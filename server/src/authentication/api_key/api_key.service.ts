@@ -16,30 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsDate, IsDefined, IsNotEmpty } from "class-validator";
+import { HttpStatus, Injectable } from "@nestjs/common";
+import { MeeloException } from "src/exceptions/meelo-exception";
 
-import Metadata from "src/scanner/models/metadata";
+@Injectable()
+export default class ApiKeyService {
+	private readonly _apiKeys: string[];
+	constructor() {
+		const envKeys = process.env.API_KEYS || process.env.API_KEY;
 
-export default class MetadataDto extends Metadata {
-	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty({
-		description:
-			"Absolute path of the file. An error will be returned if the path is not absolute, or does not belong to any library",
-	})
-	path: string;
+		this._apiKeys =
+			envKeys
+				?.split(",")
+				.map((s) => s.trim())
+				.filter((s) => s.length > 0) ?? [];
+		if (this._apiKeys.length === 0) {
+			throw new MeeloException(
+				HttpStatus.INTERNAL_SERVER_ERROR,
+				"API_KEY or API_KEYS Environment variable is missing",
+			);
+		}
+	}
 
-	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty()
-	checksum: string;
-
-	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty()
-	@IsDate()
-	@Type(() => Date)
-	registrationDate: Date;
+	public apiKeyIsValid(apiKey: string): boolean {
+		return this._apiKeys.includes(apiKey);
+	}
 }

@@ -16,30 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsDate, IsDefined, IsNotEmpty } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IllustrationType } from "@prisma/client";
+import { IsDefined, IsEnum, IsIn, IsNumber, IsString } from "class-validator";
+import {
+	HasMimeType,
+	IsFile,
+	MaxFileSize,
+	MemoryStoredFile,
+} from "nestjs-form-data";
 
-import Metadata from "src/scanner/models/metadata";
-
-export default class MetadataDto extends Metadata {
+export default class IllustrationRegistrationDto {
+	@IsFile()
 	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty({
-		description:
-			"Absolute path of the file. An error will be returned if the path is not absolute, or does not belong to any library",
+	@ApiPropertyOptional({
+		type: "file",
+		properties: {
+			file: {
+				type: "string",
+				format: "binary",
+			},
+		},
 	})
-	path: string;
+	@HasMimeType(["image/*"])
+	@MaxFileSize(20 * 1e6)
+	file: MemoryStoredFile;
 
+	@IsNumber()
 	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty()
-	checksum: string;
+	trackId: number;
 
+	@IsEnum(IllustrationType)
+	@IsIn([IllustrationType.Cover, IllustrationType.Thumbnail])
+	@IsString()
 	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty()
-	@IsDate()
-	@Type(() => Date)
-	registrationDate: Date;
+	@ApiPropertyOptional({
+		enum: [IllustrationType.Cover, IllustrationType.Thumbnail],
+	})
+	type: IllustrationType;
 }

@@ -98,14 +98,6 @@ func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, e
 	if len(m.DiscogsId) > 0 {
 		mp.WriteField("discogsId", m.DiscogsId)
 	}
-	if len(m.IllustrationBytes) > 0 {
-		part, err := mp.CreateFormFile("illustration", "cover.jpg")
-		if err != nil {
-			glg.Fail(err)
-			return MetadataCreated{}, err
-		}
-		part.Write(m.IllustrationBytes)
-	}
 	mp.WriteField("registrationDate", m.RegistrationDate.Format(time.RFC3339))
 	mp.WriteField("checksum", m.Checksum)
 	mp.WriteField("path", m.Path)
@@ -120,19 +112,21 @@ func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, e
 	return dto, err
 }
 
-func PostThumbnail(config config.Config, trackId int, thumbnailBytes []byte) error {
+func PostIllustration(config config.Config, trackId int, imageType IllustrationType, imageBytes []byte) error {
 	reqBody := new(bytes.Buffer)
 	mp := multipart.NewWriter(reqBody)
 
-	part, err := mp.CreateFormFile("thumbnail", "cover.jpg")
+	mp.WriteField("type", string(imageType))
+	mp.WriteField("trackId", strconv.FormatInt(int64(trackId), 10))
+	part, err := mp.CreateFormFile("file", "cover.jpg")
 	if err != nil {
 		glg.Fail(err)
 		return err
 	}
-	part.Write(thumbnailBytes)
+	part.Write(imageBytes)
 	mp.Close()
 
-	_, err = request("POST", fmt.Sprintf("/tracks/%d/thumbnail", trackId), reqBody, config, mp.FormDataContentType())
+	_, err = request("POST", "/illustrations", reqBody, config, mp.FormDataContentType())
 	return err
 }
 

@@ -117,8 +117,8 @@ describe("Illustration Repository", () => {
 			).toBe(null);
 		});
 
-		let releaseIllustrationPath: string;
-		it("should extract illustration to release folder, mocking the illustration bytes", async () => {
+		let discIllustrationPath: string;
+		it("should extract release/track illustration, mocking the illustration bytes", async () => {
 			jest.spyOn(
 				ScannerService.prototype as any,
 				"extractIllustrationFromFile",
@@ -139,17 +139,17 @@ describe("Illustration Repository", () => {
 					dummyRepository.trackA1_1,
 					"test/assets/dreams.m4a",
 				);
-			releaseIllustrationPath = `test/assets/metadata/${
+			discIllustrationPath = `test/assets/metadata/${
 				createdIllustration!.id
 			}/cover.jpg`;
-			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
+			expect(fs.existsSync(discIllustrationPath)).toBe(true);
+			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
 				fs.readFileSync("test/assets/cover.jpg"),
 			);
 		});
 
-		let discIllustrationPath: string;
-		it("should extract illustration to disc folder, mocking the illustration bytes", async () => {
+		let trackIllustrationPath: string = "";
+		it("should extract track illustration, mocking the illustration bytes", async () => {
 			jest.spyOn(
 				ScannerService.prototype as any,
 				"extractIllustrationFromFile",
@@ -169,20 +169,13 @@ describe("Illustration Repository", () => {
 					dummyRepository.trackA1_1,
 					"test/assets/dreams.m4a",
 				);
-			discIllustrationPath = `test/assets/metadata/${
+			trackIllustrationPath = `test/assets/metadata/${
 				createdIllustration!.id
 			}/cover.jpg`;
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
-				fs.readFileSync("test/assets/cover1.jpg"),
-			);
-			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
-				fs.readFileSync("test/assets/cover.jpg"),
-			);
+			expect(fs.existsSync(trackIllustrationPath)).toBe(true);
 		});
-		let trackIllustrationPath: string;
-		it("should extract illustration to track folder, mocking the illustration bytes", async () => {
+		it("should re-extract illustration to track folder, mocking the illustration bytes", async () => {
 			jest.spyOn(
 				ScannerService.prototype as any,
 				"extractIllustrationFromFile",
@@ -202,21 +195,13 @@ describe("Illustration Repository", () => {
 					dummyRepository.trackA1_1,
 					"test/assets/dreams.m4a",
 				);
+			expect(fs.existsSync(trackIllustrationPath)).toBe(false);
+			expect(fs.existsSync(discIllustrationPath)).toBe(true);
 			trackIllustrationPath = `test/assets/metadata/${
 				createdIllustration!.id
 			}/cover.jpg`;
+
 			expect(fs.existsSync(trackIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(trackIllustrationPath)).toStrictEqual(
-				fs.readFileSync("test/assets/cover2.jpg"),
-			);
-			expect(fs.existsSync(releaseIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(releaseIllustrationPath)).toStrictEqual(
-				fs.readFileSync("test/assets/cover.jpg"),
-			);
-			expect(fs.existsSync(discIllustrationPath)).toBe(true);
-			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
-				fs.readFileSync("test/assets/cover1.jpg"),
-			);
 		});
 	});
 });

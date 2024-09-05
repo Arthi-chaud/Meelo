@@ -482,39 +482,4 @@ describe("Track Controller", () => {
 				});
 		});
 	});
-	describe("Track Thumbnail", () => {
-		it("Should throw, as no illustration was provided", async () => {
-			return request(app.getHttpServer())
-				.post(`/tracks/-1/thumbnail`)
-				.expect(400);
-		});
-		it("Should throw, as track does not exist", async () => {
-			return request(app.getHttpServer())
-				.post(`/tracks/-1/thumbnail`)
-				.attach("thumbnail", createReadStream("test/assets/cover2.jpg"))
-				.expect(404);
-		});
-		it("Should throw, as track is not a video", async () => {
-			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackC1_1.id}/thumbnail`)
-				.attach("thumbnail", createReadStream("test/assets/cover2.jpg"))
-				.expect(400);
-		});
-		it("Should set the image's illustration", async () => {
-			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackA1_2Video.id}/thumbnail`)
-				.attach("thumbnail", createReadStream("test/assets/cover2.jpg"))
-				.expect(201)
-				.expect((res) => {
-					const illustration: IllustrationResponse = res.body;
-					const illustrationPath = `test/assets/metadata/${illustration.id}/cover.jpg`;
-					expect(illustration.type).toBe("Thumbnail");
-					expect(existsSync(illustrationPath)).toBe(true);
-					rmSync(dirname(illustrationPath), {
-						recursive: true,
-						force: true,
-					});
-				});
-		});
-	});
 });

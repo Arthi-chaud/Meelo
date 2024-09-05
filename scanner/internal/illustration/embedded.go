@@ -1,37 +1,11 @@
-package internal
+package illustration
 
 import (
 	"bytes"
 	"fmt"
-	"os"
-	"path"
-	"regexp"
-
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
-
-const IllustrationNameRegex = "(cover|artwork)\\..*$"
-
-func GetIllustrationFilePath(trackPath string) string {
-	parentDir := path.Dir(trackPath)
-	entries, err := os.ReadDir(parentDir)
-	if err != nil {
-		return ""
-	}
-	regex := regexp.MustCompile(IllustrationNameRegex)
-	for _, file := range entries {
-		if file.IsDir() {
-			continue
-		}
-		matches := regex.FindStringSubmatch(file.Name())
-		if len(matches) > 0 {
-			fullFilePath := path.Join(parentDir, file.Name())
-			return fullFilePath
-		}
-	}
-	return ""
-}
 
 func GetEmbeddedIllustrationStreamIndex(probeData ffprobe.ProbeData) int {
 	for _, stream := range probeData.Streams {

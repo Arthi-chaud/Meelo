@@ -29,3 +29,10 @@ type File struct {
 type MetadataCreated struct {
 	TrackId int `json:"trackId" validate:"required"`
 }
+
+type IllustrationType string
+
+const (
+	Cover     IllustrationType = "Cover"
+	Thumbnail IllustrationType = "Thumbnail"
+)

@@ -16,30 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsDate, IsDefined, IsNotEmpty } from "class-validator";
+import {
+	type CanActivate,
+	type ExecutionContext,
+	Injectable,
+	UnauthorizedException,
+} from "@nestjs/common";
+import ApiKeyService from "./api_key.service";
 
-import Metadata from "src/scanner/models/metadata";
+@Injectable()
+export default class ApiKeyGuard implements CanActivate {
+	constructor(private apiKeyService: ApiKeyService) {}
+	async canActivate(context: ExecutionContext): Promise<boolean> {
+		const request = context.switchToHttp().getRequest();
+		const apiKey = request.headers["x-api-key"];
 
-export default class MetadataDto extends Metadata {
-	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty({
-		description:
-			"Absolute path of the file. An error will be returned if the path is not absolute, or does not belong to any library",
-	})
-	path: string;
-
-	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty()
-	checksum: string;
-
-	@IsDefined()
-	@IsNotEmpty()
-	@ApiProperty()
-	@IsDate()
-	@Type(() => Date)
-	registrationDate: Date;
+		if (!apiKey) {
+			throw new UnauthorizedException("API key is missing.");
+		}
+		if (!this.apiKeyService.apiKeyIsValid(apiKey)) {
+			throw new UnauthorizedException("Invalid API key.");
+		}
+		return true;
+	}
 }
