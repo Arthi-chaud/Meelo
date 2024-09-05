@@ -129,15 +129,40 @@ func (s *ScannerContext) CleanLibrary(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
-// @Summary		Refresh Metadata
+// @Summary		Refresh Metadata of selected files
+// @Description	Exactly one query parameter must be given
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
 // @Router	    /refresh [post]
 // @Security JWT
+// @Param			library	query		string		false	"refresh files from library"
+// @Param			album	query		string		false	"refresh files from album"
+// @Param			release	query		string		false	"refresh files from release"
+// @Param			song	query		string		false	"refresh files from song"
+// @Param			track	query		string		false	"refresh file from track"
 func (s *ScannerContext) Refresh(c echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
+	library := c.QueryParam("library")
+	album := c.QueryParam("album")
+	release := c.QueryParam("release")
+	song := c.QueryParam("song")
+	track := c.QueryParam("track")
+	params := internal.Filter([]string{library, album, release, song, track}, func(p string) bool {
+		return len(p) > 0
+	})
+	if len(params) != 1 {
+		return c.JSON(http.StatusBadRequest, ScannerStatus{Message: "Expected exactly one query parameter"})
+	}
+	task := s.worker.AddTask(t.NewMetadataRefreshTask(api.MetadataRefreshDto{
+		LibraryIdentifier: library,
+		AlbumIdentifier:   album,
+		ReleaseIdentifier: release,
+		SongIdentifier:    song,
+		TrackIdentifier:   track,
+	}, *s.config))
+	glg.Logf("Task added to queue: %s", task.Name)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 

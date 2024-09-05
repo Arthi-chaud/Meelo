@@ -30,6 +30,14 @@ type MetadataCreated struct {
 	TrackId int `json:"trackId" validate:"required"`
 }
 
+type MetadataRefreshDto struct {
+	LibraryIdentifier string
+	AlbumIdentifier   string
+	ReleaseIdentifier string
+	SongIdentifier    string
+	TrackIdentifier   string
+}
+
 type IllustrationType string
 
 const (
