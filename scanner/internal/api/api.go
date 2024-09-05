@@ -7,7 +7,9 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -34,8 +36,16 @@ func GetUserFromAccessToken(config config.Config, accessToken string) (User, err
 	return u, err
 }
 
-func GetAllFilesInLibrary(librarySlug string, config config.Config) ([]File, error) {
-	return getAllItemsInPaginatedQuery[File](fmt.Sprintf("/files?library=%s", librarySlug), config)
+func GetAllFiles(selector FileSelectorDto, config config.Config) ([]File, error) {
+	url := "/files?"
+	v := reflect.ValueOf(selector)
+	typeOfS := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		if len(v.Field(i).String()) > 0 {
+			url = url + fmt.Sprintf("%s=%s&", strings.ToLower(typeOfS.Field(i).Name), v.Field(i).String())
+		}
+	}
+	return getAllItemsInPaginatedQuery[File](url, config)
 }
 
 func GetAllLibraries(config config.Config) ([]Library, error) {

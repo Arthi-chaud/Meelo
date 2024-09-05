@@ -30,12 +30,13 @@ type MetadataCreated struct {
 	TrackId int `json:"trackId" validate:"required"`
 }
 
-type MetadataRefreshDto struct {
-	LibraryIdentifier string
-	AlbumIdentifier   string
-	ReleaseIdentifier string
-	SongIdentifier    string
-	TrackIdentifier   string
+// Do not change names of fields, they are mapped 1:1 with the query parameters of the requests
+type FileSelectorDto struct {
+	Library string
+	Album   string
+	Release string
+	Song    string
+	Track   string
 }
 
 type IllustrationType string

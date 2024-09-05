@@ -2,37 +2,38 @@ package tasks
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 )
 
-func NewMetadataRefreshTask(refreshSelector api.MetadataRefreshDto, c config.Config) Task {
+func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, c config.Config) Task {
 	name := generateTaskName(refreshSelector)
 	return createTask(name, func(w *Worker) error { return execRefresh(refreshSelector, c, w) })
 }
 
-func execRefresh(refreshSelector api.MetadataRefreshDto, c config.Config, w *Worker) error {
+func execRefresh(refreshSelector api.FileSelectorDto, c config.Config, w *Worker) error {
+	selectedFiles, err := api.GetAllFiles(refreshSelector, c)
+	if err != nil {
+		return err
+	}
+	// filter files that need to me refreshed
+	// api.put metadata
+	// api.POST illustration
+	// api.POST thumbnail
 	return nil
 }
 
-func generateTaskName(refreshSelector api.MetadataRefreshDto) string {
+func generateTaskName(refreshSelector api.FileSelectorDto) string {
 	formattedSelector := ""
+	v := reflect.ValueOf(refreshSelector)
+	typeOfS := v.Type()
 
-	if len(refreshSelector.LibraryIdentifier) > 0 {
-		formattedSelector = fmt.Sprintf("library=%s", refreshSelector.LibraryIdentifier)
-	}
-	if len(refreshSelector.AlbumIdentifier) > 0 {
-		formattedSelector = fmt.Sprintf("album=%s", refreshSelector.AlbumIdentifier)
-	}
-	if len(refreshSelector.ReleaseIdentifier) > 0 {
-		formattedSelector = fmt.Sprintf("release=%s", refreshSelector.ReleaseIdentifier)
-	}
-	if len(refreshSelector.SongIdentifier) > 0 {
-		formattedSelector = fmt.Sprintf("song=%s", refreshSelector.SongIdentifier)
-	}
-	if len(refreshSelector.TrackIdentifier) > 0 {
-		formattedSelector = fmt.Sprintf("track=%s", refreshSelector.TrackIdentifier)
+	for i := 0; i < v.NumField(); i++ {
+		if len(v.Field(i).String()) > 0 {
+			formattedSelector = fmt.Sprintf("%s=%s", typeOfS.Field(i).Name, v.Field(i).String())
+		}
 	}
 	return fmt.Sprintf("Refresh metadata '%s'", formattedSelector)
 }

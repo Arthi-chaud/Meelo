@@ -155,12 +155,12 @@ func (s *ScannerContext) Refresh(c echo.Context) error {
 	if len(params) != 1 {
 		return c.JSON(http.StatusBadRequest, ScannerStatus{Message: "Expected exactly one query parameter"})
 	}
-	task := s.worker.AddTask(t.NewMetadataRefreshTask(api.MetadataRefreshDto{
-		LibraryIdentifier: library,
-		AlbumIdentifier:   album,
-		ReleaseIdentifier: release,
-		SongIdentifier:    song,
-		TrackIdentifier:   track,
+	task := s.worker.AddTask(t.NewMetadataRefreshTask(api.FileSelectorDto{
+		Library: library,
+		Album:   album,
+		Release: release,
+		Song:    song,
+		Track:   track,
 	}, *s.config))
 	glg.Logf("Task added to queue: %s", task.Name)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})

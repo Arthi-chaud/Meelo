@@ -21,7 +21,7 @@ func NewLibraryScanTask(library api.Library, c config.Config) Task {
 }
 
 func execScan(library api.Library, c config.Config, w *Worker) error {
-	registeredFiles, err := api.GetAllFilesInLibrary(library.Slug, c)
+	registeredFiles, err := api.GetAllFiles(api.FileSelectorDto{Library: library.Slug}, c)
 	if err != nil {
 		return err
 	}
