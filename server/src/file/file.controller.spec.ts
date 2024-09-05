@@ -53,68 +53,152 @@ describe("File Controller", () => {
 	});
 
 	describe("Get Many Files", () => {
-		it("should get file in one library", async () => {
-			return request(app.getHttpServer())
-				.get(`/files?library=${dummyRepository.library2.id}`)
-				.expect(200)
-				.expect((res) => {
-					const files: File[] = res.body.items;
-					expect(files.length).toBe(1);
-					expect(files[0]).toStrictEqual(
-						expectedFileResponse(dummyRepository.fileB1_1),
-					);
-				});
+		describe("In Library", () => {
+			it("should get file in one library", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?library=${dummyRepository.library2.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files[0]).toStrictEqual(
+							expectedFileResponse(dummyRepository.fileB1_1),
+						);
+					});
+			});
+			it("should get files in other library", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?library=${dummyRepository.library1.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(4);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_1),
+						);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_2Video),
+						);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA2_1),
+						);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileC1_1),
+						);
+					});
+			});
 		});
-		it("should get files in other library", async () => {
-			return request(app.getHttpServer())
-				.get(`/files?library=${dummyRepository.library1.id}`)
-				.expect(200)
-				.expect((res) => {
-					const files: File[] = res.body.items;
-					expect(files.length).toBe(4);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileA1_1),
-					);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileA1_2Video),
-					);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileA2_1),
-					);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileC1_1),
-					);
-				});
+		describe("In Directory", () => {
+			it("should get files in one directory", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?inFolder=Artist A/Album A`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(2);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_1),
+						);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_2Video),
+						);
+					});
+			});
+			it("should get files in sub directory", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?inFolder=Artist A/Album B`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA2_1),
+						);
+					});
+			});
+			it("should get one file in directory", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?inFolder=Compilations`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileC1_1),
+						);
+					});
+			});
 		});
-		it("should get files in one directory", async () => {
-			return request(app.getHttpServer())
-				.get(`/files?inFolder=Artist A/Album A`)
-				.expect(200)
-				.expect((res) => {
-					const files: File[] = res.body.items;
-					expect(files.length).toBe(3);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileA1_1),
-					);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileA1_2Video),
-					);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileA2_1),
-					);
-				});
+		describe("In Album", () => {
+			it("should get files from album", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?album=${dummyRepository.compilationAlbumA.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileC1_1),
+						);
+					});
+			});
 		});
-		it("should get one file in directory", async () => {
-			return request(app.getHttpServer())
-				.get(`/files?inFolder=Compilations`)
-				.expect(200)
-				.expect((res) => {
-					const files: File[] = res.body.items;
-					expect(files.length).toBe(1);
-					expect(files).toContainEqual(
-						expectedFileResponse(dummyRepository.fileC1_1),
-					);
-				});
+		describe("In Release", () => {
+			it("should get files from release", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?release=${dummyRepository.releaseB1_1.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileB1_1),
+						);
+					});
+			});
+		});
+		describe("In Song", () => {
+			it("should get files from song", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?song=${dummyRepository.songA1.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(2);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_1),
+						);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_2Video),
+						);
+					});
+			});
+			it("should get files from other song", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?song=${dummyRepository.songA2.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA2_1),
+						);
+					});
+			});
+		});
+		describe("In Track", () => {
+			it("should get file from track", async () => {
+				return request(app.getHttpServer())
+					.get(`/files?track=${dummyRepository.trackA1_2Video.id}`)
+					.expect(200)
+					.expect((res) => {
+						const files: File[] = res.body.items;
+						expect(files.length).toBe(1);
+						expect(files).toContainEqual(
+							expectedFileResponse(dummyRepository.fileA1_2Video),
+						);
+					});
+			});
 		});
 	});
 });

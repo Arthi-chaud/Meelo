@@ -226,7 +226,7 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA2_1 = await this.file.create({
 			data: {
-				path: "Artist A/Album A/My Other Song.m4a",
+				path: "Artist A/Album B/My Other Song.m4a",
 				md5Checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,

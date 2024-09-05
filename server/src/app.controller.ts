@@ -31,4 +31,7 @@ export default class AppController {
 				"Welcome to Meelo! To know more about the API, visit '/swagger'",
 		};
 	}
+
+	@A()
+	x() {}
 }

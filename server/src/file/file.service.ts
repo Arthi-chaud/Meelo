@@ -41,6 +41,10 @@ import {
 } from "src/repository/repository.utils";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import AlbumService from "src/album/album.service";
+import SongService from "src/song/song.service";
+import TrackService from "src/track/track.service";
+import ReleaseService from "src/release/release.service";
 
 @Injectable()
 export default class FileService {
@@ -95,6 +99,7 @@ export default class FileService {
 	) {
 		return this.prismaService.file.findMany({
 			where: FileService.formatManyWhereInput(where),
+			orderBy: { id: "asc" },
 			...formatPaginationParameters(pagination),
 		});
 	}
@@ -106,8 +111,36 @@ export default class FileService {
 			query = deepmerge(query, { id: where.id });
 		}
 		if (where.library) {
-			query = deepmerge(query, {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
 				library: LibraryService.formatWhereInput(where.library),
+			});
+		}
+		if (where.album) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: {
+					release: {
+						album: AlbumService.formatWhereInput(where.album),
+					},
+				},
+			});
+		}
+		if (where.release) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: {
+					release: ReleaseService.formatWhereInput(where.release),
+				},
+			});
+		}
+		if (where.song) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: {
+					song: SongService.formatWhereInput(where.song),
+				},
+			});
+		}
+		if (where.track) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: TrackService.formatWhereInput(where.track),
 			});
 		}
 		if (where.paths) {
