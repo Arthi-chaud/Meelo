@@ -6,5 +6,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "files" DROP COLUMN "md5Checksum",
-ADD COLUMN     "checksum" TEXT NOT NULL;
+ALTER TABLE "files" RENAME COLUMN "md5Checksum" TO "checksum"
