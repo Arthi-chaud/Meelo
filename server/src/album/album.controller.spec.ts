@@ -10,7 +10,7 @@ import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
 import { createTestingModule } from "test/test-module";
 import AlbumModule from "./album.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import SetupApp from "test/setup-app";

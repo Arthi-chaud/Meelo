@@ -14,7 +14,7 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import VideoService from "./video.service";
 import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
 
 describe("Video Service", () => {

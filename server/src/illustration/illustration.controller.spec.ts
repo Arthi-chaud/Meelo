@@ -6,7 +6,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import AlbumModule from "src/album/album.module";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
