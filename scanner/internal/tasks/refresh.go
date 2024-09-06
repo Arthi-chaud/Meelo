@@ -2,10 +2,14 @@ package tasks
 
 import (
 	"fmt"
+	"path"
 	"reflect"
 
+	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/parser"
+	"github.com/kpango/glg"
 )
 
 func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, c config.Config) Task {
@@ -14,14 +18,47 @@ func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, c config.Config
 }
 
 func execRefresh(refreshSelector api.FileSelectorDto, c config.Config, w *Worker) error {
+	successfulUpdates := 0
+	libraries, err := api.GetAllLibraries(c)
+	if err != nil {
+		return err
+	}
 	selectedFiles, err := api.GetAllFiles(refreshSelector, c)
 	if err != nil {
 		return err
 	}
-	// filter files that need to me refreshed
-	// api.put metadata
-	// api.POST illustration
-	// api.POST thumbnail
+	for _, selectedFile := range selectedFiles {
+		selectedFilePath, err := buildFullFileEntryPath(selectedFile, libraries, c)
+		if err != nil {
+			glg.Fail(err)
+			continue
+		}
+		newChecksum, err := internal.ComputeChecksum(selectedFilePath)
+		if err != nil {
+			glg.Fail(err)
+			continue
+		}
+		if newChecksum == selectedFile.Checksum {
+			continue
+		}
+		glg.Log("Refreshing metadata for %s.", path.Base(selectedFile.Path))
+		// Note unlike for scan, we dont use a chan here.
+		m, errs := parser.ParseMetadata(c.UserSettings, selectedFilePath)
+		if len(errs) > 0 {
+			glg.Errorf("Parsing '%s' failed:", path.Base(selectedFilePath))
+			for _, err := range errs {
+				glg.Trace(err.Error())
+			}
+			continue
+		}
+		err = pushMetadata(selectedFilePath, m, c, w, api.Update)
+		if err != nil {
+			glg.Fail(err.Error())
+		} else {
+			successfulUpdates = successfulUpdates + 1
+		}
+	}
+	glg.Logf("Updated metadata for %d files", successfulUpdates)
 	return nil
 }
 
@@ -36,4 +73,15 @@ func generateTaskName(refreshSelector api.FileSelectorDto) string {
 		}
 	}
 	return fmt.Sprintf("Refresh metadata '%s'", formattedSelector)
+}
+
+func buildFullFileEntryPath(file api.File, libraries []api.Library, c config.Config) (string, error) {
+	for _, library := range libraries {
+		if file.LibraryId != library.Id {
+			continue
+		}
+		fullPath := path.Join(c.DataDirectory, "/", library.Path, "/", file.Path)
+		return fullPath, nil
+	}
+	return "", fmt.Errorf("could not build back the full path of %s", path.Base(file.Path))
 }

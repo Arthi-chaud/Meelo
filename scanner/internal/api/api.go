@@ -76,7 +76,14 @@ func DeleteFiles(config config.Config, fileIds []int) error {
 	return err
 }
 
-func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, error) {
+type SaveMetadataMethod string
+
+const (
+	Update SaveMetadataMethod = "Update"
+	Create SaveMetadataMethod = "Create"
+)
+
+func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMetadataMethod) (MetadataCreated, error) {
 	reqBody := new(bytes.Buffer)
 	mp := multipart.NewWriter(reqBody)
 	mp.WriteField("compilation", strconv.FormatBool(m.IsCompilation))
@@ -113,7 +120,12 @@ func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, e
 	mp.WriteField("path", m.Path)
 	mp.Close()
 
-	res, err := request("POST", "/metadata", reqBody, config, mp.FormDataContentType())
+	method := "POST"
+	if saveMethod == Update {
+		method = "PUT"
+	}
+
+	res, err := request(method, "/metadata", reqBody, config, mp.FormDataContentType())
 	if err != nil {
 		return MetadataCreated{}, err
 	}
