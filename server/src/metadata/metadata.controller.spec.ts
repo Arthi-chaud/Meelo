@@ -163,7 +163,7 @@ describe("Metadata Controller", () => {
 				{ track: true },
 			);
 			expect(file.id).toBe(createdMetadata.sourceFileId);
-			expect(file.md5Checksum).toBe(validMetadata.checksum);
+			expect(file.checksum).toBe(validMetadata.checksum);
 			expect(file.libraryId).toBe(createdMetadata.libraryId);
 			expect(file.track!.id).toBe(createdMetadata.trackId);
 			expect(file.path).toBe("...Baby One More Time.m4a");
@@ -211,7 +211,7 @@ describe("Metadata Controller", () => {
 				{ track: true },
 			);
 			expect(file.id).toBe(createdMetadata.sourceFileId);
-			expect(file.md5Checksum).toBe("zzz");
+			expect(file.checksum).toBe("zzz");
 			expect(file.registerDate).toStrictEqual(new Date("2011-04-03"));
 			expect(file.track!.id).toBe(createdMetadata.trackId);
 			expect(file.path).toBe("...Baby One More Time.m4a");

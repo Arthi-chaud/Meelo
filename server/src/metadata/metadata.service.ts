@@ -48,7 +48,7 @@ export class MetadataService {
 		const relativeFilePath = this.toRelativePath(m.path, parentLibrary);
 		const fileEntry = await this.fileService.create({
 			libraryId: parentLibrary.id,
-			md5Checksum: m.checksum,
+			checksum: m.checksum,
 			registerDate: m.registrationDate,
 			path: relativeFilePath,
 		});
@@ -91,7 +91,7 @@ export class MetadataService {
 		);
 		await this.fileService.update(
 			{ id: fileEntry.id },
-			{ md5Checksum: m.checksum, registerDate: m.registrationDate },
+			{ checksum: m.checksum, registerDate: m.registrationDate },
 		);
 		await this.taskRunner.housekeeping();
 		return {

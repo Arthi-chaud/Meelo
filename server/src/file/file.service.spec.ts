@@ -72,12 +72,12 @@ describe("File Service", () => {
 			newFile = await fileService.create({
 				path: "Me",
 				libraryId: dummyRepository.library1.id,
-				md5Checksum: "Sum",
+				checksum: "Sum",
 				registerDate: now,
 			});
 			expect(newFile.id).toBeDefined();
 			expect(newFile.libraryId).toBe(dummyRepository.library1.id);
-			expect(newFile.md5Checksum).toBe("Sum");
+			expect(newFile.checksum).toBe("Sum");
 			expect(newFile.path).toBe("Me");
 			expect(newFile.registerDate).toStrictEqual(now);
 		});
@@ -88,7 +88,7 @@ describe("File Service", () => {
 				await fileService.create({
 					path: "Me",
 					libraryId: dummyRepository.library1.id,
-					md5Checksum: "Sum",
+					checksum: "Sum",
 					registerDate: now,
 				});
 			return expect(test()).rejects.toThrow(FileAlreadyExistsException);
