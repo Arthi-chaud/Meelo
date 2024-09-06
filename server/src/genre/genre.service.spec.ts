@@ -20,7 +20,7 @@ import {
 import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
 

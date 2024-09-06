@@ -3,14 +3,14 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import LibraryModule from "./../library/library.module";
+import LibraryModule from "../library/library.module";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import { MetadataModule } from "./metadata.module";
-import { MetadataController } from "./metadata.controller";
+import { RegistrationModule } from "./registration.module";
+import { MetadataController } from "./registration.controller";
 import MetadataDto from "./models/metadata.dto";
 import request from "supertest";
 import MetadataSavedResponse from "./models/metadata-saved.dto";
@@ -67,7 +67,7 @@ describe("Metadata Controller", () => {
 				PrismaModule,
 				FileModule,
 				ScannerModule,
-				MetadataModule,
+				RegistrationModule,
 				SongModule,
 				ArtistModule,
 				ReleaseModule,

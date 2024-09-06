@@ -35,7 +35,7 @@ import FfmpegService from "src/scanner/ffmpeg.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
 import FileManagerService from "src/file-manager/file-manager.service";
-import ScannerService from "src/scanner/scanner.service";
+import ScannerService from "src/registration/metadata.service";
 import { IllustrationNotFoundException } from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
 import IllustrationStats from "./models/illustration-stats";

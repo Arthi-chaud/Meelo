@@ -41,6 +41,8 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import TrackService from "src/track/track.service";
 import TrackQueryParameters from "src/track/models/track.query-parameters";
 import Roles from "src/authentication/roles/roles.enum";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import { RegistrationService } from "src/registration/registration.service";
 
 class Selector {
 	@IsOptional()
@@ -91,7 +93,8 @@ class Selector {
 export default class FileController {
 	constructor(
 		private fileService: FileService,
-		private taskService: TaskRunner,
+		private registrationService: RegistrationService,
+		private housekeepingService: HousekeepingService,
 	) {}
 
 	@ApiOperation({
@@ -132,9 +135,9 @@ export default class FileController {
 	async deleteMany(@Body() toDelete: FileDeletionDto) {
 		await Promise.all(
 			toDelete.ids.map((fileId) =>
-				this.taskService.unregisterFile({ id: fileId }),
+				this.registrationService.unregisterFile({ id: fileId }),
 			),
 		);
-		await this.taskService.housekeeping();
+		await this.housekeepingService.runHousekeeping();
 	}
 }

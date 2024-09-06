@@ -24,7 +24,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import ReleaseModule from "src/release/release.module";

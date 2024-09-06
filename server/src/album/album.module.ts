@@ -27,7 +27,7 @@ import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from "./models/album.response";
 import ProvidersModule from "src/providers/providers.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 
 @Module({
 	imports: [

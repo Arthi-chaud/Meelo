@@ -23,7 +23,7 @@ import { LyricsService } from "src/lyrics/lyrics.service";
 import { LyricsNotFoundException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import SongModule from "./song.module";
 import { GenreNotFoundException } from "src/genre/genre.exceptions";
 

@@ -28,7 +28,6 @@ import SettingsModule from "./settings/settings.module";
 import LibraryModule from "./library/library.module";
 import IllustrationModule from "./illustration/illustration.module";
 import FileManagerModule from "./file-manager/file-manager.module";
-import ScannerModule from "./scanner/scanner.module";
 import PrismaModule from "./prisma/prisma.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
 import GenreModule from "./genre/genre.module";
@@ -46,9 +45,10 @@ import PlaylistModule from "./playlist/playlist.module";
 import { MeiliSearchModule } from "nestjs-meilisearch";
 import { StreamModule } from "./stream/stream.module";
 import { SearchModule } from "./search/search.module";
-import { MetadataModule } from "./metadata/metadata.module";
+import { RegistrationModule } from "./registration/registration.module";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
-import { HousekeepingModule } from './housekeeping/housekeeping.module';
+import { HousekeepingModule } from "./housekeeping/housekeeping.module";
+import ParserModule from "./parser/parser.module";
 
 @Module({
 	imports: [
@@ -82,7 +82,6 @@ import { HousekeepingModule } from './housekeeping/housekeeping.module';
 		TrackModule,
 		ReleaseModule,
 		IllustrationModule,
-		ScannerModule,
 		PrismaModule,
 		FileModule,
 		SettingsModule,
@@ -96,10 +95,10 @@ import { HousekeepingModule } from './housekeeping/housekeeping.module';
 		ProvidersModule,
 		PlaylistModule,
 		VideoModule,
-		ScannerModule,
 		StreamModule,
 		SearchModule,
-		MetadataModule,
+		RegistrationModule,
+		ParserModule,
 		HousekeepingModule,
 	],
 	controllers: [AppController],

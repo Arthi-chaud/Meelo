@@ -18,29 +18,36 @@
 
 import { Injectable } from "@nestjs/common";
 import MetadataDto from "./models/metadata.dto";
-import ScannerService from "src/scanner/scanner.service";
+import MetadataService from "src/registration/metadata.service";
 import SettingsService from "src/settings/settings.service";
 import LibraryService from "src/library/library.service";
 import { Library } from "@prisma/client";
 import { LibraryNotFoundException } from "src/library/library.exceptions";
 import FileService from "src/file/file.service";
 import * as path from "path";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import {
+	InvalidRequestException,
+	NotFoundException,
+} from "src/exceptions/meelo-exception";
 import MetadataSavedResponse from "./models/metadata-saved.dto";
 import escapeRegex from "src/utils/escape-regex";
 import { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import FileQueryParameters from "src/file/models/file.query-parameters";
+import TrackService from "src/track/track.service";
 
 @Injectable()
-export class MetadataService {
+export class RegistrationService {
 	// TODO: one microservice is ready, move everything from scanner module to metadata
 	constructor(
-		private scannerService: ScannerService,
+		private metadataService: MetadataService,
 		private settingsService: SettingsService,
 		private libraryService: LibraryService,
 		private fileService: FileService,
+		private trackService: TrackService,
 		private housekeepingService: HousekeepingService,
 	) {}
-	async saveMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
+
+	async registerMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
 		const parentLibrary = await this.resolveLibraryFromFilePath(m.path);
 		if (!parentLibrary) {
 			throw new LibraryNotFoundException(m.path);
@@ -53,7 +60,7 @@ export class MetadataService {
 			path: relativeFilePath,
 		});
 		try {
-			const createdTrack = await this.scannerService.registerMetadata(
+			const createdTrack = await this.metadataService.registerMetadata(
 				m,
 				fileEntry,
 			);
@@ -84,7 +91,7 @@ export class MetadataService {
 				path: relativeFilePath,
 			},
 		});
-		const createdTrack = await this.scannerService.registerMetadata(
+		const createdTrack = await this.metadataService.registerMetadata(
 			m,
 			fileEntry,
 			true,
@@ -101,6 +108,23 @@ export class MetadataService {
 			songId: createdTrack.songId,
 			releaseId: createdTrack.releaseId,
 		};
+	}
+
+	public async unregisterFile(
+		where: FileQueryParameters.DeleteInput,
+		housekeeping = false,
+	) {
+		await this.trackService
+			.delete({ sourceFileId: where.id })
+			.catch((error) => {
+				if (!(error instanceof NotFoundException)) {
+					throw error;
+				}
+			});
+		await this.fileService.delete(where);
+		if (housekeeping) {
+			await this.housekeepingService.runHousekeeping();
+		}
 	}
 
 	private async resolveLibraryFromFilePath(absoluteFilePath: string) {

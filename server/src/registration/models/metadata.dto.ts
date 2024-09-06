@@ -20,7 +20,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsDate, IsDefined, IsNotEmpty } from "class-validator";
 
-import Metadata from "src/scanner/models/metadata";
+import Metadata from "src/registration/models/metadata";
 
 export default class MetadataDto extends Metadata {
 	@IsDefined()

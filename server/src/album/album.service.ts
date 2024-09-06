@@ -35,7 +35,7 @@ import compilationAlbumArtistKeyword from "src/constants/compilation";
 import Logger from "src/logger/logger";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
-import ParserService from "src/scanner/parser.service";
+import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
 import GenreService from "src/genre/genre.service";
 import MeiliSearch from "meilisearch";

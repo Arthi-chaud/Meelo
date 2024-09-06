@@ -24,10 +24,8 @@ import {
 	FileNotFoundFromTrackIDException,
 } from "./file.exceptions";
 import PrismaService from "src/prisma/prisma.service";
-import type { File, Library } from "src/prisma/models";
+import type { File } from "src/prisma/models";
 import type FileQueryParameters from "./models/file.query-parameters";
-import { FileNotReadableException } from "src/file-manager/file-manager.exceptions";
-// eslint-disable-next-line no-restricted-imports
 import { buildDateSearchParameters } from "src/utils/search-date-input";
 import LibraryService from "src/library/library.service";
 import { Prisma } from "@prisma/client";
@@ -223,33 +221,6 @@ export default class FileService {
 				}
 				throw new UnhandledORMErrorException(error, input);
 			});
-	}
-
-	/**
-	 * Register a file in the Database
-	 * @param filePath The path to the file to register, relative to parent library path
-	 * @param parentLibrary The parent Library the new file will be registered under
-	 */
-	async registerFile(
-		filePath: string,
-		parentLibrary: Library,
-		registrationDate?: Date,
-	): Promise<File> {
-		const libraryPath =
-			this.fileManagerService.getLibraryFullPath(parentLibrary);
-		const fullFilePath = `${libraryPath}/${filePath}`;
-
-		if (!this.fileManagerService.fileIsReadable(fullFilePath)) {
-			throw new FileNotReadableException(filePath);
-		}
-		return this.create({
-			checksum: await this.fileManagerService.getMd5Checksum(
-				fullFilePath,
-			),
-			path: filePath,
-			libraryId: parentLibrary.id,
-			registerDate: registrationDate ?? new Date(),
-		});
 	}
 
 	/**

@@ -3,7 +3,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
@@ -12,10 +12,9 @@ import IllustrationModule from "./illustration.module";
 import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
 import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
-import { FileParsingException } from "src/scanner/scanner.exceptions";
 import ProvidersModule from "src/providers/providers.module";
 import IllustrationRepository from "./illustration.repository";
-import ScannerService from "src/scanner/scanner.service";
+import ScannerService from "src/registration/metadata.service";
 
 jest.setTimeout(120000);
 

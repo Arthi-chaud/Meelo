@@ -22,12 +22,12 @@ import MetadataDto from "./models/metadata.dto";
 import { Role } from "src/authentication/roles/roles.decorators";
 import RoleEnum from "src/authentication/roles/roles.enum";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
-import { MetadataService } from "./metadata.service";
+import { RegistrationService } from "./registration.service";
 
 @ApiTags("Metadata")
 @Controller("metadata")
 export class MetadataController {
-	constructor(private metadataService: MetadataService) {}
+	constructor(private registrationService: RegistrationService) {}
 	@ApiOperation({
 		description:
 			"Handles the metadata of a single media file, and creates the related artist, album, etc.",
@@ -37,7 +37,7 @@ export class MetadataController {
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveFile(@Body() metadata: MetadataDto) {
-		return this.metadataService.saveMetadata(metadata);
+		return this.registrationService.saveMetadata(metadata);
 	}
 
 	@ApiOperation({
@@ -49,6 +49,6 @@ export class MetadataController {
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async updateFile(@Body() metadata: MetadataDto) {
-		return this.metadataService.updateMetadata(metadata);
+		return this.registrationService.updateMetadata(metadata);
 	}
 }

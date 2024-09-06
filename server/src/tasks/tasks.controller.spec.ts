@@ -41,19 +41,6 @@ describe("Task Controller", () => {
 		await module.close();
 	});
 
-	it("should run housekeeping", async () => {
-		const spy = jest.spyOn(taskRunner, "housekeeping");
-		spy.mockImplementationOnce(async () => {});
-
-		const res = await request(app.getHttpServer()).get(
-			`/tasks/housekeeping`,
-		);
-		expect(res.statusCode).toBe(200);
-		expect(res.body).toStrictEqual(expectedTaskResponse);
-		await delay(2000);
-		expect(spy).toBeCalled();
-	});
-
 	it("should run scan", async () => {
 		const spy = jest.spyOn(TaskRunner.prototype as any, "scanLibrary");
 		spy.mockImplementationOnce(async () => {});

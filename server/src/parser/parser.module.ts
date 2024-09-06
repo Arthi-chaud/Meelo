@@ -16,24 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import { MetadataController } from "./metadata.controller";
-import { MetadataService } from "./metadata.service";
-import ScannerModule from "src/scanner/scanner.module";
-import SettingsModule from "src/settings/settings.module";
-import LibraryModule from "src/library/library.module";
-import FileModule from "src/file/file.module";
-import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import { Module, forwardRef } from "@nestjs/common";
+import ArtistModule from "src/artist/artist.module";
+import ParserService from "./parser.service";
 
 @Module({
-	controllers: [MetadataController],
-	providers: [MetadataService],
-	imports: [
-		ScannerModule,
-		SettingsModule,
-		LibraryModule,
-		FileModule,
-		HousekeepingModule,
-	],
+	imports: [forwardRef(() => ArtistModule)],
+	providers: [ParserService],
+	exports: [ParserService],
 })
-export class MetadataModule {}
+export default class ParserModule {}

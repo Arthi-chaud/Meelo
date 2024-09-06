@@ -21,7 +21,7 @@ import LibraryController from "./library.controller";
 import LibraryService from "./library.service";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import ArtistModule from "src/artist/artist.module";

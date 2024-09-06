@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import Metadata from "./models/metadata";
+import Metadata from "../registration/models/metadata";
 import { AlbumType, SongType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
 import ArtistService from "src/artist/artist.service";

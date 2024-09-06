@@ -31,7 +31,7 @@ import ProvidersModule from "src/providers/providers.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import IllustrationRepository from "./illustration.repository";
 import PrismaModule from "src/prisma/prisma.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ScannerModule from "src/parser/parser.module";
 import { HttpModule } from "@nestjs/axios";
 
 @Module({
