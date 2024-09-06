@@ -37,7 +37,7 @@ export class MetadataController {
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveFile(@Body() metadata: MetadataDto) {
-		return this.registrationService.saveMetadata(metadata);
+		return this.registrationService.registerMetadata(metadata);
 	}
 
 	@ApiOperation({

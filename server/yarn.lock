@@ -2562,15 +2562,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/fluent-ffmpeg@npm:^2.1.21":
-  version: 2.1.21
-  resolution: "@types/fluent-ffmpeg@npm:2.1.21"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/560541aad8c3a2a0f1cfcfada1239100a1b8ecc100a7f6abc84e2aa7f694093310dc4c32eef318ccd01ea8cccb6fcd6c28672a9e32862c3f618794978575de8a
-  languageName: node
-  linkType: hard
-
 "@types/get-image-colors@npm:^4.0.2":
   version: 4.0.2
   resolution: "@types/get-image-colors@npm:4.0.2"
@@ -2696,6 +2687,13 @@ __metadata:
   version: 3.4.2
   resolution: "@types/luxon@npm:3.4.2"
   checksum: 10c0/d835467de3daf7e17ba78b50bb5a14efd94272439ca067990d71332a54b311544459c69623eddd243b511b28d70194c9591a9ee8cf9c038962c965f991affd7e
+  languageName: node
+  linkType: hard
+
+"@types/md5@npm:^2":
+  version: 2.3.5
+  resolution: "@types/md5@npm:2.3.5"
+  checksum: 10c0/aef9c40ab0ec61f1ae2acb04ee04e55b99eeec64af58176ef36d4feaf6aac335f32caca07eca0e3a1813fc362bf0b8663423250e24b39ebcfdc24c6ca4abe1cf
   languageName: node
   linkType: hard
 
@@ -3655,7 +3653,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:>=0.2.9, async@npm:^3.2.3":
+"async@npm:^3.2.3":
   version: 3.2.4
   resolution: "async@npm:3.2.4"
   checksum: 10c0/b5d02fed64717edf49e35b2b156debd9cf524934ea670108fa5528e7615ed66a5e0bf6c65f832c9483b63aa7f0bffe3e588ebe8d58a539b833798d324516e1c9
@@ -4167,6 +4165,13 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 10c0/96e4731b9ec8050cbb56ab684e8c48d6c33f7826b755802d14e3ebfdc51c57afeece3ea39bc6b09acc359e4363525388b915e16640c1378053820f5e70d0f27d
+  languageName: node
+  linkType: hard
+
+"charenc@npm:0.0.2":
+  version: 0.0.2
+  resolution: "charenc@npm:0.0.2"
+  checksum: 10c0/a45ec39363a16799d0f9365c8dd0c78e711415113c6f14787a22462ef451f5013efae8a28f1c058f81fc01f2a6a16955f7a5fd0cd56247ce94a45349c89877d8
   languageName: node
   linkType: hard
 
@@ -4797,6 +4802,13 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/5738c312387081c98d69c98e105b6327b069197f864a60593245d64c8089c8a0a744e16349281210d56835bb9274130d825a78b2ad6853ca13cfbeffc0c31750
+  languageName: node
+  linkType: hard
+
+"crypt@npm:0.0.2":
+  version: 0.0.2
+  resolution: "crypt@npm:0.0.2"
+  checksum: 10c0/adbf263441dd801665d5425f044647533f39f4612544071b1471962209d235042fb703c27eea2795c7c53e1dfc242405173003f83cf4f4761a633d11f9653f18
   languageName: node
   linkType: hard
 
@@ -6203,16 +6215,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fluent-ffmpeg@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "fluent-ffmpeg@npm:2.1.2"
-  dependencies:
-    async: "npm:>=0.2.9"
-    which: "npm:^1.1.1"
-  checksum: 10c0/6f64cd86ecb8cce2c0f13ff256b35b8282f451e5e9e5bbac8c89201e1fa7f5d5c122e905a677bfd23ea9563c04ec978b95b0c3188ae5c089d0c4376e06661749
-  languageName: node
-  linkType: hard
-
 "follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.15.6":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
@@ -7403,7 +7405,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-buffer@npm:^1.0.2":
+"is-buffer@npm:^1.0.2, is-buffer@npm:~1.1.6":
   version: 1.1.6
   resolution: "is-buffer@npm:1.1.6"
   checksum: 10c0/ae18aa0b6e113d6c490ad1db5e8df9bdb57758382b313f5a22c9c61084875c6396d50bbf49315f5b1926d142d74dfb8d31b40d993a383e0a158b15fea7a82234
@@ -8900,6 +8902,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"md5@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "md5@npm:2.3.0"
+  dependencies:
+    charenc: "npm:0.0.2"
+    crypt: "npm:0.0.2"
+    is-buffer: "npm:~1.1.6"
+  checksum: 10c0/14a21d597d92e5b738255fbe7fe379905b8cb97e0a49d44a20b58526a646ec5518c337b817ce0094ca94d3e81a3313879c4c7b510d250c282d53afbbdede9110
+  languageName: node
+  linkType: hard
+
 "media-typer@npm:0.3.0":
   version: 0.3.0
   resolution: "media-typer@npm:0.3.0"
@@ -8930,10 +8943,10 @@ __metadata:
     "@types/cookie-parser": "npm:^1.4.3"
     "@types/damerau-levenshtein": "npm:^1.0.0"
     "@types/express": "npm:^4.17.13"
-    "@types/fluent-ffmpeg": "npm:^2.1.21"
     "@types/get-image-colors": "npm:^4.0.2"
     "@types/glob": "npm:^8.0.0"
     "@types/jest": "npm:27.4.1"
+    "@types/md5": "npm:^2"
     "@types/multer": "npm:^1.4.12"
     "@types/normalize-path": "npm:^3.0.0"
     "@types/passport-jwt": "npm:^3.0.7"
@@ -8959,7 +8972,6 @@ __metadata:
     eslint-plugin-prettier: "npm:^4.0.0"
     eslint-plugin-simple-import-sort: "npm:^8.0.0"
     eslint-plugin-unused-imports: "npm:^2.0.0"
-    fluent-ffmpeg: "npm:^2.1.2"
     fs: "npm:^0.0.1-security"
     genius-lyrics-api: "npm:^3.2.1"
     get-image-colors: "npm:^4.0.1"
@@ -8968,6 +8980,7 @@ __metadata:
     http-proxy-middleware: "npm:^3.0.0"
     jest: "npm:^29.7.0"
     jimp: "npm:^0.16.1"
+    md5: "npm:^2.3.0"
     meilisearch: "npm:^0.36.0"
     mime: "npm:^3.0.0"
     musicbrainz-api: "npm:^0.10.2"
@@ -12548,17 +12561,6 @@ __metadata:
     is-string: "npm:^1.0.5"
     is-symbol: "npm:^1.0.3"
   checksum: 10c0/0a62a03c00c91dd4fb1035b2f0733c341d805753b027eebd3a304b9cb70e8ce33e25317add2fe9b5fea6f53a175c0633ae701ff812e604410ddd049777cd435e
-  languageName: node
-  linkType: hard
-
-"which@npm:^1.1.1":
-  version: 1.3.1
-  resolution: "which@npm:1.3.1"
-  dependencies:
-    isexe: "npm:^2.0.0"
-  bin:
-    which: ./bin/which
-  checksum: 10c0/e945a8b6bbf6821aaaef7f6e0c309d4b615ef35699576d5489b4261da9539f70393c6b2ce700ee4321c18f914ebe5644bc4631b15466ffbaad37d83151f6af59
   languageName: node
   linkType: hard
 

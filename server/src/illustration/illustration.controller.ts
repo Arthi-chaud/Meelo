@@ -43,6 +43,7 @@ import { IllustrationResponse } from "./models/illustration.response";
 import Roles from "src/authentication/roles/roles.enum";
 import IllustrationRegistrationDto from "./models/illustration-registration.dto";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import { RegistrationService } from "src/registration/registration.service";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
 
@@ -52,6 +53,7 @@ export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
 		private illustrationRepository: IllustrationRepository,
+		private registrationService: RegistrationService,
 		private providerIllustrationService: ProviderIllustrationService,
 		private providerService: ProviderService,
 	) {}
@@ -101,7 +103,7 @@ export class IllustrationController {
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async registerIllustration(@Body() dto: IllustrationRegistrationDto) {
-		return this.illustrationRepository.registerTrackIllustrationFromBuffer(
+		return this.registrationService.registerTrackIllustration(
 			{
 				id: dto.trackId,
 			},
