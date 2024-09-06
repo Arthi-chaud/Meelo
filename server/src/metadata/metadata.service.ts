@@ -28,7 +28,7 @@ import * as path from "path";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import MetadataSavedResponse from "./models/metadata-saved.dto";
 import escapeRegex from "src/utils/escape-regex";
-import TaskRunner from "src/tasks/tasks.runner";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
 
 @Injectable()
 export class MetadataService {
@@ -38,7 +38,7 @@ export class MetadataService {
 		private settingsService: SettingsService,
 		private libraryService: LibraryService,
 		private fileService: FileService,
-		private taskRunner: TaskRunner,
+		private housekeepingService: HousekeepingService,
 	) {}
 	async saveMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
 		const parentLibrary = await this.resolveLibraryFromFilePath(m.path);
@@ -93,7 +93,7 @@ export class MetadataService {
 			{ id: fileEntry.id },
 			{ checksum: m.checksum, registerDate: m.registrationDate },
 		);
-		await this.taskRunner.housekeeping();
+		await this.housekeepingService.runHousekeeping();
 		return {
 			trackId: createdTrack.id,
 			sourceFileId: fileEntry.id,
