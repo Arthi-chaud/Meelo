@@ -35,6 +35,7 @@ import ProvidersModule from "src/providers/providers.module";
 import TaskRunner, { TaskQueue } from "./tasks.runner";
 import { BullModule } from "@nestjs/bull";
 import PlaylistModule from "src/playlist/playlist.module";
+import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 
 @Module({
 	imports: [
@@ -48,6 +49,7 @@ import PlaylistModule from "src/playlist/playlist.module";
 		forwardRef(() => ScannerModule),
 		LyricsModule,
 		SettingsModule,
+		HousekeepingModule,
 		forwardRef(() => ProvidersModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),

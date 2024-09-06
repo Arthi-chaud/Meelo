@@ -34,16 +34,11 @@ import {
 	MeeloException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import SongService from "src/song/song.service";
-import ReleaseService from "src/release/release.service";
-import AlbumService from "src/album/album.service";
-import ArtistService from "src/artist/artist.service";
-import GenreService from "src/genre/genre.service";
 import ExternalIdService from "src/providers/external-id.provider";
 import { LyricsService } from "src/lyrics/lyrics.service";
-import PlaylistService from "src/playlist/playlist.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import type RefreshMetadataSelector from "./models/refresh-metadata.selector";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
 
 export const TaskQueue = "task-queue";
 
@@ -53,6 +48,7 @@ export default class TaskRunner {
 	constructor(
 		private settingsService: SettingsService,
 		private fileManagerService: FileManagerService,
+		private housekeepingService: HousekeepingService,
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		@Inject(forwardRef(() => TrackService))
@@ -63,21 +59,9 @@ export default class TaskRunner {
 		private libraryService: LibraryService,
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
-		@Inject(forwardRef(() => GenreService))
-		private genresService: GenreService,
 		@Inject(forwardRef(() => ExternalIdService))
 		private externalIdService: ExternalIdService,
 		private lyricsService: LyricsService,
-		@Inject(forwardRef(() => PlaylistService))
-		private playlistService: PlaylistService,
 	) {}
 
 	@OnQueueError()
@@ -97,7 +81,9 @@ export default class TaskRunner {
 			case Task.ScanLibrary:
 				return this.runTask(job, (where) => this.scanLibrary(where));
 			case Task.Housekeeping:
-				return this.runTask(job, () => this.housekeeping());
+				return this.runTask(job, () =>
+					this.housekeepingService.runHousekeeping(),
+				);
 			case Task.RefreshMetadata:
 				return this.runTask(job, (where: string) =>
 					this.refreshFilesMetadata(JSON.parse(where)),
@@ -219,7 +205,7 @@ export default class TaskRunner {
 		this.logger.log(
 			`${parentLibrary.slug} library: ${newlyRegistered.length} new files registered`,
 		);
-		await this.resolveMasters();
+		await this.housekeepingService.resolveMasters();
 	}
 
 	/**
@@ -258,7 +244,7 @@ export default class TaskRunner {
 			this.logger.warn(
 				`'${parentLibrary.slug}' library: Removed ${unavailableFiles.length} entries`,
 			);
-			await this.housekeeping();
+			await this.housekeepingService.runHousekeeping();
 		} catch (error) {
 			this.logger.error(
 				`'${parentLibrary.slug}' library: Cleaning failed:`,
@@ -292,7 +278,7 @@ export default class TaskRunner {
 		for (const file of updatedFiles) {
 			await this.unregisterFile({ id: file.id });
 		}
-		await this.housekeeping();
+		await this.housekeepingService.runHousekeeping();
 		for (const file of updatedFiles) {
 			this.logger.log(`Refreshing '${file.path} metadata`);
 			await this.registerFile(
@@ -302,31 +288,13 @@ export default class TaskRunner {
 			);
 		}
 		this.logger.log(`Refreshed ${updatedFiles.length} files' metadata`);
-		await this.resolveMasters();
+		await this.housekeepingService.runHousekeeping();
 	}
 
 	private async fetchExternalMetadata(): Promise<void> {
 		await this.fetchExternalIds();
 		await this.fetchExternalIllustrations();
 		await this.lyricsService.fetchMissingLyrics();
-	}
-
-	private async resolveMasters() {
-		await this.albumService.resolveMasterReleases();
-		await this.songService.resolveMasterTracks();
-	}
-
-	/**
-	 * Calls housekeeping methods on repository services
-	 */
-	async housekeeping(): Promise<void> {
-		await this.songService.housekeeping();
-		await this.releaseService.housekeeping();
-		await this.albumService.housekeeping();
-		await this.artistService.housekeeping();
-		await this.genresService.housekeeping();
-		await this.playlistService.housekeeping();
-		await this.resolveMasters();
 	}
 
 	///// Sub tasks
@@ -344,7 +312,7 @@ export default class TaskRunner {
 			});
 		await this.fileService.delete(where);
 		if (housekeeping) {
-			await this.housekeeping();
+			await this.housekeepingService.runHousekeeping();
 		}
 	}
 

@@ -48,6 +48,7 @@ import { StreamModule } from "./stream/stream.module";
 import { SearchModule } from "./search/search.module";
 import { MetadataModule } from "./metadata/metadata.module";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
+import { HousekeepingModule } from './housekeeping/housekeeping.module';
 
 @Module({
 	imports: [
@@ -99,6 +100,7 @@ import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 		StreamModule,
 		SearchModule,
 		MetadataModule,
+		HousekeepingModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

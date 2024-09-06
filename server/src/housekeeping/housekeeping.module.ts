@@ -17,23 +17,24 @@
  */
 
 import { Module } from "@nestjs/common";
-import { MetadataController } from "./metadata.controller";
-import { MetadataService } from "./metadata.service";
-import ScannerModule from "src/scanner/scanner.module";
-import SettingsModule from "src/settings/settings.module";
-import LibraryModule from "src/library/library.module";
-import FileModule from "src/file/file.module";
-import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import { HousekeepingService } from "./housekeeping.service";
+import SongModule from "src/song/song.module";
+import ReleaseModule from "src/release/release.module";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
+import GenreService from "src/genre/genre.service";
+import PlaylistService from "src/playlist/playlist.service";
 
 @Module({
-	controllers: [MetadataController],
-	providers: [MetadataService],
 	imports: [
-		ScannerModule,
-		SettingsModule,
-		LibraryModule,
-		FileModule,
-		HousekeepingModule,
+		SongModule,
+		ReleaseModule,
+		AlbumService,
+		ArtistService,
+		GenreService,
+		PlaylistService,
 	],
+	providers: [HousekeepingService],
+	exports: [HousekeepingService],
 })
-export class MetadataModule {}
+export class HousekeepingModule {}
