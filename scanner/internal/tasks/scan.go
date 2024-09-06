@@ -21,7 +21,7 @@ func NewLibraryScanTask(library api.Library, c config.Config) Task {
 }
 
 func execScan(library api.Library, c config.Config, w *Worker) error {
-	registeredFiles, err := api.GetAllFilesInLibrary(library.Slug, c)
+	registeredFiles, err := api.GetAllFiles(api.FileSelectorDto{Library: library.Slug}, c)
 	if err != nil {
 		return err
 	}
@@ -73,32 +73,11 @@ func scanAndPostFiles(filePaths []string, c config.Config, w *Worker) int {
 				continue
 			}
 			glg.Logf("Parsing metadata for '%s' successful.", path.Base(res.filePath))
-			created, err := api.PostMetadata(c, res.metadata)
+			err := pushMetadata(res.filePath, res.metadata, c, w, api.Create)
 			if err != nil {
-				glg.Fail("Saving Metadata failed. This might be a bug.")
+				glg.Fail(err.Error())
 			} else {
 				successfulRegistrations = successfulRegistrations + 1
-			}
-			if len(res.metadata.IllustrationLocation) > 0 {
-				err := SaveIllustration(IllustrationTask{
-					IllustrationLocation:    res.metadata.IllustrationLocation,
-					IllustrationPath:        res.metadata.IllustrationPath,
-					TrackPath:               res.filePath,
-					TrackId:                 created.TrackId,
-					IllustrationStreamIndex: res.metadata.IllustrationStreamIndex,
-				}, c)
-				if err != nil {
-					glg.Failf("Saving illustration for %s failed.", path.Base(res.filePath))
-				}
-			}
-			if res.metadata.Type == internal.Video {
-				go func() {
-					w.thumbnailQueue <- ThumbnailTask{
-						TrackId:       created.TrackId,
-						TrackDuration: int(res.metadata.Duration),
-						FilePath:      res.filePath,
-					}
-				}()
 			}
 		}
 	}

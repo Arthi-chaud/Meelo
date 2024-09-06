@@ -22,12 +22,23 @@ type Library struct {
 }
 
 type File struct {
-	Id   int    `json:"id" validate:"required"`
-	Path string `json:"path" validate:"required"`
+	Id        int    `json:"id" validate:"required"`
+	Path      string `json:"path" validate:"required"`
+	Checksum  string `json:"md5Checksum" validate:"required"`
+	LibraryId int    `json:"libraryId" validate:"required"`
 }
 
 type MetadataCreated struct {
 	TrackId int `json:"trackId" validate:"required"`
+}
+
+// Do not change names of fields, they are mapped 1:1 with the query parameters of the requests
+type FileSelectorDto struct {
+	Library string
+	Album   string
+	Release string
+	Song    string
+	Track   string
 }
 
 type IllustrationType string

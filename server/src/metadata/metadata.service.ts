@@ -27,8 +27,8 @@ import FileService from "src/file/file.service";
 import * as path from "path";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import MetadataSavedResponse from "./models/metadata-saved.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import escapeRegex from "src/utils/escape-regex";
+import TaskRunner from "src/tasks/tasks.runner";
 
 @Injectable()
 export class MetadataService {
@@ -38,18 +38,9 @@ export class MetadataService {
 		private settingsService: SettingsService,
 		private libraryService: LibraryService,
 		private fileService: FileService,
-		private illustrationRepository: IllustrationRepository,
+		private taskRunner: TaskRunner,
 	) {}
 	async saveMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
-		if (
-			m.path.includes("/../") ||
-			m.path.startsWith("../") ||
-			!m.path.startsWith(this.settingsService.settingsValues.dataFolder)
-		) {
-			throw new InvalidRequestException(
-				"File path is not absolute or is not in an allowed folder",
-			);
-		}
 		const parentLibrary = await this.resolveLibraryFromFilePath(m.path);
 		if (!parentLibrary) {
 			throw new LibraryNotFoundException(m.path);
@@ -79,7 +70,51 @@ export class MetadataService {
 		}
 	}
 
+	async updateMetadata(m: MetadataDto): Promise<MetadataSavedResponse> {
+		const parentLibrary = await this.resolveLibraryFromFilePath(m.path);
+		if (!parentLibrary) {
+			throw new LibraryNotFoundException(m.path);
+		}
+		const relativeFilePath = this.toRelativePath(m.path, parentLibrary);
+		const fileEntry = await this.fileService.get({
+			byPath: {
+				library: {
+					id: parentLibrary.id,
+				},
+				path: relativeFilePath,
+			},
+		});
+		const createdTrack = await this.scannerService.registerMetadata(
+			m,
+			fileEntry,
+			true,
+		);
+		await this.fileService.update(
+			{ id: fileEntry.id },
+			{ md5Checksum: m.checksum, registerDate: m.registrationDate },
+		);
+		await this.taskRunner.housekeeping();
+		return {
+			trackId: createdTrack.id,
+			sourceFileId: fileEntry.id,
+			libraryId: parentLibrary.id,
+			songId: createdTrack.songId,
+			releaseId: createdTrack.releaseId,
+		};
+	}
+
 	private async resolveLibraryFromFilePath(absoluteFilePath: string) {
+		if (
+			absoluteFilePath.includes("/../") ||
+			absoluteFilePath.startsWith("../") ||
+			!absoluteFilePath.startsWith(
+				this.settingsService.settingsValues.dataFolder,
+			)
+		) {
+			throw new InvalidRequestException(
+				"File path is not absolute or is not in an allowed folder",
+			);
+		}
 		if (
 			!absoluteFilePath.startsWith(
 				this.settingsService.settingsValues.dataFolder,

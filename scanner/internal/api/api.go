@@ -7,7 +7,9 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -34,8 +36,16 @@ func GetUserFromAccessToken(config config.Config, accessToken string) (User, err
 	return u, err
 }
 
-func GetAllFilesInLibrary(librarySlug string, config config.Config) ([]File, error) {
-	return getAllItemsInPaginatedQuery[File](fmt.Sprintf("/files?library=%s", librarySlug), config)
+func GetAllFiles(selector FileSelectorDto, config config.Config) ([]File, error) {
+	url := "/files?"
+	v := reflect.ValueOf(selector)
+	typeOfS := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		if len(v.Field(i).String()) > 0 {
+			url = url + fmt.Sprintf("%s=%s&", strings.ToLower(typeOfS.Field(i).Name), v.Field(i).String())
+		}
+	}
+	return getAllItemsInPaginatedQuery[File](url, config)
 }
 
 func GetAllLibraries(config config.Config) ([]Library, error) {
@@ -66,7 +76,14 @@ func DeleteFiles(config config.Config, fileIds []int) error {
 	return err
 }
 
-func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, error) {
+type SaveMetadataMethod string
+
+const (
+	Update SaveMetadataMethod = "Update"
+	Create SaveMetadataMethod = "Create"
+)
+
+func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMetadataMethod) (MetadataCreated, error) {
 	reqBody := new(bytes.Buffer)
 	mp := multipart.NewWriter(reqBody)
 	mp.WriteField("compilation", strconv.FormatBool(m.IsCompilation))
@@ -103,7 +120,12 @@ func PostMetadata(config config.Config, m internal.Metadata) (MetadataCreated, e
 	mp.WriteField("path", m.Path)
 	mp.Close()
 
-	res, err := request("POST", "/metadata", reqBody, config, mp.FormDataContentType())
+	method := "POST"
+	if saveMethod == Update {
+		method = "PUT"
+	}
+
+	res, err := request(method, "/metadata", reqBody, config, mp.FormDataContentType())
 	if err != nil {
 		return MetadataCreated{}, err
 	}

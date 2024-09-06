@@ -23,7 +23,7 @@ import ScannerModule from "src/scanner/scanner.module";
 import SettingsModule from "src/settings/settings.module";
 import LibraryModule from "src/library/library.module";
 import FileModule from "src/file/file.module";
-import IllustrationModule from "src/illustration/illustration.module";
+import TasksModule from "src/tasks/tasks.module";
 
 @Module({
 	controllers: [MetadataController],
@@ -33,7 +33,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 		SettingsModule,
 		LibraryModule,
 		FileModule,
-		IllustrationModule,
+		TasksModule,
 	],
 })
 export class MetadataModule {}

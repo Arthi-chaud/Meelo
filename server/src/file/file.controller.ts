@@ -29,12 +29,17 @@ import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
-import {
-	DefaultRoleAndMicroservice,
-	Role,
-} from "src/authentication/roles/roles.decorators";
 import FileDeletionDto from "./models/file-deletion.dto";
 import TaskRunner from "src/tasks/tasks.runner";
+import { Role } from "src/authentication/roles/roles.decorators";
+import AlbumService from "src/album/album.service";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ReleaseService from "src/release/release.service";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import SongService from "src/song/song.service";
+import SongQueryParameters from "src/song/models/song.query-params";
+import TrackService from "src/track/track.service";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
@@ -51,6 +56,34 @@ class Selector {
 	})
 	@TransformIdentifier(LibraryService)
 	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files by album`,
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files release`,
+	})
+	@TransformIdentifier(ReleaseService)
+	release?: ReleaseQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files song`,
+	})
+	@TransformIdentifier(SongService)
+	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files track`,
+	})
+	@TransformIdentifier(TrackService)
+	track?: TrackQueryParameters.WhereInput;
 }
 
 @ApiTags("Files")
@@ -77,7 +110,7 @@ export default class FileController {
 	@ApiOperation({
 		summary: "Get multiple File entries",
 	})
-	@DefaultRoleAndMicroservice()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Get()
 	@Response({
 		returns: File,
@@ -88,13 +121,7 @@ export default class FileController {
 		@Query()
 		paginationParameters: PaginationParameters,
 	) {
-		return this.fileService.getMany(
-			{
-				library: selector.library,
-				inFolder: selector.inFolder,
-			},
-			paginationParameters,
-		);
+		return this.fileService.getMany(selector, paginationParameters);
 	}
 
 	@ApiOperation({
