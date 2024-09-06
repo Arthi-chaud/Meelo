@@ -26,10 +26,6 @@ const File = Resource.concat(
 		 */
 		path: yup.string().required(),
 		/**
-		 * MD5 checksum of the file
-		 */
-		md5Checksum: yup.string().required(),
-		/**
 		 * Date of the file registration
 		 */
 		registerDate: yup.date().required(),
