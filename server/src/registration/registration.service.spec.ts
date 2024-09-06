@@ -7,19 +7,19 @@ import ScannerModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
-import IllustrationService from "./illustration.service";
-import IllustrationModule from "./illustration.module";
+import IllustrationService from "src/illustration/illustration.service";
+import IllustrationModule from "src/illustration/illustration.module";
 import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
-import { FileDoesNotExistException } from "src/file-manager/file-manager.exceptions";
 import ProvidersModule from "src/providers/providers.module";
-import IllustrationRepository from "./illustration.repository";
-import ScannerService from "src/registration/metadata.service";
+import { RegistrationService } from "./registration.service";
+import IllustrationRegistrationDto from "src/illustration/models/illustration-registration.dto";
+import IllustrationRepository from "src/illustration/illustration.repository";
 
 jest.setTimeout(120000);
 
-describe("Illustration Repository", () => {
-	let illustrationRepository: IllustrationRepository;
+describe("Registration Service", () => {
+	let registrationService: RegistrationService;
 	const baseMetadataFolder = "test/assets/metadata";
 	let dummyRepository: TestPrismaService;
 
@@ -45,7 +45,7 @@ describe("Illustration Repository", () => {
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)
 			.compile();
-		illustrationRepository = module.get(IllustrationRepository);
+		registrationService = module.get(RegistrationService);
 		dummyRepository = module.get(PrismaService);
 
 		await dummyRepository.onModuleInit();
@@ -59,71 +59,17 @@ describe("Illustration Repository", () => {
 			() => {},
 		);
 	});
+	// Note, we do not test metadata here, the controller's tests are good
+	// Here we test the logic of illustration's registration
 
 	describe("Register Track illustration", () => {
 		const outPath = `${baseMetadataFolder}/illustration.jpg`;
-		it("should not extract illustration to matching folder, as the source file does not exist", async () => {
-			const test = () =>
-				illustrationRepository.registerTrackIllustration(
-					dummyRepository.trackA1_1,
-					"trololol",
-				);
-			return expect(test()).rejects.toThrow(FileDoesNotExistException);
-		});
-
-		it("should not extract illustration to matching folder, as the source file is not valid", async () => {
-			const test = () =>
-				illustrationRepository.registerTrackIllustration(
-					dummyRepository.trackA1_1,
-					"test/assets/settings.json",
-				);
-			return expect(test()).rejects.toThrow(FileParsingException);
-		});
-
-		it("should not extract illustration to matching folder, as illustration already exists", async () => {
-			await illustrationRepository.registerTrackIllustration(
-				dummyRepository.trackA1_1,
-				"test/assets/dreams.m4a",
-			);
-			expect(fs.existsSync(outPath)).toBe(false);
-			expect(
-				await illustrationRepository.getReleaseIllustrationResponse({
-					id: dummyRepository.releaseA1_1.id,
-				}),
-			).toBe(null);
-			expect(
-				await illustrationRepository.getTrackIllustration({
-					id: dummyRepository.trackA1_1.id,
-				}),
-			).toBe(null);
-		});
-
-		it("should not extract illustration to matching folder, as their is no embedded illustration", async () => {
-			await illustrationRepository.registerTrackIllustration(
-				dummyRepository.trackA1_1,
-				"test/assets/dreams.m4a",
-			);
-			expect(fs.existsSync(outPath)).toBe(false);
-			expect(
-				await illustrationRepository.getReleaseIllustrationResponse({
-					id: dummyRepository.releaseA1_1.id,
-				}),
-			).toBe(null);
-			expect(
-				await illustrationRepository.getTrackIllustration({
-					id: dummyRepository.trackA1_1.id,
-				}),
-			).toBe(null);
-		});
+		const sourceBytes = fs.readFileSync("test/assets/cover.jpg");
+		const source2Bytes = fs.readFileSync("test/assets/cover1.jpg");
+		const source3Bytes = fs.readFileSync("test/assets/cover3.jpg");
 
 		let discIllustrationPath: string;
 		it("should extract release/track illustration, mocking the illustration bytes", async () => {
-			jest.spyOn(
-				ScannerService.prototype as any,
-				"extractIllustrationFromFile",
-			).mockImplementation(() =>
-				fs.readFileSync("test/assets/cover.jpg"),
-			);
 			jest.spyOn(
 				IllustrationService.prototype,
 				"getImageStats",
@@ -132,29 +78,24 @@ describe("Illustration Repository", () => {
 				colors: [],
 				aspectRatio: 0,
 			}));
+			
 
 			const createdIllustration =
-				await illustrationRepository.registerTrackIllustration(
+				await registrationService.registerTrackIllustration(
 					dummyRepository.trackA1_1,
-					"test/assets/dreams.m4a",
+					sourceBytes,
 				);
 			discIllustrationPath = `test/assets/metadata/${
 				createdIllustration!.id
 			}/cover.jpg`;
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
 			expect(fs.readFileSync(discIllustrationPath)).toStrictEqual(
-				fs.readFileSync("test/assets/cover.jpg"),
+				sourceBytes,
 			);
 		});
 
 		let trackIllustrationPath: string = "";
 		it("should extract track illustration, mocking the illustration bytes", async () => {
-			jest.spyOn(
-				ScannerService.prototype as any,
-				"extractIllustrationFromFile",
-			).mockImplementation(() =>
-				fs.readFileSync("test/assets/cover1.jpg"),
-			);
 			jest.spyOn(
 				IllustrationService.prototype,
 				"getImageStats",
@@ -164,9 +105,9 @@ describe("Illustration Repository", () => {
 				aspectRatio: 0,
 			}));
 			const createdIllustration =
-				await illustrationRepository.registerTrackIllustration(
+				await registrationService.registerTrackIllustration(
 					dummyRepository.trackA1_1,
-					"test/assets/dreams.m4a",
+					source2Bytes,
 				);
 			trackIllustrationPath = `test/assets/metadata/${
 				createdIllustration!.id
@@ -176,12 +117,6 @@ describe("Illustration Repository", () => {
 		});
 		it("should re-extract illustration to track folder, mocking the illustration bytes", async () => {
 			jest.spyOn(
-				ScannerService.prototype as any,
-				"extractIllustrationFromFile",
-			).mockImplementation(() =>
-				fs.readFileSync("test/assets/cover2.jpg"),
-			);
-			jest.spyOn(
 				IllustrationService.prototype,
 				"getImageStats",
 			).mockImplementation(async () => ({
@@ -190,16 +125,15 @@ describe("Illustration Repository", () => {
 				aspectRatio: 0,
 			}));
 			const createdIllustration =
-				await illustrationRepository.registerTrackIllustration(
+				await registrationService.registerTrackIllustration(
 					dummyRepository.trackA1_1,
-					"test/assets/dreams.m4a",
+					source3Bytes
 				);
 			expect(fs.existsSync(trackIllustrationPath)).toBe(false);
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
 			trackIllustrationPath = `test/assets/metadata/${
 				createdIllustration!.id
 			}/cover.jpg`;
-
 			expect(fs.existsSync(trackIllustrationPath)).toBe(true);
 		});
 	});

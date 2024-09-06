@@ -21,7 +21,7 @@ import MetadataDto from "./models/metadata.dto";
 import MetadataService from "src/registration/metadata.service";
 import SettingsService from "src/settings/settings.service";
 import LibraryService from "src/library/library.service";
-import { Library } from "@prisma/client";
+import { Illustration, IllustrationType, Library } from "@prisma/client";
 import { LibraryNotFoundException } from "src/library/library.exceptions";
 import FileService from "src/file/file.service";
 import * as path from "path";
@@ -34,16 +34,22 @@ import escapeRegex from "src/utils/escape-regex";
 import { HousekeepingService } from "src/housekeeping/housekeeping.service";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import TrackService from "src/track/track.service";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import IllustrationService from "src/illustration/illustration.service";
+import Logger from "src/logger/logger";
 
 @Injectable()
 export class RegistrationService {
-	// TODO: one microservice is ready, move everything from scanner module to metadata
+	private readonly logger = new Logger(RegistrationService.name);
 	constructor(
 		private metadataService: MetadataService,
 		private settingsService: SettingsService,
 		private libraryService: LibraryService,
 		private fileService: FileService,
 		private trackService: TrackService,
+		private illustrationService: IllustrationService,
+		private illustrationRepository: IllustrationRepository,
 		private housekeepingService: HousekeepingService,
 	) {}
 
@@ -125,6 +131,80 @@ export class RegistrationService {
 		if (housekeeping) {
 			await this.housekeepingService.runHousekeeping();
 		}
+	}
+	/**
+	 * Extract the illustration embedded into/in the same folder as the source file
+	 * Then creates illustration item in DB (according to the type (release, disc, or track))
+	 * @returns the path of the saved file
+	 */
+	async registerTrackIllustration(
+		where: TrackQueryParameters.WhereInput,
+		illustrationBytes: Buffer,
+		type: IllustrationType = IllustrationType.Cover,
+	): Promise<Illustration> {
+		const track = await this.trackService.get(where, { release: true });
+		const logRegistration = (
+			disc: number | null,
+			trackIndex: number | null,
+		) =>
+			this.logger.verbose(
+				`Saving Illustration for '${track.release.name}' (Disc ${
+					disc ?? 1
+				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
+			);
+		if (type == IllustrationType.Thumbnail) {
+			return this.illustrationRepository.saveReleaseIllustration(
+				illustrationBytes,
+				track.discIndex,
+				track.trackIndex,
+				{
+					id: track.releaseId,
+				},
+				type,
+			);
+		}
+		const parentReleaseIllustrations =
+			await this.illustrationRepository.getReleaseIllustrations({
+				id: track.releaseId,
+			});
+		const parentDiscIllustration = parentReleaseIllustrations.find(
+			(i) => i.disc === track.discIndex,
+		);
+		// If there is no illustration at all for the release or there is none for the current disc
+		if (parentReleaseIllustrations.length == 0 || !parentDiscIllustration) {
+			logRegistration(null, null);
+			const newIllustration =
+				await this.illustrationRepository.saveReleaseIllustration(
+					illustrationBytes,
+					track.discIndex,
+					null,
+					{
+						id: track.releaseId,
+					},
+					type,
+				);
+			return newIllustration;
+		}
+		const hash = await this.illustrationService.getImageHash(
+			illustrationBytes,
+		);
+		if (hash === parentDiscIllustration.hash) {
+			// The scanned illustration is the disc's one
+			return parentDiscIllustration.illustration;
+		}
+		logRegistration(track.discIndex, track.trackIndex);
+		// If the track's disc's illustration is NOT the scanned one, save the scanned one as track specific
+		return this.illustrationRepository.saveReleaseIllustration(
+			illustrationBytes,
+			track.discIndex,
+			track.trackIndex,
+			{
+				id: track.releaseId,
+			},
+			type,
+			undefined,
+			hash,
+		);
 	}
 
 	private async resolveLibraryFromFilePath(absoluteFilePath: string) {
