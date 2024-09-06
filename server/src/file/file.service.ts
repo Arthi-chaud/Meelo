@@ -76,7 +76,7 @@ export default class FileService {
 	}
 	async update(
 		where: FileQueryParameters.WhereInput,
-		what: Pick<File, "md5Checksum" | "registerDate">,
+		what: Pick<File, "checksum" | "registerDate">,
 	) {
 		return this.prismaService.file
 			.update({
@@ -206,7 +206,7 @@ export default class FileService {
 			.create({
 				data: {
 					path: input.path,
-					md5Checksum: input.md5Checksum,
+					checksum: input.checksum,
 					registerDate: input.registerDate,
 					libraryId: input.libraryId,
 				},
@@ -243,7 +243,7 @@ export default class FileService {
 			throw new FileNotReadableException(filePath);
 		}
 		return this.create({
-			md5Checksum: await this.fileManagerService.getMd5Checksum(
+			checksum: await this.fileManagerService.getMd5Checksum(
 				fullFilePath,
 			),
 			path: filePath,

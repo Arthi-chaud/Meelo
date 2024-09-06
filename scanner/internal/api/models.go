@@ -24,7 +24,7 @@ type Library struct {
 type File struct {
 	Id        int    `json:"id" validate:"required"`
 	Path      string `json:"path" validate:"required"`
-	Checksum  string `json:"md5Checksum" validate:"required"`
+	Checksum  string `json:"checksum" validate:"required"`
 	LibraryId int    `json:"libraryId" validate:"required"`
 }
 

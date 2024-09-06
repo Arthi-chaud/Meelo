@@ -462,7 +462,7 @@ export default class TaskRunner {
 			.getMd5Checksum(fullFilePath)
 			.catch(() => null);
 
-		if (newMD5 !== file.md5Checksum) {
+		if (newMD5 !== file.checksum) {
 			return true;
 		}
 		return false;
