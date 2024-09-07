@@ -50,7 +50,6 @@ import {
 } from "../models/track";
 import { TracklistItemWithRelations } from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
-import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
 import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
@@ -65,7 +64,7 @@ import Playlist, {
 	PlaylistWithRelations,
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
-import { ActiveTask, Task } from "../models/task";
+import { TaskResponse } from "../models/task";
 import { SearchResult, SearchResultTransformer } from "../models/search";
 
 const AuthenticationResponse = yup.object({
@@ -89,11 +88,18 @@ type AuthenticationInput = {
 	password: string;
 };
 
+// eslint-disable-next-line no-shadow
+enum Service {
+	API,
+	Scanner,
+}
+
 type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	route: string;
 	parameters: QueryParameters<Keys>;
 	otherParameters?: any;
 	errorMessage?: string;
+	service?: Service;
 	data?: Record<string, any>;
 	method?: "GET" | "PUT" | "POST" | "DELETE";
 } & RequireExactlyOne<{
@@ -123,6 +129,8 @@ export default class API {
 	private static isDev = () => process.env.NODE_ENV === "development";
 	private static SSR_API_URL =
 		process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
+	private static SSR_SCANNER_URL =
+		process.env.SSR_SCANNER_URL ?? process.env.PUBLIC_SCANNER_URL!;
 	static defaultPageSize = 35;
 
 	/**
@@ -172,9 +180,12 @@ export default class API {
 					route: `/tasks`,
 					errorMessage: "Tasks could not be loaded",
 					parameters: {},
+					service: Service.Scanner,
 					validator: yup.object({
-						active: ActiveTask.required().nullable(),
-						pending: yup.array(Task).required(),
+						current_task: yup.string().required().nullable(),
+						pending_tasks: yup
+							.array(yup.string().required())
+							.required(),
 					}),
 				}),
 		};
@@ -318,12 +329,14 @@ export default class API {
 	 * Calls for a task to clean all libraries
 	 * @returns A object with the status of the task
 	 */
-	static async cleanLibraries(): Promise<LibraryTaskResponse> {
+	static async cleanLibraries(): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/tasks/clean`,
+			route: `/clean`,
 			errorMessage: "Library clean failed",
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -331,12 +344,12 @@ export default class API {
 	 * Calls for a task to fetch external metadata
 	 * @returns A object with the status of the task
 	 */
-	static async fetchExternalMetadata(): Promise<LibraryTaskResponse> {
+	static async fetchExternalMetadata(): Promise<TaskResponse> {
 		return API.fetch({
 			route: `/tasks/fetch-external-metadata`,
-			errorMessage: "Fetch failed",
+			errorMessage: "A task is already running",
 			parameters: {},
-			validator: LibraryTaskResponse,
+			validator: TaskResponse,
 		});
 	}
 
@@ -346,12 +359,14 @@ export default class API {
 	 */
 	static async scanLibrary(
 		librarySlugOrId: number | string,
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/tasks/scan/${librarySlugOrId}`,
+			route: `/scan/${librarySlugOrId}`,
 			errorMessage: "Library scan failed",
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -361,12 +376,14 @@ export default class API {
 	 */
 	static async cleanLibrary(
 		librarySlugOrId: number | string,
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/tasks/clean/${librarySlugOrId}`,
+			route: `/clean/${librarySlugOrId}`,
 			errorMessage: "Library clean failed",
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -374,11 +391,13 @@ export default class API {
 	 * Calls for a task to scan all libraries
 	 * @returns the status of the task
 	 */
-	static scanLibraries(): Promise<LibraryTaskResponse> {
-		return API.fetch<LibraryTaskResponse, []>({
-			route: `/tasks/scan`,
+	static scanLibraries(): Promise<TaskResponse> {
+		return API.fetch<TaskResponse, []>({
+			route: `/scan`,
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -391,10 +410,12 @@ export default class API {
 		resourceSlugOrId: number | string,
 	): Promise<void> {
 		return API.fetch({
-			route: `/tasks/refresh-metadata`,
-			errorMessage: "Library refresh failed",
+			method: "POST",
+			route: `/refresh`,
+			errorMessage: "Metadata Refresh request failed",
 			otherParameters: { [parentResourceType]: resourceSlugOrId },
 			parameters: {},
+			service: Service.Scanner,
 			emptyResponse: true,
 		});
 	}
@@ -1120,6 +1141,7 @@ export default class API {
 		validator,
 		customValidator,
 		emptyResponse,
+		service,
 	}: FetchParameters<Keys, ReturnType>): Promise<ReturnType> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
@@ -1127,7 +1149,7 @@ export default class API {
 		};
 
 		const response = await fetch(
-			this.buildURL(route, parameters, otherParameters),
+			this.buildURL(route, parameters, otherParameters, service),
 			{
 				method: method ?? "GET",
 				body: data ? JSON.stringify(data) : undefined,
@@ -1318,13 +1340,14 @@ export default class API {
 		route: string,
 		parameters: QueryParameters<any>,
 		otherParameters?: any,
+		service: Service = Service.API,
 	): string {
 		const apiHost = isSSR() ? this.SSR_API_URL : "/api";
+		const scannerHost = isSSR() ? this.SSR_SCANNER_URL : "/scanner";
 
-		return `${apiHost}${route}${this.formatQueryParameters(
-			parameters,
-			otherParameters,
-		)}`;
+		return `${
+			service == Service.API ? apiHost : scannerHost
+		}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
 	private static formatQueryParameters<Keys extends string[]>(
