@@ -77,7 +77,6 @@ describe("Registration Service", () => {
 				colors: [],
 				aspectRatio: 0,
 			}));
-			
 
 			const createdIllustration =
 				await registrationService.registerTrackIllustration(
@@ -126,7 +125,7 @@ describe("Registration Service", () => {
 			const createdIllustration =
 				await registrationService.registerTrackIllustration(
 					dummyRepository.trackA1_1,
-					source3Bytes
+					source3Bytes,
 				);
 			expect(fs.existsSync(trackIllustrationPath)).toBe(false);
 			expect(fs.existsSync(discIllustrationPath)).toBe(true);
