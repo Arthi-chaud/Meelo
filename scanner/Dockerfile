@@ -14,7 +14,7 @@ FROM debian:bullseye-slim AS runner
 ENV SERVICE_NAME="scanner"
 RUN useradd -ms /bin/false $SERVICE_NAME
 
-RUN apt-get update -y; apt-get install -y ffmpeg
+RUN apt-get update -y; apt-get install -y ffmpeg wget
 WORKDIR /app
 COPY --from=builder /app/scanner ./
 USER $SERVICE_NAME

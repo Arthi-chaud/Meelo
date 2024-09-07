@@ -33,7 +33,7 @@ export default class TasksController {
 	constructor(private taskRunner: TaskRunner) {}
 	private onTaskAdded(): TaskStatusResponse {
 		return {
-			status: `Task started`,
+			message: `Task started`,
 		};
 	}
 
