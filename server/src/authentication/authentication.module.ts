@@ -23,6 +23,7 @@ import UserModule from "src/user/user.module";
 import AuthenticationController from "./authentication.controller";
 import AuthenticationService from "./authentication.service";
 import { JwtStrategy } from "./jwt/jwt.strategy";
+import ApiKeyService from "./api_key.service";
 import SettingsModule from "src/settings/settings.module";
 import RolesGuard from "./roles/roles.guard";
 
@@ -37,7 +38,7 @@ import RolesGuard from "./roles/roles.guard";
 		}),
 	],
 	controllers: [AuthenticationController],
-	exports: [RolesGuard],
-	providers: [AuthenticationService, JwtStrategy, RolesGuard],
+	exports: [RolesGuard, ApiKeyService],
+	providers: [AuthenticationService, JwtStrategy, RolesGuard, ApiKeyService],
 })
 export default class AuthenticationModule {}

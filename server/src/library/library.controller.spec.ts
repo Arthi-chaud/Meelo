@@ -3,7 +3,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import LibraryController from "./library.controller";
@@ -22,6 +22,8 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import TasksModule from "src/tasks/tasks.module";
 import SetupApp from "test/setup-app";
+import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import { RegistrationModule } from "src/registration/registration.module";
 
 describe("Library Controller", () => {
 	let app: INestApplication;
@@ -36,7 +38,9 @@ describe("Library Controller", () => {
 				FileManagerModule,
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
+				HousekeepingModule,
+				RegistrationModule,
 				FileManagerModule,
 				IllustrationModule,
 				ArtistModule,

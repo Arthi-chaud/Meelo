@@ -20,6 +20,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import {
 	InsufficientPermissionsException,
+	MissingApiKeyPermissionsException,
 	UnauthorizedAnonymousRequestException,
 } from "src/authentication/authentication.exception";
 import UserService from "src/user/user.service";
@@ -28,33 +29,42 @@ import { ROLES_KEY } from "./roles.decorators";
 import SettingsService from "src/settings/settings.service";
 import { User } from "@prisma/client";
 import { AuthMethod } from "../models/auth.enum";
+import ApiKeyService from "../api_key.service";
 
 @Injectable()
 export default class RolesGuard implements CanActivate {
 	constructor(
 		private reflector: Reflector,
 		private userService: UserService,
+		private apiKeyService: ApiKeyService,
 		private settingsService: SettingsService,
 	) {}
 
-	public getAuthMethod(context: ExecutionContext): AuthMethod {
+	/// @returns a list of authentication method that are accepted
+	public getAuthMethod(context: ExecutionContext): AuthMethod[] {
 		const roles = this.reflector.getAllAndOverride<RoleEnum[] | undefined>(
 			ROLES_KEY,
 			[context.getHandler(), context.getClass()],
 		);
-		const request = context.switchToHttp().getRequest();
+		const authMethods: AuthMethod[] = [];
 		// there is no decoration, we apply the default policy
-		if (roles === undefined) {
+		if (roles === undefined || roles?.includes(RoleEnum.Default)) {
 			if (this.settingsService.settingsValues.allowAnonymous) {
-				return AuthMethod.Nothing;
+				authMethods.push(AuthMethod.Nothing);
+			} else {
+				authMethods.push(AuthMethod.JWT);
 			}
-			return AuthMethod.JWT;
 		}
 		if (roles?.includes(RoleEnum.Anonymous)) {
-			return AuthMethod.Nothing;
+			authMethods.push(AuthMethod.Nothing);
 		}
-		// Admin or User role
-		return AuthMethod.JWT;
+		if (roles?.includes(RoleEnum.Microservice)) {
+			authMethods.push(AuthMethod.ApiKey);
+		}
+		if (roles?.includes(RoleEnum.Admin) || roles?.includes(RoleEnum.User)) {
+			authMethods.push(AuthMethod.JWT);
+		}
+		return authMethods;
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -62,22 +72,40 @@ export default class RolesGuard implements CanActivate {
 			ROLES_KEY,
 			[context.getHandler(), context.getClass()],
 		);
+		const errors: Error[] = [];
 		const request = context.switchToHttp().getRequest();
-		switch (this.getAuthMethod(context)) {
-			case AuthMethod.Nothing:
+		const validAuthMethods = this.getAuthMethod(context);
+		if (validAuthMethods.includes(AuthMethod.Nothing)) {
+			return true;
+		}
+		if (validAuthMethods.includes(AuthMethod.ApiKey)) {
+			const receivedApiKey = request.headers["x-api-key"];
+			if (
+				receivedApiKey &&
+				this.apiKeyService.apiKeyIsValid(receivedApiKey)
+			) {
 				return true;
-			case AuthMethod.JWT: {
-				const userPayload = request.user as User | undefined;
-				if (!userPayload) {
-					throw new UnauthorizedAnonymousRequestException();
-				}
+			}
+			errors.push(new MissingApiKeyPermissionsException());
+		}
+		if (validAuthMethods.includes(AuthMethod.JWT)) {
+			const userPayload = request.user as User | undefined;
+			if (!userPayload) {
+				errors.push(new UnauthorizedAnonymousRequestException());
+			} else {
 				const user = await this.userService.get({ id: userPayload.id });
 
 				if (roles?.includes(RoleEnum.Admin) && !user.admin) {
-					throw new InsufficientPermissionsException();
+					errors.push(new InsufficientPermissionsException());
+				} else {
+					return true;
 				}
-				return true;
 			}
 		}
+		if (errors.length > 0) {
+			throw errors[0];
+		}
+		// Probably dead code.
+		return false;
 	}
 }

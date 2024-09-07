@@ -6,7 +6,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -35,7 +35,7 @@ describe("File Service", () => {
 			imports: [
 				FileModule,
 				PrismaModule,
-				ScannerModule,
+				ParserModule,
 				FileManagerModule,
 				IllustrationModule,
 				ArtistModule,
@@ -72,12 +72,12 @@ describe("File Service", () => {
 			newFile = await fileService.create({
 				path: "Me",
 				libraryId: dummyRepository.library1.id,
-				md5Checksum: "Sum",
+				checksum: "Sum",
 				registerDate: now,
 			});
 			expect(newFile.id).toBeDefined();
 			expect(newFile.libraryId).toBe(dummyRepository.library1.id);
-			expect(newFile.md5Checksum).toBe("Sum");
+			expect(newFile.checksum).toBe("Sum");
 			expect(newFile.path).toBe("Me");
 			expect(newFile.registerDate).toStrictEqual(now);
 		});
@@ -88,7 +88,7 @@ describe("File Service", () => {
 				await fileService.create({
 					path: "Me",
 					libraryId: dummyRepository.library1.id,
-					md5Checksum: "Sum",
+					checksum: "Sum",
 					registerDate: now,
 				});
 			return expect(test()).rejects.toThrow(FileAlreadyExistsException);

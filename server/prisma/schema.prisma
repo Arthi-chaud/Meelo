@@ -165,8 +165,8 @@ model File {
     /// @description The path of the file, relate to the parent library
     /// @example path/to/file
     path         String
-    /// @description MD5 checksum of the file
-    md5Checksum  String
+    /// @description Checksum of the file
+    checksum  String
     /// @description Date of the file\'s registration
     registerDate DateTime
     /// @description Track from the file

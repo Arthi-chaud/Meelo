@@ -1,0 +1,15 @@
+name: 'Cache (Scanner)'
+description: 'Cache for Scanner'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        cd scanner
+        go install github.com/swaggo/swag/cmd/swag@latest
+        ~/go/bin/swag init -d app -o ./app/docs
+      shell: bash
+    - uses: actions/setup-go@v5
+      with:
+        check-latest: true
+        go-version-file: 'scanner/go.mod'
+        cache-dependency-path: scanner/go.sum

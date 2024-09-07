@@ -24,7 +24,6 @@ import PrismaService from "src/prisma/prisma.service";
 import type LibraryQueryParameters from "./models/library.query-parameters";
 import normalize from "normalize-path";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
-import TasksRunner from "src/tasks/tasks.runner";
 import { Library } from "src/prisma/models";
 import { PrismaError } from "prisma-error-enum";
 import {
@@ -37,13 +36,16 @@ import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import { RegistrationService } from "src/registration/registration.service";
 
 @Injectable()
 export default class LibraryService {
 	constructor(
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
-		private tasksService: TasksRunner,
+		private housekeepingService: HousekeepingService,
+		private registrationService: RegistrationService,
 		protected prismaService: PrismaService,
 	) {}
 
@@ -184,10 +186,10 @@ export default class LibraryService {
 
 		await Promise.all(
 			relatedFiles.map((file) =>
-				this.tasksService.unregisterFile({ id: file.id }),
+				this.registrationService.unregisterFile({ id: file.id }),
 			),
 		);
-		await this.tasksService.housekeeping();
+		await this.housekeepingService.runHousekeeping();
 		return this.prismaService.library
 			.delete({
 				where: LibraryService.formatWhereInput(where),

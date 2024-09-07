@@ -17,12 +17,13 @@
  */
 
 import { Controller, Get, Param, Req, Res, Response } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import FileService from "src/file/file.service";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { StreamService } from "./stream.service";
 
+@ApiTags("Streaming")
 @Controller("stream")
 export class StreamController {
 	constructor(private streamService: StreamService) {}

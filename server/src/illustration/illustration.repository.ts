@@ -31,11 +31,8 @@ import ReleaseQueryParameters from "src/release/models/release.query-parameters"
 import ReleaseService from "src/release/release.service";
 import SongQueryParameters from "src/song/models/song.query-params";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import FfmpegService from "src/scanner/ffmpeg.service";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
-import FileManagerService from "src/file-manager/file-manager.service";
-import ScannerService from "src/scanner/scanner.service";
 import { IllustrationNotFoundException } from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
 import IllustrationStats from "./models/illustration-stats";
@@ -60,9 +57,6 @@ export default class IllustrationRepository {
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 		private settingsService: SettingsService,
-		private ffmpegService: FfmpegService,
-		private scannerService: ScannerService,
-		private fileManagerService: FileManagerService,
 	) {
 		this.baseIllustrationFolderPath = join(
 			this.settingsService.settingsValues.meeloFolder!,
@@ -209,27 +203,6 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
-	private async saveIllustration(
-		buffer: Buffer,
-		type: IllustrationType,
-	): Promise<Illustration> {
-		const { blurhash, colors, aspectRatio } =
-			await this.illustrationService.getImageStats(buffer);
-
-		const newIllustration = await this.prismaService.illustration.create({
-			data: {
-				blurhash,
-				colors,
-				aspectRatio,
-				type,
-			},
-		});
-
-		const illustrationPath = this.buildIllustrationPath(newIllustration.id);
-		this.illustrationService.saveIllustration(buffer, illustrationPath);
-		return newIllustration;
-	}
-
 	async saveReleaseIllustration(
 		buffer: Buffer,
 		disc: number | null,
@@ -268,17 +241,37 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
+	private async saveIllustration(
+		buffer: Buffer,
+		type: IllustrationType,
+	): Promise<Illustration> {
+		const { blurhash, colors, aspectRatio } =
+			await this.illustrationService.getImageStats(buffer);
+
+		const newIllustration = await this.prismaService.illustration.create({
+			data: {
+				blurhash,
+				colors,
+				aspectRatio,
+				type,
+			},
+		});
+
+		const illustrationPath = this.buildIllustrationPath(newIllustration.id);
+		this.illustrationService.saveIllustration(buffer, illustrationPath);
+		return newIllustration;
+	}
+
 	/**
 	 * Deletes Illustration (File + info in DB)
 	 */
 	async deleteIllustration(illustrationId: number) {
-		const illustration = await this.prismaService.illustration
-			.findFirstOrThrow({
-				where: { id: illustrationId },
-			})
-			.catch(() => {
-				throw new IllustrationNotFoundException(illustrationId);
-			});
+		const illustration = await this.prismaService.illustration.findFirst({
+			where: { id: illustrationId },
+		});
+		if (!illustration) {
+			return;
+		}
 		const illustrationDir = this.buildIllustrationDirPath(illustration.id);
 
 		this.illustrationService.deleteIllustrationFolder(illustrationDir);
@@ -289,124 +282,6 @@ export default class IllustrationRepository {
 			.catch(() => {});
 	}
 
-	/**
-	 * Extract the illustration embedded into/in the same folder as the source file
-	 * Then creates illustration item in DB (according to the type (release, disc, or track))
-	 * @returns the path of the saved file
-	 */
-	async registerTrackFileIllustration(
-		where: TrackQueryParameters.WhereInput,
-		sourceFilePath: string,
-	): Promise<Illustration | null> {
-		const extractedIllustration =
-			await this.extractIllustrationBasedOnPreferences(sourceFilePath);
-
-		if (extractedIllustration == null) {
-			return null;
-		}
-		const track = await this.trackService.get(where, { release: true });
-		const logRegistration = (
-			disc: number | null,
-			trackIndex: number | null,
-		) =>
-			this.logger.verbose(
-				`Saving Illustration for '${track.release.name}' (Disc ${
-					disc ?? 1
-				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
-			);
-		const parentReleaseIllustrations = await this.getReleaseIllustrations({
-			id: track.releaseId,
-		});
-		const parentReleaseMainIllustration = parentReleaseIllustrations.find(
-			(i) => i.disc === null && i.track === null,
-		);
-		const parentDiscIllustration = parentReleaseIllustrations.find(
-			(i) => i.disc !== null && i.disc === track.discIndex,
-		);
-		const illustrationBytes = extractedIllustration;
-		if (
-			parentReleaseIllustrations.length == 0 ||
-			parentReleaseMainIllustration === undefined
-		) {
-			logRegistration(null, null);
-			const newIllustration = await this.saveReleaseIllustration(
-				illustrationBytes,
-				null,
-				null,
-				{
-					id: track.releaseId,
-				},
-				IllustrationType.Cover,
-			);
-			return newIllustration;
-		}
-		const hash = await this.illustrationService.getImageHash(
-			illustrationBytes,
-		);
-		if (hash === parentReleaseMainIllustration.hash) {
-			// The scanned illustration is the release's main one
-			return null;
-		}
-		if (!parentDiscIllustration) {
-			logRegistration(track.discIndex, null);
-			// If the track's disc does not have an illustration, save the scanned one
-			return this.saveReleaseIllustration(
-				illustrationBytes,
-				track.discIndex,
-				null,
-				{
-					id: track.releaseId,
-				},
-				IllustrationType.Cover,
-				undefined,
-				hash,
-			);
-		} else if (hash === parentDiscIllustration.hash) {
-			return null;
-		}
-		logRegistration(track.discIndex, track.trackIndex);
-		// If the track's disc's illustration is NOT the scanned one, save the scanned one as track specific
-		return this.saveReleaseIllustration(
-			illustrationBytes,
-			track.discIndex,
-			track.trackIndex,
-			{
-				id: track.releaseId,
-			},
-			IllustrationType.Cover,
-			undefined,
-			hash,
-		);
-	}
-
-	private async extractIllustrationBasedOnPreferences(
-		sourceFilePath: string,
-	): Promise<Buffer | null> {
-		const getEmbedded = () =>
-			this.scannerService.extractIllustrationFromFile(sourceFilePath);
-		const getInline = () =>
-			this.scannerService.extractIllustrationInFileFolder(sourceFilePath);
-		if (this.settingsService.settingsValues.metadata.order === "only") {
-			if (
-				this.settingsService.settingsValues.metadata.source ==
-				"embedded"
-			) {
-				return getEmbedded();
-			}
-			return getInline();
-		}
-		const [prefered, fallback] =
-			this.settingsService.settingsValues.metadata.source == "embedded"
-				? [getEmbedded, getInline]
-				: [getInline, getEmbedded];
-		const resolvedFavorite = await prefered();
-
-		if (resolvedFavorite == null) {
-			return fallback();
-		}
-		return resolvedFavorite;
-	}
-
 	public async getReleaseIllustrations(
 		where: ReleaseQueryParameters.WhereInput,
 	) {
@@ -415,35 +290,6 @@ export default class IllustrationRepository {
 				release: ReleaseService.formatWhereInput(where),
 			},
 			include: { illustration: true },
-		});
-	}
-
-	async registerVideoTrackScreenshot(
-		where: TrackQueryParameters.WhereInput,
-		sourceFilePath: string,
-	): Promise<Illustration | null> {
-		const track = await this.trackService.get(where);
-
-		if (track.type != "Video") {
-			return null;
-		}
-		const tmpFilePath = join(
-			this.settingsService.settingsValues.meeloFolder,
-			"tmp",
-			track.id + ".jpg",
-		);
-		await this.ffmpegService.takeVideoScreenshot(
-			sourceFilePath,
-			tmpFilePath,
-		);
-		return this.saveReleaseIllustration(
-			await this.fileManagerService.getFileBuffer(tmpFilePath),
-			track.discIndex,
-			track.trackIndex,
-			{ id: track.releaseId },
-			IllustrationType.Thumbnail,
-		).finally(() => {
-			this.fileManagerService.deleteFile(tmpFilePath);
 		});
 	}
 
