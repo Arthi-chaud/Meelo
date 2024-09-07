@@ -16,6 +16,7 @@ services:
       - ./server/test:/app/test
       - ./server/package.json:/app/package.json
       - ./server/.yarn:/app/.yarn
+      - server_deps:/app/node_modules
       - ./server/.yarnrc.yml:/app/.yarnrc.yml
       - ./server/tsconfig.json:/app/tsconfig.json
       - ./server/tsconfig.build.json:/app/tsconfig.build.json
@@ -58,6 +59,7 @@ services:
       - ./front/package.json:/app/package.json
       - ./front/tsconfig.json:/app/tsconfig.json
       - ./front/yarn.lock:/app/yarn.lock
+      - front_deps:/app/node_modules
     environment:
       # This can be commented out. see front/next.config.js
       - PUBLIC_SERVER_URL=http://localhost:4000
@@ -106,3 +108,5 @@ services:
 volumes:
   search:
   transcoder_cache:
+  front_deps:
+  server_deps:
