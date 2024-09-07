@@ -37,27 +37,11 @@ export class TaskStatusResponse {
 	status: string;
 }
 
-export class ActiveTaskResponse extends TaskResponse {
-	@ApiProperty({
-		description: "JSON Parameter of the task",
-		type: JSON,
-		nullable: true,
-	})
-	data: JSON | null;
-}
-
 export class TaskQueueStatusResponse {
 	@ApiProperty({
-		type: ActiveTaskResponse,
+		type: TaskResponse,
 		description: "Current running task",
 		nullable: true,
 	})
-	active: ActiveTaskResponse | null;
-
-	@ApiProperty({
-		type: TaskResponse,
-		description: "Tasks waiting to be processed",
-		isArray: true,
-	})
-	pending: TaskResponse[];
+	active: TaskResponse | null;
 }

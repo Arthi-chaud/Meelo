@@ -27,7 +27,7 @@ import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from "./models/album.response";
 import ProvidersModule from "src/providers/providers.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 
 @Module({
 	imports: [
@@ -38,7 +38,7 @@ import ScannerModule from "src/parser/parser.module";
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
 		GenreModule,
-		forwardRef(() => ScannerModule),
+		forwardRef(() => ParserModule),
 	],
 	exports: [AlbumService, AlbumResponseBuilder],
 	providers: [AlbumService, AlbumResponseBuilder],

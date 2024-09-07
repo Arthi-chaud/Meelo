@@ -10,7 +10,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -57,7 +57,7 @@ describe("Track Service", () => {
 			imports: [
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				IllustrationModule,
 				TrackModule,
 				ArtistModule,

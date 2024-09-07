@@ -16,23 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { HousekeepingService } from "./housekeeping.service";
 import SongModule from "src/song/song.module";
 import ReleaseModule from "src/release/release.module";
-import AlbumService from "src/album/album.service";
-import ArtistService from "src/artist/artist.service";
-import GenreService from "src/genre/genre.service";
-import PlaylistService from "src/playlist/playlist.service";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
+import GenreModule from "src/genre/genre.module";
+import PlaylistModule from "src/playlist/playlist.module";
 
 @Module({
 	imports: [
-		SongModule,
-		ReleaseModule,
-		AlbumService,
-		ArtistService,
-		GenreService,
-		PlaylistService,
+		forwardRef(() => SongModule),
+		forwardRef(() => ReleaseModule),
+		forwardRef(() => AlbumModule),
+		forwardRef(() => ArtistModule),
+		forwardRef(() => GenreModule),
+		forwardRef(() => PlaylistModule),
 	],
 	providers: [HousekeepingService],
 	exports: [HousekeepingService],

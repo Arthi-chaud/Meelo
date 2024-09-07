@@ -12,7 +12,7 @@ import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import ScannerModule from "./parser.module";
+import ParserModule from "./parser.module";
 import PrismaService from "src/prisma/prisma.service";
 
 describe("Parser Service", () => {
@@ -27,7 +27,7 @@ describe("Parser Service", () => {
 				ArtistModule,
 				AlbumModule,
 				ReleaseModule,
-				ScannerModule,
+				ParserModule,
 				SongModule,
 				TrackModule,
 				IllustrationModule,

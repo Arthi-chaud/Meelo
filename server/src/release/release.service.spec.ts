@@ -16,7 +16,7 @@ import {
 } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import GenreModule from "src/genre/genre.module";
@@ -46,7 +46,7 @@ describe("Release Service", () => {
 				TrackModule,
 				IllustrationModule,
 				SongModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
 				FileModule,
 				ProvidersModule,

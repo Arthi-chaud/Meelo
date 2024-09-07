@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import MetadataDto from "./models/metadata.dto";
 import MetadataService from "src/registration/metadata.service";
 import SettingsService from "src/settings/settings.service";
@@ -45,8 +45,11 @@ export class RegistrationService {
 	constructor(
 		private metadataService: MetadataService,
 		private settingsService: SettingsService,
+		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
+		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		private illustrationService: IllustrationService,
 		private illustrationRepository: IllustrationRepository,

@@ -28,7 +28,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import { SongResponseBuilder } from "./models/song.response";
 import ReleaseModule from "src/release/release.module";
 import ProvidersModule from "src/providers/providers.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 
 @Module({
 	imports: [
@@ -40,7 +40,7 @@ import ScannerModule from "src/parser/parser.module";
 		forwardRef(() => GenreModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => IllustrationModule),
-		forwardRef(() => ScannerModule),
+		forwardRef(() => ParserModule),
 	],
 	exports: [SongService, SongResponseBuilder],
 	providers: [SongService, SongResponseBuilder],

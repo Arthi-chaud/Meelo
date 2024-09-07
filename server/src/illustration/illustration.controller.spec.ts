@@ -6,7 +6,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import AlbumModule from "src/album/album.module";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
@@ -26,6 +26,7 @@ import { Illustration } from "src/prisma/models";
 import { IllustrationResponse } from "./models/illustration.response";
 import { createReadStream, existsSync, rmSync } from "fs";
 import { dirname } from "path";
+import IllustrationService from "./illustration.service";
 
 jest.setTimeout(60000);
 
@@ -41,7 +42,7 @@ describe("Illustration Controller", () => {
 				FileManagerModule,
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				FileModule,
 				ArtistModule,
 				AlbumModule,
@@ -60,8 +61,16 @@ describe("Illustration Controller", () => {
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
+
+		jest.spyOn(
+			IllustrationService.prototype,
+			"getImageStats",
+		).mockImplementation(async () => ({
+			blurhash: "",
+			colors: [],
+			aspectRatio: 0,
+		}));
 	});
-	const baseMetadataFolder = "test/assets/metadata";
 
 	afterAll(async () => {
 		await app.close();

@@ -5,7 +5,7 @@ import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -41,7 +41,7 @@ jest.setTimeout(120000);
 		AlbumModule,
 		PrismaModule,
 		ReleaseModule,
-		ScannerModule,
+		ParserModule,
 		SongModule,
 		TrackModule,
 		IllustrationModule,

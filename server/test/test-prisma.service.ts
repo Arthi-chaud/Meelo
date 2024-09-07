@@ -362,18 +362,23 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My Playlist 1",
 				slug: "my-playlist-1",
+				createdAt: new Date('2000-01-01')
 			},
 		});
 		this.playlist2 = await this.playlist.create({
 			data: {
 				name: "The Playlist 2",
 				slug: "the-playlist-2",
+
+				createdAt: new Date('2000-01-02')
 			},
 		});
 		this.playlist3 = await this.playlist.create({
 			data: {
 				name: "Playlist 3",
 				slug: "playlist-3",
+
+				createdAt: new Date('2000-01-03')
 			},
 		});
 		this.playlistEntry2 = await this.playlistEntry.create({
