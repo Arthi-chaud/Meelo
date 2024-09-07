@@ -32,6 +32,11 @@ services:
     depends_on:
       server:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:8133"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     environment:
       - API_URL=http://server:4000
       - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
@@ -47,9 +52,13 @@ services:
     depends_on:
       server:
         condition: service_healthy
+      scanner:
+        condition: service_healthy
     environment:
-      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
+      - PUBLIC_SERVER_URL=${PUBLIC_URL}/api
       - SSR_SERVER_URL=http://server:4000
+      - PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
+      - SSR_SCANNER_URL=http://scanner:8133
   db:
     image: postgres:alpine3.14
     healthcheck:
@@ -91,6 +100,9 @@ services:
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - transcoder_cache:/cache
+    depends_on:
+      db:
+        condition: service_healthy
     profiles: ['', 'cpu']
   nginx:
     restart: on-failure
