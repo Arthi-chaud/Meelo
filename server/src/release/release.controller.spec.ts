@@ -15,7 +15,7 @@ import ReleaseModule from "./release.module";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
@@ -49,7 +49,7 @@ describe("Release Controller", () => {
 				IllustrationModule,
 				SongModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
 				ProvidersModule,
 			],

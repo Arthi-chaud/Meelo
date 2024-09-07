@@ -31,8 +31,9 @@ import ProvidersModule from "src/providers/providers.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import IllustrationRepository from "./illustration.repository";
 import PrismaModule from "src/prisma/prisma.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import { HttpModule } from "@nestjs/axios";
+import { RegistrationModule } from "src/registration/registration.module";
 
 @Module({
 	imports: [
@@ -47,8 +48,9 @@ import { HttpModule } from "@nestjs/axios";
 		forwardRef(() => FileModule),
 		forwardRef(() => ProvidersModule),
 		forwardRef(() => PlaylistModule),
+		forwardRef(() => RegistrationModule),
 		SettingsModule,
-		forwardRef(() => ScannerModule),
+		forwardRef(() => ParserModule),
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService, IllustrationRepository],

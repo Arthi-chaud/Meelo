@@ -10,7 +10,7 @@ import { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -46,7 +46,7 @@ describe("Track Controller", () => {
 				TrackModule,
 				IllustrationModule,
 				SongModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
 				LyricsModule,
 				LibraryModule,

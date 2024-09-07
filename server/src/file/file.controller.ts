@@ -30,7 +30,6 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
 import FileDeletionDto from "./models/file-deletion.dto";
-import TaskRunner from "src/tasks/tasks.runner";
 import { Role } from "src/authentication/roles/roles.decorators";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";

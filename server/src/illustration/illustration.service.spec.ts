@@ -4,7 +4,7 @@ import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
@@ -38,7 +38,7 @@ describe("Illustration Service", () => {
 				IllustrationModule,
 				PrismaModule,
 				ArtistModule,
-				ScannerModule,
+				ParserModule,
 				SettingsModule,
 				ProvidersModule,
 			],

@@ -16,27 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { MetadataController } from "./registration.controller";
 import { RegistrationService } from "./registration.service";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import SettingsModule from "src/settings/settings.module";
 import LibraryModule from "src/library/library.module";
 import FileModule from "src/file/file.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import MetadataService from "./metadata.service";
 import TrackModule from "src/track/track.module";
+import SongModule from "src/song/song.module";
+import ArtistModule from "src/artist/artist.module";
+import AlbumModule from "src/album/album.module";
+import GenreModule from "src/genre/genre.module";
+import ReleaseModule from "src/release/release.module";
+import IllustrationModule from "src/illustration/illustration.module";
 
 @Module({
 	controllers: [MetadataController],
 	providers: [RegistrationService, MetadataService],
+	exports: [RegistrationService],
 	imports: [
-		ScannerModule,
+		ParserModule,
 		SettingsModule,
-		LibraryModule,
-		FileModule,
-		TrackModule,
-		HousekeepingModule,
+		forwardRef(() => LibraryModule),
+		forwardRef(() => SongModule),
+		forwardRef(() => AlbumModule),
+		forwardRef(() => ArtistModule),
+		forwardRef(() => ReleaseModule),
+		forwardRef(() => GenreModule),
+		forwardRef(() => FileModule),
+		forwardRef(() => TrackModule),
+		forwardRef(() => IllustrationModule),
+		forwardRef(() => HousekeepingModule),
 	],
 })
 export class RegistrationModule {}

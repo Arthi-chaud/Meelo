@@ -3,7 +3,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
@@ -37,7 +37,7 @@ describe("Registration Service", () => {
 				IllustrationModule,
 				PrismaModule,
 				ArtistModule,
-				ScannerModule,
+				ParserModule,
 				SettingsModule,
 				ProvidersModule,
 			],
@@ -63,10 +63,9 @@ describe("Registration Service", () => {
 	// Here we test the logic of illustration's registration
 
 	describe("Register Track illustration", () => {
-		const outPath = `${baseMetadataFolder}/illustration.jpg`;
 		const sourceBytes = fs.readFileSync("test/assets/cover.jpg");
 		const source2Bytes = fs.readFileSync("test/assets/cover1.jpg");
-		const source3Bytes = fs.readFileSync("test/assets/cover3.jpg");
+		const source3Bytes = fs.readFileSync("test/assets/cover2.jpg");
 
 		let discIllustrationPath: string;
 		it("should extract release/track illustration, mocking the illustration bytes", async () => {

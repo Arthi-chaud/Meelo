@@ -39,7 +39,6 @@ import UserModule from "./user/user.module";
 import ProvidersModule from "./providers/providers.module";
 import LoggerModule from "./logger/logger.module";
 import * as Plugins from "./app.plugins";
-import { BullModule } from "@nestjs/bull";
 import VideoModule from "./video/video.module";
 import PlaylistModule from "./playlist/playlist.module";
 import { MeiliSearchModule } from "nestjs-meilisearch";
@@ -57,17 +56,6 @@ import ParserModule from "./parser/parser.module";
 		MeiliSearchModule.forRoot({
 			host: process.env.MEILI_HOST!,
 			apiKey: process.env.MEILI_MASTER_KEY,
-		}),
-		BullModule.forRoot({
-			redis: {
-				host: process.env.REDIS_HOST,
-				port: 6379,
-			},
-			defaultJobOptions: {
-				attempts: 1,
-				removeOnComplete: true,
-				removeOnFail: true,
-			},
 		}),
 		NestjsFormDataModule.config({
 			storage: MemoryStoredFile,

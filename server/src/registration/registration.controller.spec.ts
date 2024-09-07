@@ -3,7 +3,7 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import ScannerModule from "src/parser/parser.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import LibraryModule from "../library/library.module";
@@ -66,7 +66,7 @@ describe("Metadata Controller", () => {
 				FileManagerModule,
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				RegistrationModule,
 				SongModule,
 				ArtistModule,
