@@ -16,7 +16,7 @@ function delay(ms: number) {
 }
 
 const expectedTaskResponse = {
-	status: `Task started`,
+	message: `Task started`,
 };
 
 describe("Task Controller", () => {

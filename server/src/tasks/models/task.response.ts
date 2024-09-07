@@ -34,7 +34,7 @@ export class TaskStatusResponse {
 	@ApiProperty({
 		description: "A message about the status of the task",
 	})
-	status: string;
+	message: string;
 }
 
 export class TaskQueueStatusResponse {
