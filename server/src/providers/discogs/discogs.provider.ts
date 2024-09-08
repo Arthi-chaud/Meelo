@@ -97,13 +97,14 @@ export default class DiscogsProvider
 	): Promise<AlbumMetadata> {
 		try {
 			const album = await this.fetch(`/masters/${masterIdentifier}`);
-
-			if (isNumber(album.id) && isString(album.notes_plaintext)) {
+			// We used to be able to use notes as description
+			// https://www.discogs.com/forum/thread/1084771?message_id=11214064#11214064
+			if (isNumber(album.id)) {
 				return {
 					genres: album.genres,
 					value: album.id.toString(),
 					rating: null,
-					description: album.notes_plaintext,
+					description: null,
 				};
 			}
 			throw new ProviderActionFailedError(
@@ -126,13 +127,10 @@ export default class DiscogsProvider
 		try {
 			const release = await this.fetch(`/releases/${releaseIdentifier}`);
 
-			if (
-				isNumber(release.id) &&
-				(isString(release.notes_plaintext) || isString(release.notes))
-			) {
+			if (isNumber(release.id)) {
 				return {
 					value: release.id.toString(),
-					description: release.notes_plaintext || release.notes,
+					description: null,
 				};
 			}
 			throw new ProviderActionFailedError(

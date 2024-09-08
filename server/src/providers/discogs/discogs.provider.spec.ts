@@ -68,12 +68,11 @@ describe("Discogs Provider", () => {
 				"24744",
 			);
 			expect(metadata.value).toBe("24744");
-			expect(metadata.description).not.toBeNull();
 			expect(metadata.genres).toContain("Electronic");
 			expect(metadata.genres).toContain("Rock");
-			expect(metadata!.description).toContain(
-				"Exciter is the tenth studio album by English electronic music band Depeche Mode",
-			);
+			// expect(metadata!.description).toContain(
+			// 	"Exciter is the tenth studio album by English electronic music band Depeche Mode",
+			// );
 		});
 		it("Should throw, as the album does not exist", () => {
 			return expect(
@@ -87,10 +86,9 @@ describe("Discogs Provider", () => {
 			const metadata =
 				await discogsProvider.getReleaseMetadataByIdentifier("9442778");
 			expect(metadata.value).toBe("9442778");
-			expect(metadata.description).not.toBeNull();
-			expect(metadata!.description).toContain(
-				"Comes with a printed inner sleeve with lyrics, credits and photos.",
-			);
+			// expect(metadata!.description).toContain(
+			// 	"Comes with a printed inner sleeve with lyrics, credits and photos.",
+			// );
 		});
 		it("Should throw, as the Release does not exist", () => {
 			return expect(
