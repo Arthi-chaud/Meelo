@@ -36,6 +36,7 @@ import { useReadLocalStorage } from "usehooks-ts";
 import { usePlayerContext } from "../../contexts/player";
 import Hls from "hls.js";
 import { v4 as uuidv4 } from "uuid";
+import { useKeyboardBinding } from "../../contexts/keybindings";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -222,6 +223,39 @@ const Player = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userIsAuthentified]);
+	useKeyboardBinding(
+		{
+			key: "p",
+			description: "openClosePlayer",
+			handler: () => setExpanded((v) => !v),
+		},
+		[expanded],
+	);
+	useKeyboardBinding(
+		{
+			key: "esc",
+			description: "closePlayer",
+			handler: () => setExpanded(false),
+		},
+		[expanded],
+	);
+	useKeyboardBinding(
+		{
+			key: "space",
+			description: "playPauseWhenExpanded",
+			handler: () => {
+				if (!expanded) {
+					return;
+				}
+				if (playing) {
+					pause();
+				} else {
+					play();
+				}
+			},
+		},
+		[expanded, playing, pause, play],
+	);
 	useEffect(() => {
 		if (player.current) {
 			player.current.onpause = null;
