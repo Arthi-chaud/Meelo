@@ -250,5 +250,7 @@
 	"rareSongs": "Rare Songs",
 	"leaveWillStopPlaybackAlert": "Leaving the website will stop playback.",
 	"keyboadBindings": "Keyboard Shortcuts",
-	"openModalShortcutDescription": "Open / Close this modal"
+	"openKeyboarBindingsModalByTypingQuestionMark": "Access Keyboard Bindings list by typing '?'",
+	"openModalShortcutDescription": "Open / Close this modal",
+	"goToSearchPage": "Go to Search page"
 }

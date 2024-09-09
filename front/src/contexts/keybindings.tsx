@@ -21,13 +21,14 @@ import { TranslationKey } from "../i18n/i18n";
 import { useKey } from "react-use";
 import { Handler } from "react-use/lib/useKey";
 
-type BindingKey = "esc" | "?";
+type BindingKey = "esc" | "?" | "/";
 
 const bindingKeyToUseKeyParam = (bindingKey: BindingKey): string => {
 	switch (bindingKey) {
 		case "esc":
 			return "Escape";
 		case "?":
+		case "/":
 			return bindingKey;
 	}
 };
@@ -119,5 +120,13 @@ export const useKeyboardBinding = (binding: Binding & { handler: Handler }) => {
 		keyboardContext.addBinding(binding.key, binding.description);
 		return () => {};
 	}, [binding]);
+	return {};
+};
+
+export const useKeyboardBindings = (
+	bindings: (Binding & { handler: Handler })[],
+) => {
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	bindings.map((binding) => useKeyboardBinding(binding));
 	return {};
 };

@@ -239,5 +239,7 @@
 	"rareSongs": "Pistes Inédites",
 	"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
 	"keyboadBindings": "Raccourcis Clavier",
-	"openModalShortcutDescription": "Ouvrir / Fermer cette modale"
+	"openKeyboarBindingsModalByTypingQuestionMark": "Ouvrez la liste des raccourcis clavier avec la touche '?'",
+	"openModalShortcutDescription": "Ouvrir / Fermer cette modale",
+	"goToSearchPage": "Rechercher"
 }

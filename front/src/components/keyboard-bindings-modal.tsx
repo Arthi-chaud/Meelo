@@ -28,19 +28,28 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-	useKeyboardBinding,
 	useKeyboardBindingContext,
+	useKeyboardBindings,
 } from "../contexts/keybindings";
 import { CloseIcon } from "./icons";
+import { useRouter } from "next/router";
 
 export const KeyboardBindingModal = () => {
 	const [isOpen, setIsOpen] = useState(false);
+	const router = useRouter();
 	const { t } = useTranslation();
-	const _ = useKeyboardBinding({
-		key: "?",
-		description: "openModalShortcutDescription",
-		handler: () => setIsOpen((x) => !x),
-	});
+	const _ = useKeyboardBindings([
+		{
+			key: "?",
+			description: "openModalShortcutDescription",
+			handler: () => setIsOpen((x) => !x),
+		},
+		{
+			key: "/",
+			description: "goToSearchPage",
+			handler: () => router.push("/search"),
+		},
+	]);
 	const theme = useTheme();
 	const { bindings } = useKeyboardBindingContext();
 
