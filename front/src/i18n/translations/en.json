@@ -248,5 +248,13 @@
 	"no": "No",
 	"featuredAlbums": "Featured Albums",
 	"rareSongs": "Rare Songs",
-	"leaveWillStopPlaybackAlert": "Leaving the website will stop playback."
+	"leaveWillStopPlaybackAlert": "Leaving the website will stop playback.",
+	"keyboadBindings": "Keyboard Shortcuts",
+	"openKeyboarBindingsModalByTypingQuestionMark": "Access Keyboard Bindings list by typing '?'",
+	"openModalShortcutDescription": "Open / Close this modal",
+	"goToSearchPage": "Go to Search page",
+	"goToSettingsPage": "Go to Settings",
+	"openClosePlayer": "Open / Close Player",
+	"closePlayer": "Close Player",
+	"playPauseWhenExpanded": "Play / Pause (When player is open)"
 }

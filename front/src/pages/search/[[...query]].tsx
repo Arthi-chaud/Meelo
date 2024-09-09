@@ -124,10 +124,14 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				sx={{ display: "flex", justifyContent: "center", paddingY: 2 }}
 			>
 				<TextField
-					id="outlined-basic"
 					label="Search"
 					variant="outlined"
 					autoFocus
+					onKeyDown={(e) => {
+						if (e.key == "Escape") {
+							(document.activeElement as any)?.blur();
+						}
+					}}
 					InputProps={{
 						value: inputValue,
 						startAdornment: (

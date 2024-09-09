@@ -58,6 +58,8 @@ import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import { setAccessToken } from "../state/userSlice";
 import API from "../api/api";
 import { deepmerge } from "@mui/utils";
+import { KeyboardBindingsProvider } from "../contexts/keybindings";
+import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -133,13 +135,16 @@ function MyApp({
 													}
 												}}
 											>
-												<PlayerContextProvider>
-													<Scaffold>
-														<Component
-															{...pageProps}
-														/>
-													</Scaffold>
-												</PlayerContextProvider>
+												<KeyboardBindingsProvider>
+													<KeyboardBindingModal />
+													<PlayerContextProvider>
+														<Scaffold>
+															<Component
+																{...pageProps}
+															/>
+														</Scaffold>
+													</PlayerContextProvider>
+												</KeyboardBindingsProvider>
 											</ErrorBoundary>
 										</AuthenticationWall>
 									</Hydrate>

@@ -158,6 +158,12 @@ const UserSettings = () => {
 					/>
 				</Grid>
 			</Grid>
+			<SectionHeader heading={t("keyboadBindings")} />
+			<Grid container sx={SettingGroupStyle}>
+				<Grid item xs={12}>
+					{t("openKeyboarBindingsModalByTypingQuestionMark")}
+				</Grid>
+			</Grid>
 			<SectionHeader heading={t("project")} />
 			<p>
 				<Star style={LinkIconStyle} />
