@@ -22,6 +22,7 @@ import {
 	Divider,
 	Grid,
 	IconButton,
+	ListItemButton,
 	ListSubheader,
 	Rating,
 	Skeleton,
@@ -33,7 +34,7 @@ import { useRouter } from "next/router";
 import API from "../../api/api";
 import Illustration from "../../components/illustration";
 import formatDuration from "../../utils/formatDuration";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PlayIcon, ShuffleIcon } from "../../components/icons";
 import {
@@ -71,11 +72,15 @@ import { useGradientBackground } from "../../utils/gradient-background";
 import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
 import { Head } from "../../components/head";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
+import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "externalIds", "illustration"]);
-const releaseTracklistQuery = (releaseIdentifier: number | string) => {
-	const query = API.getReleaseTracklist(releaseIdentifier, [
+const releaseTracklistQuery = (
+	releaseIdentifier: number | string,
+	exclusiveOnly: boolean,
+) => {
+	const query = API.getReleaseTracklist(releaseIdentifier, exclusiveOnly, [
 		"artist",
 		"featuring",
 	]);
@@ -147,7 +152,7 @@ const prepareSSR = async (
 	return {
 		additionalProps: { releaseIdentifier },
 		queries: [
-			releaseTracklistQuery(releaseIdentifier),
+			releaseTracklistQuery(releaseIdentifier, false),
 			albumQuery(release.albumId),
 			artistsOnAlbumQuery(release.albumId),
 		],
@@ -187,6 +192,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const { t } = useTranslation();
+	const [showOnlyExclusive, setShowOnlyExclusive] = useState(false);
 	const releaseIdentifier =
 		props?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
@@ -194,7 +200,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const album = useQuery(albumQuery, release.data?.albumId);
-	const tracklistQuery = useQuery(releaseTracklistQuery, releaseIdentifier);
+	const tracklistQuery = useQuery(
+		(rId) => releaseTracklistQuery(rId, showOnlyExclusive),
+		releaseIdentifier,
+	);
 	const albumGenres = useInfiniteQuery(
 		albumGenreQuery,
 		release.data?.albumId,
@@ -340,6 +349,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		accentColor?.light,
 		accentColor?.dark,
 	);
+	useEffect(() => {
+		//for some unknown reason, this state is persisted between release pages?!
+		setShowOnlyExclusive(false);
+	}, [router.asPath]);
 
 	return (
 		<>
@@ -605,7 +618,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							</Fade>
 						</Grid>
 					)}
-					<Grid item xl lg={hasGenres ? 9 : true} xs={12}>
+					<Grid
+						item
+						xl
+						lg={hasGenres ? 9 : true}
+						xs={12}
+						id={"release-tracklist"}
+					>
 						<ReleaseTrackList
 							mainArtist={albumArtist}
 							tracklist={
@@ -625,6 +644,35 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 							release={release.data}
 						/>
+						{release.data?.album.type === "Compilation" && (
+							<>
+								<ListItemButton
+									sx={{
+										textAlign: "center",
+										justifyContent: "center",
+										width: "100%",
+										fontWeight: "bolder",
+									}}
+									onClick={() => {
+										setShowOnlyExclusive((v) => !v);
+										document
+											.getElementById(
+												parentScrollableDivId,
+											)
+											?.scrollTo({
+												top: 0,
+												behavior: "smooth",
+											});
+									}}
+								>
+									{t(
+										showOnlyExclusive
+											? "showAllTrack"
+											: "showOnlyExclusiveTracks",
+									)}
+								</ListItemButton>
+							</>
+						)}
 					</Grid>
 				</Grid>
 				<RelatedContentSection

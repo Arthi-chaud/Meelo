@@ -107,6 +107,9 @@
 
 	"trackSetAsMaster": "Track set as Master",
 
+	"showAllTrack": "Show all tracks",
+	"showOnlyExclusiveTracks": "Show only exclusive tracks",
+
 	"All": "All",
 	"StudioRecording": "Studio Recording",
 	"Single": "Single",

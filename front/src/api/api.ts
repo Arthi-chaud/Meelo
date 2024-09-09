@@ -1007,6 +1007,7 @@ export default class API {
 	 */
 	static getReleaseTracklist<I extends SongInclude | never = never>(
 		slugOrId: string | number,
+		exclusiveOnly: boolean = false,
 		include?: I[],
 	): InfiniteQuery<TracklistItemWithRelations<I>> {
 		return {
@@ -1014,12 +1015,14 @@ export default class API {
 				"release",
 				slugOrId,
 				"tracklist",
+				exclusiveOnly ? "exclusives" : "",
 				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
 					route: `/releases/${slugOrId.toString()}/tracklist`,
 					parameters: { include, pagination },
+					otherParameters: { exclusive: exclusiveOnly },
 					validator: PaginatedResponse(
 						TracklistItemWithRelations(include ?? []),
 					),

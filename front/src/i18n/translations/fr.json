@@ -109,6 +109,9 @@
 	"backToTop": "Retour en haut",
 	"changeLayout": "Changer la disposition",
 
+	"showAllTrack": "Afficher toutes les morceaux",
+	"showOnlyExclusiveTracks": "Afficher seulement les morceaux exclusifs",
+
 	"changeAlbumType": "Changer le Type de l'Album",
 	"onThisAlbum": "Artistes Invités",
 
