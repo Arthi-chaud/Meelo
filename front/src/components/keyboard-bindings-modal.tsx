@@ -16,13 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Dialog, DialogContent, DialogTitle, Grid, List } from "@mui/material";
+import {
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	Grid,
+	IconButton,
+	List,
+	useTheme,
+} from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,
 } from "../contexts/keybindings";
+import { CloseIcon } from "./icons";
 
 export const KeyboardBindingModal = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -32,23 +41,50 @@ export const KeyboardBindingModal = () => {
 		description: "openModalShortcutDescription",
 		handler: () => setIsOpen((x) => !x),
 	});
+	const theme = useTheme();
 	const { bindings } = useKeyboardBindingContext();
 
 	return (
 		<Dialog open={isOpen} fullWidth onClose={() => setIsOpen(false)}>
 			<DialogTitle>{t("keyboadBindings")}</DialogTitle>
+			<IconButton
+				onClick={() => setIsOpen(false)}
+				sx={() => ({
+					position: "absolute",
+					right: 8,
+					top: 8,
+				})}
+			>
+				<CloseIcon />
+			</IconButton>
 			<DialogContent>
 				<List>
 					{bindings.map((binding) => (
 						<Grid container key={binding.key} spacing={2}>
 							<Grid item xs={4} sx={{ textAlign: "center" }}>
-								<code>{binding.key}</code>
+								<pre>
+									<code
+										style={{
+											backgroundColor:
+												theme.palette.divider,
+											borderColor: theme.palette.divider,
+											borderWidth: 1,
+											borderStyle: "solid",
+											padding: 6,
+											borderRadius:
+												theme.shape.borderRadius,
+										}}
+									>
+										{binding.key}
+									</code>
+								</pre>
 							</Grid>
 							<Grid
 								item
 								xs={8}
 								sx={{
 									textOverflow: "ellipsis",
+									alignContent: "center",
 								}}
 							>
 								{t(binding.description)}
