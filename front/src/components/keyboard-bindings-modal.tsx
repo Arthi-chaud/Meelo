@@ -28,33 +28,29 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+	useKeyboardBinding,
 	useKeyboardBindingContext,
-	useKeyboardBindings,
 } from "../contexts/keybindings";
 import { CloseIcon } from "./icons";
-import { useRouter } from "next/router";
 
 export const KeyboardBindingModal = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const router = useRouter();
 	const { t } = useTranslation();
-	const _ = useKeyboardBindings([
+	useKeyboardBinding(
 		{
 			key: "?",
 			description: "openModalShortcutDescription",
 			handler: () => setIsOpen((x) => !x),
 		},
-		{
-			key: "/",
-			description: "goToSearchPage",
-			handler: () => router.push("/search"),
-		},
-	]);
-	const theme = useTheme();
-	const { bindings } = useKeyboardBindingContext();
-
+		[],
+	);
 	return (
-		<Dialog open={isOpen} fullWidth onClose={() => setIsOpen(false)}>
+		<Dialog
+			open={isOpen}
+			sx={{ zIndex: "tooltip" }}
+			fullWidth
+			onClose={() => setIsOpen(false)}
+		>
 			<DialogTitle>{t("keyboadBindings")}</DialogTitle>
 			<IconButton
 				onClick={() => setIsOpen(false)}
@@ -67,41 +63,48 @@ export const KeyboardBindingModal = () => {
 				<CloseIcon />
 			</IconButton>
 			<DialogContent>
-				<List>
-					{bindings.map((binding) => (
-						<Grid container key={binding.key} spacing={2}>
-							<Grid item xs={4} sx={{ textAlign: "center" }}>
-								<pre>
-									<code
-										style={{
-											backgroundColor:
-												theme.palette.divider,
-											borderColor: theme.palette.divider,
-											borderWidth: 1,
-											borderStyle: "solid",
-											padding: 6,
-											borderRadius:
-												theme.shape.borderRadius,
-										}}
-									>
-										{binding.key}
-									</code>
-								</pre>
-							</Grid>
-							<Grid
-								item
-								xs={8}
-								sx={{
-									textOverflow: "ellipsis",
-									alignContent: "center",
-								}}
-							>
-								{t(binding.description)}
-							</Grid>
-						</Grid>
-					))}
-				</List>
+				<KeyboardBindingModalContent />
 			</DialogContent>
 		</Dialog>
+	);
+};
+
+const KeyboardBindingModalContent = () => {
+	const { t } = useTranslation();
+	const { bindings } = useKeyboardBindingContext();
+	const theme = useTheme();
+	return (
+		<List>
+			{bindings.map((binding) => (
+				<Grid container key={binding.key} spacing={2}>
+					<Grid item xs={4} sx={{ textAlign: "center" }}>
+						<pre>
+							<code
+								style={{
+									backgroundColor: theme.palette.divider,
+									borderColor: theme.palette.divider,
+									borderWidth: 1,
+									borderStyle: "solid",
+									padding: 6,
+									borderRadius: theme.shape.borderRadius,
+								}}
+							>
+								{binding.key}
+							</code>
+						</pre>
+					</Grid>
+					<Grid
+						item
+						xs={8}
+						sx={{
+							textOverflow: "ellipsis",
+							alignContent: "center",
+						}}
+					>
+						{t(binding.description)}
+					</Grid>
+				</Grid>
+			))}
+		</List>
 	);
 };

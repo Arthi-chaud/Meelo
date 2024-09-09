@@ -241,5 +241,9 @@
 	"keyboadBindings": "Raccourcis Clavier",
 	"openKeyboarBindingsModalByTypingQuestionMark": "Ouvrez la liste des raccourcis clavier avec la touche '?'",
 	"openModalShortcutDescription": "Ouvrir / Fermer cette modale",
-	"goToSearchPage": "Rechercher"
+	"goToSearchPage": "Rechercher",
+	"goToSettingsPage": "Accéder aux réglages",
+	"openClosePlayer": "Ouvrir / Fermer le lecteur",
+	"closePlayer": "Fermer le lecteur",
+	"playPauseWhenExpanded": "Pauser / Jouer (Quand le lecteur est ouvert)"
 }

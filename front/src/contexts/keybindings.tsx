@@ -16,19 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+	DependencyList,
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 import { TranslationKey } from "../i18n/i18n";
 import { useKey } from "react-use";
 import { Handler } from "react-use/lib/useKey";
+import { useRouter } from "next/router";
 
-type BindingKey = "esc" | "?" | "/";
+type BindingKey = "esc" | "?" | "/" | "s" | "p" | "space";
 
 const bindingKeyToUseKeyParam = (bindingKey: BindingKey): string => {
 	switch (bindingKey) {
 		case "esc":
 			return "Escape";
-		case "?":
-		case "/":
+		case "space":
+			return " ";
+		default:
 			return bindingKey;
 	}
 };
@@ -58,9 +66,16 @@ const KeyboardBindings = createContext<BindingsState & KeyboardBindingsActions>(
 export const KeyboardBindingsProvider = (props: {
 	children: JSX.Element[];
 }) => {
+	const router = useRouter();
 	const [{ bindings }, setBindings] = useState<BindingsState>({
-		bindings: [],
+		bindings: [
+			{ key: "/", description: "goToSearchPage" },
+			{ key: "s", description: "goToSettingsPage" },
+		],
 	});
+	useKey(bindingKeyToUseKeyParam("/"), () => router.push("/search"));
+	useKey(bindingKeyToUseKeyParam("s"), () => router.push("/settings"));
+
 	return (
 		<KeyboardBindings.Provider
 			value={{
@@ -107,26 +122,28 @@ export const KeyboardBindingsProvider = (props: {
 
 export const useKeyboardBindingContext = () => useContext(KeyboardBindings);
 
-export const useKeyboardBinding = (binding: Binding & { handler: Handler }) => {
+export const useKeyboardBinding = (
+	binding: Binding & { handler: Handler },
+	deps: DependencyList = [],
+) => {
 	const keyboardContext = useContext(KeyboardBindings);
 
-	useKey(bindingKeyToUseKeyParam(binding.key), (e) => {
-		if (document.activeElement?.tagName.toLowerCase() == "input") {
-			return;
-		}
-		binding.handler(e);
-	});
+	useKey(
+		bindingKeyToUseKeyParam(binding.key),
+		(e) => {
+			if (document.activeElement?.tagName.toLowerCase() == "input") {
+				return;
+			}
+			binding.handler(e);
+		},
+		{},
+		[...deps],
+	);
 	useEffect(() => {
 		keyboardContext.addBinding(binding.key, binding.description);
-		return () => {};
-	}, [binding]);
-	return {};
-};
-
-export const useKeyboardBindings = (
-	bindings: (Binding & { handler: Handler })[],
-) => {
-	// eslint-disable-next-line react-hooks/rules-of-hooks
-	bindings.map((binding) => useKeyboardBinding(binding));
+		return () => {
+			keyboardContext.removeBinding(binding.key);
+		};
+	}, []);
 	return {};
 };
