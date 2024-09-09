@@ -19,8 +19,10 @@
 import {
 	Body,
 	Controller,
+	DefaultValuePipe,
 	Get,
 	Inject,
+	ParseBoolPipe,
 	Post,
 	Put,
 	Query,
@@ -146,12 +148,19 @@ export default class ReleaseController {
 		include: SongQueryParameters.RelationInclude,
 		@Query()
 		paginationParameters: PaginationParameters,
+		@Query(
+			"exclusive",
+			new ParseBoolPipe({ optional: true }),
+			new DefaultValuePipe(false),
+		)
+		exclusiveOnly: boolean,
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 	) {
 		return this.trackService.getTracklist(
 			where,
 			paginationParameters,
+			exclusiveOnly,
 			include,
 		);
 	}

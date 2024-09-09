@@ -28,6 +28,7 @@ Meelo has all the basic features you might expect from a music player/server (pl
 - Song Versions
 - Album and Song types
   - Finding instrumental songs or live recordings has never been this simple!
+- Filter Songs that are exclusive to an album (compilations only)
 - Supports all formats!
   - Thanks to transcoding and the way we parse files, any audio and video format is virtually supported
   - (Note: Transcoding is only used when the file format is not supported in the browser)

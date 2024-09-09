@@ -187,6 +187,39 @@ export default class TrackService {
 				release: ReleaseService.formatWhereInput(where.release),
 			});
 		}
+		if (where.exclusiveOn) {
+			queryParameters = deepmerge<Prisma.TrackWhereInput>(
+				queryParameters,
+				{
+					song: {
+						group: {
+							versions: {
+								some: {
+									type: "Original",
+									tracks: {
+										every: {
+											release: {
+												OR: [
+													{
+														album: {
+															type: "Single",
+														},
+													},
+													ReleaseService.formatWhereInput(
+														where.exclusiveOn,
+													),
+												],
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					release: ReleaseService.formatWhereInput(where.exclusiveOn),
+				},
+			);
+		}
 		if (where.album) {
 			queryParameters = deepmerge(queryParameters, {
 				song: {
@@ -315,10 +348,13 @@ export default class TrackService {
 	async getTracklist(
 		where: ReleaseQueryParameters.WhereInput,
 		pagination?: PaginationParameters,
+		exclusiveOnly?: boolean,
 		include?: SongQueryParameters.RelationInclude,
 	) {
 		const tracks = await this.prismaService.track.findMany({
-			where: TrackService.formatManyWhereInput({ release: where }),
+			where: TrackService.formatManyWhereInput(
+				exclusiveOnly ? { exclusiveOn: where } : { release: where },
+			),
 			orderBy: [
 				{ trackIndex: "asc" },
 				{ discIndex: { sort: "asc", nulls: "last" } },

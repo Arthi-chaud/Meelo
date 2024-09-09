@@ -68,6 +68,7 @@ namespace TrackQueryParameters {
 				artist: ArtistQueryParameters.WhereInput;
 				album: AlbumQueryParameters.WhereInput;
 				release: ReleaseQueryParameters.WhereInput;
+				exclusiveOn: ReleaseQueryParameters.WhereInput;
 			}>
 		>
 	>;
