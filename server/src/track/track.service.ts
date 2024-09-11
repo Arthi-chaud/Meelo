@@ -191,6 +191,7 @@ export default class TrackService {
 			queryParameters = deepmerge<Prisma.TrackWhereInput>(
 				queryParameters,
 				{
+					type: "Audio",
 					song: {
 						group: {
 							versions: {
@@ -202,7 +203,9 @@ export default class TrackService {
 												OR: [
 													{
 														album: {
-															type: "Single",
+															type: {
+																not: "StudioRecording",
+															},
 														},
 													},
 													ReleaseService.formatWhereInput(
