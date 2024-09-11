@@ -24,7 +24,7 @@ import {
 	useState,
 } from "react";
 import { TranslationKey } from "../i18n/i18n";
-import { useKey } from "react-use";
+import { useKey as _useKey } from "react-use";
 import { Handler } from "react-use/lib/useKey";
 import { useRouter } from "next/router";
 
@@ -62,6 +62,21 @@ const KeyboardBindings = createContext<BindingsState & KeyboardBindingsActions>(
 		removeBinding: () => {},
 	},
 );
+
+const useKey = (...p: Parameters<typeof _useKey>) => {
+	return _useKey(
+		p[0],
+		(e) => {
+			const tagName = document.activeElement?.tagName.toLowerCase();
+			if (tagName == "input" || tagName == "textarea") {
+				return;
+			}
+			p[1]?.(e);
+		},
+		p[2],
+		p[3],
+	);
+};
 
 export const KeyboardBindingsProvider = (props: {
 	children: JSX.Element[];
@@ -130,12 +145,7 @@ export const useKeyboardBinding = (
 
 	useKey(
 		bindingKeyToUseKeyParam(binding.key),
-		(e) => {
-			if (document.activeElement?.tagName.toLowerCase() == "input") {
-				return;
-			}
-			binding.handler(e);
-		},
+		(e) => binding.handler(e),
 		{},
 		[...deps],
 	);
