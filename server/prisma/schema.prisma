@@ -573,6 +573,8 @@ enum IllustrationType {
     Avatar
     /// Ex: Thumbnail of a video
     Thumbnail
+    /// Ex: Icon of a provider
+    Icon
 }
 
 model Illustration {

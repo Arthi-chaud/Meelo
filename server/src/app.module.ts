@@ -47,6 +47,7 @@ import { SearchModule } from "./search/search.module";
 import { RegistrationModule } from "./registration/registration.module";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { HousekeepingModule } from "./housekeeping/housekeeping.module";
+import { ExternalMetadataModule } from "./external-metadata/external-metadata.module";
 import ParserModule from "./parser/parser.module";
 
 @Module({
@@ -88,6 +89,7 @@ import ParserModule from "./parser/parser.module";
 		RegistrationModule,
 		ParserModule,
 		HousekeepingModule,
+		ExternalMetadataModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,
