@@ -18,9 +18,12 @@
 
 import {
 	AlreadyExistsException,
+	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
 import Slug from "src/slug/slug";
+import ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
+import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 
 export class ProviderAlreadyExistsException extends AlreadyExistsException {
 	constructor(providerSlug: Slug) {
@@ -35,5 +38,29 @@ export class ProviderNotFoundException extends NotFoundException {
 				? `Provider with id ${providerSlugOrId} does not exist`
 				: `Provider '${providerSlugOrId.toString()}' not found`,
 		);
+	}
+}
+
+export class ExternalMetadataNotFoundException extends NotFoundException {
+	constructor(whereInput: ExternalMetadataQueryParameters.WhereInput) {
+		super("External Metadata entry not found");
+	}
+}
+
+export class MissingExternalMetadataResourceIdException extends InvalidRequestException {
+	constructor(data: CreateExternalMetadataDto) {
+		super("Missing Album, Artist, Song or Release ID");
+	}
+}
+
+export class ExternalMetadataResourceNotFoundException extends NotFoundException {
+	constructor(data: CreateExternalMetadataDto) {
+		super("Album, Artist, Song or Release not found");
+	}
+}
+
+export class ExternalMetadataEntryExistsException extends AlreadyExistsException {
+	constructor(data: CreateExternalMetadataDto) {
+		super(`External Metadata entry already exists for this resource`);
 	}
 }

@@ -17,9 +17,115 @@
  */
 
 import { Injectable } from "@nestjs/common";
+import ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
+import PrismaService from "src/prisma/prisma.service";
+import { Prisma } from "@prisma/client";
+import { PrismaError } from "prisma-error-enum";
+import {
+	ExternalMetadataEntryExistsException,
+	ExternalMetadataNotFoundException,
+	ExternalMetadataResourceNotFoundException,
+	MissingExternalMetadataResourceIdException,
+} from "./external-metadata.exceptions";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { ExternalMetadataResponse } from "./models/external-metadata.response";
+import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import {
+	ExternalMetadata,
+	ExternalMetadataSource,
+	Provider,
+} from "src/prisma/models";
+import ProviderService from "./provider.service";
 
 @Injectable()
 export default class ExternalMetadataService {
-	// Save ExternalMetadata
-	// Get External Metadata for a resource
+	constructor(
+		private prismaService: PrismaService,
+		protected providerService: ProviderService,
+	) {}
+
+	async saveMetadata(data: CreateExternalMetadataDto) {
+		if (
+			!data.albumId &&
+			!data.artistId &&
+			!data.songId &&
+			!data.releaseId
+		) {
+			throw new MissingExternalMetadataResourceIdException(data);
+		}
+		return this.prismaService.externalMetadata
+			.create({
+				data: {
+					...data,
+					sources: {
+						createMany: {
+							data: data.sources.map((source) => ({
+								url: source.url,
+								providerId: source.providerId,
+							})),
+						},
+					},
+				},
+				include: { sources: { include: { provider: true } } },
+			})
+			.catch(async (error) => {
+				if (error.code == PrismaError.RecordsNotFound) {
+					await Promise.all(
+						data.sources.map((s) =>
+							this.providerService.get({ id: s.providerId }),
+						),
+					);
+					throw new ExternalMetadataResourceNotFoundException(data);
+				}
+				if (error.code == PrismaError.UniqueConstraintViolation) {
+					throw new ExternalMetadataEntryExistsException(data);
+				}
+				throw new UnhandledORMErrorException(error, data);
+			});
+	}
+
+	async get(
+		where: ExternalMetadataQueryParameters.WhereInput,
+	): Promise<ExternalMetadataResponse> {
+		return this.prismaService.externalMetadata
+			.findFirstOrThrow({
+				where: where,
+				include: {
+					sources: {
+						include: {
+							provider: true,
+						},
+					},
+				},
+			})
+			.then((entry) => this.formatResponse(entry))
+			.catch((error) => {
+				if (
+					error instanceof Prisma.PrismaClientKnownRequestError &&
+					error.code == PrismaError.RecordsNotFound
+				) {
+					throw new ExternalMetadataNotFoundException(where);
+				}
+				throw new UnhandledORMErrorException(error, where);
+			});
+	}
+
+	private formatResponse(
+		entry: ExternalMetadata & {
+			sources: (ExternalMetadataSource & { provider: Provider })[];
+		},
+	) {
+		return {
+			description: entry.description,
+			rating: entry.rating,
+			sources: entry.sources.map((source) => ({
+				url: source.url,
+				providerName: source.provider.name,
+				providerId: source.provider.id,
+				providerIcon: source.provider.illustrationId
+					? `/illustrations/${source.provider.illustrationId}`
+					: null,
+			})),
+		};
+	}
 }

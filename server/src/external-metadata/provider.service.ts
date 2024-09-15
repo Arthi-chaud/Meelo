@@ -67,11 +67,11 @@ export default class ProviderService {
 					error instanceof Prisma.PrismaClientKnownRequestError &&
 					error.code == PrismaError.RecordsNotFound
 				) {
-					return new ProviderNotFoundException(
+					throw new ProviderNotFoundException(
 						where.id ?? where.slug!,
 					);
 				}
-				return new UnhandledORMErrorException(error, where);
+				throw new UnhandledORMErrorException(error, where);
 			});
 	}
 }
