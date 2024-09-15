@@ -32,11 +32,9 @@ import PrismaModule from "./prisma/prisma.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
 import GenreModule from "./genre/genre.module";
 import AppController from "./app.controller";
-import TasksModule from "./tasks/tasks.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import AuthenticationModule from "./authentication/authentication.module";
 import UserModule from "./user/user.module";
-import ProvidersModule from "./providers/providers.module";
 import LoggerModule from "./logger/logger.module";
 import * as Plugins from "./app.plugins";
 import VideoModule from "./video/video.module";
@@ -77,11 +75,9 @@ import ParserModule from "./parser/parser.module";
 		FileManagerModule,
 		GenreModule,
 		LyricsModule,
-		TasksModule,
 		AuthenticationModule,
 		UserModule,
 		LoggerModule,
-		ProvidersModule,
 		PlaylistModule,
 		VideoModule,
 		StreamModule,

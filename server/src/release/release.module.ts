@@ -26,12 +26,10 @@ import ReleaseController from "./release.controller";
 import ReleaseService from "./release.service";
 import { ReleaseResponseBuilder } from "./models/release.response";
 import ArtistModule from "src/artist/artist.module";
-import ProvidersModule from "src/providers/providers.module";
 
 @Module({
 	imports: [
 		PrismaModule,
-		forwardRef(() => ProvidersModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),

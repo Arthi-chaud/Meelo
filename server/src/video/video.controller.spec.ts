@@ -11,7 +11,6 @@ import {
 	expectedSongResponse,
 	expectedTrackResponse,
 } from "test/expected-responses";
-import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import VideoModule from "./video.module";
 
@@ -20,7 +19,6 @@ jest.setTimeout(60000);
 describe("Song Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let providerService: ProviderService;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -32,10 +30,8 @@ describe("Song Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
-		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
-		await providerService.onModuleInit();
 	});
 
 	afterAll(async () => {

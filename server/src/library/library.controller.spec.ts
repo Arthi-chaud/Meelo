@@ -20,7 +20,6 @@ import TrackModule from "src/track/track.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import TasksModule from "src/tasks/tasks.module";
 import SetupApp from "test/setup-app";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import { RegistrationModule } from "src/registration/registration.module";
@@ -50,7 +49,6 @@ describe("Library Controller", () => {
 				TrackModule,
 				GenreModule,
 				LyricsModule,
-				TasksModule,
 			],
 			providers: [LibraryController, LibraryService, PrismaService],
 		})

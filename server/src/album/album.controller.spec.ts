@@ -18,14 +18,11 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
-import AlbumService from "./album.service";
 import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
 } from "test/expected-responses";
-import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
-import ProvidersModule from "src/providers/providers.module";
 import { IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
@@ -33,7 +30,6 @@ jest.setTimeout(60000);
 describe("Album Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let providerService: ProviderService;
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
@@ -48,7 +44,6 @@ describe("Album Controller", () => {
 				IllustrationModule,
 				GenreModule,
 				FileModule,
-				ProvidersModule,
 			],
 			providers: [ArtistService, ReleaseService],
 		})
@@ -58,9 +53,7 @@ describe("Album Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
-		await providerService.onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -320,43 +313,6 @@ describe("Album Controller", () => {
 					expect(res.body).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumB1),
 						artist: expectedArtistResponse(dummyRepository.artistB),
-					});
-				});
-		});
-		it("should return album w/ external ID", async () => {
-			const provider = await dummyRepository.provider.findFirstOrThrow();
-			await dummyRepository.albumExternalId.create({
-				data: {
-					albumId: dummyRepository.albumA1.id,
-					providerId: provider.id,
-					description: "Album blah blah blah",
-					value: "1234",
-				},
-			});
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}?with=externalIds`)
-				.expect(200)
-				.expect((res) => {
-					const album: Album = res.body;
-					expect(album).toStrictEqual({
-						...expectedAlbumResponse(dummyRepository.albumA1),
-						externalIds: [
-							{
-								provider: {
-									name: provider.name,
-									homepage: providerService
-										.getProviderById(provider.id)
-										.getProviderHomepage(),
-									icon: `/illustrations/providers/${provider.name}/icon`,
-								},
-								description: "Album blah blah blah",
-								value: "1234",
-								rating: null,
-								url: providerService
-									.getProviderById(provider.id)
-									.getAlbumURL("1234"),
-							},
-						],
 					});
 				});
 		});

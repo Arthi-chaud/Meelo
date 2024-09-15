@@ -11,16 +11,12 @@ import IllustrationService from "src/illustration/illustration.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
-import ProvidersModule from "src/providers/providers.module";
 import { RegistrationService } from "./registration.service";
-import IllustrationRegistrationDto from "src/illustration/models/illustration-registration.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
 
 jest.setTimeout(120000);
 
 describe("Registration Service", () => {
 	let registrationService: RegistrationService;
-	const baseMetadataFolder = "test/assets/metadata";
 	let dummyRepository: TestPrismaService;
 
 	let module: TestingModule;
@@ -39,7 +35,6 @@ describe("Registration Service", () => {
 				ArtistModule,
 				ParserModule,
 				SettingsModule,
-				ProvidersModule,
 			],
 		})
 			.overrideProvider(PrismaService)

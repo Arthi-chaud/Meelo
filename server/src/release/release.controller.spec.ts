@@ -27,8 +27,6 @@ import {
 	expectedSongResponse,
 	expectedArtistResponse,
 } from "test/expected-responses";
-import ProvidersModule from "src/providers/providers.module";
-import ProviderService from "src/providers/provider.service";
 import { IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
@@ -51,7 +49,6 @@ describe("Release Controller", () => {
 				FileModule,
 				ParserModule,
 				GenreModule,
-				ProvidersModule,
 			],
 			providers: [
 				ReleaseService,
@@ -66,7 +63,6 @@ describe("Release Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		await module.get(ProviderService).onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -178,42 +174,6 @@ describe("Release Controller", () => {
 					expect(release).toStrictEqual(
 						expectedReleaseResponse(dummyRepository.releaseA1_1),
 					);
-				});
-		});
-
-		it("should return the release w/ discogs ID", async () => {
-			await module.get(PrismaService).releaseExternalId.create({
-				data: {
-					provider: { connect: { name: "discogs" } },
-					value: "1234567",
-					description: "ABCDE",
-					release: {
-						connect: { id: dummyRepository.releaseA1_1.id },
-					},
-				},
-			});
-			return request(app.getHttpServer())
-				.get(
-					`/releases/${dummyRepository.releaseA1_1.id}?with=externalIds`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const release: Release = res.body;
-					expect(release).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						externalIds: [
-							{
-								provider: {
-									name: "discogs",
-									homepage: "https://www.discogs.com",
-									icon: "/illustrations/providers/discogs/icon",
-								},
-								description: "ABCDE",
-								value: "1234567",
-								url: "https://www.discogs.com/release/1234567",
-							},
-						],
-					});
 				});
 		});
 
