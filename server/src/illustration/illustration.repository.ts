@@ -37,6 +37,7 @@ import { IllustrationNotFoundException } from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
 import IllustrationStats from "./models/illustration-stats";
 import ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
+import ProviderService from "src/external-metadata/provider.service";
 
 /**
  * This service handles the paths to illustrations files and the related tables in the DB
@@ -58,6 +59,7 @@ export default class IllustrationRepository {
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 		private settingsService: SettingsService,
+		private providerService: ProviderService,
 	) {
 		this.baseIllustrationFolderPath = join(
 			this.settingsService.settingsValues.meeloFolder!,
@@ -208,13 +210,13 @@ export default class IllustrationRepository {
 		buffer: Buffer,
 		where: ProviderQueryParameters.WhereInput,
 	): Promise<Illustration> {
-		const provider = await this.artistService.get(where);
+		const provider = await this.providerService.get(where);
 		if (provider.illustrationId !== null) {
 			await this.deleteIllustration(provider.illustrationId);
 		}
 		const newIllustration = await this.saveIllustration(
 			buffer,
-			IllustrationType.Avatar,
+			IllustrationType.Icon,
 		);
 
 		await this.prismaService.provider.update({

@@ -17,6 +17,12 @@
  */
 
 import { PickType } from "@nestjs/swagger";
+import IllustrationRegistrationDto from "src/illustration/models/illustration-registration.dto";
 import { CreateProvider } from "src/prisma/models";
 
 export class CreateProviderDTO extends PickType(CreateProvider, ["name"]) {}
+
+export class ProviderIconRegistrationDto extends PickType(
+	IllustrationRegistrationDto,
+	["file"],
+) {}

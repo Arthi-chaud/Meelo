@@ -33,6 +33,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import ParserModule from "src/parser/parser.module";
 import { HttpModule } from "@nestjs/axios";
 import { RegistrationModule } from "src/registration/registration.module";
+import { ExternalMetadataModule } from "src/external-metadata/external-metadata.module";
 
 @Module({
 	imports: [
@@ -48,6 +49,7 @@ import { RegistrationModule } from "src/registration/registration.module";
 		forwardRef(() => PlaylistModule),
 		forwardRef(() => RegistrationModule),
 		SettingsModule,
+		forwardRef(() => ExternalMetadataModule),
 		forwardRef(() => ParserModule),
 	],
 	controllers: [IllustrationController],

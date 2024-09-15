@@ -16,15 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	Body,
-	Controller,
-	Injectable,
-	Post,
-	UploadedFile,
-	UseInterceptors,
-} from "@nestjs/common";
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Injectable, Post } from "@nestjs/common";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import ProviderService from "./provider.service";
 import { CreatePlaylistDTO } from "src/playlist/models/playlist.dto";
 import { Role } from "src/authentication/roles/roles.decorators";
@@ -32,7 +25,9 @@ import Roles from "src/authentication/roles/roles.enum";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import ProviderQueryParameters from "./models/provider.query-parameters";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { Illustration, Provider } from "src/prisma/models";
+import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import { ProviderIconRegistrationDto } from "./models/provider.dto";
 
 @ApiTags("External Metadata")
 @Controller("external-providers")
@@ -48,7 +43,7 @@ export default class ProviderController {
 	@ApiOperation({
 		summary: "Save a Provider",
 	})
-	async createProvider(@Body() dto: CreatePlaylistDTO) {
+	async createProvider(@Body() dto: CreatePlaylistDTO): Promise<Provider> {
 		return this.providerService.create(dto.name);
 	}
 
@@ -58,23 +53,15 @@ export default class ProviderController {
 	})
 	@Role(Roles.Admin, Roles.Microservice)
 	@ApiConsumes("multipart/form-data")
-	@ApiBody({
-		schema: {
-			type: "object",
-			properties: {
-				icon: {
-					type: "string",
-					format: "binary",
-				},
-			},
-		},
-	})
-	@UseInterceptors(FileInterceptor("icon"))
+	@FormDataRequest({ storage: MemoryStoredFile })
 	async saveProviderIcon(
 		@IdentifierParam(ProviderService)
 		where: ProviderQueryParameters.WhereInput,
-		@UploadedFile() file: Express.Multer.File,
-	) {
-		return this.illustrationRepository.saveProviderIcon(file.buffer, where);
+		@Body() dto: ProviderIconRegistrationDto,
+	): Promise<Illustration> {
+		return this.illustrationRepository.saveProviderIcon(
+			dto.file.buffer,
+			where,
+		);
 	}
 }

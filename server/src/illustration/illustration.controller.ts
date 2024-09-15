@@ -32,7 +32,6 @@ import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import IllustrationService from "./illustration.service";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
-import { parse } from "path";
 import { NoIllustrationException } from "./illustration.exceptions";
 import IllustrationRepository from "./illustration.repository";
 import { IllustrationResponse } from "./models/illustration.response";
