@@ -22,10 +22,11 @@ import ExternalMetadataService from "./external-metadata.service";
 import PrismaModule from "src/prisma/prisma.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import ProviderController from "./provider.controller";
+import ExternalMetadataController from "./external-metadata.controller";
 
 @Module({
 	imports: [PrismaModule, forwardRef(() => IllustrationModule)],
-	controllers: [ProviderController],
+	controllers: [ProviderController, ExternalMetadataController],
 	providers: [ProviderService, ExternalMetadataService],
 	exports: [ProviderService, ExternalMetadataService],
 })

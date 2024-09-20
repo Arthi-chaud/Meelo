@@ -12,7 +12,7 @@ import { createReadStream, existsSync, readFileSync, ReadStream } from "fs";
 import IllustrationService from "src/illustration/illustration.service";
 import ProviderService from "./provider.service";
 
-describe("File Controller", () => {
+describe("External Provider Controller", () => {
 	let app: INestApplication;
 
 	let dummyRepository: TestPrismaService;

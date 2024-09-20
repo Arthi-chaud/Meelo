@@ -35,19 +35,19 @@ export class CreateExternalMetadataDto extends CreateExternalMetadata {
 	@ApiProperty()
 	@IsOptional()
 	@IsNumber()
-	songId: number | null;
+	songId?: number | null;
 	@ApiProperty()
 	@IsOptional()
 	@IsNumber()
-	albumId: number | null;
+	albumId?: number | null;
 	@ApiProperty()
 	@IsOptional()
 	@IsNumber()
-	artistId: number | null;
+	artistId?: number | null;
 	@ApiProperty()
 	@IsOptional()
 	@IsNumber()
-	releaseId: number | null;
+	releaseId?: number | null;
 
 	@ApiProperty({
 		type: CreateExternalMetadataSourceDto,

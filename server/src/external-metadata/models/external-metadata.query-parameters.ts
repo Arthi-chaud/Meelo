@@ -16,15 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import SongQueryParameters from "src/song/models/song.query-params";
 import { RequireExactlyOne } from "type-fest";
 
 namespace ExternalMetadataQueryParameters {
 	export type WhereInput = RequireExactlyOne<{
 		id: number;
-		albumId: number;
-		songId: number;
-		artistId: number;
-		releaseId: number;
+		album: AlbumQueryParameters.WhereInput;
+		song: SongQueryParameters.WhereInput;
+		artist: ArtistQueryParameters.WhereInput;
+		release: ReleaseQueryParameters.WhereInput;
 	}>;
 }
 

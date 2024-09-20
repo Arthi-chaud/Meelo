@@ -36,6 +36,10 @@ import {
 	Provider,
 } from "src/prisma/models";
 import ProviderService from "./provider.service";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
+import SongService from "src/song/song.service";
+import ReleaseService from "src/release/release.service";
 
 @Injectable()
 export default class ExternalMetadataService {
@@ -46,10 +50,10 @@ export default class ExternalMetadataService {
 
 	async saveMetadata(data: CreateExternalMetadataDto) {
 		if (
-			!data.albumId &&
-			!data.artistId &&
-			!data.songId &&
-			!data.releaseId
+			data.albumId === undefined &&
+			data.artistId === undefined &&
+			data.songId === undefined &&
+			data.releaseId === undefined
 		) {
 			throw new MissingExternalMetadataResourceIdException(data);
 		}
@@ -68,6 +72,7 @@ export default class ExternalMetadataService {
 				},
 				include: { sources: { include: { provider: true } } },
 			})
+			.then((res) => this.formatResponse(res))
 			.catch(async (error) => {
 				if (error.code == PrismaError.RecordsNotFound) {
 					await Promise.all(
@@ -75,6 +80,8 @@ export default class ExternalMetadataService {
 							this.providerService.get({ id: s.providerId }),
 						),
 					);
+				}
+				if (error.code == PrismaError.ForeignConstraintViolation) {
 					throw new ExternalMetadataResourceNotFoundException(data);
 				}
 				if (error.code == PrismaError.UniqueConstraintViolation) {
@@ -89,7 +96,19 @@ export default class ExternalMetadataService {
 	): Promise<ExternalMetadataResponse> {
 		return this.prismaService.externalMetadata
 			.findFirstOrThrow({
-				where: where,
+				where: {
+					album:
+						where.album &&
+						AlbumService.formatWhereInput(where.album),
+					artist:
+						where.artist &&
+						ArtistService.formatWhereInput(where.artist),
+					song:
+						where.song && SongService.formatWhereInput(where.song),
+					release:
+						where.release &&
+						ReleaseService.formatWhereInput(where.release),
+				},
 				include: {
 					sources: {
 						include: {
