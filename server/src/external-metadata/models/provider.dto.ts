@@ -16,15 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiHideProperty } from "@nestjs/swagger";
-import BaseProviderSettings from "../models/provider.base-settings";
-import { IsDefined, IsString } from "class-validator";
-import { Exclude } from "class-transformer";
+import { PickType } from "@nestjs/swagger";
+import IllustrationRegistrationDto from "src/illustration/models/illustration-registration.dto";
+import { CreateProvider } from "src/prisma/models";
 
-export default class GeniusSettings extends BaseProviderSettings {
-	@ApiHideProperty()
-	@IsDefined()
-	@IsString()
-	@Exclude({ toPlainOnly: true })
-	apiKey: string;
-}
+export class CreateProviderDTO extends PickType(CreateProvider, ["name"]) {}
+
+export class ProviderIconRegistrationDto extends PickType(
+	IllustrationRegistrationDto,
+	["file"],
+) {}

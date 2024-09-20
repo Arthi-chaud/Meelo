@@ -16,16 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsOptional } from "class-validator";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import SongQueryParameters from "src/song/models/song.query-params";
+import { RequireExactlyOne } from "type-fest";
 
-/**
- * Base of Any external provider's settings
- */
-export default class BaseProviderSettings {
-	@ApiProperty()
-	@IsOptional()
-	@IsBoolean()
-	@ApiProperty({ type: Boolean })
-	enabled = true;
+namespace ExternalMetadataQueryParameters {
+	export type WhereInput = RequireExactlyOne<{
+		id: number;
+		album: AlbumQueryParameters.WhereInput;
+		song: SongQueryParameters.WhereInput;
+		artist: ArtistQueryParameters.WhereInput;
+		release: ReleaseQueryParameters.WhereInput;
+	}>;
 }
+
+export default ExternalMetadataQueryParameters;

@@ -16,24 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
+import Slug from "src/slug/slug";
+import { RequireExactlyOne } from "type-fest";
 
-/**
- * Response format of a Provider resource
- */
-export default class ProviderResponse {
-	@ApiProperty({
-		description: "Name of the Provider",
-	})
-	name: string;
-
-	@ApiProperty({
-		description: "Homepage of the provider",
-	})
-	homepage: string;
-
-	@ApiProperty({
-		description: "Local URL to the provider's icon",
-	})
-	icon: string;
+namespace ProviderQueryParameters {
+	/**
+	 * Query parameters to find one provider
+	 */
+	export type WhereInput = RequireExactlyOne<{
+		id: number;
+		slug: Slug;
+	}>;
 }
+
+export default ProviderQueryParameters;

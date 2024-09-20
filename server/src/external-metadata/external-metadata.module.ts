@@ -16,32 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
+import { Module, forwardRef } from "@nestjs/common";
+import ProviderService from "./provider.service";
+import ExternalMetadataService from "./external-metadata.service";
+import PrismaModule from "src/prisma/prisma.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import ProviderController from "./provider.controller";
+import ExternalMetadataController from "./external-metadata.controller";
 
-export default class TaskResponse {
-	@ApiProperty({
-		description: "Name of the task",
-	})
-	name: string;
-
-	@ApiProperty({
-		description: "Description of the task",
-	})
-	description: string;
-}
-
-export class TaskStatusResponse {
-	@ApiProperty({
-		description: "A message about the status of the task",
-	})
-	message: string;
-}
-
-export class TaskQueueStatusResponse {
-	@ApiProperty({
-		type: TaskResponse,
-		description: "Current running task",
-		nullable: true,
-	})
-	active: TaskResponse | null;
-}
+@Module({
+	imports: [PrismaModule, forwardRef(() => IllustrationModule)],
+	controllers: [ProviderController, ExternalMetadataController],
+	providers: [ProviderService, ExternalMetadataService],
+	exports: [ProviderService, ExternalMetadataService],
+})
+export class ExternalMetadataModule {}

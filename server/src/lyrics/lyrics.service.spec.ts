@@ -15,13 +15,11 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsNotFoundBySongException } from "./lyrics.exceptions";
 import { LyricsModule } from "./lyrics.module";
 import { LyricsService } from "./lyrics.service";
-import ProvidersModule from "src/providers/providers.module";
 
 describe("Lyrics Service", () => {
 	let dummyRepository: TestPrismaService;
 	let lyricsService: LyricsService;
 	let lyricsB1: Lyrics;
-	let lyricsC1: Lyrics;
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
@@ -35,7 +33,6 @@ describe("Lyrics Service", () => {
 				SettingsModule,
 				GenreModule,
 				LyricsModule,
-				ProvidersModule,
 			],
 			providers: [LyricsService],
 		})

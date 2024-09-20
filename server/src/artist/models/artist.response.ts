@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import {
 	IllustratedResponse,
@@ -24,16 +24,10 @@ import {
 } from "src/illustration/models/illustration.response";
 import { Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import ExternalIdResponse, {
-	ExternalIdResponseBuilder,
-} from "src/providers/models/external-id.response";
 
 export class ArtistResponse extends IntersectionType(
 	Artist,
 	IllustratedResponse,
-	class {
-		externalIds?: ExternalIdResponse[];
-	},
 ) {}
 
 @Injectable()
@@ -41,13 +35,6 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 	ArtistWithRelations,
 	ArtistResponse
 > {
-	constructor(
-		@Inject(forwardRef(() => ExternalIdResponseBuilder))
-		private externalIdResponseBuilder: ExternalIdResponseBuilder,
-	) {
-		super();
-	}
-
 	returnType = ArtistResponse;
 
 	async buildResponse(artist: ArtistWithRelations): Promise<ArtistResponse> {
@@ -60,13 +47,6 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 			illustration: artist.illustration
 				? IllustrationResponse.from(artist.illustration)
 				: artist.illustration,
-			externalIds: artist.externalIds
-				? await Promise.all(
-						artist.externalIds.map((id) =>
-							this.externalIdResponseBuilder.buildResponse(id),
-						),
-				  )
-				: artist.externalIds,
 		};
 	}
 }

@@ -16,17 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	AlbumExternalId,
-	ArtistExternalId,
-	ReleaseExternalId,
-	SongExternalId,
-} from "src/prisma/models";
+import { ApiProperty, PickType } from "@nestjs/swagger";
+import { ExternalMetadata } from "src/prisma/models";
 
-type ExternalId =
-	| ArtistExternalId
-	| AlbumExternalId
-	| SongExternalId
-	| ReleaseExternalId;
+export class ExternalMetadataResponse extends PickType(ExternalMetadata, [
+	"description",
+	"rating",
+]) {
+	@ApiProperty()
+	sources: ExternalMetadataSourcesResponse[];
+}
 
-export default ExternalId;
+class ExternalMetadataSourcesResponse {
+	@ApiProperty()
+	providerName: string;
+	@ApiProperty()
+	providerId: number;
+	@ApiProperty({
+		description: "URL of the source of the metadata",
+	})
+	url: string;
+	@ApiProperty()
+	providerIcon: string | null;
+}

@@ -32,11 +32,9 @@ import PrismaModule from "./prisma/prisma.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
 import GenreModule from "./genre/genre.module";
 import AppController from "./app.controller";
-import TasksModule from "./tasks/tasks.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import AuthenticationModule from "./authentication/authentication.module";
 import UserModule from "./user/user.module";
-import ProvidersModule from "./providers/providers.module";
 import LoggerModule from "./logger/logger.module";
 import * as Plugins from "./app.plugins";
 import VideoModule from "./video/video.module";
@@ -47,6 +45,7 @@ import { SearchModule } from "./search/search.module";
 import { RegistrationModule } from "./registration/registration.module";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { HousekeepingModule } from "./housekeeping/housekeeping.module";
+import { ExternalMetadataModule } from "./external-metadata/external-metadata.module";
 import ParserModule from "./parser/parser.module";
 
 @Module({
@@ -76,11 +75,9 @@ import ParserModule from "./parser/parser.module";
 		FileManagerModule,
 		GenreModule,
 		LyricsModule,
-		TasksModule,
 		AuthenticationModule,
 		UserModule,
 		LoggerModule,
-		ProvidersModule,
 		PlaylistModule,
 		VideoModule,
 		StreamModule,
@@ -88,6 +85,7 @@ import ParserModule from "./parser/parser.module";
 		RegistrationModule,
 		ParserModule,
 		HousekeepingModule,
+		ExternalMetadataModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

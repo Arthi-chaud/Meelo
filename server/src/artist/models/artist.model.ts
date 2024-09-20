@@ -16,12 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ExternalId from "src/providers/models/external-id";
-
 export type ArtistModel = {
 	id: number;
 	name: string;
 	slug: string;
 	registeredAt: Date;
-	externalIds?: ExternalId[];
 };

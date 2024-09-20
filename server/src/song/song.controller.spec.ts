@@ -14,7 +14,6 @@ import {
 	expectedTrackResponse,
 	expectedReleaseResponse,
 } from "test/expected-responses";
-import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import { IllustrationType, SongType } from "@prisma/client";
 import Slug from "src/slug/slug";
@@ -25,7 +24,6 @@ describe("Song Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let songService: SongService;
-	let providerService: ProviderService;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -38,10 +36,8 @@ describe("Song Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
-		providerService = module.get(ProviderService);
 		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
-		await providerService.onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -177,42 +173,6 @@ describe("Song Controller", () => {
 							dummyRepository.trackA1_1,
 						),
 						featuring: [],
-					});
-				});
-		});
-		it("should return song w/ external ID", async () => {
-			const provider = await dummyRepository.provider.findFirstOrThrow();
-			await dummyRepository.songExternalId.create({
-				data: {
-					songId: dummyRepository.songA1.id,
-					providerId: provider.id,
-					description: "Hey",
-					value: "1234",
-				},
-			});
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songA1.id}?with=externalIds`)
-				.expect(200)
-				.expect((res) => {
-					const song: Song = res.body;
-					expect(song).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						externalIds: [
-							{
-								provider: {
-									name: provider.name,
-									homepage: providerService
-										.getProviderById(provider.id)
-										.getProviderHomepage(),
-									icon: `/illustrations/providers/${provider.name}/icon`,
-								},
-								description: "Hey",
-								value: "1234",
-								url: providerService
-									.getProviderById(provider.id)
-									.getSongURL("1234"),
-							},
-						],
 					});
 				});
 		});
