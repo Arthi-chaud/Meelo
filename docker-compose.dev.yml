@@ -10,6 +10,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mq:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
       interval: 5s
@@ -32,9 +34,9 @@ services:
       - .env
     environment:
       - TRANSCODER_URL=http://transcoder:7666
-      - POSTGRES_HOST=db
       - MEILI_HOST=http://meilisearch:7700
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
   scanner:
     build:
       context: ./scanner
@@ -127,9 +129,21 @@ services:
       retries: 5
     env_file:
       - .env
-
+  mq:
+    image: rabbitmq:4.0-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 volumes:
   search:
   transcoder_cache:
   front_deps:
   server_deps:
+  rabbitmq_data:
