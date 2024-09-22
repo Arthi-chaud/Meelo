@@ -47,6 +47,7 @@ import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { HousekeepingModule } from "./housekeeping/housekeeping.module";
 import { ExternalMetadataModule } from "./external-metadata/external-metadata.module";
 import ParserModule from "./parser/parser.module";
+import { RabbitMQModule } from "@golevelup/nestjs-rabbitmq";
 
 @Module({
 	imports: [
@@ -61,6 +62,9 @@ import ParserModule from "./parser/parser.module";
 			isGlobal: true,
 			cleanupAfterSuccessHandle: true,
 			cleanupAfterFailedHandle: true,
+		}),
+		RabbitMQModule.forRoot(RabbitMQModule, {
+			uri: process.env.RABBITMQ_URL!,
 		}),
 		ArtistModule,
 		AlbumModule,
