@@ -11,6 +11,8 @@ services:
         condition: service_healthy
       meilisearch:
         condition: service_healthy
+      mq:
+        condition: service_healthy
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}
       - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}
@@ -19,8 +21,8 @@ services:
     environment:
       - TRANSCODER_URL=http://transcoder:7666
       - MEILI_HOST=http://meilisearch:7700
-      - POSTGRES_HOST=db
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
       interval: 5s
@@ -107,6 +109,18 @@ services:
       test: ["CMD", "wget", "--no-verbose", "--spider", "http://0.0.0.0:7700/health"]
       timeout: 5s
       retries: 5
+  mq:
+    image: rabbitmq:4.0-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
   nginx:
     restart: on-failure
     image: nginx:1.24.0-alpine
@@ -130,3 +144,4 @@ volumes:
   data:
   search:
   transcoder_cache:
+  rabbitmq_data:
