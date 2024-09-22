@@ -1,11 +1,13 @@
 package parser
 
 import (
+	"path"
 	"strings"
 	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	c "github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/kpango/glg"
 )
 
 func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, []error) {
@@ -41,5 +43,14 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		errors = append(errors, err)
 	}
 	metadata.Checksum = checksum
+	fingerprint, err := internal.GetFileAcoustID(filePath)
+	if err != nil {
+		glg.Failf("failed to compute AcoustID for '%s'", path.Base(filePath))
+		glg.Fail(err.Error())
+	} else {
+		glg.Println(fingerprint)
+		glg.Printf("Duration: %d", metadata.Duration)
+		metadata.AcoustID = fingerprint
+	}
 	return metadata, append(errors, internal.SanitizeAndValidateMetadata(&metadata)...)
 }

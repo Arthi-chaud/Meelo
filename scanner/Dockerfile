@@ -1,6 +1,6 @@
 FROM golang:1.22.6-bullseye AS builder
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN apt-get update -y; apt-get install -y ffmpeg
+RUN apt-get update -y; apt-get install -y ffmpeg libchromaprint-tools libchromaprint-dev libfftw3-dev
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
