@@ -21,7 +21,7 @@ import { Injectable } from "@nestjs/common";
 import Logger from "src/logger/logger";
 import { ExchangeName, RoutingKey } from "./events.constants";
 
-type ResourceCreationEventType = "artist";
+type ResourceCreationEventType = "artist" | "album" | "song";
 
 @Injectable()
 export class EventsService {

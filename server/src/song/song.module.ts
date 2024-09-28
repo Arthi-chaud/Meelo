@@ -28,10 +28,12 @@ import IllustrationModule from "src/illustration/illustration.module";
 import { SongResponseBuilder } from "./models/song.response";
 import ReleaseModule from "src/release/release.module";
 import ParserModule from "src/parser/parser.module";
+import { EventsModule } from "src/events/events.module";
 
 @Module({
 	imports: [
 		PrismaModule,
+		EventsModule,
 		forwardRef(() => LyricsModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),

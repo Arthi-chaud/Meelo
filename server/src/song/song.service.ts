@@ -54,6 +54,7 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { EventsService } from "src/events/events.service";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -71,6 +72,7 @@ export default class SongService extends SearchableRepositoryService {
 		private genreService: GenreService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
+		private eventService: EventsService,
 	) {
 		super(
 			"songs",
@@ -147,6 +149,11 @@ export default class SongService extends SearchableRepositoryService {
 						type: created.type,
 					},
 				]);
+				this.eventService.publishItemCreationEvent(
+					"song",
+					created.name,
+					created.id,
+				);
 				return created;
 			})
 			.catch(async (error) => {

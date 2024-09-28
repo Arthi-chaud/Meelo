@@ -49,11 +49,13 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import { AlbumModel } from "./models/album.model";
+import { EventsService } from "src/events/events.service";
 
 @Injectable()
 export default class AlbumService extends SearchableRepositoryService {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
+		private eventService: EventsService,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
@@ -138,6 +140,11 @@ export default class AlbumService extends SearchableRepositoryService {
 						type: created.type,
 					},
 				]);
+				this.eventService.publishItemCreationEvent(
+					"album",
+					created.name,
+					created.id,
+				);
 				return created;
 			})
 			.catch(async (error) => {
