@@ -27,10 +27,12 @@ import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from "./models/album.response";
 import ParserModule from "src/parser/parser.module";
+import { EventsModule } from "src/events/events.module";
 
 @Module({
 	imports: [
 		PrismaModule,
+		EventsModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => ReleaseModule),
