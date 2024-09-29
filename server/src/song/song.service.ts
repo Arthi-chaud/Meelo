@@ -50,10 +50,10 @@ import SearchableRepositoryService from "src/repository/searchable-repository.se
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
-	getRandomIds,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { shuffle } from "src/utils/shuffle";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -237,11 +237,10 @@ export default class SongService extends SearchableRepositoryService {
 		include?: I,
 	): Promise<SongWithRelations[]> {
 		if (typeof sort == "number") {
-			const randomIds = await getRandomIds(
-				"songs",
-				this.prismaService,
+			const randomIds = await this.getManyRandomIds(
+				where,
 				sort,
-				pagination ?? {},
+				pagination,
 			);
 			return this.getMany(
 				{ ...where, id: { in: randomIds } },
@@ -260,6 +259,27 @@ export default class SongService extends SearchableRepositoryService {
 		return this.prismaService.song.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.SongFindManyArgs>
 		>(args);
+	}
+
+	private async getManyRandomIds(
+		where: SongQueryParameters.ManyWhereInput,
+		shuffleSeed: number,
+		pagination?: PaginationParameters,
+	) {
+		const ids = await this.prismaService.song
+			.findMany({
+				where: this.formatManyWhereInput(where),
+				select: { id: true },
+				orderBy: { id: "asc" },
+				cursor: pagination?.afterId
+					? { id: pagination.afterId }
+					: undefined,
+			})
+			.then((items) => items.map(({ id }) => id));
+		return shuffle(shuffleSeed, ids).slice(
+			pagination?.skip ?? 0,
+			pagination?.take,
+		);
 	}
 
 	static formatManyWhereInput(where: SongQueryParameters.ManyWhereInput) {
