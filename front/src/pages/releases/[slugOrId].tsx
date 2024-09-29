@@ -644,35 +644,37 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 							release={release.data}
 						/>
-						{release.data?.album.type === "Compilation" && (
-							<>
-								<ListItemButton
-									sx={{
-										textAlign: "center",
-										justifyContent: "center",
-										width: "100%",
-										fontWeight: "bolder",
-									}}
-									onClick={() => {
-										setShowOnlyExclusive((v) => !v);
-										document
-											.getElementById(
-												parentScrollableDivId,
-											)
-											?.scrollTo({
-												top: 0,
-												behavior: "smooth",
-											});
-									}}
-								>
-									{t(
-										showOnlyExclusive
-											? "showAllTrack"
-											: "showOnlyExclusiveTracks",
-									)}
-								</ListItemButton>
-							</>
-						)}
+						{release.data?.album.type === "Compilation" &&
+							/* It does not make sense to show the button if the album is from 'Various Artists' */
+							albumArtist !== null && (
+								<>
+									<ListItemButton
+										sx={{
+											textAlign: "center",
+											justifyContent: "center",
+											width: "100%",
+											fontWeight: "bolder",
+										}}
+										onClick={() => {
+											setShowOnlyExclusive((v) => !v);
+											document
+												.getElementById(
+													parentScrollableDivId,
+												)
+												?.scrollTo({
+													top: 0,
+													behavior: "smooth",
+												});
+										}}
+									>
+										{t(
+											showOnlyExclusive
+												? "showAllTrack"
+												: "showOnlyExclusiveTracks",
+										)}
+									</ListItemButton>
+								</>
+							)}
 					</Grid>
 				</Grid>
 				<RelatedContentSection
