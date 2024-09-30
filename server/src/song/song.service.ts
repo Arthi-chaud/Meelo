@@ -39,7 +39,7 @@ import {
 import AlbumService from "src/album/album.service";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import ParserService from "src/scanner/parser.service";
+import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";

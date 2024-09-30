@@ -17,19 +17,21 @@
  */
 
 import {
+	Body,
 	Controller,
 	Delete,
 	Get,
 	Header,
 	Param,
 	ParseIntPipe,
+	Post,
 	Query,
 	Response,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import IllustrationService from "./illustration.service";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import { parse } from "path";
 import { NoIllustrationException } from "./illustration.exceptions";
 import ProviderIllustrationService from "src/providers/provider-illustration.service";
@@ -38,6 +40,10 @@ import ProvidersSettings from "src/providers/models/providers.settings";
 import { UnknownProviderError } from "src/providers/provider.exception";
 import IllustrationRepository from "./illustration.repository";
 import { IllustrationResponse } from "./models/illustration.response";
+import Roles from "src/authentication/roles/roles.enum";
+import IllustrationRegistrationDto from "./models/illustration-registration.dto";
+import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import { RegistrationService } from "src/registration/registration.service";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
 
@@ -47,6 +53,7 @@ export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
 		private illustrationRepository: IllustrationRepository,
+		private registrationService: RegistrationService,
 		private providerIllustrationService: ProviderIllustrationService,
 		private providerService: ProviderService,
 	) {}
@@ -89,6 +96,23 @@ export class IllustrationController {
 	}
 
 	@ApiOperation({
+		summary: "Register an illustration",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Post()
+	@ApiConsumes("multipart/form-data")
+	@FormDataRequest({ storage: MemoryStoredFile })
+	async registerIllustration(@Body() dto: IllustrationRegistrationDto) {
+		return this.registrationService.registerTrackIllustration(
+			{
+				id: dto.trackId,
+			},
+			dto.file.buffer,
+			dto.type,
+		);
+	}
+
+	@ApiOperation({
 		summary: "Get info about an illustration",
 	})
 	@Cached()
@@ -113,6 +137,9 @@ export class IllustrationController {
 		@Param("id", new ParseIntPipe())
 		illustrationId: number,
 	) {
+		// Note: `deleteIllustration` now fails silently to avoid crash during housekeeping
+		// This is a hot fixto have a 404 when image does not exist.
+		await this.illustrationRepository.getIllustration(illustrationId);
 		await this.illustrationRepository.deleteIllustration(illustrationId);
 	}
 

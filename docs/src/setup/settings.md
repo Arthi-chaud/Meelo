@@ -30,3 +30,5 @@ All fields are **required**
   - `useID3CompTag`: If true, use iTunes' non-standard ID3 tags for compilations.
 
 *Note*: The provided Regular Expression uses the iTunes file architecture.
+
+*Note*: Regular Expression must use the Golang Flavor.

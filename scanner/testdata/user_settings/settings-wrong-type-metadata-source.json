@@ -1,0 +1,13 @@
+{
+	"trackRegex": [
+		"regex1"
+	],
+	"metadata": {
+		"source": "lastfm",
+		"order": "only",
+		"useExternalProviderGenres": false
+	},
+	"compilations": {
+		"useID3CompTag": true
+	}
+}

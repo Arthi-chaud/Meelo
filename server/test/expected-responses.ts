@@ -1,4 +1,4 @@
-import { SongType } from "@prisma/client";
+import { File, SongType } from "@prisma/client";
 import {
 	Release,
 	Track,
@@ -11,6 +11,11 @@ import {
 export const expectedArtistResponse = (artist: Artist) => ({
 	...artist,
 	registeredAt: artist.registeredAt.toISOString(),
+});
+
+export const expectedFileResponse = (file: File) => ({
+	...file,
+	registerDate: file.registerDate.toISOString(),
 });
 
 export const expectedAlbumResponse = (album: Album) => ({

@@ -1,0 +1,155 @@
+name: "Scanner"
+on:
+  pull_request:
+    branches: [ main, scanner-microservice ]
+  push:
+    branches: [ main, scanner-microservice ]
+  release:
+    types: [ published ]
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./scanner
+
+jobs:
+  Changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      scanner: ${{ steps.filter.outputs.scanner }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            scanner:
+              - 'scanner/**'
+              - '.github/workflows/scanner.yml'
+  Build:
+    needs: changes
+    if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: ./.github/actions/cache-scanner
+      - name: Install Dependencies and Build
+        run: go build -o scanner ./app
+  Format:
+    if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: [ Build ]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: ./.github/actions/cache-scanner
+      - uses: Jerome1337/gofmt-action@v1.0.5
+        with:
+          gofmt-path: './scanner'
+          gofmt-flags: '-l'
+  Tests:
+    runs-on: ubuntu-latest
+    needs: [ Build ]
+    if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: ./.github/actions/cache-scanner
+      - run: sudo apt-get update -y && sudo apt-get install -y ffmpeg
+      - name: Install Coverage Report
+        run: go install github.com/jandelgado/gcov2lcov@latest
+      - name: Run tests
+        run: go test ./... -coverprofile=coverage.out
+      - name: Upload Unit Tests artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report-scanner
+          path: ./scanner/coverage.out
+  Analysis:
+    needs: [ Tests ]
+    name: "Static Analysis"
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Downlad Coverage artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-report-scanner
+          path: ./scanner
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ./scanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SCANNER }}
+  Dockerize:
+    if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
+    needs: [ Build ]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: ./scanner
+          push: false
+  Publish:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.scanner == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            arthichaud/meelo-scanner
+            ghcr.io/${{ github.repository }}-scanner
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3
+        with:
+          context: ./scanner
+          push: true
+          tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || 'arthichaud/meelo-scanner:edge' }}
+          labels: ${{ steps.meta.outputs.labels }}

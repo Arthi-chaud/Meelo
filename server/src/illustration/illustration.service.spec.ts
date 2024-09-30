@@ -4,7 +4,7 @@ import type { TestingModule } from "@nestjs/testing";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
@@ -23,6 +23,7 @@ describe("Illustration Service", () => {
 	let albumService: AlbumService;
 	const baseMetadataFolder = "test/assets/metadata";
 	let dummyRepository: TestPrismaService;
+	let getBlurhashComponentCountFromAspectRatio: IllustrationService["getBlurhashComponentCountFromAspectRatio"];
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -38,7 +39,7 @@ describe("Illustration Service", () => {
 				IllustrationModule,
 				PrismaModule,
 				ArtistModule,
-				ScannerModule,
+				ParserModule,
 				SettingsModule,
 				ProvidersModule,
 			],
@@ -51,6 +52,8 @@ describe("Illustration Service", () => {
 		releaseService = module.get<ReleaseService>(ReleaseService);
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
+		getBlurhashComponentCountFromAspectRatio =
+			illustrationService["getBlurhashComponentCountFromAspectRatio"];
 
 		await dummyRepository.onModuleInit();
 	});
@@ -75,7 +78,7 @@ describe("Illustration Service", () => {
 			const outPath = `${baseMetadataFolder}/illustration.jpg`;
 			it("should write data to file", async () => {
 				if (fs.existsSync(outPath)) fs.rmSync(outPath);
-				illustrationService["saveIllustration"](
+				illustrationService.saveIllustration(
 					Buffer.from("ABC"),
 					outPath,
 				);
@@ -85,7 +88,7 @@ describe("Illustration Service", () => {
 				);
 			});
 			it("should re-write data to file", async () => {
-				illustrationService["saveIllustration"](
+				illustrationService.saveIllustration(
 					Buffer.from("ABCDE"),
 					outPath,
 				);
@@ -94,6 +97,38 @@ describe("Illustration Service", () => {
 					Buffer.from("ABCDE"),
 				);
 			});
+		});
+	});
+	describe("Get Blurhash Components Count", () => {
+		it("square image", () => {
+			const [x, y] = getBlurhashComponentCountFromAspectRatio(1);
+			expect(x).toBe(4);
+			expect(y).toBe(4);
+		});
+		it("(not really) square image", () => {
+			const [x, y] = getBlurhashComponentCountFromAspectRatio(1.01);
+			expect(x).toBe(4);
+			expect(y).toBe(4);
+		});
+		it("16:9 Thumbnail", () => {
+			const [x, y] = getBlurhashComponentCountFromAspectRatio(16 / 9);
+			expect(x).toBe(4);
+			expect(y).toBe(2);
+		});
+		it("4:3 Thumbnail", () => {
+			const [x, y] = getBlurhashComponentCountFromAspectRatio(4 / 3);
+			expect(x).toBe(4);
+			expect(y).toBe(3);
+		});
+		it("DVD Artwork", () => {
+			const [x, y] = getBlurhashComponentCountFromAspectRatio(2 / 3);
+			expect(x).toBe(3);
+			expect(y).toBe(4);
+		});
+		it("2:1 Artwork", () => {
+			const [x, y] = getBlurhashComponentCountFromAspectRatio(2);
+			expect(x).toBe(4);
+			expect(y).toBe(2);
 		});
 	});
 });

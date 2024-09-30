@@ -21,4 +21,5 @@
 export enum AuthMethod {
 	Nothing,
 	JWT,
+	ApiKey,
 }

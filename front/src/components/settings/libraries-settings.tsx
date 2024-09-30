@@ -51,7 +51,6 @@ import { ComponentProps, useMemo, useState } from "react";
 import LibraryForm from "../library-form";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
 import SectionHeader from "../section-header";
-import { capitalCase } from "change-case";
 import { useTranslation } from "react-i18next";
 
 const actionButtonStyle = {
@@ -298,16 +297,9 @@ const LibrariesSettings = () => {
 					<ListItemText
 						primary={
 							tasks.data ? (
-								`${t("current")}: ${capitalCase(
-									tasks.data.active?.name ?? t("none"),
-								)}`
-							) : (
-								<Skeleton />
-							)
-						}
-						secondary={
-							tasks.data ? (
-								tasks.data.active?.description
+								`${t("current")}: ${
+									tasks.data.current_task ?? t("none")
+								}`
 							) : (
 								<Skeleton />
 							)
@@ -319,7 +311,7 @@ const LibrariesSettings = () => {
 						primary={
 							tasks.data ? (
 								`${t("pending")}: ${
-									tasks.data.pending.length || t("none")
+									tasks.data.pending_tasks.length || t("none")
 								}`
 							) : (
 								<Skeleton />
@@ -327,13 +319,9 @@ const LibrariesSettings = () => {
 						}
 					/>
 				</ListItem>
-				{tasks.data?.pending.map((task, index) => (
+				{tasks.data?.pending_tasks.map((task, index) => (
 					<ListItem key={"task-" + index}>
-						<ListItemText
-							inset
-							primary={capitalCase(task.name)}
-							secondary={task.description}
-						/>
+						<ListItemText inset primary={task} />
 					</ListItem>
 				))}
 			</List>

@@ -14,7 +14,7 @@ import SongService from "src/song/song.service";
 import AlbumService from "src/album/album.service";
 import TrackModule from "src/track/track.module";
 import ReleaseModule from "src/release/release.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -45,7 +45,7 @@ describe("Artist Controller", () => {
 				SongModule,
 				AlbumModule,
 				TrackModule,
-				ScannerModule,
+				ParserModule,
 				IllustrationModule,
 				GenreModule,
 				LyricsModule,

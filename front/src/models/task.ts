@@ -23,13 +23,15 @@ const Task = yup.object({
 	description: yup.string().required(),
 });
 
-const ActiveTask = Task.concat(
-	yup.object({
-		data: yup.mixed(),
-	}),
-);
-
 type Task = yup.InferType<typeof Task>;
-type ActiveTask = yup.InferType<typeof ActiveTask>;
 
-export { Task, ActiveTask };
+const TaskResponse = yup.object({
+	/**
+	 * Status of the task
+	 */
+	message: yup.string().required(),
+});
+
+type TaskResponse = yup.InferType<typeof TaskResponse>;
+
+export { Task, TaskResponse };

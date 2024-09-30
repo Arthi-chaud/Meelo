@@ -10,7 +10,7 @@ import { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -24,6 +24,12 @@ import {
 	expectedReleaseResponse,
 } from "test/expected-responses";
 import { IllustrationType } from "@prisma/client";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
+import { createReadStream, existsSync, rmSync } from "fs";
+import { dirname } from "path";
 
 describe("Track Controller", () => {
 	let app: INestApplication;
@@ -40,7 +46,7 @@ describe("Track Controller", () => {
 				TrackModule,
 				IllustrationModule,
 				SongModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
 				LyricsModule,
 				LibraryModule,

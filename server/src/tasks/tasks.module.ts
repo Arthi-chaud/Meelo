@@ -24,7 +24,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import ReleaseModule from "src/release/release.module";
@@ -32,22 +32,20 @@ import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import GenreModule from "src/genre/genre.module";
 import ProvidersModule from "src/providers/providers.module";
-import TaskRunner, { TaskQueue } from "./tasks.runner";
-import { BullModule } from "@nestjs/bull";
+import TaskRunner from "./tasks.runner";
 import PlaylistModule from "src/playlist/playlist.module";
+import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 
 @Module({
 	imports: [
-		BullModule.registerQueue({
-			name: TaskQueue,
-		}),
 		forwardRef(() => LibraryModule),
 		FileManagerModule,
 		forwardRef(() => FileModule),
 		forwardRef(() => TrackModule),
-		forwardRef(() => ScannerModule),
+		forwardRef(() => ParserModule),
 		LyricsModule,
 		SettingsModule,
+		HousekeepingModule,
 		forwardRef(() => ProvidersModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),

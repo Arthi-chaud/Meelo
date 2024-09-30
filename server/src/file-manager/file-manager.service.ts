@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import SettingsService from "src/settings/settings.service";
-import md5File from "md5-file";
 // eslint-disable-next-line no-restricted-imports
 import * as fs from "fs";
 import type { Library } from "src/prisma/models";
@@ -68,15 +67,6 @@ export default class FileManagerService {
 		return fs.promises
 			.readFile(filePath)
 			.then((content) => Buffer.from(content));
-	}
-
-	/**
-	 * Compute the MD5 checksum of a file
-	 * @param filePath The Full Path to a file, whose MD5 checksum will be computed
-	 * @returns the MD5 Checksum as a string
-	 */
-	async getMd5Checksum(filePath: string): Promise<string> {
-		return md5File(filePath);
 	}
 
 	/**

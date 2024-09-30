@@ -49,3 +49,9 @@ export class InsufficientPermissionsException extends UnauthorizedRequestExcepti
 		super("Admin-only action");
 	}
 }
+
+export class MissingApiKeyPermissionsException extends UnauthorizedRequestException {
+	constructor() {
+		super("API Key is either missing or invalid");
+	}
+}

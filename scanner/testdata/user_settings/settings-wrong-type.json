@@ -1,0 +1,9 @@
+{
+	"trackRegex": [
+		"regex1"
+	],
+	"compilations": {
+		"useID3CompTag": true
+	},
+	"metadata": true
+}

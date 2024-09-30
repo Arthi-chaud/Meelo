@@ -14,7 +14,7 @@ import { createTestingModule } from "test/test-module";
 import GenreModule from "./genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import SetupApp from "test/setup-app";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
@@ -35,7 +35,7 @@ describe("Genre Controller", () => {
 				GenreModule,
 				SongModule,
 				LyricsModule,
-				ScannerModule,
+				ParserModule,
 				ReleaseModule,
 			],
 			providers: [SongService, ArtistService, PrismaService],

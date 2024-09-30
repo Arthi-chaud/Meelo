@@ -1,0 +1,7 @@
+FROM golang:1.22.6-bullseye
+RUN go install github.com/bokwoon95/wgo@latest
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN apt-get update -y; apt-get install -y ffmpeg
+WORKDIR /app
+
+CMD ["wgo", "-xdir", "./app/docs", "swag", "init", "-d", "app", "-o", "./app/docs", "::", "go", "run", "./app"]
