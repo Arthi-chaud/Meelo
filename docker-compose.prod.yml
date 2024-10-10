@@ -61,6 +61,19 @@ services:
       - SSR_SERVER_URL=http://server:4000
       - PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
       - SSR_SCANNER_URL=http://scanner:8133
+  matcher:
+    image: ghcr.io/arthi-chaud/meelo-matcher:latest
+    restart: on-failure
+    depends_on:
+      server:
+        condition: service_healthy
+      mq:
+        condition: service_healthy
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - API_KEYS=${API_KEYS}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
   db:
     image: postgres:alpine3.14
     healthcheck:
