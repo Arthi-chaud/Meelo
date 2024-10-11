@@ -18,17 +18,9 @@
 
 import { Module } from "@nestjs/common";
 import { EventsService } from "./events.service";
-import { RabbitMQModule } from "@golevelup/nestjs-rabbitmq";
-import { ExchangeName, QueueName } from "./events.constants";
 
 @Module({
-	imports: [
-		RabbitMQModule.forRoot(RabbitMQModule, {
-			uri: process.env.RABBITMQ_URL!,
-			queues: [{ name: QueueName }],
-			exchanges: [{ name: ExchangeName }],
-		}),
-	],
+	imports: [],
 	providers: [EventsService],
 	exports: [EventsService],
 })
