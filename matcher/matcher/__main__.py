@@ -1,6 +1,7 @@
 import pika
 import os
 import logging
+from .models.event import Event
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
     channel.queue_declare(queue="meelo", durable=True)
 
     def callback(ch, method, properties, body):
-        logging.info(f"{body}")
+        event = Event.from_json(body)
+        logging.info(f"{event}")
 
     channel.basic_consume(queue="meelo", on_message_callback=callback)
     logging.basicConfig(level=logging.INFO)
