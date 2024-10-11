@@ -16,19 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { Injectable } from "@nestjs/common";
 import Logger from "src/logger/logger";
-import { ExchangeName, RoutingKey } from "./events.constants";
+import {
+	ClientProxy,
+	ClientProxyFactory,
+	Transport,
+} from "@nestjs/microservices";
+import { catchError } from "rxjs";
+
+const QueueName = "meelo";
 
 type ResourceCreationEventType = "artist" | "album" | "song";
 
 @Injectable()
 export class EventsService {
 	private logger: Logger = new Logger(EventsService.name);
-	constructor(private readonly amqpConnection: AmqpConnection) {}
+	private client: ClientProxy;
 
-	async publishItemCreationEvent(
+	constructor() {
+		this.client = ClientProxyFactory.create({
+			transport: Transport.RMQ,
+			options: {
+				urls: [process.env.RABBITMQ_URL!],
+				queue: QueueName,
+				queueOptions: {
+					durable: true,
+				},
+			},
+		});
+	}
+
+	publishItemCreationEvent(
 		resourceType: ResourceCreationEventType,
 		name: string,
 		id: number,
@@ -39,13 +58,14 @@ export class EventsService {
 			name,
 			id,
 		};
-		await this.amqpConnection
-			.publish(ExchangeName, RoutingKey, dto)
-			.catch((e) => {
+		this.client.emit("", dto).pipe(
+			catchError((e, rest) => {
 				this.logger.error(
 					"An error occured while publishing message to queue:",
 				);
 				this.logger.error(e);
-			});
+				return rest;
+			}),
+		);
 	}
 }

@@ -1,4 +1,3 @@
-import { AmqpConnection, RabbitMQModule } from "@golevelup/nestjs-rabbitmq";
 import { Module, type ModuleMetadata } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
@@ -7,18 +6,18 @@ import { createMock } from "@golevelup/ts-jest";
 import { EventsModule } from "src/events/events.module";
 import { EventsService } from "src/events/events.service";
 
+@Module({})
+class MockEventsService {
+	constructor() {}
+	publishItemCreationEvent(resourceType: any, name: string, id: number) {}
+}
+
 @Module({
-	imports: [RabbitMQModule.forRoot(RabbitMQModule)],
-	providers: [
-		{
-			provide: AmqpConnection,
-			useValue: createMock<AmqpConnection>(),
-		},
-		EventsService,
-	],
-	exports: [AmqpConnection, EventsService],
+	imports: [],
+	providers: [{ provide: EventsService, useClass: MockEventsService }],
+	exports: [{ provide: EventsService, useClass: MockEventsService }],
 })
-class MockEventsModule {}
+export class MockEventsModule {}
 
 export function createTestingModule(metadata: ModuleMetadata) {
 	return Test.createTestingModule({
@@ -35,14 +34,8 @@ export function createTestingModule(metadata: ModuleMetadata) {
 			}),
 			EventsModule,
 		),
-		exports: [AmqpConnection, ...(metadata.exports ?? [])],
-		providers: [
-			{
-				provide: AmqpConnection,
-				useValue: createMock<AmqpConnection>(),
-			},
-			...(metadata.providers ?? []),
-		],
+		exports: [...(metadata.exports ?? [])],
+		providers: [...(metadata.providers ?? [])],
 	})
 		.overrideModule(EventsModule)
 		.useModule(MockEventsModule);
