@@ -29,6 +29,9 @@ import { SongResponseBuilder } from "./models/song.response";
 import ReleaseModule from "src/release/release.module";
 import ProvidersModule from "src/providers/providers.module";
 import ParserModule from "src/parser/parser.module";
+import { SongGroupResponseBuilder } from "./models/song-group.response";
+import SongGroupService from "./song-group.service";
+import { SongGroupController } from "./song-group.controller";
 
 @Module({
 	imports: [
@@ -42,8 +45,18 @@ import ParserModule from "src/parser/parser.module";
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ParserModule),
 	],
-	exports: [SongService, SongResponseBuilder],
-	providers: [SongService, SongResponseBuilder],
-	controllers: [SongController],
+	exports: [
+		SongService,
+		SongGroupService,
+		SongResponseBuilder,
+		SongGroupResponseBuilder,
+	],
+	providers: [
+		SongService,
+		SongGroupService,
+		SongResponseBuilder,
+		SongGroupResponseBuilder,
+	],
+	controllers: [SongController, SongGroupController],
 })
 export default class SongModule {}

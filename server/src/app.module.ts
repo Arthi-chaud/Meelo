@@ -89,7 +89,7 @@ import ParserModule from "./parser/parser.module";
 		ParserModule,
 		HousekeepingModule,
 	],
-	controllers: [AppController],
+	controllers: [AppController, SongGroupController],
 	providers: Plugins.AppProviders,
 })
 export default class AppModule {
