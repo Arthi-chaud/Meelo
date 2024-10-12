@@ -1,0 +1,56 @@
+/*
+ * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
+ * Copyright (C) 2023
+ *
+ * Meelo is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Meelo is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { Controller, Get, Query } from "@nestjs/common";
+import SongGroupService from "./song-group.service";
+import { ApiOperation } from "@nestjs/swagger";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import SongQueryParameters from "./models/song.query-params";
+import { Selector } from "./song.controller";
+import Response, { ResponseType } from "src/response/response.decorator";
+import { SongGroupResponseBuilder } from "./models/song-group.response";
+import SongGroupQueryParameters from "./models/song-group.query-params";
+
+@Controller("song-group")
+export class SongGroupController {
+	constructor(private songGroupService: SongGroupService) {}
+	@ApiOperation({
+		summary: "Get many songs",
+	})
+	@Response({
+		handler: SongGroupResponseBuilder,
+		type: ResponseType.Page,
+	})
+	@Get()
+	async getSongs(
+		@Query() selector: Selector,
+		@Query() sort: SongGroupQueryParameters.SortingParameter,
+		@Query()
+		paginationParameters: PaginationParameters,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+	) {
+		return this.songGroupService.getMany(
+			selector,
+			sort,
+			paginationParameters,
+			include,
+		);
+	}
+}
