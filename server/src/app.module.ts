@@ -46,6 +46,7 @@ import PlaylistModule from "./playlist/playlist.module";
 import { MeiliSearchModule } from "nestjs-meilisearch";
 import { StreamModule } from "./stream/stream.module";
 import { SearchModule } from "./search/search.module";
+import { SongGroupController } from './song/song-group.controller';
 
 @Module({
 	imports: [
@@ -91,7 +92,7 @@ import { SearchModule } from "./search/search.module";
 		StreamModule,
 		SearchModule,
 	],
-	controllers: [AppController],
+	controllers: [AppController, SongGroupController],
 	providers: Plugins.AppProviders,
 })
 export default class AppModule {
