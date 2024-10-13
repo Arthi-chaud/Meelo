@@ -33,11 +33,21 @@ import PaginatedResponse from "src/pagination/models/paginated-response";
 export default class PaginatedResponseBuilderInterceptor
 	implements NestInterceptor
 {
+	constructor(private paginationIdKey: string) {}
 	intercept(context: ExecutionContext, next: CallHandler<any>) {
 		const request = context.switchToHttp().getRequest();
 
 		return next
 			.handle()
-			.pipe(map((items) => new PaginatedResponse(items, request)));
+			.pipe(
+				map(
+					(items) =>
+						new PaginatedResponse(
+							items,
+							request,
+							this.paginationIdKey,
+						),
+				),
+			);
 	}
 }

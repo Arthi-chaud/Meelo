@@ -24,6 +24,8 @@ import { SongWithRelations } from "src/prisma/models";
 export class SongGroupResponse extends SongResponse {
 	@ApiProperty()
 	versionCount: number;
+	@ApiProperty()
+	songId: number;
 }
 
 @Injectable()
@@ -34,6 +36,8 @@ export class SongGroupResponseBuilder extends SongResponseBuilder {
 		return {
 			...(await super.buildResponse(song)),
 			versionCount: song.versionCount,
+			id: song.groupId,
+			songId: song.id,
 		};
 	}
 }

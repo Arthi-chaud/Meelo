@@ -54,21 +54,36 @@ class PaginationMetadata {
 	page: number | null;
 }
 
-export default class PaginatedResponse<T extends { id: number }> {
+export default class PaginatedResponse<
+	T extends Record<PaginationKey, number>,
+	PaginationKey extends string = "id",
+> {
 	@ApiProperty()
 	metadata: PaginationMetadata;
 
 	@ApiProperty({ type: Array })
 	items: T[];
 
-	static async awaiting<P extends { id: number }>(
+	static async awaiting<
+		P extends Record<PaginationKey1, number>,
+		PaginationKey1 extends string = "id",
+	>(
 		items: Promise<P>[],
 		request: Request | any,
+		paginationIdKey?: PaginationKey1,
 	) {
-		return new PaginatedResponse<P>(await Promise.all(items), request);
+		return new PaginatedResponse<P, PaginationKey1>(
+			await Promise.all(items),
+			request,
+			paginationIdKey,
+		);
 	}
 
-	constructor(items: T[], request: Request | any) {
+	constructor(
+		items: T[],
+		request: Request | any,
+		paginationIdKey?: PaginationKey,
+	) {
 		this.items = items;
 		const route: string = request.path;
 		const itemsCount = items.length;
@@ -88,7 +103,10 @@ export default class PaginatedResponse<T extends { id: number }> {
 					itemsCount >= take
 						? this.buildUrl(route, {
 								...request.query,
-								afterId: items.at(-1)?.id ?? null,
+								afterId:
+									items.at(-1)?.[
+										(paginationIdKey ?? "id") as keyof T
+									] ?? null,
 						  })
 						: null,
 				previous: null,

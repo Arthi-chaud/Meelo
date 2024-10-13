@@ -30,6 +30,8 @@ export const expectedSongGroupResponse = (
 	versionCount: number,
 ) => ({
 	...expectedSongResponse(song),
+	id: song.groupId,
+	songId: song.id,
 	versionCount,
 });
 
