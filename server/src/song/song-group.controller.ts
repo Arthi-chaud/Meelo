@@ -33,6 +33,7 @@ class SongGroupSelector extends PickType(Selector, [
 	"library",
 	"genre",
 	"query",
+	"type",
 ]) {}
 
 @Controller("song-groups")
@@ -44,6 +45,7 @@ export class SongGroupController {
 	@Response({
 		handler: SongGroupResponseBuilder,
 		type: ResponseType.Page,
+		paginationIdKey: "groupId",
 	})
 	@Get()
 	async getSongs(
