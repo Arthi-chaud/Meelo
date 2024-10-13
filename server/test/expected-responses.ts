@@ -25,6 +25,14 @@ export const expectedSongResponse = (song: SongWithRelations) => ({
 	type: SongType.Original,
 });
 
+export const expectedSongGroupResponse = (
+	song: SongWithRelations,
+	versionCount: number,
+) => ({
+	...expectedSongResponse(song),
+	versionCount,
+});
+
 export const expectedReleaseResponse = (release: Release) => ({
 	...release,
 	registeredAt: release.registeredAt.toISOString(),
