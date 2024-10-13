@@ -40,7 +40,12 @@ export default class SongGroupService {
 					some: SongService.formatManyWhereInput(where),
 				},
 			},
-			orderBy: sort?.sortBy ? { [sort?.sortBy]: sort?.order } : undefined,
+			orderBy: sort?.sortBy
+				? ({
+						[sort.sortBy == "name" ? "slug" : sort.sortBy]:
+							sort?.order ?? "asc",
+				  } as const)
+				: undefined,
 			include: {
 				_count: { select: { versions: true } },
 				versions: {
