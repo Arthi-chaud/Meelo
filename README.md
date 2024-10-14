@@ -26,6 +26,7 @@ Meelo has all the basic features you might expect from a music player/server (pl
   - It is pretty much the same as for albums and releases
   - No duplicated songs when browsing your library!
 - Song Versions
+- Browse Songs [grouped by version](./assets/examples/song-groups.png)
 - Album and Song types
   - Finding instrumental songs or live recordings has never been this simple!
 - Filter Songs that are exclusive to an album (compilations only)
