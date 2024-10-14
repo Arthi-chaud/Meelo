@@ -66,6 +66,10 @@ import Playlist, {
 import { isSSR } from "../utils/is-ssr";
 import { TaskResponse } from "../models/task";
 import { SearchResult, SearchResultTransformer } from "../models/search";
+import {
+	SongGroupSortingKeys,
+	SongGroupWithRelations,
+} from "../models/song-group";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),
@@ -711,6 +715,37 @@ export default class API {
 					otherParameters: { ...filter },
 					validator: PaginatedResponse(
 						SongWithRelations(include ?? []),
+					),
+				}),
+		};
+	}
+
+	static getSongGroups<I extends SongInclude | never = never>(
+		filter: {
+			library?: Identifier;
+			genre?: Identifier;
+			artist?: Identifier;
+			query?: string;
+			type?: SongType;
+		},
+		sort?: SortingParameters<typeof SongGroupSortingKeys>,
+		include?: I[],
+	): InfiniteQuery<SongGroupWithRelations<I>> {
+		return {
+			key: [
+				"song-groups",
+				...API.formatObject(filter),
+				...API.formatObject(sort),
+				...API.formatIncludeKeys(include),
+			],
+			exec: (pagination) =>
+				API.fetch({
+					route: `/song-groups`,
+					errorMessage: "Songs could not be loaded",
+					parameters: { pagination: pagination, include, sort },
+					otherParameters: { ...filter },
+					validator: PaginatedResponse(
+						SongGroupWithRelations(include ?? []),
 					),
 				}),
 		};

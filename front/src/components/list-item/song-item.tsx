@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
 import { usePlayerContext } from "../../contexts/player";
+import { SongGroupWithRelations } from "../../models/song-group";
 
 type SongItemProps<
 	T extends SongWithRelations<
@@ -32,8 +33,46 @@ type SongItemProps<
 	>,
 > = {
 	song: T | undefined;
-	formatSubtitle?: (song: T) => Promise<string>;
+	subtitles?: ((
+		song: SongWithRelations<
+			"artist" | "featuring" | "master" | "illustration"
+		>,
+	) => Promise<string>)[];
 };
+
+export const SongGroupItem = <
+	T extends SongGroupWithRelations<
+		"artist" | "featuring" | "master" | "illustration"
+	>,
+>({
+	song,
+	subtitles,
+}: SongItemProps<T>) => {
+	return (
+		<SongItem
+			song={
+				song
+					? { ...song, id: song.songId, groupId: song.id }
+					: undefined
+			}
+			subtitles={[
+				...(subtitles
+					? subtitles
+					: [
+							async (
+								s: SongWithRelations<"artist" | "featuring">,
+							) => defaultSubtitle(s),
+						]),
+				...(song && (song.versionCount ?? 0) > 1
+					? [async () => `${song.versionCount} Versions`]
+					: []),
+			]}
+		/>
+	);
+};
+
+const defaultSubtitle = (s: SongWithRelations<"artist" | "featuring">) =>
+	formatArtists(s.artist, s.featuring);
 
 /**
  * Item for a list of songs
@@ -46,22 +85,28 @@ const SongItem = <
 	>,
 >({
 	song,
-	formatSubtitle,
+	subtitles,
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
 	const { playTrack } = usePlayerContext();
 	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState(
-		formatSubtitle
+		subtitles?.length
 			? ((<br />) as unknown as string)
 			: song
-				? formatArtists(song.artist, song.featuring)
+				? defaultSubtitle(song)
 				: undefined,
 	);
 
 	useEffect(() => {
-		if (formatSubtitle && song) {
-			formatSubtitle(song).then((newSub) => setSubtitle(newSub));
+		if (subtitles && song) {
+			Promise.allSettled(subtitles.map((s) => s(song))).then((r) =>
+				setSubtitle(
+					r
+						.map((s) => (s as PromiseFulfilledResult<string>).value)
+						.join(" • "),
+				),
+			);
 		}
 	}, []);
 	return (
