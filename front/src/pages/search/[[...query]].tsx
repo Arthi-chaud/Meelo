@@ -191,9 +191,10 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						) : item.song ? (
 							<SongItem
 								song={item.song}
-								formatSubtitle={async (song) =>
-									`${t("song")} • ${song.artist.name}`
-								}
+								subtitles={[
+									async (song) =>
+										`${t("song")} • ${song.artist.name}`,
+								]}
 							/>
 						) : (
 							<ArtistItem artist={item.artist} />

@@ -25,6 +25,7 @@ import Song, { SongInclude, SongRelations } from "./song";
 const SongGroup = Song.concat(
 	yup.object({
 		versionCount: yup.number().required(),
+		songId: yup.number().required(),
 	}),
 );
 
