@@ -43,6 +43,12 @@ import Fade from "../fade";
 import globalLibrary from "../../utils/global-library";
 import { useTranslation } from "react-i18next";
 
+export type Toggle = {
+	name: string;
+	label: TranslationKey;
+	defaultValue?: boolean;
+};
+
 export type OptionState<
 	SortingKeys extends readonly string[],
 	AdditionalProps extends object = object,
@@ -60,6 +66,7 @@ type ControllerProps<
 > = {
 	options?: Options;
 	actions?: Action[];
+	toggles?: Toggle[];
 	disableSorting?: true;
 	sortingKeys: SortingKeys;
 	defaultSortingKey?: SortingKeys[number];
@@ -130,6 +137,15 @@ const Controls = <
 						option.values,
 					) ?? option.values[0];
 			});
+			props.toggles?.forEach((option) => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				baseOptions[option.name] =
+					(parseQueryParam(props.router?.query[option.name], [
+						"false",
+						"true",
+					]) ?? "false") === "true";
+			});
 			return baseOptions;
 		},
 	);
@@ -148,9 +164,10 @@ const Controls = <
 		value,
 	}: {
 		name: string;
-		value: string | null;
+		value: boolean | string | null;
 	}) => {
 		setOptionState({ ...optionsState, [name]: value });
+		value = value?.toString() ?? null;
 		if (props.router) {
 			const path = props.router.asPath.split("?")[0];
 			const params = new URLSearchParams(
@@ -283,6 +300,21 @@ const Controls = <
 								/>
 							);
 						})}
+						{props.toggles?.map((toggle) => (
+							<Button
+								key={toggle.name}
+								onClick={() => {
+									updateOptionState({
+										name: toggle.name,
+										value: !optionsState[
+											toggle.name as keyof OptionState<SortingKeys>
+										],
+									});
+								}}
+							>
+								{t(toggle.label)}
+							</Button>
+						))}
 						{props.disableLayoutToggle !== true && (
 							<Tooltip title={t("changeLayout")}>
 								<Button
