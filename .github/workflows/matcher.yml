@@ -1,0 +1,116 @@
+name: "Matcher"
+on:
+  pull_request:
+    branches: [ main, v3, external-metadata ]
+  push:
+    branches: [ main, v3 ]
+  release:
+    types: [ published ]
+
+defaults:
+  run:
+    working-directory: ./matcher
+
+jobs:
+  Changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      matcher: ${{ steps.filter.outputs.matcher }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            matcher:
+              - 'matcher/**'
+              - '.github/workflows/matcher.yml'
+  Typecheck:
+    needs: changes
+    if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
+    container: node:18-alpine3.18
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-matcher
+      - uses: jakebailey/pyright-action@v2
+        with: 
+          working-directory: './matcher'
+  Lint:
+    if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
+    container: node:18-alpine3.18
+    runs-on: ubuntu-latest
+    needs: [ Typecheck ]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-matcher
+      - run: pip install ruff
+      - run: ruff check .
+  Dockerize:
+    if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
+    needs: [ Typecheck ]
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Typecheck Docker
+        uses: docker/build-push-action@v3
+        with:
+          context: ./matcher
+          push: false
+  Publish:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.matcher == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to the GitHub Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            arthichaud/meelo-matcher
+            ghcr.io/${{ github.repository }}-matcher
+      - name: Typecheck and push Docker images
+        uses: docker/build-push-action@v3
+        with:
+          context: ./matcher
+          push: true
+          tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || 'arthichaud/meelo-matcher:edge' }}
+          labels: ${{ steps.meta.outputs.labels }}
