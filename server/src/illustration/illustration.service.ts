@@ -225,11 +225,18 @@ export default class IllustrationService {
 			new Promise<string>((resolve) => {
 				const [componentX, componentY] =
 					this.getBlurhashComponentCountFromAspectRatio(aspectRatio);
+				const isHorizontal = image.getWidth() > image.getHeight();
+				const ratio = isHorizontal
+					? image.getWidth() / image.getHeight()
+					: image.getHeight() / image.getWidth();
+				const width = 50;
+				const height = isHorizontal ? width / ratio : width * ratio;
+				const smallImage = image.resize(width, height);
 				resolve(
 					Blurhash.encode(
-						Uint8ClampedArray.from(image.bitmap.data),
-						image.getWidth(),
-						image.getHeight(),
+						Uint8ClampedArray.from(smallImage.bitmap.data),
+						smallImage.getWidth(),
+						smallImage.getHeight(),
 						componentX,
 						componentY,
 					),
