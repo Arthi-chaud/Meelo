@@ -3,6 +3,7 @@ import os
 import logging
 from .models.event import Event
 from .api import API
+from .settings import Settings
 
 
 def main():
@@ -22,6 +23,7 @@ def main():
     channel.basic_consume(queue="meelo", on_message_callback=callback)
     logging.basicConfig(level=logging.INFO)
     api_client = API()
+    settings = Settings()
     if not api_client.ping():
         logging.error("Could not connect to API. Exiting...")
         exit(1)
