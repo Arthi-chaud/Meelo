@@ -53,13 +53,13 @@ class Settings:
     provider_settings: list[BaseProviderSettings]
 
     def __init__(self):
-        self.config_dir = os.environ.get("INTERNAL_CONFIG_DIR")
-        if not self.config_dir:
+        config_dir = os.environ.get("INTERNAL_CONFIG_DIR")
+        if not config_dir:
             raise Exception("Missing env variable: 'INTERNAL_CONFIG_DIR'")
-        self.config_path = os.path.normpath(f"{self.config_dir}/settings.json")
-        if not os.path.isfile(self.config_path):
+        config_path = os.path.normpath(f"{config_dir}/settings.json")
+        if not os.path.isfile(config_path):
             raise Exception("Could not find settings file")
-        with open(self.config_path) as file:
+        with open(config_path) as file:
             logging.info("Reading settings file...")
             json_data = json.loads(file.read())
             self.push_genres = bool(json_data["metadata"]["useExternalProviderGenres"])
@@ -81,7 +81,7 @@ class Settings:
                     continue
                 try:
                     self.provider_settings.append(
-                        provider_dict[key].from_dict(provider_json)  # type: ignore
+                        provider_dict[key].schema().load(provider_json)  # type: ignore
                     )
                 except jsons.UnfulfilledArgumentError as e:
                     raise Exception(

@@ -1,0 +1,9 @@
+{
+	"metadata": {
+		"useExternalProviderGenres": false
+	},
+	"providers": {
+		"genius": { "apiKey": 1234 },
+		"musicbrainz": {}
+	}
+}
