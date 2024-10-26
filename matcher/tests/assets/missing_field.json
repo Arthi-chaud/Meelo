@@ -1,0 +1,9 @@
+{
+	"metadata": {
+		"useExternalProviderGenres": false
+	},
+	"providers": {
+		"genius": {},
+		"musicbrainz": {}
+	}
+}

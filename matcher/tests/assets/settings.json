@@ -1,0 +1,19 @@
+{
+	"trackRegex": [
+		"^([\\/\\\\]+.*)*[\\/\\\\]+(?<AlbumArtist>.+)[\\/\\\\]+(?<Album>.+)(\\s+\\((?<Year>\\d{4})\\))[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\s+\\((?<Artist>.*)\\)\\..*$",
+		"^([\\/\\\\]+.*)*[\\/\\\\]+(?<AlbumArtist>.+)[\\/\\\\]+(?<Album>.+)(\\s+\\((?<Year>\\d{4})\\))[\\/\\\\]+((?<Disc>[0-9]+)-)?(?<Index>[0-9]+)\\s+(?<Track>.*)\\..*$"
+	],
+	"metadata": {
+		"source": "embedded",
+		"order": "only",
+		"useExternalProviderGenres": true
+	},
+	"providers": {
+		"genius": { "apiKey": "azerty" },
+		"musicbrainz": {}
+	},
+	"compilations": {
+		"useID3CompTag": true,
+		"artists": []
+	}
+}
