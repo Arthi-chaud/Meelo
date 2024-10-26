@@ -89,7 +89,7 @@ class Settings:
                     )
             logging.info("Settings parsed successfully")
 
-    def get_provider_setting[T](self, cl: Type[T]) -> T | None:
+    def get_provider_setting(self, cl: Type[T]) -> T | None:
         for provider_setting in self.provider_settings:
             if isinstance(provider_setting, cl):
                 return provider_setting
