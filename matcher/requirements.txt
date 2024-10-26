@@ -1,3 +1,4 @@
 pika
+dataclasses-json
 jsons
 requests

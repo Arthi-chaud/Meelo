@@ -22,13 +22,18 @@ def main():
 
     channel.basic_consume(queue="meelo", on_message_callback=callback)
     logging.basicConfig(level=logging.INFO)
-    api_client = API()
-    settings = Settings()
-    if not api_client.ping():
-        logging.error("Could not connect to API. Exiting...")
+    try:
+        api_client = API()
+        settings = Settings()
+        if not api_client.ping():
+            logging.error("Could not connect to API. Exiting...")
+            exit(1)
+        logging.info(f"{len(settings.provider_settings)} providers enabled.")
+        logging.info("Ready to match!")
+        channel.start_consuming()
+    except Exception as e:
+        logging.fatal(e)
         exit(1)
-    logging.info("Ready to match!")
-    channel.start_consuming()
 
 
 # From https://www.rabbitmq.com/tutorials/tutorial-one-python

@@ -1,17 +1,96 @@
 import logging
 import os
+from dataclasses import dataclass
+from dataclasses_json import dataclass_json, LetterCase
+import json
+from typing import Type, TypeVar
+import jsons
+
+T = TypeVar("T")
 
 
+@dataclass_json
+@dataclass
+class BaseProviderSettings:
+    pass
+
+
+@dataclass
+class MusicBrainzSettings(BaseProviderSettings):
+    pass
+
+
+@dataclass
+class WikipediaSettings(BaseProviderSettings):
+    pass
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class GeniusSettings(BaseProviderSettings):
+    api_key: str
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class DiscogsSettings(BaseProviderSettings):
+    api_key: str
+
+
+@dataclass
+class AllMusicSettings(BaseProviderSettings):
+    pass
+
+
+@dataclass
+class MetacriticSettings(BaseProviderSettings):
+    pass
+
+
+@dataclass
 class Settings:
+    push_genres: bool
+    provider_settings: list[BaseProviderSettings]
+
     def __init__(self):
         self.config_dir = os.environ.get("INTERNAL_CONFIG_DIR")
         if not self.config_dir:
-            logging.error("Missing env variable: 'INTERNAL_CONFIG_DIR'")
-            exit(1)
+            raise Exception("Missing env variable: 'INTERNAL_CONFIG_DIR'")
         self.config_path = os.path.normpath(f"{self.config_dir}/settings.json")
         if not os.path.isfile(self.config_path):
-            logging.error("Could not find settings file")
-            exit(1)
-        with open(self.config_path) as _:
+            raise Exception("Could not find settings file")
+        with open(self.config_path) as file:
             logging.info("Reading settings file...")
+            json_data = json.loads(file.read())
+            self.push_genres = bool(json_data["metadata"]["useExternalProviderGenres"])
+            self.provider_settings = []
+            for key, provider_json in json_data["providers"].items():
+                key = key.lower()
+                provider_dict: dict[str, type[BaseProviderSettings]] = {
+                    "musicbrainz": MusicBrainzSettings,
+                    "discogs": DiscogsSettings,
+                    "genius": GeniusSettings,
+                    "allmusic": AllMusicSettings,
+                    "wikipedia": WikipediaSettings,
+                    "metacritic": MetacriticSettings,
+                }
+                if key not in provider_dict:
+                    logging.warning(
+                        f"Unknown provider key in settings: '{key}'. Skipping..."
+                    )
+                    continue
+                try:
+                    self.provider_settings.append(
+                        provider_dict[key].from_dict(provider_json)  # type: ignore
+                    )
+                except jsons.UnfulfilledArgumentError as e:
+                    raise Exception(
+                        f"An error occured while reading settings for {key}: {e}"
+                    )
             logging.info("Settings parsed successfully")
+
+    def get_provider_setting[T](self, cl: Type[T]) -> T | None:
+        for provider_setting in self.provider_settings:
+            if isinstance(provider_setting, cl):
+                return provider_setting
+        return None
