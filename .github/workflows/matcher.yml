@@ -52,7 +52,7 @@ jobs:
       - name: Restore Dependencies
         uses: ./.github/actions/cache-matcher
       - run: pip install ruff
-      - run: ruff check .
+      - run: ruff check matcher
   Dockerize:
     if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
     needs: [ Typecheck ]
