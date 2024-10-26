@@ -16,7 +16,8 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(len(settings.provider_settings), 2)
         self.assertTrue(settings.push_genres)
         self.assertEqual(
-            settings.get_provider_setting(GeniusSettings).api_key, "azerty"
+            settings.get_provider_setting(GeniusSettings).api_key,  # type: ignore
+            "azerty",
         )
         self.assertIsNotNone(settings.get_provider_setting(MusicBrainzSettings))
 
