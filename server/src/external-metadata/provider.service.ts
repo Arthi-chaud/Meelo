@@ -27,8 +27,12 @@ import {
 	ProviderNotFoundException,
 } from "./external-metadata.exceptions";
 import ProviderQueryParameters from "./models/provider.query-parameters";
-import { formatIdentifierToIdOrSlug } from "src/repository/repository.utils";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 import { Provider } from "src/prisma/models";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class ProviderService {
@@ -74,5 +78,12 @@ export default class ProviderService {
 				}
 				throw new UnhandledORMErrorException(error, where);
 			});
+	}
+
+	async getMany(paginationParameters: PaginationParameters) {
+		return this.prismaService.provider.findMany({
+			orderBy: { name: "asc" },
+			...formatPaginationParameters(paginationParameters),
+		});
 	}
 }
