@@ -12,39 +12,41 @@ T = TypeVar("T")
 @dataclass_json
 @dataclass
 class BaseProviderSettings:
-    pass
+    name: str
 
 
 @dataclass
 class MusicBrainzSettings(BaseProviderSettings):
-    pass
+    name = "MusicBrainz"
 
 
 @dataclass
 class WikipediaSettings(BaseProviderSettings):
-    pass
+    name = "Wikipedia"
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class GeniusSettings(BaseProviderSettings):
     api_key: str
+    name = "Genius"
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class DiscogsSettings(BaseProviderSettings):
     api_key: str
+    name = "Discogs"
 
 
 @dataclass
 class AllMusicSettings(BaseProviderSettings):
-    pass
+    name = "AllMusic"
 
 
 @dataclass
 class MetacriticSettings(BaseProviderSettings):
-    pass
+    name = "Metacritic"
 
 
 @dataclass
@@ -79,6 +81,7 @@ class Settings:
                         f"Unknown provider key in settings: '{key}'. Skipping..."
                     )
                     continue
+                provider_json["name"] = provider_dict[key].name
                 try:
                     self.provider_settings.append(
                         provider_dict[key].schema().load(provider_json)  # type: ignore

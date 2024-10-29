@@ -1,9 +1,12 @@
+from typing import List
 import pika
 import os
 import logging
+
+from matcher.models.api.provider import Provider
 from .models.event import Event
 from .api import API
-from .settings import Settings
+from .settings import BaseProviderSettings, Settings
 
 
 def main():
@@ -26,14 +29,28 @@ def main():
         api_client = API()
         settings = Settings()
         if not api_client.ping():
-            logging.error("Could not connect to API. Exiting...")
-            exit(1)
+            raise Exception("Could not connect to API.")
         logging.info(f"{len(settings.provider_settings)} providers enabled.")
+        push_missing_providers(
+            api_client.get_providers().items, settings.provider_settings
+        )
         logging.info("Ready to match!")
         channel.start_consuming()
     except Exception as e:
         logging.fatal(e)
         exit(1)
+
+
+def push_missing_providers(
+    api_providers: List[Provider], enabled_providers: List[BaseProviderSettings]
+):
+    for enabled_provider in enabled_providers:
+        if [
+            api_prov
+            for api_prov in api_providers
+            if api_prov.name == enabled_provider.name
+        ] == []:
+            logging.warning(f"{enabled_provider.name} does not exist in API.")
 
 
 # From https://www.rabbitmq.com/tutorials/tutorial-one-python
