@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Injectable, Post } from "@nestjs/common";
+import { Body, Controller, Get, Injectable, Post, Query } from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import ProviderService from "./provider.service";
 import { CreatePlaylistDTO } from "src/playlist/models/playlist.dto";
@@ -28,6 +28,8 @@ import ProviderQueryParameters from "./models/provider.query-parameters";
 import { Illustration, Provider } from "src/prisma/models";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { ProviderIconRegistrationDto } from "./models/provider.dto";
+import Response, { ResponseType } from "src/response/response.decorator";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @ApiTags("External Metadata")
 @Controller("external-providers")
@@ -37,6 +39,22 @@ export default class ProviderController {
 		private providerService: ProviderService,
 		private illustrationRepository: IllustrationRepository,
 	) {}
+
+	@Get()
+	@Response({
+		returns: Provider,
+		type: ResponseType.Page,
+	})
+	@Role(Roles.Default, Roles.Microservice)
+	@ApiOperation({
+		summary: "Save a Provider",
+	})
+	async getProviders(
+		@Query()
+		paginationParameters: PaginationParameters,
+	) {
+		return this.providerService.getMany(paginationParameters);
+	}
 
 	@Post()
 	@Role(Roles.Admin, Roles.Microservice)
