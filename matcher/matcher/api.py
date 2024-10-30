@@ -4,6 +4,7 @@ from typing import Any
 from dataclasses_json import DataClassJsonMixin
 import requests
 
+from matcher.models.api.dto import CreateProviderDto
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
 
@@ -27,9 +28,25 @@ class API:
             raise Exception(response.content)
         return response
 
+    def _post(self, route: str, json: Any) -> requests.Response:
+        response = requests.post(
+            f"{self._url}{route}", headers={"x-api-key": self._key}, json=json
+        )
+        if response.status_code != 201:
+            logging.error("POSTting API failed: ")
+            raise Exception(response.content)
+        return response
+
     def get_providers(self) -> Page[Provider]:
         response = self._get("/external-providers").json()
         return API._to_page(response, Provider)
+
+    def post_provider(self, provider_name: str) -> Provider:
+        dto = CreateProviderDto(name=provider_name)
+        response = self._post("/external-providers", json=dto.to_json())
+        logging.error(response.json())
+        return Provider.from_json(response.json())
+        return Provider.schema().load(response.json())
 
     @staticmethod
     def _to_page[T: DataClassJsonMixin](obj: Any, t: type[T]) -> Page[T]:

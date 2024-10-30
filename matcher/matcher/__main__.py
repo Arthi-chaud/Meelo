@@ -32,7 +32,7 @@ def main():
             raise Exception("Could not connect to API.")
         logging.info(f"{len(settings.provider_settings)} providers enabled.")
         push_missing_providers(
-            api_client.get_providers().items, settings.provider_settings
+            api_client.get_providers().items, settings.provider_settings, api_client
         )
         logging.info("Ready to match!")
         channel.start_consuming()
@@ -42,15 +42,24 @@ def main():
 
 
 def push_missing_providers(
-    api_providers: List[Provider], enabled_providers: List[BaseProviderSettings]
+    api_providers: List[Provider],
+    enabled_providers: List[BaseProviderSettings],
+    api_client: API,
 ):
+    created_providers_name = []
     for enabled_provider in enabled_providers:
         if [
             api_prov
             for api_prov in api_providers
             if api_prov.name == enabled_provider.name
         ] == []:
-            logging.warning(f"{enabled_provider.name} does not exist in API.")
+            api_client.post_provider(enabled_provider.name)
+    if created_providers_name != []:
+        logging.info(
+            f"Added {len(created_providers_name)} providers: {created_providers_name}"
+        )
+    else:
+        logging.info("Providers up to date.")
 
 
 # From https://www.rabbitmq.com/tutorials/tutorial-one-python
