@@ -53,6 +53,9 @@ export default class VideoService {
 				tracks: {
 					some: {
 						type: "Video",
+						song: {
+							type: where.type,
+						},
 					},
 				},
 			},
