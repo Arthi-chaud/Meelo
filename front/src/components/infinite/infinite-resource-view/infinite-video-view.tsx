@@ -18,7 +18,7 @@
 
 import { useRouter } from "next/router";
 import { ComponentProps, useState } from "react";
-import { SongSortingKeys } from "../../../models/song";
+import { SongSortingKeys, SongType } from "../../../models/song";
 import { VideoWithRelations } from "../../../models/video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
@@ -58,21 +58,29 @@ const playVideosAction = (
 		});
 };
 
+type AdditionalProps = {
+	type?: SongType;
+	random?: number;
+};
+
 const InfiniteVideoView = <
 	T extends VideoWithRelations<"artist" | "featuring">,
 >(
 	props: InfiniteResourceViewProps<
 		T,
 		typeof SongSortingKeys,
-		{ random?: number }
+		AdditionalProps
 	> &
 		Omit<ComponentProps<typeof VideoTile>, "video">,
 ) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const [options, setOptions] =
-		useState<OptionState<typeof SongSortingKeys>>();
+		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const query = {
+		type:
+			// @ts-ignore
+			options?.type == "All" ? undefined : (options?.type as SongType),
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
@@ -112,6 +120,27 @@ const InfiniteVideoView = <
 	return (
 		<>
 			<Controls
+				options={[
+					{
+						label: (options?.type as SongType) ?? "All",
+						name: "type",
+						values: [
+							"All",
+							...SongType.filter(
+								(type) =>
+									![
+										"Unknown",
+										"Demo",
+										"Clean",
+										"Edit",
+										"Acapella",
+										"Instrumental",
+									].includes(type),
+							),
+						],
+						currentValue: options?.type,
+					},
+				]}
 				onChange={setOptions}
 				sortingKeys={SongSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
@@ -124,18 +153,7 @@ const InfiniteVideoView = <
 			<InfiniteView
 				view={options?.view ?? "grid"}
 				query={() => {
-					const { key, exec } = props.query({
-						view: options?.view ?? "grid",
-						library: options?.library ?? null,
-						sortBy:
-							options?.sortBy ??
-							props.initialSortingField ??
-							"name",
-						order:
-							options?.order ??
-							props.initialSortingOrder ??
-							"asc",
-					});
+					const { key, exec } = props.query(query);
 					return {
 						key,
 						exec: (pagination: PaginationParameters) =>
