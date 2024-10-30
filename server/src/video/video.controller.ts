@@ -47,11 +47,11 @@ export class VideoController {
 		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
 		include: SongQueryParameters.RelationInclude,
 	) {
-		return this.videoService.getVideos(
+		return this.videoService.getMany(
 			selector,
 			paginationParameters,
 			include,
-			sort,
+			selector.random ?? sort,
 		);
 	}
 }
