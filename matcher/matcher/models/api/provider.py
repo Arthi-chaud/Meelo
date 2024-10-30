@@ -9,4 +9,4 @@ class Provider(DataClassJsonMixin):
     id: int
     name: str
     slug: str
-    illustration_id: Optional[str]
+    illustration_id: Optional[int]

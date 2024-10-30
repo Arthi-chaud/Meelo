@@ -6,6 +6,7 @@ import logging
 from matcher.models.api.provider import Provider
 from .models.event import Event
 from .api import API
+from .context import Context
 from .settings import BaseProviderSettings, Settings
 
 
@@ -34,6 +35,7 @@ def main():
         push_missing_providers(
             api_client.get_providers().items, settings.provider_settings, api_client
         )
+        Context.init(api_client, settings)
         logging.info("Ready to match!")
         channel.start_consuming()
     except Exception as e:
