@@ -741,6 +741,7 @@ export default class API {
 			album?: Identifier;
 			song?: Identifier;
 			random?: number;
+			type?: SongType;
 		},
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[],
