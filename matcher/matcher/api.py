@@ -28,9 +28,16 @@ class API:
             raise Exception(response.content)
         return response
 
-    def _post(self, route: str, json: Any) -> requests.Response:
+    def _post(
+        self, route: str, json: dict = {}, file_path: str = ""
+    ) -> requests.Response:
         response = requests.post(
-            f"{self._url}{route}", headers={"x-api-key": self._key}, json=json
+            f"{self._url}{route}",
+            headers={
+                "x-api-key": self._key,
+            },
+            files={"file": open(file_path, "rb")} if len(file_path) else None,
+            json=json if len(json.keys()) else None,
         )
         if response.status_code != 201:
             logging.error("POSTting API failed: ")
@@ -43,10 +50,11 @@ class API:
 
     def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)
-        response = self._post("/external-providers", json=dto.to_json())
-        logging.error(response.json())
-        return Provider.from_json(response.json())
+        response = self._post("/external-providers", json=dto.to_dict())
         return Provider.schema().load(response.json())
+
+    def post_provider_icon(self, provider_id: int, icon_path):
+        self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
 
     @staticmethod
     def _to_page[T: DataClassJsonMixin](obj: Any, t: type[T]) -> Page[T]:
