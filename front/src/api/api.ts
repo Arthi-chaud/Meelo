@@ -740,6 +740,7 @@ export default class API {
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
+			random?: number;
 		},
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[],
