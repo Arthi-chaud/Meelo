@@ -53,7 +53,9 @@ def push_missing_providers(
             for api_prov in api_providers
             if api_prov.name == enabled_provider.name
         ] == []:
-            api_client.post_provider(enabled_provider.name)
+            res = api_client.post_provider(enabled_provider.name)
+            icon_path = f"./assets/{res.slug}/icon.png"
+            api_client.post_provider_icon(res.id, icon_path)
     if created_providers_name != []:
         logging.info(
             f"Added {len(created_providers_name)} providers: {created_providers_name}"
