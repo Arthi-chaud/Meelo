@@ -1,12 +1,14 @@
 import os
 import logging
-from typing import Any
+from typing import Any, TypeVar
 from dataclasses_json import DataClassJsonMixin
 import requests
 
 from matcher.models.api.dto import CreateProviderDto
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
+
+T = TypeVar("T", bound=DataClassJsonMixin)
 
 
 class API:
@@ -57,6 +59,6 @@ class API:
         self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
 
     @staticmethod
-    def _to_page[T: DataClassJsonMixin](obj: Any, t: type[T]) -> Page[T]:
+    def _to_page(obj: Any, t: type[T]) -> Page[T]:
         items = t.schema().load(obj["items"], many=True)
         return Page(items=items)
