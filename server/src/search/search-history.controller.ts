@@ -16,18 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, Req } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 import { SearchHistoryService } from "./search-history.service";
 import Roles from "src/authentication/roles/roles.enum";
 import { Role } from "src/authentication/roles/roles.decorators";
-import { User } from "src/prisma/models";
+import { AlbumWithRelations, Artist, Song, User } from "src/prisma/models";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { ArtistResponseBuilder } from "src/artist/models/artist.response";
+import { AlbumResponseBuilder } from "src/album/models/album.response";
+import { SongResponseBuilder } from "src/song/models/song.response";
 
 @ApiTags("Search")
 @Controller("search/history")
 export class SearchHistoryController {
-	constructor(private searchHistoryService: SearchHistoryService) {}
+	constructor(
+		private searchHistoryService: SearchHistoryService,
+		private artistResponseBuilder: ArtistResponseBuilder,
+		private albumResponseBuilder: AlbumResponseBuilder,
+		private songResponseBuilder: SongResponseBuilder,
+	) {}
+
 	@ApiOperation({
 		summary: "Save a searched item",
 	})
@@ -40,6 +50,33 @@ export class SearchHistoryController {
 		return this.searchHistoryService.createEntry(
 			dto,
 			(request.user as User).id,
+		);
+	}
+
+	@ApiOperation({
+		summary: "Get Search History",
+	})
+	@Role(Roles.User)
+	@Get()
+	async getSearchHistory(
+		@Query() pagination: PaginationParameters,
+		@Req() request: Express.Request,
+	) {
+		const history = await this.searchHistoryService.getHistory(
+			(request.user as User).id,
+			pagination,
+		);
+		return Promise.all(
+			history.map(async (item: any) => {
+				if (item["groupId"] !== undefined) {
+					return this.songResponseBuilder.buildResponse(item as Song);
+				} else if (item["masterId"] !== undefined) {
+					return this.albumResponseBuilder.buildResponse(
+						item as unknown as AlbumWithRelations,
+					);
+				}
+				return this.artistResponseBuilder.buildResponse(item as Artist);
+			}),
 		);
 	}
 }
