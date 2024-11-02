@@ -28,6 +28,7 @@ import { usePlayerContext } from "../../contexts/player";
 
 type TrackItemProps = {
 	track: TrackWithRelations<"release" | "song" | "illustration"> | undefined;
+	onClick?: () => void;
 };
 
 /**
@@ -35,7 +36,7 @@ type TrackItemProps = {
  * @param props
  * @returns
  */
-const TrackItem = ({ track }: TrackItemProps) => {
+const TrackItem = ({ track, onClick }: TrackItemProps) => {
 	const release = track?.release;
 	const { playTrack } = usePlayerContext();
 	const isMaster = track ? track.song.masterId == track.id : false;
@@ -53,7 +54,8 @@ const TrackItem = ({ track }: TrackItemProps) => {
 			onClick={
 				track &&
 				release &&
-				(() =>
+				(() => {
+					onClick?.();
 					queryClient
 						.fetchQuery(API.getSong(track.songId, ["artist"]))
 						.then((song) => {
@@ -61,7 +63,8 @@ const TrackItem = ({ track }: TrackItemProps) => {
 								artist: song.artist,
 								track,
 							});
-						}))
+						});
+				})
 			}
 			title={track?.name}
 			secondTitle={release?.name}

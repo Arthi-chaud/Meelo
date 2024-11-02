@@ -25,7 +25,7 @@ import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { usePlayerContext } from "../../contexts/player";
 import Video, { VideoWithRelations } from "../../models/video";
 
-type VideoTileProps =
+type VideoTileProps = (
 	| {
 			video: Video | undefined;
 			subtitle: "duration";
@@ -33,9 +33,14 @@ type VideoTileProps =
 	| {
 			video: VideoWithRelations<"artist"> | undefined;
 			subtitle: "artist";
-	  };
+	  }
+) & { onClick?: () => void };
 
-const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
+const VideoTile = ({
+	video,
+	subtitle: subtitleType,
+	onClick,
+}: VideoTileProps) => {
 	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
 	const { subtitle, secondaryHref } = !video
@@ -63,7 +68,8 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 			}
 			onClick={
 				video
-					? () =>
+					? () => {
+							onClick?.();
 							queryClient
 								.fetchQuery(API.getArtist(video.artistId))
 								.then((artist) =>
@@ -71,7 +77,8 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 										track: video.track,
 										artist: artist,
 									}),
-								)
+								);
+						}
 					: undefined
 			}
 			title={video?.name}

@@ -25,6 +25,7 @@ import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"album" | "illustration"> | undefined;
 	formatSubtitle?: (release: ReleaseWithRelations<"album">) => string;
+	onClick?: () => void;
 }) => {
 	const yearFormat = props.release
 		? getYear(props.release.releaseDate)?.toString() ?? ""
@@ -36,6 +37,7 @@ const ReleaseTile = (props: {
 					<ReleaseContextualMenu release={props.release} />
 				)
 			}
+			onClick={props.onClick}
 			title={props.release?.name}
 			subtitle={
 				props.release

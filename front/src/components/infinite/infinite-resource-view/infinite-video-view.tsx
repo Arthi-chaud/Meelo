@@ -170,7 +170,11 @@ const InfiniteVideoView = <
 				}}
 				renderListItem={(item) => <></>}
 				renderGridItem={(item) => (
-					<VideoTile video={item} subtitle={props.subtitle} />
+					<VideoTile
+						video={item}
+						subtitle={props.subtitle}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
 				)}
 			/>
 		</>

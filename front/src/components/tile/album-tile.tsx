@@ -25,6 +25,7 @@ import { useTranslation } from "react-i18next";
 const AlbumTile = (props: {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
 	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
+	onClick?: () => void;
 }) => {
 	const { t } = useTranslation();
 
@@ -41,6 +42,7 @@ const AlbumTile = (props: {
 						props.album?.artist?.name ??
 						t("compilation")
 			}
+			onClick={props.onClick}
 			href={props.album ? `/albums/${props.album.slug}` : undefined}
 			secondaryHref={
 				props.album

@@ -65,7 +65,11 @@ import Playlist, {
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
 import { TaskResponse } from "../models/task";
-import { SearchResult, SearchResultTransformer } from "../models/search";
+import {
+	SaveSearchItem,
+	SearchResult,
+	SearchResultTransformer,
+} from "../models/search";
 import {
 	SongGroupSortingKeys,
 	SongGroupWithRelations,
@@ -902,12 +906,40 @@ export default class API {
 			key: ["search", query],
 			exec: () =>
 				API.fetch({
-					route: `/search/${query}`,
+					route: `/search`,
 					errorMessage: "Search failed",
+					parameters: {},
+					otherParameters: { query },
+					customValidator: SearchResultTransformer,
+				}),
+		};
+	}
+
+	static getSearchHistory(): Query<SearchResult[]> {
+		return {
+			key: ["search-history-items"],
+			exec: () =>
+				API.fetch({
+					route: `/search/history`,
+					errorMessage: "Getting Search History failed",
 					parameters: {},
 					customValidator: SearchResultTransformer,
 				}),
 		};
+	}
+
+	/**
+	 * Search artists, albums and songs, all at once
+	 */
+	static saveSearchHistoryEntry(resource: SaveSearchItem): Promise<void> {
+		return API.fetch({
+			method: "POST",
+			route: `/search/history`,
+			errorMessage: "Saving Search History failed",
+			parameters: {},
+			data: resource,
+			emptyResponse: true,
+		});
 	}
 
 	/**

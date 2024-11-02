@@ -24,8 +24,10 @@ import { PlaylistIcon } from "../icons";
 
 const PlaylistTile = ({
 	playlist,
+	onClick,
 }: {
 	playlist: PlaylistWithRelations<"illustration"> | undefined;
+	onClick?: () => void;
 }) => {
 	return (
 		<Tile
@@ -34,6 +36,7 @@ const PlaylistTile = ({
 			}
 			title={playlist?.name}
 			subtitle={null}
+			onClick={onClick}
 			href={playlist ? `/playlists/${playlist.slug}` : undefined}
 			illustration={
 				<Illustration
