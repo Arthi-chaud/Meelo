@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import { SearchController } from "./search.controller";
-import { SearchService } from "./search.service";
-import ArtistModule from "src/artist/artist.module";
-import SongModule from "src/song/song.module";
-import AlbumModule from "src/album/album.module";
-import { SearchHistoryService } from "./search-history.service";
-import { SearchHistoryController } from "./search-history.controller";
-import PrismaModule from "src/prisma/prisma.module";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsOptional, IsPositive } from "class-validator";
 
-@Module({
-	controllers: [SearchController, SearchHistoryController],
-	providers: [SearchService, SearchHistoryService],
-	imports: [ArtistModule, SongModule, AlbumModule, PrismaModule],
-	exports: [SearchHistoryService, SearchService],
-})
-export class SearchModule {}
+export class CreateSearchHistoryEntry {
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
+	songId?: number;
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
+	albumId?: number;
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
+	artistId?: number;
+}

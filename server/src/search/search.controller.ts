@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SearchService } from "./search.service";
 import { ArtistResponseBuilder } from "src/artist/models/artist.response";
@@ -42,8 +42,8 @@ export class SearchController {
 			Songs come with their artist, featuring artist, illustration and master track. \
 			Albums come with their artist and illustration.",
 	})
-	@Get(":query")
-	async search(@Param("query") query: string) {
+	@Get()
+	async search(@Query("query") query: string) {
 		const items = await this.searchService.search(query);
 		return Promise.all(
 			items.map(async (item: any) => {

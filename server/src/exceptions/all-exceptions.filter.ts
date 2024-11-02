@@ -34,6 +34,10 @@ export default class AllExceptionsFilter extends BaseExceptionFilter {
 				message: "Not found.",
 			});
 		} else {
+			if (process.env.NODE_ENV == "test") {
+				// eslint-disable-next-line no-console
+				console.log(exception);
+			}
 			logger.error(exception);
 			response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
 				statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
