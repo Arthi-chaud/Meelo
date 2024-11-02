@@ -16,20 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import { SearchController } from "./search.controller";
-import { SearchService } from "./search.service";
-import ArtistModule from "src/artist/artist.module";
-import SongModule from "src/song/song.module";
-import AlbumModule from "src/album/album.module";
+import { Body, Controller, Post, Req } from "@nestjs/common";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 import { SearchHistoryService } from "./search-history.service";
-import { SearchHistoryController } from "./search-history.controller";
-import PrismaModule from "src/prisma/prisma.module";
+import Roles from "src/authentication/roles/roles.enum";
+import { Role } from "src/authentication/roles/roles.decorators";
+import { User } from "src/prisma/models";
 
-@Module({
-	controllers: [SearchController, SearchHistoryController],
-	providers: [SearchService, SearchHistoryService],
-	imports: [ArtistModule, SongModule, AlbumModule, PrismaModule],
-	exports: [SearchHistoryService, SearchService],
-})
-export class SearchModule {}
+@ApiTags("Search")
+@Controller("search/history")
+export class SearchHistoryController {
+	constructor(private searchHistoryService: SearchHistoryService) {}
+	@ApiOperation({
+		summary: "Save a searched item",
+	})
+	@Role(Roles.User)
+	@Post()
+	async createSearchHistoryEntry(
+		@Body() dto: CreateSearchHistoryEntry,
+		@Req() request: Express.Request,
+	) {
+		return this.searchHistoryService.createEntry(
+			dto,
+			(request.user as User).id,
+		);
+	}
+}
