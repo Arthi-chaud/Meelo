@@ -69,8 +69,18 @@ const InfinitePlaylistView = (
 						view: "grid",
 					})
 				}
-				renderListItem={(item) => <PlaylistItem playlist={item} />}
-				renderGridItem={(item) => <PlaylistTile playlist={item} />}
+				renderListItem={(item) => (
+					<PlaylistItem
+						playlist={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
+				renderGridItem={(item) => (
+					<PlaylistTile
+						playlist={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
 			/>
 		</>
 	);

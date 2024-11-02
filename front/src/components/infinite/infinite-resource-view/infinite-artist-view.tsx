@@ -62,8 +62,18 @@ const InfiniteArtistView = (
 							"asc",
 					})
 				}
-				renderListItem={(item) => <ArtistItem artist={item} />}
-				renderGridItem={(item) => <ArtistTile artist={item} />}
+				renderListItem={(item) => (
+					<ArtistItem
+						artist={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
+				renderGridItem={(item) => (
+					<ArtistTile
+						artist={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
 			/>
 		</>
 	);

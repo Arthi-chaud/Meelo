@@ -33,6 +33,7 @@ type SongItemProps<
 	>,
 > = {
 	song: T | undefined;
+	onClick?: () => void;
 	subtitles?: ((
 		song: SongWithRelations<
 			"artist" | "featuring" | "master" | "illustration"
@@ -86,6 +87,7 @@ const SongItem = <
 >({
 	song,
 	subtitles,
+	onClick,
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
 	const { playTrack } = usePlayerContext();
@@ -122,14 +124,16 @@ const SongItem = <
 			onClick={
 				song &&
 				artist &&
-				(() =>
+				(() => {
+					onClick?.();
 					playTrack({
 						artist,
 						track: {
 							...song.master,
 							illustration: song.illustration,
 						},
-					}))
+					});
+				})
 			}
 			secondTitle={subtitle}
 			trailing={song && <SongContextualMenu song={song} />}

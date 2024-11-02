@@ -23,6 +23,7 @@ import ArtistAvatar from "../artist-avatar";
 
 type ArtistItemProps = {
 	artist: ArtistWithRelations<"illustration"> | undefined;
+	onClick?: () => void;
 };
 
 /**
@@ -30,7 +31,7 @@ type ArtistItemProps = {
  * @param props
  * @returns
  */
-const ArtistItem = ({ artist }: ArtistItemProps) => {
+const ArtistItem = ({ artist, onClick }: ArtistItemProps) => {
 	return (
 		<ListItem
 			icon={
@@ -40,6 +41,7 @@ const ArtistItem = ({ artist }: ArtistItemProps) => {
 				/>
 			}
 			secondTitle={null}
+			onClick={onClick}
 			href={artist ? `/artists/${artist.slug}` : undefined}
 			title={artist?.name}
 			trailing={artist && <ArtistContextualMenu artist={artist} />}

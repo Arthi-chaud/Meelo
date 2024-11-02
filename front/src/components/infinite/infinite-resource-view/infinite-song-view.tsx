@@ -223,7 +223,11 @@ const InfiniteSongView = <
 						});
 					}}
 					renderListItem={(item) => (
-						<SongItem song={item} subtitles={props.subtitles} />
+						<SongItem
+							song={item}
+							subtitles={props.subtitles}
+							onClick={() => item && props.onItemClick?.(item)}
+						/>
 					)}
 					renderGridItem={() => <></>}
 				/>

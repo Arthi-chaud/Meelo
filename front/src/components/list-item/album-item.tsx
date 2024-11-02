@@ -25,6 +25,7 @@ import { useTranslation } from "react-i18next";
 type AlbumItemProps = {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
 	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
+	onClick?: () => void;
 };
 
 /**
@@ -32,7 +33,7 @@ type AlbumItemProps = {
  * @param props
  * @returns
  */
-const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
+const AlbumItem = ({ album, formatSubtitle, onClick }: AlbumItemProps) => {
 	const artist = album?.artist;
 	const { t } = useTranslation();
 
@@ -44,6 +45,7 @@ const AlbumItem = ({ album, formatSubtitle }: AlbumItemProps) => {
 					quality="low"
 				/>
 			}
+			onClick={onClick}
 			href={album ? `/albums/${album.slug}` : undefined}
 			title={album?.name}
 			secondTitle={

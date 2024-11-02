@@ -27,6 +27,9 @@ export type SearchResult = RequireExactlyOne<{
 	artist: ArtistWithRelations<"illustration">;
 }>;
 
+export type SaveSearchItem = Partial<
+	Record<"songId" | "albumId" | "artistId", number>
+>;
 export const SearchResultTransformer = (
 	results: unknown,
 ): Promise<SearchResult[]> => {

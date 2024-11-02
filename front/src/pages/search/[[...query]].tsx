@@ -30,10 +30,16 @@ import InfiniteArtistView from "../../components/infinite/infinite-resource-view
 import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
 import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteView from "../../components/infinite/infinite-view";
-import { toInfiniteQuery, transformPage } from "../../api/use-query";
+import {
+	toInfiniteQuery,
+	transformPage,
+	useQueryClient,
+} from "../../api/use-query";
 import AlbumItem from "../../components/list-item/album-item";
 import SongItem from "../../components/list-item/song-item";
 import ArtistItem from "../../components/list-item/artist-item";
+import { useMutation } from "react-query";
+import { SaveSearchItem } from "../../models/search";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -58,6 +64,11 @@ const prepareSSR = (context: NextPageContext) => {
 					]),
 				]
 			: [],
+		// TODO A type error occurs when SSR
+		// queries: [
+		// 	API.getSearchHistory(),
+		// 	...(searchQuery ? [API.searchAll(searchQuery)] : []),
+		// ],
 	};
 };
 
@@ -83,8 +94,21 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		(newTab) => buildSearchUrl(query, newTab),
 		...tabs,
 	);
+	const queryClient = useQueryClient();
 	const [inputValue, setInputValue] = useState(query);
 	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
+	const saveSearch = useMutation((dto: SaveSearchItem) => {
+		return (
+			API.saveSearchHistoryEntry(dto)
+				.then(() => {
+					queryClient.client.invalidateQueries(
+						API.getSearchHistory().key,
+					);
+				})
+				// eslint-disable-next-line no-console
+				.catch((error: Error) => console.error(error))
+		);
+	});
 	useEffect(() => {
 		if (debounceId) {
 			clearTimeout(debounceId);
@@ -100,7 +124,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					},
 				);
 				setDebounceId(undefined);
-			}, 500),
+			}, 400),
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputValue]);
@@ -160,12 +184,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 			</Tabs>
 			<Box sx={{ paddingBottom: 2 }} />
-			{query && selectedTab == "all" && (
+			{selectedTab == "all" && (
 				<InfiniteView
 					view="list"
 					query={() =>
 						transformPage(
-							toInfiniteQuery(API.searchAll(query)),
+							toInfiniteQuery(
+								query
+									? API.searchAll(query)
+									: API.getSearchHistory(),
+							),
 							(item, index) => ({
 								...item,
 								id: index,
@@ -181,6 +209,12 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					renderListItem={(item) =>
 						!item || item.album ? (
 							<AlbumItem
+								onClick={() =>
+									item &&
+									saveSearch.mutate({
+										albumId: item.album.id,
+									})
+								}
 								album={item?.album}
 								formatSubtitle={(album) =>
 									`${t("album")} • ${
@@ -190,6 +224,9 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							/>
 						) : item.song ? (
 							<SongItem
+								onClick={() =>
+									saveSearch.mutate({ songId: item.song.id })
+								}
 								song={item.song}
 								subtitles={[
 									async (song) =>
@@ -197,13 +234,23 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								]}
 							/>
 						) : (
-							<ArtistItem artist={item.artist} />
+							<ArtistItem
+								artist={item.artist}
+								onClick={() =>
+									saveSearch.mutate({
+										artistId: item.artist.id,
+									})
+								}
+							/>
 						)
 					}
 				/>
 			)}
 			{query && selectedTab == "artist" && (
 				<InfiniteArtistView
+					onItemClick={(item) =>
+						item && saveSearch.mutate({ artistId: item.id })
+					}
 					query={({ library }) =>
 						API.getArtists(
 							{
@@ -218,6 +265,9 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab == "album" && (
 				<InfiniteAlbumView
+					onItemClick={(item) =>
+						item && saveSearch.mutate({ albumId: item.id })
+					}
 					defaultAlbumType={null}
 					query={({ library, type: newType }) =>
 						API.getAlbums(
@@ -234,6 +284,9 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab == "song" && (
 				<InfiniteSongView
+					onItemClick={(item) =>
+						item && saveSearch.mutate({ songId: item.id })
+					}
 					query={({ library, type: newType }) =>
 						API.getSongs(
 							{
