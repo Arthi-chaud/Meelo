@@ -23,6 +23,7 @@ import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { SongResponseBuilder } from "src/song/models/song.response";
 import { AlbumResponseBuilder } from "src/album/models/album.response";
 import { AlbumWithRelations, Artist, Song } from "src/prisma/models";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @ApiTags("Search")
 @Controller("search")
@@ -43,7 +44,12 @@ export class SearchController {
 			Albums come with their artist and illustration.",
 	})
 	@Get()
-	async search(@Query("query") query: string) {
+	async search(@Query("query") query?: string) {
+		if (!query) {
+			throw new InvalidRequestException(
+				"Expected non-empty 'query' query parameter",
+			);
+		}
 		const items = await this.searchService.search(query);
 		return Promise.all(
 			items.map(async (item: any) => {
