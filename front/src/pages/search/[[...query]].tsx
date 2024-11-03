@@ -31,6 +31,7 @@ import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/
 import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteView from "../../components/infinite/infinite-view";
 import {
+	Query,
 	toInfiniteQuery,
 	transformPage,
 	useQueryClient,
@@ -39,7 +40,7 @@ import AlbumItem from "../../components/list-item/album-item";
 import SongItem from "../../components/list-item/song-item";
 import ArtistItem from "../../components/list-item/artist-item";
 import { useMutation } from "react-query";
-import { SaveSearchItem } from "../../models/search";
+import { SaveSearchItem, SearchResult } from "../../models/search";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -47,29 +48,40 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { searchQuery, type },
-		infiniteQueries: searchQuery
-			? [
-					API.getArtists({ query: searchQuery }, undefined, [
-						"illustration",
-					]),
-					API.getAlbums({ query: searchQuery }, undefined, [
-						"artist",
-						"illustration",
-					]),
-					API.getSongs({ query: searchQuery }, undefined, [
-						"artist",
-						"featuring",
-						"master",
-						"illustration",
-					]),
-				]
-			: [],
-		// TODO A type error occurs when SSR
-		// queries: [
-		// 	API.getSearchHistory(),
-		// 	...(searchQuery ? [API.searchAll(searchQuery)] : []),
-		// ],
+		infiniteQueries: [
+			searchResultQueryToInfinite(API.getSearchHistory()),
+			...(searchQuery
+				? [
+						API.getArtists({ query: searchQuery }, undefined, [
+							"illustration",
+						]),
+						API.getAlbums({ query: searchQuery }, undefined, [
+							"artist",
+							"illustration",
+						]),
+						API.getSongs({ query: searchQuery }, undefined, [
+							"artist",
+							"featuring",
+							"master",
+							"illustration",
+						]),
+						searchResultQueryToInfinite(API.searchAll(searchQuery)),
+					]
+				: []),
+		],
 	};
+};
+
+const searchResultQueryToInfinite = (q: Query<SearchResult[]>) => {
+	return transformPage(toInfiniteQuery(q), (item, index) => ({
+		...item,
+		id: index,
+		illustration:
+			item.song?.illustration ??
+			item.artist?.illustration ??
+			item.album?.illustration ??
+			null,
+	}));
 };
 
 const buildSearchUrl = (
@@ -101,9 +113,13 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		return (
 			API.saveSearchHistoryEntry(dto)
 				.then(() => {
-					queryClient.client.invalidateQueries(
-						API.getSearchHistory().key,
-					);
+					// Sometimes, it refreshes to fast, and shifts the history
+					// before openning a page (for artists) is done
+					setTimeout(() => {
+						queryClient.client.invalidateQueries(
+							API.getSearchHistory().key,
+						);
+					}, 500);
 				})
 				// eslint-disable-next-line no-console
 				.catch((error: Error) => console.error(error))
@@ -188,21 +204,10 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				<InfiniteView
 					view="list"
 					query={() =>
-						transformPage(
-							toInfiniteQuery(
-								query
-									? API.searchAll(query)
-									: API.getSearchHistory(),
-							),
-							(item, index) => ({
-								...item,
-								id: index,
-								illustration:
-									item.song?.illustration ??
-									item.artist?.illustration ??
-									item.album?.illustration ??
-									null,
-							}),
+						searchResultQueryToInfinite(
+							query
+								? API.searchAll(query)
+								: API.getSearchHistory(),
 						)
 					}
 					renderGridItem={(item) => <></>}
