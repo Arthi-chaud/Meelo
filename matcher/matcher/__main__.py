@@ -3,6 +3,7 @@ import os
 import logging
 
 from matcher.bootstrap import bootstrap_context
+from matcher.matcher.artist import match_artist
 
 from .models.event import Event
 
@@ -19,11 +20,19 @@ def main():
 
     def callback(ch, method, properties, body):
         event = Event.from_json(body)
-        logging.info(f"{event}")
+        # logging.info(f"Received event: {event}")
+        match event.type:
+            # case "artist":
+            #     match_artist(event.id, event.name)
+            #     pass
+            case _:
+                pass
+                # logging.warning("No handler for event " + event.type)
 
     channel.basic_consume(queue="meelo", on_message_callback=callback)
     logging.basicConfig(level=logging.INFO)
     bootstrap_context()
+    match_artist(1, "Madonna")
     logging.info("Ready to match!")
     channel.start_consuming()
 

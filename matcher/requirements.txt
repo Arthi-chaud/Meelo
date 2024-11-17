@@ -3,3 +3,5 @@ dataclasses-json
 jsons
 requests
 unittest2
+musicbrainzngs
+urllib

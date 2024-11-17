@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from .base import BaseProvider
+from .base import ArtistSearchResult, BaseProvider
 from ..settings import AllMusicSettings
 
 
@@ -7,3 +7,8 @@ from ..settings import AllMusicSettings
 class AllMusicProvider(BaseProvider):
     settings: AllMusicSettings
     pass
+
+    def get_musicbrainz_relation_key(self) -> str | None:
+        return "allmusic"
+    def search_artist(self) -> ArtistSearchResult | None:
+        pass
