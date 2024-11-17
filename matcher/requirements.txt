@@ -4,4 +4,4 @@ jsons
 requests
 unittest2
 musicbrainzngs
-urllib
+python3-discogs-client

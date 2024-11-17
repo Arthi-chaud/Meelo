@@ -27,3 +27,12 @@ class MusicBrainzProvider(BaseProvider):
 
     def get_musicbrainz_relation_key(self) -> str | None:
         return None
+    
+    def get_artist_id_from_url(self, artist_url) -> str | None:
+        return None
+
+    def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
+        return None
+
+    def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
+        return None

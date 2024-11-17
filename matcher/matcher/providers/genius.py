@@ -18,3 +18,15 @@ class GeniusProvider(BaseProvider):
     
     def is_musicbrainz_relation(self, rel: Any) -> bool | None:
         return rel['type'] == 'lyrics' and urlparse(rel['target']).netloc == "genius.com"
+    
+    def get_artist_id_from_url(self, artist_url) -> str | None:
+        return None
+
+    def get_artist(self, artist_id: str) -> Any | None:
+        return None
+
+    def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
+        return None
+
+    def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
+        return None
