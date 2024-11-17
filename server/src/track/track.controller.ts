@@ -33,7 +33,7 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IllustrationType, TrackType } from "@prisma/client";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongService from "src/song/song.service";
@@ -52,6 +52,7 @@ import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl
 import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()
@@ -181,7 +182,7 @@ export class TrackController {
 	@ApiOperation({
 		summary: "Change a track's illustration",
 	})
-	@Admin()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Post(":idOrSlug/illustration")
 	async updateTrackIllustration(
 		@Body() illustrationDto: IllustrationDownloadDto,

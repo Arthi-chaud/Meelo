@@ -41,11 +41,12 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Role } from "src/authentication/roles/roles.decorators";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
 import IllustrationService from "src/illustration/illustration.service";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()
@@ -146,7 +147,7 @@ export default class ArtistController {
 	@ApiOperation({
 		summary: "Save an illustration for an artist",
 	})
-	@Admin()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Post(":idOrSlug/illustration")
 	async updateArtistIllustration(
 		@IdentifierParam(ArtistService)
