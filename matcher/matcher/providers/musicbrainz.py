@@ -13,9 +13,6 @@ class MusicBrainzProvider(BaseProvider):
     def set_user_agent(self):
         musicbrainzngs.set_useragent("Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo")
 
-    def build_artist_url(self, artist_id: str) -> str:
-        return f"https://musicbrainz.org/artist/{artist_id}"
-
     def get_artist(self, artist_id: str) -> Any:
         self.set_user_agent()
         return musicbrainzngs.get_artist_by_id(artist_id, ['url-rels'])
@@ -30,6 +27,9 @@ class MusicBrainzProvider(BaseProvider):
     
     def get_artist_id_from_url(self, artist_url) -> str | None:
         return None
+    
+    def get_artist_url_from_id(self, artist_id: str) -> str | None:
+        return f"https://musicbrainz.org/artist/{artist_id}"
 
     def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
         return None

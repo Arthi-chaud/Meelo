@@ -28,7 +28,7 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 		mbEntry = mb_provider.search_artist(artist_name)
 		if mbEntry:
 			external_sources.append(
-				ExternalMetadataSourceDto(mb_provider.build_artist_url(mbEntry.id),
+				ExternalMetadataSourceDto(mb_provider.get_artist_url_from_id(mbEntry.id),
 				mb_provider.api_model.id))
 			for rel in mb_provider.get_artist(mbEntry.id)['artist']['url-relation-list']:
 				if rel['type'] == 'wikidata':
@@ -46,10 +46,23 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 				if not [previous_match for previous_match in external_sources if previous_match.provider_id == provider_id]:
 					external_sources.append(ExternalMetadataSourceDto(rel['target'], provider_id))
 	## TODO Resolve Ids for providers using WIKIDATA
-	## TODO Resolving Ids for providers that were not linked in MB
-	# sources_ids = [source.provider_id for source in external_sources]
-	# for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
-	# 	logging.info("Missing provider: " + provider.api_model.name)
+	
+	# Resolve by searching
+	sources_ids = [source.provider_id for source in external_sources]
+	for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
+		search_res = provider.search_artist(artist_name)
+		if not search_res:
+			continue
+		artist_url = provider.get_artist_url_from_id(str(search_res.id)),
+		if not artist_url:
+			continue
+		external_sources.append(
+			ExternalMetadataSourceDto(
+				provider.get_artist_url_from_id(search_res.id),
+				provider.api_model.id
+			)
+		)
+
 	for source in external_sources:
 		provider = get_provider_from_external_source(source)
 		if description and artist_illustration_url:
@@ -71,7 +84,7 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 		album_id=None,
 		song_id=None,
 		sources=external_sources
-		), artist_illustration_url)
+		) if len(external_sources) > 0 or description else None, artist_illustration_url) 
 
 def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
 	return [p for p in Context.get().providers if p.api_model.id == dto.provider_id][0]

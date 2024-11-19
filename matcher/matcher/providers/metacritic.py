@@ -8,12 +8,16 @@ from .base import ArtistSearchResult, BaseProvider
 class MetacriticProvider(BaseProvider):
     settings: MetacriticSettings
     pass
-    def search_artist(self) -> ArtistSearchResult | None:
+    def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         pass
     
     def get_musicbrainz_relation_key(self) -> str | None:
         return None
+    
     def get_artist_id_from_url(self, artist_url) -> str | None:
+        return None
+    
+    def get_artist_url_from_id(self, artist_id: str) -> str | None:
         return None
 
     def get_artist(self, artist_id: str) -> Any | None:

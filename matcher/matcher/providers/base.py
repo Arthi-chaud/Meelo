@@ -19,7 +19,11 @@ class BaseProvider(Protocol):
         pass
 
     @abstractmethod
-    def search_artist(self) -> ArtistSearchResult | None:
+    def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+        pass
+
+    @abstractmethod
+    def get_artist_url_from_id(self, artist_id: str) -> str | None:
         pass
 
     @abstractmethod

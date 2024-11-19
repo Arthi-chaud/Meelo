@@ -3,7 +3,7 @@ import os
 import logging
 
 from matcher.bootstrap import bootstrap_context
-from matcher.matcher.artist import match_and_post_artist
+from matcher.matcher.artist import match_artist
 
 from .models.event import Event
 
@@ -32,6 +32,7 @@ def main():
     channel.basic_consume(queue="meelo", on_message_callback=callback)
     logging.basicConfig(level=logging.INFO)
     bootstrap_context()
+    logging.info(match_artist(1, "Madonna"))
     logging.info("Ready to match!")
     channel.start_consuming()
 
