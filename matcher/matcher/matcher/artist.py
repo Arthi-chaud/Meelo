@@ -2,6 +2,8 @@ import logging
 from typing import List
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
+from matcher.providers.base import BaseProvider
+from matcher.providers.wikidata import WikidataProvider
 from ..context import Context
 from ..providers.musicbrainz import MusicBrainzProvider
 
@@ -19,35 +21,16 @@ def match_and_post_artist(artist_id: int, artist_name: str):
 
 def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto | None, str | None]:
 	context = Context.get()
-	mb_provider = context.get_provider(MusicBrainzProvider)
 	artist_illustration_url: str | None = None
-	external_sources: List[ExternalMetadataSourceDto] = []
+	(wikidata_id, external_sources)= get_sources_from_musicbrainz(artist_name)
 	description: str | None = None
-	wikidata_id: str | None = None
-	if mb_provider:
-		mbEntry = mb_provider.search_artist(artist_name)
-		if mbEntry:
-			external_sources.append(
-				ExternalMetadataSourceDto(mb_provider.get_artist_url_from_id(mbEntry.id),
-				mb_provider.api_model.id))
-			for rel in mb_provider.get_artist(mbEntry.id)['artist']['url-relation-list']:
-				if rel['type'] == 'wikidata':
-					wikidata_id = rel['target'].replace('https://www.wikidata.org/wiki/', '')
-					continue
-				providers = [
-					p for p in context.providers 
-			   		if p.get_musicbrainz_relation_key() == rel['type']
-						or p.is_musicbrainz_relation(rel)
-					]
-				if not len(providers):
-					continue
-				provider = providers[0]
-				provider_id = provider.api_model.id
-				if not [previous_match for previous_match in external_sources if previous_match.provider_id == provider_id]:
-					external_sources.append(ExternalMetadataSourceDto(rel['target'], provider_id))
-	## TODO Resolve Ids for providers using WIKIDATA
 	
-	# Resolve by searching
+	# Link using Wikidata
+	sources_ids = [source.provider_id for source in external_sources]
+	if wikidata_id:
+		external_sources= external_sources + get_sources_from_wikidata(wikidata_id, [p for p in context.providers if p.api_model.id not in sources_ids])
+	
+	#Resolve by searching
 	sources_ids = [source.provider_id for source in external_sources]
 	for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
 		search_res = provider.search_artist(artist_name)
@@ -58,7 +41,7 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 			continue
 		external_sources.append(
 			ExternalMetadataSourceDto(
-				provider.get_artist_url_from_id(search_res.id),
+				artist_url,
 				provider.api_model.id
 			)
 		)
@@ -88,3 +71,50 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 
 def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
 	return [p for p in Context.get().providers if p.api_model.id == dto.provider_id][0]
+
+def get_sources_from_musicbrainz(artist_name: str) -> tuple[str | None, List[ExternalMetadataSourceDto]]:
+	context = Context.get()
+	mb_provider = context.get_provider(MusicBrainzProvider)
+	if not mb_provider:
+		return (None, [])
+	wikidata_id: str | None = None
+	mbEntry = mb_provider.search_artist(artist_name)
+	external_sources = []
+	if not mbEntry:
+		return (None, [])
+	external_sources.append(
+		ExternalMetadataSourceDto(mb_provider.get_artist_url_from_id(mbEntry.id),
+		mb_provider.api_model.id))
+	for rel in mb_provider.get_artist(mbEntry.id)['artist']['url-relation-list']:
+		if rel['type'] == 'wikidata':
+			wikidata_id = rel['target'].replace('https://www.wikidata.org/wiki/', '')
+			continue
+		providers = [
+			p for p in context.providers 
+	   		if p.get_musicbrainz_relation_key() == rel['type']
+				or p.is_musicbrainz_relation(rel)
+			]
+		if not len(providers):
+			continue
+		provider = providers[0]
+		provider_id = provider.api_model.id
+		if not [previous_match for previous_match in external_sources if previous_match.provider_id == provider_id]:
+			external_sources.append(ExternalMetadataSourceDto(rel['target'], provider_id))
+	return (wikidata_id, external_sources)
+
+def get_sources_from_wikidata(wikidata_id: str, missing_providers: List[BaseProvider]) -> List[ExternalMetadataSourceDto]:
+	wikidata_provider = WikidataProvider()
+	wikidata_rels = wikidata_provider.get_resource_relations(wikidata_id)
+	if not wikidata_rels:
+		return []
+	sources = []
+	for provider in missing_providers:
+		wiki_rel_key = provider.get_wikidata_artist_relation_key()
+		if not wiki_rel_key:
+			continue
+		artist_id = wikidata_rels.get_identifier_from_provider_using_relation_key(wiki_rel_key)
+		if not artist_id:
+			continue
+		artist_url = provider.get_artist_url_from_id(artist_id)
+		sources.append(ExternalMetadataSourceDto(artist_url, provider.api_model.id))
+	return sources

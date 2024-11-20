@@ -18,7 +18,7 @@ class MetacriticProvider(BaseProvider):
         return None
     
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return None
+        return f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
 
     def get_artist(self, artist_id: str) -> Any | None:
         return None
@@ -28,3 +28,5 @@ class MetacriticProvider(BaseProvider):
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         return None
+    def get_wikidata_artist_relation_key(self) -> str | None:
+        return "P1712"

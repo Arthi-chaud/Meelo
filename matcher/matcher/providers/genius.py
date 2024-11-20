@@ -37,11 +37,13 @@ class GeniusProvider(BaseProvider):
         return id if id.isnumeric() else None
 
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return 'https://genius.com/artists/' + artist_id
+        return f"https://genius.com/artists/{artist_id}"
 
     def get_artist(self, artist_id: str) -> Any | None:
         client = self._get_client()
         try:
+            if not artist_id.isnumeric():
+                return client.search_artist(artist_id, allow_name_change=False)
             artist = client.search_artist(artist_id, artist_id=artist_id)
             return artist
         except Exception as e:
@@ -53,3 +55,6 @@ class GeniusProvider(BaseProvider):
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         return None
+
+    def get_wikidata_artist_relation_key(self) -> str | None:
+        return "P2373"

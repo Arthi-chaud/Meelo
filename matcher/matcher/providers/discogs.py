@@ -48,3 +48,5 @@ class DiscogsProvider(BaseProvider):
             return artist.images[0]['uri']
         except:
             return None
+    def get_wikidata_artist_relation_key(self) -> str | None:
+        return "P1953"

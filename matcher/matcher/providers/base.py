@@ -41,3 +41,7 @@ class BaseProvider(Protocol):
     @abstractmethod
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         pass
+    
+    @abstractmethod
+    def get_wikidata_artist_relation_key(self) -> str | None:
+        pass
