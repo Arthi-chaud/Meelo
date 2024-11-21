@@ -1,5 +1,8 @@
 from dataclasses import dataclass
+import logging
 from typing import Any
+
+import requests
 from .base import ArtistSearchResult, BaseProvider
 from ..settings import WikipediaSettings
 
@@ -19,7 +22,7 @@ class WikipediaProvider(BaseProvider):
         return None
     
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return None
+        return f"https://en.wikipedia.org/wiki/{artist_id}"
 
     def get_artist(self, artist_id: str) -> Any | None:
         return None
@@ -32,3 +35,17 @@ class WikipediaProvider(BaseProvider):
 
     def get_wikidata_artist_relation_key(self) -> str | None:
         pass
+
+    def get_article_name_from_wikidata(self, wikidata_id: str) -> str | None:
+        try:
+            entities = requests.get("https://www.wikidata.org/w/api.php", params={
+                'action': "wbgetentities",
+				'props': "sitelinks",
+				'ids': wikidata_id,
+				'sitefilter': "enwiki",
+				'format': "json",
+            }).json()['entities']
+            first_entity = next(iter(entities))
+            return entities[first_entity]['sitelinks']['enwiki']['title']
+        except:
+            return None

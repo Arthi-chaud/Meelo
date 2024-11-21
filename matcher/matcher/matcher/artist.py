@@ -4,6 +4,7 @@ from typing import List
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.providers.base import BaseProvider
 from matcher.providers.wikidata import WikidataProvider
+from matcher.providers.wikipedia import WikipediaProvider
 from ..context import Context
 from ..providers.musicbrainz import MusicBrainzProvider
 
@@ -107,7 +108,7 @@ def get_sources_from_wikidata(wikidata_id: str, missing_providers: List[BaseProv
 	wikidata_rels = wikidata_provider.get_resource_relations(wikidata_id)
 	if not wikidata_rels:
 		return []
-	sources = []
+	sources: List[ExternalMetadataSourceDto] = []
 	for provider in missing_providers:
 		wiki_rel_key = provider.get_wikidata_artist_relation_key()
 		if not wiki_rel_key:
@@ -117,4 +118,15 @@ def get_sources_from_wikidata(wikidata_id: str, missing_providers: List[BaseProv
 			continue
 		artist_url = provider.get_artist_url_from_id(artist_id)
 		sources.append(ExternalMetadataSourceDto(artist_url, provider.api_model.id))
+	# We link Wikipedia manually, using Wikidata
+	wikipedia_provider = Context().get().get_provider(WikipediaProvider)
+	if not wikipedia_provider:
+		return sources
+	wikipedia_is_missing = not any([source for source in sources if source.provider_id == wikipedia_provider.api_model.id])
+	if wikipedia_is_missing:
+		wiki_article_name = wikipedia_provider.get_article_name_from_wikidata(wikidata_id)
+		if not wiki_article_name:
+			return sources
+		article_url = wikipedia_provider.get_artist_url_from_id(wiki_article_name)
+		sources.append(ExternalMetadataSourceDto(article_url, wikipedia_provider.api_model.id))
 	return sources

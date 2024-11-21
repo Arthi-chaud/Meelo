@@ -17,7 +17,7 @@ class WikidataRelations:
 class WikidataProvider:
 	def get_resource_relations(self, wikidata_id):
 		try:
-			return WikidataRelations(requests.post(
+			return WikidataRelations(requests.get(
 				f"https://wikidata.org/w/rest.php/wikibase/v0/entities/items/{wikidata_id}"
 			).json())
 		except:
