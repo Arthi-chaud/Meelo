@@ -6,13 +6,14 @@ from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from lyricsgenius import Genius
 
+# Consider that the passed Ids are names, not the numeric ids
 @dataclass
 class GeniusProvider(BaseProvider):
     settings: GeniusSettings
     pass
 
     def _get_client(self):
-        return Genius(self.settings.api_key)
+        return Genius(self.settings.api_key, timeout=2)
 
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         client = self._get_client()
@@ -34,7 +35,7 @@ class GeniusProvider(BaseProvider):
     
     def get_artist_id_from_url(self, artist_url: str) -> str | None:
         id = artist_url.replace("https://genius.com/artists/", "")
-        return id if id.isnumeric() else None
+        return id
 
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
         return f"https://genius.com/artists/{artist_id}"

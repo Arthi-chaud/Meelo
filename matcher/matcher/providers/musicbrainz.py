@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from typing import Any, List
+from typing import Any
 from .base import ArtistSearchResult, BaseProvider
 from ..settings import MusicBrainzSettings
 import musicbrainzngs
