@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-import logging
 from typing import Any
+
+import requests
 from .base import ArtistSearchResult, BaseProvider
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
-from lyricsgenius import Genius
+
 
 # Consider that the passed Ids are names, not the numeric ids
 @dataclass
@@ -12,27 +13,39 @@ class GeniusProvider(BaseProvider):
     settings: GeniusSettings
     pass
 
-    def _get_client(self):
-        return Genius(self.settings.api_key, timeout=2)
+    def _fetch(self, url: str, params={}, host="https://genius.com/api"):
+        return requests.get(
+            f"{host}{url}",
+            params=params
+                if host == "https://genius.com/api"
+                else {**params, "access_token": self.settings.api_key},
+            headers={
+                "Authorization": f"{self.settings.api_key}",
+                "User-Agent": "Meelo (Matcher), v0.0.1",
+            },
+        ).json()
 
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
-        client = self._get_client()
         try:
-            artists = client.search(artist_name, type_='artist')['sections'][0]['hits']
+            artists = self._fetch("/search/artist", {"q": artist_name})["response"][
+                "sections"
+            ][0]["hits"]
             for artist in artists:
-                # TODO Use slug 
-                if artist['result']['name'] == artist_name:
-                    return ArtistSearchResult(artist['result']['name'])
+                # TODO Use slug
+                if artist["result"]["name"] == artist_name:
+                    return ArtistSearchResult(artist["result"]["name"])
             return None
-        except:
+        except Exception:
             return None
-    
+
     def get_musicbrainz_relation_key(self) -> str | None:
         return "genius"
-    
+
     def is_musicbrainz_relation(self, rel: Any) -> bool | None:
-        return rel['type'] == 'lyrics' and urlparse(rel['target']).netloc == "genius.com"
-    
+        return (
+            rel["type"] == "lyrics" and urlparse(rel["target"]).netloc == "genius.com"
+        )
+
     def get_artist_id_from_url(self, artist_url: str) -> str | None:
         id = artist_url.replace("https://genius.com/artists/", "")
         return id
@@ -41,21 +54,34 @@ class GeniusProvider(BaseProvider):
         return f"https://genius.com/artists/{artist_id}"
 
     def get_artist(self, artist_id: str) -> Any | None:
-        client = self._get_client()
         try:
-            if not artist_id.isnumeric():
-                return client.search_artist(artist_id, allow_name_change=False)
-            artist = client.search_artist(artist_id, artist_id=artist_id)
-            return artist
-        except Exception as e:
-            logging.error(e)
+            artists = self._fetch("/search/artist", {"q": artist_id})["response"][
+                "sections"
+            ][0]["hits"]
+            for artist in artists:
+                artist = artist["result"]
+                if not artist["_type"] == "artist":
+                    continue
+                if artist["url"] == self.get_artist_url_from_id(artist_id):
+                    return artist
+            return None
+        except Exception:
             return None
 
     def get_artist_description(self, artist, artist_url: str) -> str | None:
-        return None
+        try:
+            artist = self._fetch(artist["api_path"], {'text_format': 'plain'}, "https://api.genius.com")[
+                "response"
+            ]['artist']
+            return artist["description"]["plain"]
+        except Exception:
+            return None
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
-        return None
+        try:
+            return artist["image_url"]
+        except Exception:
+            return None
 
     def get_wikidata_artist_relation_key(self) -> str | None:
         return "P2373"

@@ -3,6 +3,7 @@ from typing import List
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.providers.base import BaseProvider
+from matcher.providers.genius import GeniusProvider
 from matcher.providers.wikidata import WikidataProvider
 from matcher.providers.wikipedia import WikipediaProvider
 from ..context import Context
@@ -53,6 +54,8 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 			break
 		provider_artist_id = provider.get_artist_id_from_url(source.url)
 		if not provider_artist_id:
+			continue
+		if provider.api_model.name == "Discogs":
 			continue
 		artist = provider.get_artist(provider_artist_id)
 		if not artist:
