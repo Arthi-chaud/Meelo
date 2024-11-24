@@ -11,6 +11,7 @@ class MusicBrainzProvider(BaseProvider):
     pass
 
     def set_user_agent(self):
+        logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
         musicbrainzngs.set_useragent("Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo")
 
     def get_artist(self, artist_id: str) -> Any:

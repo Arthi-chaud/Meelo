@@ -65,5 +65,5 @@ class WikipediaProvider(BaseProvider):
             }).json()['entities']
             first_entity = next(iter(entities))
             return entities[first_entity]['sitelinks']['enwiki']['title']
-        except:
+        except Exception:
             return None
