@@ -39,7 +39,7 @@ def match_artist(artist_id: int, artist_name: str) -> tuple[ExternalMetadataDto 
 		search_res = provider.search_artist(artist_name)
 		if not search_res:
 			continue
-		artist_url = provider.get_artist_url_from_id(str(search_res.id)),
+		artist_url = provider.get_artist_url_from_id(str(search_res.id))
 		if not artist_url:
 			continue
 		external_sources.append(
@@ -91,6 +91,9 @@ def get_sources_from_musicbrainz(artist_name: str) -> tuple[str | None, List[Ext
 		ExternalMetadataSourceDto(mb_provider.get_artist_url_from_id(mbEntry.id),
 		mb_provider.api_model.id))
 	try:
+		artist = mb_provider.get_artist(mbEntry.id)['artist']
+		if 'url-relation-list' not in artist.keys():
+			return (wikidata_id, external_sources)
 		for rel in mb_provider.get_artist(mbEntry.id)['artist']['url-relation-list']:
 			if rel['type'] == 'wikidata':
 				wikidata_id = rel['target'].replace('https://www.wikidata.org/wiki/', '')

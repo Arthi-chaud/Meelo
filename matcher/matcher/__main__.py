@@ -3,7 +3,7 @@ import os
 import logging
 
 from matcher.bootstrap import bootstrap_context
-from matcher.matcher.artist import match_and_post_artist
+from matcher.matcher.artist import match_and_post_artist, match_artist
 
 from .models.event import Event
 
@@ -21,7 +21,7 @@ def main():
     def callback(ch, method, properties, body):
         event = Event.from_json(body)
         delivery_tag = method.delivery_tag
-        # logging.info(f"Received event: {event}")
+        logging.info(f"Received event: {event}")
         match event.type:
             case "artist":
                 match_and_post_artist(event.id, event.name)
