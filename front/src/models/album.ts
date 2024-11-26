@@ -20,7 +20,6 @@ import * as yup from "yup";
 import Artist from "./artist";
 import Illustration from "./illustration";
 import Resource from "./resource";
-import ExternalId from "./external-id";
 import Genre from "./genre";
 
 export const AlbumType = [
@@ -71,7 +70,7 @@ type Album = yup.InferType<typeof Album>;
 
 export default Album;
 
-export type AlbumInclude = "artist" | "externalIds" | "genres" | "illustration";
+export type AlbumInclude = "artist" | "genres" | "illustration";
 
 const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 	relation: Selection[],
@@ -82,15 +81,6 @@ const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 				artist: Artist.required().nullable(),
 				genres: yup.array(Genre.required()).required(),
 				illustration: Illustration.required().nullable(),
-				externalIds: yup
-					.array(
-						ExternalId.required().concat(
-							yup.object({
-								rating: yup.number().required().nullable(),
-							}),
-						),
-					)
-					.required(),
 			})
 			.pick(relation),
 	);

@@ -49,7 +49,6 @@ import { GetPropsTypesFrom, Page } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import TileRow from "../../components/tile-row";
 import VideoTile from "../../components/tile/video-tile";
-import ExternalIdBadge from "../../components/external-id-badge";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
@@ -73,9 +72,10 @@ import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
 import { Head } from "../../components/head";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
 import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
+import ExternalMetadataBadge from "../../components/external-metadata-badge";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
-	API.getRelease(releaseIdentifier, ["album", "externalIds", "illustration"]);
+	API.getRelease(releaseIdentifier, ["album", "illustration"]);
 const releaseTracklistQuery = (
 	releaseIdentifier: number | string,
 	exclusiveOnly: boolean,
@@ -107,7 +107,9 @@ const releaseTracklistQuery = (
 	};
 };
 const albumQuery = (albumId: number) =>
-	API.getAlbum(albumId, ["externalIds", "genres", "artist"]);
+	API.getAlbum(albumId, ["genres", "artist"]);
+const externalMetadataQuery = (albumIdentifier: string | number) =>
+	API.getAlbumExternalMetadata(albumIdentifier);
 const artistsOnAlbumQuery = (albumId: number) => {
 	const query = API.getArtists({ album: albumId }, undefined, [
 		"illustration",
@@ -155,6 +157,7 @@ const prepareSSR = async (
 			releaseTracklistQuery(releaseIdentifier, false),
 			albumQuery(release.albumId),
 			artistsOnAlbumQuery(release.albumId),
+			externalMetadataQuery(release.albumId),
 		],
 		infiniteQueries: [
 			albumGenreQuery(release.albumId),
@@ -198,6 +201,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const theme = useTheme();
 	const { playTracks } = usePlayerContext();
 	const release = useQuery(releaseQuery, releaseIdentifier);
+	const externalMetadata = useQuery(
+		externalMetadataQuery,
+		release.data?.albumId,
+	);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const album = useQuery(albumQuery, release.data?.albumId);
 	const tracklistQuery = useQuery(
@@ -312,31 +319,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		() => release.data?.illustration,
 		[release.data],
 	);
-	const externalIdWithDescription = useMemo(
-		() =>
-			album.data?.externalIds
-				.filter(
-					({ provider }) => provider.name.toLowerCase() !== "discogs",
-				)
-				.find(({ description }) => description !== null),
-		[album.data],
-	);
-	const externalIds = useMemo(() => {
-		if (album.data === undefined || release.data === undefined) {
-			return undefined;
-		}
-		return [...album.data.externalIds, ...release.data.externalIds];
-	}, [album.data, release.data]);
-
-	const albumRating = useMemo(() => {
-		return album.data
-			? album.data.externalIds
-					.map(({ rating }) => rating)
-					.filter((rating) => rating !== null)
-					.sort()
-					.at(-1) ?? null
-			: undefined;
-	}, [album.data]);
 	const accentColor = useAccentColor(illustration);
 	const { GradientBackground } = useGradientBackground(illustration?.colors);
 	const ratingColor = useThemedSxValue(
@@ -475,14 +457,14 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									<Skeleton width={"100px"} />
 								)}
 							</Typography>
-							{albumRating && (
+							{externalMetadata.data?.rating && (
 								<Rating
 									sx={{
 										paddingLeft: 1.5,
 										...ratingColor,
 									}}
 									readOnly
-									value={albumRating / 20}
+									value={externalMetadata.data.rating / 20}
 									icon={
 										<Star1
 											size={18}
@@ -817,28 +799,32 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						}
 					/>
 				</RelatedContentSection>
-				{externalIdWithDescription && (
+				{externalMetadata.data?.description && (
 					<RelatedContentSection display title={t("about")}>
 						<Box sx={{ paddingBottom: 2 }}>
 							<ResourceDescriptionExpandable
-								externalDescription={externalIdWithDescription}
+								externalMetadata={externalMetadata.data}
 							/>
 						</Box>
 					</RelatedContentSection>
 				)}
 				<RelatedContentSection
 					display={
-						externalIds === undefined || externalIds.length > 0
+						externalMetadata.data === undefined ||
+						(externalMetadata.data?.sources.length ?? 0) > 0
 					}
 					title={t("externalLinks")}
 				>
 					<Grid container spacing={1}>
 						{(
-							externalIds?.filter(({ url }) => url !== null) ??
-							generateArray(2)
-						).map((externalId, index) => (
+							externalMetadata.data?.sources.filter(
+								({ url }) => url !== null,
+							) ?? generateArray(2)
+						).map((externalSource, index) => (
 							<Grid item key={index}>
-								<ExternalIdBadge externalId={externalId} />
+								<ExternalMetadataBadge
+									source={externalSource}
+								/>
 							</Grid>
 						))}
 					</Grid>

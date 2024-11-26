@@ -17,35 +17,35 @@
  */
 
 import { Box, Button, Skeleton } from "@mui/material";
-import ExternalId from "../models/external-id";
 import Illustration from "./illustration";
 import Link from "next/link";
+import { ExternalMetadataSource } from "../models/external-metadata";
 
-type ExternalIdBadgeProps = {
-	externalId: ExternalId | undefined;
+type ExternalMetadataBadgeProps = {
+	source: ExternalMetadataSource | undefined;
 };
 
-const ExternalIdBadge = ({ externalId }: ExternalIdBadgeProps) => {
+const ExternalMetadataBadge = ({ source }: ExternalMetadataBadgeProps) => {
 	const badge = (
 		<Button
 			variant="outlined"
 			startIcon={
 				<Box sx={{ width: 30 }}>
 					<Illustration
-						url={externalId?.provider.icon ?? undefined}
+						url={source?.providerIcon ?? undefined}
 						quality="original"
 					/>
 				</Box>
 			}
 		>
-			{externalId?.provider.name ?? <Skeleton width="50px" />}
+			{source?.providerName ?? <Skeleton width="50px" />}
 		</Button>
 	);
 
-	if (externalId?.url) {
+	if (source?.url) {
 		return (
 			<Link
-				href={externalId.url ?? undefined}
+				href={source.url ?? undefined}
 				rel="noopener noreferrer"
 				target="_blank"
 			>
@@ -56,4 +56,4 @@ const ExternalIdBadge = ({ externalId }: ExternalIdBadgeProps) => {
 	return badge;
 };
 
-export default ExternalIdBadge;
+export default ExternalMetadataBadge;
