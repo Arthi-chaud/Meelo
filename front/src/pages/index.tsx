@@ -19,7 +19,12 @@
 import { Box, Grid, Stack } from "@mui/material";
 import API from "../api/api";
 import { GetPropsTypesFrom, Page } from "../ssr";
-import { useInfiniteQuery } from "../api/use-query";
+import {
+	prepareMeeloInfiniteQuery,
+	useInfiniteQuery,
+	useQueries,
+	useQuery,
+} from "../api/use-query";
 import SectionHeader from "../components/section-header";
 import TileRow from "../components/tile-row";
 import AlbumTile from "../components/tile/album-tile";
@@ -33,6 +38,9 @@ import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
 import { getRandomNumber } from "../utils/random";
 import { useGradientBackground } from "../utils/gradient-background";
+import { QueryClient } from "react-query";
+import { NextPageContext } from "next";
+import { AlbumExternalMetadata } from "../models/external-metadata";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -68,7 +76,6 @@ const albumRecommendations = (seed: number) =>
 	API.getAlbums({ random: seed, type: "StudioRecording" }, undefined, [
 		"artist",
 		"genres",
-		"externalIds",
 		"illustration",
 	]);
 
@@ -93,21 +100,28 @@ const HomePageSection = <T,>(props: {
 	);
 };
 
-const prepareSSR = () => {
+const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 	const seed = Math.floor(Math.random() * 10000000);
+	const albumRecs = await queryClient
+		.fetchInfiniteQuery(
+			prepareMeeloInfiniteQuery(() => albumRecommendations(seed)),
+		)
+		.then((res) => res.pages.at(0)?.items);
 
 	return {
 		additionalProps: {
 			blurhashIndex: Math.random(),
 			recommendationSeed: seed,
 		},
+		queries: albumRecs?.map((album) =>
+			API.getAlbumExternalMetadata(album.id),
+		),
 		infiniteQueries: [
 			newlyAddedArtistsQuery,
 			newestAlbumsQuery,
 			newlyAddedAlbumsQuery,
 			newlyAddedReleasesQuery,
 			mostListenedSongsQuery,
-			albumRecommendations(seed),
 		],
 	};
 };
@@ -119,6 +133,21 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		albumRecommendations,
 		props?.recommendationSeed ?? seed,
 	);
+	const featuredAlbumsExternalMetadata = useQueries(
+		...(featuredAlbums.data?.pages
+			.at(0)
+			?.items.map(
+				(
+					album,
+				): Parameters<
+					typeof useQuery<
+						AlbumExternalMetadata | null,
+						Parameters<typeof API.getAlbumExternalMetadata>
+					>
+				> => [API.getAlbumExternalMetadata, album.id],
+			) ?? []),
+	);
+
 	const newlyAddedAlbums = useInfiniteQuery(() => newlyAddedAlbumsQuery);
 	const newlyAddedArtists = useInfiniteQuery(() => newlyAddedArtistsQuery);
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
@@ -195,7 +224,16 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										xl={4}
 										key={index}
 									>
-										<AlbumHighlightCard album={album} />
+										<AlbumHighlightCard
+											album={album}
+											externalMetadata={
+												featuredAlbumsExternalMetadata.find(
+													({ data }) =>
+														data?.albumId ===
+														album?.id,
+												)?.data ?? undefined
+											}
+										/>
 									</Grid>
 								))}
 							</Grid>

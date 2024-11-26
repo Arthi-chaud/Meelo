@@ -20,30 +20,23 @@ import { useTranslation } from "react-i18next";
 import { AlbumWithRelations } from "../../models/album";
 import getYear from "../../utils/getYear";
 import HighlightCard from "./highlight-card";
+import { AlbumExternalMetadata } from "../../models/external-metadata";
 
 type AlbumHighlightCardProps = {
-	album:
-		| AlbumWithRelations<
-				"artist" | "externalIds" | "genres" | "illustration"
-		  >
-		| undefined;
+	album: AlbumWithRelations<"artist" | "genres" | "illustration"> | undefined;
+	externalMetadata: AlbumExternalMetadata | undefined;
 };
-const AlbumHighlightCard = ({ album }: AlbumHighlightCardProps) => {
+const AlbumHighlightCard = ({
+	album,
+	externalMetadata,
+}: AlbumHighlightCardProps) => {
 	const { t } = useTranslation();
 	return (
 		<HighlightCard
 			title={album?.name}
 			headline={album?.name}
 			body={
-				album?.externalIds
-					.filter(
-						({ provider }) =>
-							provider.name.toLowerCase() !== "discogs",
-					)
-					.map((id) => id.description)
-					.filter((desc): desc is string => desc !== null)
-					.sort((descA, descB) => descA.length - descB.length)
-					.at(0) ||
+				externalMetadata?.description ||
 				[
 					album ? album.artist?.name ?? t("compilation") : undefined,
 					album ? getYear(album.releaseDate) : undefined,

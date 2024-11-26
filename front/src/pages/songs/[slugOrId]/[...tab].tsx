@@ -38,7 +38,6 @@ import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
-import ExternalIdBadge from "../../../components/external-id-badge";
 import { PlayIcon } from "../../../components/icons";
 import GenreButton from "../../../components/genre-button";
 import { useTranslation } from "react-i18next";
@@ -50,6 +49,10 @@ import { Head } from "../../../components/head";
 import { useThemedSxValue } from "../../../utils/themed-sx-value";
 import { useAccentColor } from "../../../utils/accent-color";
 import { useTabRouter } from "../../../components/tab-router";
+import ExternalMetadataBadge from "../../../components/external-metadata-badge";
+
+const externalMetadataQuery = (songIdentifier: string | number) =>
+	API.getSongExternalMetadata(songIdentifier);
 
 const prepareSSR = (context: NextPageContext) => {
 	const songIdentifier = getSlugOrId(context.query);
@@ -59,12 +62,12 @@ const prepareSSR = (context: NextPageContext) => {
 		queries: [
 			API.getSong(songIdentifier, [
 				"artist",
-				"externalIds",
 				"featuring",
 				"lyrics",
 				"master",
 				"illustration",
 			]),
+			externalMetadataQuery(songIdentifier),
 		],
 		infiniteQueries: [
 			API.getGenres({ song: songIdentifier }),
@@ -98,13 +101,13 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const song = useQuery(() =>
 		API.getSong(songIdentifier, [
 			"artist",
-			"externalIds",
 			"featuring",
 			"lyrics",
 			"master",
 			"illustration",
 		]),
 	);
+	const externalMetadata = useQuery(externalMetadataQuery, songIdentifier);
 	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
 	const { GradientBackground } = useGradientBackground(
 		song.data?.illustration?.colors,
@@ -189,7 +192,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								))}
 							</Stack>
 						)}
-						{(!song.data || song.data.externalIds.length != 0) && (
+						{(song.data === undefined ||
+							externalMetadata.data?.sources.length) && (
 							<Stack
 								direction="row"
 								sx={{
@@ -203,22 +207,19 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									{`${t("externalLinks")}: `}
 								</Typography>
 								{(
-									song.data?.externalIds.filter(
+									externalMetadata.data?.sources.filter(
 										({ url }) => url !== null,
 									) ?? generateArray(2)
-								).map((externalId, index) => (
-									<ExternalIdBadge
+								).map((source, index) => (
+									<ExternalMetadataBadge
 										key={index}
-										externalId={externalId}
+										source={source}
 									/>
 								))}
 							</Stack>
 						)}
 						<Typography variant="body1" sx={{ paddingTop: 2 }}>
-							{song.data?.externalIds
-								.map(({ description }) => description)
-								.filter((desc) => desc !== null)
-								.at(0)}
+							{externalMetadata.data?.description}
 						</Typography>
 					</>
 				)}
