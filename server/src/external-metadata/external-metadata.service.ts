@@ -135,6 +135,10 @@ export default class ExternalMetadataService {
 		},
 	) {
 		return {
+			songId: entry.songId ?? undefined,
+			artistId: entry.artistId ?? undefined,
+			albumId: entry.albumId ?? undefined,
+			releaseId: entry.releaseId ?? undefined,
 			description: entry.description,
 			rating: entry.rating,
 			sources: entry.sources.map((source) => ({
