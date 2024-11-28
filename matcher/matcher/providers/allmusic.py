@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import Any
 from .base import ArtistSearchResult, BaseProvider
+from ..models.api.provider import Provider as ApiProviderEntry
 from ..settings import AllMusicSettings
 
 
 @dataclass
 class AllMusicProvider(BaseProvider):
+    api_model: ApiProviderEntry
     settings: AllMusicSettings
     pass
 
@@ -29,5 +31,6 @@ class AllMusicProvider(BaseProvider):
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         return None
+
     def get_wikidata_artist_relation_key(self) -> str | None:
         return "P1728"

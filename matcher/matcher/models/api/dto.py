@@ -8,13 +8,15 @@ from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 class CreateProviderDto(DataClassJsonMixin):
     name: str
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class ExternalMetadataSourceDto(DataClassJsonMixin):
     url: str
     provider_id: int
 
-@dataclass_json(letter_case=LetterCase.CAMEL)
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class ExternalMetadataDto(DataClassJsonMixin):
     description: str | None

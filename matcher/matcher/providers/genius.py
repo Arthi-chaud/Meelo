@@ -1,16 +1,17 @@
 from dataclasses import dataclass
-import logging
 from typing import Any
 
 import requests
 from .base import ArtistSearchResult, BaseProvider
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
+from ..models.api.provider import Provider as ApiProviderEntry
 
 
 # Consider that the passed Ids are names, not the numeric ids
 @dataclass
 class GeniusProvider(BaseProvider):
+    api_model: ApiProviderEntry
     settings: GeniusSettings
     pass
 
@@ -18,8 +19,8 @@ class GeniusProvider(BaseProvider):
         return requests.get(
             f"{host}{url}",
             params=params
-                if host == "https://genius.com/api"
-                else {**params, "access_token": self.settings.api_key},
+            if host == "https://genius.com/api"
+            else {**params, "access_token": self.settings.api_key},
             headers={
                 "Authorization": f"{self.settings.api_key}",
                 "User-Agent": "Meelo (Matcher), v0.0.1",
@@ -71,9 +72,9 @@ class GeniusProvider(BaseProvider):
 
     def get_artist_description(self, artist, artist_url: str) -> str | None:
         try:
-            artist = self._fetch(artist["api_path"], {'text_format': 'plain'}, "https://api.genius.com")[
-                "response"
-            ]['artist']
+            artist = self._fetch(
+                artist["api_path"], {"text_format": "plain"}, "https://api.genius.com"
+            )["response"]["artist"]
             return artist["description"]["plain"]
         except Exception:
             return None

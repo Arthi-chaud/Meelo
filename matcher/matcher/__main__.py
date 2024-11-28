@@ -3,7 +3,7 @@ import os
 import logging
 
 from matcher.bootstrap import bootstrap_context
-from matcher.matcher.artist import match_and_post_artist, match_artist
+from matcher.matcher.artist import match_and_post_artist
 
 from .models.event import Event
 

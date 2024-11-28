@@ -6,12 +6,11 @@ from matcher.settings import Settings
 from matcher.models.api.provider import Provider as ProviderApiModel
 from .providers.base import BaseProvider
 from .providers.factory import ProviderFactory
-from .api import API
-from .context import Context
-from .settings import BaseProviderSettings, Settings
+from .settings import BaseProviderSettings
+
 
 # Reads settings, push to API providers that do not exist
-# Builds Provider classes and sets up global context 
+# Builds Provider classes and sets up global context
 def bootstrap_context():
     try:
         api_client = API()
@@ -29,6 +28,7 @@ def bootstrap_context():
     except Exception as e:
         logging.fatal(e)
         exit(1)
+
 
 def push_missing_providers(
     api_providers: List[ProviderApiModel],
@@ -53,6 +53,7 @@ def push_missing_providers(
     else:
         logging.info("Providers up to date.")
     return api_providers
+
 
 # Builds provider instances from .providers using their settings
 def build_provider_models(

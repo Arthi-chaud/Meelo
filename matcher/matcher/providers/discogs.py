@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import logging
 from typing import Any
 
+from ..models.api.provider import Provider as ApiProviderEntry
 import discogs_client.client
 import requests
 from .base import ArtistSearchResult, BaseProvider
@@ -11,6 +12,7 @@ import discogs_client
 
 @dataclass
 class DiscogsProvider(BaseProvider):
+    api_model: ApiProviderEntry
     settings: DiscogsSettings
     pass
 
@@ -61,7 +63,7 @@ class DiscogsProvider(BaseProvider):
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         try:
-            return artist['images'][0]["uri"]
+            return artist["images"][0]["uri"]
         except Exception:
             return None
 

@@ -3,14 +3,16 @@ from typing import Any, Protocol
 from ..models.api.provider import Provider as ApiProviderEntry
 from dataclasses import dataclass
 
+
 @dataclass
 class ArtistSearchResult:
     id: str
 
+
 @dataclass
 class BaseProvider(Protocol):
     api_model: ApiProviderEntry
-    
+
     @abstractmethod
     def get_musicbrainz_relation_key(self) -> str | None:
         pass
@@ -41,7 +43,7 @@ class BaseProvider(Protocol):
     @abstractmethod
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         pass
-    
+
     @abstractmethod
     def get_wikidata_artist_relation_key(self) -> str | None:
         pass
