@@ -75,13 +75,19 @@ class GeniusProvider(BaseProvider):
             artist = self._fetch(
                 artist["api_path"], {"text_format": "plain"}, "https://api.genius.com"
             )["response"]["artist"]
-            return artist["description"]["plain"]
+            desc = artist["description"]["plain"]
+            if desc == "?":
+                return None
+            return desc
         except Exception:
             return None
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         try:
-            return artist["image_url"]
+            imageUrl = artist["image_url"]
+            if "default_avatar" in imageUrl:
+                return None
+            return imageUrl
         except Exception:
             return None
 
