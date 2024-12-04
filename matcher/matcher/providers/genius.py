@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Any
-
 import requests
 from .base import ArtistSearchResult, BaseProvider
 from ..settings import GeniusSettings
