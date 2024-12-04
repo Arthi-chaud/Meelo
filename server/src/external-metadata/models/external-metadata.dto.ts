@@ -55,6 +55,5 @@ export class CreateExternalMetadataDto extends CreateExternalMetadata {
 	})
 	@Type(() => CreateExternalMetadataSourceDto)
 	@ValidateNested()
-	@IsOptional()
 	sources: CreateExternalMetadataSourceDto[];
 }

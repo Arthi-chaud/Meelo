@@ -31,12 +31,15 @@ import ReleaseQueryParameters from "src/release/models/release.query-parameters"
 import ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 import ExternalMetadataService from "./external-metadata.service";
 import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import Roles from "src/authentication/roles/roles.enum";
+import { Role } from "src/authentication/roles/roles.decorators";
 
 @ApiTags("External Metadata")
 @Controller("external-metadata")
 @Injectable()
 export default class ExternalMetadataController {
 	constructor(private externalMetadataService: ExternalMetadataService) {}
+	@Role(Roles.Admin, Roles.Microservice)
 	@Post()
 	async saveMetadata(@Body() creationDto: CreateExternalMetadataDto) {
 		return this.externalMetadataService.saveMetadata(creationDto);

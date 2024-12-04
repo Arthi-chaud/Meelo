@@ -39,7 +39,7 @@ import type { Response as ExpressResponse } from "express";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { ReleaseResponseBuilder } from "./models/release.response";
@@ -53,6 +53,7 @@ import IllustrationRepository from "src/illustration/illustration.repository";
 import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
 import { IllustrationType } from "@prisma/client";
+import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()
@@ -180,7 +181,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: "Change a release's illustration",
 	})
-	@Admin()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Post(":idOrSlug/illustration")
 	async updateReleaseIllustration(
 		@IdentifierParam(ReleaseService)

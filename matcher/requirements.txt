@@ -3,3 +3,6 @@ dataclasses-json
 jsons
 requests
 unittest2
+musicbrainzngs
+python3-discogs-client
+python-dotenv
