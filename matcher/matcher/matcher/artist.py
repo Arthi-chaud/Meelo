@@ -55,13 +55,11 @@ def match_artist(
         )
 
     for source in external_sources:
-        provider = get_provider_from_external_source(source)
         if description and artist_illustration_url:
             break
+        provider = get_provider_from_external_source(source)
         provider_artist_id = provider.get_artist_id_from_url(source.url)
         if not provider_artist_id:
-            continue
-        if provider.api_model.name == "Discogs":
             continue
         artist = provider.get_artist(provider_artist_id)
         if not artist:

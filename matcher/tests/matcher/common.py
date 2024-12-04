@@ -1,9 +1,9 @@
-import enum
 import os
 from unittest import mock
+
+from dotenv import dotenv_values
 from matcher.api import API
 from matcher.context import Context
-from dotenv import dotenv_values
 from matcher.models.api.provider import Provider
 from matcher.providers.base import BaseProvider
 from matcher.providers.factory import ProviderFactory
@@ -28,8 +28,10 @@ class MatcherTestUtils:
             "INTERNAL_CONFIG_DIR": "/config/",
             "API_URL": "localhost:3000",
             "API_KEYS": "a",
-            geniusTokenKey: dotenv_values(".env").get(geniusTokenKey),
-            discogsTokenKey: dotenv_values(".env").get(discogsTokenKey),
+            geniusTokenKey: os.getenv(geniusTokenKey)
+            or dotenv_values(".env").get(geniusTokenKey),
+            discogsTokenKey: os.getenv(discogsTokenKey)
+            or dotenv_values(".env").get(discogsTokenKey),
         },
     )
     @mock.patch("os.path.isfile", return_value=True)

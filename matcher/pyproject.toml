@@ -1,1 +1,2 @@
-
+[tool.pyright]
+ignore = ['tests/matcher']
