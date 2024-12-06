@@ -1,9 +1,9 @@
 import logging
 
-from jsons import date
-
+from datetime import date
 from matcher.models.api.dto import ExternalMetadataDto
-
+import common
+from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
 
 
@@ -27,4 +27,61 @@ def match_and_post_album(album_id: int, album_name: str):
 def match_album(
     album_id: int, album_name: str, artist_name: str | None
 ) -> tuple[ExternalMetadataDto | None, date | None]:
-    return (None, None)
+    context = Context.get()
+    release_date: date | None = None
+    (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
+        lambda mb: mb.search_album(album_name, artist_name),
+        lambda mb, mbid: mb.get_album(mbid),
+    )
+    description: str | None = None
+
+    # Link using Wikidata
+    sources_ids = [source.provider_id for source in external_sources]
+    if wikidata_id:
+        external_sources = external_sources + common.get_sources_from_wikidata(
+            wikidata_id,
+            [p for p in context.providers if p.api_model.id not in sources_ids],
+            lambda p: p.get_wikidata_artist_relation_key(),
+            lambda p, album_id: p.get_album_url_from_id(album_id),
+        )
+
+    # Resolve by searching
+    sources_ids = [source.provider_id for source in external_sources]
+    for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
+        search_res = provider.search_album(album_name, artist_name)
+        if not search_res:
+            continue
+        album_url = provider.get_album_url_from_id(str(search_res.id))
+        if not album_url:
+            continue
+        external_sources.append(
+            ExternalMetadataSourceDto(album_url, provider.api_model.id)
+        )
+
+    for source in external_sources:
+        if description and release_date:
+            break
+        provider = common.get_provider_from_external_source(source)
+        provider_album_id = provider.get_album_id_from_url(source.url)
+        if not provider_album_id:
+            continue
+        album = provider.get_album(provider_album_id)
+        if not album:
+            continue
+        if not description:
+            description = provider.get_album_description(album, source.url)
+        if not release_date:
+            release_date = provider.get_album_release_date(album, source.url)
+    return (
+        ExternalMetadataDto(
+            description,
+            artist_id=None,
+            rating=None,
+            album_id=album_id,
+            song_id=None,
+            sources=external_sources,
+        )
+        if len(external_sources) > 0 or description
+        else None,
+        release_date,
+    )

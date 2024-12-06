@@ -4,8 +4,9 @@ from urllib.parse import unquote
 
 from ..models.api.provider import Provider as ApiProviderEntry
 import requests
-from .base import ArtistSearchResult, BaseProvider
+from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..settings import WikipediaSettings
+from datetime import date
 
 
 @dataclass
@@ -81,3 +82,27 @@ class WikipediaProvider(BaseProvider):
             return entities[first_entity]["sitelinks"]["enwiki"]["title"]
         except Exception:
             return None
+
+    # Album
+    def search_album(
+        self, album_name: str, artist_name: str | None
+    ) -> AlbumSearchResult | None:
+        pass
+
+    def get_album_url_from_id(self, album_id: str) -> str | None:
+        pass
+
+    def get_album_id_from_url(self, album_url) -> str | None:
+        pass
+
+    def get_album(self, album_id: str) -> Any | None:
+        pass
+
+    def get_album_description(self, album: Any, artist_url: str) -> str | None:
+        pass
+
+    def get_album_release_date(self, album: Any, artist_url: str) -> date | None:
+        pass
+
+    def get_wikidata_album_relation_key(self) -> str | None:
+        pass

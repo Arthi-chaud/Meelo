@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import Any
 import requests
-from .base import ArtistSearchResult, BaseProvider
+from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from ..models.api.provider import Provider as ApiProviderEntry
+from datetime import date
 
 
 # Consider that the passed Ids are names, not the numeric ids
@@ -92,3 +93,27 @@ class GeniusProvider(BaseProvider):
 
     def get_wikidata_artist_relation_key(self) -> str | None:
         return "P2373"
+
+    # Album
+    def search_album(
+        self, album_name: str, artist_name: str | None
+    ) -> AlbumSearchResult | None:
+        pass
+
+    def get_album_url_from_id(self, album_id: str) -> str | None:
+        pass
+
+    def get_album_id_from_url(self, album_url) -> str | None:
+        pass
+
+    def get_album(self, album_id: str) -> Any | None:
+        pass
+
+    def get_album_description(self, album: Any, artist_url: str) -> str | None:
+        pass
+
+    def get_album_release_date(self, album: Any, artist_url: str) -> date | None:
+        pass
+
+    def get_wikidata_album_relation_key(self) -> str | None:
+        pass
