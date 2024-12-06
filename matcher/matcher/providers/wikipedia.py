@@ -20,11 +20,17 @@ class WikipediaProvider(BaseProvider):
     def get_musicbrainz_relation_key(self) -> str | None:
         return None
 
+    def get_article_id_from_url(self, article_url: str) -> str:
+        return article_url.replace("https://en.wikipedia.org/wiki/", "")
+
+    def get_article_url_from_id(self, article_url: str) -> str:
+        return f"https://en.wikipedia.org/wiki/{article_url}"
+
     def get_artist_id_from_url(self, artist_url: str) -> str | None:
-        return artist_url.replace("https://en.wikipedia.org/wiki/", "")
+        return self.get_article_id_from_url(artist_url)
 
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return f"https://en.wikipedia.org/wiki/{artist_id}"
+        return self.get_article_url_from_id(artist_id)
 
     # the id is the article name
     def get_artist(self, artist_id: str) -> Any | None:

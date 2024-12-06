@@ -21,7 +21,7 @@ class MusicBrainzProvider(BaseProvider):
 
     def get_artist(self, artist_id: str) -> Any:
         self.set_user_agent()
-        return musicbrainzngs.get_artist_by_id(artist_id, ["url-rels"])
+        return musicbrainzngs.get_artist_by_id(artist_id, ["url-rels"])["artist"]
 
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         self.set_user_agent()
