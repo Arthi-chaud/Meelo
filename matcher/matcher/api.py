@@ -4,6 +4,7 @@ from typing import Any, TypeVar
 from dataclasses_json import DataClassJsonMixin
 import requests
 
+from matcher.models.api.domain import Album
 from matcher.models.api.dto import CreateProviderDto, ExternalMetadataDto
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
@@ -45,16 +46,20 @@ class API:
             logging.error("POSTting API failed: ")
             raise Exception(response.content)
         return response
-    
+
     def post_external_metadata(self, dto: ExternalMetadataDto):
         self._post("/external-metadata", json=dto.to_dict())
-    
+
     def post_artist_illustration(self, artist_id: int, image_url):
-        self._post(f"/artists/{artist_id}/illustration", json={'url': image_url})
+        self._post(f"/artists/{artist_id}/illustration", json={"url": image_url})
 
     def get_providers(self) -> Page[Provider]:
         response = self._get("/external-providers").json()
         return API._to_page(response, Provider)
+
+    def get_album(self, album_id: int) -> Album:
+        response = self._get(f"/albums/{album_id}?with=artist")
+        return Album.schema().load(response.json())
 
     def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)
