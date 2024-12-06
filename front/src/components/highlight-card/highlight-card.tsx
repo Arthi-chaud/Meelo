@@ -35,7 +35,6 @@ type HighlightCardProps = {
 const HighlightCard = (props: HighlightCardProps) => {
 	const theme = useTheme();
 	const accentColor = useAccentColor(props.illustration);
-
 	const cardColor = useMemo(() => {
 		if (accentColor !== null) {
 			const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
@@ -50,6 +49,16 @@ const HighlightCard = (props: HighlightCardProps) => {
 		}
 		return {
 			backgroundColor: `rgba(${theme.vars.palette.background.defaultChannel} / 0.40)`,
+		};
+	}, [accentColor, theme]);
+	const scrollbarColorStyle = useMemo(() => {
+		return {
+			[theme.getColorSchemeSelector("light")]: {
+				scrollbarColor: `${accentColor?.light} transparent`,
+			},
+			[theme.getColorSchemeSelector("dark")]: {
+				scrollbarColor: `${accentColor?.dark} transparent`,
+			},
 		};
 	}, [accentColor, theme]);
 	const style = {
@@ -110,10 +119,12 @@ const HighlightCard = (props: HighlightCardProps) => {
 						item
 						xs
 						sx={{
-							overflow: "scroll",
+							overflowY: "scroll",
+							overflowX: "clip",
 							marginRight: -2,
 							paddingY: 1,
 							paddingRight: 2,
+							...scrollbarColorStyle,
 						}}
 					>
 						<Typography
