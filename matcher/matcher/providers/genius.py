@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import logging
 from typing import Any
 import requests
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
@@ -7,6 +6,7 @@ from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from ..models.api.provider import Provider as ApiProviderEntry
 from datetime import date
+from ..utils import to_slug
 
 
 # Consider that the passed Ids are names, not the numeric ids
@@ -33,9 +33,9 @@ class GeniusProvider(BaseProvider):
             artists = self._fetch("/search/artist", {"q": artist_name})["response"][
                 "sections"
             ][0]["hits"]
-            artist_slug = self._slugify(artist_name)
+            artist_slug = to_slug(artist_name)
             for artist in artists:
-                if self._slugify(artist["result"]["name"]) == artist_slug:
+                if to_slug(artist["result"]["name"]) == artist_slug:
                     return ArtistSearchResult(artist["result"]["name"])
             return None
         except Exception:
@@ -95,28 +95,21 @@ class GeniusProvider(BaseProvider):
     def get_wikidata_artist_relation_key(self) -> str | None:
         return "P2373"
 
-    # TODO Use a real slug
-    def _slugify(self, s: str) -> str:
-        return "".join(s.lower().split())
-
     # Album
     def search_album(
         self, album_name: str, artist_name: str | None
     ) -> AlbumSearchResult | None:
-        artist_slug = None if not artist_name else self._slugify(artist_name)
-        album_slug = self._slugify(album_name)
+        artist_slug = None if not artist_name else to_slug(artist_name)
+        album_slug = to_slug(album_name)
         try:
             albums = self._fetch(
                 "/search/album", {"q": f"{album_name} {artist_name or ""}"}
             )["response"]["sections"][0]["hits"]
             for album in albums:
                 album = album["result"]
-                if (
-                    artist_slug
-                    and self._slugify(album["artist"]["name"]) != artist_slug
-                ):
+                if artist_slug and to_slug(album["artist"]["name"]) != artist_slug:
                     continue
-                if self._slugify(album["name"]) == album_slug:
+                if to_slug(album["name"]) == album_slug:
                     album_url = album["url"]
                     return AlbumSearchResult(str(self.get_album_id_from_url(album_url)))
             return None

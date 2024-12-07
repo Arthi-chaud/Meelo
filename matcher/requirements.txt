@@ -7,3 +7,4 @@ musicbrainzngs
 python3-discogs-client
 python-dotenv
 beautifulsoup4
+python-slugify
