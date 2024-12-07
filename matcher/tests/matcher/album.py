@@ -18,19 +18,21 @@ class TestMatchAlbum(unittest.TestCase):
 
     def test_get_album(self):
         [matches, date] = match_album(1, "Confessions on a Dancefloor", "Madonna")
-        print(matches.sources)
+        # Rating
+        self.assertIsNotNone(matches.rating)
+        self.assertEqual(matches.rating, 70)
         # Release date
         self.assertIsNotNone(date)
         self.assertEqual(date, datetime.date(2005, 11, 11))
         # Matches
         self.assertIsNotNone(matches)
         self.assertEqual(matches.album_id, 1)
-        # ##Description
+        ##Description
         self.assertIsNotNone(matches.description)
         self.assertTrue("Confessions" in str(matches.description))
         self.assertTrue("2005" in str(matches.description))
-        # ##Sources
-        # self.assertEqual(len(matches.sources), 6)
+        ##Sources
+        self.assertEqual(len(matches.sources), 5)
         ### Wikipedia
         [wiki] = [p for p in matches.sources if "wiki" in p.url]
         self.assertEqual(

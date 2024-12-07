@@ -112,3 +112,6 @@ class WikipediaProvider(BaseProvider):
 
     def get_wikidata_album_relation_key(self) -> str | None:
         pass
+
+    def get_album_rating(self, album: Any, album_url: str) -> int | None:
+        pass

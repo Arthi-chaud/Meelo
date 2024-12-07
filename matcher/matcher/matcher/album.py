@@ -29,6 +29,7 @@ def match_album(
 ) -> tuple[ExternalMetadataDto | None, date | None]:
     context = Context.get()
     release_date: date | None = None
+    rating: int | None = None
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
         lambda mb, mbid: mb.get_album(mbid),
@@ -60,7 +61,7 @@ def match_album(
         )
 
     for source in external_sources:
-        if description and release_date:
+        if description and release_date and rating:
             break
         provider = common.get_provider_from_external_source(source)
         provider_album_id = provider.get_album_id_from_url(source.url)
@@ -69,6 +70,8 @@ def match_album(
         album = provider.get_album(provider_album_id)
         if not album:
             continue
+        if not rating:
+            rating = provider.get_album_rating(album, source.url)
         if not description:
             description = provider.get_album_description(album, source.url)
         if not release_date:
@@ -77,12 +80,12 @@ def match_album(
         ExternalMetadataDto(
             description,
             artist_id=None,
-            rating=None,
+            rating=rating,
             album_id=album_id,
             song_id=None,
             sources=external_sources,
         )
-        if len(external_sources) > 0 or description
+        if len(external_sources) > 0 or description or rating
         else None,
         release_date,
     )

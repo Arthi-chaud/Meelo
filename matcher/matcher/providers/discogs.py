@@ -92,5 +92,8 @@ class DiscogsProvider(BaseProvider):
     def get_album_release_date(self, album: Any, album_url: str) -> date | None:
         pass
 
+    def get_album_rating(self, album: Any, album_url: str) -> int | None:
+        pass
+
     def get_wikidata_album_relation_key(self) -> str | None:
         return "P1954"

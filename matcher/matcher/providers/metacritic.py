@@ -58,3 +58,6 @@ class MetacriticProvider(BaseProvider):
 
     def get_wikidata_album_relation_key(self) -> str | None:
         return "P1712"
+
+    def get_album_rating(self, album: Any, album_url: str) -> int | None:
+        pass

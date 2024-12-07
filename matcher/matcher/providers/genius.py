@@ -147,6 +147,9 @@ class GeniusProvider(BaseProvider):
     def get_album_description(self, album: Any, album_url: str) -> str | None:
         pass
 
+    def get_album_rating(self, album: Any, album_url: str) -> int | None:
+        pass
+
     def get_album_release_date(self, album: Any, album_url: str) -> date | None:
         try:
             album_release_date = album["release_date_components"]
