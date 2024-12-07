@@ -21,6 +21,32 @@ class WikipediaProvider(BaseProvider):
     def get_musicbrainz_relation_key(self) -> str | None:
         return None
 
+    def get_article(self, article_id: str) -> Any | None:
+        try:
+            res = requests.get(
+                "https://en.wikipedia.org/w/api.php",
+                params={
+                    "format": "json",
+                    "action": "query",
+                    "prop": "extracts",
+                    "exintro": True,
+                    "explaintext": True,
+                    "redirects": 1,
+                    "titles": unquote(article_id),
+                },
+            ).json()["query"]["pages"]
+            first_entity = next(iter(res))
+            return res[first_entity]
+        except Exception:
+            return None
+
+    def get_article_extract(self, article: Any) -> str | None:
+        try:
+            desc: str = article["extract"]
+            return desc if not desc.startswith("Undefined may refer") else None
+        except Exception:
+            return None
+
     def get_article_id_from_url(self, article_url: str) -> str:
         return article_url.replace("https://en.wikipedia.org/wiki/", "")
 
@@ -35,30 +61,10 @@ class WikipediaProvider(BaseProvider):
 
     # the id is the article name
     def get_artist(self, artist_id: str) -> Any | None:
-        try:
-            res = requests.get(
-                "https://en.wikipedia.org/w/api.php",
-                params={
-                    "format": "json",
-                    "action": "query",
-                    "prop": "extracts",
-                    "exintro": True,
-                    "explaintext": True,
-                    "redirects": 1,
-                    "titles": unquote(artist_id),
-                },
-            ).json()["query"]["pages"]
-            first_entity = next(iter(res))
-            return res[first_entity]
-        except Exception:
-            return None
+        return self.get_article(artist_id)
 
     def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
-        try:
-            desc: str = artist["extract"]
-            return desc if not desc.startswith("Undefined may refer") else None
-        except Exception:
-            return None
+        return self.get_article_extract(artist)
 
     def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
         return None
@@ -96,10 +102,10 @@ class WikipediaProvider(BaseProvider):
         return self.get_article_id_from_url(album_url)
 
     def get_album(self, album_id: str) -> Any | None:
-        pass
+        return self.get_article(album_id)
 
     def get_album_description(self, album: Any, album_url: str) -> str | None:
-        pass
+        return self.get_article_extract(album)
 
     def get_album_release_date(self, album: Any, album_url: str) -> date | None:
         pass

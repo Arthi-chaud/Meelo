@@ -25,8 +25,9 @@ class TestMatchAlbum(unittest.TestCase):
         self.assertIsNotNone(matches)
         self.assertEqual(matches.album_id, 1)
         # ##Description
-        # self.assertIsNotNone(matches.description)
-        # self.assertTrue("Madonna" in str(matches.description))
+        self.assertIsNotNone(matches.description)
+        self.assertTrue("Confessions" in str(matches.description))
+        self.assertTrue("2005" in str(matches.description))
         # ##Sources
         # self.assertEqual(len(matches.sources), 6)
         # ### Wikipedia
