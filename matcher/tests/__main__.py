@@ -2,6 +2,7 @@ import unittest
 from .api import *
 from .settings import *
 from .matcher.artist import *
+from .matcher.album import *
 from dotenv import load_dotenv
 
 if __name__ == "__main__":

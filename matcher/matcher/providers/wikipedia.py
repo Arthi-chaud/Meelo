@@ -90,18 +90,18 @@ class WikipediaProvider(BaseProvider):
         pass
 
     def get_album_url_from_id(self, album_id: str) -> str | None:
-        pass
+        return self.get_album_url_from_id(album_id)
 
     def get_album_id_from_url(self, album_url) -> str | None:
-        pass
+        return self.get_article_id_from_url(album_url)
 
     def get_album(self, album_id: str) -> Any | None:
         pass
 
-    def get_album_description(self, album: Any, artist_url: str) -> str | None:
+    def get_album_description(self, album: Any, album_url: str) -> str | None:
         pass
 
-    def get_album_release_date(self, album: Any, artist_url: str) -> date | None:
+    def get_album_release_date(self, album: Any, album_url: str) -> date | None:
         pass
 
     def get_wikidata_album_relation_key(self) -> str | None:

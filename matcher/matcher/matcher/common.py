@@ -64,6 +64,7 @@ def get_sources_from_wikidata(
 def get_sources_from_musicbrainz(
     mb_search_resource: Callable[[BaseProvider], Any],
     mb_get_resource: Callable[[BaseProvider, str], Any],
+    mb_get_url_from_id: Callable[[BaseProvider, str], str | None],
 ) -> tuple[str | None, List[ExternalMetadataSourceDto]]:
     context = Context.get()
     mb_provider = context.get_provider(MusicBrainzProvider)
@@ -74,7 +75,7 @@ def get_sources_from_musicbrainz(
     external_sources = []
     if mbEntry is None:
         return (None, [])
-    resource_url = mb_provider.get_artist_url_from_id(mbEntry.id)
+    resource_url = mb_get_url_from_id(mb_provider, mbEntry.id)
     if resource_url:
         external_sources.append(
             ExternalMetadataSourceDto(resource_url, mb_provider.api_model.id)

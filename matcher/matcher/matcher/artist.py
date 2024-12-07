@@ -29,6 +29,7 @@ def match_artist(
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_artist(artist_name),
         lambda mb, mbid: mb.get_artist(mbid),
+        lambda mb, mbid: mb.get_artist_url_from_id(mbid),
     )
     description: str | None = None
 

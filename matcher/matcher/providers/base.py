@@ -75,11 +75,11 @@ class BaseProvider(Protocol):
         pass
 
     @abstractmethod
-    def get_album_description(self, album: Any, artist_url: str) -> str | None:
+    def get_album_description(self, album: Any, album_url: str) -> str | None:
         pass
 
     @abstractmethod
-    def get_album_release_date(self, album: Any, artist_url: str) -> date | None:
+    def get_album_release_date(self, album: Any, album_url: str) -> date | None:
         pass
 
     @abstractmethod

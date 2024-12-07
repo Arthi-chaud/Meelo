@@ -2,7 +2,7 @@ import logging
 
 from datetime import date
 from matcher.models.api.dto import ExternalMetadataDto
-import common
+from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
 
@@ -32,6 +32,7 @@ def match_album(
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
         lambda mb, mbid: mb.get_album(mbid),
+        lambda mb, mbid: mb.get_album_url_from_id(mbid),
     )
     description: str | None = None
 
@@ -41,7 +42,7 @@ def match_album(
         external_sources = external_sources + common.get_sources_from_wikidata(
             wikidata_id,
             [p for p in context.providers if p.api_model.id not in sources_ids],
-            lambda p: p.get_wikidata_artist_relation_key(),
+            lambda p: p.get_wikidata_album_relation_key(),
             lambda p, album_id: p.get_album_url_from_id(album_id),
         )
 
