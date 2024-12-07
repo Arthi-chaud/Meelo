@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import logging
 from typing import Any
 import requests
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
@@ -32,9 +33,9 @@ class GeniusProvider(BaseProvider):
             artists = self._fetch("/search/artist", {"q": artist_name})["response"][
                 "sections"
             ][0]["hits"]
+            artist_slug = self._slugify(artist_name)
             for artist in artists:
-                # TODO Use slug
-                if artist["result"]["name"] == artist_name:
+                if self._slugify(artist["result"]["name"]) == artist_slug:
                     return ArtistSearchResult(artist["result"]["name"])
             return None
         except Exception:
@@ -94,26 +95,68 @@ class GeniusProvider(BaseProvider):
     def get_wikidata_artist_relation_key(self) -> str | None:
         return "P2373"
 
+    # TODO Use a real slug
+    def _slugify(self, s: str) -> str:
+        return "".join(s.lower().split())
+
     # Album
     def search_album(
         self, album_name: str, artist_name: str | None
     ) -> AlbumSearchResult | None:
-        pass
+        artist_slug = None if not artist_name else self._slugify(artist_name)
+        album_slug = self._slugify(album_name)
+        try:
+            albums = self._fetch(
+                "/search/album", {"q": f"{album_name} {artist_name or ""}"}
+            )["response"]["sections"][0]["hits"]
+            for album in albums:
+                album = album["result"]
+                if (
+                    artist_slug
+                    and self._slugify(album["artist"]["name"]) != artist_slug
+                ):
+                    continue
+                if self._slugify(album["name"]) == album_slug:
+                    album_url = album["url"]
+                    return AlbumSearchResult(str(self.get_album_id_from_url(album_url)))
+            return None
+        except Exception:
+            return None
 
     def get_album_url_from_id(self, album_id: str) -> str | None:
-        pass
+        return f"https://genius.com/albums/{album_id}"
 
     def get_album_id_from_url(self, album_url) -> str | None:
-        pass
+        return album_url.replace("https://genius.com/albums/", "")
 
     def get_album(self, album_id: str) -> Any | None:
-        pass
+        try:
+            artists = self._fetch("/search/album", {"q": album_id})["response"][
+                "sections"
+            ][0]["hits"]
+            for artist in artists:
+                artist = artist["result"]
+                if not artist["_type"] == "album":
+                    continue
+                if artist["url"] == self.get_album_url_from_id(album_id):
+                    return artist
+            return None
+        except Exception:
+            return None
 
     def get_album_description(self, album: Any, album_url: str) -> str | None:
         pass
 
     def get_album_release_date(self, album: Any, album_url: str) -> date | None:
-        pass
+        try:
+            album_release_date = album["release_date_components"]
+            return date(
+                album_release_date["year"],
+                album_release_date["month"],
+                album_release_date["day"],
+            )
+        except Exception:
+            pass
 
     def get_wikidata_album_relation_key(self) -> str | None:
         return "P6217"
