@@ -61,6 +61,7 @@ jobs:
     env:
       GENIUS_ACCESS_TOKEN: "${{ secrets.GENIUS_ACCESS_TOKEN }}"
       DISCOGS_ACCESS_TOKEN: "${{ secrets.DISCOGS_ACCESS_TOKEN }}"
+      CI: "1"
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3

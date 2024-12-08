@@ -3,6 +3,7 @@ import os
 import logging
 
 from matcher.bootstrap import bootstrap_context
+from matcher.matcher.album import match_and_post_album
 from matcher.matcher.artist import match_and_post_artist
 
 from .models.event import Event
@@ -25,6 +26,10 @@ def main():
         match event.type:
             case "artist":
                 match_and_post_artist(event.id, event.name)
+                ch.basic_ack(delivery_tag)
+                pass
+            case "album":
+                match_and_post_album(event.id, event.name)
                 ch.basic_ack(delivery_tag)
                 pass
             case _:

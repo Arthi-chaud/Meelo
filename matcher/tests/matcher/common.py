@@ -28,6 +28,7 @@ class MatcherTestUtils:
             "INTERNAL_CONFIG_DIR": "/config/",
             "API_URL": "localhost:3000",
             "API_KEYS": "a",
+            "CI": os.getenv("CI") or "",
             geniusTokenKey: os.getenv(geniusTokenKey)
             or dotenv_values(".env").get(geniusTokenKey),
             discogsTokenKey: os.getenv(discogsTokenKey)
@@ -70,3 +71,8 @@ class MatcherTestUtils:
             )
             pass
         Context.init(API(), settings, providers)
+
+    @staticmethod
+    def is_ci():
+        val = os.environ.get("CI")
+        return val and (val == "1" or len(val) > 1)

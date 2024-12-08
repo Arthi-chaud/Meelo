@@ -453,11 +453,11 @@ describe("Album Controller", () => {
 				});
 		});
 
-		it("should reassign the album as a compilation", () => {
+		it("should change release date", () => {
 			return request(app.getHttpServer())
 				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send({
-					artistId: null,
+					releaseDate: new Date(2024, 0, 2),
 				})
 				.expect(201)
 				.expect((res) => {
@@ -466,7 +466,7 @@ describe("Album Controller", () => {
 						...expectedAlbumResponse(
 							dummyRepository.compilationAlbumA,
 						),
-						artistId: null,
+						releaseDate: "2024-01-02T00:00:00.000Z",
 						type: "RemixAlbum",
 					});
 				});
