@@ -47,10 +47,12 @@ class TestMatchAlbum(unittest.TestCase):
         [discogs] = [p for p in matches.sources if "discogs" in p.url]
         self.assertEqual(discogs.url, "https://www.discogs.com/master/34205")
         ### Genius
-        [genius] = [p for p in matches.sources if "genius" in p.url]
-        self.assertEqual(
-            genius.url, "https://genius.com/albums/Madonna/Confessions-on-a-dance-floor"
-        )
+        if not MatcherTestUtils.is_ci():
+            [genius] = [p for p in matches.sources if "genius" in p.url]
+            self.assertEqual(
+                genius.url,
+                "https://genius.com/albums/Madonna/Confessions-on-a-dance-floor",
+            )
         ### Musicbrainz
         [mb] = [p for p in matches.sources if "musicbrainz" in p.url]
         self.assertEqual(

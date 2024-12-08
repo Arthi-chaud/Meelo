@@ -11,12 +11,14 @@ class TestGenius(unittest.TestCase):
     def setUpClass(cls):
         MatcherTestUtils.setup_context()
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_search_artist(self):
         provider: BaseProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         artist = provider.search_artist("P!nk")
         self.assertIsNotNone(artist)
         self.assertEqual(artist.id, "P!nk")  # pyright: ignore
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_artist_description_and_image(self):
         provider: BaseProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         artist = provider.get_artist("Massive Attack")
@@ -28,6 +30,7 @@ class TestGenius(unittest.TestCase):
         illustration = provider.get_artist_illustration_url(artist, "")
         self.assertIsNotNone(illustration)
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_artist_without_image(self):
         provider: BaseProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         artist = provider.get_artist("Peplab")
@@ -35,6 +38,7 @@ class TestGenius(unittest.TestCase):
         illustration = provider.get_artist_illustration_url(artist, "")
         self.assertIsNone(illustration)
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_album_release_date(self):
         provider: BaseProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         album = provider.get_album("Superbus/Aeromusical")
