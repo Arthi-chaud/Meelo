@@ -59,8 +59,8 @@ class MusicBrainzProvider(BaseProvider):
     ) -> AlbumSearchResult | None:
         self.set_user_agent()
         # TODO It's ugly, use an album_type variable from API
-        is_single = album_name.endswith(" - Single")
         sanitised_album_name = re.sub("\\s*-\\s*Single$", "", album_name)
+        is_single = sanitised_album_name != album_name
         try:
             releases = musicbrainzngs.search_releases(
                 sanitised_album_name,
@@ -68,12 +68,11 @@ class MusicBrainzProvider(BaseProvider):
                 limit=10,
             )["release-list"]
             if is_single:
-                matches = [
+                releases = [
                     r
                     for r in releases
                     if r["release-group"]["primary-type"] == "Single"
                 ]
-                return AlbumSearchResult(matches[0]["release-group"]["id"])
             return AlbumSearchResult(releases[0]["release-group"]["id"])
         except Exception:
             return None

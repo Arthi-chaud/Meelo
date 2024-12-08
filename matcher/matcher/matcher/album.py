@@ -9,9 +9,10 @@ from ..context import Context
 
 def match_and_post_album(album_id: int, album_name: str):
     try:
-        album = Context.get().client.get_album(album_id)
-        (dto, release_date) = match_album(album_id, album_name, album.artist_name)
         context = Context.get()
+        album = context.client.get_album(album_id)
+        logging.info(album)
+        (dto, release_date) = match_album(album_id, album_name, album.artist_name)
         if dto:
             logging.info(
                 f"Matched with {len(dto.sources)} providers for album {album_name}"

@@ -59,7 +59,11 @@ class API:
 
     def get_album(self, album_id: int) -> Album:
         response = self._get(f"/albums/{album_id}?with=artist")
-        return Album.schema().load(response.json())
+        json = response.json()
+        logging.error(json)
+        if json["artist"]:
+            json["artistName"] = json["artist"]["name"]
+        return Album.schema().load(json)
 
     def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)
