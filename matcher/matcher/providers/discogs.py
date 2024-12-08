@@ -54,8 +54,7 @@ class DiscogsProvider(BaseProvider):
                 headers=self._headers(),
                 params={"token": self.settings.api_key},
             ).json()
-        except Exception as e:
-            logging.error(e)
+        except Exception:
             return None
 
     def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
@@ -94,8 +93,7 @@ class DiscogsProvider(BaseProvider):
                 headers=self._headers(),
                 params={"token": self.settings.api_key},
             ).json()
-        except Exception as e:
-            logging.error(e)
+        except Exception:
             return None
 
     def get_album_description(self, album: Any, album_url: str) -> str | None:

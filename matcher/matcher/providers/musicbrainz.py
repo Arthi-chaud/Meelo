@@ -73,6 +73,12 @@ class MusicBrainzProvider(BaseProvider):
                     for r in releases
                     if r["release-group"]["primary-type"] == "Single"
                 ]
+            else:
+                releases = [
+                    r
+                    for r in releases
+                    if r["release-group"]["primary-type"] != "Single"
+                ]
             return AlbumSearchResult(releases[0]["release-group"]["id"])
         except Exception:
             return None

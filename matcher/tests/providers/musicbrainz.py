@@ -29,6 +29,12 @@ class TestMusicbrainz(unittest.TestCase):
         self.assertIsNotNone(album)
         self.assertEqual(album.id, "ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")  # pyright:ignore
 
+    def test_search_album_not_single(self):
+        provider: BaseProvider = Context().get().get_provider(MusicBrainzProvider)  # pyright: ignore
+        album = provider.search_album("Celebration", "Madonna")
+        self.assertIsNotNone(album)
+        self.assertEqual(album.id, "bd252c17-ff32-4369-8e73-4d0a65a316bd")  # pyright:ignore
+
     def test_search_single(self):
         provider: BaseProvider = Context().get().get_provider(MusicBrainzProvider)  # pyright: ignore
         album = provider.search_album("Protection - Single", "Massive Attack")

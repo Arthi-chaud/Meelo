@@ -11,7 +11,6 @@ def match_and_post_album(album_id: int, album_name: str):
     try:
         context = Context.get()
         album = context.client.get_album(album_id)
-        logging.info(album)
         (dto, release_date) = match_album(album_id, album_name, album.artist_name)
         if dto:
             logging.info(
