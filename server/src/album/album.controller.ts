@@ -34,8 +34,8 @@ import UpdateAlbumDTO from "./models/update-album.dto";
 import { AlbumResponseBuilder } from "./models/album.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import {
-	Admin,
 	DefaultRoleAndMicroservice,
+	Role,
 } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
@@ -48,6 +48,7 @@ import TransformIdentifier from "src/identifier/identifier.transform";
 import ArtistService from "src/artist/artist.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import LibraryService from "src/library/library.service";
+import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsEnum(AlbumType, {
@@ -170,7 +171,7 @@ export default class AlbumController {
 	@ApiOperation({
 		summary: "Update the album",
 	})
-	@Admin()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Response({ handler: AlbumResponseBuilder })
 	@Post(":idOrSlug")
 	async updateAlbum(

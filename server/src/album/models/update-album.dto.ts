@@ -28,4 +28,10 @@ export default class UpdateAlbumDTO {
 	@IsEnum(AlbumType)
 	@IsOptional()
 	type?: AlbumType;
+
+	@ApiProperty({
+		description: "The original release date of the album",
+	})
+	@IsOptional()
+	releaseDate?: Date;
 }
