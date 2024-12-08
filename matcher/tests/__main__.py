@@ -7,7 +7,7 @@ from .providers.metacritic import *
 from .providers.allmusic import *
 from .providers.wikipedia import *
 from .providers.musicbrainz import *
-
+from .providers.genius import *
 from dotenv import load_dotenv
 
 if __name__ == "__main__":

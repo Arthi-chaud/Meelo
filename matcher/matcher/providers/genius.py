@@ -65,10 +65,14 @@ class GeniusProvider(BaseProvider):
                 artist = artist["result"]
                 if not artist["_type"] == "artist":
                     continue
-                if artist["url"] == self.get_artist_url_from_id(artist_id):
+                if (
+                    to_slug(artist["name"]) == to_slug(artist_id)
+                    or str(artist["id"]) == artist_id
+                ):
                     return artist
             return None
-        except Exception:
+        except Exception as e:
+            print(e)
             return None
 
     def get_artist_description(self, artist, artist_url: str) -> str | None:
