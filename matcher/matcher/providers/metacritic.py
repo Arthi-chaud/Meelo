@@ -47,7 +47,7 @@ class MetacriticProvider(BaseProvider):
         pass
 
     def get_album_url_from_id(self, album_id: str) -> str | None:
-        return f'https://www.metacritic.com/music/{album_id.replace('music/', '')}'
+        return f"https://www.metacritic.com/music/{album_id.replace('music/', '')}"
 
     def get_album_id_from_url(self, album_url) -> str | None:
         return album_url.replace("https://www.metacritic.com/music/", "")

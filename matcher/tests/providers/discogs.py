@@ -14,7 +14,7 @@ class TestDiscogs(unittest.TestCase):
         provider: BaseProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
         artist = provider.search_artist("P!nk")
         self.assertIsNotNone(artist)
-        self.assertEqual(artist.id, "36988")
+        self.assertEqual(artist.id, "36988")  # pyright: ignore
 
     def test_get_artist_description_and_image(self):
         provider: BaseProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore

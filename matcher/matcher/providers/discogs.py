@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import logging
 from typing import Any
 
 from ..models.api.provider import Provider as ApiProviderEntry

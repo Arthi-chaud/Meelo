@@ -107,7 +107,7 @@ class GeniusProvider(BaseProvider):
         album_slug = to_slug(album_name)
         try:
             albums = self._fetch(
-                "/search/album", {"q": f"{album_name} {artist_name or ""}"}
+                "/search/album", {"q": f"{album_name} {artist_name or str()}"}
             )["response"]["sections"][0]["hits"]
             for album in albums:
                 album = album["result"]
