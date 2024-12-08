@@ -26,7 +26,7 @@ const ExternalMetadataSource = yup.object({
 });
 
 const CommonExternalMetadata = yup.object({
-	description: yup.string().nullable().required(),
+	description: yup.string().required().nullable(),
 	sources: yup.array(ExternalMetadataSource.required()).required(),
 });
 
