@@ -1,3 +1,4 @@
+from datetime import date
 import os
 import logging
 from typing import Any, TypeVar
@@ -5,7 +6,11 @@ from dataclasses_json import DataClassJsonMixin
 import requests
 
 from matcher.models.api.domain import Album
-from matcher.models.api.dto import CreateProviderDto, ExternalMetadataDto
+from matcher.models.api.dto import (
+    CreateProviderDto,
+    ExternalMetadataDto,
+    UpdateAlbumDto,
+)
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
 
@@ -60,7 +65,6 @@ class API:
     def get_album(self, album_id: int) -> Album:
         response = self._get(f"/albums/{album_id}?with=artist")
         json = response.json()
-        logging.error(json)
         if json["artist"]:
             json["artistName"] = json["artist"]["name"]
         return Album.schema().load(json)
@@ -72,6 +76,10 @@ class API:
 
     def post_provider_icon(self, provider_id: int, icon_path):
         self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
+
+    def post_album_release_date(self, album_id: int, release_date: date):
+        dto = UpdateAlbumDto(release_date=release_date.isoformat())
+        self._post(f"/albums/{album_id}", json=dto.to_dict())
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:

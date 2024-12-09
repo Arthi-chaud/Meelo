@@ -18,8 +18,8 @@ def match_and_post_album(album_id: int, album_name: str):
             )
             context.client.post_external_metadata(dto)
         if release_date:
-            # TODO POST Release date
             logging.info(f"Updating release date for album {album_name}")
+            context.client.post_album_release_date(album_id, release_date)
     except Exception as e:
         logging.error(e)
 

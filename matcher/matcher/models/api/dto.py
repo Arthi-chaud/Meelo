@@ -3,6 +3,13 @@ from typing import List
 from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 
 
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class UpdateAlbumDto(DataClassJsonMixin):
+    # str should be iso 8601
+    release_date: str
+
+
 @dataclass_json
 @dataclass
 class CreateProviderDto(DataClassJsonMixin):
