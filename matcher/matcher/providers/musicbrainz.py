@@ -6,6 +6,8 @@ from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..settings import MusicBrainzSettings
 from ..models.api.provider import Provider as ApiProviderEntry
 import musicbrainzngs
+from musicbrainzngs.musicbrainz import _rate_limit
+import requests
 from datetime import date, datetime
 
 
@@ -13,23 +15,36 @@ from datetime import date, datetime
 class MusicBrainzProvider(BaseProvider):
     api_model: ApiProviderEntry
     settings: MusicBrainzSettings
-    pass
+
+    def __init__(self, api_model, settings) -> None:
+        self.api_model = api_model
+        self.settings = settings
+        musicbrainzngs.set_useragent(
+            "Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo"
+        )
+        logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
+
+    # Note: Only use this method if action is not supported by library
+    # E.g. Getting genres of a release-group
+    @_rate_limit
+    @staticmethod
+    def _fetch(url: str, query: Any = {}) -> Any:
+        res = requests.get(
+            f"https://musicbrainz.org/ws/2{url}",
+            params={**query, **{"fmt": "json"}},
+            headers={
+                "User-Agent": "Meelo Matcher/0.0.1 ( github.com/Arthi-chaud/Meelo )"
+            },
+        )
+        return res.json()
 
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
 
-    def set_user_agent(self):
-        logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
-        musicbrainzngs.set_useragent(
-            "Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo"
-        )
-
     def get_artist(self, artist_id: str) -> Any:
-        self.set_user_agent()
         return musicbrainzngs.get_artist_by_id(artist_id, ["url-rels"])["artist"]
 
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
-        self.set_user_agent()
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artist-list"]
         return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
 
@@ -57,30 +72,24 @@ class MusicBrainzProvider(BaseProvider):
         album_name: str,
         artist_name: str | None,
     ) -> AlbumSearchResult | None:
-        self.set_user_agent()
         # TODO It's ugly, use an album_type variable from API
         sanitised_album_name = re.sub("\\s*-\\s*Single$", "", album_name)
         is_single = sanitised_album_name != album_name
         try:
             releases = musicbrainzngs.search_releases(
                 sanitised_album_name,
-                artist=artist_name or self.compilation_artist_id,
+                arid=self.compilation_artist_id if not artist_name else None,
+                artist=artist_name,
                 limit=10,
             )["release-list"]
+            releases = [r["release-group"] for r in releases if r]
             if is_single:
-                releases = [
-                    r
-                    for r in releases
-                    if r["release-group"]["primary-type"] == "Single"
-                ]
+                releases = [r for r in releases if r["primary-type"] == "Single"]
             else:
-                releases = [
-                    r
-                    for r in releases
-                    if r["release-group"]["primary-type"] != "Single"
-                ]
-            return AlbumSearchResult(releases[0]["release-group"]["id"])
-        except Exception:
+                releases = [r for r in releases if r["primary-type"] != "Single"]
+            return AlbumSearchResult(releases[0]["id"])
+        except Exception as e:
+            logging.error(e)
             return None
 
     def get_album_url_from_id(self, album_id: str) -> str | None:
@@ -90,10 +99,9 @@ class MusicBrainzProvider(BaseProvider):
         return album_url.replace("https://musicbrainz.org/release-group/", "")
 
     def get_album(self, album_id: str) -> Any | None:
-        self.set_user_agent()
-        return musicbrainzngs.get_release_group_by_id(album_id, ["url-rels"])[
-            "release-group"
-        ]
+        return self._fetch(
+            f"/release-group/{album_id}", {"inc": "+".join(["url-rels", "genres"])}
+        )
 
     def get_album_description(self, album: Any, album_url: str) -> str | None:
         pass
