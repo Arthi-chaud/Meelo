@@ -1,3 +1,4 @@
+from typing import List
 import unittest
 import datetime
 from matcher.context import Context
@@ -47,9 +48,17 @@ class TestMusicbrainz(unittest.TestCase):
         self.assertIsNotNone(album)
         self.assertEqual(album.id, "751030cb-44c8-3542-8e75-42b3e4f820fa")  # pyright:ignore
 
-    def test_get_album_release_date(self):
+    def test_get_album_release_date_and_genres(self):
         provider: BaseProvider = Context().get().get_provider(MusicBrainzProvider)  # pyright: ignore
         album = provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
         self.assertIsNotNone(album)
         release_date = provider.get_album_release_date(album, "")
         self.assertEqual(release_date, datetime.date(1994, 9, 26))
+        genres: List[str] = provider.get_album_genres(album, "")  # pyright: ignore
+        self.assertEqual(len(genres), 6)
+        self.assertIn("Trip Hop", genres)
+        self.assertIn("Electronic", genres)
+        self.assertIn("Dub", genres)
+        self.assertIn("Downtempo", genres)
+        self.assertIn("Alternative Dance", genres)
+        self.assertIn("Electronica", genres)

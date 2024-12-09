@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import datetime
-from typing import Any
+from typing import Any, List
 import json
 import requests
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
@@ -97,6 +97,9 @@ class AllMusicProvider(BaseProvider):
             ).date()
         except Exception:
             pass
+
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+        pass
 
     def get_wikidata_album_relation_key(self) -> str | None:
         return "P1729"

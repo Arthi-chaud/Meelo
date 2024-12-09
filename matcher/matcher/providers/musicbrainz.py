@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 import logging
 import re
-from typing import Any
+from typing import Any, List
+from ..utils import capitalize_all_words
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..settings import MusicBrainzSettings
 from ..models.api.provider import Provider as ApiProviderEntry
@@ -19,10 +20,12 @@ class MusicBrainzProvider(BaseProvider):
     def __init__(self, api_model, settings) -> None:
         self.api_model = api_model
         self.settings = settings
+        # Ignore warning at runtime, the library uses XML and does not parse everything we want (like genres)
+        logging.getLogger("musicbrainzngs").setLevel(logging.ERROR)
+        musicbrainzngs.set_format("json")
         musicbrainzngs.set_useragent(
             "Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo"
         )
-        logging.getLogger("musicbrainzngs").setLevel(logging.WARNING)
 
     # Note: Only use this method if action is not supported by library
     # E.g. Getting genres of a release-group
@@ -42,10 +45,10 @@ class MusicBrainzProvider(BaseProvider):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
 
     def get_artist(self, artist_id: str) -> Any:
-        return musicbrainzngs.get_artist_by_id(artist_id, ["url-rels"])["artist"]
+        return musicbrainzngs.get_artist_by_id(artist_id, ["url-rels"])
 
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
-        matches = musicbrainzngs.search_artists(artist_name, limit=3)["artist-list"]
+        matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
         return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
 
     def get_musicbrainz_relation_key(self) -> str | None:
@@ -81,7 +84,7 @@ class MusicBrainzProvider(BaseProvider):
                 arid=self.compilation_artist_id if not artist_name else None,
                 artist=artist_name,
                 limit=10,
-            )["release-list"]
+            )["releases"]
             releases = [r["release-group"] for r in releases if r]
             if is_single:
                 releases = [r for r in releases if r["primary-type"] == "Single"]
@@ -100,7 +103,7 @@ class MusicBrainzProvider(BaseProvider):
 
     def get_album(self, album_id: str) -> Any | None:
         return self._fetch(
-            f"/release-group/{album_id}", {"inc": "+".join(["url-rels", "genres"])}
+            f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
 
     def get_album_description(self, album: Any, album_url: str) -> str | None:
@@ -117,3 +120,14 @@ class MusicBrainzProvider(BaseProvider):
 
     def get_album_rating(self, album: Any, album_url: str) -> int | None:
         pass
+
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+        try:
+            genres: List[Any] = album["genres"]
+            return [
+                capitalize_all_words(genre["name"])
+                for genre in genres
+                if genre["count"] > 0
+            ]
+        except Exception:
+            pass

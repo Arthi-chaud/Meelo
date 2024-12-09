@@ -1,4 +1,3 @@
-import os
 import unittest
 import datetime
 from matcher.matcher.album import match_album
@@ -11,12 +10,19 @@ class TestMatchAlbum(unittest.TestCase):
         return MatcherTestUtils.setup_context()
 
     # TODO Test compilation
-    # TODO Test album where rating from metacritic
-    # TODO Test where an album has the same name as a song
-    # TODO Test a compilation album does not get mixed up with a single
-
     def test_get_album(self):
-        [matches, date] = match_album(1, "Confessions on a Dancefloor", "Madonna")
+        [matches, date, genres] = match_album(
+            1, "Confessions on a Dancefloor", "Madonna"
+        )
+        # Genres
+        self.assertEqual(len(genres), 7)
+        self.assertIn("Pop", genres)
+        self.assertIn("Dance-Pop", genres)
+        self.assertIn("Synth-Pop", genres)
+        self.assertIn("Disco", genres)
+        self.assertIn("House", genres)
+        self.assertIn("Electronic", genres)
+        self.assertIn("Euro House", genres)
         # Rating
         self.assertIsNotNone(matches.rating)
         self.assertEqual(matches.rating, 70)
@@ -64,7 +70,7 @@ class TestMatchAlbum(unittest.TestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000356345")
 
     def test_get_album2(self):
-        [matches, date] = match_album(
+        [matches, date, genres] = match_album(
             1, "The Tortured Poets Department", "Taylor Swift"
         )
         # Rating
@@ -110,7 +116,7 @@ class TestMatchAlbum(unittest.TestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0004210541")
 
     def test_get_album_no_rating(self):
-        [matches, date] = match_album(1, "Aéromusical", "Superbus")
+        [matches, date, genres] = match_album(1, "Aéromusical", "Superbus")
         # Rating
         self.assertIsNone(matches.rating)
         # Release date

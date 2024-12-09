@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Any, Protocol
 from ..models.api.provider import Provider as ApiProviderEntry
+from typing import List
 from dataclasses import dataclass
 from datetime import date
 
@@ -80,6 +81,10 @@ class BaseProvider(Protocol):
 
     @abstractmethod
     def get_album_rating(self, album: Any, album_url: str) -> int | None:
+        pass
+
+    @abstractmethod
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
         pass
 
     @abstractmethod

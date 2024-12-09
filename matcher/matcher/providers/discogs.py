@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 
+from matcher.utils import capitalize_all_words
 from ..models.api.provider import Provider as ApiProviderEntry
 import discogs_client.client
 import requests
@@ -105,6 +106,12 @@ class DiscogsProvider(BaseProvider):
 
     def get_album_rating(self, album: Any, album_url: str) -> int | None:
         pass
+
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+        try:
+            return [capitalize_all_words(g) for g in album["genres"]]
+        except Exception:
+            pass
 
     def get_wikidata_album_relation_key(self) -> str | None:
         return "P1954"

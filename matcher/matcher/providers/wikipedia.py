@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 from urllib.parse import unquote
-
 from ..models.api.provider import Provider as ApiProviderEntry
 import requests
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
@@ -111,6 +110,9 @@ class WikipediaProvider(BaseProvider):
         pass
 
     def get_wikidata_album_relation_key(self) -> str | None:
+        pass
+
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
         pass
 
     def get_album_rating(self, album: Any, album_url: str) -> int | None:

@@ -82,11 +82,11 @@ def get_sources_from_musicbrainz(
         )
     try:
         resource = mb_get_resource(mb_provider, mbEntry.id)
-        if "url-relation-list" not in resource.keys():
+        if "relations" not in resource.keys():
             return (wikidata_id, external_sources)
-        for rel in resource["url-relation-list"]:
+        for rel in resource["relations"]:
             if rel["type"] == "wikidata":
-                wikidata_id = rel["target"].replace(
+                wikidata_id = rel["url"]["resource"].replace(
                     "https://www.wikidata.org/wiki/", ""
                 )
                 continue
@@ -106,7 +106,7 @@ def get_sources_from_musicbrainz(
                 if previous_match.provider_id == provider_id
             ]:
                 external_sources.append(
-                    ExternalMetadataSourceDto(rel["target"], provider_id)
+                    ExternalMetadataSourceDto(rel["url"]["resource"], provider_id)
                 )
     except Exception:
         pass

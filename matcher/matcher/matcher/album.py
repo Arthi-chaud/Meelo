@@ -1,6 +1,7 @@
 import logging
 
 from datetime import date
+from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
@@ -11,7 +12,9 @@ def match_and_post_album(album_id: int, album_name: str):
     try:
         context = Context.get()
         album = context.client.get_album(album_id)
-        (dto, release_date) = match_album(album_id, album_name, album.artist_name)
+        (dto, release_date, genres) = match_album(
+            album_id, album_name, album.artist_name
+        )
         if dto:
             logging.info(
                 f"Matched with {len(dto.sources)} providers for album {album_name}"
@@ -20,15 +23,19 @@ def match_and_post_album(album_id: int, album_name: str):
         if release_date:
             logging.info(f"Updating release date for album {album_name}")
             context.client.post_album_release_date(album_id, release_date)
+        if genres:
+            logging.info(f"Found {len(genres)} genres for album {album_name}")
+            # TODO Post Genres
     except Exception as e:
         logging.error(e)
 
 
 def match_album(
     album_id: int, album_name: str, artist_name: str | None
-) -> tuple[ExternalMetadataDto | None, date | None]:
+) -> tuple[ExternalMetadataDto | None, date | None, List[str]]:
     context = Context.get()
     release_date: date | None = None
+    genres: List[str] = []
     rating: int | None = None
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
@@ -61,7 +68,7 @@ def match_album(
         )
 
     for source in external_sources:
-        if description and release_date and rating:
+        if description and release_date and rating and genres:
             break
         provider = common.get_provider_from_external_source(source)
         provider_album_id = provider.get_album_id_from_url(source.url)
@@ -76,6 +83,11 @@ def match_album(
             description = provider.get_album_description(album, source.url)
         if not release_date:
             release_date = provider.get_album_release_date(album, source.url)
+        genres = genres + [
+            g
+            for g in provider.get_album_genres(album, source.url) or []
+            if g not in genres
+        ]
     return (
         ExternalMetadataDto(
             description,
@@ -88,4 +100,5 @@ def match_album(
         if len(external_sources) > 0 or description or rating
         else None,
         release_date,
+        genres,
     )

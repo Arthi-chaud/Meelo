@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 import requests
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..settings import GeniusSettings
@@ -46,7 +46,8 @@ class GeniusProvider(BaseProvider):
 
     def is_musicbrainz_relation(self, rel: Any) -> bool | None:
         return (
-            rel["type"] == "lyrics" and urlparse(rel["target"]).netloc == "genius.com"
+            rel["type"] == "lyrics"
+            and urlparse(rel["url"]["resource"]).netloc == "genius.com"
         )
 
     def get_artist_id_from_url(self, artist_url: str) -> str | None:
@@ -71,8 +72,7 @@ class GeniusProvider(BaseProvider):
                 ):
                     return artist
             return None
-        except Exception as e:
-            print(e)
+        except Exception:
             return None
 
     def get_artist_description(self, artist, artist_url: str) -> str | None:
@@ -157,6 +157,9 @@ class GeniusProvider(BaseProvider):
             )
         except Exception:
             pass
+
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+        pass
 
     def get_wikidata_album_relation_key(self) -> str | None:
         return "P6217"

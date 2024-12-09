@@ -26,8 +26,9 @@ class TestDiscogs(unittest.TestCase):
         illustration = provider.get_artist_illustration_url(artist, "")
         self.assertIsNotNone(illustration)
 
-    def test_get_album(self):
+    def test_get_album_genres(self):
         provider: BaseProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
         album = provider.get_album("138437")
         self.assertIsNotNone(album)
-        # TODO Test Genres
+        genres = provider.get_album_genres(album, "")
+        self.assertEqual(genres, ["Electronic"])

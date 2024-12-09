@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 from matcher.settings import MetacriticSettings
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..models.api.provider import Provider as ApiProviderEntry
@@ -21,7 +21,7 @@ class MetacriticProvider(BaseProvider):
         pass
 
     def is_musicbrainz_relation(self, rel: Any) -> bool | None:
-        return "metacritic" in rel["target"]
+        return "metacritic" in rel["url"]["resource"]
 
     def get_artist_id_from_url(self, artist_url) -> str | None:
         return None
@@ -98,3 +98,6 @@ class MetacriticProvider(BaseProvider):
             return int(raw_value)
         except Exception:
             pass
+
+    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+        pass
