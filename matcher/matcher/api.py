@@ -1,7 +1,7 @@
 from datetime import date
 import os
 import logging
-from typing import Any, TypeVar
+from typing import Any, List, TypeVar
 from dataclasses_json import DataClassJsonMixin
 import requests
 
@@ -77,8 +77,13 @@ class API:
     def post_provider_icon(self, provider_id: int, icon_path):
         self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
 
-    def post_album_release_date(self, album_id: int, release_date: date):
-        dto = UpdateAlbumDto(release_date=release_date.isoformat())
+    def post_album_update(
+        self, album_id: int, release_date: date | None, genres: List[str] | None
+    ):
+        dto = UpdateAlbumDto(
+            release_date=release_date.isoformat() if release_date else None,
+            genres=genres,
+        )
         self._post(f"/albums/{album_id}", json=dto.to_dict())
 
     @staticmethod

@@ -407,6 +407,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			.update({
 				data: {
 					...what,
+					releaseDate: what.releaseDate ?? undefined,
 					genres: what.genres
 						? {
 								connectOrCreate: what.genres

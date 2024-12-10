@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 
 
@@ -7,7 +7,8 @@ from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 @dataclass
 class UpdateAlbumDto(DataClassJsonMixin):
     # str should be iso 8601
-    release_date: str
+    release_date: Optional[str] = None
+    genres: Optional[List[str]] = None
 
 
 @dataclass_json

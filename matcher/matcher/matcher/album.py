@@ -22,10 +22,10 @@ def match_and_post_album(album_id: int, album_name: str):
             context.client.post_external_metadata(dto)
         if release_date:
             logging.info(f"Updating release date for album {album_name}")
-            context.client.post_album_release_date(album_id, release_date)
         if genres:
             logging.info(f"Found {len(genres)} genres for album {album_name}")
-            # TODO Post Genres
+        if release_date or genres:
+            context.client.post_album_update(album_id, release_date, genres)
     except Exception as e:
         logging.error(e)
 

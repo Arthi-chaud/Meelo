@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import logging
 import re
 from typing import Any, List
-from ..utils import capitalize_all_words
+from ..utils import capitalize_all_words, to_slug
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
 from ..settings import MusicBrainzSettings
 from ..models.api.provider import Provider as ApiProviderEntry
@@ -77,6 +77,8 @@ class MusicBrainzProvider(BaseProvider):
     ) -> AlbumSearchResult | None:
         # TODO It's ugly, use an album_type variable from API
         sanitised_album_name = re.sub("\\s*-\\s*Single$", "", album_name)
+        album_slug = to_slug(sanitised_album_name)
+        artist_slug = to_slug(artist_name) if artist_name else None
         is_single = sanitised_album_name != album_name
         try:
             releases = musicbrainzngs.search_releases(
@@ -85,12 +87,40 @@ class MusicBrainzProvider(BaseProvider):
                 artist=artist_name,
                 limit=10,
             )["releases"]
-            releases = [r["release-group"] for r in releases if r]
+            release_group_key = "release-group"
             if is_single:
-                releases = [r for r in releases if r["primary-type"] == "Single"]
+                releases = [
+                    r
+                    for r in releases
+                    if r[release_group_key]["primary-type"] == "Single"
+                ]
             else:
-                releases = [r for r in releases if r["primary-type"] != "Single"]
-            return AlbumSearchResult(releases[0]["id"])
+                releases = [
+                    r
+                    for r in releases
+                    if r[release_group_key]["primary-type"] != "Single"
+                ]
+            releases = sorted(
+                [r for r in releases if "date" in r.keys()],
+                key=lambda r: r["date"],
+            )
+            releases = (
+                [
+                    r
+                    for r in releases
+                    if to_slug(r["artist-credit"][0]["name"]) == artist_slug
+                ]
+                if artist_name
+                else releases
+            )
+            exact_matches = [
+                r
+                for r in releases
+                if to_slug(r[release_group_key]["title"]) == album_slug
+            ]
+            if len(exact_matches) > 0:
+                return AlbumSearchResult(exact_matches[0][release_group_key]["id"])
+            return None
         except Exception as e:
             logging.error(e)
             return None
