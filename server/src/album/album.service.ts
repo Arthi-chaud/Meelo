@@ -405,7 +405,26 @@ export default class AlbumService extends SearchableRepositoryService {
 	) {
 		return this.prismaService.album
 			.update({
-				data: what,
+				data: {
+					...what,
+					releaseDate: what.releaseDate ?? undefined,
+					genres: what.genres
+						? {
+								connectOrCreate: what.genres
+									.map((genre) => [
+										genre,
+										new Slug(genre).toString(),
+									])
+									.map(([genreName, genreSlug]) => ({
+										where: { slug: genreSlug },
+										create: {
+											name: genreName,
+											slug: genreSlug,
+										},
+									})),
+						  }
+						: undefined,
+				},
 				where: AlbumService.formatWhereInput(where),
 			})
 			.catch(async (error) => {
@@ -419,7 +438,18 @@ export default class AlbumService extends SearchableRepositoryService {
 	 */
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
+		const otherReleaseDate = album.releases
+			.map((r) => r.releaseDate)
+			.filter((d) => d !== null && d !== undefined);
 
+		// If the album's release date is not from any of the releases, abort
+		// Happens if date has been updated by microservice
+		if (
+			album.releaseDate &&
+			!otherReleaseDate.includes(album.releaseDate)
+		) {
+			return;
+		}
 		album.releaseDate = album.releases?.at(0)?.releaseDate ?? null;
 		for (const release of album.releases) {
 			if (

@@ -1,4 +1,3 @@
-import os
 import unittest
 
 from matcher.matcher.artist import match_artist
@@ -105,7 +104,7 @@ class TestMatchArtist(unittest.TestCase):
         self.assertEqual(discogs.url, "https://www.discogs.com/artist/9663")
         ### Genius
         ### CI fails here (thanks cloudflare) because we do a search for this provider
-        if not os.getenv("CI"):
+        if not MatcherTestUtils.is_ci():
             [genius] = [p for p in matches.sources if "genius" in p.url]
             self.assertEqual(genius.url, "https://genius.com/artists/Peplab")
         ### Musicbrainz

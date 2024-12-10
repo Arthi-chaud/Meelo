@@ -76,12 +76,7 @@ export class IllustrationController {
 				dimensions,
 				res,
 			)
-			.catch((err) => {
-				if (err instanceof NoIllustrationException) {
-					this.illustrationRepository.deleteIllustration(
-						illustration.id,
-					);
-				}
+			.catch(() => {
 				throw new NoIllustrationException(
 					"Illustration file not found",
 				);
