@@ -405,7 +405,25 @@ export default class AlbumService extends SearchableRepositoryService {
 	) {
 		return this.prismaService.album
 			.update({
-				data: what,
+				data: {
+					...what,
+					genres: what.genres
+						? {
+								connectOrCreate: what.genres
+									.map((genre) => [
+										genre,
+										new Slug(genre).toString(),
+									])
+									.map(([genreName, genreSlug]) => ({
+										where: { slug: genreSlug },
+										create: {
+											name: genreName,
+											slug: genreSlug,
+										},
+									})),
+						  }
+						: undefined,
+				},
 				where: AlbumService.formatWhereInput(where),
 			})
 			.catch(async (error) => {

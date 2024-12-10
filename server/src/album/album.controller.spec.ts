@@ -23,7 +23,7 @@ import {
 	expectedArtistResponse,
 } from "test/expected-responses";
 import SettingsService from "src/settings/settings.service";
-import { IllustrationType } from "@prisma/client";
+import { Genre, IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -469,6 +469,28 @@ describe("Album Controller", () => {
 						releaseDate: "2024-01-02T00:00:00.000Z",
 						type: "RemixAlbum",
 					});
+				});
+		});
+		it("should add genres", async () => {
+			await request(app.getHttpServer())
+				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
+				.send({
+					genres: ["Genre 1", "Genre 2", "Genre 3", "Genre 2"],
+				})
+				.expect(201);
+			await request(app.getHttpServer())
+				.get(
+					`/albums/${dummyRepository.compilationAlbumA.id}?with=genres`,
+				)
+				.expect((res) => {
+					const genres = res.body.genres.map(
+						(genre: Genre) => genre.name,
+					);
+					expect(genres).toStrictEqual([
+						"Genre 1",
+						"Genre 2",
+						"Genre 3",
+					]);
 				});
 		});
 	});

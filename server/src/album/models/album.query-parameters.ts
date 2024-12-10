@@ -80,7 +80,9 @@ namespace AlbumQueryParameters {
 	 */
 	export class UpdateInput extends PartialType(
 		PickType(Album, ["type", "releaseDate"] as const),
-	) {}
+	) {
+		genres?: string[];
+	}
 
 	/**
 	 * The input to find or create an album
