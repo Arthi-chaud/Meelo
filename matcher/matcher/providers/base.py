@@ -1,24 +1,39 @@
 from abc import abstractmethod
-from typing import Any, Protocol
+from typing import Any, TypeVar, Type, TypeVarTuple, Callable
+
+from matcher.settings import BaseProviderSettings
+from .domain import AlbumSearchResult, ArtistSearchResult
 from ..models.api.provider import Provider as ApiProviderEntry
 from typing import List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
-
-@dataclass
-class ArtistSearchResult:
-    id: str
+Settings = TypeVar("Settings", bound=BaseProviderSettings, default=BaseProviderSettings)
 
 
 @dataclass
-class AlbumSearchResult:
-    id: str
+class BaseFeature[*Args, Res]:
+    Args = TypeVarTuple("Args")
+    Res = TypeVar("Res")
+
+    run: Callable[["BaseProvider", *Args], Res]
 
 
 @dataclass
-class BaseProvider(Protocol):
+class BaseProvider[Settings]:
+    T = TypeVar("T")
     api_model: ApiProviderEntry
+    settings: Settings
+    features: List[BaseFeature] = field(init=False)
+
+    def has_feature(self, t: Type[T]) -> bool:
+        return any([f for f in self.features if isinstance(f, t)])
+
+    def get_feature(self, t: Type[T]) -> T | None:
+        try:
+            return [f for f in self.features if isinstance(f, t)][0]
+        except Exception:
+            pass
 
     @abstractmethod
     def get_musicbrainz_relation_key(self) -> str | None:

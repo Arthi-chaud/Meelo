@@ -1,18 +1,17 @@
 from dataclasses import dataclass
 from typing import Any, List
+from matcher.providers.features import GetAlbumFeature
 from matcher.settings import MetacriticSettings
 from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
-from ..models.api.provider import Provider as ApiProviderEntry
 import requests
 from bs4 import BeautifulSoup, Tag
 from datetime import date, datetime
 
 
 @dataclass
-class MetacriticProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: MetacriticSettings
-    pass
+class MetacriticProvider(BaseProvider[MetacriticSettings]):
+    def __post_init__(self):
+        self.features = []
 
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         pass
