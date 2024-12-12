@@ -34,7 +34,7 @@ export const SongType = [
 	"Clean",
 	"Demo",
 	"Unknown",
-	"Acapella",
+	"Acappella",
 	"Medley",
 	"NonMusic",
 ] as const;
