@@ -133,7 +133,7 @@ const InfiniteVideoView = <
 										"Demo",
 										"Clean",
 										"Edit",
-										"Acapella",
+										"Acappella",
 										"Instrumental",
 									].includes(type),
 							),
