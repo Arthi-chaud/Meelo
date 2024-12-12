@@ -1,19 +1,16 @@
 from dataclasses import dataclass
 from typing import Any, List
 from urllib.parse import unquote
-from ..models.api.provider import Provider as ApiProviderEntry
+
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 import requests
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
+from .domain import ArtistSearchResult, AlbumSearchResult
 from ..settings import WikipediaSettings
 from datetime import date
 
 
 @dataclass
-class WikipediaProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: WikipediaSettings
-    pass
-
+class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
     def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         pass
 

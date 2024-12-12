@@ -3,19 +3,16 @@ import datetime
 from typing import Any, List
 import json
 import requests
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
-from ..models.api.provider import Provider as ApiProviderEntry
+
+from matcher.providers.boilerplate import BaseProviderBoilerplate
+from .domain import ArtistSearchResult, AlbumSearchResult
 from ..settings import AllMusicSettings
 from datetime import date
 from bs4 import BeautifulSoup, Tag
 
 
 @dataclass
-class AllMusicProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: AllMusicSettings
-    pass
-
+class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
     def get_musicbrainz_relation_key(self) -> str | None:
         return "allmusic"
 

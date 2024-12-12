@@ -2,21 +2,17 @@ from dataclasses import dataclass
 from typing import Any, List
 
 from matcher.utils import capitalize_all_words
-from ..models.api.provider import Provider as ApiProviderEntry
 import discogs_client.client
 import requests
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
+from .domain import ArtistSearchResult, AlbumSearchResult
+from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
 from datetime import date
 import discogs_client
 
 
 @dataclass
-class DiscogsProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: DiscogsSettings
-    pass
-
+class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
     def _headers(self):
         return {
             "Accept-Encoding": "gzip",

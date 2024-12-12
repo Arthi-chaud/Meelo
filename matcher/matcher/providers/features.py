@@ -1,9 +1,9 @@
 from datetime import date
 from typing import Any, List
 from matcher.providers.base import BaseFeature
-
 from matcher.providers.domain import (
     AlbumSearchResult,
+    ArtistSearchResult,
     ResourceId,
     ResourceUrl,
     ResourceName,
@@ -35,7 +35,7 @@ class IsMusicBrainzRelationFeature(BaseFeature[Any, bool]):
 ## Artists
 
 
-class SearchArtistFeature(BaseFeature[str, AlbumSearchResult | None]):
+class SearchArtistFeature(BaseFeature[str, ArtistSearchResult | None]):
     pass
 
 
@@ -101,4 +101,8 @@ class GetAlbumUrlFromIdFeature(GetUrlFromIdFeature):
 
 
 class GetAlbumIdFromUrlFeature(GetIdFromUrlFeature):
+    pass
+
+
+class GetWikidataAlbumRelationKeyFeature(GetWikidataRelationKeyFeature):
     pass

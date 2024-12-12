@@ -3,9 +3,9 @@ import logging
 import re
 from typing import Any, List
 from ..utils import capitalize_all_words, to_slug
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
+from .domain import ArtistSearchResult, AlbumSearchResult
 from ..settings import MusicBrainzSettings
-from ..models.api.provider import Provider as ApiProviderEntry
+from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
 from musicbrainzngs.musicbrainz import _rate_limit
 import requests
@@ -13,10 +13,7 @@ from datetime import date, datetime
 
 
 @dataclass
-class MusicBrainzProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: MusicBrainzSettings
-
+class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     def __init__(self, api_model, settings) -> None:
         self.api_model = api_model
         self.settings = settings

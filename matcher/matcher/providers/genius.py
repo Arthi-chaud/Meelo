@@ -1,21 +1,17 @@
 from dataclasses import dataclass
 from typing import Any, List
 import requests
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
+from .domain import ArtistSearchResult, AlbumSearchResult
+from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
-from ..models.api.provider import Provider as ApiProviderEntry
 from datetime import date
 from ..utils import to_slug
 
 
 # Consider that the passed Ids are names, not the numeric ids
 @dataclass
-class GeniusProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: GeniusSettings
-    pass
-
+class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):
         return requests.get(
             f"{host}{url}",
