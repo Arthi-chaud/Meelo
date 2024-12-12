@@ -12,7 +12,7 @@ class BaseFeature[*Args, Res]:
     Args = TypeVarTuple("Args")
     Res = TypeVar("Res")
 
-    run: Callable[["BaseProvider", *Args], Res]
+    run: Callable[[*Args], Res]
 
 
 @dataclass

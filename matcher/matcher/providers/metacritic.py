@@ -24,31 +24,29 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
     def __post_init__(self):
         self.features = [
             IsMusicBrainzRelationFeature(
-                lambda _, rel: "metacritic" in rel["url"]["resource"]
+                lambda rel: "metacritic" in rel["url"]["resource"]
             ),
             GetArtistIdFromUrlFeature(
-                lambda _, url: url.replace("https://metacritic.com/person", "")
+                lambda url: url.replace("https://metacritic.com/person", "")
             ),
             GetArtistUrlFromIdFeature(
-                lambda _,
-                artist_id: f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
+                lambda artist_id: f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
             ),
-            GetWikidataArtistRelationKeyFeature(lambda _: "P1712"),
+            GetWikidataArtistRelationKeyFeature(lambda: "P1712"),
             GetAlbumUrlFromIdFeature(
-                lambda _,
-                album_id: f"https://www.metacritic.com/music/{album_id.replace('music/', '')}"
+                lambda album_id: f"https://www.metacritic.com/music/{album_id.replace('music/', '')}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda _, album_url: album_url.replace(
+                lambda album_url: album_url.replace(
                     "https://www.metacritic.com/music/", ""
                 )
             ),
-            GetWikidataAlbumRelationKeyFeature(lambda _: "P1712"),
-            GetAlbumFeature(lambda _, album_id: self._get_album(album_id)),
+            GetWikidataAlbumRelationKeyFeature(lambda: "P1712"),
+            GetAlbumFeature(lambda album_id: self._get_album(album_id)),
             GetAlbumReleaseDateFeature(
-                lambda _, album: self._get_album_release_date(album)
+                lambda album: self._get_album_release_date(album)
             ),
-            GetAlbumRatingFeature(lambda _, album: self._get_album_rating(album)),
+            GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
         ]
 
     def _get_album(self, album_id: str) -> Any | None:
