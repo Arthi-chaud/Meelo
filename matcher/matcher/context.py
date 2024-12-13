@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 from typing import List, TypeVar, Type
-from matcher.providers.base import BaseProvider
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from .api import API
 from .settings import Settings
 
-T = TypeVar("T", bound=BaseProvider)
+T = TypeVar("T", bound=BaseProviderBoilerplate)
 
 
 @dataclass
 class _InternalContext:
     client: API
     settings: Settings
-    providers: List[BaseProvider]
+    providers: List[BaseProviderBoilerplate]
 
     def get_provider(self, cl: Type[T]) -> T | None:
         for provider in self.providers:
@@ -24,7 +24,9 @@ class Context:
     _instance: _InternalContext | None
 
     @classmethod
-    def init(cls, client: API, settings: Settings, providers: List[BaseProvider]):
+    def init(
+        cls, client: API, settings: Settings, providers: List[BaseProviderBoilerplate]
+    ):
         cls._instance = _InternalContext(client, settings, providers)
 
     @classmethod

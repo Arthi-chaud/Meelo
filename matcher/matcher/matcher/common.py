@@ -1,4 +1,5 @@
 from matcher.models.api.dto import ExternalMetadataSourceDto
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from ..context import Context
 from typing import Any, Callable, List
 from matcher.providers.base import BaseProvider
@@ -13,9 +14,9 @@ def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
 
 def get_sources_from_wikidata(
     wikidata_id: str,
-    missing_providers: List[BaseProvider],
-    get_wikidata_relation_key: Callable[[BaseProvider], str | None],
-    get_resource_url_from_id: Callable[[BaseProvider, str], str | None],
+    missing_providers: List[BaseProviderBoilerplate],
+    get_wikidata_relation_key: Callable[[BaseProviderBoilerplate], str | None],
+    get_resource_url_from_id: Callable[[BaseProviderBoilerplate, str], str | None],
 ) -> List[ExternalMetadataSourceDto]:
     wikidata_provider = WikidataProvider()
     wikidata_rels = wikidata_provider.get_resource_relations(wikidata_id)
@@ -62,9 +63,9 @@ def get_sources_from_wikidata(
 
 
 def get_sources_from_musicbrainz(
-    mb_search_resource: Callable[[BaseProvider], Any],
-    mb_get_resource: Callable[[BaseProvider, str], Any],
-    mb_get_url_from_id: Callable[[BaseProvider, str], str | None],
+    mb_search_resource: Callable[[BaseProviderBoilerplate], Any],
+    mb_get_resource: Callable[[BaseProviderBoilerplate, str], Any],
+    mb_get_url_from_id: Callable[[BaseProviderBoilerplate, str], str | None],
 ) -> tuple[str | None, List[ExternalMetadataSourceDto]]:
     context = Context.get()
     mb_provider = context.get_provider(MusicBrainzProvider)

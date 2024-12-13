@@ -78,15 +78,13 @@ def match_album(
         if not album:
             continue
         if not rating:
-            rating = provider.get_album_rating(album, source.url)
+            rating = provider.get_album_rating(album)
         if not description:
-            description = provider.get_album_description(album, source.url)
+            description = provider.get_album_description(album)
         if not release_date:
-            release_date = provider.get_album_release_date(album, source.url)
+            release_date = provider.get_album_release_date(album)
         genres = genres + [
-            g
-            for g in provider.get_album_genres(album, source.url) or []
-            if g not in genres
+            g for g in provider.get_album_genres(album) or [] if g not in genres
         ]
     return (
         ExternalMetadataDto(

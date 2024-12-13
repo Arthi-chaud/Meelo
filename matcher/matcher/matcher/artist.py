@@ -67,11 +67,9 @@ def match_artist(
         if not artist:
             continue
         if not description:
-            description = provider.get_artist_description(artist, source.url)
+            description = provider.get_artist_description(artist)
         if not artist_illustration_url:
-            artist_illustration_url = provider.get_artist_illustration_url(
-                artist, source.url
-            )
+            artist_illustration_url = provider.get_artist_illustration_url(artist)
     return (
         ExternalMetadataDto(
             description,

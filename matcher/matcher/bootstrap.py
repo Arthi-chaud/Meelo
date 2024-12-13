@@ -2,6 +2,7 @@ import logging
 from typing import List
 from matcher.api import API
 from matcher.context import Context
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.settings import Settings
 from matcher.models.api.provider import Provider as ProviderApiModel
 from .providers.base import BaseProvider
@@ -58,7 +59,7 @@ def push_missing_providers(
 # Builds provider instances from .providers using their settings
 def build_provider_models(
     api_models: List[ProviderApiModel], provider_settings: List[BaseProviderSettings]
-) -> List[BaseProvider]:
+) -> List[BaseProviderBoilerplate]:
     providers = []
     for provider_setting in provider_settings:
         api_model = [
