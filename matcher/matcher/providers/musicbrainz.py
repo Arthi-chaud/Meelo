@@ -2,6 +2,21 @@ from dataclasses import dataclass
 import logging
 import re
 from typing import Any, List
+
+from matcher.providers.features import (
+    GetAlbumGenresFeature,
+    GetAlbumIdFromUrlFeature,
+    GetAlbumReleaseDateFeature,
+    GetAlbumUrlFromIdFeature,
+    GetArtistFeature,
+    GetArtistIdFromUrlFeature,
+    GetArtistUrlFromIdFeature,
+    GetWikidataArtistRelationKeyFeature,
+    GetWikidataAlbumRelationKeyFeature,
+    SearchAlbumFeature,
+    GetAlbumFeature,
+    SearchArtistFeature,
+)
 from ..utils import capitalize_all_words, to_slug
 from .domain import ArtistSearchResult, AlbumSearchResult
 from ..settings import MusicBrainzSettings
@@ -14,15 +29,48 @@ from datetime import date, datetime
 
 @dataclass
 class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
-    def __init__(self, api_model, settings) -> None:
-        self.api_model = api_model
-        self.settings = settings
+    def __post_init__(self):
         # Ignore warning at runtime, the library uses XML and does not parse everything we want (like genres)
         logging.getLogger("musicbrainzngs").setLevel(logging.ERROR)
         musicbrainzngs.set_format("json")
         musicbrainzngs.set_useragent(
             "Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo"
         )
+        self.features = [
+            GetArtistFeature(
+                lambda artist: musicbrainzngs.get_artist_by_id(artist, ["url-rels"])
+            ),
+            SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
+            GetArtistUrlFromIdFeature(
+                lambda artist_id: f"https://musicbrainz.org/artist/{artist_id}"
+            ),
+            GetArtistIdFromUrlFeature(
+                lambda artist_url: artist_url.replace(
+                    "https://musicbrainz.org/artist/", ""
+                )
+            ),
+            SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
+            GetWikidataArtistRelationKeyFeature(lambda: "P434"),
+            GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
+            SearchAlbumFeature(
+                lambda album_name, artist_name: self._search_album(
+                    album_name, artist_name
+                )
+            ),
+            GetAlbumUrlFromIdFeature(
+                lambda album_id: f"https://musicbrainz.org/release-group/{album_id}"
+            ),
+            GetAlbumIdFromUrlFeature(
+                lambda album_url: album_url.replace(
+                    "https://musicbrainz.org/release-group/", ""
+                )
+            ),
+            GetAlbumFeature(lambda album: self._get_album(album)),
+            GetAlbumReleaseDateFeature(
+                lambda album: self._get_album_release_date(album)
+            ),
+            GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+        ]
 
     # Note: Only use this method if action is not supported by library
     # E.g. Getting genres of a release-group
@@ -41,33 +89,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
 
-    def get_artist(self, artist_id: str) -> Any:
-        return musicbrainzngs.get_artist_by_id(artist_id, ["url-rels"])
-
-    def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
         return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
 
-    def get_musicbrainz_relation_key(self) -> str | None:
-        return None
-
-    def get_artist_id_from_url(self, artist_url) -> str | None:
-        return artist_url.replace("https://musicbrainz.org/artist/", "")
-
-    def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return f"https://musicbrainz.org/artist/{artist_id}"
-
-    def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
-        return None
-
-    def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
-        return None
-
-    def get_wikidata_artist_relation_key(self) -> str | None:
-        return "P434"
-
     # Album
-    def search_album(
+    def _search_album(
         self,
         album_name: str,
         artist_name: str | None,
@@ -122,33 +149,18 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             logging.error(e)
             return None
 
-    def get_album_url_from_id(self, album_id: str) -> str | None:
-        return f"https://musicbrainz.org/release-group/{album_id}"
-
-    def get_album_id_from_url(self, album_url) -> str | None:
-        return album_url.replace("https://musicbrainz.org/release-group/", "")
-
-    def get_album(self, album_id: str) -> Any | None:
+    def _get_album(self, album_id: str) -> Any | None:
         return self._fetch(
             f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
 
-    def get_album_description(self, album: Any, album_url: str) -> str | None:
-        pass
-
-    def get_album_release_date(self, album: Any, album_url: str) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         try:
             return datetime.strptime(album["first-release-date"], "%Y-%m-%d").date()
         except Exception:
             pass
 
-    def get_wikidata_album_relation_key(self) -> str | None:
-        return "P436"
-
-    def get_album_rating(self, album: Any, album_url: str) -> int | None:
-        pass
-
-    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             genres: List[Any] = album["genres"]
             return [
