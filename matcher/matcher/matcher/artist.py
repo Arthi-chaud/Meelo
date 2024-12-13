@@ -1,6 +1,10 @@
 import logging
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
+from matcher.providers.features import (
+    GetArtistDescriptionFeature,
+    GetArtistIllustrationUrlFeature,
+)
 from ..context import Context
 from . import common
 
@@ -57,9 +61,15 @@ def match_artist(
         )
 
     for source in external_sources:
-        if description and artist_illustration_url:
-            break
         provider = common.get_provider_from_external_source(source)
+        is_useful = (
+            not description and provider.has_feature(GetArtistDescriptionFeature)
+        ) or (
+            not artist_illustration_url
+            and provider.has_feature(GetArtistIllustrationUrlFeature)
+        )
+        if not is_useful:
+            continue
         provider_artist_id = provider.get_artist_id_from_url(source.url)
         if not provider_artist_id:
             continue
@@ -70,6 +80,8 @@ def match_artist(
             description = provider.get_artist_description(artist)
         if not artist_illustration_url:
             artist_illustration_url = provider.get_artist_illustration_url(artist)
+        if description and artist_illustration_url:
+            break
     return (
         ExternalMetadataDto(
             description,

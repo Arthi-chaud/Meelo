@@ -3,6 +3,12 @@ import logging
 from datetime import date
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
+from matcher.providers.features import (
+    GetAlbumDescriptionFeature,
+    GetAlbumGenresFeature,
+    GetAlbumRatingFeature,
+    GetAlbumReleaseDateFeature,
+)
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
@@ -68,9 +74,15 @@ def match_album(
         )
 
     for source in external_sources:
-        if description and release_date and rating and genres:
-            break
         provider = common.get_provider_from_external_source(source)
+        is_useful = (
+            (not description and provider.has_feature(GetAlbumDescriptionFeature))
+            or (not release_date and provider.has_feature(GetAlbumReleaseDateFeature))
+            or (not rating and provider.has_feature(GetAlbumRatingFeature))
+            or (len(genres) == 0 and provider.has_feature(GetAlbumGenresFeature))
+        )
+        if not is_useful:
+            continue
         provider_album_id = provider.get_album_id_from_url(source.url)
         if not provider_album_id:
             continue
@@ -86,6 +98,8 @@ def match_album(
         genres = genres + [
             g for g in provider.get_album_genres(album) or [] if g not in genres
         ]
+        if description and release_date and rating and genres:
+            break
     return (
         ExternalMetadataDto(
             description,
