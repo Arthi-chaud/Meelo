@@ -2,7 +2,6 @@ from matcher.models.api.dto import ExternalMetadataSourceDto
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from ..context import Context
 from typing import Any, Callable, List
-from matcher.providers.base import BaseProvider
 from ..providers.wikidata import WikidataProvider
 from ..providers.musicbrainz import MusicBrainzProvider
 from ..providers.wikipedia import WikipediaProvider

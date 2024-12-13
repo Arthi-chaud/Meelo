@@ -5,7 +5,6 @@ from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.settings import Settings
 from matcher.models.api.provider import Provider as ProviderApiModel
-from .providers.base import BaseProvider
 from .providers.factory import ProviderFactory
 from .settings import BaseProviderSettings
 
