@@ -1,21 +1,70 @@
 from dataclasses import dataclass
 from typing import Any, List
 
+from matcher.providers.features import (
+    GetAlbumFeature,
+    GetAlbumGenresFeature,
+    GetAlbumIdFromUrlFeature,
+    GetAlbumUrlFromIdFeature,
+    GetArtistDescriptionFeature,
+    GetArtistFeature,
+    GetArtistIdFromUrlFeature,
+    GetArtistIllustrationUrlFeature,
+    GetArtistUrlFromIdFeature,
+    GetWikidataAlbumRelationKeyFeature,
+    GetWikidataArtistRelationKeyFeature,
+    SearchArtistFeature,
+    GetMusicBrainzRelationKeyFeature,
+)
 from matcher.utils import capitalize_all_words
-from ..models.api.provider import Provider as ApiProviderEntry
 import discogs_client.client
 import requests
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
+from .domain import ArtistSearchResult
+from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
-from datetime import date
 import discogs_client
+
+# Notes:
+# - We dont get album descriptions because they are too short and/or technical
+# - Release date for albums are just years. We could get a date from the master release but shrug
+# - Searching albums is Unimplemented because need to identify singles from albums
+#   Too lazy, and anyway we propably dont need info from that provider
 
 
 @dataclass
-class DiscogsProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: DiscogsSettings
-    pass
+class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
+    def __post_init__(self):
+        self.features = [
+            GetMusicBrainzRelationKeyFeature(lambda: "discogs"),
+            SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
+            GetArtistIdFromUrlFeature(
+                lambda artist_url: artist_url.replace(
+                    "https://www.discogs.com/artist/", ""
+                )
+            ),
+            GetArtistUrlFromIdFeature(
+                lambda artist_id: "https://www.discogs.com/artist/" + str(artist_id)
+            ),
+            GetArtistFeature(lambda artist_name: self._get_artist(artist_name)),
+            GetArtistDescriptionFeature(
+                lambda artist: self._get_artist_description(artist)
+            ),
+            GetArtistIllustrationUrlFeature(
+                lambda artist: self._get_artist_illustration_url(artist)
+            ),
+            GetWikidataArtistRelationKeyFeature(lambda: "P1953"),
+            GetWikidataAlbumRelationKeyFeature(lambda: "P1954"),
+            GetAlbumUrlFromIdFeature(
+                lambda album_id: f"https://www.discogs.com/master/{album_id}"
+            ),
+            GetAlbumIdFromUrlFeature(
+                lambda album_url: album_url.replace(
+                    "https://www.discogs.com/master/", ""
+                )
+            ),
+            GetAlbumFeature(lambda album_id: self._get_album(album_id)),
+            GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+        ]
 
     def _headers(self):
         return {
@@ -29,7 +78,7 @@ class DiscogsProvider(BaseProvider):
             "Meelo Matcher/0.0.1", user_token=self.settings.api_key
         )
 
-    def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         client = self._get_client()
         try:
             return ArtistSearchResult(
@@ -38,16 +87,7 @@ class DiscogsProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_musicbrainz_relation_key(self) -> str | None:
-        return "discogs"
-
-    def get_artist_id_from_url(self, artist_url) -> str | None:
-        return artist_url.replace("https://www.discogs.com/artist/", "")
-
-    def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return "https://www.discogs.com/artist/" + str(artist_id)
-
-    def get_artist(self, artist_id: str) -> Any | None:
+    def _get_artist(self, artist_id: str) -> Any | None:
         try:
             return requests.get(
                 f"https://api.discogs.com/artists/{artist_id}",
@@ -57,36 +97,21 @@ class DiscogsProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_artist_description(self, artist: Any, artist_url: str) -> str | None:
+    def _get_artist_description(self, artist: Any) -> str | None:
         try:
             return artist["profile_plaintext"]
         except Exception:
             return None
 
-    def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
+    def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             return artist["images"][0]["uri"]
         except Exception:
             return None
 
-    def get_wikidata_artist_relation_key(self) -> str | None:
-        return "P1953"
-
     # Album
-    def search_album(
-        self, album_name: str, artist_name: str | None
-    ) -> AlbumSearchResult | None:
-        # Unimplemented because need to identify singles from albums
-        # Too lazy, and anyway we propably dont need info from that provider
-        pass
 
-    def get_album_url_from_id(self, album_id: str) -> str | None:
-        return f"https://www.discogs.com/master/{album_id}"
-
-    def get_album_id_from_url(self, album_url) -> str | None:
-        return album_url.replace("https://www.discogs.com/master/", "")
-
-    def get_album(self, album_id: str) -> Any | None:
+    def _get_album(self, album_id: str) -> Any | None:
         try:
             return requests.get(
                 f"https://api.discogs.com/masters/{album_id}",
@@ -96,22 +121,8 @@ class DiscogsProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_album_description(self, album: Any, album_url: str) -> str | None:
-        # Description from this provider aren't good
-        pass
-
-    def get_album_release_date(self, album: Any, album_url: str) -> date | None:
-        # It only provides a year, skip
-        pass
-
-    def get_album_rating(self, album: Any, album_url: str) -> int | None:
-        pass
-
-    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             return [capitalize_all_words(g) for g in album["genres"]]
         except Exception:
             pass
-
-    def get_wikidata_album_relation_key(self) -> str | None:
-        return "P1954"

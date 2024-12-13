@@ -1,6 +1,6 @@
 from typing import TypeVar, cast
 from matcher.providers.allmusic import AllMusicProvider
-from matcher.providers.base import BaseProvider
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.discogs import DiscogsProvider
 from matcher.providers.genius import GeniusProvider
 from matcher.providers.metacritic import MetacriticProvider
@@ -24,7 +24,7 @@ class ProviderFactory:
     @staticmethod
     def buildProvider(
         api_model: ApiProviderEntry, settings: BaseProviderSettings
-    ) -> BaseProvider:
+    ) -> BaseProviderBoilerplate:
         match settings.name:
             case "AllMusic":
                 return AllMusicProvider(api_model, cast(AllMusicSettings, settings))

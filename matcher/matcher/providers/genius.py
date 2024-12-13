@@ -1,20 +1,74 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 import requests
-from .base import ArtistSearchResult, BaseProvider, AlbumSearchResult
+
+from matcher.providers.features import (
+    GetAlbumFeature,
+    GetAlbumIdFromUrlFeature,
+    GetAlbumReleaseDateFeature,
+    GetAlbumUrlFromIdFeature,
+    GetArtistDescriptionFeature,
+    GetArtistFeature,
+    GetArtistIdFromUrlFeature,
+    GetArtistIllustrationUrlFeature,
+    GetArtistUrlFromIdFeature,
+    GetMusicBrainzRelationKeyFeature,
+    GetWikidataAlbumRelationKeyFeature,
+    GetWikidataArtistRelationKeyFeature,
+    IsMusicBrainzRelationFeature,
+    SearchAlbumFeature,
+    SearchArtistFeature,
+)
+from .domain import ArtistSearchResult, AlbumSearchResult
+from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
-from ..models.api.provider import Provider as ApiProviderEntry
 from datetime import date
 from ..utils import to_slug
 
 
 # Consider that the passed Ids are names, not the numeric ids
 @dataclass
-class GeniusProvider(BaseProvider):
-    api_model: ApiProviderEntry
-    settings: GeniusSettings
-    pass
+class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
+    def __post_init__(self):
+        self.features = [
+            GetMusicBrainzRelationKeyFeature(lambda: "genius"),
+            IsMusicBrainzRelationFeature(
+                lambda rel: rel["type"] == "lyrics"
+                and urlparse(rel["url"]["resource"]).netloc == "genius.com"
+            ),
+            SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
+            GetArtistIdFromUrlFeature(
+                lambda artist_url: artist_url.replace("https://genius.com/artists/", "")
+            ),
+            GetArtistUrlFromIdFeature(
+                lambda artist_id: f"https://genius.com/artists/{artist_id}"
+            ),
+            GetArtistFeature(lambda artist_id: self._get_artist(artist_id)),
+            GetArtistDescriptionFeature(
+                lambda artist: self._get_artist_description(artist)
+            ),
+            GetArtistIllustrationUrlFeature(
+                lambda artist: self._get_artist_illustration_url(artist)
+            ),
+            GetWikidataArtistRelationKeyFeature(lambda: "P2373"),
+            SearchAlbumFeature(
+                lambda album_name, artist_name: self._search_album(
+                    album_name, artist_name
+                )
+            ),
+            GetAlbumUrlFromIdFeature(
+                lambda album_id: f"https://genius.com/albums/{album_id}"
+            ),
+            GetAlbumIdFromUrlFeature(
+                lambda album_url: album_url.replace("https://genius.com/albums/", "")
+            ),
+            GetAlbumFeature(lambda album: self._get_album(album)),
+            GetAlbumReleaseDateFeature(
+                lambda album: self._get_album_release_date(album)
+            ),
+            GetWikidataAlbumRelationKeyFeature(lambda: "P6217"),
+        ]
 
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):
         return requests.get(
@@ -28,7 +82,7 @@ class GeniusProvider(BaseProvider):
             },
         ).json()
 
-    def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         try:
             artists = self._fetch("/search/artist", {"q": artist_name})["response"][
                 "sections"
@@ -41,23 +95,7 @@ class GeniusProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_musicbrainz_relation_key(self) -> str | None:
-        return "genius"
-
-    def is_musicbrainz_relation(self, rel: Any) -> bool | None:
-        return (
-            rel["type"] == "lyrics"
-            and urlparse(rel["url"]["resource"]).netloc == "genius.com"
-        )
-
-    def get_artist_id_from_url(self, artist_url: str) -> str | None:
-        id = artist_url.replace("https://genius.com/artists/", "")
-        return id
-
-    def get_artist_url_from_id(self, artist_id: str) -> str | None:
-        return f"https://genius.com/artists/{artist_id}"
-
-    def get_artist(self, artist_id: str) -> Any | None:
+    def _get_artist(self, artist_id: str) -> Any | None:
         try:
             artists = self._fetch("/search/artist", {"q": artist_id})["response"][
                 "sections"
@@ -75,7 +113,7 @@ class GeniusProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_artist_description(self, artist, artist_url: str) -> str | None:
+    def _get_artist_description(self, artist) -> str | None:
         try:
             artist = self._fetch(
                 artist["api_path"], {"text_format": "plain"}, "https://api.genius.com"
@@ -87,7 +125,7 @@ class GeniusProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_artist_illustration_url(self, artist: Any, artist_url: str) -> str | None:
+    def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             imageUrl = artist["image_url"]
             if "default_avatar" in imageUrl:
@@ -96,11 +134,8 @@ class GeniusProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_wikidata_artist_relation_key(self) -> str | None:
-        return "P2373"
-
     # Album
-    def search_album(
+    def _search_album(
         self, album_name: str, artist_name: str | None
     ) -> AlbumSearchResult | None:
         artist_slug = None if not artist_name else to_slug(artist_name)
@@ -120,13 +155,7 @@ class GeniusProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_album_url_from_id(self, album_id: str) -> str | None:
-        return f"https://genius.com/albums/{album_id}"
-
-    def get_album_id_from_url(self, album_url) -> str | None:
-        return album_url.replace("https://genius.com/albums/", "")
-
-    def get_album(self, album_id: str) -> Any | None:
+    def _get_album(self, album_id: str) -> Any | None:
         try:
             artists = self._fetch("/search/album", {"q": album_id})["response"][
                 "sections"
@@ -141,13 +170,7 @@ class GeniusProvider(BaseProvider):
         except Exception:
             return None
 
-    def get_album_description(self, album: Any, album_url: str) -> str | None:
-        pass
-
-    def get_album_rating(self, album: Any, album_url: str) -> int | None:
-        pass
-
-    def get_album_release_date(self, album: Any, album_url: str) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         try:
             album_release_date = album["release_date_components"]
             return date(
@@ -157,9 +180,3 @@ class GeniusProvider(BaseProvider):
             )
         except Exception:
             pass
-
-    def get_album_genres(self, album: Any, album_url: str) -> List[str] | None:
-        pass
-
-    def get_wikidata_album_relation_key(self) -> str | None:
-        return "P6217"
