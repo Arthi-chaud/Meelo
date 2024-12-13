@@ -260,37 +260,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			),
 		[bSidesQuery.data],
 	);
-	const { videos, liveVideos, videoExtras } = useMemo(
-		() =>
-			(albumVideos.data?.pages.at(0)?.items ?? []).reduce(
-				(prev, current) => {
-					if (current.type === "NonMusic") {
-						return {
-							videos: prev.videos,
-							liveVideos: prev.liveVideos,
-							videoExtras: prev.videoExtras.concat(current),
-						};
-					} else if (current.type === "Live") {
-						return {
-							videos: prev.videos,
-							liveVideos: prev.liveVideos.concat(current),
-							videoExtras: prev.videoExtras,
-						};
-					}
-					return {
-						videos: prev.videos.concat(current),
-						liveVideos: prev.liveVideos,
-						videoExtras: prev.videoExtras,
-					};
-				},
-				{
-					videos: [] as Video[],
-					videoExtras: [] as Video[],
-					liveVideos: [] as Video[],
-				},
-			),
-		[albumVideos.data],
-	);
 	const [tracks, totalDuration, trackList] = useMemo(() => {
 		if (tracklistQuery.data) {
 			const discMap = tracklistQuery.data;
@@ -308,6 +277,49 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		}
 		return [[], undefined, undefined];
 	}, [tracklistQuery.data]);
+	const { videos, liveVideos, videoExtras } = useMemo(
+		() =>
+			(albumVideos.data?.pages.at(0)?.items ?? [])
+				.map(
+					(video) =>
+						[
+							video,
+							tracks.findIndex(
+								(track) => track.song.groupId == video.groupId,
+							),
+						] as const,
+				)
+				.sort(([_, i1], [__, i2]) => i1 - i2)
+				.map(([v, _]) => v)
+				.reduce(
+					(prev, current) => {
+						if (current.type === "NonMusic") {
+							return {
+								videos: prev.videos,
+								liveVideos: prev.liveVideos,
+								videoExtras: prev.videoExtras.concat(current),
+							};
+						} else if (current.type === "Live") {
+							return {
+								videos: prev.videos,
+								liveVideos: prev.liveVideos.concat(current),
+								videoExtras: prev.videoExtras,
+							};
+						}
+						return {
+							videos: prev.videos.concat(current),
+							liveVideos: prev.liveVideos,
+							videoExtras: prev.videoExtras,
+						};
+					},
+					{
+						videos: [] as Video[],
+						videoExtras: [] as Video[],
+						liveVideos: [] as Video[],
+					},
+				),
+		[albumVideos.data, tracks],
+	);
 	const illustration = useMemo(
 		() => release.data?.illustration,
 		[release.data],
