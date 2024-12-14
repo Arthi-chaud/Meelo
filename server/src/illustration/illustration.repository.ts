@@ -33,9 +33,14 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
-import { IllustrationNotFoundException } from "./illustration.exceptions";
+import {
+	IllustrationNotFoundException,
+	MissingIllustrationResourceIdException,
+} from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
 import IllustrationStats from "./models/illustration-stats";
+import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
+import { IllustrationResponse } from "./models/illustration.response";
 
 /**
  * This service handles the paths to illustrations files and the related tables in the DB
@@ -161,6 +166,57 @@ export default class IllustrationRepository {
 				},
 			],
 		});
+	}
+
+	async saveIllustrationFromUrl(
+		dto: IllustrationDownloadDto,
+	): Promise<IllustrationResponse> {
+		const resourceKeys = Object.keys(dto).filter((k) => k != "url");
+		if (resourceKeys.length != 1) {
+			throw new MissingIllustrationResourceIdException();
+		}
+		const resourceKey = resourceKeys[0] as keyof IllustrationDownloadDto;
+
+		const buffer = await this.illustrationService.downloadIllustration(
+			dto.url,
+		);
+		switch (resourceKey) {
+			case "url": // Note: to please typeckechecker
+			case "artistId": {
+				return this.saveArtistIllustration(buffer, {
+					id: dto[resourceKey]! as number,
+				}).then(IllustrationResponse.from);
+			}
+			case "playlistId": {
+				return this.savePlaylistIllustration(buffer, {
+					id: dto[resourceKey]!,
+				}).then(IllustrationResponse.from);
+			}
+			case "trackId": {
+				const track = await this.trackService.get({
+					id: dto[resourceKey]!,
+				});
+
+				return this.saveReleaseIllustration(
+					buffer,
+					track.discIndex,
+					track.trackIndex,
+					{ id: track.releaseId },
+					IllustrationType.Cover,
+				).then(IllustrationResponse.from);
+			}
+			case "releaseId": {
+				return this.saveReleaseIllustration(
+					buffer,
+					null,
+					null,
+					{
+						id: dto[resourceKey]!,
+					},
+					IllustrationType.Cover,
+				).then(IllustrationResponse.from);
+			}
+		}
 	}
 
 	async saveArtistIllustration(
