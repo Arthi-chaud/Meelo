@@ -55,7 +55,12 @@ const InfiniteTrackView = (
 						order: options?.order ?? "asc",
 					})
 				}
-				renderListItem={(item) => <TrackItem track={item} />}
+				renderListItem={(item) => (
+					<TrackItem
+						track={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
 				renderGridItem={(item) => <></>}
 			/>
 		</>

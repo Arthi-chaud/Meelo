@@ -16,13 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SearchService } from "./search.service";
 import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { SongResponseBuilder } from "src/song/models/song.response";
 import { AlbumResponseBuilder } from "src/album/models/album.response";
 import { AlbumWithRelations, Artist, Song } from "src/prisma/models";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @ApiTags("Search")
 @Controller("search")
@@ -42,8 +43,13 @@ export class SearchController {
 			Songs come with their artist, featuring artist, illustration and master track. \
 			Albums come with their artist and illustration.",
 	})
-	@Get(":query")
-	async search(@Param("query") query: string) {
+	@Get()
+	async search(@Query("query") query?: string) {
+		if (!query) {
+			throw new InvalidRequestException(
+				"Expected non-empty 'query' query parameter",
+			);
+		}
 		const items = await this.searchService.search(query);
 		return Promise.all(
 			items.map(async (item: any) => {

@@ -95,12 +95,14 @@ const InfiniteAlbumView = (
 				}
 				renderListItem={(item) => (
 					<AlbumItem
+						onClick={() => item && props.onItemClick?.(item)}
 						album={item}
 						formatSubtitle={props.formatSubtitle}
 					/>
 				)}
 				renderGridItem={(item) => (
 					<AlbumTile
+						onClick={() => item && props.onItemClick?.(item)}
 						album={item}
 						formatSubtitle={props.formatSubtitle}
 					/>

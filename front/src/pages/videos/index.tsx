@@ -51,9 +51,9 @@ const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			<InfiniteVideoView
 				initialSortingField={props?.sortBy}
 				initialSortingOrder={props?.order}
-				query={({ library, sortBy, order }) =>
+				query={({ library, sortBy, order, random, type }) =>
 					API.getVideos(
-						{ library: library ?? undefined },
+						{ library: library ?? undefined, random, type },
 						{ sortBy, order },
 						["artist", "featuring"],
 					)

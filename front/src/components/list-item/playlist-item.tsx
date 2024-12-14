@@ -24,6 +24,7 @@ import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu"
 
 type PlaylistItemProps = {
 	playlist: PlaylistWithRelations<"illustration"> | undefined;
+	onClick?: () => void;
 };
 
 /**
@@ -31,7 +32,7 @@ type PlaylistItemProps = {
  * @param props
  * @returns
  */
-const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
+const PlaylistItem = ({ playlist, onClick }: PlaylistItemProps) => {
 	return (
 		<ListItem
 			icon={
@@ -45,6 +46,7 @@ const PlaylistItem = ({ playlist }: PlaylistItemProps) => {
 			secondTitle={null}
 			href={playlist ? `/playlists/${playlist.slug}` : undefined}
 			title={playlist?.name}
+			onClick={onClick}
 			trailing={
 				playlist && <PlaylistContextualMenu playlist={playlist} />
 			}

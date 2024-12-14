@@ -26,7 +26,8 @@ import ResponseBuilderInterceptor from "./interceptors/response.interceptor";
 import type { Constructor, RequireExactlyOne } from "type-fest";
 
 type ResponseDecoratorParam<
-	ToType extends Type<{ id: number }>,
+	ToType extends Type<Record<PaginationKey, number>>,
+	PaginationKey extends string = "id",
 	FromType = unknown,
 > = {
 	/**
@@ -34,6 +35,7 @@ type ResponseDecoratorParam<
 	 * @default SINGLE
 	 */
 	type?: ResponseType;
+	paginationIdKey?: PaginationKey;
 } & RequireExactlyOne<{
 	handler: Constructor<ResponseBuilderInterceptor<FromType, ToType>>;
 	returns: ToType;
@@ -45,8 +47,11 @@ type ResponseDecoratorParam<
  * - 'Build' the response (i.e. finding the illustration path)
  * - Format pagination, if the response is a page
  */
-const Response = <ToType extends Type<{ id: number }>>(
-	params: ResponseDecoratorParam<ToType>,
+const Response = <
+	ToType extends Type<Record<PaginationKey, number>>,
+	PaginationKey extends string = "id",
+>(
+	params: ResponseDecoratorParam<ToType, PaginationKey>,
 ): MethodDecorator => {
 	return function (target: any, propertyKey: string, descriptor: any) {
 		const interceptors = [];
@@ -56,7 +61,11 @@ const Response = <ToType extends Type<{ id: number }>>(
 
 		if (params.type == ResponseType.Page) {
 			openApiDecorators.push(ApiPaginatedResponse(returnType));
-			interceptors.push(PaginatedResponseBuilderInterceptor);
+			interceptors.push(
+				new PaginatedResponseBuilderInterceptor(
+					params.paginationIdKey ?? "id",
+				),
+			);
 		} else {
 			openApiDecorators.push(
 				ApiOkResponse({

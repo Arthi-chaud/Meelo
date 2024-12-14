@@ -17,11 +17,9 @@
  */
 
 import {
-	Body,
 	Controller,
 	Get,
 	Inject,
-	Post,
 	Put,
 	Query,
 	forwardRef,
@@ -30,10 +28,10 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { IllustrationType, TrackType } from "@prisma/client";
+import { TrackType } from "@prisma/client";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin, Role } from "src/authentication/roles/roles.decorators";
+import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongService from "src/song/song.service";
@@ -48,11 +46,6 @@ import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
-import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import IllustrationService from "src/illustration/illustration.service";
-import { IllustrationResponse } from "src/illustration/models/illustration.response";
-import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()
@@ -107,8 +100,6 @@ export class TrackController {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		private illustrationService: IllustrationService,
-		private illustrationRepository: IllustrationRepository,
 	) {}
 
 	@ApiOperation({
@@ -177,31 +168,5 @@ export class TrackController {
 
 		await this.songService.setMasterTrack(where);
 		return track;
-	}
-
-	@ApiOperation({
-		summary: "Change a track's illustration",
-	})
-	@Role(Roles.Admin, Roles.Microservice)
-	@Post(":idOrSlug/illustration")
-	async updateTrackIllustration(
-		@Body() illustrationDto: IllustrationDownloadDto,
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
-	): Promise<IllustrationResponse> {
-		const track = await this.trackService.get(where);
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		return this.illustrationRepository
-			.saveReleaseIllustration(
-				buffer,
-				track.discIndex,
-				track.trackIndex,
-				{ id: track.releaseId },
-				IllustrationType.Cover,
-			)
-			.then(IllustrationResponse.from);
 	}
 }

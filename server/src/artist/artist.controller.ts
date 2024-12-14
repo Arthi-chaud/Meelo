@@ -16,15 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	Body,
-	Controller,
-	Get,
-	Inject,
-	Post,
-	Query,
-	forwardRef,
-} from "@nestjs/common";
+import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ArtistService from "./artist.service";
 import ArtistQueryParameters from "./models/artist.query-parameters";
@@ -41,12 +33,6 @@ import LibraryQueryParameters from "src/library/models/library.query-parameters"
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
-import { Role } from "src/authentication/roles/roles.decorators";
-import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
-import IllustrationService from "src/illustration/illustration.service";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import { IllustrationResponse } from "src/illustration/models/illustration.response";
-import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()
@@ -90,10 +76,6 @@ export default class ArtistController {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 	) {}
 
 	@ApiOperation({
@@ -142,24 +124,5 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 	) {
 		return this.artistService.get(where, include);
-	}
-
-	@ApiOperation({
-		summary: "Save an illustration for an artist",
-	})
-	@Role(Roles.Admin, Roles.Microservice)
-	@Post(":idOrSlug/illustration")
-	async updateArtistIllustration(
-		@IdentifierParam(ArtistService)
-		where: ArtistQueryParameters.WhereInput,
-		@Body() illustrationDto: IllustrationDownloadDto,
-	): Promise<IllustrationResponse> {
-		return this.illustrationService
-			.downloadIllustration(illustrationDto.url)
-			.then((buffer) =>
-				this.illustrationRepository
-					.saveArtistIllustration(buffer, where)
-					.then(IllustrationResponse.from),
-			);
 	}
 }

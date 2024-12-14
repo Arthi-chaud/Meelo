@@ -18,25 +18,129 @@
 
 import { useRouter } from "next/router";
 import { ComponentProps, useState } from "react";
-import { SongSortingKeys } from "../../../models/song";
+import { SongSortingKeys, SongType } from "../../../models/song";
 import { VideoWithRelations } from "../../../models/video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import VideoTile from "../../tile/video-tile";
 import { PaginationParameters } from "../../../models/pagination";
+import { PlayIcon, ShuffleIcon } from "../../icons";
+import { PlayerActions, usePlayerContext } from "../../../contexts/player";
+import {
+	InfiniteQuery,
+	QueryClient,
+	prepareMeeloInfiniteQuery,
+	useQueryClient,
+} from "../../../api/use-query";
 
-const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
-	props: InfiniteResourceViewProps<T, typeof SongSortingKeys> &
+const playVideosAction = (
+	emptyPlaylist: PlayerActions["emptyPlaylist"],
+	playTrack: PlayerActions["playTrack"],
+	playAfter: PlayerActions["playAfter"],
+	queryClient: QueryClient,
+	query: () => InfiniteQuery<VideoWithRelations<"artist" | "featuring">>,
+) => {
+	emptyPlaylist();
+	queryClient.client
+		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
+		.then(async (res) => {
+			const videos = res.pages.flatMap(({ items }) => items);
+			let i = 0;
+			for (const video of videos) {
+				if (i == 0) {
+					playTrack(video);
+				} else {
+					playAfter(video);
+				}
+				i++;
+			}
+		});
+};
+
+type AdditionalProps = {
+	type?: SongType;
+	random?: number;
+};
+
+const InfiniteVideoView = <
+	T extends VideoWithRelations<"artist" | "featuring">,
+>(
+	props: InfiniteResourceViewProps<
+		T,
+		typeof SongSortingKeys,
+		AdditionalProps
+	> &
 		Omit<ComponentProps<typeof VideoTile>, "video">,
 ) => {
 	const router = useRouter();
+	const queryClient = useQueryClient();
 	const [options, setOptions] =
-		useState<OptionState<typeof SongSortingKeys>>();
-
+		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
+	const query = {
+		type:
+			// @ts-ignore
+			options?.type == "All" ? undefined : (options?.type as SongType),
+		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
+		order: options?.order ?? props.initialSortingOrder ?? "asc",
+		view: "grid",
+		library: options?.library ?? null,
+	} as const;
+	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
+	const playAction = {
+		label: "playAll",
+		icon: <PlayIcon />,
+		onClick: () => {
+			playVideosAction(
+				emptyPlaylist,
+				playTrack,
+				playAfter,
+				queryClient,
+				() => props.query(query),
+			);
+		},
+	} as const;
+	const shuffleAction = {
+		label: "shuffle",
+		icon: <ShuffleIcon />,
+		onClick: () => {
+			playVideosAction(
+				emptyPlaylist,
+				playTrack,
+				playAfter,
+				queryClient,
+				() =>
+					props.query({
+						...query,
+						random: Math.floor(Math.random() * 10000),
+					}),
+			);
+		},
+	} as const;
 	return (
 		<>
 			<Controls
+				options={[
+					{
+						label: (options?.type as SongType) ?? "All",
+						name: "type",
+						values: [
+							"All",
+							...SongType.filter(
+								(type) =>
+									![
+										"Unknown",
+										"Demo",
+										"Clean",
+										"Edit",
+										"Acappella",
+										"Instrumental",
+									].includes(type),
+							),
+						],
+						currentValue: options?.type,
+					},
+				]}
 				onChange={setOptions}
 				sortingKeys={SongSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
@@ -44,22 +148,12 @@ const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
 				router={props.light == true ? undefined : router}
 				defaultLayout={"grid"}
 				disableLayoutToggle
+				actions={[playAction, shuffleAction]}
 			/>
 			<InfiniteView
 				view={options?.view ?? "grid"}
 				query={() => {
-					const { key, exec } = props.query({
-						view: options?.view ?? "grid",
-						library: options?.library ?? null,
-						sortBy:
-							options?.sortBy ??
-							props.initialSortingField ??
-							"name",
-						order:
-							options?.order ??
-							props.initialSortingOrder ??
-							"asc",
-					});
+					const { key, exec } = props.query(query);
 					return {
 						key,
 						exec: (pagination: PaginationParameters) =>
@@ -76,7 +170,11 @@ const InfiniteVideoView = <T extends VideoWithRelations<"artist">>(
 				}}
 				renderListItem={(item) => <></>}
 				renderGridItem={(item) => (
-					<VideoTile video={item} subtitle={props.subtitle} />
+					<VideoTile
+						video={item}
+						subtitle={props.subtitle}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
 				)}
 			/>
 		</>

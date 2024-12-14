@@ -21,13 +21,11 @@ import {
 	Controller,
 	Delete,
 	Get,
-	Inject,
 	Param,
 	ParseIntPipe,
 	Post,
 	Put,
 	Query,
-	forwardRef,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import PlaylistService from "./playlist.service";
@@ -52,8 +50,6 @@ import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Role } from "src/authentication/roles/roles.decorators";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
 import SongQueryParameters from "src/song/models/song.query-params";
 import Roles from "src/authentication/roles/roles.enum";
@@ -70,13 +66,7 @@ export class Selector {
 @Controller("playlists")
 @ApiTags("Playlists")
 export default class PlaylistController {
-	constructor(
-		private playlistService: PlaylistService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
-	) {}
+	constructor(private playlistService: PlaylistService) {}
 
 	@ApiOperation({
 		summary: "Get one Playlist",
@@ -209,24 +199,5 @@ export default class PlaylistController {
 		entryId: number,
 	) {
 		await this.playlistService.removeEntry(entryId);
-	}
-
-	@ApiOperation({
-		summary: "Change a playlist's illustration",
-	})
-	@Role(Roles.Admin, Roles.Microservice)
-	@Post(":idOrSlug/illustration")
-	async updatePlaylistIllustration(
-		@IdentifierParam(PlaylistService)
-		where: PlaylistQueryParameters.WhereInput,
-		@Body() illustrationDto: IllustrationDownloadDto,
-	): Promise<IllustrationResponse> {
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		return this.illustrationRepository
-			.savePlaylistIllustration(buffer, where)
-			.then(IllustrationResponse.from);
 	}
 }

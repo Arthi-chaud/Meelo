@@ -65,13 +65,21 @@ import Playlist, {
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
 import { TaskResponse } from "../models/task";
-import { SearchResult, SearchResultTransformer } from "../models/search";
 import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
 	ReleaseExternalMetadata,
 	SongExternalMetadata,
 } from "../models/external-metadata";
+import {
+	SaveSearchItem,
+	SearchResult,
+	SearchResultTransformer,
+} from "../models/search";
+import {
+	SongGroupSortingKeys,
+	SongGroupWithRelations,
+} from "../models/song-group";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),
@@ -475,13 +483,13 @@ export default class API {
 	 * Update Artist Illustration
 	 */
 	static async updateArtistIllustration(
-		artistSlugOrId: number | string,
+		artistId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			artistSlugOrId,
+			artistId,
 			illustrationUrl,
-			"artists",
+			"artist",
 		);
 	}
 
@@ -489,13 +497,13 @@ export default class API {
 	 * Update Release Illustration
 	 */
 	static async updateReleaseIllustration(
-		releaseSlugOrId: number | string,
+		releaseId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			releaseSlugOrId,
+			releaseId,
 			illustrationUrl,
-			"releases",
+			"release",
 		);
 	}
 
@@ -503,13 +511,13 @@ export default class API {
 	 * Update Track Illustration
 	 */
 	static async updateTrackIllustration(
-		trackSlugOrId: number | string,
+		trackId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			trackSlugOrId,
+			trackId,
 			illustrationUrl,
-			"tracks",
+			"track",
 		);
 	}
 
@@ -517,13 +525,13 @@ export default class API {
 	 * Update Track Illustration
 	 */
 	static async updatePlaylistIllustration(
-		playlistSlugOrId: number | string,
+		playlistId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			playlistSlugOrId,
+			playlistId,
 			illustrationUrl,
-			"playlists",
+			"playlist",
 		);
 	}
 
@@ -531,17 +539,17 @@ export default class API {
 	 * Update Resourse Illustration
 	 */
 	private static async updateResourceIllustration(
-		resourceSlugOrId: number | string,
+		resourceId: number,
 		illustrationUrl: string,
-		resourceType: "artists" | "releases" | "tracks" | "playlists",
+		resourceType: "artist" | "release" | "track" | "playlist",
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/${resourceType}/${resourceSlugOrId}/illustration`,
+			route: `/illustrations/url`,
 			errorMessage: "Update Illustration Failed",
 			method: "POST",
 			parameters: {},
 			emptyResponse: true,
-			data: { url: illustrationUrl },
+			data: { url: illustrationUrl, [`${resourceType}Id`]: resourceId },
 		});
 	}
 
@@ -722,6 +730,37 @@ export default class API {
 		};
 	}
 
+	static getSongGroups<I extends SongInclude | never = never>(
+		filter: {
+			library?: Identifier;
+			genre?: Identifier;
+			artist?: Identifier;
+			query?: string;
+			type?: SongType;
+		},
+		sort?: SortingParameters<typeof SongGroupSortingKeys>,
+		include?: I[],
+	): InfiniteQuery<SongGroupWithRelations<I>> {
+		return {
+			key: [
+				"song-groups",
+				...API.formatObject(filter),
+				...API.formatObject(sort),
+				...API.formatIncludeKeys(include),
+			],
+			exec: (pagination) =>
+				API.fetch({
+					route: `/song-groups`,
+					errorMessage: "Songs could not be loaded",
+					parameters: { pagination: pagination, include, sort },
+					otherParameters: { ...filter },
+					validator: PaginatedResponse(
+						SongGroupWithRelations(include ?? []),
+					),
+				}),
+		};
+	}
+
 	/**
 	 * Fetch all songs
 	 * @returns An InfiniteQuery of Songs
@@ -732,6 +771,8 @@ export default class API {
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
+			random?: number;
+			type?: SongType;
 		},
 		sort?: SortingParameters<typeof SongSortingKeys>,
 		include?: I[],
@@ -871,12 +912,40 @@ export default class API {
 			key: ["search", query],
 			exec: () =>
 				API.fetch({
-					route: `/search/${query}`,
+					route: `/search`,
 					errorMessage: "Search failed",
+					parameters: {},
+					otherParameters: { query },
+					customValidator: SearchResultTransformer,
+				}),
+		};
+	}
+
+	static getSearchHistory(): Query<SearchResult[]> {
+		return {
+			key: ["search-history-items"],
+			exec: () =>
+				API.fetch({
+					route: `/search/history`,
+					errorMessage: "Getting Search History failed",
 					parameters: {},
 					customValidator: SearchResultTransformer,
 				}),
 		};
+	}
+
+	/**
+	 * Search artists, albums and songs, all at once
+	 */
+	static saveSearchHistoryEntry(resource: SaveSearchItem): Promise<void> {
+		return API.fetch({
+			method: "POST",
+			route: `/search/history`,
+			errorMessage: "Saving Search History failed",
+			parameters: {},
+			data: resource,
+			emptyResponse: true,
+		});
 	}
 
 	/**

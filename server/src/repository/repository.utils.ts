@@ -16,29 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PrismaClient } from "@prisma/client";
 import Identifier from "src/identifier/models/identifier";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Slug from "src/slug/slug";
 import { RequireExactlyOne } from "type-fest";
-
-export async function getRandomIds(
-	tableName: string,
-	prisma: PrismaClient,
-	seed: number,
-	pagination: PaginationParameters,
-): Promise<number[]> {
-	const ids = await prisma
-		.$queryRawUnsafe(
-			`SELECT id FROM ${tableName} ORDER BY MD5(${seed.toString()} || id::text)`,
-		)
-		.then((res: { id: number }[]) => res.map(({ id }) => id));
-	if (pagination?.afterId !== undefined) {
-		const indexOfFirstItem = ids.indexOf(pagination.afterId) + 1;
-		return ids.slice(indexOfFirstItem, pagination?.take);
-	}
-	return ids.slice(pagination?.skip, pagination?.take);
-}
 
 export function sortItemsUsingOrderedIdList<T extends { id: number }>(
 	matches: number[],

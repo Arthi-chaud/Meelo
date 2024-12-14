@@ -24,7 +24,7 @@ import {
 	SongWithRelations,
 } from "../../../models/song";
 import Controls, { OptionState } from "../../controls/controls";
-import SongItem from "../../list-item/song-item";
+import SongItem, { SongGroupItem } from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { PlayIcon, ShuffleIcon } from "../../icons";
@@ -35,9 +35,15 @@ import {
 	useQueryClient,
 } from "../../../api/use-query";
 import { PlayerActions, usePlayerContext } from "../../../contexts/player";
+import {
+	SongGroupSortingKeys,
+	SongGroupWithRelations,
+} from "../../../models/song-group";
 
 type AdditionalProps = {
 	type?: SongType;
+	// if true, show song groups instead of songs
+	groups?: boolean;
 	random?: number;
 };
 
@@ -89,10 +95,18 @@ const InfiniteSongView = <
 		typeof SongSortingKeys,
 		AdditionalProps
 	> &
-		Pick<ComponentProps<typeof SongItem<T>>, "formatSubtitle"> & {
+		Pick<ComponentProps<typeof SongItem<T>>, "subtitles"> & {
 			disableShuffle?: boolean;
+			groupsQuery?: (
+				p: OptionState<typeof SongGroupSortingKeys> & AdditionalProps,
+			) => InfiniteQuery<
+				SongGroupWithRelations<
+					"artist" | "featuring" | "master" | "illustration"
+				>
+			>;
 		},
 ) => {
+	const disableGroupingVersions = !props.groupsQuery;
 	const router = useRouter();
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
@@ -105,6 +119,7 @@ const InfiniteSongView = <
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
+		groups: disableGroupingVersions ? false : options?.groups ?? false,
 		library: options?.library ?? null,
 	} as const;
 	const shuffleAction = {
@@ -154,28 +169,69 @@ const InfiniteSongView = <
 				]}
 				actions={[
 					playAction,
-					...(props.disableShuffle !== true ? [shuffleAction] : []),
+					...(props.disableShuffle !== true && !options?.groups
+						? [shuffleAction]
+						: []),
 				]}
-				disableSorting={props.disableSorting}
+				toggles={
+					disableGroupingVersions
+						? []
+						: [
+								{
+									name: "groups",
+									label: options?.groups
+										? "showAllSongs"
+										: "groupVersions",
+								},
+							]
+				}
+				disableSorting={options?.groups || props.disableSorting}
 				onChange={setOptions}
-				sortingKeys={SongSortingKeys}
+				sortingKeys={
+					options?.groups ? SongGroupSortingKeys : SongSortingKeys
+				}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
 				router={props.light == true ? undefined : router}
 				disableLayoutToggle
 				defaultLayout={"list"}
 			/>
-			<InfiniteView
-				view={options?.view ?? "list"}
-				query={() => props.query(query)}
-				renderListItem={(item) => (
-					<SongItem
-						song={item}
-						formatSubtitle={props.formatSubtitle}
-					/>
-				)}
-				renderGridItem={(item) => <></>}
-			/>
+			{options?.groups ? (
+				<InfiniteView
+					view={"list"}
+					query={() => {
+						return props.groupsQuery!({
+							...query,
+							sortBy: "name",
+						});
+					}}
+					renderListItem={(item) => (
+						<SongGroupItem
+							song={item}
+							subtitles={props.subtitles}
+						/>
+					)}
+					renderGridItem={() => <></>}
+				/>
+			) : (
+				<InfiniteView
+					view={"list"}
+					query={() => {
+						return props.query({
+							...query,
+							sortBy: query.sortBy,
+						});
+					}}
+					renderListItem={(item) => (
+						<SongItem
+							song={item}
+							subtitles={props.subtitles}
+							onClick={() => item && props.onItemClick?.(item)}
+						/>
+					)}
+					renderGridItem={() => <></>}
+				/>
+			)}
 		</>
 	);
 };

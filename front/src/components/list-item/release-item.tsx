@@ -26,9 +26,10 @@ import { Star } from "iconsax-react";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<"album" | "illustration">;
+	onClick?: () => void;
 };
 
-const ReleaseItem = ({ release }: ReleaseItemProps) => {
+const ReleaseItem = ({ release, onClick }: ReleaseItemProps) => {
 	const isMaster = release.id == release.album.masterId;
 
 	return (
@@ -42,6 +43,7 @@ const ReleaseItem = ({ release }: ReleaseItemProps) => {
 			}
 			href={`/releases/${release.slug}`}
 			title={release.name}
+			onClick={onClick}
 			secondTitle={getYear(release.releaseDate)?.toString()}
 			trailing={
 				<Grid

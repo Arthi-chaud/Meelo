@@ -39,6 +39,7 @@ import Roles from "src/authentication/roles/roles.enum";
 import IllustrationRegistrationDto from "./models/illustration-registration.dto";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { RegistrationService } from "src/registration/registration.service";
+import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
 
@@ -84,10 +85,10 @@ export class IllustrationController {
 	}
 
 	@ApiOperation({
-		summary: "Register an illustration",
+		summary: "Register an illustration from a file",
 	})
 	@Role(Roles.Admin, Roles.Microservice)
-	@Post()
+	@Post("file")
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async registerIllustration(@Body() dto: IllustrationRegistrationDto) {
@@ -98,6 +99,15 @@ export class IllustrationController {
 			dto.file.buffer,
 			dto.type,
 		);
+	}
+
+	@ApiOperation({
+		summary: "Save an illustration from a url",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Post("url")
+	async saveIllustration(@Body() dto: IllustrationDownloadDto) {
+		return this.illustrationRepository.saveIllustrationFromUrl(dto);
 	}
 
 	@ApiOperation({

@@ -17,13 +17,11 @@
  */
 
 import {
-	Body,
 	Controller,
 	DefaultValuePipe,
 	Get,
 	Inject,
 	ParseBoolPipe,
-	Post,
 	Put,
 	Query,
 	Res,
@@ -49,8 +47,6 @@ import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import IllustrationService from "src/illustration/illustration.service";
 import { IllustrationResponse } from "src/illustration/models/illustration.response";
 import { IllustrationType } from "@prisma/client";
 import Roles from "src/authentication/roles/roles.enum";
@@ -81,10 +77,6 @@ export default class ReleaseController {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => AlbumService))
 		private albumService: AlbumService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
 	) {}
 
 	@ApiOperation({
@@ -176,31 +168,6 @@ export default class ReleaseController {
 		@Res() response: ExpressResponse,
 	) {
 		return this.releaseService.pipeArchive(where, response);
-	}
-
-	@ApiOperation({
-		summary: "Change a release's illustration",
-	})
-	@Role(Roles.Admin, Roles.Microservice)
-	@Post(":idOrSlug/illustration")
-	async updateReleaseIllustration(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-		@Body() illustrationDto: IllustrationDownloadDto,
-	): Promise<IllustrationResponse> {
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		return this.illustrationRepository
-			.saveReleaseIllustration(
-				buffer,
-				null,
-				null,
-				where,
-				IllustrationType.Cover,
-			)
-			.then(IllustrationResponse.from);
 	}
 
 	@ApiOperation({

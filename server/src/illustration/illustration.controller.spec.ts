@@ -139,8 +139,9 @@ describe("Illustration Controller", () => {
 		let firstIllustration: IllustrationResponse | null = null;
 		it("should create the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					artistId: dummyRepository.artistB.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -156,8 +157,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should update the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					artistId: dummyRepository.artistB.id,
 					url: illustration2UrlExample,
 				})
 				.expect(201)
@@ -179,8 +181,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/artists/-1/artists`)
+				.post(`/illustrations/url`)
 				.send({
+					artistId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
@@ -191,10 +194,9 @@ describe("Illustration Controller", () => {
 		let firstIllustration: IllustrationResponse | null = null;
 		it("should create the release illustration", async () => {
 			return request(app.getHttpServer())
-				.post(
-					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
-				)
+				.post(`/illustrations/url`)
 				.send({
+					releaseId: dummyRepository.releaseB1_1.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -210,10 +212,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should update the release illustration", async () => {
 			return request(app.getHttpServer())
-				.post(
-					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
-				)
+				.post(`/illustrations/url`)
 				.send({
+					releaseId: dummyRepository.releaseB1_1.id,
 					url: illustration2UrlExample,
 				})
 				.expect(201)
@@ -236,8 +237,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when release does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/releases/-1/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					releaseId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
@@ -247,8 +249,9 @@ describe("Illustration Controller", () => {
 	describe("Update Track Illustration", () => {
 		it("should create the track illustration", async () => {
 			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackC1_1.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					trackId: dummyRepository.trackC1_1.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -263,8 +266,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/tracks/-1/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					trackId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
@@ -274,8 +278,9 @@ describe("Illustration Controller", () => {
 	describe("Update Playlist Illustration", () => {
 		it("should create the Playlist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/playlists/${dummyRepository.playlist1.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					playlistId: dummyRepository.playlist1.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -290,11 +295,33 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when playlist does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/playlists/-1/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					playlistId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
+		});
+	});
+
+	describe("POST Illustration", () => {
+		it("should not save the illustration (2 resource ids)", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/url`)
+				.send({
+					artistId: 1,
+					releaseId: 2,
+					url: illustrationUrlExample,
+				})
+				.expect(400);
+		});
+		it("should not save the illustration (no resource id)", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/url`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(400);
 		});
 	});
 
@@ -308,14 +335,14 @@ describe("Illustration Controller", () => {
 		describe("Error handling", () => {
 			it("Should throw, as target track does not exist", async () => {
 				return buildData(
-					request(app.getHttpServer()).post(`/illustrations`),
+					request(app.getHttpServer()).post(`/illustrations/file`),
 				)
 					.expect(400)
 					.field("trackId", 1);
 			});
 			it("Should throw, as type is not valid", async () => {
 				return buildData(
-					request(app.getHttpServer()).post(`/illustrations`),
+					request(app.getHttpServer()).post(`/illustrations/file`),
 				)
 					.expect(400)
 					.field("type", "Avatar");
@@ -323,7 +350,7 @@ describe("Illustration Controller", () => {
 		});
 		it("Should set the image's illustration", async () => {
 			return buildData(
-				request(app.getHttpServer()).post(`/illustrations`),
+				request(app.getHttpServer()).post(`/illustrations/file`),
 			)
 				.expect(201)
 				.expect((res) => {

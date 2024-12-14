@@ -59,7 +59,7 @@ describe("Video Service", () => {
 
 	describe("Get Songs With Videos", () => {
 		it("should return the songs With video", async () => {
-			const videoSongs = await videoService.getVideos({});
+			const videoSongs = await videoService.getMany({});
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
 				...dummyRepository.songA1,
@@ -70,11 +70,11 @@ describe("Video Service", () => {
 			});
 		});
 		it("should return an empty list (pagination)", async () => {
-			const videoSongs = await videoService.getVideos({}, { skip: 1 });
+			const videoSongs = await videoService.getMany({}, { skip: 1 });
 			expect(videoSongs.length).toBe(0);
 		});
 		it("should return songs with their artist", async () => {
-			const videoSongs = await videoService.getVideos(
+			const videoSongs = await videoService.getMany(
 				{},
 				{},
 				{ artist: true },

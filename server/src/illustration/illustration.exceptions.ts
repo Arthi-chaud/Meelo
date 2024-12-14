@@ -30,6 +30,12 @@ class NoIllustrationFolderException extends MeeloException {
 	}
 }
 
+export class MissingIllustrationResourceIdException extends InvalidRequestException {
+	constructor() {
+		super("Missing Album, Artist, Song or Release ID");
+	}
+}
+
 export class NoArtistFolderIllustrationException extends NoIllustrationFolderException {
 	constructor(artistSlug: Slug) {
 		super(

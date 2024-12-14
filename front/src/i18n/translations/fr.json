@@ -106,6 +106,9 @@
 	"pluralRemixAlbum": "Remixes",
 	"pluralVideoAlbum": "Albums Vidéos",
 
+	"groupVersions": "Grouper les versions",
+	"showAllSongs": "Afficher toutes les versions",
+
 	"backToTop": "Retour en haut",
 	"changeLayout": "Changer la disposition",
 
@@ -200,7 +203,7 @@
 	"Clean": "Version Clean",
 	"Demo": "Maquette",
 	"Unknown": "Type Inconnu",
-	"Acapella": "Acapella",
+	"Acappella": "A Cappella",
 	"Medley": "Medley/Megamix",
 
 	"refreshMetadataStarted": "Mise à jour des métadonées... (Rechargez la page pour actualiser)",

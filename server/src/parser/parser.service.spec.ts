@@ -975,14 +975,26 @@ describe("Parser Service", () => {
 			);
 		});
 
-		it("Acapella (Acapella)", () => {
+		it("Acappella (Acapella)", () => {
 			expect(
 				parserService.getSongType("Don't Give It Up (Acapella)"),
-			).toBe(SongType.Acapella);
+			).toBe(SongType.Acappella);
 		});
-		it("Acapella (Remix Acapella)", () => {
+		it("Acappella (Various Spelling)", () => {
 			expect(
-				parserService.getSongType("Don't Give It Up (Remix Acapella)"),
+				parserService.getSongType("Don't Give It Up (A Cappella)"),
+			).toBe(SongType.Acappella);
+			expect(
+				parserService.getSongType("Don't Give It Up (Acappella)"),
+			).toBe(SongType.Acappella);
+
+			expect(parserService.getSongType("Irresistible (Accapella)")).toBe(
+				SongType.Acappella,
+			);
+		});
+		it("Acappella (Remix Acapella)", () => {
+			expect(
+				parserService.getSongType("Don't Give It Up (Remix Acappella)"),
 			).toBe(SongType.Remix);
 		});
 		it("Non-Music (Photo Shoot/Gallery)", () => {

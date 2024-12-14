@@ -33,9 +33,9 @@ export const SongType = [
 	"Clean",
 	"Demo",
 	"Unknown",
-	"Acapella",
-	"NonMusic",
+	"Acappella",
 	"Medley",
+	"NonMusic",
 ] as const;
 export type SongType = (typeof SongType)[number];
 

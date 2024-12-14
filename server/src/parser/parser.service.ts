@@ -448,8 +448,14 @@ export default class ParserService {
 		if (extensionWords.at(-1) == "beats") {
 			return SongType.Remix;
 		}
-		if (containsWord("acapella")) {
-			return SongType.Acapella;
+		if (
+			containsWord("acapella") ||
+			containsWord("acappella") ||
+			containsWord("accappella") ||
+			containsWord("accapella") ||
+			titleContainsWord("a cappella")
+		) {
+			return SongType.Acappella;
 		}
 		if (
 			containsWord('12"') ||

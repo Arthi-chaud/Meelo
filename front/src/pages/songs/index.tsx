@@ -58,7 +58,21 @@ const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				initialSortingOrder={props?.order}
 				query={({ sortBy, order, type, library, random }) =>
 					API.getSongs(
-						{ type, library: library ?? undefined, random },
+						{
+							type,
+							library: library ?? undefined,
+							random,
+						},
+						{ sortBy, order },
+						["artist", "featuring", "master", "illustration"],
+					)
+				}
+				groupsQuery={({ sortBy, order, library, type }) =>
+					API.getSongGroups(
+						{
+							type,
+							library: library ?? undefined,
+						},
 						{ sortBy, order },
 						["artist", "featuring", "master", "illustration"],
 					)

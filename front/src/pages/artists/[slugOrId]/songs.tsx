@@ -123,9 +123,29 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						["artist", "featuring", "master", "illustration"],
 					)
 				}
-				formatSubtitle={(song) =>
-					getTrackReleaseName(song.master).then((name) => name)
+				groupsQuery={
+					isRareSongsPage(router)
+						? undefined
+						: ({ sortBy, order, library, type }) =>
+								API.getSongGroups(
+									{
+										type,
+										artist: artistIdentifier,
+										library: library ?? undefined,
+									},
+									{ sortBy, order },
+									[
+										"artist",
+										"featuring",
+										"master",
+										"illustration",
+									],
+								)
 				}
+				subtitles={[
+					(song) =>
+						getTrackReleaseName(song.master).then((name) => name),
+				]}
 			/>
 		</Box>
 	);

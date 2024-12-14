@@ -73,10 +73,12 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			<InfiniteVideoView
 				initialSortingField={props?.sortBy}
 				initialSortingOrder={props?.order}
-				query={({ sortBy, order, library }) =>
+				query={({ sortBy, order, library, random, type }) =>
 					API.getVideos(
 						{
+							type,
 							artist: artistIdentifier,
+							random,
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
