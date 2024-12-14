@@ -148,7 +148,7 @@ func PostIllustration(config config.Config, trackId int, imageType IllustrationT
 	part.Write(imageBytes)
 	mp.Close()
 
-	_, err = request("POST", "/illustrations", reqBody, config, mp.FormDataContentType())
+	_, err = request("POST", "/illustrations/file", reqBody, config, mp.FormDataContentType())
 	return err
 }
 

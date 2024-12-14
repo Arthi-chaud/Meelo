@@ -96,10 +96,10 @@ export class IllustrationController {
 	}
 
 	@ApiOperation({
-		summary: "Register an illustration",
+		summary: "Register an illustration from a file",
 	})
 	@Role(Roles.Admin, Roles.Microservice)
-	@Post()
+	@Post("file")
 	@ApiConsumes("multipart/form-data")
 	@FormDataRequest({ storage: MemoryStoredFile })
 	async registerIllustration(@Body() dto: IllustrationRegistrationDto) {
