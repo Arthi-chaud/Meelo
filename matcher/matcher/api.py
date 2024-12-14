@@ -56,7 +56,10 @@ class API:
         self._post("/external-metadata", json=dto.to_dict())
 
     def post_artist_illustration(self, artist_id: int, image_url):
-        self._post(f"/artists/{artist_id}/illustration", json={"url": image_url})
+        self._post(
+            "/illustrations/url",
+            json={"url": image_url, "artistId": artist_id},
+        )
 
     def get_providers(self) -> Page[Provider]:
         response = self._get("/external-providers").json()
