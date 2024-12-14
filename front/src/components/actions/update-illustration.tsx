@@ -83,7 +83,7 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 
 const UpdateIllustrationAction = (
 	queryClient: QueryClient,
-	resourceId: number | string,
+	resourceId: number,
 	resourceType: "artist" | "track" | "release" | "playlist",
 ): Action => {
 	const textFieldId = `update-illustration-${resourceType}-${resourceId}`;
@@ -121,23 +121,23 @@ const UpdateIllustrationAction = (
 
 const UpdateArtistIllustrationAction = (
 	queryClient: QueryClient,
-	artistSlugOrId: number | string,
-) => UpdateIllustrationAction(queryClient, artistSlugOrId, "artist");
+	artistId: number,
+) => UpdateIllustrationAction(queryClient, artistId, "artist");
 
 const UpdateReleaseIllustrationAction = (
 	queryClient: QueryClient,
-	releaseSlugOrId: number | string,
-) => UpdateIllustrationAction(queryClient, releaseSlugOrId, "release");
+	releaseId: number,
+) => UpdateIllustrationAction(queryClient, releaseId, "release");
 
 const UpdateTrackIllustrationAction = (
 	queryClient: QueryClient,
-	trackSlugOrId: number | string,
-) => UpdateIllustrationAction(queryClient, trackSlugOrId, "track");
+	trackId: number,
+) => UpdateIllustrationAction(queryClient, trackId, "track");
 
 const UpdatePlaylistIllustrationAction = (
 	queryClient: QueryClient,
-	playlistSlugOrId: number | string,
-) => UpdateIllustrationAction(queryClient, playlistSlugOrId, "playlist");
+	playlistId: number,
+) => UpdateIllustrationAction(queryClient, playlistId, "playlist");
 
 export {
 	UpdateArtistIllustrationAction,

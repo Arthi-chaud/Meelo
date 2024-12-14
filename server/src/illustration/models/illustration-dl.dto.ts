@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class IllustrationDownloadDto {
 	@ApiProperty({
@@ -26,4 +26,20 @@ export class IllustrationDownloadDto {
 	@IsString()
 	@IsNotEmpty()
 	url: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsNumber()
+	trackId?: number | null;
+	@ApiProperty()
+	@IsOptional()
+	@IsNumber()
+	artistId?: number | null;
+	@ApiProperty()
+	@IsOptional()
+	@IsNumber()
+	playlistId?: number | null;
+	@ApiProperty()
+	@IsOptional()
+	@IsNumber()
+	releaseId?: number | null;
 }

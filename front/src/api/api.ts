@@ -477,13 +477,13 @@ export default class API {
 	 * Update Artist Illustration
 	 */
 	static async updateArtistIllustration(
-		artistSlugOrId: number | string,
+		artistId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			artistSlugOrId,
+			artistId,
 			illustrationUrl,
-			"artists",
+			"artist",
 		);
 	}
 
@@ -491,13 +491,13 @@ export default class API {
 	 * Update Release Illustration
 	 */
 	static async updateReleaseIllustration(
-		releaseSlugOrId: number | string,
+		releaseId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			releaseSlugOrId,
+			releaseId,
 			illustrationUrl,
-			"releases",
+			"release",
 		);
 	}
 
@@ -505,13 +505,13 @@ export default class API {
 	 * Update Track Illustration
 	 */
 	static async updateTrackIllustration(
-		trackSlugOrId: number | string,
+		trackId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			trackSlugOrId,
+			trackId,
 			illustrationUrl,
-			"tracks",
+			"track",
 		);
 	}
 
@@ -519,13 +519,13 @@ export default class API {
 	 * Update Track Illustration
 	 */
 	static async updatePlaylistIllustration(
-		playlistSlugOrId: number | string,
+		playlistId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			playlistSlugOrId,
+			playlistId,
 			illustrationUrl,
-			"playlists",
+			"playlist",
 		);
 	}
 
@@ -533,17 +533,17 @@ export default class API {
 	 * Update Resourse Illustration
 	 */
 	private static async updateResourceIllustration(
-		resourceSlugOrId: number | string,
+		resourceId: number,
 		illustrationUrl: string,
-		resourceType: "artists" | "releases" | "tracks" | "playlists",
+		resourceType: "artist" | "release" | "track" | "playlist",
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/${resourceType}/${resourceSlugOrId}/illustration`,
+			route: `/illustrations/url`,
 			errorMessage: "Update Illustration Failed",
 			method: "POST",
 			parameters: {},
 			emptyResponse: true,
-			data: { url: illustrationUrl },
+			data: { url: illustrationUrl, [`${resourceType}Id`]: resourceId },
 		});
 	}
 
