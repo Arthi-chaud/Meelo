@@ -1,6 +1,6 @@
 import logging
 
-from datetime import date
+from datetime import date, datetime
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.providers.features import (
@@ -21,11 +21,24 @@ def match_and_post_album(album_id: int, album_name: str):
         (dto, release_date, genres) = match_album(
             album_id, album_name, album.artist_name
         )
+        old_release_date = (
+            datetime.fromisoformat(album.release_date).date()
+            if album.release_date
+            else None
+        )
         if dto:
             logging.info(
                 f"Matched with {len(dto.sources)} providers for album {album_name}"
             )
             context.client.post_external_metadata(dto)
+
+        if old_release_date and release_date:
+            if abs(release_date.year - old_release_date.year) > 2:
+                logging.info(
+                    f"Release date found ({release_date.year}) is too far from the one from the API ({old_release_date.year})."
+                )
+                logging.info("Probably a mismatch. Ignoring...")
+                release_date = None
         if release_date:
             logging.info(f"Updating release date for album {album_name}")
         if genres:
