@@ -1,5 +1,10 @@
 from dataclasses import dataclass
-from dataclasses_json import dataclass_json, LetterCase, Undefined, DataClassJsonMixin
+from dataclasses_json import (
+    dataclass_json,
+    LetterCase,
+    Undefined,
+    DataClassJsonMixin,
+)
 from typing import Optional
 
 
