@@ -118,17 +118,20 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 releases = [
                     r
                     for r in releases
-                    if r[release_group_key]["primary-type"] == "Single"
+                    if r[release_group_key].get("primary-type") == "Single"
                 ]
             else:
                 releases = [
                     r
                     for r in releases
-                    if r[release_group_key]["primary-type"] != "Single"
+                    if r[release_group_key].get("primary-type") != "Single"
                 ]
-            releases = sorted(
-                [r for r in releases if "date" in r.keys()],
-                key=lambda r: r["date"],
+            releases = (
+                sorted(
+                    [r for r in releases if "date" in r.keys()],
+                    key=lambda r: r["date"],
+                )
+                or releases
             )
             releases = (
                 [
