@@ -15,7 +15,8 @@ class TestWikipedia(unittest.TestCase):
         self.assertIsNotNone(album)
         description = provider.get_album_description(album)
         self.assertIsNotNone(description)
-        self.assertIn("first album", description)  # pyright: ignore
+        self.assertIn("Sweater", description)  # pyright: ignore
+        self.assertIn("Moloko", description) #pyright: ignore
 
     def test_get_artist_description(self):
         provider: WikipediaProvider = Context().get().get_provider(WikipediaProvider)  # pyright: ignore
