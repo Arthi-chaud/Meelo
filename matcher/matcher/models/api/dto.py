@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import List, Optional
 from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 
-from matcher.providers.domain import AlbumType
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
@@ -11,7 +10,7 @@ class UpdateAlbumDto(DataClassJsonMixin):
     # str should be iso 8601
     release_date: Optional[str] = None
     genres: Optional[List[str]] = None
-    type: Optional[AlbumType] = None
+    type: Optional[str] = None
 
 
 @dataclass_json

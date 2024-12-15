@@ -87,7 +87,7 @@ class API:
         dto = UpdateAlbumDto(
             release_date=release_date.isoformat() if release_date else None,
             genres=genres,
-            type=type
+            type=type.value if type else None
         )
         self._post(f"/albums/{album_id}", json=dto.to_dict())
 
