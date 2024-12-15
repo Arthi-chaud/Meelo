@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Any, List
-import math
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,

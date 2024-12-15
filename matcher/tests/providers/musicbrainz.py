@@ -23,8 +23,8 @@ class TestMusicbrainz(unittest.TestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        artist1 = provider.search_artist("Christine & The Queen")
-        artist2 = provider.search_artist("Christine and The Queen")
+        artist1 = provider.search_artist("Christine & The Queens")
+        artist2 = provider.search_artist("Christine and The Queens")
         self.assertIsNotNone(artist1)
         self.assertIsNotNone(artist2)
         self.assertEqual(artist1.id, "9c90ffbf-b137-4dee-bfcc-b8010787840d")  # pyright:ignore
