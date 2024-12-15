@@ -7,6 +7,7 @@ from .features import (
     GetAlbumIdFromUrlFeature,
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
+    GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -20,7 +21,7 @@ from .features import (
     SearchAlbumFeature,
     SearchArtistFeature,
 )
-from .domain import AlbumSearchResult, ArtistSearchResult
+from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult
 from typing import Any, List
 
 
@@ -98,6 +99,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     def get_album_rating(self, album: Any) -> int | None:
         f = self.get_feature(GetAlbumRatingFeature)
+        return f.run(album) if f else None
+
+    def get_album_type(self, album: Any) -> AlbumType | None:
+        f = self.get_feature(GetAlbumTypeFeature)
         return f.run(album) if f else None
 
     def get_album_genres(self, album: Any) -> List[str] | None:

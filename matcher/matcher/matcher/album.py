@@ -3,11 +3,13 @@ import logging
 from datetime import date, datetime
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
+from matcher.providers.domain import AlbumType
 from matcher.providers.features import (
     GetAlbumDescriptionFeature,
     GetAlbumGenresFeature,
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
+    GetAlbumTypeFeature,
 )
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
@@ -18,9 +20,11 @@ def match_and_post_album(album_id: int, album_name: str):
     try:
         context = Context.get()
         album = context.client.get_album(album_id)
-        (dto, release_date, genres) = match_album(
-            album_id, album_name, album.artist_name
+        (dto, release_date, album_type, genres) = match_album(
+            album_id, album_name, album.artist_name, album.type
         )
+        # We only care about the new album type if the previous type is Studio
+        album_type = album_type if album.type == AlbumType.STUDIO and album_type else album.type
         old_release_date = (
             datetime.fromisoformat(album.release_date).date()
             if album.release_date
@@ -43,19 +47,23 @@ def match_and_post_album(album_id: int, album_name: str):
             logging.info(f"Updating release date for album {album_name}")
         if genres:
             logging.info(f"Found {len(genres)} genres for album {album_name}")
-        if release_date or genres:
-            context.client.post_album_update(album_id, release_date, genres)
+        if album_type != album.type and album_type != AlbumType.OTHER:
+            logging.info(f"Found type for album {album_name}: {album_type.value}")
+        if release_date or genres or (album_type != album.type) and album_type != AlbumType.OTHER:
+            context.client.post_album_update(album_id, release_date, genres, album_type)
     except Exception as e:
         logging.error(e)
 
 
 def match_album(
-    album_id: int, album_name: str, artist_name: str | None
-) -> tuple[ExternalMetadataDto | None, date | None, List[str]]:
+    album_id: int, album_name: str, artist_name: str | None, type: AlbumType
+) -> tuple[ExternalMetadataDto | None, date | None, AlbumType | None, List[str]]:
     context = Context.get()
     release_date: date | None = None
     genres: List[str] = []
     rating: int | None = None
+    # The type is none if it needs to be found, or sth else if the API already knows it
+    album_type: AlbumType | None = None if type == AlbumType.OTHER or type == AlbumType.STUDIO else type
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
         lambda mb, mbid: mb.get_album(mbid),
@@ -92,6 +100,7 @@ def match_album(
             (not description and provider.has_feature(GetAlbumDescriptionFeature))
             or (not release_date and provider.has_feature(GetAlbumReleaseDateFeature))
             or (not rating and provider.has_feature(GetAlbumRatingFeature))
+            or (not album_type and provider.has_feature(GetAlbumTypeFeature))
             or (len(genres) == 0 and provider.has_feature(GetAlbumGenresFeature))
         )
         if not is_useful:
@@ -102,6 +111,8 @@ def match_album(
         album = provider.get_album(provider_album_id)
         if not album:
             continue
+        if not album_type:
+            album_type = provider.get_album_type(album)
         if not rating:
             rating = provider.get_album_rating(album)
         if not description:
@@ -125,5 +136,6 @@ def match_album(
         if len(external_sources) > 0 or description or rating
         else None,
         release_date,
+        album_type if album_type != type else None,
         genres,
     )

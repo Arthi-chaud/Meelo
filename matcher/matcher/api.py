@@ -13,6 +13,7 @@ from matcher.models.api.dto import (
 )
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
+from matcher.providers.domain import AlbumType
 
 T = TypeVar("T", bound=DataClassJsonMixin)
 
@@ -81,11 +82,12 @@ class API:
         self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
 
     def post_album_update(
-        self, album_id: int, release_date: date | None, genres: List[str] | None
+        self, album_id: int, release_date: date | None, genres: List[str] | None, type: AlbumType | None
     ):
         dto = UpdateAlbumDto(
             release_date=release_date.isoformat() if release_date else None,
             genres=genres,
+            type=type.value if type else None
         )
         self._post(f"/albums/{album_id}", json=dto.to_dict())
 

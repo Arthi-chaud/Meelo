@@ -16,10 +16,11 @@ from matcher.providers.features import (
     GetWikidataAlbumRelationKeyFeature,
     SearchAlbumFeature,
     GetAlbumFeature,
+    GetAlbumTypeFeature,
     SearchArtistFeature,
 )
 from ..utils import capitalize_all_words, to_slug
-from .domain import ArtistSearchResult, AlbumSearchResult
+from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult
 from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
@@ -52,6 +53,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 )
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
+            GetAlbumTypeFeature(lambda album: self._get_album_type(album)),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
             SearchAlbumFeature(
@@ -102,7 +104,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         artist_name: str | None,
     ) -> AlbumSearchResult | None:
         # TODO It's ugly, use an album_type variable from API
-        sanitised_album_name = re.sub("\\s*-\\s*Single$", "", album_name)
+        sanitised_album_name = re.sub("\\s*-\\s*(Single|EP)$", "", album_name)
         album_slug = to_slug(sanitised_album_name)
         artist_slug = to_slug(artist_name) if artist_name else None
         is_single = sanitised_album_name != album_name
@@ -175,3 +177,20 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             ]
         except Exception:
             pass
+
+    def _get_album_type(self, album: Any) -> AlbumType | None:
+        raw_types: List[str] = []
+        if album.get('primary-type'):
+            raw_types.append(album['primary-type'])
+        if album.get('secondary-types'):
+            raw_types.extend(album['secondary-types'])
+        raw_types = [t.lower() for t in raw_types]
+        if raw_types == ['album']:
+            return AlbumType.STUDIO
+        if 'remix' in raw_types:
+            return AlbumType.REMIXES
+        if 'compilation' in raw_types:
+            return AlbumType.COMPILATION
+        if 'dj-mix' in raw_types:
+            return AlbumType.REMIXES
+        return None
