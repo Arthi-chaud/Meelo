@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import logging
 import re
 from typing import Any, List
+import warnings
 
 from matcher.providers.features import (
     GetAlbumGenresFeature,
@@ -32,7 +33,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     def __post_init__(self):
         # Ignore warning at runtime, the library uses XML and does not parse everything we want (like genres)
         logging.getLogger("musicbrainzngs").setLevel(logging.ERROR)
-        musicbrainzngs.set_format("json")
+        with warnings.catch_warnings(action="ignore"):
+            musicbrainzngs.set_format("json")
         musicbrainzngs.set_useragent(
             "Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo"
         )
