@@ -2,7 +2,7 @@ from slugify import slugify
 
 
 def to_slug(s: str) -> str:
-    return slugify("".join(s.lower().split()))
+    return slugify("".join(s.lower().split())).replace("-", "")
 
 
 def capitalize_all_words(s: str) -> str:
