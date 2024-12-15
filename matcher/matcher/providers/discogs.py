@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, List
-
+import math
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
@@ -105,7 +105,12 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
 
     def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
-            return artist["images"][0]["uri"]
+            # We sort images and take the most square one.
+            images = artist["images"]
+            sorted_images = sorted(
+                images, key=lambda i: abs(1 - (i["width"] / i["height"]))
+            )
+            return sorted_images[0]["uri"]
         except Exception:
             return None
 
