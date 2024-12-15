@@ -18,6 +18,36 @@ class TestGenius(unittest.TestCase):
         self.assertEqual(artist.id, "P!nk")  # pyright: ignore
 
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
+    def test_search_artist_with_alias(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        artist1 = provider.search_artist("Christine & The Queens")
+        artist2 = provider.search_artist("Christine and The Queens")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "Christine and the Queens")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
+    def test_search_artist_with_and(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        artist1 = provider.search_artist("Florence + The Machine")
+        artist2 = provider.search_artist("Florence and the machine")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "Florence + the Machine")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
+    def test_search_artist_with_and_2(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        artist1 = provider.search_artist("Selena Gomez & The Scene")
+        artist2 = provider.search_artist("Selena Gomez and the Scene")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "Selena Gomez & The Scene")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_artist_description_and_image(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         artist = provider.get_artist("Massive Attack")

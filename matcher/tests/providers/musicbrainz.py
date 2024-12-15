@@ -19,6 +19,39 @@ class TestMusicbrainz(unittest.TestCase):
         self.assertIsNotNone(artist)
         self.assertEqual(artist.id, "f4d5cc07-3bc9-4836-9b15-88a08359bc63")  # pyright:ignore
 
+    def test_search_artist_with_alias(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        artist1 = provider.search_artist("Christine & The Queen")
+        artist2 = provider.search_artist("Christine and The Queen")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "9c90ffbf-b137-4dee-bfcc-b8010787840d")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    def test_search_artist_with_and(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        artist1 = provider.search_artist("Florence + The Machine")
+        artist2 = provider.search_artist("Florence and the machine")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "5fee3020-513b-48c2-b1f7-4681b01db0c6")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    def test_search_artist_with_and_2(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        artist1 = provider.search_artist("Selena Gomez & The Scene")
+        artist2 = provider.search_artist("Selena Gomez and the Scene")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "37d0a847-32d3-480f-bd1e-101f50a3d332")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
     def test_get_artist(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)

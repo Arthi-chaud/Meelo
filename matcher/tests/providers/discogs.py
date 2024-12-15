@@ -15,6 +15,33 @@ class TestDiscogs(unittest.TestCase):
         self.assertIsNotNone(artist)
         self.assertEqual(artist.id, "36988")  # pyright: ignore
 
+    def test_search_artist_with_alias(self):
+        provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        artist1 = provider.search_artist("Christine & The Queen")
+        artist2 = provider.search_artist("Christine and The Queen")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "2714640")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    def test_search_artist_with_and(self):
+        provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        artist1 = provider.search_artist("Florence + The Machine")
+        artist2 = provider.search_artist("Florence and the machine")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "994835")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
+    def test_search_artist_with_and_2(self):
+        provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        artist1 = provider.search_artist("Selena Gomez & The Scene")
+        artist2 = provider.search_artist("Selena Gomez and the Scene")
+        self.assertIsNotNone(artist1)
+        self.assertIsNotNone(artist2)
+        self.assertEqual(artist1.id, "1867561")  # pyright:ignore
+        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+
     def test_get_artist_description_and_image(self):
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
         artist = provider.get_artist("4480")

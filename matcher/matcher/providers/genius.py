@@ -84,12 +84,28 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
 
     def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         try:
+            artist_name = artist_name.lower()
             artists = self._fetch("/search/artist", {"q": artist_name})["response"][
                 "sections"
             ][0]["hits"]
-            artist_slug = to_slug(artist_name)
+            # Sometimes search fails if the name contains ' and ' instead of ' & '
+            if len(artists) == 0 and " and " in artist_name:
+                artists = self._fetch(
+                    "/search/artist", {"q": artist_name.replace(" and ", " & ")}
+                )["response"]["sections"][0]["hits"]
+            artist_slug = to_slug(
+                artist_name.replace(" & ", " and ").replace(" and ", " ")
+            )
             for artist in artists:
-                if to_slug(artist["result"]["name"]) == artist_slug:
+                if (
+                    to_slug(
+                        artist["result"]["name"]
+                        .lower()
+                        .replace(" & ", " and ")
+                        .replace(" and ", " ")
+                    )
+                    == artist_slug
+                ):
                     return ArtistSearchResult(artist["result"]["name"])
             return None
         except Exception:
