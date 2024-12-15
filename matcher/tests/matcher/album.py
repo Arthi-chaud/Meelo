@@ -1,6 +1,7 @@
 import unittest
 import datetime
 from matcher.matcher.album import match_album
+from matcher.providers.domain import AlbumType
 from tests.matcher.common import MatcherTestUtils
 
 
@@ -9,11 +10,12 @@ class TestMatchAlbum(unittest.TestCase):
     def setUpClass(cls):
         return MatcherTestUtils.setup_context()
 
-    # TODO Test compilation
     def test_get_album(self):
-        [matches, date, genres] = match_album(
-            1, "Confessions on a Dancefloor", "Madonna"
+        [matches, date, type, genres] = match_album(
+            1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
         )
+        # Type
+        self.assertIsNone(type)
         # Genres
         self.assertEqual(len(genres), 7)
         self.assertIn("Pop", genres)
@@ -70,9 +72,11 @@ class TestMatchAlbum(unittest.TestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000356345")
 
     def test_get_album2(self):
-        [matches, date, genres] = match_album(
-            1, "The Tortured Poets Department", "Taylor Swift"
+        [matches, date, type, genres] = match_album(
+            1, "The Tortured Poets Department", "Taylor Swift", AlbumType.STUDIO
         )
+        # Type
+        self.assertIsNone(type)
         # Rating
         self.assertIsNotNone(matches.rating)
         self.assertEqual(matches.rating, 60)
@@ -116,7 +120,7 @@ class TestMatchAlbum(unittest.TestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0004210541")
 
     def test_get_album_no_rating(self):
-        [matches, date, genres] = match_album(1, "Aéromusical", "Superbus")
+        [matches, date, type, genres] = match_album(1, "Aéromusical", "Superbus", AlbumType.STUDIO)
         # Rating
         self.assertIsNone(matches.rating)
         # Release date
