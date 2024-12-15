@@ -458,15 +458,14 @@ export default class AlbumService extends SearchableRepositoryService {
 	 */
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
-		const otherReleaseDate = album.releases
-			.map((r) => r.releaseDate)
-			.filter((d) => d !== null && d !== undefined);
 
-		// If the album's release date is not from any of the releases, abort
-		// Happens if date has been updated by microservice
+		// If the album's release date has been updated by the matcher
+		// We ignore
+		// Usually, a date that has a month and a day is provided by the matcher (the scanner only gives years)
+		// I know it's ugly
 		if (
-			album.releaseDate &&
-			!otherReleaseDate.includes(album.releaseDate)
+			album.releaseDate?.getMonth() ||
+			(album.releaseDate?.getDate() ?? 1) > 1
 		) {
 			return;
 		}
