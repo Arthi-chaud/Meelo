@@ -3,6 +3,7 @@ from typing import Any, List
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
     AlbumSearchResult,
+    AlbumType,
     ArtistSearchResult,
     ResourceId,
     ResourceUrl,
@@ -87,6 +88,8 @@ class GetAlbumRatingFeature(BaseFeature[Any, int | None]):
 class GetAlbumGenresFeature(BaseFeature[Any, List[str] | None]):
     pass
 
+class GetAlbumTypeFeature(BaseFeature[Any, AlbumType | None]):
+    pass
 
 class GetAlbumWikidataRelationKeyFeature(GetWikidataRelationKeyFeature):
     pass
