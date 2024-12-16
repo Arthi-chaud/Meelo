@@ -15,13 +15,21 @@ from .features import (
     GetArtistIllustrationUrlFeature,
     GetArtistUrlFromIdFeature,
     GetMusicBrainzRelationKeyFeature,
+    GetSongDescriptionFeature,
+    GetSongFeature,
+    GetSongGenresFeature,
+    GetSongIdFromUrlFeature,
+    GetSongLyricsFeature,
+    GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
+    GetWikidataSongRelationKeyFeature,
     IsMusicBrainzRelationFeature,
     SearchAlbumFeature,
     SearchArtistFeature,
+    SearchSongFeature,
 )
-from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult
+from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult, SongSearchResult
 from typing import Any, List
 
 
@@ -116,3 +124,39 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     def get_wikidata_album_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataAlbumRelationKeyFeature)
         return f.run() if f else None
+
+    # Song
+
+    def search_song(
+        self, song_name: str, artist_name: str, featuring_artists: List[str]
+    ) -> SongSearchResult | None:
+        f = self.get_feature(SearchSongFeature)
+        return f.run(song_name, artist_name, featuring_artists) if f else None
+
+    def get_song(self, song_id: str) -> Any | None:
+        f = self.get_feature(GetSongFeature)
+        return f.run(song_id) if f else None
+
+    def get_song_description(self, song: Any) -> str | None:
+        f = self.get_feature(GetSongDescriptionFeature)
+        return f.run(song) if f else None
+
+    def get_song_genres(self, song: Any) -> List[str] | None:
+        f = self.get_feature(GetSongGenresFeature)
+        return f.run(song) if f else None
+
+    def get_song_lyrics(self, song: Any) -> str | None:
+        f = self.get_feature(GetSongLyricsFeature)
+        return f.run(song) if f else None
+
+    def get_wikidata_song_relation_key(self) -> str | None:
+        f = self.get_feature(GetWikidataSongRelationKeyFeature)
+        return f.run() if f else None
+
+    def get_song_url_from_id(self, song_id: str) -> str | None:
+        f = self.get_feature(GetSongUrlFromIdFeature)
+        return f.run(song_id) if f else None
+
+    def get_song_id_from_url(self, song_url) -> str | None:
+        f = self.get_feature(GetSongIdFromUrlFeature)
+        return f.run(song_url) if f else None
