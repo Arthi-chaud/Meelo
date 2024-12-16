@@ -14,6 +14,7 @@ from matcher.providers.features import (
     GetArtistUrlFromIdFeature,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
+    GetWikidataSongRelationKeyFeature,
     SearchAlbumFeature,
     GetAlbumFeature,
     GetAlbumTypeFeature,
@@ -74,6 +75,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 lambda album: self._get_album_release_date(album)
             ),
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+            GetWikidataSongRelationKeyFeature(lambda: "P435"),
         ]
 
     # Note: Only use this method if action is not supported by library
@@ -180,17 +182,17 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
 
     def _get_album_type(self, album: Any) -> AlbumType | None:
         raw_types: List[str] = []
-        if album.get('primary-type'):
-            raw_types.append(album['primary-type'])
-        if album.get('secondary-types'):
-            raw_types.extend(album['secondary-types'])
+        if album.get("primary-type"):
+            raw_types.append(album["primary-type"])
+        if album.get("secondary-types"):
+            raw_types.extend(album["secondary-types"])
         raw_types = [t.lower() for t in raw_types]
-        if raw_types == ['album']:
+        if raw_types == ["album"]:
             return AlbumType.STUDIO
-        if 'remix' in raw_types:
+        if "remix" in raw_types:
             return AlbumType.REMIXES
-        if 'compilation' in raw_types:
+        if "compilation" in raw_types:
             return AlbumType.COMPILATION
-        if 'dj-mix' in raw_types:
+        if "dj-mix" in raw_types:
             return AlbumType.REMIXES
         return None

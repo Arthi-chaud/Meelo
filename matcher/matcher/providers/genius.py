@@ -15,6 +15,7 @@ from matcher.providers.features import (
     GetMusicBrainzRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
+    GetWikidataSongRelationKeyFeature,
     IsMusicBrainzRelationFeature,
     SearchAlbumFeature,
     SearchArtistFeature,
@@ -68,6 +69,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                 lambda album: self._get_album_release_date(album)
             ),
             GetWikidataAlbumRelationKeyFeature(lambda: "P6217"),
+            GetWikidataSongRelationKeyFeature(lambda: "P6218"),
         ]
 
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):
