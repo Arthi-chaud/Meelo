@@ -133,7 +133,7 @@ class TestMusicbrainz(unittest.TestCase):
         self.assertIn("Alternative Dance", genres)
         self.assertIn("Electronica", genres)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.STUDIO, type) 
+        self.assertIs(AlbumType.STUDIO, type)
 
     def test_get_album_type_remix(self):
         provider: MusicBrainzProvider = (
@@ -143,8 +143,7 @@ class TestMusicbrainz(unittest.TestCase):
         album = provider.get_album("54bd7d44-86e1-3e3c-82e0-10febdedcbda")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.REMIXES, type) 
-
+        self.assertIs(AlbumType.REMIXES, type)
 
     def test_get_album_type_remix_2(self):
         provider: MusicBrainzProvider = (
@@ -154,13 +153,13 @@ class TestMusicbrainz(unittest.TestCase):
         album = provider.get_album("ce018797-8764-34f8-aee4-10089fc7393d")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.REMIXES, type) 
+        self.assertIs(AlbumType.REMIXES, type)
 
     def test_get_album_type_remix_3(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        # Madonna - You Can Dance 
+        # Madonna - You Can Dance
         album = provider.get_album("a70bd0f3-2af4-3fb0-b4af-d94b0c3a882f")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
@@ -170,7 +169,7 @@ class TestMusicbrainz(unittest.TestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        # Sneaker Pimps - Becoming remixed 
+        # Sneaker Pimps - Becoming remixed
         album = provider.get_album("20e4a61b-218b-3e1f-9d12-6a4a2dd44425")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
@@ -184,46 +183,82 @@ class TestMusicbrainz(unittest.TestCase):
         album = provider.get_album("bd252c17-ff32-4369-8e73-4d0a65a316bd")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.COMPILATION, type) 
+        self.assertIs(AlbumType.COMPILATION, type)
 
     def test_get_album_type_compilation_2(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        # Girls Aloud - Ten 
+        # Girls Aloud - Ten
         album = provider.get_album("3d22d747-fada-49f5-b649-ca1901beb3f2")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.COMPILATION, type) 
+        self.assertIs(AlbumType.COMPILATION, type)
 
     def test_get_album_type_compilation_3(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        # Garbage Anthology 
+        # Garbage Anthology
         album = provider.get_album("6dbee52b-146d-45ba-86d4-f0156824088b")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.COMPILATION, type) 
+        self.assertIs(AlbumType.COMPILATION, type)
 
     def test_get_album_type_compilation_4(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        # Moloko Catalogue 
+        # Moloko Catalogue
         album = provider.get_album("35f99662-c0e7-3ddc-a321-ad2da346cb83")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.COMPILATION, type) 
-
+        self.assertIs(AlbumType.COMPILATION, type)
 
     def test_get_album_type_compilation_unofficial(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        # Britney Spears - Can you handle mine 
+        # Britney Spears - Can you handle mine
         album = provider.get_album("8795e66f-3746-3892-b160-917647350d15")
         self.assertIsNotNone(album)
         type = provider.get_album_type(album)
-        self.assertIs(AlbumType.COMPILATION, type) 
+        self.assertIs(AlbumType.COMPILATION, type)
 
+    def test_search_song(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        song = provider.search_song("Breathe On Me", "Britney Spears", [])
+        self.assertIsNotNone(song)
+        self.assertEqual("08d07438-9b9c-4c41-a1d5-7211a32cc9ad", song.id)  # pyright: ignore
+
+    def test_search_song_special_char(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        song = provider.search_song("100%", "Moloko", [])
+        self.assertIsNotNone(song)
+        self.assertEqual("13f48782-ca5a-4a7f-9623-f1054697c173", song.id)  # pyright: ignore
+
+    def test_search_song_solo(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        song = provider.search_song("E.T.", "Katy Perry", [])
+        self.assertIsNotNone(song)
+        self.assertIn(
+            song.id,  # pyright: ignore
+            [
+                "59025ade-1476-466e-bff4-7a20a6e296b8",
+                "a0ad9828-ff96-42d0-b7a5-d0e85ec001c2",
+            ],
+        )
+
+    def test_search_song_feat(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        song = provider.search_song("E.T.", "Katy Perry", ["Kanye West"])
+        self.assertIsNotNone(song)
+        self.assertEqual("a53fe01d-5c2d-4c71-9684-9ef814df9c9b", song.id)  # pyright: ignore

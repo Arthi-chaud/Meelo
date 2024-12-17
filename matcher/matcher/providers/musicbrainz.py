@@ -19,9 +19,10 @@ from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumTypeFeature,
     SearchArtistFeature,
+    SearchSongFeature,
 )
 from ..utils import capitalize_all_words, to_slug
-from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult
+from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult, SongSearchResult
 from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
@@ -75,6 +76,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 lambda album: self._get_album_release_date(album)
             ),
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+            SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
             GetWikidataSongRelationKeyFeature(lambda: "P435"),
         ]
 
@@ -196,3 +198,49 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         if "dj-mix" in raw_types:
             return AlbumType.REMIXES
         return None
+
+    # Example of a URL to get genres + url rels:
+    # https://musicbrainz.org/ws/2/recording/d63f9a2c-aea5-4b77-875e-eee7ce1fd734?fmt=json&inc=work-rels+work-level-rels+url-rels+tags
+
+    # This method returns a recording ID
+    # It's simpler for us to use a recording instead of finding a work because
+    # - Finding the work from a recording requires a new query
+    # - Work dont include genres, recordings do
+    def _search_song(
+        self, song_name: str, artist_name: str, featuring: List[str]
+    ) -> SongSearchResult | None:
+        try:
+            recordings = self._fetch(
+                "/recording",
+                {
+                    "query": f"work:{song_name.replace('.','')} and artistname:{artist_name}",
+                    "limit": 100,
+                },
+            )["recordings"]
+            artist_slug = to_slug(artist_name)
+            song_slug = to_slug(song_name)
+            artist_recordings = []
+            for r in recordings:
+                if r.get("video"):
+                    continue
+                if to_slug(r["title"]) != song_slug:
+                    continue
+                artists = [to_slug(a["name"]) for a in r["artist-credit"]]
+                if artist_slug not in artists:
+                    continue
+                if not featuring:
+                    artist_recordings.append(r)
+                    continue
+                for f in featuring:
+                    if to_slug(f) in artists:
+                        artist_recordings.append(r)
+                        break
+            ordered_recordings = [
+                r
+                for r in artist_recordings
+                if (r.get("disambiguation") or "main") == "main"
+            ] or artist_recordings
+
+            return SongSearchResult(ordered_recordings[0]["id"])
+        except Exception:
+            pass
