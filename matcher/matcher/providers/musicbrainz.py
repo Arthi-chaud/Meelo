@@ -15,11 +15,13 @@ from matcher.providers.features import (
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
+    GetSongFeature,
     SearchAlbumFeature,
     GetAlbumFeature,
     GetAlbumTypeFeature,
     SearchArtistFeature,
     SearchSongFeature,
+    GetSongGenresFeature,
 )
 from ..utils import capitalize_all_words, to_slug
 from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult, SongSearchResult
@@ -77,6 +79,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             ),
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
             SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
+            GetSongFeature(lambda s: self._get_song(s)),
+            GetSongGenresFeature(lambda album: self._get_song_genres(album)),
             GetWikidataSongRelationKeyFeature(lambda: "P435"),
         ]
 
@@ -199,8 +203,15 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             return AlbumType.REMIXES
         return None
 
-    # Example of a URL to get genres + url rels:
-    # https://musicbrainz.org/ws/2/recording/d63f9a2c-aea5-4b77-875e-eee7ce1fd734?fmt=json&inc=work-rels+work-level-rels+url-rels+tags
+    def _get_song(self, recording_id: str) -> Any | None:
+        try:
+            recording = musicbrainzngs.get_recording_by_id(
+                recording_id,
+                includes=["work-rels", "url-rels", "tags", "work-level-rels"],
+            )
+            return recording
+        except Exception:
+            pass
 
     # This method returns a recording ID
     # It's simpler for us to use a recording instead of finding a work because
@@ -242,5 +253,16 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             ] or artist_recordings
 
             return SongSearchResult(ordered_recordings[0]["id"])
+        except Exception:
+            pass
+
+    def _get_song_genres(self, song: Any) -> List[str] | None:
+        try:
+            genres: List[Any] = song["tags"]
+            return [
+                capitalize_all_words(genre["name"])
+                for genre in genres
+                if genre["count"] > 0
+            ]
         except Exception:
             pass

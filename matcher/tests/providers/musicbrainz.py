@@ -262,3 +262,18 @@ class TestMusicbrainz(unittest.TestCase):
         song = provider.search_song("E.T.", "Katy Perry", ["Kanye West"])
         self.assertIsNotNone(song)
         self.assertEqual("a53fe01d-5c2d-4c71-9684-9ef814df9c9b", song.id)  # pyright: ignore
+
+    def test_get_song_with_genres(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        song = provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
+        self.assertIsNotNone(song)
+        self.assertEqual(song["title"], "Breathe on Me")  # pyright:ignore
+        genres: List[str] = provider.get_song_genres(song)  # pyright: ignore
+        self.assertIsNotNone(genres)
+        self.assertIn("Pop", genres)
+        self.assertIn("Dance-Pop", genres)
+        self.assertIn("Electro", genres)
+        self.assertIn("Synth-Pop", genres)
+        self.assertIn("Ballad", genres)
