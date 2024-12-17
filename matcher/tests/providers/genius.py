@@ -82,3 +82,33 @@ class TestGenius(unittest.TestCase):
             album,
         )
         self.assertEqual(release_date, datetime.date(2002, 3, 26))
+
+    def test_get_song_lyrics_and_description(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        song = provider.get_song("Rachel-stevens-some-girls")
+        self.assertIsNotNone(song)
+        # Lyrics
+        lyrics: str = provider.get_song_lyrics(song)  # pyright: ignore
+        self.assertIsNotNone(lyrics)
+        lines = lyrics.split("\n")
+        self.assertEqual("[Verse 1]", lines[0])
+        self.assertIn("(A chat, a gift)", lines)
+        self.assertIn("All I seem to get is the other, other", lines)
+        # Description
+        desc: str = provider.get_song_description(song)  # pyright: ignore
+        self.assertIsNotNone(desc)
+        self.assertTrue(
+            desc.startswith("Some Girls is a single released by Rachel Stevens")
+        )
+        self.assertIn("album Come and Get It and", desc)
+
+    def test_get_song_wo_lyrics_and_description(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        song = provider.get_song("Madonna-die-another-day-dirty-vegas-dub")
+        self.assertIsNotNone(song)
+        # Lyrics
+        lyrics: str = provider.get_song_lyrics(song)  # pyright: ignore
+        self.assertIsNone(lyrics)
+        # Description
+        desc: str = provider.get_song_description(song)  # pyright: ignore
+        self.assertIsNone(desc)

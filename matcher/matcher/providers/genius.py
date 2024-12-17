@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 import requests
 
 from matcher.providers.features import (
@@ -13,6 +13,11 @@ from matcher.providers.features import (
     GetArtistIllustrationUrlFeature,
     GetArtistUrlFromIdFeature,
     GetMusicBrainzRelationKeyFeature,
+    GetSongDescriptionFeature,
+    GetSongFeature,
+    GetSongIdFromUrlFeature,
+    GetSongLyricsFeature,
+    GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
@@ -25,7 +30,9 @@ from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from datetime import date
+import re
 from ..utils import to_slug
+from bs4 import BeautifulSoup
 
 
 # Consider that the passed Ids are names, not the numeric ids
@@ -70,6 +77,17 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             ),
             GetWikidataAlbumRelationKeyFeature(lambda: "P6217"),
             GetWikidataSongRelationKeyFeature(lambda: "P6218"),
+            GetSongUrlFromIdFeature(
+                lambda id: f"https://genius.com/{id.replace('-lyrics', '')}-lyrics"
+            ),
+            GetSongIdFromUrlFeature(
+                lambda url: url.replace("-lyrics", "").replace(
+                    "https://genius.com/", ""
+                )
+            ),
+            GetSongFeature(lambda id: self._get_song(id)),
+            GetSongLyricsFeature(lambda s: self._get_song_lyrics(s)),
+            GetSongDescriptionFeature(lambda s: self._get_song_description(s)),
         ]
 
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):
@@ -198,3 +216,39 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             )
         except Exception:
             pass
+
+    def _get_song(self, song_id: Any) -> Any | None:
+        url: str = self.get_song_url_from_id(song_id)  # pyright: ignore
+        try:
+            # Stolen from https://github.com/johnwmillr/LyricsGenius/blob/795a81b0d0bd63855d18dc694400fb34079f6f6f/lyricsgenius/genius.py#L95
+            html = requests.get(
+                url,
+                headers={"User-Agent": "Meelo Matcher/0.0.1"},
+            ).text.replace("<br/>", "\n")
+            soup = BeautifulSoup(html, "html.parser")
+            return soup
+        except Exception as e:
+            print(e)
+            pass
+
+    def _get_song_lyrics(self, song: Any) -> str | None:
+        html = song
+        divs = html.find_all(
+            "div", class_=re.compile(r"^Lyrics-\w{2}.\w+.[1]|Lyrics__Container")
+        )
+        return self._clean_html(divs)
+
+    def _get_song_description(self, song: Any) -> str | None:
+        html = song
+        divs = html.find_all("div", class_=re.compile(r"^SongDescription-.+"))
+        for div in divs:
+            if "start the song bio" in div.get_text().lower():
+                return
+
+        # Note: There are 2 matching divs, which are nested. We are interested in the second one
+        return self._clean_html(divs[1:])
+
+    def _clean_html(self, divs: Any) -> str | None:
+        if divs and len(divs) > 0:
+            text: str = "\n".join([div.get_text() for div in divs])
+            return text.strip("\n")
