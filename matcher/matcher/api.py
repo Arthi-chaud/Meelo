@@ -5,7 +5,7 @@ from typing import Any, List, TypeVar
 from dataclasses_json import DataClassJsonMixin
 import requests
 
-from matcher.models.api.domain import Album
+from matcher.models.api.domain import Album, Song
 from matcher.models.api.dto import (
     CreateProviderDto,
     ExternalMetadataDto,
@@ -69,9 +69,12 @@ class API:
     def get_album(self, album_id: int) -> Album:
         response = self._get(f"/albums/{album_id}?with=artist")
         json = response.json()
-        if json["artist"]:
-            json["artistName"] = json["artist"]["name"]
         return Album.schema().load(json)
+
+    def get_song(self, song_id: int) -> Song:
+        response = self._get(f"/songs/{song_id}?with=artist,featuring")
+        json = response.json()
+        return Song.schema().load(json)
 
     def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)
@@ -82,14 +85,21 @@ class API:
         self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
 
     def post_album_update(
-        self, album_id: int, release_date: date | None, genres: List[str] | None, type: AlbumType | None
+        self,
+        album_id: int,
+        release_date: date | None,
+        genres: List[str] | None,
+        type: AlbumType | None,
     ):
         dto = UpdateAlbumDto(
             release_date=release_date.isoformat() if release_date else None,
             genres=genres,
-            type=type.value if type else None
+            type=type.value if type else None,
         )
         self._post(f"/albums/{album_id}", json=dto.to_dict())
+
+    def post_song_lyrics(self, song_id: int, lyrics: str):
+        self._post(f"/songs/{song_id}/lyrics", json={"lyrics": lyrics})
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:

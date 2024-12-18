@@ -21,10 +21,12 @@ def match_and_post_album(album_id: int, album_name: str):
         context = Context.get()
         album = context.client.get_album(album_id)
         (dto, release_date, album_type, genres) = match_album(
-            album_id, album_name, album.artist_name, album.type
+            album_id, album_name, album.artist.name, album.type
         )
         # We only care about the new album type if the previous type is Studio
-        album_type = album_type if album.type == AlbumType.STUDIO and album_type else album.type
+        album_type = (
+            album_type if album.type == AlbumType.STUDIO and album_type else album.type
+        )
         old_release_date = (
             datetime.fromisoformat(album.release_date).date()
             if album.release_date
@@ -49,7 +51,12 @@ def match_and_post_album(album_id: int, album_name: str):
             logging.info(f"Found {len(genres)} genres for album {album_name}")
         if album_type != album.type and album_type != AlbumType.OTHER:
             logging.info(f"Found type for album {album_name}: {album_type.value}")
-        if release_date or genres or (album_type != album.type) and album_type != AlbumType.OTHER:
+        if (
+            release_date
+            or genres
+            or (album_type != album.type)
+            and album_type != AlbumType.OTHER
+        ):
             context.client.post_album_update(album_id, release_date, genres, album_type)
     except Exception as e:
         logging.error(e)
@@ -63,7 +70,9 @@ def match_album(
     genres: List[str] = []
     rating: int | None = None
     # The type is none if it needs to be found, or sth else if the API already knows it
-    album_type: AlbumType | None = None if type == AlbumType.OTHER or type == AlbumType.STUDIO else type
+    album_type: AlbumType | None = (
+        None if type == AlbumType.OTHER or type == AlbumType.STUDIO else type
+    )
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
         lambda mb, mbid: mb.get_album(mbid),

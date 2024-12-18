@@ -4,6 +4,7 @@ import logging
 
 from matcher.bootstrap import bootstrap_context
 from matcher.matcher.album import match_and_post_album
+from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
 
 from .models.event import Event
@@ -32,8 +33,12 @@ def main():
                 match_and_post_album(event.id, event.name)
                 ch.basic_ack(delivery_tag)
                 pass
+            case "song":
+                match_and_post_song(event.id, event.name)
+                ch.basic_ack(delivery_tag)
+                pass
             case _:
-                # logging.warning("No handler for event " + event.type)
+                logging.warning("No handler for event " + event.type)
                 pass
 
     channel.basic_consume(queue="meelo", on_message_callback=callback)

@@ -26,10 +26,10 @@ def match_and_post_song(song_id: int, song_name: str):
             context.client.post_external_metadata(dto)
 
         if lyrics:
-            logging.info(f"Found lyrics for song {song}")
+            logging.info(f"Found lyrics for song {song.name}")
+            context.client.post_song_lyrics(song_id, lyrics)
         if genres:
-            logging.info(f"Found {len(genres)} genres for song {song}")
-        # TODO Post Lyrics
+            logging.info(f"Found {len(genres)} genres for song {song.name}")
         # TODO Post Genres
     except Exception as e:
         logging.error(e)
@@ -42,6 +42,10 @@ def match_song(
     genres: List[str] = []
     lyrics: str | None = None
     description: str | None = None
+    external_sources: List[ExternalMetadataSourceDto] = []
+    # We could skip using crossreference using wikidata,
+    # because musicbrainz is not always useful for songs
+    # + Searching using Genius seems efficient enough
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_song(song_name, artist_name, featuring),
         lambda mb, mbid: mb.get_song(mbid),
@@ -59,8 +63,7 @@ def match_song(
         )
 
     # Resolve by searching
-    sources_ids = [source.provider_id for source in external_sources]
-    for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
+    for provider in [p for p in context.providers]:
         search_res = provider.search_song(song_name, artist_name, featuring)
         if not search_res:
             continue
