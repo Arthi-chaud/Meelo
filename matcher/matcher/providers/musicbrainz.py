@@ -14,13 +14,19 @@ from matcher.providers.features import (
     GetArtistUrlFromIdFeature,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
+    GetWikidataSongRelationKeyFeature,
+    GetSongFeature,
     SearchAlbumFeature,
     GetAlbumFeature,
     GetAlbumTypeFeature,
     SearchArtistFeature,
+    SearchSongFeature,
+    GetSongGenresFeature,
+    GetSongUrlFromIdFeature,
+    GetSongIdFromUrlFeature,
 )
 from ..utils import capitalize_all_words, to_slug
-from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult
+from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult, SongSearchResult
 from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
@@ -74,6 +80,18 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 lambda album: self._get_album_release_date(album)
             ),
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+            SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
+            GetSongFeature(lambda s: self._get_song(s)),
+            GetSongGenresFeature(lambda album: self._get_song_genres(album)),
+            GetWikidataSongRelationKeyFeature(lambda: "P435"),
+            GetSongUrlFromIdFeature(
+                lambda song_id: f"https://musicbrainz.org/recording/{song_id}"
+            ),
+            GetSongIdFromUrlFeature(
+                lambda song_url: song_url.replace(
+                    "https://musicbrainz.org/recording/", ""
+                )
+            ),
         ]
 
     # Note: Only use this method if action is not supported by library
@@ -180,17 +198,80 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
 
     def _get_album_type(self, album: Any) -> AlbumType | None:
         raw_types: List[str] = []
-        if album.get('primary-type'):
-            raw_types.append(album['primary-type'])
-        if album.get('secondary-types'):
-            raw_types.extend(album['secondary-types'])
+        if album.get("primary-type"):
+            raw_types.append(album["primary-type"])
+        if album.get("secondary-types"):
+            raw_types.extend(album["secondary-types"])
         raw_types = [t.lower() for t in raw_types]
-        if raw_types == ['album']:
+        if raw_types == ["album"]:
             return AlbumType.STUDIO
-        if 'remix' in raw_types:
+        if "remix" in raw_types:
             return AlbumType.REMIXES
-        if 'compilation' in raw_types:
+        if "compilation" in raw_types:
             return AlbumType.COMPILATION
-        if 'dj-mix' in raw_types:
+        if "dj-mix" in raw_types:
             return AlbumType.REMIXES
         return None
+
+    def _get_song(self, recording_id: str) -> Any | None:
+        try:
+            recording = musicbrainzngs.get_recording_by_id(
+                recording_id,
+                includes=["work-rels", "url-rels", "tags", "work-level-rels"],
+            )
+            return recording
+        except Exception:
+            pass
+
+    # This method returns a recording ID
+    # It's simpler for us to use a recording instead of finding a work because
+    # - Finding the work from a recording requires a new query
+    # - Work dont include genres, recordings do
+    def _search_song(
+        self, song_name: str, artist_name: str, featuring: List[str]
+    ) -> SongSearchResult | None:
+        try:
+            recordings = self._fetch(
+                "/recording",
+                {
+                    "query": f"work:{song_name.replace('.','')} and artistname:{artist_name}",
+                    "limit": 100,
+                },
+            )["recordings"]
+            artist_slug = to_slug(artist_name)
+            song_slug = to_slug(song_name)
+            artist_recordings = []
+            for r in recordings:
+                if r.get("video"):
+                    continue
+                if to_slug(r["title"]) != song_slug:
+                    continue
+                artists = [to_slug(a["name"]) for a in r["artist-credit"]]
+                if artist_slug not in artists:
+                    continue
+                if not featuring:
+                    artist_recordings.append(r)
+                    continue
+                for f in featuring:
+                    if to_slug(f) in artists:
+                        artist_recordings.append(r)
+                        break
+            ordered_recordings = [
+                r
+                for r in artist_recordings
+                if (r.get("disambiguation") or "main") == "main"
+            ] or artist_recordings
+            return SongSearchResult(ordered_recordings[0]["id"])
+        except Exception:
+            pass
+
+    def _get_song_genres(self, song: Any) -> List[str] | None:
+        try:
+            genres: List[Any] = song["tags"]
+            return [
+                capitalize_all_words(genre["name"])
+                for genre in genres
+                if genre["count"] > 0
+            ]
+        except Exception:
+            pass

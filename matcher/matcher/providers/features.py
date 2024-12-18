@@ -8,6 +8,7 @@ from matcher.providers.domain import (
     ResourceId,
     ResourceUrl,
     ResourceName,
+    SongSearchResult,
 )
 
 
@@ -88,10 +89,8 @@ class GetAlbumRatingFeature(BaseFeature[Any, int | None]):
 class GetAlbumGenresFeature(BaseFeature[Any, List[str] | None]):
     pass
 
-class GetAlbumTypeFeature(BaseFeature[Any, AlbumType | None]):
-    pass
 
-class GetAlbumWikidataRelationKeyFeature(GetWikidataRelationKeyFeature):
+class GetAlbumTypeFeature(BaseFeature[Any, AlbumType | None]):
     pass
 
 
@@ -108,4 +107,41 @@ class GetAlbumIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class GetWikidataAlbumRelationKeyFeature(GetWikidataRelationKeyFeature):
+    pass
+
+
+## Songs
+
+
+class SearchSongFeature(
+    BaseFeature[ResourceName, ResourceName, List[ResourceName], SongSearchResult | None]
+):
+    pass
+
+
+class GetSongFeature(BaseFeature[ResourceId, Any | None]):
+    pass
+
+
+class GetSongDescriptionFeature(BaseFeature[Any, str | None]):
+    pass
+
+
+class GetSongGenresFeature(BaseFeature[Any, List[str] | None]):
+    pass
+
+
+class GetSongLyricsFeature(BaseFeature[Any, str | None]):
+    pass
+
+
+class GetSongUrlFromIdFeature(GetUrlFromIdFeature):
+    pass
+
+
+class GetSongIdFromUrlFeature(GetIdFromUrlFeature):
+    pass
+
+
+class GetWikidataSongRelationKeyFeature(GetWikidataRelationKeyFeature):
     pass

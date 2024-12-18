@@ -215,6 +215,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Get a song",
 	})
+	@Role(Roles.Default, Roles.Microservice)
 	@Response({ handler: SongResponseBuilder })
 	@Get(":idOrSlug")
 	async getSong(
@@ -231,6 +232,7 @@ export class SongController {
 	})
 	@Response({ handler: SongResponseBuilder })
 	@Post(":idOrSlug")
+	@Role(Roles.Default, Roles.Microservice)
 	async updateSong(
 		@Body() updateDTO: UpdateSongDTO,
 		@IdentifierParam(SongService)
@@ -274,7 +276,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Update a song's lyrics",
 	})
-	@Admin()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Post(":idOrSlug/lyrics")
 	async updateSongLyrics(
 		@IdentifierParam(SongService)

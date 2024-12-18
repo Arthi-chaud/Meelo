@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 import requests
 
 from matcher.providers.features import (
@@ -13,18 +13,27 @@ from matcher.providers.features import (
     GetArtistIllustrationUrlFeature,
     GetArtistUrlFromIdFeature,
     GetMusicBrainzRelationKeyFeature,
+    GetSongDescriptionFeature,
+    GetSongFeature,
+    GetSongIdFromUrlFeature,
+    GetSongLyricsFeature,
+    GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
+    GetWikidataSongRelationKeyFeature,
     IsMusicBrainzRelationFeature,
     SearchAlbumFeature,
     SearchArtistFeature,
+    SearchSongFeature,
 )
-from .domain import ArtistSearchResult, AlbumSearchResult
+from .domain import ArtistSearchResult, AlbumSearchResult, SongSearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from datetime import date
+import re
 from ..utils import to_slug
+from bs4 import BeautifulSoup
 
 
 # Consider that the passed Ids are names, not the numeric ids
@@ -68,6 +77,19 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                 lambda album: self._get_album_release_date(album)
             ),
             GetWikidataAlbumRelationKeyFeature(lambda: "P6217"),
+            GetWikidataSongRelationKeyFeature(lambda: "P6218"),
+            GetSongUrlFromIdFeature(
+                lambda id: f"https://genius.com/{id.replace('-lyrics', '')}-lyrics"
+            ),
+            GetSongIdFromUrlFeature(
+                lambda url: url.replace("-lyrics", "").replace(
+                    "https://genius.com/", ""
+                )
+            ),
+            GetSongFeature(lambda id: self._get_song(id)),
+            GetSongLyricsFeature(lambda s: self._get_song_lyrics(s)),
+            GetSongDescriptionFeature(lambda s: self._get_song_description(s)),
+            SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
         ]
 
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):
@@ -196,3 +218,91 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             )
         except Exception:
             pass
+
+    def _get_song(self, song_id: Any) -> Any | None:
+        url: str = self.get_song_url_from_id(song_id)  # pyright: ignore
+        try:
+            # Stolen from https://github.com/johnwmillr/LyricsGenius/blob/795a81b0d0bd63855d18dc694400fb34079f6f6f/lyricsgenius/genius.py#L95
+            html = requests.get(
+                url,
+                headers={"User-Agent": "Meelo Matcher/0.0.1"},
+            ).text.replace("<br/>", "\n")
+            soup = BeautifulSoup(html, "html.parser")
+            return soup
+        except Exception as e:
+            print(e)
+            pass
+
+    def _get_song_lyrics(self, song: Any) -> str | None:
+        html = song
+        divs = html.find_all(
+            "div", class_=re.compile(r"^Lyrics-\w{2}.\w+.[1]|Lyrics__Container")
+        )
+        return self._clean_html(divs)
+
+    def _get_song_description(self, song: Any) -> str | None:
+        html = song
+        divs = html.find_all("div", class_=re.compile(r"^SongDescription-.+"))
+        for div in divs:
+            if "start the song bio" in div.get_text().lower():
+                return
+
+        # Note: There are 2 matching divs, which are nested. We are interested in the second one
+        return self._clean_html(divs[1:])
+
+    def _clean_html(self, divs: Any) -> str | None:
+        if divs and len(divs) > 0:
+            text: str = "\n".join([div.get_text() for div in divs])
+            return text.strip("\n")
+
+    def _search_song(
+        self, song_name: str, artist_name: str, featuring: List[str]
+    ) -> SongSearchResult | None:
+        try:
+            response = self._fetch("/search/song", {"q": f"{artist_name} {song_name}"})[
+                "response"
+            ]
+            search_res = [res for res in response["sections"][0]["hits"]]
+            songs = [res["result"] for res in search_res if res.get("type") == "song"]
+            song_slug = to_slug(song_name)
+            artist_slug = to_slug(artist_name)
+            matches = []
+            # For each result,
+            # We filter out those where the artist does not match
+            # If featuring, we look for songs with at least 1 feat artist in common
+            # We select song where slug is identical or 'start with'
+            # (because some songs have a remix suffix when featuring)
+            for song in songs:
+                artist_slugs = [to_slug(f["name"]) for f in song["primary_artists"]] + [
+                    to_slug(f["name"]) for f in song["featured_artists"]
+                ]
+                if artist_slug not in artist_slugs:
+                    continue
+                if featuring:
+                    feat_slug = to_slug(featuring[0])
+                    if feat_slug not in artist_slugs:
+                        continue
+                match_slug = to_slug(song["title"])
+                if match_slug != song_slug and not match_slug.startswith(song_slug):
+                    continue
+                matches.append(song)
+            if not matches:
+                return
+            # If one of the matches is an exact match, return it
+            # otherwise select song that is the closest to the song's slug
+            final_match: Any | None = None
+            for match in matches:
+                if to_slug(match["title"]) == song_slug:
+                    final_match = match
+                    break
+            if not final_match:
+                ordered_matches = sorted(
+                    matches,
+                    # We sort matches by distance to the title
+                    key=lambda s: abs(len(to_slug(s["title"])) - len(song_slug)),
+                )
+                final_match = ordered_matches[0]
+            song_id = self.get_song_id_from_url(final_match["url"])
+            return SongSearchResult(song_id) if song_id else None
+        except Exception:
+            return None

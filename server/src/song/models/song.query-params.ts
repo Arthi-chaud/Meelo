@@ -90,7 +90,7 @@ namespace SongQueryParameters {
 	 */
 	export type UpdateInput = Partial<{
 		type: SongType;
-		genres: GenreQueryParameters.WhereInput[];
+		genres: (GenreQueryParameters.WhereInput | string)[];
 	}>;
 	export type DeleteInput = {
 		id: Song["id"];

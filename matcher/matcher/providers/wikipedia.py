@@ -9,6 +9,8 @@ from .features import (
     GetAlbumFeature,
     GetAlbumIdFromUrlFeature,
     GetAlbumUrlFromIdFeature,
+    GetSongFeature,
+    GetSongDescriptionFeature,
 )
 from urllib.parse import unquote
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -38,6 +40,8 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
             ),
             GetAlbumFeature(lambda album_id: self.get_article(album_id)),
             GetAlbumDescriptionFeature(lambda album: self.get_article_extract(album)),
+            GetSongFeature(lambda song_id: self.get_article(song_id)),
+            GetSongDescriptionFeature(lambda song: self.get_article_extract(song)),
         ]
 
     def get_article(self, article_id: str) -> Any | None:

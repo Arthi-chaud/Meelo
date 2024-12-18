@@ -13,6 +13,11 @@ class AlbumSearchResult:
     id: str
 
 
+@dataclass
+class SongSearchResult:
+    id: str
+
+
 ResourceUrl: TypeAlias = str
 
 ResourceName: TypeAlias = str

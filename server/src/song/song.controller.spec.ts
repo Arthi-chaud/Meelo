@@ -549,5 +549,30 @@ describe("Song Controller", () => {
 					});
 				});
 		});
+
+		it("Should update Song's Type", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songB1.id}`)
+				.send({
+					genres: ["a", "B", "c"],
+				})
+				.expect(201)
+				.expect(async () => {
+					const songGenres = await dummyRepository.genre
+						.findMany({
+							where: {
+								songs: {
+									some: { id: dummyRepository.songB1.id },
+								},
+							},
+						})
+						.then((genres) => genres.map(({ name }) => name));
+					expect(songGenres).toContain("a");
+					expect(songGenres).toContain("B");
+					expect(songGenres).toContain("c");
+					// Check previously linked genre still exists
+					expect(songGenres).toContain("My Genre B");
+				});
+		});
 	});
 });

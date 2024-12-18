@@ -3,6 +3,7 @@ from .api import *
 from .settings import *
 from .matcher.artist import *
 from .matcher.album import *
+from .matcher.song import *
 from .providers.metacritic import *
 from .providers.allmusic import *
 from .providers.wikipedia import *
