@@ -14,40 +14,25 @@ class TestGenius(unittest.TestCase):
 
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_search_artist(self):
+        scenarios: List[Tuple[str, str]] = [
+            ("P!nk", "P!nk"),
+            ("Christine & The Queens", "Christine and the Queens"),
+            ("Christine and The Queens", "Christine and the Queens"),
+            ("Florence + The Machine", "Florence + the Machine"),
+            ("Florence and The Machine", "Florence + the Machine"),
+            ("Selena Gomez & The Scene", "Selena Gomez & The Scene"),
+            ("Selena Gomez and the Scene", "Selena Gomez & The Scene"),
+        ]
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
-        artist = provider.search_artist("P!nk")
-        self.assertIsNotNone(artist)
-        self.assertEqual(artist.id, "P!nk")  # pyright: ignore
-
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    def test_search_artist_with_alias(self):
-        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
-        artist1 = provider.search_artist("Christine & The Queens")
-        artist2 = provider.search_artist("Christine and The Queens")
-        self.assertIsNotNone(artist1)
-        self.assertIsNotNone(artist2)
-        self.assertEqual(artist1.id, "Christine and the Queens")  # pyright:ignore
-        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
-
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    def test_search_artist_with_and(self):
-        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
-        artist1 = provider.search_artist("Florence + The Machine")
-        artist2 = provider.search_artist("Florence and the machine")
-        self.assertIsNotNone(artist1)
-        self.assertIsNotNone(artist2)
-        self.assertEqual(artist1.id, "Florence + the Machine")  # pyright:ignore
-        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
-
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    def test_search_artist_with_and_2(self):
-        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
-        artist1 = provider.search_artist("Selena Gomez & The Scene")
-        artist2 = provider.search_artist("Selena Gomez and the Scene")
-        self.assertIsNotNone(artist1)
-        self.assertIsNotNone(artist2)
-        self.assertEqual(artist1.id, "Selena Gomez & The Scene")  # pyright:ignore
-        self.assertEqual(artist2.id, artist1.id)  # pyright:ignore
+        for [artist_name, expected] in scenarios:
+            with self.subTest(
+                "Search Artist",
+                artist_name=artist_name,
+                expected=expected,
+            ):
+                artist = provider.search_artist(artist_name)
+                self.assertIsNotNone(artist)
+                self.assertEqual(artist.id, expected)  # pyright: ignore
 
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_artist_description_and_image(self):
@@ -137,7 +122,7 @@ class TestGenius(unittest.TestCase):
         ]
         for [song_name, artist_name, feat, expected] in scenarios:
             with self.subTest(
-                "S",
+                "Search Song",
                 song_name=song_name,
                 artist_name=artist_name,
                 feat=feat,
