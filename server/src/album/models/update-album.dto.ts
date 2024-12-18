@@ -30,7 +30,7 @@ export default class UpdateAlbumDTO {
 	type?: AlbumType;
 
 	@ApiProperty({
-		description: "The Genres of the albums",
+		description: "The Genres of the album",
 		isArray: true,
 	})
 	@IsOptional()

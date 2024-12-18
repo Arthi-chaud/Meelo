@@ -55,6 +55,7 @@ import {
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { EventsService } from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -452,9 +453,25 @@ export default class SongService extends SearchableRepositoryService {
 			...what,
 			genres: what.genres
 				? {
-						connect: what.genres.map((genre) =>
-							GenreService.formatWhereInput(genre),
-						),
+						connect: what.genres
+							.filter((genre) => typeof genre !== "string")
+							.map((genre: GenreQueryParameters.WhereInput) => ({
+								id: genre.id,
+								slug: genre.slug?.toString(),
+							})),
+						connectOrCreate: what.genres
+							.filter((genre) => typeof genre === "string")
+							.map((genre: string) => [
+								genre,
+								new Slug(genre).toString(),
+							])
+							.map(([genreName, genreSlug]) => ({
+								where: { slug: genreSlug },
+								create: {
+									name: genreName,
+									slug: genreSlug,
+								},
+							})),
 				  }
 				: undefined,
 		};
@@ -472,9 +489,11 @@ export default class SongService extends SearchableRepositoryService {
 	) {
 		if (what.genres) {
 			await Promise.all(
-				what.genres.map((genreWhere) =>
-					this.genreService.get(genreWhere),
-				),
+				what.genres
+					.filter((genre) => typeof genre !== "string")
+					.map((genreWhere: GenreQueryParameters.WhereInput) =>
+						this.genreService.get(genreWhere),
+					),
 			);
 		}
 		return this.prismaService.song
