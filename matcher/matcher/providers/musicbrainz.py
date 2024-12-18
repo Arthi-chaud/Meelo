@@ -22,6 +22,8 @@ from matcher.providers.features import (
     SearchArtistFeature,
     SearchSongFeature,
     GetSongGenresFeature,
+    GetSongUrlFromIdFeature,
+    GetSongIdFromUrlFeature,
 )
 from ..utils import capitalize_all_words, to_slug
 from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult, SongSearchResult
@@ -82,6 +84,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             GetSongFeature(lambda s: self._get_song(s)),
             GetSongGenresFeature(lambda album: self._get_song_genres(album)),
             GetWikidataSongRelationKeyFeature(lambda: "P435"),
+            GetSongUrlFromIdFeature(
+                lambda song_id: f"https://musicbrainz.org/recording/{song_id}"
+            ),
+            GetSongIdFromUrlFeature(
+                lambda song_url: song_url.replace(
+                    "https://musicbrainz.org/recording/", ""
+                )
+            ),
         ]
 
     # Note: Only use this method if action is not supported by library
@@ -251,7 +261,6 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 for r in artist_recordings
                 if (r.get("disambiguation") or "main") == "main"
             ] or artist_recordings
-
             return SongSearchResult(ordered_recordings[0]["id"])
         except Exception:
             pass
