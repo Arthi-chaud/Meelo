@@ -30,7 +30,7 @@ def match_and_post_song(song_id: int, song_name: str):
             context.client.post_song_lyrics(song_id, lyrics)
         if genres:
             logging.info(f"Found {len(genres)} genres for song {song.name}")
-        # TODO Post Genres
+            context.client.post_song_genres(song_id, genres)
     except Exception as e:
         logging.error(e)
 
@@ -63,7 +63,8 @@ def match_song(
         )
 
     # Resolve by searching
-    for provider in [p for p in context.providers]:
+    sources_ids = [source.provider_id for source in external_sources]
+    for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
         search_res = provider.search_song(song_name, artist_name, featuring)
         if not search_res:
             continue
