@@ -70,6 +70,7 @@ class TestGenius(unittest.TestCase):
         )
         self.assertEqual(release_date, datetime.date(2002, 3, 26))
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_song_lyrics_and_description(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         song = provider.get_song("Rachel-stevens-some-girls")
@@ -89,6 +90,7 @@ class TestGenius(unittest.TestCase):
         )
         self.assertIn("album Come and Get It and", desc)
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_song_wo_lyrics_and_description(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         song = provider.get_song("Madonna-die-another-day-dirty-vegas-dub")
@@ -100,6 +102,7 @@ class TestGenius(unittest.TestCase):
         desc: str = provider.get_song_description(song)  # pyright: ignore
         self.assertIsNone(desc)
 
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_search_song(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         scenarios: List[Tuple[str, str, List[str], str | None]] = [

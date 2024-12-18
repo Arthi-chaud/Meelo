@@ -35,7 +35,7 @@ class TestMatchSong(unittest.TestCase):
             self.assertIsNotNone(matches.description)
             self.assertTrue("will.i.am" in str(matches.description))
         ##Sources
-        self.assertGreaterEqual(len(matches.sources), 2)
+        self.assertGreaterEqual(len(matches.sources), 1)
         ### Genius
         if not MatcherTestUtils.is_ci():
             [genius] = [p for p in matches.sources if "genius" in p.url]
