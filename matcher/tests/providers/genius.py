@@ -1,8 +1,10 @@
 import unittest
 import datetime
 from matcher.context import Context
+from matcher.providers.domain import SongSearchResult
 from tests.matcher.common import MatcherTestUtils
 from matcher.providers.genius import GeniusProvider
+from typing import List, Tuple
 
 
 class TestGenius(unittest.TestCase):
@@ -112,3 +114,40 @@ class TestGenius(unittest.TestCase):
         # Description
         desc: str = provider.get_song_description(song)  # pyright: ignore
         self.assertIsNone(desc)
+
+    def test_search_song(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        scenarios: List[Tuple[str, str, List[str], str | None]] = [
+            ("Overrated", "Siobhan Donaghy", [], "Siobhan-donaghy-overrated"),
+            ("Work B**ch", "Britney Spears", [], "Britney-spears-work-bch-work-work"),
+            ("Work Bitch", "Britney Spears", [], "Britney-spears-work-bitch"),
+            ("Gimme More", "Britney Spears", [], "Britney-spears-gimme-more"),
+            ("Anti-Hero", "Taylor Swift", [], "Taylor-swift-anti-hero"),
+            ("E.T.", "Katy Perry", [], "Katy-perry-et"),
+            ("E.T.", "Katy Perry", ["Kanye West"], "Katy-perry-et-remix"),
+            ("Fun For Me", "Moloko", [], "Moloko-fun-for-me"),
+            ("M!ssundaztood", "P!nk", [], "P-nk-m-ssundaztood"),
+            (
+                "Bad Romance (Chew Fu H1N1 Fix)",
+                "Lady Gaga",
+                [],
+                "Lady-gaga-bad-romance-chew-fu-h1n1-fix",
+            ),
+            # ("Drive", "Peplab", [], None),
+        ]
+        for [song_name, artist_name, feat, expected] in scenarios:
+            with self.subTest(
+                "S",
+                song_name=song_name,
+                artist_name=artist_name,
+                feat=feat,
+                expected=expected,
+            ):
+                search_res: SongSearchResult = provider.search_song(
+                    song_name, artist_name, feat
+                )  # pyright: ignore
+                if expected:
+                    self.assertIsNotNone(search_res)
+                    self.assertEqual(search_res.id, expected)
+                else:
+                    self.assertIsNone(search_res)

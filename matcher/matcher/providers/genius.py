@@ -24,8 +24,9 @@ from matcher.providers.features import (
     IsMusicBrainzRelationFeature,
     SearchAlbumFeature,
     SearchArtistFeature,
+    SearchSongFeature,
 )
-from .domain import ArtistSearchResult, AlbumSearchResult
+from .domain import ArtistSearchResult, AlbumSearchResult, SongSearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
@@ -88,6 +89,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             GetSongFeature(lambda id: self._get_song(id)),
             GetSongLyricsFeature(lambda s: self._get_song_lyrics(s)),
             GetSongDescriptionFeature(lambda s: self._get_song_description(s)),
+            SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
         ]
 
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):
@@ -252,3 +254,55 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
         if divs and len(divs) > 0:
             text: str = "\n".join([div.get_text() for div in divs])
             return text.strip("\n")
+
+    def _search_song(
+        self, song_name: str, artist_name: str, featuring: List[str]
+    ) -> SongSearchResult | None:
+        try:
+            response = self._fetch("/search/song", {"q": f"{artist_name} {song_name}"})[
+                "response"
+            ]
+            search_res = [res for res in response["sections"][0]["hits"]]
+            songs = [res["result"] for res in search_res if res.get("type") == "song"]
+            song_slug = to_slug(song_name)
+            artist_slug = to_slug(artist_name)
+            matches = []
+            # For each result,
+            # We filter out those where the artist does not match
+            # If featuring, we look for songs with at least 1 feat artist in common
+            # We select song where slug is identical or 'start with'
+            # (because some songs have a remix suffix when featuring)
+            for song in songs:
+                artist_slugs = [to_slug(f["name"]) for f in song["primary_artists"]] + [
+                    to_slug(f["name"]) for f in song["featured_artists"]
+                ]
+                if artist_slug not in artist_slugs:
+                    continue
+                if featuring:
+                    feat_slug = to_slug(featuring[0])
+                    if feat_slug not in artist_slugs:
+                        continue
+                match_slug = to_slug(song["title"])
+                if match_slug != song_slug and not match_slug.startswith(song_slug):
+                    continue
+                matches.append(song)
+            if not matches:
+                return
+            # If one of the matches is an exact match, return it
+            # otherwise select song that is the closest to the song's slug
+            final_match: Any | None = None
+            for match in matches:
+                if to_slug(match["title"]) == song_slug:
+                    final_match = match
+                    break
+            if not final_match:
+                ordered_matches = sorted(
+                    matches,
+                    # We sort matches by distance to the title
+                    key=lambda s: abs(len(to_slug(s["title"])) - len(song_slug)),
+                )
+                final_match = ordered_matches[0]
+            song_id = self.get_song_id_from_url(final_match["url"])
+            return SongSearchResult(song_id) if song_id else None
+        except Exception:
+            return None
