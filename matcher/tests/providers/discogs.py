@@ -31,13 +31,10 @@ class TestDiscogs(unittest.TestCase):
                 self.assertIsNotNone(artist)
                 self.assertEqual(artist.id, expected)  # pyright: ignore
 
-    def test_get_artist_description_and_image(self):
+    def test_get_artist_image(self):
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
         artist = provider.get_artist("4480")
         self.assertIsNotNone(artist)
-        description = provider.get_artist_description(artist)
-        self.assertIsNotNone(description)
-        self.assertIn("Bristol", description)  # pyright: ignore
         illustration = provider.get_artist_illustration_url(artist)
         self.assertIsNotNone(illustration)
 

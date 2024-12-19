@@ -5,7 +5,6 @@ from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
     GetAlbumUrlFromIdFeature,
-    GetArtistDescriptionFeature,
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistIllustrationUrlFeature,
@@ -24,7 +23,7 @@ from ..settings import DiscogsSettings
 import discogs_client
 
 # Notes:
-# - We dont get album descriptions because they are too short and/or technical
+# - We dont get descriptions because they are too short and/or technical
 # - Release date for albums are just years. We could get a date from the master release but shrug
 # - Searching albums is Unimplemented because need to identify singles from albums
 #   Too lazy, and anyway we propably dont need info from that provider
@@ -45,9 +44,6 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
                 lambda artist_id: "https://www.discogs.com/artist/" + str(artist_id)
             ),
             GetArtistFeature(lambda artist_name: self._get_artist(artist_name)),
-            GetArtistDescriptionFeature(
-                lambda artist: self._get_artist_description(artist)
-            ),
             GetArtistIllustrationUrlFeature(
                 lambda artist: self._get_artist_illustration_url(artist)
             ),
@@ -93,12 +89,6 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
                 headers=self._headers(),
                 params={"token": self.settings.api_key},
             ).json()
-        except Exception:
-            return None
-
-    def _get_artist_description(self, artist: Any) -> str | None:
-        try:
-            return artist["profile_plaintext"]
         except Exception:
             return None
 

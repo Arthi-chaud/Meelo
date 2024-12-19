@@ -93,10 +93,6 @@ class TestMatchArtist(unittest.TestCase):
         # Matches
         self.assertIsNotNone(matches)
         self.assertEqual(matches.artist_id, 1)
-        ##Description
-        self.assertIsNotNone(matches.description)
-        ## Comes from Discogs
-        self.assertTrue("Dutch" in str(matches.description))
         # ##Sources
         self.assertTrue(len(matches.sources) >= 2)
         ### Discogs
