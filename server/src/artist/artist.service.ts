@@ -141,6 +141,7 @@ export default class ArtistService extends SearchableRepositoryService {
 					"artist",
 					artist.name,
 					artist.id,
+					4,
 				);
 				return artist;
 			})

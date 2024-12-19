@@ -24,7 +24,7 @@ import {
 	AlbumNotEmptyException,
 	AlbumNotFoundException,
 } from "./album.exceptions";
-import { Prisma } from "@prisma/client";
+import { AlbumType, Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import ReleaseService from "src/release/release.service";
@@ -144,6 +144,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					"album",
 					created.name,
 					created.id,
+					created.type == AlbumType.StudioRecording ? 4 : 2,
 				);
 				return created;
 			})

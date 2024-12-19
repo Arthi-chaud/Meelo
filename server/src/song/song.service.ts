@@ -154,6 +154,7 @@ export default class SongService extends SearchableRepositoryService {
 					"song",
 					created.name,
 					created.id,
+					created.type == SongType.Original ? 3 : 1,
 				);
 				return created;
 			})

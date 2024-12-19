@@ -21,6 +21,7 @@ import Logger from "src/logger/logger";
 import {
 	ClientProxy,
 	ClientProxyFactory,
+	RmqRecord,
 	Transport,
 } from "@nestjs/microservices";
 import { catchError } from "rxjs";
@@ -41,6 +42,7 @@ export class EventsService {
 				urls: [process.env.RABBITMQ_URL!],
 				queue: QueueName,
 				queueOptions: {
+					maxPriority: 5,
 					durable: true,
 				},
 			},
@@ -51,6 +53,8 @@ export class EventsService {
 		resourceType: ResourceCreationEventType,
 		name: string,
 		id: number,
+		// Between 1 and 5. 5 is top priority
+		priority: number,
 	) {
 		const dto = {
 			event: "created",
@@ -58,7 +62,8 @@ export class EventsService {
 			name,
 			id,
 		};
-		this.client.emit("", dto).pipe(
+		const record = new RmqRecord(dto, { priority });
+		this.client.emit("", record).pipe(
 			catchError((e, rest) => {
 				this.logger.error(
 					"An error occured while publishing message to queue:",

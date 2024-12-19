@@ -23,7 +23,7 @@ def main():
     connection = pika.BlockingConnection(connectionParams)
     global channel
     channel = connection.channel()
-    channel.queue_declare(queue="meelo", durable=True)
+    channel.queue_declare(queue="meelo", durable=True, arguments={"x-max-priority": 5})
 
     def callback(ch, method, _, body):
         event = Event.from_json(body)
@@ -46,7 +46,9 @@ def main():
                 logging.warning("No handler for event " + event.type)
                 pass
 
-    channel.basic_consume(queue="meelo", on_message_callback=callback)
+    channel.basic_consume(
+        queue="meelo", on_message_callback=callback, arguments={"x-max-priority": 5}
+    )
     logging.basicConfig(level=logging.INFO)
     bootstrap_context()
     logging.info("Ready to match!")
