@@ -1,13 +1,17 @@
 import pika
 import os
+import sys
 import logging
+import signal
 
+from pika.adapters.blocking_connection import BlockingChannel
 from matcher.bootstrap import bootstrap_context
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
-
 from .models.event import Event
+
+channel: BlockingChannel | None = None
 
 
 def main():
@@ -17,10 +21,11 @@ def main():
         exit(1)
     connectionParams = pika.URLParameters(rabbitUrl)
     connection = pika.BlockingConnection(connectionParams)
+    global channel
     channel = connection.channel()
     channel.queue_declare(queue="meelo", durable=True)
 
-    def callback(ch, method, properties, body):
+    def callback(ch, method, _, body):
         event = Event.from_json(body)
         delivery_tag = method.delivery_tag
         logging.info(f"Received event: {event}")
@@ -48,6 +53,14 @@ def main():
     channel.start_consuming()
 
 
+def terminate(signal, term):
+    logging.info("Shutting Down Matcher...")
+    if channel:
+        channel.close()
+    sys.exit(0)
+
+
 # From https://www.rabbitmq.com/tutorials/tutorial-one-python
 if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, terminate)
     main()
