@@ -7,10 +7,10 @@ import { ExternalMetadataModule } from "./external-metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SetupApp from "test/setup-app";
-import ExternalMetadataService from "./external-metadata.service";
 import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 import { Provider } from "@prisma/client";
 import { ExternalMetadataResponse } from "./models/external-metadata.response";
+import { DuplicateSourcesInExternalMetadataDto } from "./external-metadata.exceptions";
 
 describe("External Metadata Controller", () => {
 	let app: INestApplication;
@@ -82,6 +82,27 @@ describe("External Metadata Controller", () => {
 					sources: [{ providerId: provider.id, url: "URL" }],
 				} satisfies CreateExternalMetadataDto)
 				.expect(404);
+		});
+
+		it("should return an error, duplicate source", () => {
+			return request(app.getHttpServer())
+				.post(`/external-metadata`)
+				.send({
+					albumId: dummyRepository.compilationAlbumA.id,
+					description: "a",
+					rating: undefined,
+					sources: [
+						{ providerId: provider.id, url: "URL" },
+						{ providerId: provider.id, url: "URL2" },
+					],
+				} satisfies CreateExternalMetadataDto)
+				.expect(400)
+				.expect((res) => {
+					const message = res.body.message;
+					expect(message).toBe(
+						new DuplicateSourcesInExternalMetadataDto().message,
+					);
+				});
 		});
 	});
 

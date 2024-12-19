@@ -47,6 +47,12 @@ export class ExternalMetadataNotFoundException extends NotFoundException {
 	}
 }
 
+export class DuplicateSourcesInExternalMetadataDto extends InvalidRequestException {
+	constructor() {
+		super("The same provider was included twice in the sources.");
+	}
+}
+
 export class MissingExternalMetadataResourceIdException extends InvalidRequestException {
 	constructor(data: CreateExternalMetadataDto) {
 		super("Missing Album, Artist, Song or Release ID");

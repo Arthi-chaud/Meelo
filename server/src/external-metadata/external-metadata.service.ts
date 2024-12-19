@@ -22,6 +22,7 @@ import PrismaService from "src/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import {
+	DuplicateSourcesInExternalMetadataDto,
 	ExternalMetadataEntryExistsException,
 	ExternalMetadataNotFoundException,
 	ExternalMetadataResourceNotFoundException,
@@ -57,6 +58,13 @@ export default class ExternalMetadataService {
 		) {
 			throw new MissingExternalMetadataResourceIdException(data);
 		}
+		data.sources
+			.map((source) => source.providerId)
+			.forEach((providerId, index, ids) => {
+				if (ids.indexOf(providerId) != index) {
+					throw new DuplicateSourcesInExternalMetadataDto();
+				}
+			});
 		return this.prismaService.externalMetadata
 			.create({
 				data: {
