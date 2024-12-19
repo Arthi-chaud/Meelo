@@ -1,6 +1,7 @@
 import pika
 import os
 import sys
+import time
 import logging
 import signal
 
@@ -13,22 +14,17 @@ from .models.event import Event
 
 channel: BlockingChannel | None = None
 
+queue_name = "meelo"
 
-def main():
-    rabbitUrl = os.environ.get("RABBITMQ_URL")
-    if not rabbitUrl:
-        logging.error("Missing env var 'RABBITMQ_URL'")
-        exit(1)
-    connectionParams = pika.URLParameters(rabbitUrl)
-    connection = pika.BlockingConnection(connectionParams)
-    global channel
-    channel = connection.channel()
-    channel.queue_declare(queue="meelo", durable=True, arguments={"x-max-priority": 5})
 
-    def callback(ch, method, _, body):
+def consume(ch):
+    while True:
+        method, prop, body = ch.basic_get(queue_name)
+        if not method:
+            continue
         event = Event.from_json(body)
         delivery_tag = method.delivery_tag
-        logging.info(f"Received event: {event}")
+        logging.info(f"Received event: {event} (P={prop.priority})")
         match event.type:
             case "artist":
                 match_and_post_artist(event.id, event.name)
@@ -45,14 +41,25 @@ def main():
             case _:
                 logging.warning("No handler for event " + event.type)
                 pass
+        time.sleep(0.5)
 
-    channel.basic_consume(
-        queue="meelo", on_message_callback=callback, arguments={"x-max-priority": 5}
-    )
+
+def main():
+    global channel
     logging.basicConfig(level=logging.INFO)
+    rabbitUrl = os.environ.get("RABBITMQ_URL")
+    if not rabbitUrl:
+        logging.error("Missing env var 'RABBITMQ_URL'")
+        exit(1)
+    connectionParams = pika.URLParameters(rabbitUrl)
+    connection = pika.BlockingConnection(connectionParams)
+    channel = connection.channel()
+    channel.queue_declare(
+        queue=queue_name, durable=True, arguments={"x-max-priority": 5}
+    )
     bootstrap_context()
     logging.info("Ready to match!")
-    channel.start_consuming()
+    consume(channel)
 
 
 def terminate(signal, term):
