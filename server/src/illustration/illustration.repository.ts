@@ -39,6 +39,8 @@ import {
 } from "./illustration.exceptions";
 import { IllustrationType } from "@prisma/client";
 import IllustrationStats from "./models/illustration-stats";
+import ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
+import ProviderService from "src/external-metadata/provider.service";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import { IllustrationResponse } from "./models/illustration.response";
 
@@ -62,6 +64,7 @@ export default class IllustrationRepository {
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 		private settingsService: SettingsService,
+		private providerService: ProviderService,
 	) {
 		this.baseIllustrationFolderPath = join(
 			this.settingsService.settingsValues.meeloFolder!,
@@ -259,6 +262,26 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
+	async saveProviderIcon(
+		buffer: Buffer,
+		where: ProviderQueryParameters.WhereInput,
+	): Promise<Illustration> {
+		const provider = await this.providerService.get(where);
+		if (provider.illustrationId !== null) {
+			await this.deleteIllustration(provider.illustrationId);
+		}
+		const newIllustration = await this.saveIllustration(
+			buffer,
+			IllustrationType.Icon,
+		);
+
+		await this.prismaService.provider.update({
+			data: { illustrationId: newIllustration.id },
+			where: { id: provider.id },
+		});
+		return newIllustration;
+	}
+
 	async saveReleaseIllustration(
 		buffer: Buffer,
 		disc: number | null,
@@ -347,42 +370,5 @@ export default class IllustrationRepository {
 			},
 			include: { illustration: true },
 		});
-	}
-
-	async downloadMissingArtistIllustrations() {
-		const artistsWithoutIllustrations =
-			await this.prismaService.artist.findMany({
-				where: {
-					illustration: null,
-					externalIds: { some: { illustration: { not: null } } },
-				},
-				include: {
-					externalIds: { where: { illustration: { not: null } } },
-				},
-			});
-
-		await Promise.allSettled(
-			artistsWithoutIllustrations.map(async (artist) => {
-				for (const url of artist.externalIds
-					.map(({ illustration }) => illustration)
-					.filter((illustration) => illustration !== null)) {
-					try {
-						const buffer =
-							await this.illustrationService.downloadIllustration(
-								url!,
-							);
-						await this.saveArtistIllustration(buffer, {
-							id: artist.id,
-						});
-						this.logger.verbose(
-							`Illustration found for artist '${artist.name}'`,
-						);
-						return;
-					} catch {
-						continue;
-					}
-				}
-			}),
-		);
 	}
 }

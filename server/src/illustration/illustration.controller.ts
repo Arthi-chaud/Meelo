@@ -32,12 +32,7 @@ import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import IllustrationService from "./illustration.service";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
-import { parse } from "path";
 import { NoIllustrationException } from "./illustration.exceptions";
-import ProviderIllustrationService from "src/providers/provider-illustration.service";
-import ProviderService from "src/providers/provider.service";
-import ProvidersSettings from "src/providers/models/providers.settings";
-import { UnknownProviderError } from "src/providers/provider.exception";
 import IllustrationRepository from "./illustration.repository";
 import { IllustrationResponse } from "./models/illustration.response";
 import Roles from "src/authentication/roles/roles.enum";
@@ -55,8 +50,6 @@ export class IllustrationController {
 		private illustrationService: IllustrationService,
 		private illustrationRepository: IllustrationRepository,
 		private registrationService: RegistrationService,
-		private providerIllustrationService: ProviderIllustrationService,
-		private providerService: ProviderService,
 	) {}
 
 	@ApiOperation({
@@ -84,12 +77,7 @@ export class IllustrationController {
 				dimensions,
 				res,
 			)
-			.catch((err) => {
-				if (err instanceof NoIllustrationException) {
-					this.illustrationRepository.deleteIllustration(
-						illustration.id,
-					);
-				}
+			.catch(() => {
 				throw new NoIllustrationException(
 					"Illustration file not found",
 				);
@@ -151,35 +139,5 @@ export class IllustrationController {
 		// This is a hot fixto have a 404 when image does not exist.
 		await this.illustrationRepository.getIllustration(illustrationId);
 		await this.illustrationRepository.deleteIllustration(illustrationId);
-	}
-
-	@ApiOperation({
-		summary: "Get a Provider's icon",
-	})
-	@Cached()
-	@Get("providers/:name/icon")
-	async getProviderIillustration(
-		@Param("name") providerName: string,
-		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true }) res: Response,
-	) {
-		const pNameIsValid = (str: string): str is keyof ProvidersSettings =>
-			this.providerService.providerCatalogue.find(
-				({ name }) => name == str,
-			) !== undefined;
-		let illustrationPath = "";
-
-		if (!pNameIsValid(providerName)) {
-			throw new UnknownProviderError(providerName);
-		}
-		illustrationPath =
-			this.providerIllustrationService.buildIconPath(providerName);
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			`${providerName}-${parse(illustrationPath).name}`,
-			dimensions,
-			res,
-			parse(illustrationPath).ext,
-		);
 	}
 }

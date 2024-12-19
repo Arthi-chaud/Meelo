@@ -1,0 +1,9 @@
+name: 'Cache (Matcher)'
+description: 'Cache for Matcher'
+runs:
+  using: "composite"
+  steps:
+    - run: apk add --update --no-progress lsb-release python3 py3-pip
+      shell: sh
+    - run: pip3 install -r matcher/requirements.txt
+      shell: sh

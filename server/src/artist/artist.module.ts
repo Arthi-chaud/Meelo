@@ -26,13 +26,13 @@ import { ArtistResponseBuilder } from "./models/artist.response";
 import SettingsModule from "src/settings/settings.module";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import ProvidersModule from "src/providers/providers.module";
+import { EventsModule } from "src/events/events.module";
 
 @Module({
 	imports: [
 		PrismaModule,
 		SettingsModule,
-		forwardRef(() => ProvidersModule),
+		EventsModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),

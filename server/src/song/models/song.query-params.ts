@@ -90,7 +90,7 @@ namespace SongQueryParameters {
 	 */
 	export type UpdateInput = Partial<{
 		type: SongType;
-		genres: GenreQueryParameters.WhereInput[];
+		genres: (GenreQueryParameters.WhereInput | string)[];
 	}>;
 	export type DeleteInput = {
 		id: Song["id"];
@@ -109,12 +109,11 @@ namespace SongQueryParameters {
 		"genres",
 		"master",
 		"lyrics",
-		"externalIds",
 		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["lyrics", "externalIds"],
+		["lyrics"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 

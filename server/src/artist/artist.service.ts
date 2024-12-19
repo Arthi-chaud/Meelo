@@ -46,6 +46,7 @@ import {
 	formatIdentifier,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
+import { EventsService } from "src/events/events.service";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {
@@ -54,6 +55,7 @@ export default class ArtistService extends SearchableRepositoryService {
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		private illustrationRepository: IllustrationRepository,
+		private eventService: EventsService,
 	) {
 		super("artist", ["name", "slug"], meiliSearch);
 	}
@@ -135,6 +137,12 @@ export default class ArtistService extends SearchableRepositoryService {
 						name: artist.name,
 					},
 				]);
+				this.eventService.publishItemCreationEvent(
+					"artist",
+					artist.name,
+					artist.id,
+					4,
+				);
 				return artist;
 			})
 			.catch((error) => {

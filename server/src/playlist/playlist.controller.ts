@@ -48,7 +48,11 @@ import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { Role } from "src/authentication/roles/roles.decorators";
+import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
 import SongQueryParameters from "src/song/models/song.query-params";
+import Roles from "src/authentication/roles/roles.enum";
 
 export class Selector {
 	@IsOptional()

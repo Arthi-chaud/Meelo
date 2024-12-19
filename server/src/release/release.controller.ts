@@ -37,7 +37,7 @@ import type { Response as ExpressResponse } from "express";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { ReleaseResponseBuilder } from "./models/release.response";
@@ -46,6 +46,10 @@ import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import LibraryQueryParameters from "src/library/models/library.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
+import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
+import { IllustrationResponse } from "src/illustration/models/illustration.response";
+import { IllustrationType } from "@prisma/client";
+import Roles from "src/authentication/roles/roles.enum";
 
 class Selector {
 	@IsOptional()

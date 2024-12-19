@@ -1,7 +1,23 @@
-import type { ModuleMetadata } from "@nestjs/common";
+import { Module, type ModuleMetadata } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { MeiliSearchModule } from "nestjs-meilisearch";
+import { createMock } from "@golevelup/ts-jest";
+import { EventsModule } from "src/events/events.module";
+import { EventsService } from "src/events/events.service";
+
+@Module({})
+class MockEventsService {
+	constructor() {}
+	publishItemCreationEvent(resourceType: any, name: string, id: number) {}
+}
+
+@Module({
+	imports: [],
+	providers: [{ provide: EventsService, useClass: MockEventsService }],
+	exports: [{ provide: EventsService, useClass: MockEventsService }],
+})
+export class MockEventsModule {}
 
 export function createTestingModule(metadata: ModuleMetadata) {
 	return Test.createTestingModule({
@@ -16,8 +32,11 @@ export function createTestingModule(metadata: ModuleMetadata) {
 				cleanupAfterSuccessHandle: true,
 				cleanupAfterFailedHandle: true,
 			}),
+			EventsModule,
 		),
-		exports: metadata.exports,
-		providers: metadata.providers,
-	});
+		exports: [...(metadata.exports ?? [])],
+		providers: [...(metadata.providers ?? [])],
+	})
+		.overrideModule(EventsModule)
+		.useModule(MockEventsModule);
 }

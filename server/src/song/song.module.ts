@@ -27,8 +27,8 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { SongResponseBuilder } from "./models/song.response";
 import ReleaseModule from "src/release/release.module";
-import ProvidersModule from "src/providers/providers.module";
 import ParserModule from "src/parser/parser.module";
+import { EventsModule } from "src/events/events.module";
 import { SongGroupResponseBuilder } from "./models/song-group.response";
 import SongGroupService from "./song-group.service";
 import { SongGroupController } from "./song-group.controller";
@@ -36,7 +36,7 @@ import { SongGroupController } from "./song-group.controller";
 @Module({
 	imports: [
 		PrismaModule,
-		forwardRef(() => ProvidersModule),
+		EventsModule,
 		forwardRef(() => LyricsModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => TrackModule),

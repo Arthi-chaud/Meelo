@@ -19,7 +19,6 @@ const fs = require("fs");
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
-import ProvidersModule from "src/providers/providers.module";
 import { IllustrationType } from "@prisma/client";
 import { Illustration } from "src/prisma/models";
 import { IllustrationResponse } from "./models/illustration.response";
@@ -50,7 +49,6 @@ describe("Illustration Controller", () => {
 				TrackModule,
 				GenreModule,
 				LyricsModule,
-				ProvidersModule,
 			],
 		})
 			.overrideProvider(PrismaService)

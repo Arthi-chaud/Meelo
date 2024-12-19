@@ -66,6 +66,12 @@ import Playlist, {
 import { isSSR } from "../utils/is-ssr";
 import { TaskResponse } from "../models/task";
 import {
+	AlbumExternalMetadata,
+	ArtistExternalMetadata,
+	ReleaseExternalMetadata,
+	SongExternalMetadata,
+} from "../models/external-metadata";
+import {
 	SaveSearchItem,
 	SearchResult,
 	SearchResultTransformer,
@@ -1200,6 +1206,65 @@ export default class API {
 					parameters: {},
 					validator: Genre,
 				}),
+		};
+	}
+
+	static getArtistExternalMetadata(
+		slugOrId: string | number,
+	): Query<ArtistExternalMetadata | null> {
+		return {
+			key: ["artist", slugOrId, "external-metadata"],
+			exec: () =>
+				API.fetch({
+					route: `/external-metadata/artist/${slugOrId}`,
+					errorMessage: "Metadata could not be loaded",
+					parameters: {},
+					validator: ArtistExternalMetadata,
+				}).catch(() => null),
+		};
+	}
+
+	static getSongExternalMetadata(
+		slugOrId: string | number,
+	): Query<SongExternalMetadata | null> {
+		return {
+			key: ["song", slugOrId, "external-metadata"],
+			exec: () =>
+				API.fetch({
+					route: `/external-metadata/song/${slugOrId}`,
+					errorMessage: "Metadata could not be loaded",
+					parameters: {},
+					validator: SongExternalMetadata,
+				}).catch(() => null),
+		};
+	}
+	static getAlbumExternalMetadata(
+		slugOrId: string | number,
+	): Query<AlbumExternalMetadata | null> {
+		return {
+			key: ["album", slugOrId, "external-metadata"],
+			exec: () =>
+				API.fetch({
+					route: `/external-metadata/album/${slugOrId}`,
+					errorMessage: "Metadata could not be loaded",
+					parameters: {},
+					validator: AlbumExternalMetadata,
+				}).catch(() => null),
+		};
+	}
+
+	static getReleaseExternalMetadata(
+		slugOrId: string | number,
+	): Query<ReleaseExternalMetadata | null> {
+		return {
+			key: ["release", slugOrId, "external-metadata"],
+			exec: () =>
+				API.fetch({
+					route: `/external-metadata/release/${slugOrId}`,
+					errorMessage: "Metadata could not be loaded",
+					parameters: {},
+					validator: ReleaseExternalMetadata,
+				}).catch(() => null),
 		};
 	}
 

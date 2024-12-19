@@ -39,7 +39,7 @@ namespace ReleaseQueryParameters {
 		| "slug"
 		| "nameSlug"
 		| "tracks"
-		| "externalIds"
+		| "externalMetadata"
 		| "registeredAt"
 	> & {
 		releaseDate?: Date;
@@ -95,13 +95,10 @@ namespace ReleaseQueryParameters {
 	export const AvailableIncludes = [
 		"album",
 		"tracks",
-		"externalIds",
 		"illustration",
 	] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
-		AvailableIncludes,
-		["externalIds"],
-	);
+	export const AvailableAtomicIncludes =
+		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**

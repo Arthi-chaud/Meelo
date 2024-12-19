@@ -13,7 +13,6 @@ import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
-import ProvidersModule from "src/providers/providers.module";
 
 jest.setTimeout(120000);
 
@@ -41,7 +40,6 @@ describe("Illustration Service", () => {
 				ArtistModule,
 				ParserModule,
 				SettingsModule,
-				ProvidersModule,
 			],
 		})
 			.overrideProvider(PrismaService)

@@ -43,7 +43,6 @@ import compilationAlbumArtistKeyword from "src/constants/compilation";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import DiscogsProvider from "src/providers/discogs/discogs.provider";
 import deepmerge from "deepmerge";
 import {
 	formatIdentifierToIdOrSlug,
@@ -62,7 +61,6 @@ export default class ReleaseService {
 		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private illustrationRepository: IllustrationRepository,
-		private discogsProvider: DiscogsProvider,
 	) {}
 
 	/**
@@ -91,15 +89,26 @@ export default class ReleaseService {
 				releaseDate: input.releaseDate,
 				extensions: input.extensions,
 				albumId: album.id,
-				externalIds: input.discogsId
+				externalMetadata: input.discogsId
 					? {
 							create: {
-								provider: {
-									connect: {
-										name: this.discogsProvider.name,
+								sources: {
+									create: {
+										provider: {
+											connectOrCreate: {
+												where: { slug: "discogs" },
+												create: {
+													name: "Discogs",
+													// This is a hotfix while rewriting external metadata.
+													slug: "discogs",
+												},
+											},
+										},
+										url:
+											"https://www.discogs.com/release/" +
+											input.discogsId,
 									},
 								},
-								value: input.discogsId,
 							},
 					  }
 					: undefined,

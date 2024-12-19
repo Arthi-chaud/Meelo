@@ -1,0 +1,32 @@
+from dataclasses import dataclass
+from dataclasses_json import (
+    dataclass_json,
+    LetterCase,
+    Undefined,
+    DataClassJsonMixin,
+)
+from typing import Optional, List
+from matcher.providers.domain import AlbumType
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
+class Artist(DataClassJsonMixin):
+    name: str
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
+class Album(DataClassJsonMixin):
+    name: str
+    artist: Artist
+    type: AlbumType = AlbumType.OTHER
+    release_date: Optional[str] = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
+class Song(DataClassJsonMixin):
+    name: str
+    artist: Artist
+    featuring: List[Artist]

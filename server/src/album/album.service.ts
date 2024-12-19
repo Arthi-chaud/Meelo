@@ -24,7 +24,7 @@ import {
 	AlbumNotEmptyException,
 	AlbumNotFoundException,
 } from "./album.exceptions";
-import { Prisma } from "@prisma/client";
+import { AlbumType, Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import ReleaseService from "src/release/release.service";
@@ -48,12 +48,14 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import { AlbumModel } from "./models/album.model";
+import { EventsService } from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
 
 @Injectable()
 export default class AlbumService extends SearchableRepositoryService {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
+		private eventService: EventsService,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
@@ -138,6 +140,12 @@ export default class AlbumService extends SearchableRepositoryService {
 						type: created.type,
 					},
 				]);
+				this.eventService.publishItemCreationEvent(
+					"album",
+					created.name,
+					created.id,
+					created.type == AlbumType.StudioRecording ? 4 : 2,
+				);
 				return created;
 			})
 			.catch(async (error) => {
@@ -418,7 +426,26 @@ export default class AlbumService extends SearchableRepositoryService {
 	) {
 		return this.prismaService.album
 			.update({
-				data: what,
+				data: {
+					...what,
+					releaseDate: what.releaseDate ?? undefined,
+					genres: what.genres
+						? {
+								connectOrCreate: what.genres
+									.map((genre) => [
+										genre,
+										new Slug(genre).toString(),
+									])
+									.map(([genreName, genreSlug]) => ({
+										where: { slug: genreSlug },
+										create: {
+											name: genreName,
+											slug: genreSlug,
+										},
+									})),
+						  }
+						: undefined,
+				},
 				where: AlbumService.formatWhereInput(where),
 			})
 			.catch(async (error) => {
@@ -433,6 +460,16 @@ export default class AlbumService extends SearchableRepositoryService {
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
 
+		// If the album's release date has been updated by the matcher
+		// We ignore
+		// Usually, a date that has a month and a day is provided by the matcher (the scanner only gives years)
+		// I know it's ugly
+		if (
+			album.releaseDate?.getMonth() ||
+			(album.releaseDate?.getDate() ?? 1) > 1
+		) {
+			return;
+		}
 		album.releaseDate = album.releases?.at(0)?.releaseDate ?? null;
 		for (const release of album.releases) {
 			if (

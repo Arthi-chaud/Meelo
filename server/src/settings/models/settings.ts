@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Exclude, Type } from "class-transformer";
 import {
 	ArrayNotEmpty,
@@ -28,10 +28,119 @@ import {
 	IsString,
 	ValidateNested,
 } from "class-validator";
-import ProvidersSettings from "src/providers/models/providers.settings";
 
 export const metadataSourceValue = ["path", "embedded"] as const;
 export const metadataOrderValue = ["only", "preferred"] as const;
+
+class BaseProviderSettings {
+	@ApiProperty()
+	@IsOptional()
+	@IsBoolean()
+	@ApiProperty({ type: Boolean })
+	enabled = true;
+}
+
+//TODO Delete Provider Settings after Matcher Microservice
+
+class AllMusicSettings extends BaseProviderSettings {}
+
+class DiscogsSettings extends BaseProviderSettings {
+	@ApiHideProperty()
+	@IsDefined()
+	@IsString()
+	@Exclude({ toPlainOnly: true })
+	apiKey: string;
+}
+
+class GeniusSettings extends BaseProviderSettings {
+	@ApiHideProperty()
+	@IsDefined()
+	@IsString()
+	@Exclude({ toPlainOnly: true })
+	apiKey: string;
+}
+class MetacriticSettings extends BaseProviderSettings {}
+
+class MusicBrainzSettings extends BaseProviderSettings {}
+
+class WikipediaSettings extends BaseProviderSettings {}
+
+/**
+ * Settings for the Providers
+ */
+export class ProvidersSettings {
+	/**
+	 * Settings for the Genius provider
+	 */
+	@ApiProperty({
+		type: GeniusSettings,
+		required: false,
+	})
+	@Type(() => GeniusSettings)
+	@ValidateNested()
+	@IsOptional()
+	genius: GeniusSettings;
+
+	/**
+	 * Settings for the Musicbrainz provider
+	 */
+	@ApiProperty({
+		type: MusicBrainzSettings,
+		required: false,
+	})
+	@Type(() => MusicBrainzSettings)
+	@ValidateNested()
+	@IsOptional()
+	musicbrainz: MusicBrainzSettings;
+
+	/**
+	 * Settings for the Discogs provider
+	 */
+	@ApiProperty({
+		type: DiscogsSettings,
+		required: false,
+	})
+	@Type(() => DiscogsSettings)
+	@ValidateNested()
+	@IsOptional()
+	discogs: DiscogsSettings;
+
+	/**
+	 * Settings for the Wikipedia provider
+	 */
+	@ApiProperty({
+		type: WikipediaSettings,
+		required: false,
+	})
+	@Type(() => WikipediaSettings)
+	@ValidateNested()
+	@IsOptional()
+	wikipedia: WikipediaSettings;
+
+	/**
+	 * Settings for the Metacritic provider
+	 */
+	@ApiProperty({
+		type: MetacriticSettings,
+		required: false,
+	})
+	@Type(() => MetacriticSettings)
+	@ValidateNested()
+	@IsOptional()
+	metacritic: MetacriticSettings;
+
+	/**
+	 * Settings for the AllMusic provider
+	 */
+	@ApiProperty({
+		type: AllMusicSettings,
+		required: false,
+	})
+	@Type(() => AllMusicSettings)
+	@ValidateNested()
+	@IsOptional()
+	allMusic: AllMusicSettings;
+}
 
 class CompilationSettings {
 	@ApiProperty()

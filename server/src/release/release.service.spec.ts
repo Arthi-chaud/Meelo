@@ -23,8 +23,6 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
 import TrackService from "src/track/track.service";
-import ProvidersModule from "src/providers/providers.module";
-import ProviderService from "src/providers/provider.service";
 
 describe("Release Service", () => {
 	let releaseService: ReleaseService;
@@ -49,7 +47,6 @@ describe("Release Service", () => {
 				ParserModule,
 				GenreModule,
 				FileModule,
-				ProvidersModule,
 			],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		})
@@ -61,7 +58,6 @@ describe("Release Service", () => {
 		trackService = module.get(TrackService);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		await module.get(ProviderService).onModuleInit();
 	});
 
 	afterAll(async () => {
