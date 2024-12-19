@@ -58,15 +58,12 @@
 	"path": "Path",
 	"registrationDate": "Registration Date",
 	"noLyricsFound": "No Lyrics Found",
-
 	"changeAlbumType": "Change Album Type",
-
 	"libraryDeleted": "Library deleted",
 	"libraryDeletionFail": "Deleting library failed",
 	"libraryCreated": "Library created",
 	"libraryCreationFail": "Creating library failed",
 	"libraryUpdated": "Library updated",
-
 	"nameOfLibrary": "Name of the library",
 	"nameIsRequired": "Name is required",
 	"pathOfLibrary": "Path of the library",
@@ -74,29 +71,24 @@
 	"goBackHome": "Go Back Home",
 	"oops": "Oops",
 	"by": "by",
-
 	"warning": "Warning",
 	"downloadWarning": "Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content.",
 	"download": "Download",
 	"compilation": "Compilation",
-
 	"clean": "Clean",
 	"refresh": "Refresh",
 	"scan": "Scan",
 	"refreshMetadata": "Refresh Metadata",
-
 	"createLibrary": "Create Library",
-
+	"deletingLibrary": "Deleting library...",
 	"deleteLibrary": "Delete Library",
 	"deleteLibraryAction": "Delete a Library",
 	"deleteLibraryWarning": "You are about to delete a library. This can not be undone",
-
 	"deleteUser": "Delete User",
 	"deleteUserWarning": "You are about to delete a user. This can not be undone.",
 	"userDeleted": "User deleted",
 	"userDeletionFail": "User deletion failed",
 	"userUpdateFail": "Updating user failed",
-
 	"userNowEnabled": "User is now enabled",
 	"userNowDisabled": "User is now disabled",
 	"userNowAdmin": "User is now an admin and can run administrative tasks",
@@ -104,12 +96,9 @@
 	"you": "You",
 	"admin": "Admin",
 	"enabled": "Enabled",
-
 	"trackSetAsMaster": "Track set as Master",
-
 	"showAllTrack": "Show all tracks",
 	"showOnlyExclusiveTracks": "Show only exclusive tracks",
-
 	"All": "All",
 	"StudioRecording": "Studio Recording",
 	"Single": "Single",
@@ -118,7 +107,6 @@
 	"Soundtrack": "Soundtrack",
 	"RemixAlbum": "Remix Album",
 	"VideoAlbum": "Video Album",
-
 	"pluralStudioRecording": "Studio Albums",
 	"pluralSingle": "Singles",
 	"pluralLiveRecording": "Live Albums",
@@ -126,15 +114,11 @@
 	"pluralSoundtrack": "Soundtrack Albums",
 	"pluralRemixAlbum": "Remixes",
 	"pluralVideoAlbum": "Video Albums",
-
 	"groupVersions": "Group Versions",
 	"showAllSongs": "Show All Versions",
-
 	"onThisAlbum": "Featured Artists",
-
 	"backToTop": "Back To Top",
 	"changeLayout": "Change layout",
-
 	"sortBy": "Sort By",
 	"order": "Order",
 	"asc": "Asc",
@@ -151,18 +135,14 @@
 	"bitrate": "Bitrate",
 	"trackIndex": "Track Index",
 	"discIndex": "Disc Index",
-
 	"allLibraries": "All Libraries",
-
 	"setAsMaster": "Set as Master",
 	"setAllTracksAsMaster": "Set all tracks as Master",
 	"deleteFromPlaylist": "Delete from Playlist",
 	"changeIllutration": "Change Illustration",
 	"releaseSetAsMaster": "Release set as master",
 	"tracksUpdated": "Tracks successfully updated",
-
 	"librariesLoadFail": "Libraries could not be loaded",
-
 	"username": "Username",
 	"password": "Password",
 	"confirmPassword": "Confirm",
@@ -198,7 +178,6 @@
 	"darkMode": "Dark Mode",
 	"autoMode": "Auto Mode",
 	"logout": "Logout",
-
 	"appearsOn": "Appears On",
 	"featuredOnPlaylists": "Featured On",
 	"bonusTracks": "Bonus Tracks",
@@ -215,10 +194,8 @@
 	"Unknown": "Unknown",
 	"Acappella": "A Cappella",
 	"Medley": "Medley/Megamix",
-
 	"refreshMetadataStarted": "Refreshing Metadata... (You might need to refresh the page)",
 	"refreshMetadataFailed": "Oops... Refreshing Metadata Failed",
-
 	"more": "More",
 	"networkError": "There seem to be some network issues...",
 	"playbackError": "The track's format is not supported by this browser. Skipping...",
@@ -247,7 +224,6 @@
 	"encounteredABug": "You encountered a bug?",
 	"openAnIssue": "Open an issue on GitHub!",
 	"readTheDoc": "Read the user documentation",
-
 	"en": "English",
 	"fr": "French",
 	"yes": "Yes",

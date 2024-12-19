@@ -24,6 +24,7 @@ import {
 	Post,
 	Put,
 	Query,
+	SetMetadata,
 } from "@nestjs/common";
 import Response, { ResponseType } from "src/response/response.decorator";
 import LibraryService from "./library.service";
@@ -104,8 +105,9 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
-		summary: "Delete a library",
+		summary: "Delete a library. Hangs while the library gets deleted.",
 	})
+	@SetMetadata("request-timeout", 60000)
 	@Admin()
 	@Delete(":idOrSlug")
 	async deleteLibrary(
@@ -114,7 +116,7 @@ export default class LibraryController {
 	) {
 		const library = await this.libraryService.get(where);
 
-		this.libraryService.delete(where);
+		await this.libraryService.delete(where);
 		return library;
 	}
 }

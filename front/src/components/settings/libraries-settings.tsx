@@ -114,12 +114,15 @@ const LibrariesSettings = () => {
 	const closeEditModal = () => setLibraryEdit(undefined);
 	const closeCreateModal = () => setCreateModalOpen(false);
 	const deletionMutation = useMutation((libraryId: number) =>
-		API.deleteLibrary(libraryId)
-			.then(() => {
-				toast.success(t("libraryDeleted"));
-				queryClient.client.invalidateQueries(["libraries"]);
+		toast
+			.promise(API.deleteLibrary(libraryId), {
+				loading: t("deletingLibrary"),
+				success: t("libraryDeleted"),
+				error: t("libraryDeletionFail"),
 			})
-			.catch(() => toast.error(t("libraryDeletionFail"))),
+			.then(() => {
+				queryClient.client.invalidateQueries(["libraries"]);
+			}),
 	);
 	const createMutation = useMutation(
 		(createForm: { name: string; path: string }) =>
