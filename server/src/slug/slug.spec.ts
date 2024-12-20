@@ -76,4 +76,15 @@ describe("Slugs", () => {
 	it("should have prefix as the string is digits only", () => {
 		expect(Slug.isSlug("123")).toBe(false);
 	});
+	it("should consider ellipsis as space", () => {
+		const actual = new Slug("Oops!...I Did it again").toString();
+		const expected = new Slug("Oops!... I Did it again").toString();
+		expect(actual).toBe(expected);
+	});
+
+	it("should consider unicode ellipsis as space", () => {
+		const actual = new Slug("Oops!…I Did it again").toString();
+		const expected = new Slug("Oops!... I Did it again").toString();
+		expect(actual).toBe(expected);
+	});
 });
