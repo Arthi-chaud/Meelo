@@ -1,6 +1,6 @@
 import logging
 
-from typing import List
+from typing import List, Tuple
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.providers.features import (
     GetAlbumGenresFeature,
@@ -16,8 +16,15 @@ def match_and_post_song(song_id: int, song_name: str):
     try:
         context = Context.get()
         song = context.client.get_song(song_id)
+        source_file = context.client.get_file(song.master.source_file_id)
         (dto, lyrics, genres) = match_song(
-            song_id, song.name, song.artist.name, [f.name for f in song.featuring]
+            song_id,
+            song.name,
+            song.artist.name,
+            [f.name for f in song.featuring],
+            (source_file.fingerprint, song.master.duration)
+            if source_file.fingerprint and song.master.duration
+            else None,
         )
         if dto:
             logging.info(
@@ -36,7 +43,11 @@ def match_and_post_song(song_id: int, song_name: str):
 
 
 def match_song(
-    song_id: int, song_name: str, artist_name: str, featuring: List[str]
+    song_id: int,
+    song_name: str,
+    artist_name: str,
+    featuring: List[str],
+    acoustid_and_duration: Tuple[str, int] | None,
 ) -> tuple[ExternalMetadataDto | None, str | None, List[str]]:
     context = Context.get()
     genres: List[str] = []
@@ -47,7 +58,14 @@ def match_song(
     # because musicbrainz is not always useful for songs
     # + Searching using Genius seems efficient enough
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
-        lambda mb: mb.search_song(song_name, artist_name, featuring),
+        lambda mb: (
+            mb.search_song_with_acoustid(
+                acoustid_and_duration[0], acoustid_and_duration[1], song_name
+            )
+            or mb.search_song(song_name, artist_name, featuring)
+        )
+        if acoustid_and_duration
+        else mb.search_song(song_name, artist_name, featuring),
         lambda mb, mbid: mb.get_song(mbid),
         lambda mb, mbid: mb.get_song_url_from_id(mbid),
     )

@@ -21,6 +21,7 @@ from matcher.providers.features import (
     GetAlbumTypeFeature,
     SearchArtistFeature,
     SearchSongFeature,
+    SearchSongWithAcoustIdFeature,
     GetSongGenresFeature,
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
@@ -81,6 +82,11 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             ),
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
             SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
+            SearchSongWithAcoustIdFeature(
+                lambda acoustid, dur, name: self._search_song_with_acoustid(
+                    acoustid, dur, name
+                )
+            ),
             GetSongFeature(lambda s: self._get_song(s)),
             GetSongGenresFeature(lambda album: self._get_song_genres(album)),
             GetWikidataSongRelationKeyFeature(lambda: "P435"),
@@ -261,6 +267,28 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 for r in artist_recordings
                 if (r.get("disambiguation") or "main") == "main"
             ] or artist_recordings
+            return SongSearchResult(ordered_recordings[0]["id"])
+        except Exception:
+            pass
+
+    def _search_song_with_acoustid(
+        self, acoustid: str, duration: int, song_name: str
+    ) -> SongSearchResult | None:
+        try:
+            song_slug = to_slug(song_name)
+            recordings = requests.get(
+                # Note: the 'params' are does not allow the '+' for the 'meta' field
+                f"https://api.acoustid.org/v2/lookup?client={"3WWOxoNbNH"}&duration={duration}&fingerprint={acoustid}&meta=recordings+sources",
+            ).json()["results"][0]["recordings"]
+
+            recordings = [r for r in recordings if r.get("sources") and r.get("title")]
+            ## Filter recordings by title
+            recordings = [r for r in recordings if to_slug(r["title"]) == song_slug]
+            ## Order recordings by sources count
+            ordered_recordings = sorted(
+                recordings,
+                key=lambda r: -r["sources"],
+            )
             return SongSearchResult(ordered_recordings[0]["id"])
         except Exception:
             pass

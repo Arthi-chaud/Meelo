@@ -5,7 +5,7 @@ from typing import Any, List, TypeVar
 from dataclasses_json import DataClassJsonMixin
 import requests
 
-from matcher.models.api.domain import Album, Song
+from matcher.models.api.domain import Album, Song, File
 from matcher.models.api.dto import (
     CreateProviderDto,
     ExternalMetadataDto,
@@ -72,9 +72,14 @@ class API:
         return Album.schema().load(json)
 
     def get_song(self, song_id: int) -> Song:
-        response = self._get(f"/songs/{song_id}?with=artist,featuring")
+        response = self._get(f"/songs/{song_id}?with=artist,featuring,master")
         json = response.json()
         return Song.schema().load(json)
+
+    def get_file(self, file_id: int) -> File:
+        response = self._get(f"/files/{file_id}")
+        json = response.json()
+        return File.schema().load(json)
 
     def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)

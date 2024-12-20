@@ -119,6 +119,12 @@ class SearchSongFeature(
     pass
 
 
+class SearchSongWithAcoustIdFeature(
+    BaseFeature[str, int, str, SongSearchResult | None]
+):
+    pass
+
+
 class GetSongFeature(BaseFeature[ResourceId, Any | None]):
     pass
 
