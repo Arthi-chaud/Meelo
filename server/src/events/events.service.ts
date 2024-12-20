@@ -30,6 +30,17 @@ const QueueName = "meelo";
 
 type ResourceCreationEventType = "artist" | "album" | "song";
 
+// Should be numbers between 1 and 5. The higher, the more important
+// eslint-disable-next-line no-shadow
+export enum ResourceEventPriority {
+	Artist = 4,
+	OriginalSong = 3,
+	NonOriginalSong = 1,
+	ExtraMaterial = 1,
+	StudioAlbum = 4,
+	NonStudioAlbum = 2,
+}
+
 @Injectable()
 export class EventsService {
 	private logger: Logger = new Logger(EventsService.name);
@@ -53,8 +64,7 @@ export class EventsService {
 		resourceType: ResourceCreationEventType,
 		name: string,
 		id: number,
-		// Between 1 and 5. 5 is top priority
-		priority: number,
+		priority: ResourceEventPriority,
 	) {
 		const dto = {
 			event: "created",
@@ -62,7 +72,7 @@ export class EventsService {
 			name,
 			id,
 		};
-		const record = new RmqRecord(dto, { priority });
+		const record = new RmqRecord(dto, { priority: priority });
 		this.client.emit("", record).pipe(
 			catchError((e, rest) => {
 				this.logger.error(
