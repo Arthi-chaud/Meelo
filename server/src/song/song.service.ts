@@ -753,9 +753,11 @@ export default class SongService extends SearchableRepositoryService {
 					{ tracks: { some: { type: TrackType.Audio } } },
 					{
 						OR: [
-							// We take original songs or extras
+							// We take original songs, medleys or extras
 							{
-								type: { in: ["Original", "NonMusic"] },
+								type: {
+									in: ["Original", "NonMusic", "Medley"],
+								},
 							},
 							// Or songs that are only available as demos/acoustic versions
 							{
