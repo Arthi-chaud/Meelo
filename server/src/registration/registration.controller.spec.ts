@@ -36,6 +36,7 @@ const validMetadata: MetadataDto = {
 	name: "...Baby One More Time (feat. B)",
 	type: "Audio",
 	genres: ["My Genre"],
+	fingerprint: "AcoustId",
 };
 
 const applyFormFields = (r: request.Test, object: MetadataDto) => {
@@ -51,7 +52,7 @@ const applyFormFields = (r: request.Test, object: MetadataDto) => {
 	return r;
 };
 
-describe("Metadata Controller", () => {
+describe("Registration Controller", () => {
 	let app: INestApplication;
 	let fileService: FileService;
 	let songService: SongService;
@@ -167,6 +168,7 @@ describe("Metadata Controller", () => {
 			expect(file.libraryId).toBe(createdMetadata.libraryId);
 			expect(file.track!.id).toBe(createdMetadata.trackId);
 			expect(file.path).toBe("...Baby One More Time.m4a");
+			expect(file.fingerprint).toBe("AcoustId");
 
 			const song = await songService.get(
 				{ id: createdMetadata.songId },

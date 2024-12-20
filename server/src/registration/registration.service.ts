@@ -67,6 +67,7 @@ export class RegistrationService {
 			checksum: m.checksum,
 			registerDate: m.registrationDate,
 			path: relativeFilePath,
+			fingerprint: m.fingerprint ?? null,
 		});
 		try {
 			const createdTrack = await this.metadataService.registerMetadata(

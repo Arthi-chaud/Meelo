@@ -6,7 +6,6 @@ import { INestApplication } from "@nestjs/common";
 import SongModule from "src/song/song.module";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import ProviderService from "src/providers/provider.service";
 import SettingsService from "src/settings/settings.service";
 import * as Plugins from "../app.plugins";
 import ArtistModule from "src/artist/artist.module";
@@ -23,7 +22,6 @@ jest.setTimeout(60000);
 describe("Search History Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let providerService: ProviderService;
 	let token: string;
 
 	let module: TestingModule;
@@ -46,11 +44,9 @@ describe("Search History Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
-		providerService = module.get(ProviderService);
 		const userService = module.get(UserService);
 		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
-		await providerService.onModuleInit();
 		await userService.create({
 			name: "admin",
 			password: "azerty1234",

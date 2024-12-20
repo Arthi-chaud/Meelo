@@ -74,6 +74,7 @@ describe("File Service", () => {
 				libraryId: dummyRepository.library1.id,
 				checksum: "Sum",
 				registerDate: now,
+				fingerprint: null,
 			});
 			expect(newFile.id).toBeDefined();
 			expect(newFile.libraryId).toBe(dummyRepository.library1.id);
@@ -90,6 +91,7 @@ describe("File Service", () => {
 					libraryId: dummyRepository.library1.id,
 					checksum: "Sum",
 					registerDate: now,
+					fingerprint: null,
 				});
 			return expect(test()).rejects.toThrow(FileAlreadyExistsException);
 		});

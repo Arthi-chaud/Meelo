@@ -36,18 +36,19 @@ generator classes {
 model User {
     /// @description Unique numeric user identifier
     /// @example 123
-    id          Int           @id @default(autoincrement())
+    id            Int             @id @default(autoincrement())
     /// @description the username
-    name        String        @unique
+    name          String          @unique
     /// @description the hashed password of the user\'s account
-    password    String
+    password      String
     /// @description Indicates if the user is allowed to use the application
-    enabled     Boolean       @default(false)
+    enabled       Boolean         @default(false)
     /// @description Indicates if the user is an admin or not
-    admin       Boolean       @default(false)
+    admin         Boolean         @default(false)
     /// @description the history of song played
-    playHistory PlayHistory[]
-	searchHistory SearchHistory[]
+    playHistory   PlayHistory[]
+    searchHistory SearchHistory[]
+
     @@map("users")
 }
 
@@ -125,7 +126,8 @@ model Album {
     genres           Genre[]
     illustration     AlbumIllustration?
 
-	searchHistory SearchHistory[] 
+    searchHistory SearchHistory[]
+
     @@unique([slug, artistId])
     @@map("albums")
 }
@@ -155,7 +157,8 @@ model Artist {
     illustrationId   Int?              @unique
     illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
 
-	searchHistory SearchHistory[] 
+    searchHistory SearchHistory[]
+
     @@map("artists")
 }
 
@@ -178,6 +181,8 @@ model File {
     /// @description Unique numeric identifier of the library it is been registered under
     /// @example 123
     libraryId    Int
+    /// @description Fingerprint of the file, used for AcoustID 
+    fingerprint  String?
 
     @@unique([path, libraryId])
     @@map("files")
@@ -285,9 +290,9 @@ model Song {
     /// @description List of relations to playlists
     playlists        PlaylistEntry[]
     /// @description the history of play
-    playHistory  PlayHistory[]
-	searchHistory SearchHistory[] 
-    illustration SongIllustration?
+    playHistory      PlayHistory[]
+    searchHistory    SearchHistory[]
+    illustration     SongIllustration?
 
     @@unique([slug, artistId])
     @@map("songs")
@@ -570,17 +575,17 @@ model PlayHistory {
 }
 
 model SearchHistory {
-	id 			Int 		@id @default(autoincrement()) 
-    searchAt 	DateTime 	@default(now())
-	song 		Song? 		@relation(fields: [songId], references: [id], onDelete: Cascade)
-	songId 		Int?
-	album 		Album? 		@relation(fields: [albumId], references: [id], onDelete: Cascade)
-	albumId 	Int?
-	artist 		Artist?		@relation(fields: [artistId], references: [id], onDelete: Cascade) 
-	artistId 	Int?
+    id       Int      @id @default(autoincrement())
+    searchAt DateTime @default(now())
+    song     Song?    @relation(fields: [songId], references: [id], onDelete: Cascade)
+    songId   Int?
+    album    Album?   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    albumId  Int?
+    artist   Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+    artistId Int?
 
-	user		User		@relation(fields: [userId], references: [id], onDelete: Cascade)
-	userId		Int
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
 
     @@unique([songId, albumId, artistId, userId])
     @@map("search_history")
