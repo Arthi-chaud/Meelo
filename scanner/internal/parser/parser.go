@@ -50,7 +50,7 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 			glg.Failf("failed to compute Fingerprint for '%s'", path.Base(filePath))
 			glg.Fail(err.Error())
 		} else {
-			metadata.Fingerprint = fingerprint
+			metadata.Fingerprint = &fingerprint
 		}
 	}
 	return metadata, append(errors, internal.SanitizeAndValidateMetadata(&metadata)...)
