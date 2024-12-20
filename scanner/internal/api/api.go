@@ -118,6 +118,7 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	mp.WriteField("registrationDate", m.RegistrationDate.Format(time.RFC3339))
 	mp.WriteField("checksum", m.Checksum)
 	mp.WriteField("path", m.Path)
+	mp.WriteField("fingerprint", m.Fingerprint)
 	mp.Close()
 
 	method := "POST"
