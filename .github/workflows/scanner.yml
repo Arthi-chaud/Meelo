@@ -1,9 +1,9 @@
 name: "Scanner"
 on:
   pull_request:
-    branches: [ main, scanner-microservice ]
+    branches: [ main, v3 ]
   push:
-    branches: [ main, scanner-microservice ]
+    branches: [ main, v3 ]
   release:
     types: [ published ]
 
