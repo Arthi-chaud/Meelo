@@ -26,7 +26,21 @@ class Album(DataClassJsonMixin):
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
+class Track(DataClassJsonMixin):
+    source_file_id: int
+    duration: Optional[int] = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
 class Song(DataClassJsonMixin):
     name: str
     artist: Artist
+    master: Track
     featuring: List[Artist]
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
+class File(DataClassJsonMixin):
+    fingerprint: Optional[str] = None

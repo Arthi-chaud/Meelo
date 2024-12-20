@@ -1,7 +1,6 @@
 import pika
 import os
 import sys
-import time
 import logging
 import signal
 
@@ -41,7 +40,6 @@ def consume(ch):
             case _:
                 logging.warning("No handler for event " + event.type)
                 pass
-        time.sleep(0.5)
 
 
 def main():
