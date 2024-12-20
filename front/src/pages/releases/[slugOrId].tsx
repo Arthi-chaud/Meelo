@@ -247,7 +247,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		() =>
 			(bSidesQuery.data?.pages.at(0)?.items ?? []).reduce(
 				(prev, current) => {
-					if (current.type === "NonMusic") {
+					if (["NonMusic", "Medley"].includes(current.type)) {
 						return {
 							bSides: prev.bSides,
 							extras: prev.extras.concat(current),
