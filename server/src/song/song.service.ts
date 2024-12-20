@@ -779,6 +779,14 @@ export default class SongService extends SearchableRepositoryService {
 									{
 										id: release.albumId,
 									},
+									// Get songs from video albums, where the name starts with the album's name
+									// E.g. 'In The Zone DVD'
+									{
+										type: AlbumType.VideoAlbum,
+										nameSlug: {
+											startsWith: album.nameSlug,
+										},
+									},
 								],
 							},
 						},
@@ -919,6 +927,19 @@ export default class SongService extends SearchableRepositoryService {
 												},
 											},
 										],
+									},
+								},
+							},
+							// Take all audio tracks that appear only on video albums
+							{
+								tracks: {
+									every: {
+										release: {
+											album: {
+												type: AlbumType.VideoAlbum,
+											},
+										},
+										type: TrackType.Audio,
 									},
 								},
 							},
