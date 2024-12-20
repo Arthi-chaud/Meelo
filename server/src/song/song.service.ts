@@ -53,7 +53,10 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { EventsService } from "src/events/events.service";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 
@@ -154,7 +157,9 @@ export default class SongService extends SearchableRepositoryService {
 					"song",
 					created.name,
 					created.id,
-					created.type == SongType.Original ? 3 : 1,
+					created.type == SongType.Original
+						? ResourceEventPriority.OriginalSong
+						: ResourceEventPriority.NonOriginalSong,
 				);
 				return created;
 			})

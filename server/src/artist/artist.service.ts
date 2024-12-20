@@ -46,7 +46,10 @@ import {
 	formatIdentifier,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
-import { EventsService } from "src/events/events.service";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {
@@ -141,7 +144,7 @@ export default class ArtistService extends SearchableRepositoryService {
 					"artist",
 					artist.name,
 					artist.id,
-					4,
+					ResourceEventPriority.Artist,
 				);
 				return artist;
 			})

@@ -48,7 +48,10 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import { AlbumModel } from "./models/album.model";
-import { EventsService } from "src/events/events.service";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
 
 @Injectable()
@@ -144,7 +147,9 @@ export default class AlbumService extends SearchableRepositoryService {
 					"album",
 					created.name,
 					created.id,
-					created.type == AlbumType.StudioRecording ? 4 : 2,
+					created.type == AlbumType.StudioRecording
+						? ResourceEventPriority.StudioAlbum
+						: ResourceEventPriority.NonStudioAlbum,
 				);
 				return created;
 			})
