@@ -104,18 +104,21 @@ describe("Track Service", () => {
 			libraryId: dummyRepository.library1.id,
 			registerDate: new Date(),
 			checksum: "",
+			fingerprint: null,
 		});
 		file2 = await fileService.create({
 			path: "My Artist/My Album (Special Edition)/1-02 My dummyRepository.songA1.m4a",
 			libraryId: secondLibrary.id,
 			registerDate: new Date(),
 			checksum: "",
+			fingerprint: null,
 		});
 		tmpFile = await fileService.create({
 			path: "My Artist/My Album (Special Edition)/2-01 My dummyRepository.songA1 video.m4a",
 			libraryId: secondLibrary.id,
 			registerDate: new Date(),
 			checksum: "",
+			fingerprint: null,
 		});
 	});
 

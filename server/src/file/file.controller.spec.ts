@@ -45,6 +45,7 @@ describe("File Controller", () => {
 					expect(file).toStrictEqual(
 						expectedFileResponse(dummyRepository.fileA1_1),
 					);
+					expect(file.fingerprint).toBe("ACOUSTID");
 				});
 		});
 		it("should return an error, as the file does not exist", async () => {

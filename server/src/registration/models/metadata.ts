@@ -31,6 +31,7 @@ import {
 	IsPositive,
 	IsString,
 	Matches,
+	MinLength,
 } from "class-validator";
 
 /**
@@ -170,4 +171,13 @@ export default class Metadata {
 	})
 	@IsOptional()
 	discogsId?: string;
+
+	/**
+	 * Fingerprint (AcoustID) of the file
+	 */
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	@MinLength(1)
+	fingerprint?: string;
 }

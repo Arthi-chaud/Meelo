@@ -207,6 +207,7 @@ export default class FileService {
 					checksum: input.checksum,
 					registerDate: input.registerDate,
 					libraryId: input.libraryId,
+					fingerprint: input.fingerprint,
 				},
 			})
 			.catch((error) => {

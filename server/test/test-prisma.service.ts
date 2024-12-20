@@ -173,6 +173,7 @@ export default class TestPrismaService extends PrismaService {
 				checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
+				fingerprint: "ACOUSTID",
 			},
 		});
 		this.trackA1_1 = await this.track.create({
