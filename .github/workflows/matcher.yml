@@ -1,7 +1,7 @@
 name: "Matcher"
 on:
   pull_request:
-    branches: [ main, v3, external-metadata ]
+    branches: [ main, v3 ]
   push:
     branches: [ main, v3 ]
   release:

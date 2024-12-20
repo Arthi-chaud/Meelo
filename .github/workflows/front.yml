@@ -1,9 +1,9 @@
 name: "Front"
 on:
   pull_request:
-    branches: [ main, v2 ]
+    branches: [ main, v3 ]
   push:
-    branches: [ main, v2 ]
+    branches: [ main, v3 ]
   release:
     types: [ published ]
 
