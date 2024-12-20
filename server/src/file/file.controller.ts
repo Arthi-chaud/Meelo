@@ -100,6 +100,7 @@ export default class FileController {
 		summary: "Get one 'File'",
 	})
 	@Get(":idOrSlug")
+	@Role(Roles.Default, Roles.Microservice)
 	get(
 		@RelationIncludeQuery(FileQueryParameters.AvailableAtomicIncludes)
 		include: FileQueryParameters.RelationInclude,
