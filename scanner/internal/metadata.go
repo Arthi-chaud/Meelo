@@ -45,6 +45,7 @@ type Metadata struct {
 	RegistrationDate        time.Time `validate:"required"`
 	Checksum                string    `validate:"required"`
 	Path                    string    `validate:"required"`
+	Fingerprint             string
 }
 
 type TrackType string
