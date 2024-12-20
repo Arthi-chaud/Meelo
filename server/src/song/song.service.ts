@@ -684,6 +684,34 @@ export default class SongService extends SearchableRepositoryService {
 			undefined,
 			{ tracks: true },
 		);
+
+		// IDs of studio releases where any of the release's tracks appear
+		const olderStudioReleasesWhereSongAppears = await this.releaseService
+			.getMany(
+				{
+					id: {
+						in: albumSongs
+							.filter((s) => s.type == SongType.Original)
+							.flatMap((s) => s.tracks!.map((t) => t.releaseId)),
+					},
+				},
+				undefined,
+				undefined,
+				{ album: true },
+			)
+			.then((releases) =>
+				releases
+					.filter((r) => r.album.type == AlbumType.StudioRecording)
+					.filter((r) => r.album.id != album.id)
+					.filter(({ album: a }) => {
+						if (!a.releaseDate || !album.releaseDate) {
+							return false;
+						}
+						return a.releaseDate < album.releaseDate;
+					})
+					.map((r) => r.id),
+			);
+
 		const albumSongsBaseNames = albumSongs
 			// Some albums have live songs from previous albums, we ignore them
 			.filter((song) => song.type != SongType.Live)
@@ -695,6 +723,17 @@ export default class SongService extends SearchableRepositoryService {
 							track.type == "Audio" &&
 							track.releaseId == release.id,
 					) != undefined,
+			)
+			// We exclude the songs that appear on older studio albums
+			// Because we dont want to get BSide from their singles
+			// See #795
+			.filter(
+				(song) =>
+					song.tracks!.find((t) =>
+						olderStudioReleasesWhereSongAppears.includes(
+							t.releaseId,
+						),
+					) == undefined,
 			)
 			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());
 
@@ -718,7 +757,7 @@ export default class SongService extends SearchableRepositoryService {
 												),
 												type: AlbumType.Single,
 											},
-											//... that are relates to the current tracklist
+											//... that are related to the current tracklist
 											{
 												OR: [
 													...albumSongsBaseNames.map(
@@ -754,7 +793,7 @@ export default class SongService extends SearchableRepositoryService {
 							},
 						},
 					},
-					// We only want songs that have at least one audtio tracks
+					// We only want songs that have at least one audio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
 					{
 						OR: [

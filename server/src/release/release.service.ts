@@ -252,7 +252,7 @@ export default class ReleaseService {
 			});
 	}
 
-	async getMany<I extends AlbumQueryParameters.RelationInclude = {}>(
+	async getMany<I extends ReleaseQueryParameters.RelationInclude = {}>(
 		where: ReleaseQueryParameters.ManyWhereInput,
 		sort?: ReleaseQueryParameters.SortingParameter,
 		pagination?: PaginationParameters,
