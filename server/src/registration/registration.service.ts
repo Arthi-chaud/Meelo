@@ -21,7 +21,12 @@ import MetadataDto from "./models/metadata.dto";
 import MetadataService from "src/registration/metadata.service";
 import SettingsService from "src/settings/settings.service";
 import LibraryService from "src/library/library.service";
-import { Illustration, IllustrationType, Library } from "@prisma/client";
+import {
+	Illustration,
+	IllustrationType,
+	Library,
+	TrackType,
+} from "@prisma/client";
 import { LibraryNotFoundException } from "src/library/library.exceptions";
 import FileService from "src/file/file.service";
 import * as path from "path";
@@ -157,14 +162,16 @@ export class RegistrationService {
 				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
 			);
 		if (type == IllustrationType.Thumbnail) {
-			return this.illustrationRepository.saveReleaseIllustration(
+			if (track.type != TrackType.Video) {
+				throw new InvalidRequestException(
+					"Cannot save a thumbnail for an audio track",
+				);
+			}
+			return this.illustrationRepository.saveTrackThumbnail(
 				illustrationBytes,
-				track.discIndex,
-				track.trackIndex,
 				{
-					id: track.releaseId,
+					id: track.id,
 				},
-				type,
 			);
 		}
 		const parentReleaseIllustrations =
