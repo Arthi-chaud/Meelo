@@ -42,7 +42,10 @@ const ResourceDescriptionExpandable = ({ externalMetadata }: Props) => {
 	return (
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
 			{externalMetadata?.description ||
-				generateArray(5).map((_, index) => <Skeleton key={index} />)}
+				(externalMetadata?.description === undefined &&
+					generateArray(5).map((_, index) => (
+						<Skeleton key={index} />
+					)))}
 
 			{externalMetadata?.description && (
 				<Link

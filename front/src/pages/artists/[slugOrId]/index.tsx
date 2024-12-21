@@ -218,7 +218,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					subtitleIs="artistName"
 					query={appearances}
 				/>
-				{externalMetadata.data && (
+				{externalMetadata.data?.description && (
 					<>
 						<Divider sx={{ marginBottom: SectionPadding }} />
 						<SectionHeader heading={t("about")} />
