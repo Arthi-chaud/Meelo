@@ -78,6 +78,8 @@ services:
       - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
       - API_KEYS=${API_KEYS}
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+    volumes:
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   transcoder:
     image: ghcr.io/zoriya/kyoo_transcoder:master
     restart: on-failure
