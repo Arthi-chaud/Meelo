@@ -58,10 +58,12 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 		metadata.DiscIndex = int64(discValue)
 	}
 	if value, err := tags.GetString("date"); err == nil {
-
-		date, err := time.Parse("2006", value)
-		if err == nil {
-			metadata.ReleaseDate = date
+		// iTunes purchases use an ISO format
+		for _, format := range []string{"2006", time.DateOnly, time.DateTime, time.RFC3339} {
+			date, err := time.Parse(format, value)
+			if err == nil {
+				metadata.ReleaseDate = date
+			}
 		}
 	}
 	if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
