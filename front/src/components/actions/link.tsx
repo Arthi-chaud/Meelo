@@ -27,6 +27,7 @@ import {
 } from "../icons";
 import { NextRouter } from "next/router";
 import Action from "./action";
+import toast from "react-hot-toast";
 
 export const GoToSongLyricsAction = (
 	songIdentifier: string | number,
@@ -76,10 +77,16 @@ export const GoToReleaseAction = (
 
 export const GoToReleaseAsyncAction = (
 	router: NextRouter,
-	albumIdentifier: () => PromiseLike<number | string>,
+	albumIdentifier: () => PromiseLike<number | string | null>,
 ): Action => ({
 	onClick: () =>
-		albumIdentifier().then((id) => router.push(`/releases/${id}`)),
+		albumIdentifier().then((id) => {
+			if (id === null) {
+				toast.error("This resource is not attached to any album.");
+			} else {
+				router.push(`/releases/${id}`);
+			}
+		}),
 	label: "goToAlbum",
 	icon: <AlbumIcon />,
 });

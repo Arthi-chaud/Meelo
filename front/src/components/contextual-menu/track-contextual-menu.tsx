@@ -43,6 +43,7 @@ import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import ChangeSongType from "../actions/song-type";
 import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
+import Action from "../actions/action";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<"song" | "illustration">;
@@ -60,7 +61,8 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const getPlayNextProps = () =>
 		Promise.all([
 			queryClient.fetchQuery(API.getArtist(props.track.song.artistId)),
-			queryClient.fetchQuery(API.getRelease(props.track.releaseId)),
+			props.track.releaseId &&
+				queryClient.fetchQuery(API.getRelease(props.track.releaseId)),
 		]).then(([artist, release]) => ({
 			track: props.track,
 			artist,
@@ -81,12 +83,14 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		<ContextualMenu
 			onSelect={props.onSelect}
 			actions={[
-				props.isVideo
-					? [
-							GoToArtistAction(props.track.song.artistId),
-							GoToReleaseAction(props.track.releaseId),
-						]
-					: [GoToReleaseAction(props.track.releaseId)],
+				[
+					props.isVideo
+						? GoToArtistAction(props.track.song.artistId)
+						: undefined,
+					props.track.releaseId
+						? GoToReleaseAction(props.track.releaseId)
+						: undefined,
+				].filter((a): a is Action => a !== undefined),
 				[GoToSongLyricsAction(props.track.song.slug)],
 				[
 					PlayNextAction(getPlayNextProps, playNext),

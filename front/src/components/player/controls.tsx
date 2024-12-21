@@ -413,33 +413,49 @@ const ExpandedPlayerControls = (
 								}}
 							>
 								{props.artist && props.track ? (
-									<Link
-										href={`/releases/${props.track.releaseId}`}
-										style={{
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-										}}
-									>
-										<Button
-											onClick={() =>
-												props.onExpand(false)
-											}
+									!props.track.releaseId ? (
+										<Typography
 											sx={{
-												textTransform: "none",
-												color: "inherit",
-												width: "100%",
+												fontWeight: "bold",
+												...playerTextStyle,
 											}}
 										>
-											<Typography
+											{props.track?.name}
+										</Typography>
+									) : (
+										<Link
+											href={
+												props.track.releaseId
+													? `/releases/${props.track.releaseId}`
+													: {}
+											}
+											style={{
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+											}}
+										>
+											<Button
+												onClick={() =>
+													props.track?.releaseId &&
+													props.onExpand(false)
+												}
 												sx={{
-													fontWeight: "bold",
-													...playerTextStyle,
+													textTransform: "none",
+													color: "inherit",
+													width: "100%",
 												}}
 											>
-												{props.track?.name}
-											</Typography>
-										</Button>
-									</Link>
+												<Typography
+													sx={{
+														fontWeight: "bold",
+														...playerTextStyle,
+													}}
+												>
+													{props.track?.name}
+												</Typography>
+											</Button>
+										</Link>
+									)
 								) : (
 									<Skeleton animation={false} width={"70%"} />
 								)}

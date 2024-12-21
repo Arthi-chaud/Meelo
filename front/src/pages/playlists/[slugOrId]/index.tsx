@@ -22,6 +22,7 @@ import RelationPageHeader from "../../../components/relation-page-header/relatio
 import { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
+	Query,
 	prepareMeeloQuery,
 	useQueries,
 	useQuery,
@@ -89,7 +90,16 @@ const prepareSSR = async (
 		additionalProps: { playlistIdentifier },
 		queries: [
 			playlistQuery(playlistIdentifier),
-			...entries.map((entry) => API.getRelease(entry.master.releaseId)),
+			...entries
+				.map((entry) =>
+					entry.master.releaseId
+						? API.getRelease(entry.master.releaseId)
+						: undefined,
+				)
+				.filter(
+					(promise): promise is Query<Release> =>
+						promise !== undefined,
+				),
 		],
 	};
 };
@@ -219,13 +229,15 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const playlist = useQuery(playlistQuery, playlistIdentifier);
 	const entriesQuery = useQuery(playlistEntriesQuery, playlistIdentifier);
 	const masterTracksReleaseQueries = useQueries(
-		...(entriesQuery.data?.map(
-			({
-				master,
-			}): Parameters<
-				typeof useQuery<Release, Parameters<typeof API.getRelease>>
-			> => [API.getRelease, master.releaseId],
-		) ?? []),
+		...(entriesQuery.data
+			?.filter(({ master }) => master.releaseId)
+			.map(
+				({
+					master,
+				}): Parameters<
+					typeof useQuery<Release, Parameters<typeof API.getRelease>>
+				> => [API.getRelease, master.releaseId ?? undefined],
+			) ?? []),
 	);
 	const reorderMutation = useMutation((reorderedEntries: number[]) => {
 		return API.reorderPlaylist(playlistIdentifier, reorderedEntries)
@@ -240,7 +252,11 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		const releases = masterTracksReleaseQueries.map((query) => query.data);
 		const resolvedReleases = releases.filter((data) => data !== undefined);
 
-		if (resolvedReleases.length !== entriesQuery.data?.length) {
+		if (
+			resolvedReleases.length !==
+			entriesQuery.data?.filter(({ master }) => master.releaseId != null)
+				.length
+		) {
 			return undefined;
 		}
 
