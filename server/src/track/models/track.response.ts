@@ -34,7 +34,10 @@ import {
 } from "src/illustration/models/illustration.response";
 
 export class TrackResponse extends IntersectionType(
-	class extends OmitType(Track, ["thumbnailId"]) {},
+	class extends OmitType(Track, [
+		"thumbnailId",
+		"standaloneIllustrationId",
+	]) {},
 	IllustratedResponse,
 	class {
 		song?: SongResponse;

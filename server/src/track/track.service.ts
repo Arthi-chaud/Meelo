@@ -382,6 +382,10 @@ export default class TrackService {
 				where: TrackService.formatWhereInput(where),
 				data: {
 					...what,
+					standaloneIllustrationId: undefined,
+					standaloneIllustration: what.standaloneIllustrationId
+						? { connect: { id: what.standaloneIllustrationId } }
+						: undefined,
 					thumbnailId: undefined,
 					thumbnail: what.thumbnailId
 						? { connect: { id: what.thumbnailId } }

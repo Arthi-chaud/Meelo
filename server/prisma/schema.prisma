@@ -392,52 +392,55 @@ enum TrackType {
 model Track {
     /// @description Unique numeric Track identifier
     /// @example 123
-    id           Int                @id @default(autoincrement())
+    id                       Int                @id @default(autoincrement())
     /// @description The reference song
-    song         Song               @relation(fields: [songId], references: [id])
+    song                     Song               @relation(fields: [songId], references: [id])
     /// @description Unique numeric identifier of the parent song
     /// @example 123
-    songId       Int
+    songId                   Int
     /// @description The parent release the track can be found on
-    release      Release            @relation(fields: [releaseId], references: [id])
+    release                  Release            @relation(fields: [releaseId], references: [id])
     /// @description Unique numeric identifier of the parent release
     /// @example 123
-    releaseId    Int
+    releaseId                Int
     /// @description The display name of the track
     /// @example My Song (Album Version)
-    name         String
+    name                     String
     /// @description The index of the disc the track is on
     /// @example 1
-    discIndex    Int?
+    discIndex                Int?
     /// @description The index of the track on the disc
     /// @example 2
-    trackIndex   Int?
+    trackIndex               Int?
     /// @description Type of track (Audio or Video)
-    type         TrackType
+    type                     TrackType
     /// @description Bitrate, in kbps
     /// @example 320
-    bitrate      Int?
+    bitrate                  Int?
     /// @description The type of source the track is ripped from
-    ripSource    RipSource?
+    ripSource                RipSource?
     /// @description The duration in seconds of the track
     /// @example 120
-    duration     Int?
+    duration                 Int?
     /// @description If it is a "Bonus" track
     /// @example false
-    isBonus      Boolean            @default(false)
+    isBonus                  Boolean            @default(false)
     /// @description If the track has been remastered
     /// @example false
-    isRemastered Boolean            @default(false)
+    isRemastered             Boolean            @default(false)
     /// @description The track from the file
-    sourceFile   File               @relation(fields: [sourceFileId], references: [id])
+    sourceFile               File               @relation(fields: [sourceFileId], references: [id])
     /// @description Unique numeric identifier of the source file
     /// @example 123
-    sourceFileId Int                @unique
-    masterOf     Song?              @relation("Master")
-    illustration TrackIllustration?
-    thumbnailId  Int?               @unique
+    sourceFileId             Int                @unique
+    masterOf                 Song?              @relation("Master")
+    illustration             TrackIllustration?
+    thumbnailId              Int?               @unique
     /// @description (For internal use) Thumbnail for the track (only for video tracks)
-    thumbnail    Illustration?      @relation(fields: [thumbnailId], references: [id])
+    thumbnail                Illustration?      @relation(fields: [thumbnailId], references: [id], name: "track_thumbnail")
+    // Illustration if track is not attached to a release
+    standaloneIllustrationId Int?               @unique
+    standaloneIllustration   Illustration?      @relation(fields: [standaloneIllustrationId], references: [id], name: "track_standalone_illustration")
 
     @@map("tracks")
 }
@@ -608,22 +611,23 @@ enum IllustrationType {
 model Illustration {
     /// @description Unique numeric identifier
     /// @example 123
-    id          Int                  @id @default(autoincrement())
-    artist      Artist?
-    playlist    Playlist?
-    release     ReleaseIllustration?
+    id              Int                  @id @default(autoincrement())
+    artist          Artist?
+    playlist        Playlist?
+    release         ReleaseIllustration?
     /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
     /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
-    blurhash    String
+    blurhash        String
     /// @description List of dominant colors in the image
     /// @example ['#FFFFFF', '#123123', '#F0F0F0']
-    colors      String[]
+    colors          String[]
     /// @description Aspect Ratio of the image
     /// @example 0.33
-    aspectRatio Float                @default(1)
-    type        IllustrationType
-    Provider    Provider[]
-    Track       Track?
+    aspectRatio     Float                @default(1)
+    type            IllustrationType
+    Provider        Provider[]
+    ThumbnailTrack  Track?               @relation("track_thumbnail")
+    StandaloneTrack Track?               @relation("track_standalone_illustration")
 
     @@map("illustrations")
 }
