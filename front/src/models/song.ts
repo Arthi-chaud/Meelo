@@ -60,6 +60,7 @@ const Song = Resource.concat(
 		 * The ID of the master track
 		 */
 		masterId: yup.number().required().nullable(),
+		groupId: yup.number().required(),
 		/**
 		 * Type of song
 		 */

@@ -41,6 +41,7 @@ import SongItem from "../../components/list-item/song-item";
 import ArtistItem from "../../components/list-item/artist-item";
 import { useMutation } from "react-query";
 import { SaveSearchItem, SearchResult } from "../../models/search";
+import formatArtists from "../../utils/formatArtists";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -235,7 +236,10 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								song={item.song}
 								subtitles={[
 									async (song) =>
-										`${t("song")} • ${song.artist.name}`,
+										`${t("song")} • ${formatArtists(
+											song.artist,
+											song.featuring,
+										)}`,
 								]}
 							/>
 						) : (

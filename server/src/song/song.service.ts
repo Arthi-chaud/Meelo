@@ -57,8 +57,8 @@ import {
 	EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
-import { shuffle } from "src/utils/shuffle";
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import { shuffle } from "src/utils/shuffle";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
