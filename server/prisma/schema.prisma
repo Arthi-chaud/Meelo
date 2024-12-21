@@ -435,6 +435,9 @@ model Track {
     sourceFileId Int                @unique
     masterOf     Song?              @relation("Master")
     illustration TrackIllustration?
+    thumbnailId  Int?               @unique
+    /// @description (For internal use) Thumbnail for the track (only for video tracks)
+    thumbnail    Illustration?      @relation(fields: [thumbnailId], references: [id])
 
     @@map("tracks")
 }
@@ -620,6 +623,7 @@ model Illustration {
     aspectRatio Float                @default(1)
     type        IllustrationType
     Provider    Provider[]
+    Track       Track?
 
     @@map("illustrations")
 }

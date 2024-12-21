@@ -42,9 +42,13 @@ namespace TrackQueryParameters {
 		| "releaseId"
 		| "song"
 		| "songId"
-	> & { sourceFile: FileQueryParameters.WhereInput } & {
+		| "thumbnail"
+		| "thumbnailId"
+	> & {
+		sourceFile: FileQueryParameters.WhereInput;
 		release: ReleaseQueryParameters.WhereInput;
-	} & { song: SongQueryParameters.WhereInput };
+		song: SongQueryParameters.WhereInput;
+	};
 
 	/**
 	 * Query parameters to find one track
@@ -76,7 +80,7 @@ namespace TrackQueryParameters {
 	/**
 	 * The input required to update a track in the database
 	 */
-	export type UpdateInput = Partial<CreateInput>;
+	export type UpdateInput = Partial<CreateInput & { thumbnailId: number }>;
 
 	/**
 	 * The input to find or create a track

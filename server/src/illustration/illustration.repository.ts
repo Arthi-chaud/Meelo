@@ -282,6 +282,25 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
+	async saveTrackThumbnail(
+		buffer: Buffer,
+		where: TrackQueryParameters.WhereInput,
+	) {
+		const track = await this.trackService.get(where);
+		const newIllustration = await this.saveIllustration(
+			buffer,
+			IllustrationType.Thumbnail,
+		);
+		if (track.thumbnailId) {
+			await this.deleteIllustration(track.thumbnailId);
+		}
+		await this.trackService.update(
+			{ thumbnailId: newIllustration.id },
+			where,
+		);
+		return newIllustration;
+	}
+
 	async saveReleaseIllustration(
 		buffer: Buffer,
 		disc: number | null,

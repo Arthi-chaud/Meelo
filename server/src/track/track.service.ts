@@ -382,6 +382,10 @@ export default class TrackService {
 				where: TrackService.formatWhereInput(where),
 				data: {
 					...what,
+					thumbnailId: undefined,
+					thumbnail: what.thumbnailId
+						? { connect: { id: what.thumbnailId } }
+						: undefined,
 					song: what.song
 						? {
 								connect: SongService.formatWhereInput(
@@ -429,6 +433,11 @@ export default class TrackService {
 				where: where,
 			})
 			.then((deleted) => {
+				if (deleted.thumbnailId) {
+					this.illustrationRepository.deleteIllustration(
+						deleted.thumbnailId,
+					);
+				}
 				this.illustrationRepository
 					.getReleaseIllustrations({ id: deleted.releaseId })
 					.then((relatedIllustrations) => {
