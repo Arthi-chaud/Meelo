@@ -349,6 +349,11 @@ export default class ReleaseService {
 	 * @param where Query parameters to find the release to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
+		const { tracks } = await this.get(where, { tracks: true });
+
+		if (tracks.length > 0) {
+			throw new ReleaseNotEmptyException(where.id);
+		}
 		this.illustrationRepository
 			.getReleaseIllustrations(where)
 			.then((relatedIllustrations) => {
@@ -369,12 +374,6 @@ export default class ReleaseService {
 				return deleted;
 			})
 			.catch((error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.ForeignConstraintViolation
-				) {
-					throw new ReleaseNotEmptyException(where.id);
-				}
 				throw new UnhandledORMErrorException(error, where);
 			});
 	}
