@@ -692,7 +692,8 @@ export default class SongService extends SearchableRepositoryService {
 					id: {
 						in: albumSongs
 							.filter((s) => s.type == SongType.Original)
-							.flatMap((s) => s.tracks!.map((t) => t.releaseId)),
+							.flatMap((s) => s.tracks!.map((t) => t.releaseId))
+							.filter((rid): rid is number => rid !== null),
 					},
 				},
 				undefined,
@@ -729,10 +730,12 @@ export default class SongService extends SearchableRepositoryService {
 			// See #795
 			.filter(
 				(song) =>
-					song.tracks!.find((t) =>
-						olderStudioReleasesWhereSongAppears.includes(
-							t.releaseId,
-						),
+					song.tracks!.find(
+						(t) =>
+							t.releaseId &&
+							olderStudioReleasesWhereSongAppears.includes(
+								t.releaseId,
+							),
 					) == undefined,
 			)
 			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());

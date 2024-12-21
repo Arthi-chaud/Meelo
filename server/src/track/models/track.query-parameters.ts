@@ -48,7 +48,7 @@ namespace TrackQueryParameters {
 		| "standaloneIllustrationId"
 	> & {
 		sourceFile: FileQueryParameters.WhereInput;
-		release: ReleaseQueryParameters.WhereInput;
+		release?: ReleaseQueryParameters.WhereInput;
 		song: SongQueryParameters.WhereInput;
 	};
 

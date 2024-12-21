@@ -41,7 +41,7 @@ export class TrackResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		song?: SongResponse;
-		release?: ReleaseResponse;
+		release?: ReleaseResponse | null;
 	},
 ) {}
 

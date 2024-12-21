@@ -399,10 +399,10 @@ model Track {
     /// @example 123
     songId                   Int
     /// @description The parent release the track can be found on
-    release                  Release            @relation(fields: [releaseId], references: [id])
+    release                  Release?           @relation(fields: [releaseId], references: [id])
     /// @description Unique numeric identifier of the parent release
     /// @example 123
-    releaseId                Int
+    releaseId                Int?
     /// @description The display name of the track
     /// @example My Song (Album Version)
     name                     String

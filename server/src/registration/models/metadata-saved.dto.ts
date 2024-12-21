@@ -28,5 +28,5 @@ export default class MetadataSavedResponse {
 	@ApiProperty()
 	sourceFileId: number;
 	@ApiProperty()
-	releaseId: number;
+	releaseId: number | null;
 }

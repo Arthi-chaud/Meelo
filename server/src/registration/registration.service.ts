@@ -152,15 +152,6 @@ export class RegistrationService {
 		type: IllustrationType = IllustrationType.Cover,
 	): Promise<Illustration> {
 		const track = await this.trackService.get(where, { release: true });
-		const logRegistration = (
-			disc: number | null,
-			trackIndex: number | null,
-		) =>
-			this.logger.verbose(
-				`Saving Illustration for '${track.release.name}' (Disc ${
-					disc ?? 1
-				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
-			);
 		if (type == IllustrationType.Thumbnail) {
 			if (track.type != TrackType.Video) {
 				throw new InvalidRequestException(
@@ -174,6 +165,22 @@ export class RegistrationService {
 				},
 			);
 		}
+		if (!track.release || !track.releaseId) {
+			return this.illustrationRepository.saveTrackStandaloneIllustration(
+				illustrationBytes,
+				{ id: track.id },
+				type,
+			);
+		}
+		const logRegistration = (
+			disc: number | null,
+			trackIndex: number | null,
+		) =>
+			this.logger.verbose(
+				`Saving Illustration for '${track.release!.name}' (Disc ${
+					disc ?? 1
+				}${trackIndex === null ? "" : `, track ${trackIndex}`}).`,
+			);
 		const parentReleaseIllustrations =
 			await this.illustrationRepository.getReleaseIllustrations({
 				id: track.releaseId,

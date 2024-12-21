@@ -29,8 +29,6 @@ import TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import SongQueryParameters from "src/song/models/song.query-params";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
 import {
@@ -122,55 +120,6 @@ export default class IllustrationRepository {
 		});
 	}
 
-	async getSongIllustration(where: SongQueryParameters.WhereInput) {
-		return this.trackService
-			.getMasterTrack(where)
-			.then((track) => this.getTrackIllustration({ id: track.id }))
-			.catch(() => null);
-	}
-
-	async getAlbumIllustration(
-		where: AlbumQueryParameters.WhereInput,
-	): Promise<Illustration | null> {
-		return this.releaseService
-			.getMasterRelease(where)
-			.then((release) => this.getReleaseIllustration({ id: release.id }));
-	}
-
-	/**
-	 * If the track does not have a specific illustration, fallback on parent disc, then release
-	 */
-	async getTrackIllustration(where: TrackQueryParameters.WhereInput) {
-		const track = await this.trackService.get(where);
-
-		return this.prismaService.illustration.findFirst({
-			where: {
-				release: {
-					release: {
-						id: track.releaseId,
-					},
-					OR: [
-						{ disc: track.discIndex, track: track.trackIndex },
-						{ disc: track.discIndex, track: null },
-						{ disc: null, track: null },
-					],
-				},
-			},
-			orderBy: [
-				{
-					release: {
-						disc: { nulls: "last", sort: "asc" },
-					},
-				},
-				{
-					release: {
-						track: { nulls: "last", sort: "asc" },
-					},
-				},
-			],
-		});
-	}
-
 	async saveIllustrationFromUrl(
 		dto: IllustrationDownloadDto,
 	): Promise<IllustrationResponse> {
@@ -200,6 +149,11 @@ export default class IllustrationRepository {
 					id: dto[resourceKey]!,
 				});
 
+				if (!track.releaseId) {
+					return this.saveTrackStandaloneIllustration(buffer, {
+						id: track.id,
+					}).then(IllustrationResponse.from);
+				}
 				return this.saveReleaseIllustration(
 					buffer,
 					track.discIndex,
@@ -301,6 +255,22 @@ export default class IllustrationRepository {
 		return newIllustration;
 	}
 
+	async saveTrackStandaloneIllustration(
+		buffer: Buffer,
+		where: TrackQueryParameters.WhereInput,
+		type: IllustrationType = IllustrationType.Cover,
+	) {
+		const track = await this.trackService.get(where);
+		const newIllustration = await this.saveIllustration(buffer, type);
+		if (track.standaloneIllustrationId) {
+			await this.deleteIllustration(track.standaloneIllustrationId);
+		}
+		await this.trackService.update(
+			{ standaloneIllustrationId: newIllustration.id },
+			where,
+		);
+		return newIllustration;
+	}
 	async saveReleaseIllustration(
 		buffer: Buffer,
 		disc: number | null,
