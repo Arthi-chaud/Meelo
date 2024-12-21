@@ -91,8 +91,12 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	if len(m.AlbumArtist) > 0 {
 		mp.WriteField("albumArtist", m.AlbumArtist)
 	}
-	mp.WriteField("album", m.Album)
-	mp.WriteField("release", m.Release)
+	if len(m.Album) > 0 {
+		mp.WriteField("album", m.Album)
+	}
+	if len(m.Release) > 0 {
+		mp.WriteField("release", m.Release)
+	}
 	mp.WriteField("name", m.Name)
 	mp.WriteField("releaseDate", m.ReleaseDate.Format(time.RFC3339))
 	if m.Index > 0 {

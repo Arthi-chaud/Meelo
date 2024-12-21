@@ -18,9 +18,9 @@ type Metadata struct {
 	// Name of the artist of the parent album
 	AlbumArtist string
 	// Name of the album of the track
-	Album string `validate:"required"`
+	Album string
 	// Name of the release of the track
-	Release string `validate:"required"`
+	Release string
 	// Name of the track
 	Name string `validate:"required"`
 	// Release date of the track
