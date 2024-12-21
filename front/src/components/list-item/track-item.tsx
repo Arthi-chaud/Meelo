@@ -53,7 +53,6 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 			}
 			onClick={
 				track &&
-				release &&
 				(() => {
 					onClick?.();
 					queryClient
@@ -67,7 +66,7 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 				})
 			}
 			title={track?.name}
-			secondTitle={release?.name}
+			secondTitle={release?.name ?? null}
 			trailing={
 				<Grid
 					container

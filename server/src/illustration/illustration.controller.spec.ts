@@ -326,23 +326,29 @@ describe("Illustration Controller", () => {
 	});
 
 	describe("Register Illustration", () => {
-		const buildData = (r: request.Test) => {
+		const buildData = (r: request.Test, trackId: number) => {
 			return r
-				.field("trackId", dummyRepository.trackC1_1.id)
 				.field("type", "Thumbnail")
+				.field("trackId", trackId)
 				.attach("file", createReadStream("test/assets/cover2.jpg"));
 		};
 		describe("Error handling", () => {
 			it("Should throw, as target track does not exist", async () => {
 				return buildData(
 					request(app.getHttpServer()).post(`/illustrations/file`),
-				)
-					.expect(400)
-					.field("trackId", 1);
+					1,
+				).expect(404);
+			});
+			it("Should throw, as target track is not a video", async () => {
+				return buildData(
+					request(app.getHttpServer()).post(`/illustrations/file`),
+					dummyRepository.trackA1_1.id,
+				).expect(400);
 			});
 			it("Should throw, as type is not valid", async () => {
 				return buildData(
 					request(app.getHttpServer()).post(`/illustrations/file`),
+					dummyRepository.trackC1_1.id,
 				)
 					.expect(400)
 					.field("type", "Avatar");
@@ -351,6 +357,7 @@ describe("Illustration Controller", () => {
 		it("Should set the image's illustration", async () => {
 			return buildData(
 				request(app.getHttpServer()).post(`/illustrations/file`),
+				dummyRepository.trackA1_2Video.id,
 			)
 				.expect(201)
 				.expect((res) => {

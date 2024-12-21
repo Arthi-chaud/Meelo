@@ -112,9 +112,13 @@ export default class TrackService {
 				song: {
 					connect: SongService.formatWhereInput(input.song),
 				},
-				release: {
-					connect: ReleaseService.formatWhereInput(input.release),
-				},
+				release: input.release
+					? {
+							connect: ReleaseService.formatWhereInput(
+								input.release,
+							),
+					  }
+					: undefined,
 				sourceFile: {
 					connect: FileService.formatWhereInput(input.sourceFile),
 				},
@@ -129,17 +133,22 @@ export default class TrackService {
 					const parentSong = await this.songService.get(input.song, {
 						artist: true,
 					});
-					const parentRelease = await this.releaseService.get(
-						input.release,
-					);
 
 					await this.fileService.get(input.sourceFile);
-					if (error.code === PrismaError.RequiredRelationViolation) {
-						throw new TrackAlreadyExistsException(
-							input.name,
-							new Slug(parentRelease.slug),
-							new Slug(parentSong.artist.slug),
+					if (input.release) {
+						const parentRelease = await this.releaseService.get(
+							input.release,
 						);
+
+						if (
+							error.code === PrismaError.RequiredRelationViolation
+						) {
+							throw new TrackAlreadyExistsException(
+								input.name,
+								new Slug(parentRelease.slug),
+								new Slug(parentSong.artist.slug),
+							);
+						}
 					}
 				}
 				throw new UnhandledORMErrorException(error, input);
@@ -382,6 +391,14 @@ export default class TrackService {
 				where: TrackService.formatWhereInput(where),
 				data: {
 					...what,
+					standaloneIllustrationId: undefined,
+					standaloneIllustration: what.standaloneIllustrationId
+						? { connect: { id: what.standaloneIllustrationId } }
+						: undefined,
+					thumbnailId: undefined,
+					thumbnail: what.thumbnailId
+						? { connect: { id: what.thumbnailId } }
+						: undefined,
 					song: what.song
 						? {
 								connect: SongService.formatWhereInput(
@@ -429,22 +446,29 @@ export default class TrackService {
 				where: where,
 			})
 			.then((deleted) => {
-				this.illustrationRepository
-					.getReleaseIllustrations({ id: deleted.releaseId })
-					.then((relatedIllustrations) => {
-						const exactIllustration = relatedIllustrations.find(
-							(i) =>
-								i.disc !== null &&
-								i.track !== null &&
-								i.disc === deleted.discIndex &&
-								i.track === deleted.trackIndex,
-						);
-						if (exactIllustration) {
-							this.illustrationRepository.deleteIllustration(
-								exactIllustration.id,
+				if (deleted.thumbnailId) {
+					this.illustrationRepository.deleteIllustration(
+						deleted.thumbnailId,
+					);
+				}
+				if (deleted.releaseId) {
+					this.illustrationRepository
+						.getReleaseIllustrations({ id: deleted.releaseId })
+						.then((relatedIllustrations) => {
+							const exactIllustration = relatedIllustrations.find(
+								(i) =>
+									i.disc !== null &&
+									i.track !== null &&
+									i.disc === deleted.discIndex &&
+									i.track === deleted.trackIndex,
 							);
-						}
-					});
+							if (exactIllustration) {
+								this.illustrationRepository.deleteIllustration(
+									exactIllustration.id,
+								);
+							}
+						});
+				}
 				this.logger.warn(`Track '${deleted.name}' deleted`);
 				return deleted;
 			})

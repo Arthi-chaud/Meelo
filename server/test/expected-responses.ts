@@ -46,7 +46,11 @@ export const expectedReleaseResponse = (release: Release) => ({
 	releaseDate: release.releaseDate?.toISOString() ?? null,
 });
 
-export const expectedTrackResponse = (track: Track) => ({
+export const expectedTrackResponse = ({
+	thumbnailId,
+	standaloneIllustrationId,
+	...track
+}: Track) => ({
 	...track,
 });
 

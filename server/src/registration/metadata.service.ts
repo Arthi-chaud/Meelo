@@ -130,29 +130,37 @@ export default class MetadataService {
 			},
 			{ id: song.id },
 		);
-		const album = await this.albumService.getOrCreate(
-			{
-				name: this.parserService.parseReleaseExtension(metadata.album)
-					.parsedName,
-				artist: albumArtist ? { id: albumArtist?.id } : undefined,
-				registeredAt: file.registerDate,
-			},
-			{ releases: true },
-		);
-		const parsedReleaseName = this.parserService.parseReleaseExtension(
-			metadata.release,
-		);
-		const release = await this.releaseService.getOrCreate(
-			{
-				name: parsedReleaseName.parsedName,
-				extensions: parsedReleaseName.extensions,
-				releaseDate: metadata.releaseDate,
-				album: { id: album.id },
-				registeredAt: file.registerDate,
-				discogsId: metadata.discogsId,
-			},
-			{ album: true },
-		);
+		const album = metadata.album
+			? await this.albumService.getOrCreate(
+					{
+						name: this.parserService.parseReleaseExtension(
+							metadata.album,
+						).parsedName,
+						artist: albumArtist
+							? { id: albumArtist?.id }
+							: undefined,
+						registeredAt: file.registerDate,
+					},
+					{ releases: true },
+			  )
+			: undefined;
+		const parsedReleaseName = metadata.release
+			? this.parserService.parseReleaseExtension(metadata.release)
+			: undefined;
+		const release =
+			parsedReleaseName && album
+				? await this.releaseService.getOrCreate(
+						{
+							name: parsedReleaseName.parsedName,
+							extensions: parsedReleaseName.extensions,
+							releaseDate: metadata.releaseDate,
+							album: { id: album.id },
+							registeredAt: file.registerDate,
+							discogsId: metadata.discogsId,
+						},
+						{ album: true },
+				  )
+				: undefined;
 		const track: TrackQueryParameters.CreateInput = {
 			name: parsedTrackName.parsedName,
 			isBonus: parsedTrackName.bonus,
@@ -170,30 +178,32 @@ export default class MetadataService {
 					? Math.floor(metadata.duration)
 					: null,
 			sourceFile: { id: file.id },
-			release: { id: release.id },
+			release: release ? { id: release.id } : undefined,
 			song: { id: song.id },
 		};
-
-		if (
-			albumArtist === undefined &&
-			release.album.type == AlbumType.StudioRecording
-		) {
-			await this.albumService.update(
-				{ type: AlbumType.Compilation },
-				{ id: release.albumId },
-			);
-		}
-		if (album.masterId === null) {
-			this.albumService.setMasterRelease({ id: release.id });
-		}
-		if (
-			!release.releaseDate ||
-			(metadata.releaseDate && release.releaseDate < metadata.releaseDate)
-		) {
-			await this.releaseService.update(
-				{ releaseDate: metadata.releaseDate },
-				{ id: release.id },
-			);
+		if (release && album) {
+			if (
+				albumArtist === undefined &&
+				release.album.type == AlbumType.StudioRecording
+			) {
+				await this.albumService.update(
+					{ type: AlbumType.Compilation },
+					{ id: release.albumId },
+				);
+			}
+			if (album.masterId === null) {
+				this.albumService.setMasterRelease({ id: release.id });
+			}
+			if (
+				!release.releaseDate ||
+				(metadata.releaseDate &&
+					release.releaseDate < metadata.releaseDate)
+			) {
+				await this.releaseService.update(
+					{ releaseDate: metadata.releaseDate },
+					{ id: release.id },
+				);
+			}
 		}
 		if (overwrite) {
 			await this.trackService.delete({ sourceFileId: file.id });

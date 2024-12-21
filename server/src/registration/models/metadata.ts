@@ -74,20 +74,20 @@ export default class Metadata {
 	/**
 	 * Name of the album of the track
 	 */
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@IsString()
 	@IsNotEmpty()
-	@IsDefined()
-	album: string;
+	@IsOptional()
+	album?: string;
 
 	/**
 	 * Name of the release of the track
 	 */
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@IsString()
 	@IsNotEmpty()
-	@IsDefined()
-	release: string;
+	@IsOptional()
+	release?: string;
 
 	/**
 	 * Name of the track

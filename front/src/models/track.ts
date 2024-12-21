@@ -37,7 +37,7 @@ const Track = Resource.concat(
 		/**
 		 * Unique identifier of the parent release
 		 */
-		releaseId: yup.number().required(),
+		releaseId: yup.number().required().nullable(),
 		/**
 		 * Title of the track
 		 */
@@ -86,7 +86,7 @@ export type TrackInclude = "song" | "release" | "illustration";
 
 const TrackRelations = yup.object({
 	song: yup.lazy(() => Song.required()),
-	release: Release.required(),
+	release: Release.required().nullable(),
 	illustration: Illustration.required().nullable(),
 });
 

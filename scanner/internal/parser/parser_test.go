@@ -23,6 +23,7 @@ func getParserTestConfig() config.UserSettings {
 		TrackRegex: []string{
 			"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\s+\\((?P<Artist>.*)\\)\\..*$",
 			"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$",
+			"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+Unknown Album[\\/\\\\]+(?P<Track>.*)\\..*$",
 		},
 	}
 }
@@ -92,4 +93,23 @@ func TestParserEmbedded(t *testing.T) {
 	assert.Equal(t, "Dreams", m.Name)
 	assert.Equal(t, internal.Inline, m.IllustrationLocation)
 	assert.Equal(t, "../../testdata/cover.jpg", m.IllustrationPath)
+}
+
+func TestParserStandaloneTrack(t *testing.T) {
+	path := "/data/Lady Gaga/Unknown Album/Bad Romance.m4v"
+	m, err := ParseMetadata(getParserTestConfig(), path)
+
+	assert.Len(t, err, 2) // fpcalc error and no checksum
+	assert.Equal(t, "Lady Gaga", m.AlbumArtist)
+	assert.Equal(t, "Lady Gaga", m.Artist)
+	assert.Equal(t, false, m.IsCompilation)
+	assert.Equal(t, "", m.Album)
+	assert.Equal(t, internal.Video, m.Type)
+	assert.Equal(t, int64(0), m.Bitrate)
+	assert.Equal(t, int64(0), m.Duration)
+	assert.Equal(t, "", m.Release)
+	assert.Equal(t, int64(0), m.DiscIndex)
+	assert.Equal(t, int64(0), m.Index)
+	assert.Empty(t, m.Genres)
+	assert.Equal(t, "Bad Romance", m.Name)
 }

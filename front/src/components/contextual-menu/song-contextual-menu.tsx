@@ -76,7 +76,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					GoToArtistAction(props.song.artist.slug),
 					GoToReleaseAsyncAction(
 						router,
-						async () => (await getMasterTrack()).release.slug,
+						async () =>
+							(await getMasterTrack()).release?.slug ?? null,
 					),
 				],
 				[GoToSongLyricsAction(songSlug)],

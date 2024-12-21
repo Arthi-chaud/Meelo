@@ -16,7 +16,7 @@ import VideoModule from "./video.module";
 
 jest.setTimeout(60000);
 
-describe("Song Controller", () => {
+describe("Video Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 

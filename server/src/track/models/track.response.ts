@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, OmitType } from "@nestjs/swagger";
 import { Track, TrackWithRelations } from "src/prisma/models";
 import {
 	ReleaseResponse,
@@ -34,11 +34,14 @@ import {
 } from "src/illustration/models/illustration.response";
 
 export class TrackResponse extends IntersectionType(
-	Track,
+	class extends OmitType(Track, [
+		"thumbnailId",
+		"standaloneIllustrationId",
+	]) {},
 	IllustratedResponse,
 	class {
 		song?: SongResponse;
-		release?: ReleaseResponse;
+		release?: ReleaseResponse | null;
 	},
 ) {}
 
