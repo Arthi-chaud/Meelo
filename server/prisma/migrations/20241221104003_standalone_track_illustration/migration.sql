@@ -21,7 +21,7 @@ SELECT
     t.id AS "trackId"
 FROM
     tracks t
-    JOIN releases r ON r.id = t."releaseId"
+    LEFT JOIN releases r ON r.id = t."releaseId"
     -- Left join, because release can be null or not have artwork.
     -- In that case, we still want videos to have their thumbnails
     LEFT JOIN LATERAL (
