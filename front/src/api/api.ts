@@ -355,19 +355,6 @@ export default class API {
 	}
 
 	/**
-	 * Calls for a task to fetch external metadata
-	 * @returns A object with the status of the task
-	 */
-	static async fetchExternalMetadata(): Promise<TaskResponse> {
-		return API.fetch({
-			route: `/tasks/fetch-external-metadata`,
-			errorMessage: "A task is already running",
-			parameters: {},
-			validator: TaskResponse,
-		});
-	}
-
-	/**
 	 * Calls for a task to scan a library
 	 * @returns A object with the status of the task
 	 */

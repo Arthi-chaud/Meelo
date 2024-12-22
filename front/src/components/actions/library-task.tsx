@@ -20,7 +20,7 @@ import toast from "react-hot-toast";
 import API from "../../api/api";
 import { TaskResponse } from "../../models/task";
 import Action from "./action";
-import { CleanIcon, MetadataRefreshIcon, ScanIcon } from "../icons";
+import { CleanIcon, ScanIcon } from "../icons";
 
 /**
  * Using the resolved value of the task porimise, triggers an appropriate toast
@@ -60,9 +60,3 @@ export const CleanLibraryAction = (
 	icon: CleanAllLibrariesAction.icon,
 	onClick: () => handleTask(API.cleanLibrary(librarySlugOrId)),
 });
-
-export const FetchExternalMetadata: Action = {
-	label: "fetchMetadata",
-	icon: <MetadataRefreshIcon />,
-	onClick: () => handleTask(API.fetchExternalMetadata()),
-};

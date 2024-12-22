@@ -41,7 +41,6 @@ import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,
-	FetchExternalMetadata,
 	ScanAllLibrariesAction,
 	ScanLibraryAction,
 } from "../actions/library-task";
@@ -99,13 +98,6 @@ const LibrariesSettings = () => {
 		onClick: () => {
 			tasks.refetch();
 			CleanAllLibrariesAction.onClick?.();
-		},
-	};
-	const fetchMetadata = {
-		...FetchExternalMetadata,
-		onClick: () => {
-			tasks.refetch();
-			FetchExternalMetadata.onClick?.();
 		},
 	};
 	const confirm = useConfirm();
@@ -245,19 +237,17 @@ const LibrariesSettings = () => {
 						{t("createLibrary")}
 					</Button>
 				</Grid>
-				{[cleanAllLibaries, scanAllLibaries, fetchMetadata].map(
-					(action, index) => (
-						<Grid item key={"Library-action-" + index}>
-							<Button
-								variant={index % 2 ? "contained" : "outlined"}
-								startIcon={action.icon}
-								onClick={action.onClick}
-							>
-								{t(action.label)}
-							</Button>
-						</Grid>
-					),
-				)}
+				{[cleanAllLibaries, scanAllLibaries].map((action, index) => (
+					<Grid item key={"Library-action-" + index}>
+						<Button
+							variant={index % 2 ? "contained" : "outlined"}
+							startIcon={action.icon}
+							onClick={action.onClick}
+						>
+							{t(action.label)}
+						</Button>
+					</Grid>
+				))}
 			</Grid>
 			<Dialog
 				open={libraryEdit != undefined}
