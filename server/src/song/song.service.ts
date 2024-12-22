@@ -744,6 +744,7 @@ export default class SongService extends SearchableRepositoryService {
 			where: {
 				tracks: {
 					some: {
+						type: "Audio",
 						release: {
 							album: {
 								OR: [
