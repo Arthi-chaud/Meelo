@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import { TestingModule } from "@nestjs/testing";
-import type { Lyrics, Song, Track } from "src/prisma/models";
+import type { Lyrics, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
@@ -12,9 +12,7 @@ import {
 	expectedSongResponse,
 	expectedArtistResponse,
 	expectedTrackResponse,
-	expectedReleaseResponse,
 } from "test/expected-responses";
-import SettingsService from "src/settings/settings.service";
 import { IllustrationType, SongType } from "@prisma/client";
 import Slug from "src/slug/slug";
 
@@ -36,7 +34,6 @@ describe("Song Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
-		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
 	});
 

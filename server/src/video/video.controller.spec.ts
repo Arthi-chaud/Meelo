@@ -11,7 +11,6 @@ import {
 	expectedSongResponse,
 	expectedTrackResponse,
 } from "test/expected-responses";
-import SettingsService from "src/settings/settings.service";
 import VideoModule from "./video.module";
 
 jest.setTimeout(60000);
@@ -30,7 +29,6 @@ describe("Video Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
-		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
 	});
 

@@ -75,8 +75,8 @@ describe("Illustration Controller", () => {
 	});
 
 	const getDummyIllustrationStream = () =>
-		fs.createReadStream("test/assets/settings.json");
-	const dummyIllustrationBytes = fs.readFileSync("test/assets/settings.json");
+		fs.createReadStream("test/sequencer.ts");
+	const dummyIllustrationBytes = fs.readFileSync("test/sequencer.ts");
 
 	const illustrationUrlExample =
 		"https://sample-videos.com/img/Sample-jpg-image-50kb.jpg";

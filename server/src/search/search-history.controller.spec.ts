@@ -6,7 +6,6 @@ import { INestApplication } from "@nestjs/common";
 import SongModule from "src/song/song.module";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import SettingsService from "src/settings/settings.service";
 import * as Plugins from "../app.plugins";
 import ArtistModule from "src/artist/artist.module";
 import AlbumModule from "src/album/album.module";
@@ -45,7 +44,6 @@ describe("Search History Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		const userService = module.get(UserService);
-		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
 		await userService.create({
 			name: "admin",

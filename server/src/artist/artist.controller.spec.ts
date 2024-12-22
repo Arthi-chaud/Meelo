@@ -24,7 +24,6 @@ import { LyricsModule } from "src/lyrics/lyrics.module";
 import FileModule from "src/file/file.module";
 import { expectedArtistResponse } from "test/expected-responses";
 import SettingsModule from "src/settings/settings.module";
-import SettingsService from "src/settings/settings.service";
 import { IllustrationType } from "@prisma/client";
 
 describe("Artist Controller", () => {
@@ -61,7 +60,6 @@ describe("Artist Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		module.get(SettingsService).loadFromFile();
 	});
 
 	afterAll(async () => {

@@ -11,7 +11,6 @@ import {
 	expectedArtistResponse,
 	expectedSongGroupResponse,
 } from "test/expected-responses";
-import SettingsService from "src/settings/settings.service";
 import { SongGroupResponse } from "./models/song-group.response";
 
 describe("Song Group Controller", () => {
@@ -28,7 +27,6 @@ describe("Song Group Controller", () => {
 			.compile();
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
-		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
 	});
 

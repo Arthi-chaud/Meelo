@@ -22,7 +22,6 @@ import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
 } from "test/expected-responses";
-import SettingsService from "src/settings/settings.service";
 import { Genre, IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
@@ -53,7 +52,6 @@ describe("Album Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		module.get(SettingsService).loadFromFile();
 	});
 
 	afterAll(async () => {

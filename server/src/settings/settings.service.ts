@@ -23,16 +23,13 @@ import {
 	InvalidMeeloDirVarException,
 	InvalidSettingsFileException,
 	MissingSettingsException,
-	SettingsFileNotFoundException,
 } from "./settings.exception";
-import { join } from "path";
 import { plainToClass } from "class-transformer";
 import { validateSync } from "class-validator";
 
 @Injectable()
 export default class SettingsService {
 	protected settings: Settings;
-	private readonly configPath: string;
 
 	constructor(
 		@Inject(forwardRef(() => FileManagerService))
@@ -46,30 +43,14 @@ export default class SettingsService {
 		) {
 			throw new InvalidMeeloDirVarException(meeloDir);
 		}
-		this.configPath = join(meeloDir, "settings.json");
-		this.loadFromFile();
+		this.load();
 	}
 
 	/**
-	 * Loading Settings configuration from a JSON file
+	 * Loading Settings configuration
 	 */
-	loadFromFile(): void {
-		let object: any = {};
-
-		try {
-			object = JSON.parse(
-				this.fileManagerService
-					.getFileContent(this.configPath)
-					.toString(),
-			);
-		} catch (error) {
-			if (error instanceof SyntaxError) {
-				throw new InvalidSettingsFileException();
-			}
-			throw new SettingsFileNotFoundException();
-		}
+	private load(): void {
 		const uncheckedSettings = plainToClass(Settings, {
-			...object,
 			meeloFolder: process.env.INTERNAL_CONFIG_DIR!,
 			dataFolder: process.env.INTERNAL_DATA_DIR!,
 			allowAnonymous: process.env.ALLOW_ANONYMOUS === "1",
