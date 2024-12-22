@@ -101,6 +101,15 @@ class TestMusicbrainz(unittest.TestCase):
         type = provider.get_album_type(album)
         self.assertIs(AlbumType.STUDIO, type)
 
+    def test_get_album_release_date_month_only(self):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider(MusicBrainzProvider)
+        )  # pyright: ignore
+        album = provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
+        self.assertIsNotNone(album)
+        release_date = provider.get_album_release_date(album)
+        self.assertEqual(release_date, datetime.date(1994, 11, 1))
+
     def test_get_album_type(self):
         scenarios: List[Tuple[str, AlbumType]] = [
             # Massive Attack - No Protection

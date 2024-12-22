@@ -186,10 +186,16 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         )
 
     def _get_album_release_date(self, album: Any) -> date | None:
-        try:
-            return datetime.strptime(album["first-release-date"], "%Y-%m-%d").date()
-        except Exception:
-            pass
+        str_release_date = album.get("first-release-date")
+        if not str_release_date:
+            return None
+        for format in ["%Y-%m-%d", "%Y-%m", "%Y"]:
+            try:
+                parsed = datetime.strptime(str_release_date, format)
+                if parsed:
+                    return parsed.date()
+            except Exception:
+                continue
 
     def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
