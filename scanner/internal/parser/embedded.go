@@ -62,7 +62,16 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 		for _, format := range []string{"2006", time.DateOnly, time.DateTime, time.RFC3339} {
 			date, err := time.Parse(format, value)
 			if err == nil {
-				metadata.ReleaseDate = date
+				metadata.ReleaseDate = &date
+			}
+		}
+	}
+	if metadata.ReleaseDate == nil {
+		if value, err := tags.GetString("year"); err == nil {
+			// MP3s only store year(?)
+			date, err := time.Parse("2006", value)
+			if err == nil {
+				metadata.ReleaseDate = &date
 			}
 		}
 	}

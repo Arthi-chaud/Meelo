@@ -24,7 +24,7 @@ type Metadata struct {
 	// Name of the track
 	Name string `validate:"required"`
 	// Release date of the track
-	ReleaseDate time.Time
+	ReleaseDate *time.Time
 	// Index of the track on the disc
 	Index int64
 	// Index of the disc the track is on
@@ -100,7 +100,7 @@ func Merge(m1 Metadata, m2 Metadata) Metadata {
 		glg.Warnf("source: %+v", m2)
 	}
 	// dates do not seem to be overwritten correctly
-	if m1.ReleaseDate.Year() == 1 {
+	if m1.ReleaseDate != nil && (*m1.ReleaseDate).Year() == 1 {
 		m1.ReleaseDate = m2.ReleaseDate
 	}
 	return m1

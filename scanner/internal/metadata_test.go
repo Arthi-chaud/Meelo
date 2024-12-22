@@ -11,12 +11,13 @@ func TestVMergeMetadataCorrectOverride(t *testing.T) {
 	m1 := Metadata{
 		Artist:      "A",
 		AlbumArtist: "",
-		ReleaseDate: time.Time{},
+		ReleaseDate: nil,
 	}
+	m2Date := time.Date(2007, 1, 1, 1, 1, 1, 1, time.UTC)
 	m2 := Metadata{
 		Artist:      "B",
 		AlbumArtist: "B",
-		ReleaseDate: time.Date(2007, 1, 1, 1, 1, 1, 1, time.UTC),
+		ReleaseDate: &m2Date,
 	}
 	m3 := Merge(m1, m2)
 

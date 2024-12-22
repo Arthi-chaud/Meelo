@@ -98,7 +98,9 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 		mp.WriteField("release", m.Release)
 	}
 	mp.WriteField("name", m.Name)
-	mp.WriteField("releaseDate", m.ReleaseDate.Format(time.RFC3339))
+	if m.ReleaseDate != nil {
+		mp.WriteField("releaseDate", (*m.ReleaseDate).Format(time.RFC3339))
+	}
 	if m.Index > 0 {
 		mp.WriteField("index", strconv.FormatInt(m.Index, 10))
 	}
