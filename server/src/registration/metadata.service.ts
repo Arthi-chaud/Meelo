@@ -20,7 +20,7 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import Metadata from "./models/metadata";
 import TrackService from "src/track/track.service";
 import SongService from "src/song/song.service";
-import { AlbumType } from "@prisma/client";
+import { AlbumType, TrackType } from "@prisma/client";
 import ReleaseService from "src/release/release.service";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
@@ -119,6 +119,7 @@ export default class MetadataService {
 			},
 			{
 				genres: true,
+				master: true,
 			},
 		);
 
@@ -209,7 +210,11 @@ export default class MetadataService {
 			await this.trackService.delete({ sourceFileId: file.id });
 		}
 		return this.trackService.create(track).then((res) => {
-			if (song.masterId === null && track.type === "Audio") {
+			if (
+				(song.masterId === null ||
+					song.master?.type == TrackType.Video) &&
+				track.type === TrackType.Audio
+			) {
 				this.songService.setMasterTrack({ id: res.id });
 			}
 			return res;
