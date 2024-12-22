@@ -16,30 +16,26 @@ channel: BlockingChannel | None = None
 queue_name = "meelo"
 
 
-def consume(ch: BlockingChannel):
-    while True:
-        method, prop, body = ch.basic_get(queue_name)
-        if not method:
-            continue
-        event = Event.from_json(body)
-        delivery_tag = method.delivery_tag
-        logging.info(f"Received event: {event} (P={prop.priority})")
-        match event.type:
-            case "artist":
-                match_and_post_artist(event.id, event.name)
-                ch.basic_ack(delivery_tag)
-                pass
-            case "album":
-                match_and_post_album(event.id, event.name)
-                ch.basic_ack(delivery_tag)
-                pass
-            case "song":
-                match_and_post_song(event.id, event.name)
-                ch.basic_ack(delivery_tag)
-                pass
-            case _:
-                logging.warning("No handler for event " + event.type)
-                pass
+def consume(ch: BlockingChannel, method, prop, body):
+    event = Event.from_json(body)
+    delivery_tag = method.delivery_tag
+    logging.info(f"Received event: {event} (P={prop.priority})")
+    match event.type:
+        case "artist":
+            match_and_post_artist(event.id, event.name)
+            ch.basic_ack(delivery_tag)
+            pass
+        case "album":
+            match_and_post_album(event.id, event.name)
+            ch.basic_ack(delivery_tag)
+            pass
+        case "song":
+            match_and_post_song(event.id, event.name)
+            ch.basic_ack(delivery_tag)
+            pass
+        case _:
+            logging.warning("No handler for event " + event.type)
+            pass
 
 
 def main():
@@ -57,7 +53,9 @@ def main():
     )
     bootstrap_context()
     logging.info("Ready to match!")
-    consume(channel)
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue_name, on_message_callback=consume)
+    channel.start_consuming()
 
 
 def terminate(signal, term):
