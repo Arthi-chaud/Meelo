@@ -16,7 +16,7 @@ channel: BlockingChannel | None = None
 queue_name = "meelo"
 
 
-def consume(ch):
+def consume(ch: BlockingChannel):
     while True:
         method, prop, body = ch.basic_get(queue_name)
         if not method:

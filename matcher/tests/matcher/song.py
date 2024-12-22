@@ -1,4 +1,5 @@
 import unittest
+from matcher.context import Context
 from matcher.matcher.song import match_song
 from tests.matcher.common import MatcherTestUtils
 
@@ -49,3 +50,15 @@ class TestMatchSong(unittest.TestCase):
             mb.url,
             "https://musicbrainz.org/recording/b4e91acc-17d6-4e1a-b08e-e06714bab7bd",
         )
+
+    def test_get_song_ignore_genres(self):
+        # Setup
+        context = Context.get()
+        context.settings.push_genres = False
+        [matches, lyrics, genres] = match_song(
+            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None
+        )
+        # Teardown
+        context.settings.push_genres = True
+        # Genres
+        self.assertEqual(len(genres), 0)

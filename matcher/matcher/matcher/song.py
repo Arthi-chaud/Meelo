@@ -49,6 +49,7 @@ def match_song(
     featuring: List[str],
     acoustid_and_duration: Tuple[str, int] | None,
 ) -> tuple[ExternalMetadataDto | None, str | None, List[str]]:
+    need_genres = Context.get().settings.push_genres
     context = Context.get()
     genres: List[str] = []
     lyrics: str | None = None
@@ -98,7 +99,11 @@ def match_song(
         is_useful = (
             (not description and provider.has_feature(GetSongDescriptionFeature))
             or (not lyrics and provider.has_feature(GetSongLyricsFeature))
-            or (len(genres) == 0 and provider.has_feature(GetAlbumGenresFeature))
+            or (
+                need_genres
+                and len(genres) == 0
+                and provider.has_feature(GetAlbumGenresFeature)
+            )
         )
         if not is_useful:
             continue
