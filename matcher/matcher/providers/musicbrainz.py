@@ -227,12 +227,18 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
 
     def _get_song(self, recording_id: str) -> Any | None:
         try:
-            recording = musicbrainzngs.get_recording_by_id(
-                recording_id,
-                includes=["work-rels", "url-rels", "tags", "work-level-rels"],
+            # mbngz does not accept genres as recording include
+            recording = self._fetch(
+                f"/recording/{recording_id}",
+                {
+                    "inc": "+".join(
+                        ["work-rels", "url-rels", "genres", "work-level-rels"]
+                    )
+                },
             )
             return recording
-        except Exception:
+        except Exception as e:
+            print(e)
             pass
 
     # This method returns a recording ID
@@ -301,7 +307,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
 
     def _get_song_genres(self, song: Any) -> List[str] | None:
         try:
-            genres: List[Any] = song["tags"]
+            genres: List[Any] = song["genres"]
             return [
                 capitalize_all_words(genre["name"])
                 for genre in genres
