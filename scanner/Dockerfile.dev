@@ -1,7 +1,8 @@
-FROM golang:1.22.6-bullseye
+FROM golang:1.22.6-alpine
 RUN go install github.com/bokwoon95/wgo@latest
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN apt-get update -y; apt-get install -y ffmpeg libchromaprint-tools libchromaprint-dev libfftw3-dev
+
+RUN apk update && apk upgrade && apk add ffmpeg chromaprint mailcap 
 WORKDIR /app
 
 CMD ["wgo", "-xdir", "./app/docs", "swag", "init", "-d", "app", "-o", "./app/docs", "::", "go", "run", "./app"]
