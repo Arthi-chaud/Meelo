@@ -484,6 +484,7 @@ export default class ParserService {
 		albumName = albumName.toLowerCase();
 		if (
 			albumName.includes("soundtrack") ||
+			albumName.includes("original score") ||
 			albumName.includes("from the motion picture") ||
 			albumName.includes("bande originale") ||
 			albumName.includes(

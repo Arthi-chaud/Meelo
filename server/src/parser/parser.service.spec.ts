@@ -1293,6 +1293,10 @@ describe("Parser Service", () => {
 					"8 femmes (Bande originale du film)",
 				),
 			).toBe(AlbumType.Soundtrack);
+
+			expect(
+				parserService.getAlbumType("Challengers: Original Score"),
+			).toBe(AlbumType.Soundtrack);
 		});
 
 		it("should identify title as single", () => {
