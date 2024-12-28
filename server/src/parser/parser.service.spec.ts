@@ -280,166 +280,114 @@ describe("Parser Service", () => {
 	});
 
 	describe("Extract artist name from song name", () => {
-		it("No Featuring", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
-				"Strict Machine",
-			);
-			expect(res.name).toBe("Strict Machine");
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("Basic: A (feat. B)", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+		const scenarios = [
+			["Strict Machine", "Strict Machine", []],
+			[
 				"Me Against the Music (feat. Madonna)",
-			);
-			expect(res.name).toBe("Me Against the Music");
-			expect(res.featuring).toStrictEqual(["Madonna"]);
-		});
-		it("Basic without parenthesis: A feat. B", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Me Against the Music",
+				["Madonna"],
+			],
+
+			[
 				"Me Against the Music feat. Madonna",
-			);
-			expect(res.name).toBe("Me Against the Music");
-			expect(res.featuring).toStrictEqual(["Madonna"]);
-		});
-		it("Tricky", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
-				"Good Times With Bad People",
-			);
-			expect(res.name).toBe("Good Times With Bad People");
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("Basic: A (featuring B)", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Me Against the Music",
+				["Madonna"],
+			],
+
+			[
 				"Me Against the Music (featuring Madonna)",
-			);
-			expect(res.name).toBe("Me Against the Music");
-			expect(res.featuring).toStrictEqual(["Madonna"]);
-		});
-		it("Basic: A (Featuring B)", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
-				"Me Against the Music (Featuring Madonna)",
-			);
-			expect(res.name).toBe("Me Against the Music");
-			expect(res.featuring).toStrictEqual(["Madonna"]);
-		});
-		it("Basic: A (With B)", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Me Against the Music",
+				["Madonna"],
+			],
+
+			[
 				"Me Against the Music (With Madonna)",
-			);
-			expect(res.name).toBe("Me Against the Music");
-			expect(res.featuring).toStrictEqual(["Madonna"]);
-		});
-		it("Basic With Suffix: A (Suffix) [feat. B]", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Me Against the Music",
+				["Madonna"],
+			],
+			[
+				"Me Against the Music (Featuring Madonna)",
+				"Me Against the Music",
+				["Madonna"],
+			],
+			[
 				"Medellín (Offer Nissim Madame X In The Sphinx Mix) [feat. Maluma]",
-			);
-			expect(res.name).toBe(
 				"Medellín (Offer Nissim Madame X In The Sphinx Mix)",
-			);
-			expect(res.featuring).toStrictEqual(["Maluma"]);
-		});
-		it("Basic With Suffix: A (feat. B) [Suffix]", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				["Maluma"],
+			],
+
+			[
 				"Medellín (feat. Maluma) [Offer Nissim Madame X In The Sphinx Mix]",
-			);
-			expect(res.name).toBe(
 				"Medellín (Offer Nissim Madame X In The Sphinx Mix)",
-			);
-			expect(res.featuring).toStrictEqual(["Maluma"]);
-		});
-		it("Multiple artists: A (feat. B) [feat. C]", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
-				"4 Minutes (feat. Justin Timberlake) [feat. Timbaland]",
-			);
-			expect(res.name).toBe("4 Minutes");
-			expect(res.featuring).toStrictEqual([
-				"Justin Timberlake",
-				"Timbaland",
-			]);
-		});
-		it("Multiple artists: A (feat. B & C)", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				["Maluma"],
+			],
+
+			[
 				"4 Minutes (feat. Justin Timberlake & Timbaland)",
-			);
-			expect(res.name).toBe("4 Minutes");
-			expect(res.featuring).toStrictEqual([
-				"Justin Timberlake",
-				"Timbaland",
-			]);
-		});
-		it("Multiple artists with Suffix: A (feat. B & C) [Remix Name]", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				,
+				"4 Minutes",
+				["Justin Timberlake", "Timbaland"],
+			],
+			[
+				"4 Minutes (feat. Justin Timberlake) [feat. Timbaland]",
+				,
+				"4 Minutes",
+				["Justin Timberlake", "Timbaland"],
+			],
+			[
 				"4 Minutes (Remix) [feat. Justin Timberlake & Timbaland]",
-			);
-			expect(res.name).toBe("4 Minutes (Remix)");
-			expect(res.featuring).toStrictEqual([
-				"Justin Timberlake",
-				"Timbaland",
-			]);
-		});
-		it("Multiple artists without parenthesis: A featuring B & C (Remix)", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"4 Minutes (Remix)",
+				["Justin Timberlake", "Timbaland"],
+			],
+			[
 				"4 Minutes featuring Justin Timberlake & Timbaland (Remix)",
-			);
-			expect(res.name).toBe("4 Minutes (Remix)");
-			expect(res.featuring).toStrictEqual([
-				"Justin Timberlake",
-				"Timbaland",
-			]);
-		});
-		it("3 featured artists", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"4 Minutes (Remix)",
+				["Justin Timberlake", "Timbaland"],
+			],
+			[
 				"Champion (feat. Nas, Drake & Young Jeezy)",
-			);
-			expect(res.name).toBe("Champion");
-			expect(res.featuring).toStrictEqual([
-				"Nas",
-				"Drake",
-				"Young Jeezy",
-			]);
-		});
-		it("4 featured artists", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Champion",
+				["Nas", "Drake", "Young Jeezy"],
+			],
+			[
 				"Champion (feat. Nas, Drake, Young Jeezy & Someone)",
-			);
-			expect(res.name).toBe("Champion");
-			expect(res.featuring).toStrictEqual([
-				"Nas",
-				"Drake",
-				"Young Jeezy",
-				"Someone",
-			]);
-		});
-		it('Using "with"', async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
-				"Champion (With A)",
-			);
-			expect(res.name).toBe("Champion");
-			expect(res.featuring).toStrictEqual(["A"]);
-		});
-		it("Not a feature", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"Champion",
+				["Nas", "Drake", "Young Jeezy", "Someone"],
+			],
+
+			["Champion (With Someone)", "Champion", ["Someone"]],
+			[
 				"You Lied To Me (Sprayed With Shep's Attitude)",
-			);
-			expect(res.name).toBe(
 				"You Lied To Me (Sprayed With Shep's Attitude)",
-			);
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("Remix and features in same group", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				[],
+			],
+			[
 				"You Lied To Me (Remix Feat. Shep Pettibone)",
-			);
-			expect(res.name).toBe("You Lied To Me (Remix)");
-			expect(res.featuring).toStrictEqual(["Shep Pettibone"]);
-		});
-		it("Handling nested groups", async () => {
-			const res = await parserService.extractFeaturedArtistsFromSongName(
+				"You Lied To Me (Remix)",
+				["Shep Pettibone"],
+			],
+			[
 				"Crooked Madam (Damn Mad - Shellfish Remix)",
-			);
-			expect(res.name).toBe("Crooked Madam (Damn Mad - Shellfish Remix)");
-			expect(res.featuring).toStrictEqual([]);
-		});
+				"Crooked Madam (Damn Mad - Shellfish Remix)",
+				[],
+			],
+			["Good Times With Bad People", "Good Times With Bad People", []],
+		] as const;
+
+		for (const [
+			unparsedSongName,
+			expectedSongName,
+			expectedFeaturing,
+		] of scenarios) {
+			test(unparsedSongName, async () => {
+				const { name, featuring } =
+					await parserService.extractFeaturedArtistsFromSongName(
+						unparsedSongName,
+					);
+				expect(name).toBe(expectedSongName);
+				expect(featuring).toEqual(expectedFeaturing);
+			});
+		}
 	});
 
 	describe("Extract artists name from artist name", () => {
