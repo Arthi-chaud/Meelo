@@ -3,6 +3,7 @@ import datetime
 from matcher.matcher.album import match_album
 from matcher.providers.domain import AlbumType
 from tests.matcher.common import MatcherTestUtils
+from matcher.context import Context
 
 
 class TestMatchAlbum(unittest.TestCase):
@@ -120,7 +121,9 @@ class TestMatchAlbum(unittest.TestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0004210541")
 
     def test_get_album_no_rating(self):
-        [matches, date, type, genres] = match_album(1, "Aéromusical", "Superbus", AlbumType.STUDIO)
+        [matches, date, type, genres] = match_album(
+            1, "Aéromusical", "Superbus", AlbumType.STUDIO
+        )
         # Rating
         self.assertIsNone(matches.rating)
         # Release date
@@ -149,3 +152,15 @@ class TestMatchAlbum(unittest.TestCase):
         ### Allmusic
         [allmusic] = [p for p in matches.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000770491")
+
+    def test_get_album_ignore_genres(self):
+        # Setup
+        context = Context.get()
+        context.settings.push_genres = False
+        [matches, date, type, genres] = match_album(
+            1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
+        )
+        # Teardown
+        context.settings.push_genres = True
+        # Genres
+        self.assertEqual(len(genres), 0)

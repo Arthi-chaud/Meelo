@@ -117,9 +117,11 @@ def match_song(
             description = provider.get_song_description(song)
         if not lyrics:
             lyrics = provider.get_song_lyrics(song)
-        genres = genres + [
-            g for g in provider.get_song_genres(song) or [] if g not in genres
-        ]
+        genres = genres + (
+            [g for g in provider.get_song_genres(song) or [] if g not in genres]
+            if need_genres
+            else []
+        )
         if description and lyrics and genres:
             break
     return (
