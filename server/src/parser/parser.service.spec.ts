@@ -14,7 +14,6 @@ import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import ParserModule from "./parser.module";
 import PrismaService from "src/prisma/prisma.service";
-import { Allow } from "class-validator";
 
 describe("Parser Service", () => {
 	let parserService: ParserService;
@@ -68,145 +67,82 @@ describe("Parser Service", () => {
 	});
 
 	describe("Strip Groups", () => {
-		it("No Group", () => {
-			const res = parserService.stripGroups("Strict Machine");
-			expect(res).toStrictEqual("Strict Machine");
-		});
-		it("Simple Group", () => {
-			const res = parserService.stripGroups(
-				"Me Against the Music (feat. Madonna)",
-			);
-			expect(res).toStrictEqual("Me Against the Music");
-		});
-		it("Simple Dash Group", () => {
-			const res = parserService.stripGroups("A - B");
-			expect(res).toStrictEqual("A");
-		});
-		it("Group before root (hard)", () => {
-			const res = parserService.stripGroups("(A) B - C [D]");
-			expect(res).toStrictEqual("B");
-		});
-		it("Simple", () => {
-			const res = parserService.stripGroups("A (B)");
-			expect(res).toStrictEqual("A");
-		});
-		it("Group Before Root", () => {
-			const res = parserService.stripGroups("(A) B");
-			expect(res).toStrictEqual("B");
-		});
-		it("Three Groups (Different separator Order)", () => {
-			const res = parserService.stripGroups(
+		const scenarios = [
+			["Strict Machine", undefined],
+			["Me Against the Music (feat. Madonna)", "Me Against the Music"],
+			[
 				"Me Against the Music    [feat. Madonna]  [Remix A]   (Edit B)",
-			);
-			expect(res).toStrictEqual("Me Against the Music");
-		});
+				"Me Against the Music",
+			],
+			["A - B", "A"],
+			["A (B)", "A"],
+			["(A) B", "B"],
+			["(A) B - C [D]", "B"],
+		] as const;
+
+		for (const [unparsedName, expectedName] of scenarios) {
+			test(unparsedName, () => {
+				const res = parserService.stripGroups(unparsedName);
+				expect(res).toBe(expectedName ?? unparsedName);
+			});
+		}
 	});
 
 	describe("Split Groups", () => {
-		it("No Group", () => {
-			const res = parserService.splitGroups("Strict Machine");
-			expect(res).toStrictEqual(["Strict Machine"]);
-		});
-		it("Simple Group", () => {
-			const res = parserService.splitGroups(
+		const scenarios = [
+			["Strict Machine", ["Strict Machine"]],
+			[
 				"Me Against the Music (feat. Madonna)",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-			]);
-		});
-		it("Simple Dash Group", () => {
-			const res = parserService.splitGroups("A - B");
-			expect(res).toStrictEqual(["A", "B"]);
-		});
-
-		it("Two Groups", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna"],
+			],
+			["A - B", ["A", "B"]],
+			[
 				"Me Against the Music (feat. Madonna)  [Remix]",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix",
-			]);
-		});
-		it("Two Groups (Same Delimiters)", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna", "Remix"],
+			],
+			[
 				"Me Against the Music (feat. Madonna)  (Remix)",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix",
-			]);
-		});
-		it("Two Groups (No Whitespace)", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna", "Remix"],
+			],
+			[
 				"Me Against the Music (feat. Madonna)[Remix]",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix",
-			]);
-		});
-		it("Three Groups", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna", "Remix"],
+			],
+			[
 				"Me Against the Music (feat. Madonna) [Remix A ]  {Edit B}",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix A",
-				"Edit B",
-			]);
-		});
-		it("Three Groups (Different separator Order)", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna", "Remix A", "Edit B"],
+			],
+			[
 				"Me Against the Music [feat. Madonna] [Remix A] (Edit B)",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix A",
-				"Edit B",
-			]);
-		});
-		it("Nested Groups", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna", "Remix A", "Edit B"],
+			],
+			[
 				"Me Against the Music [feat. Madonna  [Remix A] (Edit B)]",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix A",
-				"Edit B",
-			]);
-		});
-		it("Nested Group + Simple Group", () => {
-			const res = parserService.splitGroups(
+				["Me Against the Music", "feat. Madonna", "Remix A", "Edit B"],
+			],
+			[
 				"Me Against the Music [feat. Madonna  [Remix A] (Edit B)] [Version C]",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix A",
-				"Edit B",
-				"Version C",
-			]);
-		});
-		it("Dash Group", () => {
-			const res = parserService.splitGroups(
+				[
+					"Me Against the Music",
+					"feat. Madonna",
+					"Remix A",
+					"Edit B",
+					"Version C",
+				],
+			],
+			[
 				"Me Against the Music (feat. Madonna) - Remix A (Edit B)",
-			);
-			expect(res).toStrictEqual([
-				"Me Against the Music",
-				"feat. Madonna",
-				"Remix A",
-				"Edit B",
-			]);
-		});
+				["Me Against the Music", "feat. Madonna", "Remix A", "Edit B"],
+			],
+		] as const;
+
+		for (const [unparsed, expected] of scenarios) {
+			test(unparsed, () => {
+				const res = parserService.splitGroups(unparsed);
+				expect(res).toStrictEqual(expected);
+			});
+		}
+
 		it("Group before root (Simple)", () => {
 			const res = parserService.splitGroups("(A) B", {
 				keepDelimiters: true,
