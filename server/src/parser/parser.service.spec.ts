@@ -718,117 +718,75 @@ describe("Parser Service", () => {
 	});
 
 	describe("Extract Release name's extension", () => {
-		it("should build the album name from a basic release name", () => {
-			expect(
-				parserService.parseReleaseExtension("My Album").parsedName,
-			).toBe("My Album");
-			expect(
-				parserService.parseReleaseExtension("My New Album").parsedName,
-			).toBe("My New Album");
-		});
+		const scenarios = [
+			["My Album", undefined, []],
+			["My New Album", undefined, []],
 
-		it("should build the album name from a release name with a basic extension", () => {
-			expect(
-				parserService.parseReleaseExtension("My Album (Deluxe Edition)")
-					.parsedName,
-			).toBe("My Album");
-			expect(
-				parserService.parseReleaseExtension(
-					"My New Album (Edited Special Edition)",
-				).parsedName,
-			).toBe("My New Album");
-		});
+			["My Album (Deluxe Edition)", "My Album", "Deluxe Edition"],
+			[
+				"My New Album (Edited Special Edition)",
+				"My Album",
+				"Edited Special Edition",
+			],
+			[
+				"Garbage (20th Anniversary Deluxe Edition)",
+				"Garbage",
+				["20th Anniversary Deluxe Edition"],
+			],
+			["My Album (Right Now)", undefined, []],
+			["(Right Now) My Album", undefined, []],
+			[
+				"My Album (Right Now) [Deluxe Edition]",
+				"My Album (Right Now)",
+				["Deluxe Edition"],
+			],
 
-		it("should build the album name from a release name with a medium extension", () => {
-			expect(
-				parserService.parseReleaseExtension(
-					"Garbage (20th Anniversary Deluxe Edition)",
-				).parsedName,
-			).toBe("Garbage");
-		});
-
-		it("should build the album name from a release name with a suffix ", () => {
-			expect(
-				parserService.parseReleaseExtension("My Album (Right Now)")
-					.parsedName,
-			).toBe("My Album (Right Now)");
-		});
-
-		it("should build the album name from a release name with a prefix ", () => {
-			expect(
-				parserService.parseReleaseExtension("(Right Now) My Album")
-					.parsedName,
-			).toBe("(Right Now) My Album");
-		});
-
-		it("should build the album name from a release name with a basic extension and a suffix ", () => {
-			expect(
-				parserService.parseReleaseExtension(
-					"My Album (Right Now) [Deluxe Edition]",
-				).parsedName,
-			).toBe("My Album (Right Now)");
-		});
-
-		it("should build the album name from a release name with a basic extension and a prefix ", () => {
-			expect(
-				parserService.parseReleaseExtension(
-					"(Right Now) My Album [Deluxe Edition]",
-				).parsedName,
-			).toBe("(Right Now) My Album");
-		});
-		it("should remove the 'Remaster' extension", () => {
-			expect(
-				parserService.parseReleaseExtension("My Album [2022 Remaster]")
-					.parsedName,
-			).toBe("My Album");
-		});
-		it("should remove the 'remastered' extension", () => {
-			expect(
-				parserService.parseReleaseExtension(
-					"My Album [2022 Remastered]",
-				).parsedName,
-			).toBe("My Album");
-		});
-
-		it("should remove the 'remastered version' extension", () => {
-			const parsed = parserService.parseReleaseExtension(
-				"My Album [2022 Remastered version]",
-			);
-			expect(parsed.parsedName).toBe("My Album");
-			expect(parsed.extensions).toStrictEqual([
-				"2022 Remastered version",
-			]);
-		});
-
-		it("should remove the 'remaster' extension, lowercase", () => {
-			expect(
-				parserService.parseReleaseExtension("My Album [2022 Remaster]")
-					.parsedName,
-			).toBe("My Album");
-		});
-
-		it("should remove multiple extensions", () => {
-			expect(
-				parserService.parseReleaseExtension(
-					"My Album  (Deluxe)  [2022 Remaster] ",
-				).parsedName,
-			).toBe("My Album");
-		});
-		it("should remove w/ tricky name", () => {
-			expect(
-				parserService.parseReleaseExtension(
-					"Version 2.0 (20th Anniversary Deluxe Edition)",
-				).parsedName,
-			).toBe("Version 2.0");
-		});
-
-		it("should extract single identifier from name", () => {
-			const res = parserService.parseReleaseExtension(
+			[
+				"(Right Now) My Album [Deluxe Edition]",
+				"(Right Now) My Album",
+				["Deluxe Edition"],
+			],
+			["My Album [2022 Remaster]", "My Album", ["2022 Remaster"]],
+			["My Album [2022 remaster]", "My Album", ["2022 remaster"]],
+			["My Album [2022 Remastered]", "My Album", ["2022 Remastered"]],
+			[
+				"My Album  (Deluxe)  [2022 Remaster] ",
+				"My Album",
+				["Deluxe", "2022 Remaster"],
+			],
+			[
 				"My Single (12'' Vinyl) - Single",
-			);
-			expect(res.parsedName).toBe("My Single - Single");
-			expect(res.extensions).toStrictEqual(["12'' Vinyl"]);
-		});
+				"My Single - Single",
+				["12'' Vinyl"],
+			],
+			[
+				"Version 2.0 (20th Anniversary Deluxe Edition)",
+				"Version 2.0",
+				["20th Anniversary Deluxe Edition"],
+			],
+			[
+				"My Album [2022 Remastered version]",
+				"My Album",
+				["2022 Remastered version"],
+			],
+		] as const;
+
+		for (const [
+			unparsedReleaseName,
+			expectedReleaseName,
+			expectedExtensions,
+		] of scenarios) {
+			test(unparsedReleaseName, () => {
+				const { parsedName, extensions } =
+					parserService.parseReleaseExtension(unparsedReleaseName);
+
+				expect(parsedName).toBe(
+					expectedReleaseName ?? unparsedReleaseName,
+				);
+
+				expect(extensions).toStrictEqual(expectedExtensions);
+			});
+		}
 	});
 
 	describe("Extract Track name's extension", () => {
