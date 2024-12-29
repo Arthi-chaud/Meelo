@@ -14,6 +14,7 @@ import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import ParserModule from "./parser.module";
 import PrismaService from "src/prisma/prisma.service";
+import { Allow } from "class-validator";
 
 describe("Parser Service", () => {
 	let parserService: ParserService;
@@ -391,717 +392,246 @@ describe("Parser Service", () => {
 	});
 
 	describe("Extract artists name from artist name", () => {
-		it("No Featuring", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Madonna",
-				);
-			expect(res.artist).toBe("Madonna");
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("No Featuring (Multiple words)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Everything but the Girl",
-				);
-			expect(res.artist).toBe("Everything but the Girl");
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("2 Artists (&)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Iggy Azalea & Tyga",
-				);
-			expect(res.artist).toBe("Iggy Azalea");
-			expect(res.featuring).toStrictEqual(["Tyga"]);
-		});
-		it("2 Artists (feat.)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Clean Bandit feat. Jess Glynne",
-				);
-			expect(res.artist).toBe("Clean Bandit");
-			expect(res.featuring).toStrictEqual(["Jess Glynne"]);
-		});
-		it("2 Artists (Feat.)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Clean Bandit Feat. Jess Glynne",
-				);
-			expect(res.artist).toBe("Clean Bandit");
-			expect(res.featuring).toStrictEqual(["Jess Glynne"]);
-		});
-		it("2 Artists (Featuring)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Clean Bandit Featuring Jess Glynne",
-				);
-			expect(res.artist).toBe("Clean Bandit");
-			expect(res.featuring).toStrictEqual(["Jess Glynne"]);
-		});
-		it("2 Artists ((feat.))", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Clean Bandit (feat. Jess Glynne)",
-				);
-			expect(res.artist).toBe("Clean Bandit");
-			expect(res.featuring).toStrictEqual(["Jess Glynne"]);
-		});
+		const scenarios = [
+			["Madonna", undefined, []],
+			["Everything But The Girl", undefined, []],
+			["Iggy Azalea & Tyga", "Iggy Azalea", ["Tyga"]],
+			["Clean Bandit feat. Jess Glyne", "Clean Bandit", ["Jess Glyne"]],
+			["Clean Bandit (feat. Jess Glyne)", "Clean Bandit", ["Jess Glyne"]],
+			["Clean Bandit Feat. Jess Glyne", "Clean Bandit", ["Jess Glyne"]],
+			[
+				"Clean Bandit Featuring Jess Glyne",
+				"Clean Bandit",
+				["Jess Glyne"],
+			],
+			["Christine & The Queens", undefined, []],
+			["Miss Kittin & The Hacker", undefined, []],
+			[
+				"Robin Schulz & Me & My Monkey",
+				"Robin Schulz",
+				[" Me & My Monkey"],
+			],
+			[
+				"Charli XCX, Caroline Polacheck & Christine",
+				"Charli XCX",
+				["Caroline Polacheck", "Christine"],
+			],
+			[
+				"Clean Bandit Featuring Jess Glyne & BBBB",
+				"Clean Bandit",
+				["Jess Glyne", "BBBB"],
+			],
 
-		it("Ambiguous", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Christine & The Queens",
-				);
-			expect(res.artist).toBe("Christine & The Queens");
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("Custom", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Miss Kittin & The Hacker",
-				);
-			expect(res.artist).toBe("Miss Kittin & The Hacker");
-			expect(res.featuring).toStrictEqual([]);
-		});
-		it("2 artists (Ambiguous)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Robin Schulz & Me & My Monkey",
-				);
-			expect(res.artist).toBe("Robin Schulz");
-			expect(res.featuring).toStrictEqual(["Me & My Monkey"]);
-		});
-		it("3 Artists", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Charli XCX, Caroline Polacheck & Christine",
-				);
-			expect(res.artist).toBe("Charli XCX");
-			expect(res.featuring).toStrictEqual([
-				"Caroline Polacheck",
-				"Christine",
-			]);
-		});
-		it("3 Artists (Featuring)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Clean Bandit Featuring Jess Glynne & BBBB",
-				);
-			expect(res.artist).toBe("Clean Bandit");
-			expect(res.featuring).toStrictEqual(["Jess Glynne", "BBBB"]);
-		});
-
-		it("4 Artists (Featuring)", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Clean Bandit Featuring Jess Glynne, BBBB & CCCC",
-				);
-			expect(res.artist).toBe("Clean Bandit");
-			expect(res.featuring).toStrictEqual([
-				"Jess Glynne",
-				"BBBB",
-				"CCCC",
-			]);
-		});
-		it("'Vs.' Separator", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Snoop Dogg Vs. David Guetta",
-				);
-			expect(res.artist).toBe("Snoop Dogg");
-			expect(res.featuring).toStrictEqual(["David Guetta"]);
-		});
-		it("'Vs' Separator", async () => {
-			const res =
-				await parserService.extractFeaturedArtistsFromArtistName(
-					"Snoop Dogg Vs David Guetta",
-				);
-			expect(res.artist).toBe("Snoop Dogg");
-			expect(res.featuring).toStrictEqual(["David Guetta"]);
-		});
+			[
+				"Clean Bandit Featuring Jess Glyne, BBBB & CCCC",
+				"Clean Bandit",
+				["Jess Glyne", "BBBB", "CCCC"],
+			],
+			["Snoop Dogg Vs. David Guetta", "Snoop Dogg", ["David Guetta"]],
+			["Snoop Dogg Vs David Guetta", "Snoop Dogg", ["David Guetta"]],
+		] as const;
+		for (const [
+			unparsedArtistName,
+			expectedArtistName,
+			expectedFeaturing,
+		] of scenarios) {
+			test(unparsedArtistName, async () => {
+				const { artist, featuring } =
+					await parserService.extractFeaturedArtistsFromArtistName(
+						unparsedArtistName,
+					);
+				expect(artist).toBe(expectedArtistName ?? unparsedArtistName);
+				expect(featuring).toEqual(expectedFeaturing);
+			});
+		}
 	});
 
 	describe("Get Song Type", () => {
-		it("Original Version (No group)", () => {
-			expect(parserService.getSongType("My Song")).toBe(
+		const scenarios = [
+			[
 				SongType.Original,
-			);
-		});
-		it("Original Version (Album Version)", () => {
-			expect(parserService.getSongType("My Song (Album Version)")).toBe(
-				SongType.Original,
-			);
-		});
-		it("Original Version (Main Version)", () => {
-			expect(parserService.getSongType("My Song (Main Version)")).toBe(
-				SongType.Original,
-			);
-		});
-		it("Original Version (Original Version)", () => {
-			expect(
-				parserService.getSongType("My Song (Original Version)"),
-			).toBe(SongType.Original);
-		});
-		it("Original Version (Original Mix)", () => {
-			expect(parserService.getSongType("My Song (Original Mix)")).toBe(
-				SongType.Original,
-			);
-		});
-		it("Original Version (Feat Group)", () => {
-			expect(parserService.getSongType("My Song (feat. A)")).toBe(
-				SongType.Original,
-			);
-		});
-		it("Original Version (Tricky Name - Beats)", () => {
-			expect(parserService.getSongType("Heart Beats")).toBe(
-				SongType.Original,
-			);
-		});
-		it("Original Version (Tricky Name - Live)", () => {
-			expect(parserService.getSongType("Live")).toBe(SongType.Original);
-		});
-		it("Original Version (Tricky Name - Clean)", () => {
-			expect(parserService.getSongType("Clean")).toBe(SongType.Original);
-		});
-		it("Original Version (Tricky Name - Credits)", () => {
-			expect(parserService.getSongType("Credits")).toBe(
-				SongType.Original,
-			);
-		});
-
-		it("Acoustic Version", () => {
-			expect(
-				parserService.getSongType("Live It Up (Acoustic Version)"),
-			).toBe(SongType.Acoustic);
-		});
-		it("Acoustic Version", () => {
-			expect(parserService.getSongType("Live It Up (Acoustic)")).toBe(
+				[
+					"My Song",
+					"My Song (Album Version)",
+					"My Song (Main Version)",
+					"My Song (Original Version)",
+					"My Song (Original Mix)",
+					"My Song (feat. A)",
+					"Heart Beats",
+					"Clean",
+					"Live",
+					"Credits",
+				],
+			],
+			[
 				SongType.Acoustic,
-			);
-		});
-		it("Acoustic Version (Acoustic Mix)", () => {
-			expect(parserService.getSongType("Live It Up (Acoustic Mix)")).toBe(
-				SongType.Acoustic,
-			);
-		});
-		it("Acoustic Version (Acoustic Remix)", () => {
-			expect(
-				parserService.getSongType("Live It Up (Acoustic Remix)"),
-			).toBe(SongType.Acoustic);
-		});
-
-		it("Instrumental Version (Simple Group)", () => {
-			expect(parserService.getSongType("My Song (Instrumental)")).toBe(
+				[
+					"Live It Up (Acoustic Version)",
+					"Live It Up (Acoustic)",
+					"Live It Up (Acoustic Mix)",
+					"Live It Up (Acoustic Remix)",
+				],
+			],
+			[
 				SongType.Instrumental,
-			);
-		});
-		it("Instrumental Version (Instrumental Version)", () => {
-			expect(
-				parserService.getSongType("My Song (Instrumental Version)"),
-			).toBe(SongType.Instrumental);
-		});
-		it("Instrumental Version (Version Instrumentale)", () => {
-			expect(
-				parserService.getSongType("My Song (Version Instrumentale)"),
-			).toBe(SongType.Instrumental);
-		});
-		it("Instrumental Version (Instrumental Mix)", () => {
-			expect(
-				parserService.getSongType("My Song (Instrumental Mix)"),
-			).toBe(SongType.Instrumental);
-		});
-		it("Instrumental Version (Deepstrumental)", () => {
-			expect(
-				parserService.getSongType(
+				[
+					"My Song (Instrumental)",
+					"My Song (Instrumental Version)",
+					"My Song (Version Instrumentale)",
+					"My Song (Instrumental Mix)",
 					"Deeper And Deeper (Shep's Deepstrumental)",
-				),
-			).toBe(SongType.Instrumental);
-		});
-
-		it("Remix (Extended 12'')", () => {
-			expect(parserService.getSongType("Fever (Extended 12'')")).toBe(
+				],
+			],
+			[
 				SongType.Remix,
-			);
-		});
-		it('Remix (Extended 12")', () => {
-			expect(parserService.getSongType('Fever (Extended 12")')).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Extended Album Version)", () => {
-			expect(
-				parserService.getSongType("Jump (Extended Album Vetsion)"),
-			).toBe(SongType.Remix);
-		});
-		it('Remix (12")', () => {
-			expect(
-				parserService.getSongType(
+				[
+					"Fever (Extended 12'')",
+					'Fever (Extended 12")',
+					"Jump (Extended Album Vetsion)",
 					"Deeper And Deeper (Shep's Classic 12'')",
-				),
-			).toBe(SongType.Remix);
-			expect(
-				parserService.getSongType(
 					"Deeper And Deeper (Shep's Classic 12\")",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (That Version)", () => {
-			expect(
-				parserService.getSongType("Freak Like Me (BRITS 2003 Version)"),
-			).toBe(SongType.Remix);
-			expect(
-				parserService.getSongType(
+					"Freak Like Me (BRITS 2003 Version)",
 					"Too Lost In You (Love Actually Version)",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (-Mix)", () => {
-			expect(parserService.getSongType("Sorry (PSB Maxi-Mix)")).toBe(
-				SongType.Remix,
-			);
-			expect(
-				parserService.getSongType("Optimistique-Moi (Opti-Mix-tic)"),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (7'' Mix)", () => {
-			expect(parserService.getSongType("Fever (7'' Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it('Remix (7" Remix)', () => {
-			expect(parserService.getSongType('Fever (7" Remix)')).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Olliver Helden Remix)", () => {
-			expect(
-				parserService.getSongType("Fever (Olliver Helden Remix)"),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (Extended Mix)", () => {
-			expect(parserService.getSongType("Fever (Extended Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Extended Remix)", () => {
-			expect(parserService.getSongType("Fever (Extended Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Extended Remix Edit)", () => {
-			expect(parserService.getSongType("Fever (Extended Mix Edit)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Ambiant Mix)", () => {
-			expect(parserService.getSongType("Fever (Ambiant Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Remix)[Radio Edit]", () => {
-			expect(parserService.getSongType("Fever (Remix)[Radio Edit]")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Rock Mix)", () => {
-			expect(parserService.getSongType("Fever (Rock Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Remix Edit)", () => {
-			expect(parserService.getSongType("Fever (Remix Edit)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Mix Edit)", () => {
-			expect(
-				parserService.getSongType(
+					"Sorry (PSB Maxi-Mix)",
+					"Optimistique-Moi (Opti-Mix-tic)",
+					"Fever (7'' Mix)",
+					'Fever (7" Remix)',
+					"Fever (Olliver Helden Remix)",
+					"Fever (Extended Mix)",
+					"Fever (Extended Mix)",
+					"Fever (Extended Mix Edit)",
+					"Fever (Ambiant Mix)",
+					"Fever (Remix)[Radio Edit]",
+					"Fever (Rock Mix)",
+					"Fever (Remix Edit)",
 					"Sing It Back (Can 7 Supermarket Mix Edit)",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (Vocal Edit)", () => {
-			expect(
-				parserService.getSongType(
 					"Sing It Back (Can 7 Supermarket Vocal Edit)",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (Radio Mix)", () => {
-			expect(parserService.getSongType("Fever (Radio Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Instrumental Break Down Mix)", () => {
-			expect(
-				parserService.getSongType(
+					"Fever (Radio Mix)",
 					"Fever (Instrumental Break Down Mix)",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (Electro Bashment Instrumental Remix)", () => {
-			expect(
-				parserService.getSongType(
 					"Fever (Electro Bashment Instrumental Remix)",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (Re-Edit)", () => {
-			expect(
-				parserService.getSongType("Ooh La La (Phones Re-Edit)"),
-			).toBe(SongType.Remix);
-			expect(
-				parserService.getSongType(
+					"Ooh La La (Phones Re-Edit)",
 					"Ride A White Horse (Serge Santiágo Re-Edit)",
-				),
-			).toBe(SongType.Remix);
-		});
-		it("Remix (Re-Mix)", () => {
-			expect(
-				parserService.getSongType(
 					"Express Yourself (Shep's 'Spressin' Himself Re-Mix)",
-				),
-			).toBe(SongType.Remix);
-		});
-
-		it("Remix (Dub Mix)", () => {
-			expect(parserService.getSongType("Fever (Dub Mix)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Dub)", () => {
-			expect(parserService.getSongType("Fever (Dub)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Extended Dub)", () => {
-			expect(parserService.getSongType("Fever (Extended Dub)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Dub Edit)", () => {
-			expect(parserService.getSongType("Fever (Dub Edit)")).toBe(
-				SongType.Remix,
-			);
-		});
-
-		it("Remix (Beats)", () => {
-			expect(parserService.getSongType("Fever (Beats)")).toBe(
-				SongType.Remix,
-			);
-		});
-		it("Remix (Jam Beats)", () => {
-			expect(parserService.getSongType("Fever (Jam Beats)")).toBe(
-				SongType.Remix,
-			);
-		});
-
-		it("Demo (Demo)", () => {
-			expect(parserService.getSongType("Fever (Demo)")).toBe(
-				SongType.Demo,
-			);
-		});
-		it("Demo (Alternative Mix)", () => {
-			// In the UK, this is usually used to name a Demo version
-			expect(parserService.getSongType("Fever (Alternative Mix)")).toBe(
-				SongType.Demo,
-			);
-		});
-		it("Demo (Demo 1)", () => {
-			expect(parserService.getSongType("Fever (Demo 1)")).toBe(
-				SongType.Demo,
-			);
-		});
-		it("Demo (First Demo)", () => {
-			expect(parserService.getSongType("Fever (First Demo)")).toBe(
-				SongType.Demo,
-			);
-		});
-
-		it("Demo (Rough Mix)", () => {
-			expect(parserService.getSongType("Fever (Rough Mix)")).toBe(
-				SongType.Demo,
-			);
-		});
-		it("Demo (Rough Mix Edit)", () => {
-			expect(parserService.getSongType("Fever (Rough Mix Edit)")).toBe(
-				SongType.Demo,
-			);
-		});
-
-		it("Live (Simple)", () => {
-			expect(parserService.getSongType("Fever (Live)")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Live from)", () => {
-			expect(parserService.getSongType("Fever (Live from X)")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Live at)", () => {
-			expect(parserService.getSongType("Fever (Live at X)")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Live in)", () => {
-			expect(parserService.getSongType("Fever (Live in X)")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Live Version)", () => {
-			expect(parserService.getSongType("Fever (Live Version)")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Version Live)", () => {
-			expect(parserService.getSongType("Fever (Version Live)")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Remixed)", () => {
-			expect(parserService.getSongType("Fever (Remix) [Live]")).toBe(
-				SongType.Live,
-			);
-		});
-		it("Live (Live Edit)", () => {
-			expect(parserService.getSongType("Fever (Live Edit from X)")).toBe(
-				SongType.Live,
-			);
-		});
-
-		it("Clean (Clean)", () => {
-			expect(parserService.getSongType("Fever (Clean)")).toBe(
-				SongType.Clean,
-			);
-		});
-		it("Clean (Clean Version)", () => {
-			expect(parserService.getSongType("Fever (Clean Version)")).toBe(
-				SongType.Clean,
-			);
-		});
-		it("Clean (Clean Edit)", () => {
-			expect(parserService.getSongType("Fever (Clean Edit)")).toBe(
-				SongType.Clean,
-			);
-		});
-
-		it("Edit (Edit)", () => {
-			expect(parserService.getSongType("Fever (Edit)")).toBe(
-				SongType.Edit,
-			);
-		});
-		it("Edit (Single Version)", () => {
-			expect(parserService.getSongType("Fever (Single Version)")).toBe(
-				SongType.Edit,
-			);
-		});
-		it("Edit (Radio Version)", () => {
-			expect(parserService.getSongType("Fever (Radio Version)")).toBe(
-				SongType.Edit,
-			);
-		});
-		it("Edit (7''Edit)", () => {
-			expect(parserService.getSongType("Fever (7'' Edit)")).toBe(
-				SongType.Edit,
-			);
-		});
-		it('Edit (7" Edit)', () => {
-			expect(parserService.getSongType('Fever (7" Edit)')).toBe(
-				SongType.Edit,
-			);
-		});
-		it("Edit (Edit Version)", () => {
-			expect(parserService.getSongType("Fever (Edit Version)")).toBe(
-				SongType.Edit,
-			);
-		});
-		it("Edit (Album Edit)", () => {
-			expect(parserService.getSongType("Fever (Album Edit)")).toBe(
-				SongType.Edit,
-			);
-		});
-
-		it("Acappella (Acapella)", () => {
-			expect(
-				parserService.getSongType("Don't Give It Up (Acapella)"),
-			).toBe(SongType.Acappella);
-		});
-		it("Acappella (Various Spelling)", () => {
-			expect(
-				parserService.getSongType("Don't Give It Up (A Cappella)"),
-			).toBe(SongType.Acappella);
-			expect(
-				parserService.getSongType("Don't Give It Up (Acappella)"),
-			).toBe(SongType.Acappella);
-
-			expect(parserService.getSongType("Irresistible (Accapella)")).toBe(
-				SongType.Acappella,
-			);
-		});
-		it("Acappella (Remix Acapella)", () => {
-			expect(
-				parserService.getSongType("Don't Give It Up (Remix Acappella)"),
-			).toBe(SongType.Remix);
-		});
-		it("Non-Music (Photo Shoot/Gallery)", () => {
-			expect(parserService.getSongType("Photo Gallery")).toBe(
-				SongType.NonMusic,
-			);
-			expect(parserService.getSongType("Photo Shoot")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType(
-					"The Truth About Love Photoshoot (Behind The Scenes)",
-				),
-			).toBe(SongType.NonMusic);
-			expect(
-				parserService.getSongType(
-					"Girl On Film - Behind The Scenes At The Photo Shoot",
-				),
-			).toBe(SongType.NonMusic);
-		});
-		it("Non-Music (Documentary)", () => {
-			expect(
-				parserService.getSongType(
-					"Little Bits Of Goldfrapp - Documentary",
-				),
-			).toBe(SongType.NonMusic);
-			expect(
-				parserService.getSongType(
-					"Thanks For Your Uhh, Support (Documentary)",
-				),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("Documentaire Exclusif")).toBe(
-				SongType.NonMusic,
-			);
-			expect(parserService.getSongType("Documentaire Inedit")).toBe(
-				SongType.NonMusic,
-			);
-		});
-		it("Non-Music (Interview)", () => {
-			expect(parserService.getSongType("The After Show Interview")).toBe(
-				SongType.NonMusic,
-			);
-			expect(parserService.getSongType("Interview")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType(
-					"Exclusive Interview With Girls Aloud",
-				),
-			).toBe(SongType.NonMusic);
-		});
-		it("Non-Music (Making Of)", () => {
-			expect(
-				parserService.getSongType("The Making Of Goodbye Lullaby"),
-			).toBe(SongType.NonMusic);
-			expect(
-				parserService.getSongType("MTV's Making The Video: Toxic"),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("The Show (Making Of)")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType("Making Of 2 'City Of Love'"),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("So You Say (Making of)")).toBe(
-				SongType.NonMusic,
-			);
-		});
-		it("Non-Music (TV Special)", () => {
-			expect(
-				parserService.getSongType(
-					'ABC Television Special: "Britney Spears: In The Zone"',
-				),
-			).toBe(SongType.NonMusic);
-			expect(
-				parserService.getSongType(
-					"In The Zone Special (Exclusive Interview & Behind the Scenes Footage)",
-				),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("MTV Special - The Show")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType("Making Of 2 'City Of Love'"),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("So You Say (Making of)")).toBe(
-				SongType.NonMusic,
-			);
-		});
-		it("Non-Music (Behind the Scenes)", () => {
-			expect(parserService.getSongType("Smile (Behind The Scene)")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType("Walk This Way (Behind The Scenes)"),
-			).toBe(SongType.NonMusic);
-			expect(
-				parserService.getSongType(
-					"Triumph Of A Heart - Stories Behind The Music Video",
-				),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("Behind The Scenes")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType(
-					"Exclusive Behind-The-Scenes Footage",
-				),
-			).toBe(SongType.NonMusic);
-		});
-		it("Non-Music (Photo Shoot)", () => {
-			expect(parserService.getSongType("Smile (Behind The Scene)")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType("Walk This Way (Behind The Scenes)"),
-			).toBe(SongType.NonMusic);
-			expect(
-				parserService.getSongType(
-					"Triumph Of A Heart - Stories Behind The Music Video",
-				),
-			).toBe(SongType.NonMusic);
-			expect(parserService.getSongType("Behind The Scenes")).toBe(
-				SongType.NonMusic,
-			);
-			expect(
-				parserService.getSongType(
-					"Exclusive Behind-The-Scenes Footage",
-				),
-			).toBe(SongType.NonMusic);
-		});
-		it("Non-Music (Voice Memo)", () => {
-			expect(
-				parserService.getSongType(
-					"Blank Space (Guitar / Vocal Voice Memo)",
-				),
-			).toBe(SongType.NonMusic);
-		});
-		it("Non-Music (Advert)", () => {
-			expect(
-				parserService.getSongType(
-					"Sound of the Udnerground (Album Advert)",
-				),
-			).toBe(SongType.NonMusic);
-		});
-		it("Mashups", () => {
-			const f = (s: string) => parserService.getSongType(s);
-			expect(f("Megamix")).toBe(SongType.Medley);
-			expect(f("Album Megamix")).toBe(SongType.Medley);
-			expect(f("Album Megamix")).toBe(SongType.Medley);
-			expect(f("Chris Cox Megamix")).toBe(SongType.Medley);
-			expect(f("Tommie Sunshine Megasix Smash-up")).toBe(SongType.Medley);
-			expect(f("Tommie Sunshine Megasix Smash-up")).toBe(SongType.Medley);
-			expect(f("Medley")).toBe(SongType.Medley);
-			expect(f("Medley (Live)")).toBe(SongType.Live);
-			expect(
-				f("Like A Virgin/Hollywood Medley (2003 MTV VMA Performance)"),
-			).toBe(SongType.Live);
-		});
+					"Fever (Dub Mix)",
+					"Fever (Dub)",
+					"Fever (Extended Dub)",
+					"Fever (Dub Edit)",
+					"Fever (Beats)",
+					"Fever (Jam Beats)",
+					"Don't Give It Up (Remix Acappella)",
+				],
+				[
+					SongType.Demo,
+					[
+						"Fever (Demo)",
+						"Fever (Alternative Mix)",
+						"Fever (Demo 1)",
+						"Fever (First Demo)",
+						"Fever (Rough Mix)",
+						"Fever (Rough Mix Edit)",
+					],
+				],
+				[
+					SongType.Live,
+					[
+						"Fever (Live)",
+						"Fever (Live from X)",
+						"Fever (Live at X)",
+						"Fever (Live in X)",
+						"Fever (Live Version)",
+						"Fever (Version Live)",
+						"Fever (Remix) [Live]",
+						"Fever (Live Edit from X)",
+						"Medley (Live)",
+						"Like A Virgin/Hollywood Medley (2003 MTV VMA Performance)",
+					],
+				],
+				[
+					SongType.Clean,
+					[
+						"Fever (Clean)",
+						"Fever (Clean Version)",
+						"Fever (Clean Edit)",
+					],
+				],
+				[
+					SongType.Edit,
+					[
+						"Fever (Edit)",
+						"Fever (Single Version)",
+						"Fever (Radio Version)",
+						"Fever (7'' Edit)",
+						'Fever (7" Edit)',
+						"Fever (Edit Version)",
+						"Fever (Album Edit)",
+					],
+				],
+				[
+					SongType.Acappella,
+					[
+						"Don't Give It Up (Acapella)",
+						"Don't Give It Up (A Cappella)",
+						"Don't Give It Up (Acappella)",
+						"Irresistible (Accapella)",
+					],
+				],
+				[
+					SongType.Medley,
+					[
+						"Megamix",
+						"Album Megamix",
+						"Album Megamix",
+						"Chris Cox Megamix",
+						"Tommie Sunshine Megasix Smash-up",
+					],
+				],
+				[
+					SongType.NonMusic,
+					[
+						"Photo Gallery",
+						"Photo Shoot",
+						"The Truth About Love Photoshoot (Behind The Scenes)",
+						"Girl On Film - Behind The Scenes At The Photo Shoot",
+						"Little Bits Of Goldfrapp - Documentary",
+						"Thanks For Your Uhh, Support (Documentary)",
+						"Documentaire Exclusif",
+						"Documentaire Inedit",
+						"The After Show Interview",
+						"Interview",
+						"Exclusive Interview With Girls Aloud",
+						"The Making Of Goodbye Lullaby",
+						"MTV's Making The Video: Toxic",
+						"The Show (Making Of)",
+						"Making Of 2 'City Of Love'",
+						"So You Say (Making of)",
+						'ABC Television Special: "Britney Spears: In The Zone"',
+						"In The Zone Special (Exclusive Interview & Behind the Scenes Footage)",
+						"MTV Special - The Show",
+						"Making Of 2 'City Of Love'",
+						"So You Say (Making of)",
+						"Smile (Behind The Scene)",
+						"Walk This Way (Behind The Scenes)",
+						"Behind The Scenes",
+						"Exclusive Behind-The-Scenes Footage",
+						"Smile (Behind The Scene)",
+						"Triumph Of A Heart - Stories Behind The Music Video",
+						"Blank Space (Guitar / Vocal Voice Memo)",
+						"Sound of the Udnerground (Album Advert)",
+					],
+				],
+			],
+		] as const;
+		for (const [expectedSongType, songNames] of scenarios) {
+			describe(expectedSongType, () => {
+				for (const songName of songNames) {
+					test(songName, () =>
+						expect(parserService.getSongType(songName)).toBe(
+							expectedSongType,
+						),
+					);
+				}
+			});
+		}
 	});
 
 	describe("Detect Album Type", () => {
