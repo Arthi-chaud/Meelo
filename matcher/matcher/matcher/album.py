@@ -65,6 +65,7 @@ def match_and_post_album(album_id: int, album_name: str):
 def match_album(
     album_id: int, album_name: str, artist_name: str | None, type: AlbumType
 ) -> tuple[ExternalMetadataDto | None, date | None, AlbumType | None, List[str]]:
+    need_genres = Context.get().settings.push_genres
     context = Context.get()
     release_date: date | None = None
     genres: List[str] = []
@@ -110,7 +111,11 @@ def match_album(
             or (not release_date and provider.has_feature(GetAlbumReleaseDateFeature))
             or (not rating and provider.has_feature(GetAlbumRatingFeature))
             or (not album_type and provider.has_feature(GetAlbumTypeFeature))
-            or (len(genres) == 0 and provider.has_feature(GetAlbumGenresFeature))
+            or (
+                need_genres
+                and len(genres) == 0
+                and provider.has_feature(GetAlbumGenresFeature)
+            )
         )
         if not is_useful:
             continue
@@ -128,9 +133,11 @@ def match_album(
             description = provider.get_album_description(album)
         if not release_date:
             release_date = provider.get_album_release_date(album)
-        genres = genres + [
-            g for g in provider.get_album_genres(album) or [] if g not in genres
-        ]
+        genres = genres + (
+            [g for g in provider.get_album_genres(album) or [] if g not in genres]
+            if need_genres
+            else []
+        )
         if description and release_date and rating and genres:
             break
     return (
