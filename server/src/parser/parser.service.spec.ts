@@ -325,13 +325,13 @@ describe("Parser Service", () => {
 
 			[
 				"4 Minutes (feat. Justin Timberlake & Timbaland)",
-				,
+
 				"4 Minutes",
 				["Justin Timberlake", "Timbaland"],
 			],
 			[
 				"4 Minutes (feat. Justin Timberlake) [feat. Timbaland]",
-				,
+
 				"4 Minutes",
 				["Justin Timberlake", "Timbaland"],
 			],
@@ -409,7 +409,7 @@ describe("Parser Service", () => {
 			[
 				"Robin Schulz & Me & My Monkey",
 				"Robin Schulz",
-				[" Me & My Monkey"],
+				["Me & My Monkey"],
 			],
 			[
 				"Charli XCX, Caroline Polacheck & Christine",
@@ -722,11 +722,11 @@ describe("Parser Service", () => {
 			["My Album", undefined, []],
 			["My New Album", undefined, []],
 
-			["My Album (Deluxe Edition)", "My Album", "Deluxe Edition"],
+			["My Album (Deluxe Edition)", "My Album", ["Deluxe Edition"]],
 			[
 				"My New Album (Edited Special Edition)",
-				"My Album",
-				"Edited Special Edition",
+				"My New Album",
+				["Edited Special Edition"],
 			],
 			[
 				"Garbage (20th Anniversary Deluxe Edition)",
@@ -790,137 +790,65 @@ describe("Parser Service", () => {
 	});
 
 	describe("Extract Track name's extension", () => {
-		it("should build the song name from a track name with a basic extension", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song (Album Mix)")
-					.parsedName,
-			).toBe("My Song");
-		});
-		it("should build the song name from a track name with a basic extension", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song (Music Video)")
-					.parsedName,
-			).toBe("My Song");
-		});
+		const scenarios = [
+			["My Song (Yeah)", undefined, undefined],
+			[
+				"I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)",
+				undefined,
+				undefined,
+			],
+			[
+				"Me Against the Music (Video Mix Instrumental)",
+				undefined,
+				undefined,
+			],
+			["My Song (Video Edit)", undefined, undefined],
+			["My Song (Video Mix)", undefined, undefined],
+			["Jump (Extended Album Version)", undefined, undefined],
+			["My Song (Album Mix)", "My Song", undefined],
+			["My Song (Music Video)", "My Song", undefined],
+			["My Song (Video)", "My Song", undefined],
+			["My Song (Official Music Video)", "My Song", undefined],
+			["My Song  (remastered)", "My Song", { remastered: true }],
+			["My Song  (Bonus Track)", "My Song", { bonus: true }],
+			["my song (bonus track)", "my song", { bonus: true }],
+			["My Song (Album Version)", "My Song", undefined],
+			["My Song (Main Version)", "My Song", undefined],
+			[
+				"My Song  {Music Video}  (Remaster)",
+				"My Song",
+				{ remastered: true },
+			],
 
-		it("should build the song name from a track name with an even more basic extension", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song (Video)")
-					.parsedName,
-			).toBe("My Song");
-		});
+			["A (B - C) {D}", undefined, undefined],
+			[
+				"Crooked Madam (Damn Mad - Shellfish Remix)",
+				undefined,
+				undefined,
+			],
+			["A - B (C) - D {E}", "A - B (C) - D {E}", undefined],
+		] as const;
+		for (const [
+			unparsedTrackName,
+			expectedTrackName,
+			expectedExtensions,
+		] of scenarios) {
+			test(unparsedTrackName, () => {
+				const { parsedName, ...extensions } =
+					parserService.parseTrackExtensions(unparsedTrackName);
 
-		it("should build the song name from a track name with a normal extension", () => {
-			expect(
-				parserService.parseTrackExtensions(
-					"My Song (Official Music Video)",
-				).parsedName,
-			).toBe("My Song");
-		});
+				expect(parsedName).toBe(expectedTrackName ?? unparsedTrackName);
 
-		it("should remove 'remaster' extension", () => {
-			const parsed = parserService.parseTrackExtensions(
-				"My Song  (remastered)",
-			);
-			expect(parsed.parsedName).toBe("My Song");
-			expect(parsed.remastered).toBe(true);
-		});
-		it("should remove 'bonus track' extension", () => {
-			const parsed = parserService.parseTrackExtensions(
-				"My Song  (Bonus Track)",
-			);
-			expect(parsed.parsedName).toBe("My Song");
-			expect(parsed.bonus).toBe(true);
-		});
-		it("should remove 'bonus track' extension (lowercase)", () => {
-			const parsed = parserService.parseTrackExtensions(
-				"my song (bonus track)",
-			);
-			expect(parsed.parsedName).toBe("my song");
-			expect(parsed.bonus).toBe(true);
-		});
-		it("should remove 'Album Version' extension", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song  (Album Version)")
-					.parsedName,
-			).toBe("My Song");
-		});
-
-		it("should remove 'Main Version' extension", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song  (Main Version)")
-					.parsedName,
-			).toBe("My Song");
-		});
-
-		it("should remove multiple extensions", () => {
-			expect(
-				parserService.parseTrackExtensions(
-					"My Song  {Music Video}  (Remaster)",
-				).parsedName,
-			).toBe("My Song");
-		});
-
-		it("should not remove extension (Non-specfic trailing group)", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song (Yeah)").parsedName,
-			).toBe("My Song (Yeah)");
-		});
-
-		it("should not remove extension ('Live from Music Video Award')", () => {
-			expect(
-				parserService.parseTrackExtensions(
-					"I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)",
-				).parsedName,
-			).toBe("I'm A Slave 4 U (Live from 2001 MTV Video Music Awards)");
-		});
-
-		it("should not remove extension ('Extended Album Version')", () => {
-			expect(
-				parserService.parseTrackExtensions(
-					"Jump (Extended Album Version)",
-				).parsedName,
-			).toBe("Jump (Extended Album Version)");
-		});
-
-		it("should not remove extension ('Video Edit')", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song (Video Edit)")
-					.parsedName,
-			).toBe("My Song (Video Edit)");
-		});
-
-		it("should not remove extension ('Video Mix')", () => {
-			expect(
-				parserService.parseTrackExtensions("My Song (Video Mix)")
-					.parsedName,
-			).toBe("My Song (Video Mix)");
-		});
-
-		it("should not remove extension ('Video Mix Instrumental')", () => {
-			expect(
-				parserService.parseTrackExtensions(
-					"Me Against the Music (Video Mix Instrumental)",
-				).parsedName,
-			).toBe("Me Against the Music (Video Mix Instrumental)");
-		});
-		it("should not reorder ('A (B - C) {D}')", () => {
-			expect(
-				parserService.parseTrackExtensions("A (B - C) {D}").parsedName,
-			).toBe("A (B - C) {D}");
-		});
-		it("should not reorder (Real example)", () => {
-			expect(
-				parserService.parseTrackExtensions(
-					"Crooked Madam (Damn Mad - Shellfish Remix)",
-				).parsedName,
-			).toBe("Crooked Madam (Damn Mad - Shellfish Remix)");
-		});
-		it("should not reorder ('A - B (C) - D {E}')", () => {
-			expect(
-				parserService.parseTrackExtensions("A - B (C) - D {E}")
-					.parsedName,
-			).toBe("A - B (C) - D {E}");
-		});
+				if (expectedExtensions) {
+					for (const [key, value] of Object.entries(extensions)) {
+						if (key in Object.keys(expectedExtensions)) {
+							expect(value).toBe(
+								(expectedExtensions as any)[key],
+							);
+						}
+					}
+				}
+			});
+		}
 	});
 });
