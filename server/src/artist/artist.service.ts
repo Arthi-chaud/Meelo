@@ -343,14 +343,22 @@ export default class ArtistService extends SearchableRepositoryService {
 				select: {
 					id: true,
 					_count: {
-						select: { albums: true, songs: true, featuredOn: true },
+						select: {
+							albums: true,
+							songs: true,
+							featuredOn: true,
+							videos: true,
+						},
 					},
 				},
 			})
 			.then((artists) =>
 				artists.filter(
 					({ _count }) =>
-						!_count.albums && !_count.songs && !_count.featuredOn,
+						!_count.videos &&
+						!_count.albums &&
+						!_count.songs &&
+						!_count.featuredOn,
 				),
 			);
 

@@ -594,11 +594,13 @@ export default class SongService extends SearchableRepositoryService {
 				select: {
 					id: true,
 					_count: {
-						select: { tracks: true },
+						select: { tracks: true, videos: true },
 					},
 				},
 			})
-			.then((genres) => genres.filter((genre) => !genre._count.tracks));
+			.then((songs) =>
+				songs.filter(({ _count }) => !_count.videos && !_count.tracks),
+			);
 
 		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
 		await this.prismaService.songGroup.deleteMany({
