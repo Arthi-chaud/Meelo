@@ -158,6 +158,7 @@ model Artist {
     illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
 
     searchHistory SearchHistory[]
+    videos        Video[]
 
     @@map("artists")
 }
@@ -293,9 +294,45 @@ model Song {
     playHistory      PlayHistory[]
     searchHistory    SearchHistory[]
     illustration     SongIllustration?
+    videos           Video[]
 
     @@unique([slug, artistId])
     @@map("songs")
+}
+
+model Video {
+    /// @description Unique numeric Video identifier
+    /// @example 123
+    id       Int    @id @default(autoincrement())
+    /// @description String identifier
+    /// @example my-artist-my-video
+    slug     String @unique
+    /// @example my-video
+    nameSlug String
+    /// Title of the video
+    name     String
+    /// The main artist of the video
+    artist   Artist @relation(fields: [artistId], references: [id])
+    artistId Int
+
+    song   Song? @relation(fields: [songId], references: [id])
+    songId Int?
+
+    tracks Track[]
+
+    type VideoType
+}
+
+enum VideoType {
+    MusicVideo
+    LyricsVideo
+    Live
+    BehindTheScenes
+    Interview
+    Advert
+    Unknown
+
+    @@map("video-types")
 }
 
 model SongGroup {
@@ -441,6 +478,8 @@ model Track {
     // Illustration if track is not attached to a release
     standaloneIllustrationId Int?               @unique
     standaloneIllustration   Illustration?      @relation(fields: [standaloneIllustrationId], references: [id], name: "track_standalone_illustration")
+    video                    Video?             @relation(fields: [videoId], references: [id])
+    videoId                  Int?
 
     @@map("tracks")
 }
