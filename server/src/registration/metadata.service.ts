@@ -29,6 +29,7 @@ import GenreService from "src/genre/genre.service";
 import { File } from "src/prisma/models";
 import ParserService from "../parser/parser.service";
 import Slug from "src/slug/slug";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export default class MetadataService {
@@ -47,6 +48,8 @@ export default class MetadataService {
 		private genreService: GenreService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 	) {}
 
 	/**
@@ -95,42 +98,62 @@ export default class MetadataService {
 				}),
 			),
 		);
+		//TODO Sanitize video name
 		const parsedTrackName =
 			this.parserService.parseTrackExtensions(parsedSongName);
-		const song = await this.songService.getOrCreate(
-			{
-				name: parsedTrackName.parsedName,
-				group: {
-					slug: new Slug(
-						songArtist.name,
-						this.parserService.stripGroups(
-							parsedTrackName.parsedName,
-						) || parsedTrackName.parsedName,
-						// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
-						// If it does, let's just pass the entire song name
-					),
-				},
-				artist: { id: songArtist.id },
-				featuring: featuringArtists.map(({ slug }) => ({
-					slug: new Slug(slug),
-				})),
-				genres: genres.map((genre) => ({ id: genre.id })),
-				registeredAt: file.registerDate,
-			},
-			{
-				genres: true,
-				master: true,
-			},
-		);
+		const video =
+			metadata.type == TrackType.Video
+				? await this.videoService.getOrCreate({
+						name: parsedTrackName.parsedName,
+						type: this.parserService.getVideoType(metadata.name),
+						artist: { id: songArtist.id },
+				  })
+				: null;
+		const song =
+			!video || !VideoService.videoIsExtra(video)
+				? await this.songService.getOrCreate(
+						{
+							name: parsedTrackName.parsedName,
+							group: {
+								slug: new Slug(
+									songArtist.name,
+									this.parserService.stripGroups(
+										parsedTrackName.parsedName,
+									) || parsedTrackName.parsedName,
+									// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
+									// If it does, let's just pass the entire song name
+								),
+							},
+							artist: { id: songArtist.id },
+							featuring: featuringArtists.map(({ slug }) => ({
+								slug: new Slug(slug),
+							})),
+							genres: genres.map((genre) => ({ id: genre.id })),
+							registeredAt: file.registerDate,
+						},
+						{
+							genres: true,
+							master: true,
+						},
+				  )
+				: null;
 
-		await this.songService.update(
-			{
-				genres: song.genres
-					.concat(genres)
-					.map((genre) => ({ id: genre.id })),
-			},
-			{ id: song.id },
-		);
+		if (song) {
+			await this.songService.update(
+				{
+					genres: song.genres
+						.concat(genres)
+						.map((genre) => ({ id: genre.id })),
+				},
+				{ id: song.id },
+			);
+			if (video) {
+				await this.videoService.update(
+					{ song: { id: song.id } },
+					{ id: video.id },
+				);
+			}
+		}
 		const album = metadata.album
 			? await this.albumService.getOrCreate(
 					{
@@ -180,7 +203,8 @@ export default class MetadataService {
 					: null,
 			sourceFile: { id: file.id },
 			release: release ? { id: release.id } : undefined,
-			song: { id: song.id },
+			song: song ? { id: song.id } : undefined,
+			video: video ? { id: video.id } : undefined,
 		};
 		if (release && album) {
 			if (
@@ -211,6 +235,7 @@ export default class MetadataService {
 		}
 		return this.trackService.create(track).then((res) => {
 			if (
+				song &&
 				(song.masterId === null ||
 					song.master?.type == TrackType.Video) &&
 				track.type === TrackType.Audio

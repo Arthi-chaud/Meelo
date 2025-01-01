@@ -32,6 +32,7 @@ import AlbumModule from "src/album/album.module";
 import GenreModule from "src/genre/genre.module";
 import ReleaseModule from "src/release/release.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import VideoModule from "src/video/video.module";
 
 @Module({
 	controllers: [MetadataController],
@@ -48,6 +49,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 		forwardRef(() => GenreModule),
 		forwardRef(() => FileModule),
 		forwardRef(() => TrackModule),
+		forwardRef(() => VideoModule),
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => HousekeepingModule),
 	],

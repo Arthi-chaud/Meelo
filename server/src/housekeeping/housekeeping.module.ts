@@ -24,6 +24,7 @@ import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import GenreModule from "src/genre/genre.module";
 import PlaylistModule from "src/playlist/playlist.module";
+import VideoModule from "src/video/video.module";
 
 @Module({
 	imports: [
@@ -33,6 +34,7 @@ import PlaylistModule from "src/playlist/playlist.module";
 		forwardRef(() => ArtistModule),
 		forwardRef(() => GenreModule),
 		forwardRef(() => PlaylistModule),
+		forwardRef(() => VideoModule),
 	],
 	providers: [HousekeepingService],
 	exports: [HousekeepingService],

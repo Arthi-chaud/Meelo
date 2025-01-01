@@ -330,7 +330,9 @@ enum VideoType {
     BehindTheScenes
     Interview
     Advert
-    Unknown
+    PhotoGallery
+    Documentary
+    Other
 
     @@map("video-types")
 }
@@ -431,10 +433,10 @@ model Track {
     /// @example 123
     id                       Int                @id @default(autoincrement())
     /// @description The reference song
-    song                     Song               @relation(fields: [songId], references: [id])
+    song                     Song?              @relation(fields: [songId], references: [id])
     /// @description Unique numeric identifier of the parent song
     /// @example 123
-    songId                   Int
+    songId                   Int?
     /// @description The parent release the track can be found on
     release                  Release?           @relation(fields: [releaseId], references: [id])
     /// @description Unique numeric identifier of the parent release

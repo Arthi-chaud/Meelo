@@ -40,7 +40,7 @@ export class TrackResponse extends IntersectionType(
 	]) {},
 	IllustratedResponse,
 	class {
-		song?: SongResponse;
+		song?: SongResponse | null;
 		release?: ReleaseResponse | null;
 	},
 ) {}
@@ -65,6 +65,7 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 		return {
 			id: track.id,
 			songId: track.songId,
+			videoId: track.videoId,
 			releaseId: track.releaseId,
 			name: track.name,
 			discIndex: track.discIndex,

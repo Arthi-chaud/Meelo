@@ -23,6 +23,7 @@ import GenreService from "src/genre/genre.service";
 import PlaylistService from "src/playlist/playlist.service";
 import ReleaseService from "src/release/release.service";
 import SongService from "src/song/song.service";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export class HousekeepingService {
@@ -37,6 +38,9 @@ export class HousekeepingService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => GenreService))
 		private genresService: GenreService,
+
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 	) {}
@@ -45,6 +49,7 @@ export class HousekeepingService {
 	 */
 	public async runHousekeeping(): Promise<void> {
 		await this.songService.housekeeping();
+		await this.videoService.housekeeping();
 		await this.releaseService.housekeeping();
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();

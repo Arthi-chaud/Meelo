@@ -16,19 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
+import {
+	AlreadyExistsException,
+	NotFoundException,
+} from "src/exceptions/meelo-exception";
+import Slug from "src/slug/slug";
 
-export default class MetadataSavedResponse {
-	@ApiProperty()
-	trackId: number;
-	@ApiProperty()
-	libraryId: number;
-	@ApiProperty()
-	videoId: number | null;
-	@ApiProperty()
-	songId: number | null;
-	@ApiProperty()
-	sourceFileId: number;
-	@ApiProperty()
-	releaseId: number | null;
+export class VideoAlreadyExistsException extends AlreadyExistsException {
+	constructor(videoName: string, artistName: string) {
+		super(`Video ${videoName} by ${artistName} already exists`);
+	}
+}
+
+export class VideoNotFoundException extends NotFoundException {
+	constructor(videoSlugOrId: Slug | number) {
+		super(
+			typeof videoSlugOrId === "number"
+				? `Video ${videoSlugOrId} not found`
+				: `Video '${videoSlugOrId}' not found`,
+		);
+	}
 }

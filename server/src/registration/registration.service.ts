@@ -84,6 +84,7 @@ export class RegistrationService {
 				sourceFileId: fileEntry.id,
 				libraryId: parentLibrary.id,
 				songId: createdTrack.songId,
+				videoId: createdTrack.videoId,
 				releaseId: createdTrack.releaseId,
 			};
 		} catch (e) {
@@ -121,6 +122,8 @@ export class RegistrationService {
 			sourceFileId: fileEntry.id,
 			libraryId: parentLibrary.id,
 			songId: createdTrack.songId,
+
+			videoId: createdTrack.videoId,
 			releaseId: createdTrack.releaseId,
 		};
 	}

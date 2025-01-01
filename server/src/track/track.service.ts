@@ -47,6 +47,7 @@ import {
 } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export default class TrackService {
@@ -109,9 +110,11 @@ export default class TrackService {
 			include: include ?? ({} as I),
 			data: {
 				...input,
-				song: {
-					connect: SongService.formatWhereInput(input.song),
-				},
+				song: input.song
+					? {
+							connect: SongService.formatWhereInput(input.song),
+					  }
+					: undefined,
 				release: input.release
 					? {
 							connect: ReleaseService.formatWhereInput(
@@ -122,6 +125,9 @@ export default class TrackService {
 				sourceFile: {
 					connect: FileService.formatWhereInput(input.sourceFile),
 				},
+				video: input.video
+					? { connect: VideoService.formatWhereInput(input.video) }
+					: undefined,
 			},
 		};
 		return this.prismaService.track
@@ -130,9 +136,11 @@ export default class TrackService {
 			)
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					const parentSong = await this.songService.get(input.song, {
-						artist: true,
-					});
+					const parentSong = input.song
+						? await this.songService.get(input.song, {
+								artist: true,
+						  })
+						: undefined;
 
 					await this.fileService.get(input.sourceFile);
 					if (input.release) {
@@ -146,7 +154,9 @@ export default class TrackService {
 							throw new TrackAlreadyExistsException(
 								input.name,
 								new Slug(parentRelease.slug),
-								new Slug(parentSong.artist.slug),
+								parentSong
+									? new Slug(parentSong.artist.slug)
+									: undefined,
 							);
 						}
 					}
@@ -398,6 +408,13 @@ export default class TrackService {
 					thumbnailId: undefined,
 					thumbnail: what.thumbnailId
 						? { connect: { id: what.thumbnailId } }
+						: undefined,
+					video: what.video
+						? {
+								connect: VideoService.formatWhereInput(
+									what.video,
+								),
+						  }
 						: undefined,
 					song: what.song
 						? {

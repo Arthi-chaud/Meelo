@@ -520,6 +520,9 @@ export default class SongService extends SearchableRepositoryService {
 	async setMasterTrack(trackWhere: TrackQueryParameters.WhereInput) {
 		const track = await this.trackService.get(trackWhere);
 
+		if (!track.songId) {
+			return;
+		}
 		return this.prismaService.song.update({
 			where: { id: track.songId },
 			data: { masterId: track.id },

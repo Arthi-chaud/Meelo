@@ -18,7 +18,7 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import Metadata from "../registration/models/metadata";
-import { AlbumType, SongType } from "@prisma/client";
+import { AlbumType, SongType, VideoType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
 import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
@@ -539,6 +539,61 @@ export default class ParserService {
 			return AlbumType.Compilation;
 		}
 		return AlbumType.StudioRecording;
+	}
+
+	getVideoType(videoName: string): VideoType {
+		const songExtensions = this.splitGroups(videoName, {
+			removeRoot: true,
+		});
+		const lowercaseSongName = videoName.toLowerCase();
+		const jointExtensionWords = songExtensions
+			.map((ext) => ext.toLowerCase())
+			.filter(
+				(ext) =>
+					!(ext.startsWith("feat ") || ext.startsWith("featuring ")),
+			)
+			.join(" ");
+		const extensionWords = jointExtensionWords.split(" ").flat();
+
+		const containsWord = (word: string) =>
+			extensionWords.includes(word) || lowercaseSongName.includes(word);
+
+		if (containsWord("lyrics") || containsWord("lyric")) {
+			return VideoType.LyricsVideo;
+		}
+		if (containsWord("interview")) {
+			return VideoType.Interview;
+		}
+		if (containsWord("advert")) {
+			return VideoType.Advert;
+		}
+		if (containsWord("documentaire") || containsWord("documentary")) {
+			return VideoType.Documentary;
+		}
+		if (containsWord("photo gallery")) {
+			return VideoType.PhotoGallery;
+		}
+		if (containsWord("photo shoot") || containsWord("photoshoot")) {
+			return VideoType.BehindTheScenes;
+		}
+		if (
+			containsWord("behind the scene") ||
+			containsWord("behind-the-scene") ||
+			containsWord("behind the music video") ||
+			containsWord("behind the video")
+		) {
+			return VideoType.BehindTheScenes;
+		}
+		if (containsWord("making of") || containsWord("making the video")) {
+			return VideoType.BehindTheScenes;
+		}
+		if (containsWord("television special") || containsWord("mtv special")) {
+			return VideoType.Interview;
+		}
+		if (containsWord("live") || containsWord("performance")) {
+			return VideoType.Live;
+		}
+		return VideoType.MusicVideo;
 	}
 
 	/**
