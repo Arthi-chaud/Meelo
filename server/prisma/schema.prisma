@@ -323,6 +323,9 @@ model Video {
     /// @description The tracks for that video (just like for a song)
     tracks   Track[]
 
+    /// @description The date the video was registered
+    registeredAt DateTime @default(now())
+
     type VideoType
 }
 
