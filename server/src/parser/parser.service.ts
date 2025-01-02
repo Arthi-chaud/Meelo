@@ -630,6 +630,33 @@ export default class ParserService {
 		return { parsedName, extensions };
 	}
 
+	// The following are unchanged
+	// A (Lyric Video)
+	// A (Bedroom Video)
+	// A (Alternative Music Video)
+	//
+	// A (Video) becomes A
+	// A (Music Video) becomes A
+	removeVideoExtensions(videoName: string) {
+		const groups = this.splitGroups(videoName, { keepDelimiters: true });
+		const res: string[] = [];
+		for (const group in groups) {
+			const groupSlug = new Slug(group).toString();
+			if (
+				[
+					"music-video",
+					"video",
+					"official video",
+					"official music video",
+				].includes(groupSlug)
+			) {
+				continue;
+			}
+			res.push(group);
+		}
+		return res.join(" ");
+	}
+
 	/**
 	 * Removes an extension from a track's name
 	 * For example, if the release Name is 'My Song (Music Video)', the parent

@@ -24,12 +24,14 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { RequireExactlyOne } from "type-fest";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import SongGroupQueryParameters from "src/song/models/song-group.query-params";
 
 namespace VideoQueryParameters {
 	export type CreateInput = {
 		name: string;
 		artist: ArtistQueryParameters.WhereInput;
 		song?: SongQueryParameters.WhereInput;
+		group?: SongGroupQueryParameters.GetOrCreateInput;
 		type?: VideoType;
 	};
 	export type UpdateInput = Partial<{

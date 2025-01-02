@@ -29,7 +29,7 @@ import ParserModule from "src/parser/parser.module";
 @Module({
 	imports: [
 		forwardRef(() => SongModule),
-		TrackModule,
+		forwardRef(() => TrackModule),
 		PrismaModule,
 		forwardRef(() => ArtistModule),
 		forwardRef(() => ParserModule),

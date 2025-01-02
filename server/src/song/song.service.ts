@@ -569,6 +569,7 @@ export default class SongService extends SearchableRepositoryService {
 		return this.prismaService.song
 			.delete({
 				where: SongService.formatWhereInput(where),
+				include: { tracks: true, videos: true },
 			})
 			.then((deleted) => {
 				this.meiliSearch
@@ -611,6 +612,7 @@ export default class SongService extends SearchableRepositoryService {
 				versions: {
 					none: {},
 				},
+				videos: { none: {} },
 			},
 		});
 		await this.resolveMasterTracks();
@@ -978,7 +980,7 @@ export default class SongService extends SearchableRepositoryService {
 		return this.parserService.stripGroups(songName);
 	}
 
-	private static formatSongGroupCreateInput(
+	static formatSongGroupCreateInput(
 		input: SongGroupQueryParameters.CreateInput,
 	) {
 		return {
@@ -986,7 +988,7 @@ export default class SongService extends SearchableRepositoryService {
 		};
 	}
 
-	private static formatSongGroupWhereInput(
+	static formatSongGroupWhereInput(
 		input: SongGroupQueryParameters.WhereInput,
 	) {
 		return {

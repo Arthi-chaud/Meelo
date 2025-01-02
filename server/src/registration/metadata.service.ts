@@ -98,45 +98,40 @@ export default class MetadataService {
 				}),
 			),
 		);
-		//TODO Sanitize video name
+		const videoName =
+			this.parserService.removeVideoExtensions(parsedSongName);
+		const videoType = this.parserService.getVideoType(videoName);
+
 		const parsedTrackName =
 			this.parserService.parseTrackExtensions(parsedSongName);
-		const video =
-			metadata.type == TrackType.Video
-				? await this.videoService.getOrCreate({
+		const songGroupSlug = new Slug(
+			songArtist.name,
+			this.parserService.stripGroups(parsedTrackName.parsedName) ||
+				parsedTrackName.parsedName,
+			// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
+			// If it does, let's just pass the entire song name
+		);
+
+		const song = !VideoService.videoTypeIsExtra(videoType)
+			? await this.songService.getOrCreate(
+					{
 						name: parsedTrackName.parsedName,
-						type: this.parserService.getVideoType(metadata.name),
+						group: {
+							slug: songGroupSlug,
+						},
 						artist: { id: songArtist.id },
-				  })
-				: null;
-		const song =
-			!video || !VideoService.videoIsExtra(video)
-				? await this.songService.getOrCreate(
-						{
-							name: parsedTrackName.parsedName,
-							group: {
-								slug: new Slug(
-									songArtist.name,
-									this.parserService.stripGroups(
-										parsedTrackName.parsedName,
-									) || parsedTrackName.parsedName,
-									// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
-									// If it does, let's just pass the entire song name
-								),
-							},
-							artist: { id: songArtist.id },
-							featuring: featuringArtists.map(({ slug }) => ({
-								slug: new Slug(slug),
-							})),
-							genres: genres.map((genre) => ({ id: genre.id })),
-							registeredAt: file.registerDate,
-						},
-						{
-							genres: true,
-							master: true,
-						},
-				  )
-				: null;
+						featuring: featuringArtists.map(({ slug }) => ({
+							slug: new Slug(slug),
+						})),
+						genres: genres.map((genre) => ({ id: genre.id })),
+						registeredAt: file.registerDate,
+					},
+					{
+						genres: true,
+						master: true,
+					},
+			  )
+			: null;
 
 		if (song) {
 			await this.songService.update(
@@ -147,13 +142,21 @@ export default class MetadataService {
 				},
 				{ id: song.id },
 			);
-			if (video) {
-				await this.videoService.update(
-					{ song: { id: song.id } },
-					{ id: video.id },
-				);
-			}
 		}
+
+		const video =
+			metadata.type == TrackType.Video
+				? await this.videoService.create({
+						name: videoName,
+						type: videoType,
+						artist: { id: songArtist.id },
+						group: {
+							slug: songGroupSlug,
+						},
+						song: song ? { id: song.id } : undefined,
+				  })
+				: null;
+
 		const album = metadata.album
 			? await this.albumService.getOrCreate(
 					{
@@ -168,6 +171,7 @@ export default class MetadataService {
 					{ releases: true },
 			  )
 			: undefined;
+		//TODO Link to album
 		const parsedReleaseName = metadata.release
 			? this.parserService.parseReleaseExtension(metadata.release)
 			: undefined;
@@ -203,7 +207,7 @@ export default class MetadataService {
 					: null,
 			sourceFile: { id: file.id },
 			release: release ? { id: release.id } : undefined,
-			song: song ? { id: song.id } : undefined,
+			song: song && !video ? { id: song.id } : undefined,
 			video: video ? { id: video.id } : undefined,
 		};
 		if (release && album) {

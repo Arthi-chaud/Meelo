@@ -303,22 +303,25 @@ model Song {
 model Video {
     /// @description Unique numeric Video identifier
     /// @example 123
-    id       Int    @id @default(autoincrement())
+    id       Int        @id @default(autoincrement())
     /// @description String identifier
     /// @example my-artist-my-video
-    slug     String @unique
+    slug     String     @unique
     /// @example my-video
     nameSlug String
     /// Title of the video
     name     String
     /// The main artist of the video
-    artist   Artist @relation(fields: [artistId], references: [id])
+    artist   Artist     @relation(fields: [artistId], references: [id])
     artistId Int
-
-    song   Song? @relation(fields: [songId], references: [id])
-    songId Int?
-
-    tracks Track[]
+    /// @description If set, the video is likely to be a music video for that song 
+    song     Song?      @relation(fields: [songId], references: [id], onDelete: Restrict)
+    songId   Int?
+    /// @description The song group the video is relared to (it could be a making-of for the song\'s music video)
+    group    SongGroup? @relation(fields: [groupId], references: [id], onDelete: Restrict)
+    groupId  Int?
+    /// @description The tracks for that video (just like for a song)
+    tracks   Track[]
 
     type VideoType
 }
@@ -340,12 +343,14 @@ enum VideoType {
 model SongGroup {
     /// @description Unique numeric Song identifier
     /// @example 123
-    id       Int    @id @default(autoincrement())
+    id       Int     @id @default(autoincrement())
     /// @description String notation of the group
     /// @example kylie-minogue-all-the-lovers
-    slug     String @unique
+    slug     String  @unique
     /// @description Song that belong to this group
     versions Song[]
+    /// @description Videos related to this group (music videos, behind-the-scenes, etc.)
+    videos   Video[]
 
     @@map("song_groups")
 }
@@ -433,7 +438,7 @@ model Track {
     /// @example 123
     id                       Int                @id @default(autoincrement())
     /// @description The reference song
-    song                     Song?              @relation(fields: [songId], references: [id])
+    song                     Song?              @relation(fields: [songId], references: [id], onDelete: Restrict)
     /// @description Unique numeric identifier of the parent song
     /// @example 123
     songId                   Int?
@@ -480,7 +485,7 @@ model Track {
     // Illustration if track is not attached to a release
     standaloneIllustrationId Int?               @unique
     standaloneIllustration   Illustration?      @relation(fields: [standaloneIllustrationId], references: [id], name: "track_standalone_illustration")
-    video                    Video?             @relation(fields: [videoId], references: [id])
+    video                    Video?             @relation(fields: [videoId], references: [id], onDelete: Restrict)
     videoId                  Int?
 
     @@map("tracks")

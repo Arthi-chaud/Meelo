@@ -16,6 +16,7 @@ CREATE TABLE "Video" (
     "name" TEXT NOT NULL,
     "artistId" INTEGER NOT NULL,
     "songId" INTEGER,
+    "groupId" INTEGER,
     "type" "video-types" NOT NULL,
 
     CONSTRAINT "Video_pkey" PRIMARY KEY ("id")
@@ -29,6 +30,9 @@ ALTER TABLE "Video" ADD CONSTRAINT "Video_artistId_fkey" FOREIGN KEY ("artistId"
 
 -- AddForeignKey
 ALTER TABLE "Video" ADD CONSTRAINT "Video_songId_fkey" FOREIGN KEY ("songId") REFERENCES "songs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Video" ADD CONSTRAINT "Video_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "song_groups"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "tracks" ADD CONSTRAINT "tracks_songId_fkey" FOREIGN KEY ("songId") REFERENCES "songs"("id") ON DELETE SET NULL ON UPDATE CASCADE;

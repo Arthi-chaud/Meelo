@@ -25,7 +25,7 @@ import {
 } from "src/repository/repository.utils";
 import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
-import { Prisma, Song, Track, Video, VideoType } from "@prisma/client";
+import { Prisma, Song, Track, VideoType } from "@prisma/client";
 import { shuffle } from "src/utils/shuffle";
 import VideoQueryParameters from "./models/video.query-parameters";
 import ArtistService from "src/artist/artist.service";
@@ -64,6 +64,18 @@ export default class VideoService {
 				type: data.type ?? this.parserService.getVideoType(data.name),
 				artist: {
 					connect: ArtistService.formatWhereInput(data.artist),
+				},
+				group: {
+					connectOrCreate: data.group
+						? {
+								create: SongService.formatSongGroupCreateInput(
+									data.group,
+								),
+								where: SongService.formatSongGroupWhereInput(
+									data.group,
+								),
+						  }
+						: undefined,
 				},
 				song: data.song
 					? {
@@ -146,13 +158,13 @@ export default class VideoService {
 		};
 	}
 
-	static videoIsExtra(v: Video): boolean {
+	static videoTypeIsExtra(vType: VideoType): boolean {
 		const nonExtraTypes: VideoType[] = [
 			VideoType.MusicVideo,
 			VideoType.LyricsVideo,
 			VideoType.Live,
 		];
-		return !nonExtraTypes.includes(v.type);
+		return !nonExtraTypes.includes(vType);
 	}
 
 	static formatManyWhereInput(

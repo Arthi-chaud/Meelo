@@ -58,7 +58,6 @@ export class SearchHistoryService {
 				artistId: dto.artistId,
 			},
 		});
-		//TODO Check resource exists
 		return this.prismaService.searchHistory
 			.create({
 				data: {
