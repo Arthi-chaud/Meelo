@@ -65,12 +65,7 @@ namespace VideoQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = [
-		"tracks",
-		"artist",
-		"song",
-		"illustration",
-	] as const;
+	export const AvailableIncludes = ["tracks", "artist", "song"] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
 		[],
