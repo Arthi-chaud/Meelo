@@ -23,9 +23,8 @@ import {
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
-import SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
-import { Prisma, Song, Track, VideoType } from "@prisma/client";
+import { Prisma, Track, VideoType } from "@prisma/client";
 import { shuffle } from "src/utils/shuffle";
 import VideoQueryParameters from "./models/video.query-parameters";
 import ArtistService from "src/artist/artist.service";
@@ -37,6 +36,11 @@ import {
 	VideoNotFoundException,
 } from "./video.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { Video } from "src/prisma/models";
+import deepmerge from "deepmerge";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import AlbumService from "src/album/album.service";
+import LibraryService from "src/library/library.service";
 
 @Injectable()
 export default class VideoService {
@@ -59,6 +63,7 @@ export default class VideoService {
 			include: include ?? ({} as I),
 			data: {
 				name: data.name,
+				registeredAt: data.registeredAt,
 				slug: new Slug(artist.name, data.name).toString(),
 				nameSlug: new Slug(data.name).toString(),
 				type: data.type ?? this.parserService.getVideoType(data.name),
@@ -168,38 +173,92 @@ export default class VideoService {
 	}
 
 	static formatManyWhereInput(
-		where: SongQueryParameters.ManyWhereInput,
-	): Prisma.SongWhereInput {
-		return {
-			OR: [
-				SongService.formatManyWhereInput(where),
-				{
-					group: {
-						versions: {
-							some: SongService.formatManyWhereInput(where),
-						},
-					},
-				},
-			],
-			AND: {
+		where: VideoQueryParameters.ManyWhereInput,
+	): Prisma.VideoWhereInput {
+		let query: Prisma.VideoWhereInput = {
+			type: where.type,
+		};
+
+		if (where.id) {
+			query = deepmerge(query, { id: where.id });
+		}
+		if (where.name) {
+			query = deepmerge(query, {
+				name: buildStringSearchParameters(where.name),
+			});
+		}
+		if (where.album) {
+			query = deepmerge(query, {
 				tracks: {
 					some: {
-						type: "Video",
-						song: {
-							type: where.type,
+						release: {
+							album: AlbumService.formatWhereInput(where.album),
 						},
 					},
 				},
+			});
+		}
+
+		if (where.library) {
+			query = deepmerge(query, {
+				tracks: {
+					some: {
+						sourceFile: {
+							library: LibraryService.formatWhereInput(
+								where.library,
+							),
+						},
+					},
+				},
+			});
+		}
+
+		if (where.song) {
+			query = deepmerge(query, {
+				song: SongService.formatWhereInput(where.song),
+			});
+		}
+
+		if (where.group) {
+			query = deepmerge(query, {
+				OR: [
+					{
+						song: {
+							group: SongService.formatSongGroupWhereInput(
+								where.group,
+							),
+						},
+					},
+
+					{
+						group: SongService.formatSongGroupWhereInput(
+							where.group,
+						),
+					},
+				],
+			});
+		}
+
+		if (where.artist) {
+			query = deepmerge(query, {
+				artist: ArtistService.formatWhereInput(where.artist),
+			});
+		}
+		return deepmerge(query, {
+			AND: {
+				tracks: {
+					some: {},
+				},
 			},
-		};
+		});
 	}
 
 	private async getManyRandomIds(
-		where: SongQueryParameters.ManyWhereInput,
+		where: VideoQueryParameters.ManyWhereInput,
 		shuffleSeed: number,
 		pagination?: PaginationParameters,
 	) {
-		const ids = await this.prismaService.song
+		const ids = await this.prismaService.video
 			.findMany({
 				where: VideoService.formatManyWhereInput(where),
 				select: { id: true },
@@ -223,13 +282,13 @@ export default class VideoService {
 	 * @param include the relations to include with the returned songs
 	 */
 	async getMany<
-		I extends Omit<SongQueryParameters.RelationInclude, "tracks">,
+		I extends Omit<VideoQueryParameters.RelationInclude, "tracks">,
 	>(
-		where: SongQueryParameters.ManyWhereInput,
+		where: VideoQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
-		sort?: SongQueryParameters.SortingParameter | number,
-	): Promise<(Song & { track: Track })[]> {
+		sort?: VideoQueryParameters.SortingParameter | number,
+	): Promise<(Video & { track: Track })[]> {
 		if (typeof sort == "number") {
 			const randomIds = await this.getManyRandomIds(
 				where,
@@ -242,29 +301,10 @@ export default class VideoService {
 				include,
 			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
 		}
-		return this.prismaService.song
+		return this.prismaService.video
 			.findMany({
 				orderBy: sort?.sortBy
-					? this.songService.formatSortingInput(sort)
-					: where.album
-					? [
-							{
-								master: {
-									discIndex: {
-										sort: "asc",
-										nulls: "last",
-									} as const,
-								},
-							},
-							{
-								master: {
-									trackIndex: {
-										sort: "asc",
-										nulls: "last",
-									} as const,
-								},
-							},
-					  ]
+					? this.formatSortingInput(sort)
 					: undefined,
 				include: {
 					...include,
@@ -280,12 +320,40 @@ export default class VideoService {
 				...formatPaginationParameters(pagination),
 				where: VideoService.formatManyWhereInput(where),
 			})
-			.then((songs) =>
-				songs.map(({ tracks, ...song }) => ({
-					...song,
+			.then((videos) =>
+				videos.map(({ tracks, ...video }) => ({
+					...video,
 					track: tracks[0],
 				})),
 			);
+	}
+
+	formatSortingInput(
+		sortingParameter: VideoQueryParameters.SortingParameter,
+	) {
+		sortingParameter.order ??= "asc";
+		const sort: Prisma.VideoOrderByWithRelationInput[] = [];
+		switch (sortingParameter.sortBy) {
+			case "name":
+				sort.push({ nameSlug: sortingParameter.order });
+				break;
+			case "addDate":
+				sort.push({ registeredAt: sortingParameter.order });
+				break;
+			case "artistName":
+				sort.push({
+					artist: this.artistService.formatSortingInput({
+						sortBy: "name",
+						order: sortingParameter.order,
+					}),
+				});
+				break;
+			default:
+				sort.push({
+					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
+				});
+		}
+		return sort;
 	}
 
 	async delete(where: VideoQueryParameters.WhereInput) {

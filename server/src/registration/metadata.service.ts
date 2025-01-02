@@ -153,6 +153,7 @@ export default class MetadataService {
 						group: {
 							slug: songGroupSlug,
 						},
+						registeredAt: file.registerDate,
 						song: song ? { id: song.id } : undefined,
 				  })
 				: null;

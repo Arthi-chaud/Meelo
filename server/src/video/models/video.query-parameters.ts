@@ -22,13 +22,16 @@ import { filterAtomicRelationInclude } from "src/relation-include/atomic-relatio
 import Slug from "src/slug/slug";
 import SongQueryParameters from "src/song/models/song.query-params";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import { RequireExactlyOne } from "type-fest";
+import { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import SongGroupQueryParameters from "src/song/models/song-group.query-params";
+import { SearchStringInput } from "src/utils/search-string-input";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace VideoQueryParameters {
 	export type CreateInput = {
 		name: string;
+		registeredAt?: Date;
 		artist: ArtistQueryParameters.WhereInput;
 		song?: SongQueryParameters.WhereInput;
 		group?: SongGroupQueryParameters.GetOrCreateInput;
@@ -42,6 +45,22 @@ namespace VideoQueryParameters {
 		id: number;
 		slug: Slug;
 	}>;
+
+	/**
+	 * Query params to find multiple songs
+	 */
+	export type ManyWhereInput = Partial<
+		RequireAtLeastOne<{
+			name: SearchStringInput;
+			album: AlbumQueryParameters.WhereInput;
+			artist?: ArtistQueryParameters.WhereInput;
+			library: AlbumQueryParameters.WhereInput;
+			group: SongGroupQueryParameters.WhereInput;
+			song: SongQueryParameters.WhereInput;
+			type?: VideoType;
+			id: { in: number[] };
+		}>
+	>;
 
 	/**
 	 * Defines what relations to include in query
