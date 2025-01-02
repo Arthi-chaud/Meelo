@@ -146,7 +146,7 @@ export default class MetadataService {
 
 		const video =
 			metadata.type == TrackType.Video
-				? await this.videoService.create({
+				? await this.videoService.getOrCreate({
 						name: videoName,
 						type: videoType,
 						artist: { id: songArtist.id },

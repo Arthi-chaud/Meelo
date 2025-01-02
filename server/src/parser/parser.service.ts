@@ -643,7 +643,7 @@ export default class ParserService {
 	removeVideoExtensions(videoName: string) {
 		const groups = this.splitGroups(videoName, { keepDelimiters: true });
 		const res: string[] = [];
-		for (const group in groups) {
+		for (const group of groups) {
 			const groupSlug = new Slug(group).toString();
 			if (
 				[

@@ -241,7 +241,21 @@ export default class VideoService {
 
 		if (where.artist) {
 			query = deepmerge(query, {
-				artist: ArtistService.formatWhereInput(where.artist),
+				OR: [
+					{
+						artist: ArtistService.formatWhereInput(where.artist),
+					},
+
+					{
+						song: {
+							featuring: {
+								some: ArtistService.formatWhereInput(
+									where.artist,
+								),
+							},
+						},
+					},
+				],
 			});
 		}
 		return deepmerge(query, {
