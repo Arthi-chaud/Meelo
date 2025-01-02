@@ -632,6 +632,8 @@ describe("Parser Service", () => {
 					"Triumph Of A Heart - Stories Behind The Music Video",
 					"Exclusive Behind-The-Scenes Footage",
 					"Smile (Behind The Scene)",
+					"A (B-Roll)",
+					"A (B-Roll Footage)",
 				],
 			],
 			[VideoType.PhotoGallery, ["Photo Gallery"]],

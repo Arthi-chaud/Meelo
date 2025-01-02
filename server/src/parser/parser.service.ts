@@ -584,6 +584,9 @@ export default class ParserService {
 		) {
 			return VideoType.BehindTheScenes;
 		}
+		if (containsWord("b roll") || containsWord("b-roll")) {
+			return VideoType.BehindTheScenes;
+		}
 		if (containsWord("making of") || containsWord("making the video")) {
 			return VideoType.BehindTheScenes;
 		}
