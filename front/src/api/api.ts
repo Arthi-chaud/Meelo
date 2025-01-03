@@ -41,7 +41,12 @@ import {
 	SongType,
 	SongWithRelations,
 } from "../models/song";
-import { VideoWithRelations } from "../models/video";
+import {
+	VideoInclude,
+	VideoSortingKeys,
+	VideoType,
+	VideoWithRelations,
+} from "../models/video";
 import {
 	TrackInclude,
 	TrackSortingKeys,
@@ -749,19 +754,19 @@ export default class API {
 	}
 
 	/**
-	 * Fetch all songs
-	 * @returns An InfiniteQuery of Songs
+	 * @returns An InfiniteQuery of Videos
 	 */
-	static getVideos<I extends SongInclude | never = never>(
+	static getVideos<I extends VideoInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
+			group?: Identifier;
 			random?: number;
-			type?: SongType;
+			type?: VideoType;
 		},
-		sort?: SortingParameters<typeof SongSortingKeys>,
+		sort?: SortingParameters<typeof VideoSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
