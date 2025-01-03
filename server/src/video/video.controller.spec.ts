@@ -8,10 +8,13 @@ import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
 import { VideoResponse } from "./models/video.response";
 import {
+	expectedArtistResponse,
 	expectedSongResponse,
 	expectedTrackResponse,
+	expectedVideoResponse,
 } from "test/expected-responses";
 import VideoModule from "./video.module";
+import { Video } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -45,7 +48,7 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
+						...expectedVideoResponse(dummyRepository.videoA1),
 						track: {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
@@ -64,18 +67,21 @@ describe("Video Controller", () => {
 					expect(videoSongs.length).toBe(0);
 				});
 		});
-		it("should return songs with their lyrics", () => {
+		it("should return video with their artist", () => {
 			return request(app.getHttpServer())
-				.get(`/videos?with=lyrics`)
+				.get(`/videos?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse({
-							...dummyRepository.songA1,
-							lyrics: dummyRepository.lyricsA1,
-						}),
+						...expectedVideoResponse({
+							...dummyRepository.videoA1,
+							artist: expectedArtistResponse(
+								dummyRepository.artistA,
+							),
+							featuring: [],
+						} as Video),
 						track: {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
@@ -96,7 +102,7 @@ describe("Video Controller", () => {
 					const songs: VideoResponse[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
+						...expectedVideoResponse(dummyRepository.videoA1),
 						track: {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
@@ -118,7 +124,7 @@ describe("Video Controller", () => {
 	});
 
 	describe("Get Videos from library", () => {
-		it("should return the songs With video", async () => {
+		it("should return the videos", async () => {
 			return request(app.getHttpServer())
 				.get(`/videos?library=${dummyRepository.library1.id}`)
 				.expect(200)
@@ -126,7 +132,7 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
+						...expectedVideoResponse(dummyRepository.videoA1),
 						track: {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,

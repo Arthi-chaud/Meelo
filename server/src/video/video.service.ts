@@ -20,6 +20,7 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import PrismaService from "src/prisma/prisma.service";
 import {
+	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
@@ -149,6 +150,8 @@ export default class VideoService {
 							? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							  // @ts-ignore
 							  video.song?.featuring ?? []
+							: include?.artist
+							? []
 							: undefined,
 				};
 			});
@@ -209,13 +212,38 @@ export default class VideoService {
 		}
 		if (where.album) {
 			query = deepmerge(query, {
-				tracks: {
-					some: {
-						release: {
-							album: AlbumService.formatWhereInput(where.album),
+				OR: [
+					{
+						song: {
+							tracks: {
+								some: {
+									release: {
+										album: AlbumService.formatWhereInput(
+											where.album,
+										),
+									},
+								},
+							},
 						},
 					},
-				},
+					{
+						tracks: {
+							some: {
+								song: {
+									tracks: {
+										some: {
+											release: {
+												album: AlbumService.formatWhereInput(
+													where.album,
+												),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				],
 			});
 		}
 
@@ -371,6 +399,8 @@ export default class VideoService {
 							? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 							  // @ts-ignore
 							  video.song?.featuring ?? []
+							: include?.artist
+							? []
 							: undefined,
 					track: tracks[0],
 				})),
@@ -460,4 +490,6 @@ export default class VideoService {
 		}
 		throw new UnhandledORMErrorException(error, where);
 	}
+
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 }

@@ -19,10 +19,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import {
-	TrackResponse,
-	TrackResponseBuilder,
-} from "src/track/models/track.response";
+import { TrackResponseBuilder } from "src/track/models/track.response";
 import {
 	SongResponse,
 	SongResponseBuilder,
@@ -35,7 +32,7 @@ import {
 
 export class VideoResponse extends IntersectionType(Video) {
 	@ApiProperty()
-	track: TrackResponse;
+	track?: Track;
 	@ApiProperty()
 	artist?: ArtistResponse;
 	@ApiProperty()
@@ -46,11 +43,13 @@ export class VideoResponse extends IntersectionType(Video) {
 
 @Injectable()
 export class VideoResponseBuilder extends ResponseBuilderInterceptor<
-	VideoWithRelations & { track: Track; featuring?: Artist[] },
+	VideoWithRelations & { track?: Track; featuring?: Artist[] },
 	VideoResponse
 > {
 	constructor(
+		@Inject(forwardRef(() => SongResponseBuilder))
 		private songResponseBuilder: SongResponseBuilder,
+		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
 		private trackResponseBuilder: TrackResponseBuilder,
@@ -61,7 +60,7 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = VideoResponse;
 
 	async buildResponse(
-		video: VideoWithRelations & { track: Track; featuring?: Artist[] },
+		video: VideoWithRelations & { track?: Track; featuring?: Artist[] },
 	): Promise<VideoResponse> {
 		return {
 			...video,
@@ -81,7 +80,11 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 						featuring: undefined,
 				  })
 				: video.song,
-			track: await this.trackResponseBuilder.buildResponse(video.track),
+			track: video.track
+				? ((await this.trackResponseBuilder.buildResponse(
+						video.track,
+				  )) as Track)
+				: undefined,
 		};
 	}
 }

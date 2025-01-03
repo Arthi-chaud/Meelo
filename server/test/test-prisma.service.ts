@@ -13,6 +13,8 @@ import {
 	SongType,
 	Track,
 	TrackType,
+	Video,
+	VideoType,
 } from "@prisma/client";
 import Logger from "src/logger/logger";
 import { Playlist } from "src/prisma/models";
@@ -61,6 +63,8 @@ export default class TestPrismaService extends PrismaService {
 
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
+
+	public videoA1: Video;
 
 	private baseTrack = {
 		bitrate: 0,
@@ -196,12 +200,27 @@ export default class TestPrismaService extends PrismaService {
 				libraryId: this.library1.id,
 			},
 		});
+		this.videoA1 = await this.video.create({
+			data: {
+				name: "My Song",
+				slug: "my-artist-my-song",
+				nameSlug: "my-song",
+				artist: { connect: { id: this.artistA.id } },
+				type: VideoType.MusicVideo,
+				group: {
+					connect: {
+						slug: new Slug(this.artistA.name, "my-song").toString(),
+					},
+				},
+			},
+		});
 		this.trackA1_2Video = await this.track.create({
 			data: {
 				...this.baseTrack,
 				name: "My Song 2 (Video)",
 				songId: this.songA1.id,
 				discIndex: 2,
+				videoId: this.videoA1.id,
 				releaseId: this.releaseA1_2.id,
 				type: TrackType.Video,
 				sourceFileId: this.fileA1_2Video.id,

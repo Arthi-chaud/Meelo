@@ -32,6 +32,10 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
+import {
+	VideoResponse,
+	VideoResponseBuilder,
+} from "src/video/models/video.response";
 
 export class TrackResponse extends IntersectionType(
 	class extends OmitType(Track, [
@@ -41,6 +45,7 @@ export class TrackResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		song?: SongResponse | null;
+		video?: VideoResponse | null;
 		release?: ReleaseResponse | null;
 	},
 ) {}
@@ -51,6 +56,8 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 	TrackResponse
 > {
 	constructor(
+		@Inject(forwardRef(() => VideoResponseBuilder))
+		private videoResponseBuilder: VideoResponseBuilder,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder,
 		@Inject(forwardRef(() => SongResponseBuilder))
@@ -77,6 +84,9 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 			isBonus: track.isBonus,
 			isRemastered: track.isRemastered,
 			sourceFileId: track.sourceFileId,
+			video: track.video
+				? await this.videoResponseBuilder.buildResponse(track.video)
+				: track.video,
 			song: track.song
 				? await this.songResponseBuilder.buildResponse(track.song)
 				: track.song,

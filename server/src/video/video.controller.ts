@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Query } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -38,6 +38,10 @@ import SongGroupQueryParameters from "src/song/models/song-group.query-params";
 import Slug from "src/slug/slug";
 import { formatIdentifier } from "src/repository/repository.utils";
 import VideoQueryParameters from "./models/video.query-parameters";
+import Roles from "src/authentication/roles/roles.enum";
+import { Role } from "src/authentication/roles/roles.decorators";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import UpdateVideoDTO from "./models/update-video.dto";
 
 export class Selector {
 	@IsEnum(VideoType)
@@ -102,6 +106,35 @@ export class Selector {
 @Controller("videos")
 export class VideoController {
 	constructor(private videoService: VideoService) {}
+
+	@ApiOperation({
+		summary: "Get a video",
+	})
+	@Role(Roles.Default)
+	@Response({ handler: VideoResponseBuilder })
+	@Get(":idOrSlug")
+	async getVideo(
+		@RelationIncludeQuery(VideoQueryParameters.AvailableAtomicIncludes)
+		include: VideoQueryParameters.RelationInclude,
+		@IdentifierParam(VideoService)
+		where: VideoQueryParameters.WhereInput,
+	) {
+		return this.videoService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Update a video",
+	})
+	@Response({ handler: VideoResponseBuilder })
+	@Post(":idOrSlug")
+	@Role(Roles.Default)
+	async updateSong(
+		@Body() updateDTO: UpdateVideoDTO,
+		@IdentifierParam(VideoService)
+		where: VideoQueryParameters.WhereInput,
+	) {
+		return this.videoService.update(updateDTO, where);
+	}
 
 	@ApiOperation({
 		summary: "Get many Videos",

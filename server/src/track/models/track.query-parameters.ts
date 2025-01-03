@@ -118,6 +118,7 @@ namespace TrackQueryParameters {
 		"song",
 		"release",
 		"sourceFile",
+		"video",
 		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes =

@@ -382,7 +382,11 @@ export default class TrackService {
 				{ discIndex: { sort: "asc", nulls: "last" } },
 			],
 			...formatPaginationParameters(pagination),
-			include: { illustration: true, song: { include: include } },
+			include: {
+				illustration: true,
+				song: { include: include },
+				video: { include: { artist: include?.artist ?? false } },
+			},
 		});
 
 		if (tracks.length == 0) {
