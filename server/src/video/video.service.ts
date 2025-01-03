@@ -36,7 +36,7 @@ import {
 	VideoNotFoundException,
 } from "./video.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { Video } from "src/prisma/models";
+import { Artist, Video } from "src/prisma/models";
 import deepmerge from "deepmerge";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import AlbumService from "src/album/album.service";
@@ -119,7 +119,13 @@ export default class VideoService {
 		include?: I,
 	) {
 		const args = {
-			include: include ?? ({} as I),
+			include: {
+				...(include ?? ({} as I)),
+
+				song: include?.artist
+					? { include: { featuring: include.artist } }
+					: include?.song ?? false,
+			},
 			where: VideoService.formatWhereInput(where),
 		};
 		return this.prismaService.video
@@ -131,6 +137,20 @@ export default class VideoService {
 			>(args)
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
+			})
+			.then((video) => {
+				return {
+					...video,
+					featuring:
+						"song" in (video ?? {}) &&
+						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+						// @ts-ignore
+						"featuring" in (video.song ?? {})
+							? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							  // @ts-ignore
+							  video.song?.featuring ?? []
+							: undefined,
+				};
 			});
 	}
 
@@ -289,11 +309,11 @@ export default class VideoService {
 	}
 
 	/**
-	 * Get songs with at least one video track
-	 * The songs are returned with its first video track
-	 * @param where the query parameters to find the songs
+	 * Get videos with at least one track
+	 * The videos are returned with their first video track
+	 * @param where the query parameters to find the video
 	 * @param pagination the pagination parameters
-	 * @param include the relations to include with the returned songs
+	 * @param include the relations to include with the returned videos
 	 */
 	async getMany<
 		I extends Omit<VideoQueryParameters.RelationInclude, "tracks">,
@@ -302,7 +322,7 @@ export default class VideoService {
 		pagination?: PaginationParameters,
 		include?: I,
 		sort?: VideoQueryParameters.SortingParameter | number,
-	): Promise<(Video & { track: Track })[]> {
+	): Promise<(Video & { track: Track; featuring?: Artist[] })[]> {
 		if (typeof sort == "number") {
 			const randomIds = await this.getManyRandomIds(
 				where,
@@ -322,6 +342,9 @@ export default class VideoService {
 					: undefined,
 				include: {
 					...include,
+					song: include?.artist
+						? { include: { featuring: include.artist } }
+						: include?.song ?? false,
 					tracks: {
 						where: {
 							type: "Video",
@@ -337,6 +360,18 @@ export default class VideoService {
 			.then((videos) =>
 				videos.map(({ tracks, ...video }) => ({
 					...video,
+					song:
+						include?.song && video.song
+							? { ...video.song, featuring: undefined }
+							: include?.song
+							? null
+							: undefined,
+					featuring:
+						"featuring" in (video.song ?? {})
+							? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+							  // @ts-ignore
+							  video.song?.featuring ?? []
+							: undefined,
 					track: tracks[0],
 				})),
 			);

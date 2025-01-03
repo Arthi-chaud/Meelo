@@ -564,7 +564,7 @@ export default class ParserService {
 		if (containsWord("interview")) {
 			return VideoType.Interview;
 		}
-		if (containsWord("advert")) {
+		if (containsWord("advert") || containsWord("teaser")) {
 			return VideoType.Advert;
 		}
 		if (containsWord("documentaire") || containsWord("documentary")) {

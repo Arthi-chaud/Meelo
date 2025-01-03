@@ -27,7 +27,7 @@ import {
 	SongResponse,
 	SongResponseBuilder,
 } from "../../song/models/song.response";
-import { Track, Video, VideoWithRelations } from "src/prisma/models";
+import { Artist, Track, Video, VideoWithRelations } from "src/prisma/models";
 import {
 	ArtistResponse,
 	ArtistResponseBuilder,
@@ -39,12 +39,14 @@ export class VideoResponse extends IntersectionType(Video) {
 	@ApiProperty()
 	artist?: ArtistResponse;
 	@ApiProperty()
+	featuring?: ArtistResponse[];
+	@ApiProperty()
 	song?: SongResponse | null;
 }
 
 @Injectable()
 export class VideoResponseBuilder extends ResponseBuilderInterceptor<
-	VideoWithRelations & { track: Track },
+	VideoWithRelations & { track: Track; featuring?: Artist[] },
 	VideoResponse
 > {
 	constructor(
@@ -59,15 +61,25 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = VideoResponse;
 
 	async buildResponse(
-		video: VideoWithRelations & { track: Track },
+		video: VideoWithRelations & { track: Track; featuring?: Artist[] },
 	): Promise<VideoResponse> {
 		return {
 			...video,
 			artist: video.artist
 				? await this.artistResponseBuilder.buildResponse(video.artist)
 				: video.artist,
+			featuring: video.featuring
+				? await Promise.all(
+						video.featuring.map((a) =>
+							this.artistResponseBuilder.buildResponse(a),
+						),
+				  )
+				: video.featuring,
 			song: video.song
-				? await this.songResponseBuilder.buildResponse(video.song)
+				? await this.songResponseBuilder.buildResponse({
+						...video.song,
+						featuring: undefined,
+				  })
 				: video.song,
 			track: await this.trackResponseBuilder.buildResponse(video.track),
 		};
