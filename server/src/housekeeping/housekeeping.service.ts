@@ -48,8 +48,8 @@ export class HousekeepingService {
 	 * Calls housekeeping methods on repository services
 	 */
 	public async runHousekeeping(): Promise<void> {
-		await this.songService.housekeeping();
 		await this.videoService.housekeeping();
+		await this.songService.housekeeping();
 		await this.releaseService.housekeeping();
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();
