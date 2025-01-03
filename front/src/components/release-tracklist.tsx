@@ -45,14 +45,18 @@ import { Fragment, useMemo } from "react";
 import { generateArray } from "../utils/gen-list";
 import { TrackState, usePlayerContext } from "../contexts/player";
 import { Audio } from "react-loader-spinner";
+import { VideoWithRelations } from "../models/video";
+import { RequireAtLeastOne } from "type-fest";
 
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
 	tracklist:
 		| Tracklist<
-				TrackWithRelations<"illustration"> & {
-					song: SongWithRelations<"artist" | "featuring">;
-				}
+				TrackWithRelations<"illustration"> &
+					RequireAtLeastOne<{
+						song: SongWithRelations<"artist" | "featuring">;
+						video: Omit<VideoWithRelations<"artist">, "track">;
+					}>
 		  >
 		| undefined;
 	release: Release | undefined;
@@ -84,10 +88,12 @@ const ReleaseTrackList = ({
 	const flatTracklist = tracklist
 		? Array.from(Object.values(tracklist)).flat()
 		: undefined;
-	const formatTracksubtitle = (
-		song: SongWithRelations<"artist" | "featuring">,
-	) => {
-		if (song.artistId === mainArtist?.id && song.featuring?.length === 0) {
+	const formatTracksubtitle = (song: {
+		artistId: number;
+		artist: Artist;
+		featuring?: Artist[];
+	}) => {
+		if (song.artistId === mainArtist?.id && !song.featuring?.length) {
 			return undefined;
 		}
 		return formatArtists(song.artist, song.featuring);
@@ -115,11 +121,16 @@ const ReleaseTrackList = ({
 				>
 					{(
 						disc[1] as (
-							| (TrackWithRelations<"illustration"> & {
-									song: SongWithRelations<
-										"artist" | "featuring"
-									>;
-							  })
+							| (TrackWithRelations<"illustration"> &
+									RequireAtLeastOne<{
+										song: SongWithRelations<
+											"artist" | "featuring"
+										>;
+										video: Omit<
+											VideoWithRelations<"artist">,
+											"track"
+										>;
+									}>)
 							| undefined
 						)[]
 					).map((currentTrack, index) => (
@@ -129,8 +140,9 @@ const ReleaseTrackList = ({
 									mainArtist === undefined
 										? false
 										: currentTrack
-											? currentTrack.song.artistId !=
-												mainArtist?.id
+											? (currentTrack.song ??
+													currentTrack.video)!
+													.artistId != mainArtist?.id
 											: false
 								}
 								disablePadding
@@ -138,8 +150,14 @@ const ReleaseTrackList = ({
 								secondaryAction={
 									currentTrack ? (
 										<ReleaseTrackContextualMenu
-											track={currentTrack}
-											artist={currentTrack.song.artist}
+											track={{
+												...currentTrack,
+												song: currentTrack.song ?? null,
+											}}
+											artist={
+												(currentTrack.song ??
+													currentTrack.video)!.artist
+											}
 										/>
 									) : (
 										<IconButton disabled>
@@ -159,7 +177,8 @@ const ReleaseTrackList = ({
 													(flatTrack) => ({
 														track: flatTrack,
 														release,
-														artist: flatTrack.song
+														artist: (flatTrack.song ??
+															flatTrack.video)!
 															.artist,
 													}),
 												),
@@ -206,7 +225,8 @@ const ReleaseTrackList = ({
 												? null
 												: currentTrack
 													? formatTracksubtitle(
-															currentTrack.song,
+															(currentTrack.song ??
+																currentTrack.video)!,
 														)
 													: undefined
 										}

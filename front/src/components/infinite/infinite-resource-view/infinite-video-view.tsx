@@ -18,8 +18,11 @@
 
 import { useRouter } from "next/router";
 import { ComponentProps, useState } from "react";
-import { SongSortingKeys, SongType } from "../../../models/song";
-import { VideoWithRelations } from "../../../models/video";
+import {
+	VideoSortingKeys,
+	VideoType,
+	VideoWithRelations,
+} from "../../../models/video";
 import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
@@ -59,7 +62,7 @@ const playVideosAction = (
 };
 
 type AdditionalProps = {
-	type?: SongType;
+	type?: VideoType;
 	random?: number;
 };
 
@@ -68,7 +71,7 @@ const InfiniteVideoView = <
 >(
 	props: InfiniteResourceViewProps<
 		T,
-		typeof SongSortingKeys,
+		typeof VideoSortingKeys,
 		AdditionalProps
 	> &
 		Omit<ComponentProps<typeof VideoTile>, "video">,
@@ -76,11 +79,11 @@ const InfiniteVideoView = <
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const [options, setOptions] =
-		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
+		useState<OptionState<typeof VideoSortingKeys, AdditionalProps>>();
 	const query = {
 		type:
 			// @ts-ignore
-			options?.type == "All" ? undefined : (options?.type as SongType),
+			options?.type == "All" ? undefined : (options?.type as VideoType),
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
@@ -122,27 +125,14 @@ const InfiniteVideoView = <
 			<Controls
 				options={[
 					{
-						label: (options?.type as SongType) ?? "All",
+						label: (options?.type as VideoType) ?? "All",
 						name: "type",
-						values: [
-							"All",
-							...SongType.filter(
-								(type) =>
-									![
-										"Unknown",
-										"Demo",
-										"Clean",
-										"Edit",
-										"Acappella",
-										"Instrumental",
-									].includes(type),
-							),
-						],
+						values: ["All", ...VideoType],
 						currentValue: options?.type,
 					},
 				]}
 				onChange={setOptions}
-				sortingKeys={SongSortingKeys}
+				sortingKeys={VideoSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
 				router={props.light == true ? undefined : router}

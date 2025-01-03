@@ -38,7 +38,7 @@ import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
-import ChangeSongType from "../actions/song-type";
+import { ChangeSongType } from "../actions/resource-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
 import { useTranslation } from "react-i18next";

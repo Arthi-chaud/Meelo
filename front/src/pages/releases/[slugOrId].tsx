@@ -60,7 +60,7 @@ import ResourceDescriptionExpandable from "../../components/resource-description
 import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
-import Video from "../../models/video";
+import Video, { VideoTypeIsExtra } from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
@@ -292,7 +292,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						[
 							video,
 							tracks.findIndex(
-								(track) => track.song.groupId == video.groupId,
+								(track) =>
+									(track.song ?? track.video)!.groupId ==
+									video.groupId,
 							),
 						] as const,
 				)
@@ -300,7 +302,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				.map(([v, _]) => v)
 				.reduce(
 					(prev, current) => {
-						if (current.type === "NonMusic") {
+						if (VideoTypeIsExtra(current.type)) {
 							return {
 								videos: prev.videos,
 								liveVideos: prev.liveVideos,
@@ -525,7 +527,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													artist: artists.data.find(
 														(artist) =>
 															artist.id ==
-															track.song.artistId,
+															(track.song ??
+																track.video)!
+																.artistId,
 													)!,
 													release: release.data,
 												}),
@@ -630,7 +634,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												discKey,
 												discTracks.map((discTrack) => ({
 													...discTrack,
-													song: discTrack.song,
+													song: discTrack.song!,
+													video: discTrack.video!,
 												})),
 											]),
 										)

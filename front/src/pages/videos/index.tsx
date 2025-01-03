@@ -18,7 +18,7 @@
 
 import React from "react";
 import { useRouter } from "next/router";
-import { SongSortingKeys } from "../../models/song";
+import { VideoSortingKeys } from "../../models/video";
 import API from "../../api/api";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import { GetPropsTypesFrom, Page } from "../../ssr";
@@ -29,7 +29,10 @@ import { Head } from "../../components/head";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
+	const sortBy = getSortingFieldParams(
+		context.query.sortBy,
+		VideoSortingKeys,
+	);
 
 	return {
 		additionalProps: { sortBy, order },

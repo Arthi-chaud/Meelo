@@ -30,7 +30,7 @@ import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
-import ChangeAlbumType from "../actions/album-type";
+import { ChangeAlbumType } from "../actions/resource-type";
 import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
 import { useTranslation } from "react-i18next";
 

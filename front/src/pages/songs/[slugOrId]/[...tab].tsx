@@ -79,7 +79,7 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getTracks(
 				{ song: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["release", "song", "illustration"],
+				["release", "song", "illustration", "video"],
 			),
 		],
 	};
@@ -284,7 +284,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								API.getTracks(
 									{ song: songIdentifier },
 									{ sortBy, order },
-									["release", "song", "illustration"],
+									[
+										"release",
+										"song",
+										"illustration",
+										"video",
+									],
 								)
 							}
 						/>

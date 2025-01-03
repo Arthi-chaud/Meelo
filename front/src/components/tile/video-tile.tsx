@@ -21,9 +21,9 @@ import Illustration from "../illustration";
 import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
-import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { usePlayerContext } from "../../contexts/player";
 import Video, { VideoWithRelations } from "../../models/video";
+import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 
 type VideoTileProps = (
 	| {
@@ -58,14 +58,7 @@ const VideoTile = ({
 
 	return (
 		<Tile
-			contextualMenu={
-				video && (
-					<TrackContextualMenu
-						isVideo
-						track={{ ...video.track, song: video }}
-					/>
-				)
-			}
+			contextualMenu={video && <VideoContextualMenu video={video} />}
 			onClick={
 				video
 					? () => {

@@ -551,7 +551,7 @@ export default class API {
 	static async updateAlbum(
 		albumSlugOrId: number | string,
 		newType: AlbumType,
-	): Promise<unknown> {
+	): Promise<void> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
@@ -572,6 +572,20 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
+			method: "POST",
+			parameters: {},
+			emptyResponse: true,
+			data: { type: newType },
+		});
+	}
+
+	static async updateVideo(
+		videoSlugOrId: number | string,
+		newType: VideoType,
+	): Promise<void> {
+		return API.fetch({
+			route: `/videos/${videoSlugOrId}`,
+			errorMessage: "Update Video Failed",
 			method: "POST",
 			parameters: {},
 			emptyResponse: true,
@@ -774,13 +788,19 @@ export default class API {
 				"videos",
 				...API.formatObject(filter),
 				...API.formatObject(sort),
-				...API.formatIncludeKeys(include),
+				...API.formatIncludeKeys(
+					include?.filter((i) => i !== "featuring"),
+				),
 			],
 			exec: (pagination) =>
 				API.fetch({
 					route: `/videos`,
 					errorMessage: "Videos could not be loaded",
-					parameters: { pagination: pagination, include, sort },
+					parameters: {
+						pagination: pagination,
+						include: include?.filter((i) => i !== "featuring"),
+						sort,
+					},
 					otherParameters: filter,
 					validator: PaginatedResponse(
 						VideoWithRelations(include ?? []),
@@ -805,6 +825,21 @@ export default class API {
 					route: `/songs/${songSlugOrId}`,
 					parameters: { include },
 					validator: SongWithRelations(include ?? []),
+				}),
+		};
+	}
+
+	static getVideo<I extends VideoInclude | never = never>(
+		videoSlugOrId: string | number,
+		include?: I[],
+	): Query<VideoWithRelations<I>> {
+		return {
+			key: ["video", videoSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () =>
+				API.fetch({
+					route: `/videos/${videoSlugOrId}`,
+					parameters: { include },
+					validator: VideoWithRelations(include ?? []),
 				}),
 		};
 	}

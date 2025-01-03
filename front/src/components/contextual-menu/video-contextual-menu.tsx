@@ -16,41 +16,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Artist from "../../models/artist";
+import { useQueryClient } from "../../api/use-query";
+import API from "../../api/api";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
 import {
 	GoToArtistAction,
-	GoToRelatedTracksAction,
+	GoToReleaseAction,
 	GoToSongLyricsAction,
-	GoToSongVersionAction,
 } from "../actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
 } from "../actions/playlist";
-import { ShareSongAction } from "../actions/share";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
-import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
-import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
-import { ChangeSongType } from "../actions/resource-type";
 import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
+import Action from "../actions/action";
+import { VideoWithRelations } from "../../models/video";
+import { ChangeVideoType } from "../actions/resource-type";
 
-type ReleaseTrackContextualMenuProps = {
-	track: TrackWithRelations<"song" | "illustration">;
-	artist: Artist;
+type VideoContextualMenuProps = {
+	video: VideoWithRelations;
 	onSelect?: () => void;
 };
 
-const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
-	const songSlug = props.track.song?.slug;
-	const confirm = useConfirm();
+const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 	const queryClient = useQueryClient();
+	const confirm = useConfirm();
+	const getPlayNextProps = () =>
+		Promise.all([
+			queryClient.fetchQuery(API.getArtist(props.video.artistId)),
+			props.video.track.releaseId &&
+				queryClient.fetchQuery(
+					API.getRelease(props.video.track.releaseId),
+				),
+		]).then(([artist, release]) => ({
+			track: props.video.track,
+			artist,
+			release,
+		}));
 	const { t } = useTranslation();
 	const { playNext, playAfter } = usePlayerContext();
 
@@ -58,42 +67,35 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 		<ContextualMenu
 			onSelect={props.onSelect}
 			actions={[
-				[GoToArtistAction(props.artist.slug)],
-				songSlug ? [GoToSongLyricsAction(songSlug)] : [],
 				[
-					PlayNextAction(async () => props, playNext),
-					PlayAfterAction(async () => props, playAfter),
-				],
-				props.track.songId
-					? [AddToPlaylistAction(props.track.songId, queryClient)]
-					: [],
-				songSlug
-					? [
-							GoToSongVersionAction(songSlug),
-							GoToRelatedTracksAction(songSlug),
-						]
+					GoToArtistAction(props.video.artistId),
+					props.video.track.releaseId
+						? GoToReleaseAction(props.video.track.releaseId)
+						: undefined,
+				].filter((a): a is Action => a !== undefined),
+				props.video.songId
+					? [GoToSongLyricsAction(props.video.songId)]
 					: [],
 				[
-					...(props.track.song
-						? [
-								ChangeSongType(
-									props.track.song,
-									queryClient,
-									confirm,
-								),
-							]
-						: []),
-					UpdateTrackIllustrationAction(queryClient, props.track.id),
-					RefreshTrackMetadataAction(props.track.id, t),
+					PlayNextAction(getPlayNextProps, playNext),
+					PlayAfterAction(getPlayNextProps, playAfter),
 				],
-				[ShowTrackFileInfoAction(confirm, props.track.id)],
+				props.video.songId
+					? [AddToPlaylistAction(props.video.songId, queryClient)]
+					: [],
 				[
-					DownloadAction(confirm, props.track.sourceFileId, t),
-					...(songSlug ? [ShareSongAction(songSlug, t)] : []),
+					ChangeVideoType(props.video, queryClient, confirm),
+					UpdateTrackIllustrationAction(
+						queryClient,
+						props.video.track.id,
+					),
+					RefreshTrackMetadataAction(props.video.track.id, t),
 				],
+				[ShowTrackFileInfoAction(confirm, props.video.track.id)],
+				[DownloadAction(confirm, props.video.track.sourceFileId, t)],
 			]}
 		/>
 	);
 };
 
-export default ReleaseTrackContextualMenu;
+export default VideoContextualMenu;
