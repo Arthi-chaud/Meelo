@@ -208,7 +208,10 @@ export default class MetadataService {
 					: null,
 			sourceFile: { id: file.id },
 			release: release ? { id: release.id } : undefined,
-			song: song && !video ? { id: song.id } : undefined,
+			song:
+				song && (!video || !VideoService.videoTypeIsExtra(video.type))
+					? { id: song.id }
+					: undefined,
 			video: video ? { id: video.id } : undefined,
 		};
 		if (release && album) {
