@@ -146,16 +146,19 @@ export default class MetadataService {
 
 		const video =
 			metadata.type == TrackType.Video
-				? await this.videoService.getOrCreate({
-						name: videoName,
-						type: videoType,
-						artist: { id: songArtist.id },
-						group: {
-							slug: songGroupSlug,
+				? await this.videoService.getOrCreate(
+						{
+							name: videoName,
+							type: videoType,
+							artist: { id: songArtist.id },
+							group: {
+								slug: songGroupSlug,
+							},
+							registeredAt: file.registerDate,
+							song: song ? { id: song.id } : undefined,
 						},
-						registeredAt: file.registerDate,
-						song: song ? { id: song.id } : undefined,
-				  })
+						{ master: true },
+				  )
 				: null;
 
 		const album = metadata.album
@@ -241,14 +244,28 @@ export default class MetadataService {
 		if (overwrite) {
 			await this.trackService.delete({ sourceFileId: file.id });
 		}
-		return this.trackService.create(track).then((res) => {
+		return this.trackService.create(track).then(async (res) => {
 			if (
 				song &&
 				(song.masterId === null ||
 					song.master?.type == TrackType.Video) &&
 				track.type === TrackType.Audio
 			) {
-				this.songService.setMasterTrack({ id: res.id });
+				await this.songService.update(
+					{ master: { id: res.id } },
+					{ id: song.id },
+				);
+			}
+
+			if (
+				video &&
+				(!video.master ||
+					(video.master.bitrate ?? 0) < (track.bitrate ?? 0))
+			) {
+				await this.videoService.update(
+					{ master: { id: res.id } },
+					{ id: video.id },
+				);
 			}
 			return res;
 		});

@@ -427,10 +427,10 @@ describe("Track Controller", () => {
 		});
 	});
 
-	describe("Set Track as master (POST /tracks/:id/master)", () => {
+	describe("Set Track as master (POST /tracks/:id/master/song)", () => {
 		it("should set track as master", () => {
 			return request(app.getHttpServer())
-				.put(`/tracks/${dummyRepository.trackA1_2Video.id}/master`)
+				.put(`/tracks/${dummyRepository.trackA1_2Video.id}/master/song`)
 				.expect(200)
 				.expect((res) => {
 					const track: Track = res.body;

@@ -443,18 +443,24 @@ describe("Song Service", () => {
 
 	describe("Set Master Track", () => {
 		it("should set track as master", async () => {
-			const updatedSong = await songService.setMasterTrack({
-				id: dummyRepository.trackA1_2Video.id,
-			});
+			const updatedSong = await songService.update(
+				{
+					master: { id: dummyRepository.trackA1_2Video.id },
+				},
+				{ id: dummyRepository.songA1.id },
+			);
 			expect(updatedSong).toStrictEqual({
 				...dummyRepository.songA1,
 				masterId: dummyRepository.trackA1_2Video.id,
 			});
 		});
 		it("should unset track as master", async () => {
-			const updatedSong = await songService.unsetMasterTrack({
-				id: dummyRepository.songA1.id,
-			});
+			const updatedSong = await songService.update(
+				{ master: null },
+				{
+					id: dummyRepository.songA1.id,
+				},
+			);
 			expect(updatedSong).toStrictEqual({
 				...dummyRepository.songA1,
 			});

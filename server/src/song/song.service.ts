@@ -29,7 +29,6 @@ import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Song, SongWithRelations } from "src/prisma/models";
 import Logger from "src/logger/logger";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
 import { PrismaError } from "prisma-error-enum";
 import {
 	SongAlreadyExistsException,
@@ -59,6 +58,7 @@ import {
 } from "src/events/events.service";
 import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { shuffle } from "src/utils/shuffle";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -457,6 +457,14 @@ export default class SongService extends SearchableRepositoryService {
 	): Prisma.SongUpdateInput {
 		return {
 			...what,
+			master:
+				what.master === null
+					? { disconnect: true }
+					: what.master
+					? {
+							connect: TrackService.formatWhereInput(what.master),
+					  }
+					: undefined,
 			genres: what.genres
 				? {
 						connect: what.genres
@@ -502,6 +510,16 @@ export default class SongService extends SearchableRepositoryService {
 					),
 			);
 		}
+
+		if (what.master) {
+			const newMaster = await this.trackService.get(what.master);
+			const song = await this.get(where);
+			if (newMaster.songId !== song.id) {
+				throw new InvalidRequestException(
+					"Master track of song should be track of said song",
+				);
+			}
+		}
 		return this.prismaService.song
 			.update({
 				data: this.formatUpdateInput(what),
@@ -510,35 +528,6 @@ export default class SongService extends SearchableRepositoryService {
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
 			});
-	}
-
-	/**
-	 * Set the track as song's master
-	 * @param trackWhere the query parameters of the track
-	 * @returns the updated song
-	 */
-	async setMasterTrack(trackWhere: TrackQueryParameters.WhereInput) {
-		const track = await this.trackService.get(trackWhere);
-
-		if (!track.songId) {
-			return;
-		}
-		return this.prismaService.song.update({
-			where: { id: track.songId },
-			data: { masterId: track.id },
-		});
-	}
-
-	/**
-	 * Unset song's master track
-	 * @param song the query parameters of the song
-	 * @returns the updated song
-	 */
-	async unsetMasterTrack(songWhere: SongQueryParameters.WhereInput) {
-		return this.prismaService.song.update({
-			where: SongService.formatWhereInput(songWhere),
-			data: { masterId: null },
-		});
 	}
 
 	/**

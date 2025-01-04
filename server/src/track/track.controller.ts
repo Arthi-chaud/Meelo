@@ -46,6 +46,7 @@ import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
+import VideoService from "src/video/video.service";
 
 class Selector {
 	@IsOptional()
@@ -100,6 +101,8 @@ export class TrackController {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 	) {}
 
 	@ApiOperation({
@@ -155,18 +158,44 @@ export class TrackController {
 	}
 
 	@ApiOperation({
-		summary: "Set a track as master track",
+		summary: "Set a track as master track of parent song",
 	})
 	@Admin()
 	@Response({ handler: TrackResponseBuilder })
-	@Put(":idOrSlug/master")
-	async setAsMaster(
+	@Put(":idOrSlug/master/song")
+	async setAsMasterOrSong(
 		@IdentifierParam(TrackService)
 		where: TrackQueryParameters.WhereInput,
 	) {
 		const track = await this.trackService.get(where);
 
-		await this.songService.setMasterTrack(where);
+		if (track.songId) {
+			await this.songService.update(
+				{ master: { id: track.id } },
+				{ id: track.songId },
+			);
+		}
+		return track;
+	}
+
+	@ApiOperation({
+		summary: "Set a track as master track of parent video",
+	})
+	@Admin()
+	@Response({ handler: TrackResponseBuilder })
+	@Put(":idOrSlug/master/video")
+	async setAsMasterOfVideo(
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
+	) {
+		const track = await this.trackService.get(where);
+
+		if (track.videoId) {
+			await this.videoService.update(
+				{ master: { id: track.id } },
+				{ id: track.videoId },
+			);
+		}
 		return track;
 	}
 }

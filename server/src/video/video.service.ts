@@ -42,6 +42,8 @@ import deepmerge from "deepmerge";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import AlbumService from "src/album/album.service";
 import LibraryService from "src/library/library.service";
+import TrackService from "src/track/track.service";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export default class VideoService {
@@ -53,6 +55,8 @@ export default class VideoService {
 		private parserService: ParserService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 	) {}
 
 	async create<I extends VideoQueryParameters.RelationInclude = {}>(
@@ -161,17 +165,35 @@ export default class VideoService {
 		what: VideoQueryParameters.UpdateInput,
 		where: VideoQueryParameters.WhereInput,
 	) {
+		if (what.master) {
+			const newMaster = await this.trackService.get(what.master);
+			const video = await this.get(where);
+			if (newMaster.videoId !== video.id) {
+				throw new InvalidRequestException(
+					"Master track of video should be track of said video",
+				);
+			}
+		}
 		return this.prismaService.video
 			.update({
 				where: VideoService.formatWhereInput(where),
 				data: {
 					type: what.type,
+					master:
+						what.master === null
+							? { disconnect: true }
+							: what.master
+							? {
+									connect: TrackService.formatWhereInput(
+										what.master,
+									),
+							  }
+							: undefined,
 					song: what.song
 						? { connect: SongService.formatWhereInput(what.song) }
 						: undefined,
 				},
 			})
-
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
 			});

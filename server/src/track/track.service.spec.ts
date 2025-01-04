@@ -479,9 +479,12 @@ describe("Track Service", () => {
 
 	describe("Delete Track", () => {
 		it("should delete the track", async () => {
-			await songService.setMasterTrack({
-				id: dummyRepository.trackA1_1.id,
-			});
+			await songService.update(
+				{
+					master: { id: dummyRepository.trackA1_1.id },
+				},
+				{ id: dummyRepository.songA1.id },
+			);
 			await trackService.delete({ id: dummyRepository.trackA1_1.id });
 
 			const test = async () =>

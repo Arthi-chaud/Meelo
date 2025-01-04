@@ -27,6 +27,7 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import SongGroupQueryParameters from "src/song/models/song-group.query-params";
 import { SearchStringInput } from "src/utils/search-string-input";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace VideoQueryParameters {
 	export type CreateInput = {
@@ -39,6 +40,7 @@ namespace VideoQueryParameters {
 	};
 	export type UpdateInput = Partial<{
 		song: SongQueryParameters.WhereInput;
+		master: TrackQueryParameters.WhereInput | null;
 		type: VideoType;
 	}>;
 	export type WhereInput = RequireExactlyOne<{
@@ -65,7 +67,12 @@ namespace VideoQueryParameters {
 	/**
 	 * Defines what relations to include in query
 	 */
-	export const AvailableIncludes = ["tracks", "artist", "song"] as const;
+	export const AvailableIncludes = [
+		"tracks",
+		"artist",
+		"song",
+		"master",
+	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
 		[],

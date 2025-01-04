@@ -29,6 +29,7 @@ import { filterAtomicRelationInclude } from "src/relation-include/atomic-relatio
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { SongType } from "@prisma/client";
 import SongGroupQueryParameters from "./song-group.query-params";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace SongQueryParameters {
 	/**
@@ -90,6 +91,7 @@ namespace SongQueryParameters {
 	 */
 	export type UpdateInput = Partial<{
 		type: SongType;
+		master: TrackQueryParameters.WhereInput | null;
 		genres: (GenreQueryParameters.WhereInput | string)[];
 	}>;
 	export type DeleteInput = {
