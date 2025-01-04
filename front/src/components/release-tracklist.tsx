@@ -48,17 +48,14 @@ import { Audio } from "react-loader-spinner";
 import { VideoWithRelations } from "../models/video";
 import { RequireAtLeastOne } from "type-fest";
 
+type TrackType = TrackWithRelations<"illustration"> &
+	RequireAtLeastOne<{
+		song: SongWithRelations<"artist" | "featuring">;
+		video: VideoWithRelations<"artist">;
+	}>;
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
-	tracklist:
-		| Tracklist<
-				TrackWithRelations<"illustration"> &
-					RequireAtLeastOne<{
-						song: SongWithRelations<"artist" | "featuring">;
-						video: Omit<VideoWithRelations<"artist">, "track">;
-					}>
-		  >
-		| undefined;
+	tracklist: Tracklist<TrackType> | undefined;
 	release: Release | undefined;
 };
 
@@ -119,183 +116,181 @@ const ReleaseTrackList = ({
 						)
 					}
 				>
-					{(
-						disc[1] as (
-							| (TrackWithRelations<"illustration"> &
-									RequireAtLeastOne<{
-										song: SongWithRelations<
-											"artist" | "featuring"
-										>;
-										video: Omit<
-											VideoWithRelations<"artist">,
-											"track"
-										>;
-									}>)
-							| undefined
-						)[]
-					).map((currentTrack, index) => (
-						<Fragment key={index}>
-							<ListItem
-								dense={
-									mainArtist === undefined
-										? false
-										: currentTrack
-											? (currentTrack.song ??
-													currentTrack.video)!
-													.artistId != mainArtist?.id
-											: false
-								}
-								disablePadding
-								disableGutters
-								secondaryAction={
-									currentTrack ? (
-										<ReleaseTrackContextualMenu
-											track={{
-												...currentTrack,
-												song: currentTrack.song ?? null,
-											}}
-											artist={
-												(currentTrack.song ??
-													currentTrack.video)!.artist
-											}
-										/>
-									) : (
-										<IconButton disabled>
-											<ContextualMenuIcon />
-										</IconButton>
-									)
-								}
-							>
-								<ListItemButton
-									onClick={
-										flatTracklist &&
-										currentTrack &&
-										release &&
-										(() =>
-											playTracks({
-												tracks: flatTracklist.map(
-													(flatTrack) => ({
-														track: flatTrack,
-														release,
-														artist: (flatTrack.song ??
-															flatTrack.video)!
-															.artist,
-													}),
-												),
-												cursor: flatTracklist.findIndex(
-													(flatTrack) =>
-														flatTrack.id ==
-														currentTrack.id,
-												),
-											}))
+					{(disc[1] as (TrackType | undefined)[]).map(
+						(currentTrack, index) => (
+							<Fragment key={index}>
+								<ListItem
+									dense={
+										mainArtist === undefined
+											? false
+											: currentTrack
+												? (currentTrack.song ??
+														currentTrack.video)!
+														.artistId !=
+													mainArtist?.id
+												: false
 									}
-									sx={{
-										borderTopRightRadius: 0,
-										borderBottomRightRadius: 0,
-									}}
-								>
-									<ListItemIcon>
-										{currentTrack ? (
-											currentTrack.id ===
-											currentlyPlayingTrack?.track.id ? (
-												<PlayingIcon />
-											) : (
-												<Typography color="text.disabled">
-													{currentTrack.trackIndex}
-												</Typography>
-											)
-										) : (
-											<Skeleton
-												width="20px"
-												sx={{ color: "text.disabled" }}
-											/>
-										)}
-									</ListItemIcon>
-									<ListItemText
-										primary={
-											currentTrack?.name ?? (
-												<Skeleton width="120px" />
-											)
-										}
-										primaryTypographyProps={{
-											fontSize: "medium",
-										}}
-										secondary={
-											mainArtist === undefined
-												? null
-												: currentTrack
-													? formatTracksubtitle(
-															(currentTrack.song ??
-																currentTrack.video)!,
-														)
-													: undefined
-										}
-										secondaryTypographyProps={{
-											fontSize: "small",
-											color: "text.disabled",
-										}}
-									/>
-									{currentTrack?.isBonus && (
-										<Typography
-											sx={{
-												display: {
-													xs: "none",
-													sm: "block",
-												},
-											}}
-											color="text.disabled"
-										>
-											{t("bonusTrack")}
-										</Typography>
-									)}
-									{currentTrack?.isRemastered && (
-										<Typography
-											color="text.disabled"
-											sx={{
-												display: {
-													xs: "none",
-													sm: "block",
-												},
-											}}
-										>
-											{t("remastered")}
-										</Typography>
-									)}
-									{currentTrack?.type == "Video" && (
-										<Icon
-											sx={{
-												marginLeft: 2,
-												display: "flex",
-												alignItems: "center",
-											}}
-										>
-											<VideoIcon
-												color={
-													theme.palette.text.disabled
+									disablePadding
+									disableGutters
+									secondaryAction={
+										currentTrack ? (
+											<ReleaseTrackContextualMenu
+												track={{
+													...currentTrack,
+													song:
+														currentTrack.song ??
+														null,
+												}}
+												artist={
+													(currentTrack.song ??
+														currentTrack.video)!
+														.artist
 												}
 											/>
-										</Icon>
-									)}
-									<Typography
-										color="text.disabled"
+										) : (
+											<IconButton disabled>
+												<ContextualMenuIcon />
+											</IconButton>
+										)
+									}
+								>
+									<ListItemButton
+										onClick={
+											flatTracklist &&
+											currentTrack &&
+											release &&
+											(() =>
+												playTracks({
+													tracks: flatTracklist.map(
+														(flatTrack) => ({
+															track: flatTrack,
+															release,
+															artist: (flatTrack.song ??
+																flatTrack.video)!
+																.artist,
+														}),
+													),
+													cursor: flatTracklist.findIndex(
+														(flatTrack) =>
+															flatTrack.id ==
+															currentTrack.id,
+													),
+												}))
+										}
 										sx={{
-											marginLeft: 2,
-											overflow: "unset",
+											borderTopRightRadius: 0,
+											borderBottomRightRadius: 0,
 										}}
 									>
-										{currentTrack ? (
-											formatDuration(
-												currentTrack.duration,
-											)
-										) : (
-											<Skeleton width="30px" />
+										<ListItemIcon>
+											{currentTrack ? (
+												currentTrack.id ===
+												currentlyPlayingTrack?.track
+													.id ? (
+													<PlayingIcon />
+												) : (
+													<Typography color="text.disabled">
+														{
+															currentTrack.trackIndex
+														}
+													</Typography>
+												)
+											) : (
+												<Skeleton
+													width="20px"
+													sx={{
+														color: "text.disabled",
+													}}
+												/>
+											)}
+										</ListItemIcon>
+										<ListItemText
+											primary={
+												currentTrack?.name ?? (
+													<Skeleton width="120px" />
+												)
+											}
+											primaryTypographyProps={{
+												fontSize: "medium",
+											}}
+											secondary={
+												mainArtist === undefined
+													? null
+													: currentTrack
+														? formatTracksubtitle(
+																(currentTrack.song ??
+																	currentTrack.video)!,
+															)
+														: undefined
+											}
+											secondaryTypographyProps={{
+												fontSize: "small",
+												color: "text.disabled",
+											}}
+										/>
+										{currentTrack?.isBonus && (
+											<Typography
+												sx={{
+													display: {
+														xs: "none",
+														sm: "block",
+													},
+												}}
+												color="text.disabled"
+											>
+												{t("bonusTrack")}
+											</Typography>
 										)}
-									</Typography>
-								</ListItemButton>
-							</ListItem>
-							<Divider variant="inset" />
-						</Fragment>
-					))}
+										{currentTrack?.isRemastered && (
+											<Typography
+												color="text.disabled"
+												sx={{
+													display: {
+														xs: "none",
+														sm: "block",
+													},
+												}}
+											>
+												{t("remastered")}
+											</Typography>
+										)}
+										{currentTrack?.type == "Video" && (
+											<Icon
+												sx={{
+													marginLeft: 2,
+													display: "flex",
+													alignItems: "center",
+												}}
+											>
+												<VideoIcon
+													color={
+														theme.palette.text
+															.disabled
+													}
+												/>
+											</Icon>
+										)}
+										<Typography
+											color="text.disabled"
+											sx={{
+												marginLeft: 2,
+												overflow: "unset",
+											}}
+										>
+											{currentTrack ? (
+												formatDuration(
+													currentTrack.duration,
+												)
+											) : (
+												<Skeleton width="30px" />
+											)}
+										</Typography>
+									</ListItemButton>
+								</ListItem>
+								<Divider variant="inset" />
+							</Fragment>
+						),
+					)}
 				</List>
 			))}
 		</Box>
