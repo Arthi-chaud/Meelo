@@ -112,26 +112,28 @@ export default class MetadataService {
 			// If it does, let's just pass the entire song name
 		);
 
-		const song = !VideoService.videoTypeIsExtra(videoType)
-			? await this.songService.getOrCreate(
-					{
-						name: parsedTrackName.parsedName,
-						group: {
-							slug: songGroupSlug,
+		const song =
+			metadata.type == TrackType.Audio ||
+			!VideoService.videoTypeIsExtra(videoType)
+				? await this.songService.getOrCreate(
+						{
+							name: parsedTrackName.parsedName,
+							group: {
+								slug: songGroupSlug,
+							},
+							artist: { id: songArtist.id },
+							featuring: featuringArtists.map(({ slug }) => ({
+								slug: new Slug(slug),
+							})),
+							genres: genres.map((genre) => ({ id: genre.id })),
+							registeredAt: file.registerDate,
 						},
-						artist: { id: songArtist.id },
-						featuring: featuringArtists.map(({ slug }) => ({
-							slug: new Slug(slug),
-						})),
-						genres: genres.map((genre) => ({ id: genre.id })),
-						registeredAt: file.registerDate,
-					},
-					{
-						genres: true,
-						master: true,
-					},
-			  )
-			: null;
+						{
+							genres: true,
+							master: true,
+						},
+				  )
+				: null;
 
 		if (song) {
 			await this.songService.update(
