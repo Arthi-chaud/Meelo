@@ -10,8 +10,8 @@ While the software wants to be a flexible as possible, it requires a little bit 
 
 Meelo has all the basic features you might expect from a music player/server (playback, browsing, search, playlists, libraries ...). But it comes with a handful of features that make it unique :star_struck:
 
-- Music Videos
-  - Access them directly from an album's or an artist's page
+- Music Videos are first-class citizens
+  - Access them directly from an album's, artist's or song's page
   - We also differentiate music video from interviews, behind-the-scenes, trailers...
 - Identifies B-Sides
   - Meelo shows you any tracks that could be related to an album directly on the album's page!
