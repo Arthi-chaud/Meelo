@@ -238,7 +238,14 @@ export class SongController {
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
 	) {
-		return this.songService.update(updateDTO, where);
+		const { masterTrackId, ...dtoRest } = updateDTO;
+		return this.songService.update(
+			{
+				...dtoRest,
+				master: masterTrackId ? { id: masterTrackId } : undefined,
+			},
+			where,
+		);
 	}
 
 	@ApiOperation({

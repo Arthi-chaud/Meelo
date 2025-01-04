@@ -571,5 +571,28 @@ describe("Song Controller", () => {
 					expect(songGenres).toContain("My Genre B");
 				});
 		});
+
+		it("should set track as master", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackA1_2Video.id,
+				})
+				.expect((res) => {
+					const song: Song = res.body;
+					expect(song.masterId).toBe(
+						dummyRepository.trackA1_2Video.id,
+					);
+				});
+		});
+
+		it("should fail as track does not belong to song", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.songA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackC1_1.id,
+				})
+				.expect(400);
+		});
 	});
 });

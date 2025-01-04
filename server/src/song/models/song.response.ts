@@ -73,7 +73,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 					"This should happen only during a scan or a clean. " +
 					"If it is not the case, this is a bug.",
 			);
-			song.master = await this.trackService.getMasterTrack({
+			song.master = await this.trackService.getSongMasterTrack({
 				id: song.id,
 			});
 		}

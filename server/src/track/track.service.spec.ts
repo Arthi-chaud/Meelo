@@ -35,6 +35,7 @@ import FileManagerService from "src/file-manager/file-manager.service";
 import Slug from "src/slug/slug";
 import { FileNotFoundException } from "src/file/file.exceptions";
 import { ReleaseNotFoundException } from "src/release/release.exceptions";
+import VideoModule from "src/video/video.module";
 
 describe("Track Service", () => {
 	let trackService: TrackService;
@@ -68,6 +69,7 @@ describe("Track Service", () => {
 				GenreModule,
 				LyricsModule,
 				LibraryModule,
+				VideoModule,
 			],
 			providers: [
 				PrismaService,
@@ -408,7 +410,7 @@ describe("Track Service", () => {
 				},
 				song: { id: dummyRepository.songA1.id },
 			});
-			const track = await trackService.getMasterTrack({
+			const track = await trackService.getSongMasterTrack({
 				id: dummyRepository.songA1.id,
 			});
 			await trackService.delete({ id: tmpTrack.id });
@@ -418,7 +420,7 @@ describe("Track Service", () => {
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = async () =>
-				await trackService.getMasterTrack({ id: -1 });
+				await trackService.getSongMasterTrack({ id: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 		it("should throw, as the parent song does not have tracks", async () => {
@@ -431,7 +433,7 @@ describe("Track Service", () => {
 				},
 			});
 			const test = async () =>
-				await trackService.getMasterTrack({ id: tmpSong.id });
+				await trackService.getSongMasterTrack({ id: tmpSong.id });
 			return expect(test()).rejects.toThrow(MasterTrackNotFoundException);
 		});
 	});

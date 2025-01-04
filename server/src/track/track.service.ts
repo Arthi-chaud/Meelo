@@ -55,6 +55,8 @@ export default class TrackService {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => FileService))
@@ -329,7 +331,7 @@ export default class TrackService {
 	 * @param include the relation to include in the returned object
 	 * @returns the master track of the song
 	 */
-	async getMasterTrack(
+	async getSongMasterTrack(
 		where: SongQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude,
 	) {
@@ -356,6 +358,43 @@ export default class TrackService {
 					throw new MasterTrackNotFoundException(
 						new Slug(song.slug),
 						new Slug(song.artist.slug),
+					);
+				}
+				return master;
+			});
+	}
+
+	/**
+	 * Fetch the master tracks of a video
+	 * @param where the parameters to find the parent video
+	 * @param include the relation to include in the returned object
+	 * @returns the master track of the video
+	 */
+	async getVideoMasterTrack(
+		where: SongQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude,
+	) {
+		return this.videoService
+			.get(where, { artist: true })
+			.then(async (video) => {
+				if (video.masterId != null) {
+					return this.get({ id: video.masterId }, include);
+				}
+				const tracks = await this.prismaService.track.findMany({
+					where: { video: VideoService.formatWhereInput(where) },
+					include: include,
+					orderBy: {
+						bitrate: { sort: "desc", nulls: "last" },
+					},
+				});
+				const master =
+					tracks.find((track) => track.type == "Video") ??
+					tracks.at(0);
+
+				if (!master) {
+					throw new MasterTrackNotFoundException(
+						new Slug(video.slug),
+						new Slug(video.artist.slug),
 					);
 				}
 				return master;

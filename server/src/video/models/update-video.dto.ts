@@ -28,4 +28,10 @@ export default class UpdateVideoDTO {
 	@IsEnum(VideoType)
 	@IsOptional()
 	type?: VideoType;
+
+	@ApiProperty({
+		description: "ID of the track to set as master",
+	})
+	@IsOptional()
+	masterTrackId?: number;
 }

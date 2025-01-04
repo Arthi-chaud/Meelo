@@ -161,4 +161,29 @@ describe("Video Controller", () => {
 				});
 		});
 	});
+
+	describe("Update Video", () => {
+		it("should set track as master", () => {
+			return request(app.getHttpServer())
+				.post(`/videos/${dummyRepository.videoA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackA1_2Video.id,
+				})
+				.expect((res) => {
+					const video: Video = res.body;
+					expect(video.masterId).toBe(
+						dummyRepository.trackA1_2Video.id,
+					);
+				});
+		});
+
+		it("should fail as track does not belong to video", () => {
+			return request(app.getHttpServer())
+				.post(`/videos/${dummyRepository.videoA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackA1_1.id,
+				})
+				.expect(400);
+		});
+	});
 });

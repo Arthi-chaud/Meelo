@@ -133,7 +133,14 @@ export class VideoController {
 		@IdentifierParam(VideoService)
 		where: VideoQueryParameters.WhereInput,
 	) {
-		return this.videoService.update(updateDTO, where);
+		const { masterTrackId, ...dtoRest } = updateDTO;
+		return this.videoService.update(
+			{
+				...dtoRest,
+				master: masterTrackId ? { id: masterTrackId } : undefined,
+			},
+			where,
+		);
 	}
 
 	@ApiOperation({

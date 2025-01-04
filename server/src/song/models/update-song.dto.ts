@@ -35,4 +35,10 @@ export default class UpdateSongDTO {
 	})
 	@IsOptional()
 	genres?: string[];
+
+	@ApiProperty({
+		description: "ID of the track to set as master",
+	})
+	@IsOptional()
+	masterTrackId?: number;
 }
