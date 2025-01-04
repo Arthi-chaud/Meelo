@@ -42,18 +42,18 @@ describe("Video Controller", () => {
 	describe("Get Videos", () => {
 		it("should return videos", () => {
 			return request(app.getHttpServer())
-				.get(`/videos`)
+				.get(`/videos?with=master,illustration`)
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedVideoResponse(dummyRepository.videoA1),
-						track: {
+						illustration: null,
+						master: {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
-							illustration: null,
 						},
 					});
 				});
@@ -77,17 +77,8 @@ describe("Video Controller", () => {
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedVideoResponse({
 							...dummyRepository.videoA1,
-							artist: expectedArtistResponse(
-								dummyRepository.artistA,
-							),
-							featuring: [],
-						} as Video),
-						track: {
-							...expectedTrackResponse(
-								dummyRepository.trackA1_2Video,
-							),
-							illustration: null,
-						},
+						}),
+						artist: expectedArtistResponse(dummyRepository.artistA),
 					});
 				});
 		});
@@ -103,12 +94,6 @@ describe("Video Controller", () => {
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
 						...expectedVideoResponse(dummyRepository.videoA1),
-						track: {
-							...expectedTrackResponse(
-								dummyRepository.trackA1_2Video,
-							),
-							illustration: null,
-						},
 					});
 				});
 		});
@@ -133,12 +118,6 @@ describe("Video Controller", () => {
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
 						...expectedVideoResponse(dummyRepository.videoA1),
-						track: {
-							...expectedTrackResponse(
-								dummyRepository.trackA1_2Video,
-							),
-							illustration: null,
-						},
 					});
 				});
 		});

@@ -224,8 +224,11 @@ export default class TestPrismaService extends PrismaService {
 				releaseId: this.releaseA1_2.id,
 				type: TrackType.Video,
 				sourceFileId: this.fileA1_2Video.id,
+				masterOfVideo: { connect: { id: this.videoA1.id } },
 			},
 		});
+		//To update master track id
+		this.videoA1.masterId = this.trackA1_2Video.id;
 		this.songA2 = await this.song.create({
 			data: {
 				name: "My Other Song",

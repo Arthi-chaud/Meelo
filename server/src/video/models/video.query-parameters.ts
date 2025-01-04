@@ -72,6 +72,7 @@ namespace VideoQueryParameters {
 		"artist",
 		"song",
 		"master",
+		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,

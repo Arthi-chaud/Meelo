@@ -25,7 +25,7 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import SongService from "src/song/song.service";
-import { Prisma, Track, VideoType } from "@prisma/client";
+import { Prisma, VideoType } from "@prisma/client";
 import { shuffle } from "src/utils/shuffle";
 import VideoQueryParameters from "./models/video.query-parameters";
 import ArtistService from "src/artist/artist.service";
@@ -37,7 +37,7 @@ import {
 	VideoNotFoundException,
 } from "./video.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { Artist, Video } from "src/prisma/models";
+import { VideoWithRelations } from "src/prisma/models";
 import deepmerge from "deepmerge";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import AlbumService from "src/album/album.service";
@@ -124,13 +124,7 @@ export default class VideoService {
 		include?: I,
 	) {
 		const args = {
-			include: {
-				...(include ?? ({} as I)),
-
-				song: include?.artist
-					? { include: { featuring: include.artist } }
-					: include?.song ?? false,
-			},
+			include: include ?? ({} as I),
 			where: VideoService.formatWhereInput(where),
 		};
 		return this.prismaService.video
@@ -142,22 +136,6 @@ export default class VideoService {
 			>(args)
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
-			})
-			.then((video) => {
-				return {
-					...video,
-					featuring:
-						"song" in (video ?? {}) &&
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						"featuring" in (video.song ?? {})
-							? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							  // @ts-ignore
-							  video.song?.featuring ?? []
-							: include?.artist
-							? []
-							: undefined,
-				};
 			});
 	}
 
@@ -407,7 +385,7 @@ export default class VideoService {
 		pagination?: PaginationParameters,
 		include?: I,
 		sort?: VideoQueryParameters.SortingParameter | number,
-	): Promise<(Video & { track: Track; featuring?: Artist[] })[]> {
+	): Promise<VideoWithRelations[]> {
 		if (typeof sort == "number") {
 			const randomIds = await this.getManyRandomIds(
 				where,
@@ -420,48 +398,12 @@ export default class VideoService {
 				include,
 			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
 		}
-		return this.prismaService.video
-			.findMany({
-				orderBy: sort?.sortBy
-					? this.formatSortingInput(sort)
-					: undefined,
-				include: {
-					...include,
-					song: include?.artist
-						? { include: { featuring: include.artist } }
-						: include?.song ?? false,
-					tracks: {
-						where: {
-							type: "Video",
-						},
-						orderBy: { bitrate: { sort: "desc", nulls: "last" } },
-						take: 1,
-						include: { illustration: true },
-					},
-				},
-				...formatPaginationParameters(pagination),
-				where: VideoService.formatManyWhereInput(where),
-			})
-			.then((videos) =>
-				videos.map(({ tracks, ...video }) => ({
-					...video,
-					song:
-						include?.song && video.song
-							? { ...video.song, featuring: undefined }
-							: include?.song
-							? null
-							: undefined,
-					featuring:
-						"featuring" in (video.song ?? {})
-							? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							  // @ts-ignore
-							  video.song?.featuring ?? []
-							: include?.artist
-							? []
-							: undefined,
-					track: tracks[0],
-				})),
-			);
+		return this.prismaService.video.findMany({
+			orderBy: sort?.sortBy ? this.formatSortingInput(sort) : undefined,
+			include: include,
+			...formatPaginationParameters(pagination),
+			where: VideoService.formatManyWhereInput(where),
+		});
 	}
 
 	formatSortingInput(

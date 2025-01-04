@@ -155,13 +155,16 @@ describe("Video Service", () => {
 
 	describe("Get  Videos", () => {
 		it("should return the songs With video", async () => {
-			const videoSongs = await videoService.getMany({});
+			const videoSongs = await videoService.getMany({}, undefined, {
+				master: true,
+				illustration: true,
+			});
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toMatchObject({
 				...dummyRepository.videoA1,
-				track: {
+				illustration: null,
+				master: {
 					...dummyRepository.trackA1_2Video,
-					illustration: null,
 				},
 			});
 		});
@@ -176,14 +179,9 @@ describe("Video Service", () => {
 				{ artist: true },
 			);
 			expect(videoSongs.length).toBe(1);
-			expect(videoSongs[0]).toMatchObject({
+			expect(videoSongs[0]).toStrictEqual({
 				...dummyRepository.videoA1,
 				artist: dummyRepository.artistA,
-				featuring: [],
-				track: {
-					...dummyRepository.trackA1_2Video,
-					illustration: null,
-				},
 			});
 		});
 	});

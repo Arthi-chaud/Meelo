@@ -17,35 +17,44 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { ApiProperty, IntersectionType } from "@nestjs/swagger";
+import { IntersectionType } from "@nestjs/swagger";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import { TrackResponseBuilder } from "src/track/models/track.response";
+import {
+	TrackResponse,
+	TrackResponseBuilder,
+} from "src/track/models/track.response";
 import {
 	SongResponse,
 	SongResponseBuilder,
 } from "../../song/models/song.response";
-import { Artist, Track, Video, VideoWithRelations } from "src/prisma/models";
+import { Video, VideoWithRelations } from "src/prisma/models";
 import {
 	ArtistResponse,
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
+import TrackService from "src/track/track.service";
+import Logger from "src/logger/logger";
 
-export class VideoResponse extends IntersectionType(Video) {
-	@ApiProperty()
-	track?: Track;
-	@ApiProperty()
-	artist?: ArtistResponse;
-	@ApiProperty()
-	featuring?: ArtistResponse[];
-	@ApiProperty()
-	song?: SongResponse | null;
-}
+export class VideoResponse extends IntersectionType(
+	Video,
+	IllustratedResponse,
+	class {
+		master?: TrackResponse;
+		artist?: ArtistResponse;
+		song?: SongResponse | null;
+	},
+) {}
 
 @Injectable()
 export class VideoResponseBuilder extends ResponseBuilderInterceptor<
-	VideoWithRelations & { track?: Track; featuring?: Artist[] },
+	VideoWithRelations,
 	VideoResponse
 > {
+	private readonly logger = new Logger(VideoResponseBuilder.name);
 	constructor(
 		@Inject(forwardRef(() => SongResponseBuilder))
 		private songResponseBuilder: SongResponseBuilder,
@@ -53,37 +62,41 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
 		private trackResponseBuilder: TrackResponseBuilder,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 	) {
 		super();
 	}
 
 	returnType = VideoResponse;
 
-	async buildResponse(
-		video: VideoWithRelations & { track?: Track; featuring?: Artist[] },
-	): Promise<VideoResponse> {
+	async buildResponse(video: VideoWithRelations): Promise<VideoResponse> {
+		if (video.master === null) {
+			this.logger.warn(
+				"The Master Track of a video had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
+			video.master = await this.trackService.getVideoMasterTrack({
+				id: video.id,
+			});
+		}
 		return {
 			...video,
 			artist: video.artist
 				? await this.artistResponseBuilder.buildResponse(video.artist)
 				: video.artist,
-			featuring: video.featuring
-				? await Promise.all(
-						video.featuring.map((a) =>
-							this.artistResponseBuilder.buildResponse(a),
-						),
-				  )
-				: video.featuring,
 			song: video.song
 				? await this.songResponseBuilder.buildResponse({
 						...video.song,
 						featuring: undefined,
 				  })
 				: video.song,
-			track: video.track
-				? ((await this.trackResponseBuilder.buildResponse(
-						video.track,
-				  )) as Track)
+			illustration: video.illustration
+				? IllustrationResponse.from(video.illustration)
+				: video.illustration,
+			master: video.master
+				? await this.trackResponseBuilder.buildResponse(video.master)
 				: undefined,
 		};
 	}
