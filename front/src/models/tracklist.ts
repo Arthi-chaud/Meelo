@@ -37,15 +37,13 @@ const TracklistItemWithRelations = <Selection extends SongInclude | never>(
 		.concat(
 			yup.object({
 				song: Song.concat(SongRelations.pick(selection)).nullable(),
-				video: Video.omit(["track"])
-					.concat(
-						VideoRelations.pick(
-							selection.includes("artist" as Selection)
-								? ["artist"]
-								: [],
-						),
-					)
-					.nullable(),
+				video: Video.concat(
+					VideoRelations.pick(
+						selection.includes("artist" as Selection)
+							? ["artist"]
+							: [],
+					),
+				).nullable(),
 			}),
 		)
 		.required();

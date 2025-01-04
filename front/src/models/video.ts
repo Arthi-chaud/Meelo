@@ -51,37 +51,23 @@ const Video = Resource.concat(
 		groupId: yup.number().required().nullable(),
 		registeredAt: yup.date().required(),
 		type: yup.mixed<VideoType>().oneOf(VideoType).required(),
-		track: yup.lazy(() =>
-			Track.concat(
-				yup.object({
-					illustration: Illustration.required().nullable(),
-				}),
-			),
-		),
 	}),
 );
 
 type Video = yup.InferType<typeof Video>;
 
-export type VideoInclude = "artist" | "song" | "featuring";
+export type VideoInclude = "artist" | "song" | "illustration" | "master";
 export const VideoRelations = yup.object({
 	artist: Artist.required(),
-	featuring: yup.array(Artist.required()).required(),
 	song: yup.lazy(() => Song.required().nullable()),
+	master: yup.lazy(() => Track.required()),
+	illustration: Illustration.required().nullable(),
 });
 
 const VideoWithRelations = <Selection extends VideoInclude | never = never>(
 	relation: Selection[],
-) => {
-	if (
-		relation.includes("featuring" as Selection) &&
-		!relation.includes("artist" as Selection)
-	) {
-		throw new Error("You can't include featuring without artist");
-	}
-	return Video.concat(VideoRelations.pick(relation));
-};
-//TODO It should not be possible to include "featuring" w/o artist
+) => Video.concat(VideoRelations.pick(relation));
+
 type VideoWithRelations<Selection extends VideoInclude | never = never> =
 	yup.InferType<ReturnType<typeof VideoWithRelations<Selection>>>;
 

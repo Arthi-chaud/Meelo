@@ -41,7 +41,7 @@ import { VideoWithRelations } from "../../models/video";
 import { ChangeVideoType } from "../actions/resource-type";
 
 type VideoContextualMenuProps = {
-	video: VideoWithRelations;
+	video: VideoWithRelations<"master" | "illustration">;
 	onSelect?: () => void;
 };
 
@@ -51,12 +51,15 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 	const getPlayNextProps = () =>
 		Promise.all([
 			queryClient.fetchQuery(API.getArtist(props.video.artistId)),
-			props.video.track.releaseId &&
+			props.video.master.releaseId &&
 				queryClient.fetchQuery(
-					API.getRelease(props.video.track.releaseId),
+					API.getRelease(props.video.master.releaseId),
 				),
 		]).then(([artist, release]) => ({
-			track: props.video.track,
+			track: {
+				...props.video.master,
+				illustration: props.video.illustration,
+			},
 			artist,
 			release,
 		}));
@@ -69,8 +72,8 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 			actions={[
 				[
 					GoToArtistAction(props.video.artistId),
-					props.video.track.releaseId
-						? GoToReleaseAction(props.video.track.releaseId)
+					props.video.master.releaseId
+						? GoToReleaseAction(props.video.master.releaseId)
 						: undefined,
 				].filter((a): a is Action => a !== undefined),
 				props.video.songId
@@ -87,12 +90,12 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 					ChangeVideoType(props.video, queryClient, confirm),
 					UpdateTrackIllustrationAction(
 						queryClient,
-						props.video.track.id,
+						props.video.master.id,
 					),
-					RefreshTrackMetadataAction(props.video.track.id, t),
+					RefreshTrackMetadataAction(props.video.master.id, t),
 				],
-				[ShowTrackFileInfoAction(confirm, props.video.track.id)],
-				[DownloadAction(confirm, props.video.track.sourceFileId, t)],
+				[ShowTrackFileInfoAction(confirm, props.video.master.id)],
+				[DownloadAction(confirm, props.video.master.sourceFileId, t)],
 			]}
 		/>
 	);

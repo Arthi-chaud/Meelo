@@ -62,7 +62,7 @@ const videosQuery = (artistSlugOrId: string | number) =>
 	API.getVideos(
 		{ artist: artistSlugOrId },
 		{ sortBy: "addDate", order: "desc" },
-		["artist", "featuring"],
+		["artist", "master", "illustration"],
 	);
 
 const topSongsQuery = (artistSlugOrId: string | number) =>

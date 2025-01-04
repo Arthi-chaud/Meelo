@@ -64,7 +64,10 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				Promise.allSettled(
 					tracks
 						.reverse()
-						.map((track) => API.setTrackAsMaster(track.id)),
+						.filter((track) => track.songId != null)
+						.map((track) =>
+							API.setTrackAsSongMaster(track.id, track.songId!),
+						),
 				)
 					.then(() => {
 						toast.success(t("tracksUpdated"));

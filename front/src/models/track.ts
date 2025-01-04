@@ -91,7 +91,7 @@ export type TrackInclude = "song" | "release" | "illustration" | "video";
 
 const TrackRelations = yup.object({
 	song: yup.lazy(() => Song.required().nullable()),
-	video: yup.lazy(() => Video.omit(["track"]).required().nullable()),
+	video: yup.lazy(() => Video.required().nullable()),
 	release: Release.required().nullable(),
 	illustration: Illustration.required().nullable(),
 });

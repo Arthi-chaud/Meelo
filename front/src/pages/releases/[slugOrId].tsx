@@ -60,7 +60,7 @@ import ResourceDescriptionExpandable from "../../components/resource-description
 import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
-import Video, { VideoTypeIsExtra } from "../../models/video";
+import { VideoTypeIsExtra, VideoWithRelations } from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
@@ -129,7 +129,8 @@ const releaseBSidesQuery = (releaseId: number) =>
 		"master",
 		"illustration",
 	]);
-const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
+const albumVideosQuery = (albumId: number) =>
+	API.getVideos({ album: albumId }, undefined, ["master", "illustration"]);
 const relatedAlbumsQuery = (albumId: number) =>
 	API.getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
 		"artist",
@@ -322,10 +323,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						};
 					},
 					{
-						videos: [] as Video[],
-						videoExtras: [] as Video[],
-						liveVideos: [] as Video[],
-					},
+						videos: [],
+						videoExtras: [],
+						liveVideos: [],
+					} as Record<
+						"videos" | "videoExtras" | "liveVideos",
+						VideoWithRelations<"master" | "illustration">[]
+					>,
 				),
 		[albumVideos.data, tracks],
 	);

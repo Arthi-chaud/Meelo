@@ -37,7 +37,11 @@ const prepareSSR = (context: NextPageContext) => {
 	return {
 		additionalProps: { sortBy, order },
 		infiniteQueries: [
-			API.getVideos({}, { sortBy, order }, ["artist", "featuring"]),
+			API.getVideos({}, { sortBy, order }, [
+				"artist",
+				"master",
+				"illustration",
+			]),
 		],
 	};
 };
@@ -58,7 +62,7 @@ const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 					API.getVideos(
 						{ library: library ?? undefined, random, type },
 						{ sortBy, order },
-						["artist", "featuring"],
+						["artist", "master", "illustration"],
 					)
 				}
 				subtitle="artist"

@@ -92,8 +92,6 @@ const AuthenticationResponse = yup.object({
 
 type Identifier = number | string;
 
-type NullableIdentifier = Identifier | null;
-
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
 type QueryParameters<Keys extends readonly string[]> = {
@@ -788,9 +786,7 @@ export default class API {
 				"videos",
 				...API.formatObject(filter),
 				...API.formatObject(sort),
-				...API.formatIncludeKeys(
-					include?.filter((i) => i !== "featuring"),
-				),
+				...API.formatIncludeKeys(include),
 			],
 			exec: (pagination) =>
 				API.fetch({
@@ -798,7 +794,7 @@ export default class API {
 					errorMessage: "Videos could not be loaded",
 					parameters: {
 						pagination: pagination,
-						include: include?.filter((i) => i !== "featuring"),
+						include,
 						sort,
 					},
 					otherParameters: filter,
@@ -850,7 +846,7 @@ export default class API {
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getMasterTrack<I extends TrackInclude | never = never>(
+	static getSongMasterTrack<I extends TrackInclude | never = never>(
 		songSlugOrId: string | number,
 		include?: I[],
 	): Query<TrackWithRelations<I>> {
@@ -863,7 +859,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/tracks/master/${songSlugOrId}`,
+					route: `/tracks/master/song/${songSlugOrId}`,
 					parameters: { include },
 					validator: TrackWithRelations(include ?? []),
 				}),
@@ -1488,15 +1484,36 @@ export default class API {
 	 * @param trackSlugOrId
 	 * @returns
 	 */
-	static async setTrackAsMaster(
+	static async setTrackAsSongMaster(
 		trackSlugOrId: string | number,
+		songSlugOrId: string | number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/tracks/${trackSlugOrId}/master`,
-			errorMessage: "Track update failed",
+			route: `/songs/${songSlugOrId}`,
+			errorMessage: "Update Song Failed",
+			method: "POST",
 			parameters: {},
-			method: "PUT",
-			validator: yup.mixed(),
+			emptyResponse: true,
+			data: { masterTrackId: trackSlugOrId },
+		});
+	}
+
+	/**
+	 * Mark a track as master
+	 * @param trackSlugOrId
+	 * @returns
+	 */
+	static async setTrackAsVideoMaster(
+		trackSlugOrId: string | number,
+		videoSlugOrId: string | number,
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/videos/${videoSlugOrId}`,
+			errorMessage: "Update Video Failed",
+			method: "POST",
+			parameters: {},
+			emptyResponse: true,
+			data: { masterTrackId: trackSlugOrId },
 		});
 	}
 

@@ -27,7 +27,6 @@ import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import InfiniteResourceViewProps from "./infinite-resource-view-props";
 import VideoTile from "../../tile/video-tile";
-import { PaginationParameters } from "../../../models/pagination";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import { PlayerActions, usePlayerContext } from "../../../contexts/player";
 import {
@@ -42,13 +41,23 @@ const playVideosAction = (
 	playTrack: PlayerActions["playTrack"],
 	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
-	query: () => InfiniteQuery<VideoWithRelations<"artist" | "featuring">>,
+	query: () => InfiniteQuery<
+		VideoWithRelations<"artist" | "master" | "illustration">
+	>,
 ) => {
 	emptyPlaylist();
 	queryClient.client
 		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
 		.then(async (res) => {
-			const videos = res.pages.flatMap(({ items }) => items);
+			const videos = res.pages
+				.flatMap(({ items }) => items)
+				.map((video) => ({
+					...video,
+					track: {
+						...video.master,
+						illustration: video.illustration,
+					},
+				}));
 			let i = 0;
 			for (const video of videos) {
 				if (i == 0) {
@@ -67,7 +76,7 @@ type AdditionalProps = {
 };
 
 const InfiniteVideoView = <
-	T extends VideoWithRelations<"artist" | "featuring">,
+	T extends VideoWithRelations<"artist" | "illustration" | "master">,
 >(
 	props: InfiniteResourceViewProps<
 		T,
@@ -143,20 +152,10 @@ const InfiniteVideoView = <
 			<InfiniteView
 				view={options?.view ?? "grid"}
 				query={() => {
-					const { key, exec } = props.query(query);
-					return {
-						key,
-						exec: (pagination: PaginationParameters) =>
-							exec(pagination).then((page) => {
-								return {
-									...page,
-									items: page.items.map((item) => ({
-										...item,
-										illustration: item.track.illustration,
-									})),
-								};
-							}),
-					};
+					return props.query({
+						...query,
+						sortBy: query.sortBy,
+					});
 				}}
 				renderListItem={(item) => <></>}
 				renderGridItem={(item) => (

@@ -48,7 +48,7 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getVideos(
 				{ artist: artistIdentifier },
 				{ sortBy: sortBy, order: order },
-				["artist", "featuring"],
+				["artist", "master", "illustration"],
 			),
 		],
 	};
@@ -85,7 +85,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist", "featuring"],
+						["artist", "master", "illustration"],
 					)
 				}
 				subtitle="duration"
