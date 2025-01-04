@@ -191,7 +191,7 @@ export default class MetadataService {
 				  )
 				: undefined;
 		const track: TrackQueryParameters.CreateInput = {
-			name: parsedTrackName.parsedName,
+			name: video ? videoName : parsedTrackName.parsedName,
 			isBonus: parsedTrackName.bonus,
 			isRemastered: parsedTrackName.remastered,
 			discIndex: metadata.discIndex ?? null,

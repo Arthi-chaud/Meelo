@@ -226,10 +226,11 @@ export default class VideoService {
 							},
 						},
 					},
+
 					{
-						tracks: {
-							some: {
-								song: {
+						group: {
+							versions: {
+								some: {
 									tracks: {
 										some: {
 											release: {
@@ -240,6 +241,40 @@ export default class VideoService {
 										},
 									},
 								},
+							},
+						},
+					},
+					{
+						tracks: {
+							some: {
+								OR: [
+									{
+										video: {
+											tracks: {
+												some: {
+													release: {
+														album: AlbumService.formatWhereInput(
+															where.album,
+														),
+													},
+												},
+											},
+										},
+									},
+									{
+										song: {
+											tracks: {
+												some: {
+													release: {
+														album: AlbumService.formatWhereInput(
+															where.album,
+														),
+													},
+												},
+											},
+										},
+									},
+								],
 							},
 						},
 					},
