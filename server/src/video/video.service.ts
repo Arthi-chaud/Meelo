@@ -152,7 +152,7 @@ export default class VideoService {
 				);
 			}
 		}
-		return this.prismaService.video
+		let updatedVideo = await this.prismaService.video
 			.update({
 				where: VideoService.formatWhereInput(where),
 				data: {
@@ -175,6 +175,70 @@ export default class VideoService {
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
 			});
+		// If the video becomes an extra
+		// Unlink related song but patch group id
+		if (
+			VideoService.videoTypeIsExtra(updatedVideo.type) &&
+			updatedVideo.songId
+		) {
+			const linkedSong = await this.songService.get({
+				id: updatedVideo.songId,
+			});
+			updatedVideo = await this.prismaService.video.update({
+				where: { id: updatedVideo.id },
+				data: {
+					groupId: linkedSong.groupId,
+					songId: null,
+					tracks: {
+						updateMany: {
+							where: { videoId: updatedVideo.id },
+							data: { songId: null },
+						},
+					},
+				},
+			});
+			await this.songService.housekeeping();
+		}
+		// If instead we make an extra into a song
+		// TODO It's uuglyyy
+		else if (
+			!updatedVideo.songId &&
+			!VideoService.videoTypeIsExtra(updatedVideo.type)
+		) {
+			const artist = await this.artistService.get({
+				id: updatedVideo.artistId,
+			});
+			const songName = this.parserService.parseTrackExtensions(
+				updatedVideo.name,
+			).parsedName;
+			const newSong = await this.songService.getOrCreate({
+				name: songName,
+				artist: { id: updatedVideo.artistId },
+				registeredAt: updatedVideo.registeredAt,
+				genres: [],
+				group: {
+					slug: new Slug(
+						artist.name,
+						this.parserService.stripGroups(songName) || songName,
+					),
+				},
+			});
+			updatedVideo = await this.prismaService.video.update({
+				where: { id: updatedVideo.id },
+				data: {
+					groupId: newSong.groupId,
+					songId: newSong.id,
+					tracks: {
+						updateMany: {
+							where: { videoId: updatedVideo.id },
+							data: { songId: newSong.id },
+						},
+					},
+				},
+			});
+			await this.songService.housekeeping();
+		}
+		return updatedVideo;
 	}
 
 	static formatWhereInput(

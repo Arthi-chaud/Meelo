@@ -206,6 +206,7 @@ export default class TestPrismaService extends PrismaService {
 				slug: "my-artist-my-song",
 				nameSlug: "my-song",
 				artist: { connect: { id: this.artistA.id } },
+				song: { connect: { id: this.songA1.id } },
 				type: VideoType.MusicVideo,
 				group: {
 					connect: {

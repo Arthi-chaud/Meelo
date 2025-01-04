@@ -24,9 +24,11 @@ import {
 } from "./video.exceptions";
 import { Video, VideoType } from "@prisma/client";
 import Slug from "src/slug/slug";
+import TrackService from "src/track/track.service";
 
 describe("Video Service", () => {
 	let videoService: VideoService;
+	let trackService: TrackService;
 	let video1: Video;
 	let dummyRepository: TestPrismaService;
 
@@ -53,6 +55,7 @@ describe("Video Service", () => {
 			.compile();
 		dummyRepository = module.get(PrismaService);
 		videoService = module.get(VideoService);
+		trackService = module.get(TrackService);
 
 		await dummyRepository.onModuleInit();
 	});
@@ -153,7 +156,7 @@ describe("Video Service", () => {
 		});
 	});
 
-	describe("Get  Videos", () => {
+	describe("Get Videos", () => {
 		it("should return the songs With video", async () => {
 			const videoSongs = await videoService.getMany({}, undefined, {
 				master: true,
@@ -183,6 +186,41 @@ describe("Video Service", () => {
 				...dummyRepository.videoA1,
 				artist: dummyRepository.artistA,
 			});
+		});
+	});
+
+	describe("Update Video", () => {
+		it("should set video as extra", async () => {
+			const updated = await videoService.update(
+				{ type: VideoType.Documentary },
+				{ id: dummyRepository.videoA1.id },
+			);
+			expect(updated.type).toBe(VideoType.Documentary);
+			expect(updated.songId).toBe(null);
+			expect(updated.groupId).toBe(dummyRepository.songA1.groupId);
+			const videoTracks = await trackService.getMany({
+				video: { id: dummyRepository.videoA1.id },
+			});
+			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			videoTracks.forEach((track) => expect(track.songId).toBe(null));
+		});
+
+		it("should set video back as video", async () => {
+			const updated = await videoService.update(
+				{ type: VideoType.MusicVideo },
+				{ id: dummyRepository.videoA1.id },
+			);
+			expect(updated.type).toBe(VideoType.MusicVideo);
+			expect(updated.songId).toBe(dummyRepository.songA1.id);
+			expect(updated.groupId).toBe(dummyRepository.songA1.groupId);
+
+			const videoTracks = await trackService.getMany({
+				video: { id: dummyRepository.videoA1.id },
+			});
+			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			videoTracks.forEach((track) =>
+				expect(track.songId).toBe(dummyRepository.songA1.id),
+			);
 		});
 	});
 });
