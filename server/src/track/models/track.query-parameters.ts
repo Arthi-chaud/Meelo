@@ -73,6 +73,7 @@ namespace TrackQueryParameters {
 				type: TrackType;
 				id: { in: number[] };
 				song: SongQueryParameters.WhereInput;
+				video: VideoQueryParameters.WhereInput;
 				library: LibraryQueryParameters.WhereInput;
 			} & RequireExactlyOne<{
 				artist: ArtistQueryParameters.WhereInput;

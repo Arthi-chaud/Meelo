@@ -194,7 +194,11 @@ export default class TrackService {
 				song: SongService.formatWhereInput(where.song),
 			});
 		}
-
+		if (where.video) {
+			queryParameters = deepmerge(queryParameters, {
+				video: VideoService.formatWhereInput(where.video),
+			});
+		}
 		if (where.library) {
 			queryParameters = deepmerge(queryParameters, {
 				sourceFile: {

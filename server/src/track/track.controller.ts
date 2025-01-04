@@ -38,6 +38,8 @@ import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
+import VideoQueryParameters from "src/video/models/video.query-parameters";
+import VideoService from "src/video/video.service";
 
 class Selector {
 	@IsOptional()
@@ -60,6 +62,13 @@ class Selector {
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter tracks by video",
+	})
+	@TransformIdentifier(VideoService)
+	video?: VideoQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
