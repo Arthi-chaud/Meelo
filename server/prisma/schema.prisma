@@ -268,8 +268,8 @@ model Song {
     /// @description The main artist of the song
     featuring        Artist[]          @relation("ArtistToSong")
     /// @description The main/most used track of the song, by default the first one
-    master           Track?            @relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
-    /// @description Unique numeric identifier of the main release, if there is one
+    master           Track?            @relation("SongMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main track, if there is one
     /// @example 123
     masterId         Int?              @unique
     /// @description Related tracks
@@ -326,7 +326,15 @@ model Video {
     /// @description The date the video was registered
     registeredAt DateTime @default(now())
 
-    type VideoType
+    type         VideoType
+    /// @description The main/most used track of the video, by default the first one
+    master       Track?             @relation("VideoMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main track, if there is one
+    /// @example 123
+    masterId     Int?               @unique
+    illustration VideoIllustration?
+
+    @@map("videos")
 }
 
 enum VideoType {
@@ -480,7 +488,8 @@ model Track {
     /// @description Unique numeric identifier of the source file
     /// @example 123
     sourceFileId             Int                @unique
-    masterOf                 Song?              @relation("Master")
+    masterOfSong             Song?              @relation("SongMaster")
+    masterOfVideo            Video?             @relation("VideoMaster")
     illustration             TrackIllustration?
     thumbnailId              Int?               @unique
     /// @description (For internal use) Thumbnail for the track (only for video tracks)
@@ -727,4 +736,16 @@ view SongIllustration {
     song        Song             @relation(fields: [songId], references: [id])
 
     @@map("song_illustrations_view")
+}
+
+view VideoIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    videoId     Int              @unique
+    video       Video            @relation(fields: [videoId], references: [id])
+
+    @@map("video_illustrations_view")
 }
