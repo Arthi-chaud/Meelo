@@ -288,17 +288,17 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { videos, liveVideos, videoExtras } = useMemo(
 		() =>
 			(albumVideos.data?.pages.at(0)?.items ?? [])
-				.map(
-					(video) =>
-						[
-							video,
-							tracks.findIndex(
-								(track) =>
-									(track.song ?? track.video)!.groupId ==
-									video.groupId,
-							),
-						] as const,
-				)
+				.map((video) => {
+					const videoIndex = tracks.findIndex(
+						(track) =>
+							(track.song ?? track.video)!.groupId ==
+							video.groupId,
+					);
+					return [
+						video,
+						videoIndex == -1 ? tracks.length : videoIndex,
+					] as const;
+				})
 
 				.sort(
 					([v1, i1], [v2, i2]) =>
