@@ -777,6 +777,7 @@ export default class API {
 			group?: Identifier;
 			random?: number;
 			type?: VideoType;
+			query?: string;
 		},
 		sort?: SortingParameters<typeof VideoSortingKeys>,
 		include?: I[],
