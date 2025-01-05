@@ -25,7 +25,7 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import SongService from "src/song/song.service";
-import { Prisma, VideoType } from "@prisma/client";
+import { AlbumType, Prisma, VideoType } from "@prisma/client";
 import { shuffle } from "src/utils/shuffle";
 import VideoQueryParameters from "./models/video.query-parameters";
 import ArtistService from "src/artist/artist.service";
@@ -309,6 +309,35 @@ export default class VideoService extends SearchableRepositoryService {
 		if (where.album) {
 			query = deepmerge(query, {
 				OR: [
+					{
+						// Video tracks from singles that are extras
+						// applicable only if album is studio recording
+						tracks: {
+							some: {
+								release: {
+									album: { type: AlbumType.Single },
+									tracks: {
+										some: {
+											song: {
+												tracks: {
+													some: {
+														release: {
+															album: {
+																...AlbumService.formatWhereInput(
+																	where.album,
+																),
+																type: AlbumType.StudioRecording,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 					{
 						song: {
 							tracks: {
