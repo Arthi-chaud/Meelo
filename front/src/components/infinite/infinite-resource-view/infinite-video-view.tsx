@@ -35,6 +35,7 @@ import {
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
+import VideoItem from "../../list-item/video-item";
 
 const playVideosAction = (
 	emptyPlaylist: PlayerActions["emptyPlaylist"],
@@ -146,7 +147,6 @@ const InfiniteVideoView = <
 				defaultSortingKey={props.initialSortingField}
 				router={props.light == true ? undefined : router}
 				defaultLayout={"grid"}
-				disableLayoutToggle
 				actions={[playAction, shuffleAction]}
 			/>
 			<InfiniteView
@@ -157,7 +157,12 @@ const InfiniteVideoView = <
 						sortBy: query.sortBy,
 					});
 				}}
-				renderListItem={(item) => <></>}
+				renderListItem={(item) => (
+					<VideoItem
+						video={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
 				renderGridItem={(item) => (
 					<VideoTile
 						video={item}
