@@ -41,7 +41,12 @@ import {
 	SongType,
 	SongWithRelations,
 } from "../models/song";
-import { VideoWithRelations } from "../models/video";
+import {
+	VideoInclude,
+	VideoSortingKeys,
+	VideoType,
+	VideoWithRelations,
+} from "../models/video";
 import {
 	TrackInclude,
 	TrackSortingKeys,
@@ -86,8 +91,6 @@ const AuthenticationResponse = yup.object({
 });
 
 type Identifier = number | string;
-
-type NullableIdentifier = Identifier | null;
 
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
@@ -546,7 +549,7 @@ export default class API {
 	static async updateAlbum(
 		albumSlugOrId: number | string,
 		newType: AlbumType,
-	): Promise<unknown> {
+	): Promise<void> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
@@ -567,6 +570,20 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
+			method: "POST",
+			parameters: {},
+			emptyResponse: true,
+			data: { type: newType },
+		});
+	}
+
+	static async updateVideo(
+		videoSlugOrId: number | string,
+		newType: VideoType,
+	): Promise<void> {
+		return API.fetch({
+			route: `/videos/${videoSlugOrId}`,
+			errorMessage: "Update Video Failed",
 			method: "POST",
 			parameters: {},
 			emptyResponse: true,
@@ -749,19 +766,20 @@ export default class API {
 	}
 
 	/**
-	 * Fetch all songs
-	 * @returns An InfiniteQuery of Songs
+	 * @returns An InfiniteQuery of Videos
 	 */
-	static getVideos<I extends SongInclude | never = never>(
+	static getVideos<I extends VideoInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
+			group?: Identifier;
 			random?: number;
-			type?: SongType;
+			type?: VideoType;
+			query?: string;
 		},
-		sort?: SortingParameters<typeof SongSortingKeys>,
+		sort?: SortingParameters<typeof VideoSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
@@ -775,7 +793,11 @@ export default class API {
 				API.fetch({
 					route: `/videos`,
 					errorMessage: "Videos could not be loaded",
-					parameters: { pagination: pagination, include, sort },
+					parameters: {
+						pagination: pagination,
+						include,
+						sort,
+					},
 					otherParameters: filter,
 					validator: PaginatedResponse(
 						VideoWithRelations(include ?? []),
@@ -804,13 +826,28 @@ export default class API {
 		};
 	}
 
+	static getVideo<I extends VideoInclude | never = never>(
+		videoSlugOrId: string | number,
+		include?: I[],
+	): Query<VideoWithRelations<I>> {
+		return {
+			key: ["video", videoSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () =>
+				API.fetch({
+					route: `/videos/${videoSlugOrId}`,
+					parameters: { include },
+					validator: VideoWithRelations(include ?? []),
+				}),
+		};
+	}
+
 	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getMasterTrack<I extends TrackInclude | never = never>(
+	static getSongMasterTrack<I extends TrackInclude | never = never>(
 		songSlugOrId: string | number,
 		include?: I[],
 	): Query<TrackWithRelations<I>> {
@@ -823,7 +860,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/tracks/master/${songSlugOrId}`,
+					route: `/tracks/master/song/${songSlugOrId}`,
 					parameters: { include },
 					validator: TrackWithRelations(include ?? []),
 				}),
@@ -1448,15 +1485,36 @@ export default class API {
 	 * @param trackSlugOrId
 	 * @returns
 	 */
-	static async setTrackAsMaster(
+	static async setTrackAsSongMaster(
 		trackSlugOrId: string | number,
+		songSlugOrId: string | number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/tracks/${trackSlugOrId}/master`,
-			errorMessage: "Track update failed",
+			route: `/songs/${songSlugOrId}`,
+			errorMessage: "Update Song Failed",
+			method: "POST",
 			parameters: {},
-			method: "PUT",
-			validator: yup.mixed(),
+			emptyResponse: true,
+			data: { masterTrackId: trackSlugOrId },
+		});
+	}
+
+	/**
+	 * Mark a track as master
+	 * @param trackSlugOrId
+	 * @returns
+	 */
+	static async setTrackAsVideoMaster(
+		trackSlugOrId: string | number,
+		videoSlugOrId: string | number,
+	): Promise<unknown> {
+		return API.fetch({
+			route: `/videos/${videoSlugOrId}`,
+			errorMessage: "Update Video Failed",
+			method: "POST",
+			parameters: {},
+			emptyResponse: true,
+			data: { masterTrackId: trackSlugOrId },
 		});
 	}
 

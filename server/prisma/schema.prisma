@@ -158,6 +158,7 @@ model Artist {
     illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
 
     searchHistory SearchHistory[]
+    videos        Video[]
 
     @@map("artists")
 }
@@ -267,8 +268,8 @@ model Song {
     /// @description The main artist of the song
     featuring        Artist[]          @relation("ArtistToSong")
     /// @description The main/most used track of the song, by default the first one
-    master           Track?            @relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
-    /// @description Unique numeric identifier of the main release, if there is one
+    master           Track?            @relation("SongMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main track, if there is one
     /// @example 123
     masterId         Int?              @unique
     /// @description Related tracks
@@ -293,20 +294,75 @@ model Song {
     playHistory      PlayHistory[]
     searchHistory    SearchHistory[]
     illustration     SongIllustration?
+    videos           Video[]
 
     @@unique([slug, artistId])
     @@map("songs")
 }
 
+model Video {
+    /// @description Unique numeric Video identifier
+    /// @example 123
+    id       Int        @id @default(autoincrement())
+    /// @description String identifier
+    /// @example my-artist-my-video
+    slug     String     @unique
+    /// @example my-video
+    nameSlug String
+    /// Title of the video
+    name     String
+    /// The main artist of the video
+    artist   Artist     @relation(fields: [artistId], references: [id])
+    artistId Int
+    /// @description If set, the video is likely to be a music video for that song 
+    song     Song?      @relation(fields: [songId], references: [id], onDelete: Restrict)
+    songId   Int?
+    /// @description The song group the video is relared to (it could be a making-of for the song\'s music video)
+    group    SongGroup? @relation(fields: [groupId], references: [id], onDelete: Restrict)
+    groupId  Int?
+    /// @description The tracks for that video (just like for a song)
+    tracks   Track[]
+
+    /// @description The date the video was registered
+    registeredAt DateTime @default(now())
+
+    type          VideoType
+    /// @description The main/most used track of the video, by default the first one
+    master        Track?             @relation("VideoMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main track, if there is one
+    /// @example 123
+    masterId      Int?               @unique
+    illustration  VideoIllustration?
+    searchHistory SearchHistory[]
+
+    @@map("videos")
+}
+
+enum VideoType {
+    MusicVideo
+    LyricsVideo
+    Live
+    BehindTheScenes
+    Interview
+    Advert
+    PhotoGallery
+    Documentary
+    Other
+
+    @@map("video-types")
+}
+
 model SongGroup {
     /// @description Unique numeric Song identifier
     /// @example 123
-    id       Int    @id @default(autoincrement())
+    id       Int     @id @default(autoincrement())
     /// @description String notation of the group
     /// @example kylie-minogue-all-the-lovers
-    slug     String @unique
+    slug     String  @unique
     /// @description Song that belong to this group
     versions Song[]
+    /// @description Videos related to this group (music videos, behind-the-scenes, etc.)
+    videos   Video[]
 
     @@map("song_groups")
 }
@@ -394,10 +450,10 @@ model Track {
     /// @example 123
     id                       Int                @id @default(autoincrement())
     /// @description The reference song
-    song                     Song               @relation(fields: [songId], references: [id])
+    song                     Song?              @relation(fields: [songId], references: [id], onDelete: Restrict)
     /// @description Unique numeric identifier of the parent song
     /// @example 123
-    songId                   Int
+    songId                   Int?
     /// @description The parent release the track can be found on
     release                  Release?           @relation(fields: [releaseId], references: [id])
     /// @description Unique numeric identifier of the parent release
@@ -433,7 +489,8 @@ model Track {
     /// @description Unique numeric identifier of the source file
     /// @example 123
     sourceFileId             Int                @unique
-    masterOf                 Song?              @relation("Master")
+    masterOfSong             Song?              @relation("SongMaster")
+    masterOfVideo            Video?             @relation("VideoMaster")
     illustration             TrackIllustration?
     thumbnailId              Int?               @unique
     /// @description (For internal use) Thumbnail for the track (only for video tracks)
@@ -441,6 +498,8 @@ model Track {
     // Illustration if track is not attached to a release
     standaloneIllustrationId Int?               @unique
     standaloneIllustration   Illustration?      @relation(fields: [standaloneIllustrationId], references: [id], name: "track_standalone_illustration")
+    video                    Video?             @relation(fields: [videoId], references: [id], onDelete: Restrict)
+    videoId                  Int?
 
     @@map("tracks")
 }
@@ -589,11 +648,13 @@ model SearchHistory {
     albumId  Int?
     artist   Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
     artistId Int?
+    video    Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+    videoId  Int?
 
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
 
-    @@unique([songId, albumId, artistId, userId])
+    @@unique([songId, albumId, artistId, videoId, userId])
     @@map("search_history")
 }
 
@@ -678,4 +739,16 @@ view SongIllustration {
     song        Song             @relation(fields: [songId], references: [id])
 
     @@map("song_illustrations_view")
+}
+
+view VideoIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    videoId     Int              @unique
+    video       Video            @relation(fields: [videoId], references: [id])
+
+    @@map("video_illustrations_view")
 }

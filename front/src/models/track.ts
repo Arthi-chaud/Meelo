@@ -21,6 +21,7 @@ import Illustration from "./illustration";
 import Release from "./release";
 import Resource from "./resource";
 import Song from "./song";
+import Video from "./video";
 
 export const TrackType = ["Audio", "Video"] as const;
 export type TrackType = (typeof TrackType)[number];
@@ -33,7 +34,11 @@ const Track = Resource.concat(
 		/**
 		 * Unique identifier of the parent song
 		 */
-		songId: yup.number().required(),
+		songId: yup.number().required().nullable(),
+		/**
+		 * Unique identifier of the parent video
+		 */
+		videoId: yup.number().required().nullable(),
 		/**
 		 * Unique identifier of the parent release
 		 */
@@ -82,10 +87,11 @@ type Track = yup.InferType<typeof Track>;
 
 export default Track;
 
-export type TrackInclude = "song" | "release" | "illustration";
+export type TrackInclude = "song" | "release" | "illustration" | "video";
 
 const TrackRelations = yup.object({
-	song: yup.lazy(() => Song.required()),
+	song: yup.lazy(() => Song.required().nullable()),
+	video: yup.lazy(() => Video.required().nullable()),
 	release: Release.required().nullable(),
 	illustration: Illustration.required().nullable(),
 });

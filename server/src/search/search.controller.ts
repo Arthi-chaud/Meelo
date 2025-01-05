@@ -24,6 +24,8 @@ import { SongResponseBuilder } from "src/song/models/song.response";
 import { AlbumResponseBuilder } from "src/album/models/album.response";
 import { AlbumWithRelations, Artist, Song } from "src/prisma/models";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { VideoResponseBuilder } from "src/video/models/video.response";
+import { Video } from "@prisma/client";
 
 @ApiTags("Search")
 @Controller("search")
@@ -33,14 +35,16 @@ export class SearchController {
 		private artistResponseBuilder: ArtistResponseBuilder,
 		private albumResponseBuilder: AlbumResponseBuilder,
 		private songResponseBuilder: SongResponseBuilder,
+		private videoResponseBuilder: VideoResponseBuilder,
 	) {}
 	@ApiOperation({
-		summary: "Search artists, albums and song, all in one!",
+		summary: "Search artists, albums, songs and videos all in one!",
 		description:
 			"Returns an ordered list of matching artists, songs and albums. \
 			No pagination paramters. \
 			Artists come with their respective illustration. \
 			Songs come with their artist, featuring artist, illustration and master track. \
+			Videos come with their artist,  illustration and master track. \
 			Albums come with their artist and illustration.",
 	})
 	@Get()
@@ -54,6 +58,11 @@ export class SearchController {
 		return Promise.all(
 			items.map(async (item: any) => {
 				if (item["groupId"] !== undefined) {
+					if ("songId" in item) {
+						return this.videoResponseBuilder.buildResponse(
+							item as Video,
+						);
+					}
 					return this.songResponseBuilder.buildResponse(item as Song);
 				} else if (item["masterId"] !== undefined) {
 					return this.albumResponseBuilder.buildResponse(

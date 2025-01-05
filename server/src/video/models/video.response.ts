@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { ApiProperty, IntersectionType } from "@nestjs/swagger";
+import { IntersectionType } from "@nestjs/swagger";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
 	TrackResponse,
@@ -27,32 +27,77 @@ import {
 	SongResponse,
 	SongResponseBuilder,
 } from "../../song/models/song.response";
-import { Song, Track } from "src/prisma/models";
+import { Video, VideoWithRelations } from "src/prisma/models";
+import {
+	ArtistResponse,
+	ArtistResponseBuilder,
+} from "src/artist/models/artist.response";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
+import TrackService from "src/track/track.service";
+import Logger from "src/logger/logger";
 
-export class VideoResponse extends IntersectionType(SongResponse) {
-	@ApiProperty()
-	track: TrackResponse;
-}
+export class VideoResponse extends IntersectionType(
+	Video,
+	IllustratedResponse,
+	class {
+		master?: TrackResponse;
+		artist?: ArtistResponse;
+		song?: SongResponse | null;
+	},
+) {}
 
 @Injectable()
 export class VideoResponseBuilder extends ResponseBuilderInterceptor<
-	Song & { track: Track },
+	VideoWithRelations,
 	VideoResponse
 > {
+	private readonly logger = new Logger(VideoResponseBuilder.name);
 	constructor(
+		@Inject(forwardRef(() => SongResponseBuilder))
 		private songResponseBuilder: SongResponseBuilder,
+		@Inject(forwardRef(() => ArtistResponseBuilder))
+		private artistResponseBuilder: ArtistResponseBuilder,
 		@Inject(forwardRef(() => TrackResponseBuilder))
 		private trackResponseBuilder: TrackResponseBuilder,
+		@Inject(forwardRef(() => TrackService))
+		private trackService: TrackService,
 	) {
 		super();
 	}
 
 	returnType = VideoResponse;
 
-	async buildResponse(song: Song & { track: Track }): Promise<VideoResponse> {
+	async buildResponse(video: VideoWithRelations): Promise<VideoResponse> {
+		if (video.master === null) {
+			this.logger.warn(
+				"The Master Track of a video had to be resolved manually. " +
+					"This should happen only during a scan or a clean. " +
+					"If it is not the case, this is a bug.",
+			);
+			video.master = await this.trackService.getVideoMasterTrack({
+				id: video.id,
+			});
+		}
 		return {
-			...(await this.songResponseBuilder.buildResponse(song)),
-			track: await this.trackResponseBuilder.buildResponse(song.track),
+			...video,
+			artist: video.artist
+				? await this.artistResponseBuilder.buildResponse(video.artist)
+				: video.artist,
+			song: video.song
+				? await this.songResponseBuilder.buildResponse({
+						...video.song,
+						featuring: undefined,
+				  })
+				: video.song,
+			illustration: video.illustration
+				? IllustrationResponse.from(video.illustration)
+				: video.illustration,
+			master: video.master
+				? await this.trackResponseBuilder.buildResponse(video.master)
+				: undefined,
 		};
 	}
 }

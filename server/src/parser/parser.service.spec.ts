@@ -1,7 +1,7 @@
 import { TestingModule } from "@nestjs/testing";
 import ParserService from "./parser.service";
 import { createTestingModule } from "test/test-module";
-import { AlbumType, SongType } from "@prisma/client";
+import { AlbumType, SongType, VideoType } from "@prisma/client";
 import ArtistModule from "src/artist/artist.module";
 import AlbumModule from "src/album/album.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -397,6 +397,7 @@ describe("Parser Service", () => {
 					"Clean",
 					"Live",
 					"Credits",
+					"Live to Tell",
 				],
 			],
 			[
@@ -563,6 +564,88 @@ describe("Parser Service", () => {
 					test(songName, () =>
 						expect(parserService.getSongType(songName)).toBe(
 							expectedSongType,
+						),
+					);
+				}
+			});
+		}
+	});
+
+	describe("Get Video Type", () => {
+		const scenarios = [
+			[
+				VideoType.MusicVideo,
+				[
+					"A (Video)",
+					"A (Clip Video)",
+					"A (Official Music Video)",
+					"A (Music Video)",
+					"Live to Tell",
+				],
+			],
+			[
+				VideoType.LyricsVideo,
+				[
+					"A (Lyric Video)",
+					"A (Lyrics Video)",
+					"A (Lyrics)",
+					"A (Official Lyric Video)",
+				],
+			],
+			[VideoType.Advert, ["Sound of the Udnerground (Album Advert)"]],
+			[
+				VideoType.Interview,
+				[
+					"The After Show Interview",
+					"Interview",
+					"Exclusive Interview With Girls Aloud",
+
+					'ABC Television Special: "Britney Spears: In The Zone"',
+					"In The Zone Special (Exclusive Interview & Behind the Scenes Footage)",
+					"MTV Special - The Show",
+				],
+			],
+			[VideoType.Live, ["Fever (Live)"]],
+			[
+				VideoType.Documentary,
+				[
+					"Little Bits Of Goldfrapp - Documentary",
+					"Thanks For Your Uhh, Support (Documentary)",
+					"Documentaire Exclusif",
+					"Documentaire Inedit",
+				],
+			],
+			[
+				VideoType.BehindTheScenes,
+				[
+					"Photo Shoot",
+					"The Truth About Love Photoshoot (Behind The Scenes)",
+					"Girl On Film - Behind The Scenes At The Photo Shoot",
+					"Making Of 2 'City Of Love'",
+					"So You Say (Making of)",
+					"Smile (Behind The Scene)",
+					"Walk This Way (Behind The Scenes)",
+					"Behind The Scenes",
+					"The Making Of Goodbye Lullaby",
+					"MTV's Making The Video: Toxic",
+					"The Show (Making Of)",
+					"Making Of 2 'City Of Love'",
+					"So You Say (Making of)",
+					"Triumph Of A Heart - Stories Behind The Music Video",
+					"Exclusive Behind-The-Scenes Footage",
+					"Smile (Behind The Scene)",
+					"A (B-Roll)",
+					"A (B-Roll Footage)",
+				],
+			],
+			[VideoType.PhotoGallery, ["Photo Gallery"]],
+		] as const;
+		for (const [expectedVideoType, videoNames] of scenarios) {
+			describe(expectedVideoType, () => {
+				for (const videoName of videoNames) {
+					test(videoName, () =>
+						expect(parserService.getVideoType(videoName)).toBe(
+							expectedVideoType,
 						),
 					);
 				}

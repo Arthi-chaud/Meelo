@@ -38,7 +38,7 @@ import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
 import { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
-import ChangeSongType from "../actions/song-type";
+import { ChangeSongType } from "../actions/resource-type";
 import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
 import { useTranslation } from "react-i18next";
@@ -58,7 +58,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const { playNext, playAfter } = usePlayerContext();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(
-			API.getMasterTrack(songSlug, ["release", "illustration"]),
+			API.getSongMasterTrack(songSlug, ["release", "illustration"]),
 		);
 	const router = useRouter();
 	const confirm = useConfirm();

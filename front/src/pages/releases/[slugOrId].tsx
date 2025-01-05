@@ -60,7 +60,7 @@ import ResourceDescriptionExpandable from "../../components/resource-description
 import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
-import Video from "../../models/video";
+import { VideoTypeIsExtra, VideoWithRelations } from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
@@ -129,7 +129,8 @@ const releaseBSidesQuery = (releaseId: number) =>
 		"master",
 		"illustration",
 	]);
-const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
+const albumVideosQuery = (albumId: number) =>
+	API.getVideos({ album: albumId }, undefined, ["master", "illustration"]);
 const relatedAlbumsQuery = (albumId: number) =>
 	API.getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
 		"artist",
@@ -287,20 +288,41 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { videos, liveVideos, videoExtras } = useMemo(
 		() =>
 			(albumVideos.data?.pages.at(0)?.items ?? [])
-				.map(
-					(video) =>
-						[
-							video,
-							tracks.findIndex(
-								(track) => track.song.groupId == video.groupId,
-							),
-						] as const,
+				.map((video) => {
+					const videoIndex = tracks.findIndex(
+						(track) =>
+							(track.song ?? track.video)!.groupId ==
+							video.groupId,
+					);
+					return [
+						video,
+						videoIndex == -1 ? tracks.length : videoIndex,
+					] as const;
+				})
+
+				.sort(
+					([v1, i1], [v2, i2]) =>
+						i1 - i2 || v1.slug.localeCompare(v2.slug),
 				)
+				.map(([video, tracklistIndex], _, videosWithIndexes) => {
+					if (album.data?.type === "Single") {
+						return [video, tracklistIndex] as const;
+					}
+					const firstVideoOfSameGroup = videosWithIndexes.find(
+						([__, i]) => i == tracklistIndex,
+					)!;
+					return [
+						video,
+						firstVideoOfSameGroup[0].id == video.id
+							? tracklistIndex
+							: 10000 + tracklistIndex,
+					] as const;
+				})
 				.sort(([_, i1], [__, i2]) => i1 - i2)
 				.map(([v, _]) => v)
 				.reduce(
 					(prev, current) => {
-						if (current.type === "NonMusic") {
+						if (VideoTypeIsExtra(current.type)) {
 							return {
 								videos: prev.videos,
 								liveVideos: prev.liveVideos,
@@ -320,10 +342,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						};
 					},
 					{
-						videos: [] as Video[],
-						videoExtras: [] as Video[],
-						liveVideos: [] as Video[],
-					},
+						videos: [],
+						videoExtras: [],
+						liveVideos: [],
+					} as Record<
+						"videos" | "videoExtras" | "liveVideos",
+						VideoWithRelations<"master" | "illustration">[]
+					>,
 				),
 		[albumVideos.data, tracks],
 	);
@@ -525,7 +550,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													artist: artists.data.find(
 														(artist) =>
 															artist.id ==
-															track.song.artistId,
+															(track.song ??
+																track.video)!
+																.artistId,
 													)!,
 													release: release.data,
 												}),
@@ -630,7 +657,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												discKey,
 												discTracks.map((discTrack) => ({
 													...discTrack,
-													song: discTrack.song,
+													song: discTrack.song!,
+													video: discTrack.video!,
 												})),
 											]),
 										)

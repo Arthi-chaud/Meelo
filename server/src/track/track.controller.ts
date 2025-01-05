@@ -16,14 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	Controller,
-	Get,
-	Inject,
-	Put,
-	Query,
-	forwardRef,
-} from "@nestjs/common";
+import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
@@ -31,7 +24,6 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
 import { TrackResponseBuilder } from "./models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongService from "src/song/song.service";
@@ -46,6 +38,8 @@ import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
+import VideoQueryParameters from "src/video/models/video.query-parameters";
+import VideoService from "src/video/video.service";
 
 class Selector {
 	@IsOptional()
@@ -68,6 +62,13 @@ class Selector {
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter tracks by video",
+	})
+	@TransformIdentifier(VideoService)
+	video?: VideoQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -98,8 +99,6 @@ export class TrackController {
 	constructor(
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
 	) {}
 
 	@ApiOperation({
@@ -144,29 +143,27 @@ export class TrackController {
 		summary: "Get a song's master track",
 	})
 	@Response({ handler: TrackResponseBuilder })
-	@Get("master/:idOrSlug")
+	@Get("master/song/:idOrSlug")
 	async getSongMaster(
 		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
 		include: TrackQueryParameters.RelationInclude,
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
 	) {
-		return this.trackService.getMasterTrack(where, include);
+		return this.trackService.getSongMasterTrack(where, include);
 	}
 
 	@ApiOperation({
-		summary: "Set a track as master track",
+		summary: "Get a video's master track",
 	})
-	@Admin()
 	@Response({ handler: TrackResponseBuilder })
-	@Put(":idOrSlug/master")
-	async setAsMaster(
-		@IdentifierParam(TrackService)
-		where: TrackQueryParameters.WhereInput,
+	@Get("master/video/:idOrSlug")
+	async getVideoMaster(
+		@RelationIncludeQuery(TrackQueryParameters.AvailableAtomicIncludes)
+		include: TrackQueryParameters.RelationInclude,
+		@IdentifierParam(SongService)
+		where: SongQueryParameters.WhereInput,
 	) {
-		const track = await this.trackService.get(where);
-
-		await this.songService.setMasterTrack(where);
-		return track;
+		return this.trackService.getVideoMasterTrack(where, include);
 	}
 }

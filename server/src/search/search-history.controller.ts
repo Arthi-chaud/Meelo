@@ -22,11 +22,18 @@ import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.d
 import { SearchHistoryService } from "./search-history.service";
 import Roles from "src/authentication/roles/roles.enum";
 import { Role } from "src/authentication/roles/roles.decorators";
-import { AlbumWithRelations, Artist, Song, User } from "src/prisma/models";
+import {
+	AlbumWithRelations,
+	Artist,
+	Song,
+	User,
+	Video,
+} from "src/prisma/models";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { AlbumResponseBuilder } from "src/album/models/album.response";
 import { SongResponseBuilder } from "src/song/models/song.response";
+import { VideoResponseBuilder } from "src/video/models/video.response";
 
 @ApiTags("Search")
 @Controller("search/history")
@@ -36,6 +43,7 @@ export class SearchHistoryController {
 		private artistResponseBuilder: ArtistResponseBuilder,
 		private albumResponseBuilder: AlbumResponseBuilder,
 		private songResponseBuilder: SongResponseBuilder,
+		private videoResponseBuilder: VideoResponseBuilder,
 	) {}
 
 	@ApiOperation({
@@ -69,6 +77,11 @@ export class SearchHistoryController {
 		return Promise.all(
 			history.map(async (item: any) => {
 				if (item["groupId"] !== undefined) {
+					if ("songId" in item) {
+						return this.videoResponseBuilder.buildResponse(
+							item as Video,
+						);
+					}
 					return this.songResponseBuilder.buildResponse(item as Song);
 				} else if (item["masterId"] !== undefined) {
 					return this.albumResponseBuilder.buildResponse(

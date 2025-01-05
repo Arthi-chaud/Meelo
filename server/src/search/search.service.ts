@@ -17,6 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
+import { Video } from "@prisma/client";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import AlbumService from "src/album/album.service";
@@ -24,6 +25,7 @@ import { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
 import { Artist, Song } from "src/prisma/models";
 import SongService from "src/song/song.service";
+import VideoService from "src/video/video.service";
 
 type MeilisearchResultType = Record<"id" | "_rankingScore", number>;
 
@@ -33,15 +35,19 @@ export class SearchService {
 		private artistService: ArtistService,
 		private songService: SongService,
 		private albumService: AlbumService,
+		private videoService: VideoService,
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 	) {}
 
-	async search(query: string): Promise<(Artist | Song | AlbumModel)[]> {
+	async search(
+		query: string,
+	): Promise<(Artist | Song | AlbumModel | Video)[]> {
 		const meiliQueryResult = await this.meiliSearch.multiSearch({
 			queries: [
 				this.artistService,
 				this.songService,
 				this.albumService,
+				this.videoService,
 			].map((s) => ({
 				q: query,
 				indexUid: s.indexName,
@@ -55,7 +61,9 @@ export class SearchService {
 			.hits as MeilisearchResultType[];
 		const matchingAlbumsIds = meiliQueryResult.results[2]
 			.hits as MeilisearchResultType[];
-		const [artists, songs, album] = await Promise.all(
+		const matchingVideosIds = meiliQueryResult.results[3]
+			.hits as MeilisearchResultType[];
+		const [artists, songs, albums, videos] = await Promise.all(
 			[
 				[
 					// Note: I know it's ugly, but needed for correct typing
@@ -96,6 +104,19 @@ export class SearchService {
 						),
 					matchingAlbumsIds,
 				] as const,
+				[
+					(ids: number[]) =>
+						this.videoService.getMany(
+							{ id: { in: ids } },
+							undefined,
+							{
+								illustration: true,
+								master: true,
+								artist: true,
+							},
+						),
+					matchingVideosIds,
+				] as const,
 			].map(async ([getMany, matches]) => {
 				if (!matches) {
 					return [];
@@ -111,7 +132,7 @@ export class SearchService {
 			}),
 		);
 
-		return [...artists, ...songs, ...album].sort(
+		return [...artists, ...songs, ...albums, ...videos].sort(
 			(a, b) => b.ranking - a.ranking,
 		);
 	}

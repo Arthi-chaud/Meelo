@@ -26,6 +26,7 @@ import {
 	expectedTrackResponse,
 	expectedSongResponse,
 	expectedArtistResponse,
+	expectedVideoResponse,
 } from "test/expected-responses";
 import { IllustrationType } from "@prisma/client";
 
@@ -368,6 +369,7 @@ describe("Release Controller", () => {
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							illustration: null,
+							video: null,
 							song: expectedSongResponse(dummyRepository.songA2),
 						},
 						{
@@ -375,6 +377,9 @@ describe("Release Controller", () => {
 								dummyRepository.trackA1_2Video,
 							),
 							illustration: null,
+							video: expectedVideoResponse(
+								dummyRepository.videoA1,
+							),
 							song: expectedSongResponse(dummyRepository.songA1),
 						},
 					]);
@@ -393,6 +398,7 @@ describe("Release Controller", () => {
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							illustration: null,
+							video: null,
 							song: {
 								...expectedSongResponse(dummyRepository.songA2),
 								artist: expectedArtistResponse(
@@ -404,6 +410,14 @@ describe("Release Controller", () => {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
+							video: {
+								...expectedVideoResponse(
+									dummyRepository.videoA1,
+								),
+								artist: expectedArtistResponse(
+									dummyRepository.artistA,
+								),
+							},
 							illustration: null,
 							song: {
 								...expectedSongResponse(dummyRepository.songA1),

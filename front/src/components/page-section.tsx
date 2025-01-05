@@ -148,7 +148,12 @@ export const AlbumListPageSection = (
 };
 
 export const VideoListPageSection = (
-	props: Omit<PageSectionProps<VideoWithRelations<"artist">>, "child"> &
+	props: Omit<
+		PageSectionProps<
+			VideoWithRelations<"artist" | "master" | "illustration">
+		>,
+		"child"
+	> &
 		Omit<ComponentProps<typeof VideoTile>, "video">,
 ) => {
 	return (

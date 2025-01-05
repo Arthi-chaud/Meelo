@@ -174,7 +174,7 @@ describe("Registration Controller", () => {
 			expect(file.fingerprint).toBe("AcoustId");
 
 			const song = await songService.get(
-				{ id: createdMetadata.songId },
+				{ id: createdMetadata.songId! },
 				{
 					artist: true,
 					featuring: true,

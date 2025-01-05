@@ -47,6 +47,7 @@ import {
 } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export default class TrackService {
@@ -54,6 +55,8 @@ export default class TrackService {
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => FileService))
@@ -109,9 +112,11 @@ export default class TrackService {
 			include: include ?? ({} as I),
 			data: {
 				...input,
-				song: {
-					connect: SongService.formatWhereInput(input.song),
-				},
+				song: input.song
+					? {
+							connect: SongService.formatWhereInput(input.song),
+					  }
+					: undefined,
 				release: input.release
 					? {
 							connect: ReleaseService.formatWhereInput(
@@ -122,6 +127,9 @@ export default class TrackService {
 				sourceFile: {
 					connect: FileService.formatWhereInput(input.sourceFile),
 				},
+				video: input.video
+					? { connect: VideoService.formatWhereInput(input.video) }
+					: undefined,
 			},
 		};
 		return this.prismaService.track
@@ -130,9 +138,11 @@ export default class TrackService {
 			)
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					const parentSong = await this.songService.get(input.song, {
-						artist: true,
-					});
+					const parentSong = input.song
+						? await this.songService.get(input.song, {
+								artist: true,
+						  })
+						: undefined;
 
 					await this.fileService.get(input.sourceFile);
 					if (input.release) {
@@ -146,7 +156,9 @@ export default class TrackService {
 							throw new TrackAlreadyExistsException(
 								input.name,
 								new Slug(parentRelease.slug),
-								new Slug(parentSong.artist.slug),
+								parentSong
+									? new Slug(parentSong.artist.slug)
+									: undefined,
 							);
 						}
 					}
@@ -182,7 +194,11 @@ export default class TrackService {
 				song: SongService.formatWhereInput(where.song),
 			});
 		}
-
+		if (where.video) {
+			queryParameters = deepmerge(queryParameters, {
+				video: VideoService.formatWhereInput(where.video),
+			});
+		}
 		if (where.library) {
 			queryParameters = deepmerge(queryParameters, {
 				sourceFile: {
@@ -319,7 +335,7 @@ export default class TrackService {
 	 * @param include the relation to include in the returned object
 	 * @returns the master track of the song
 	 */
-	async getMasterTrack(
+	async getSongMasterTrack(
 		where: SongQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude,
 	) {
@@ -353,6 +369,43 @@ export default class TrackService {
 	}
 
 	/**
+	 * Fetch the master tracks of a video
+	 * @param where the parameters to find the parent video
+	 * @param include the relation to include in the returned object
+	 * @returns the master track of the video
+	 */
+	async getVideoMasterTrack(
+		where: SongQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude,
+	) {
+		return this.videoService
+			.get(where, { artist: true })
+			.then(async (video) => {
+				if (video.masterId != null) {
+					return this.get({ id: video.masterId }, include);
+				}
+				const tracks = await this.prismaService.track.findMany({
+					where: { video: VideoService.formatWhereInput(where) },
+					include: include,
+					orderBy: {
+						bitrate: { sort: "desc", nulls: "last" },
+					},
+				});
+				const master =
+					tracks.find((track) => track.type == "Video") ??
+					tracks.at(0);
+
+				if (!master) {
+					throw new MasterTrackNotFoundException(
+						new Slug(video.slug),
+						new Slug(video.artist.slug),
+					);
+				}
+				return master;
+			});
+	}
+
+	/**
 	 * Get Playlist of release
 	 * @param where query paremeters to find the release
 	 * @returns all the tracks, ordered, from a release
@@ -372,7 +425,11 @@ export default class TrackService {
 				{ discIndex: { sort: "asc", nulls: "last" } },
 			],
 			...formatPaginationParameters(pagination),
-			include: { illustration: true, song: { include: include } },
+			include: {
+				illustration: true,
+				song: { include: include },
+				video: { include: { artist: include?.artist ?? false } },
+			},
 		});
 
 		if (tracks.length == 0) {
@@ -398,6 +455,13 @@ export default class TrackService {
 					thumbnailId: undefined,
 					thumbnail: what.thumbnailId
 						? { connect: { id: what.thumbnailId } }
+						: undefined,
+					video: what.video
+						? {
+								connect: VideoService.formatWhereInput(
+									what.video,
+								),
+						  }
 						: undefined,
 					song: what.song
 						? {

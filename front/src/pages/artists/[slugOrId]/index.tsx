@@ -39,6 +39,7 @@ import {
 } from "../../../components/page-section";
 import { Head } from "../../../components/head";
 import ExternalMetadataBadge from "../../../components/external-metadata-badge";
+import { VideoTypeIsExtra } from "../../../models/video";
 
 // Number of Song item in the 'Top Song' section
 const SongListSize = 6;
@@ -60,8 +61,8 @@ const latestAlbumsQuery = AlbumType.map((type) => ({
 const videosQuery = (artistSlugOrId: string | number) =>
 	API.getVideos(
 		{ artist: artistSlugOrId },
-		{ sortBy: "totalPlayCount", order: "desc" },
-		["artist"],
+		{ sortBy: "addDate", order: "desc" },
+		["artist", "master", "illustration"],
 	);
 
 const topSongsQuery = (artistSlugOrId: string | number) =>
@@ -130,12 +131,14 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		return {
 			musicVideos:
 				firstPage?.filter(
-					(video) => video.type != "NonMusic" && video.type != "Live",
+					(video) =>
+						!VideoTypeIsExtra(video.type) && video.type != "Live",
 				) ?? [],
 			liveVideos:
 				firstPage?.filter((video) => video.type == "Live") ?? [],
 			extras:
-				firstPage?.filter((video) => video.type == "NonMusic") ?? [],
+				firstPage?.filter((video) => VideoTypeIsExtra(video.type)) ??
+				[],
 		};
 	}, [videos]);
 	const { GradientBackground } = useGradientBackground(

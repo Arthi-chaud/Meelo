@@ -8,10 +8,13 @@ import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
 import { VideoResponse } from "./models/video.response";
 import {
+	expectedArtistResponse,
 	expectedSongResponse,
 	expectedTrackResponse,
+	expectedVideoResponse,
 } from "test/expected-responses";
 import VideoModule from "./video.module";
+import { Video } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -39,18 +42,18 @@ describe("Video Controller", () => {
 	describe("Get Videos", () => {
 		it("should return videos", () => {
 			return request(app.getHttpServer())
-				.get(`/videos`)
+				.get(`/videos?with=master,illustration`)
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						track: {
+						...expectedVideoResponse(dummyRepository.videoA1),
+						illustration: null,
+						master: {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
-							illustration: null,
 						},
 					});
 				});
@@ -64,24 +67,18 @@ describe("Video Controller", () => {
 					expect(videoSongs.length).toBe(0);
 				});
 		});
-		it("should return songs with their lyrics", () => {
+		it("should return video with their artist", () => {
 			return request(app.getHttpServer())
-				.get(`/videos?with=lyrics`)
+				.get(`/videos?with=artist`)
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse({
-							...dummyRepository.songA1,
-							lyrics: dummyRepository.lyricsA1,
+						...expectedVideoResponse({
+							...dummyRepository.videoA1,
 						}),
-						track: {
-							...expectedTrackResponse(
-								dummyRepository.trackA1_2Video,
-							),
-							illustration: null,
-						},
+						artist: expectedArtistResponse(dummyRepository.artistA),
 					});
 				});
 		});
@@ -96,13 +93,7 @@ describe("Video Controller", () => {
 					const songs: VideoResponse[] = res.body.items;
 					expect(songs.length).toBe(1);
 					expect(songs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						track: {
-							...expectedTrackResponse(
-								dummyRepository.trackA1_2Video,
-							),
-							illustration: null,
-						},
+						...expectedVideoResponse(dummyRepository.videoA1),
 					});
 				});
 		});
@@ -118,7 +109,7 @@ describe("Video Controller", () => {
 	});
 
 	describe("Get Videos from library", () => {
-		it("should return the songs With video", async () => {
+		it("should return the videos", async () => {
 			return request(app.getHttpServer())
 				.get(`/videos?library=${dummyRepository.library1.id}`)
 				.expect(200)
@@ -126,13 +117,7 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(1);
 					expect(videoSongs[0]).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						track: {
-							...expectedTrackResponse(
-								dummyRepository.trackA1_2Video,
-							),
-							illustration: null,
-						},
+						...expectedVideoResponse(dummyRepository.videoA1),
 					});
 				});
 		});
@@ -153,6 +138,31 @@ describe("Video Controller", () => {
 					const videoSongs: VideoResponse[] = res.body.items;
 					expect(videoSongs.length).toBe(0);
 				});
+		});
+	});
+
+	describe("Update Video", () => {
+		it("should set track as master", () => {
+			return request(app.getHttpServer())
+				.post(`/videos/${dummyRepository.videoA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackA1_2Video.id,
+				})
+				.expect((res) => {
+					const video: Video = res.body;
+					expect(video.masterId).toBe(
+						dummyRepository.trackA1_2Video.id,
+					);
+				});
+		});
+
+		it("should fail as track does not belong to video", () => {
+			return request(app.getHttpServer())
+				.post(`/videos/${dummyRepository.videoA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackA1_1.id,
+				})
+				.expect(400);
 		});
 	});
 });

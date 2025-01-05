@@ -19,11 +19,13 @@
 import Song, { SongInclude, SongRelations } from "./song";
 import { TrackWithRelations } from "./track";
 import * as yup from "yup";
+import Video, { VideoRelations } from "./video";
 
 const TracklistItem = TrackWithRelations(["illustration"])
 	.concat(
 		yup.object({
-			song: Song.required(),
+			song: Song.required().nullable(),
+			video: Video.required().nullable(),
 		}),
 	)
 	.required();
@@ -34,7 +36,14 @@ const TracklistItemWithRelations = <Selection extends SongInclude | never>(
 	TrackWithRelations(["illustration"])
 		.concat(
 			yup.object({
-				song: Song.concat(SongRelations.pick(selection)),
+				song: Song.concat(SongRelations.pick(selection)).nullable(),
+				video: Video.concat(
+					VideoRelations.pick(
+						selection.includes("artist" as Selection)
+							? ["artist"]
+							: [],
+					),
+				).nullable(),
 			}),
 		)
 		.required();

@@ -25,11 +25,12 @@ import AlbumModule from "src/album/album.module";
 import { SearchHistoryService } from "./search-history.service";
 import { SearchHistoryController } from "./search-history.controller";
 import PrismaModule from "src/prisma/prisma.module";
+import VideoModule from "src/video/video.module";
 
 @Module({
 	controllers: [SearchController, SearchHistoryController],
 	providers: [SearchService, SearchHistoryService],
-	imports: [ArtistModule, SongModule, AlbumModule, PrismaModule],
+	imports: [ArtistModule, SongModule, AlbumModule, PrismaModule, VideoModule],
 	exports: [SearchHistoryService, SearchService],
 })
 export class SearchModule {}

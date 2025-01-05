@@ -26,7 +26,7 @@ import InfiniteView from "../infinite-view";
 
 const InfiniteTrackView = (
 	props: InfiniteResourceViewProps<
-		TrackWithRelations<"song" | "release" | "illustration">,
+		TrackWithRelations<"video" | "song" | "release" | "illustration">,
 		typeof TrackSortingKeys
 	>,
 ) => {

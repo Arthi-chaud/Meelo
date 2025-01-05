@@ -18,7 +18,7 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import Metadata from "../registration/models/metadata";
-import { AlbumType, SongType } from "@prisma/client";
+import { AlbumType, SongType, VideoType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
 import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
@@ -541,6 +541,66 @@ export default class ParserService {
 		return AlbumType.StudioRecording;
 	}
 
+	getVideoType(videoName: string): VideoType {
+		const songExtensions = this.splitGroups(videoName, {
+			removeRoot: true,
+		});
+		const lowercaseSongName = videoName.toLowerCase();
+		const jointExtensionWords = songExtensions
+			.map((ext) => ext.toLowerCase())
+			.filter(
+				(ext) =>
+					!(ext.startsWith("feat ") || ext.startsWith("featuring ")),
+			)
+			.join(" ");
+		const extensionWords = jointExtensionWords.split(" ").flat();
+
+		const containsWord = (word: string) =>
+			extensionWords.includes(word) || lowercaseSongName.includes(word);
+		const containsExtension = (word: string) =>
+			extensionWords.includes(word);
+
+		if (containsExtension("lyrics") || containsExtension("lyric")) {
+			return VideoType.LyricsVideo;
+		}
+		if (containsWord("interview")) {
+			return VideoType.Interview;
+		}
+		if (containsWord("advert") || containsWord("teaser")) {
+			return VideoType.Advert;
+		}
+		if (containsWord("documentaire") || containsWord("documentary")) {
+			return VideoType.Documentary;
+		}
+		if (containsWord("photo gallery")) {
+			return VideoType.PhotoGallery;
+		}
+		if (containsWord("photo shoot") || containsWord("photoshoot")) {
+			return VideoType.BehindTheScenes;
+		}
+		if (
+			containsWord("behind the scene") ||
+			containsWord("behind-the-scene") ||
+			containsWord("behind the music video") ||
+			containsWord("behind the video")
+		) {
+			return VideoType.BehindTheScenes;
+		}
+		if (containsWord("b roll") || containsWord("b-roll")) {
+			return VideoType.BehindTheScenes;
+		}
+		if (containsWord("making of") || containsWord("making the video")) {
+			return VideoType.BehindTheScenes;
+		}
+		if (containsWord("television special") || containsWord("mtv special")) {
+			return VideoType.Interview;
+		}
+		if (containsExtension("live") || containsExtension("performance")) {
+			return VideoType.Live;
+		}
+		return VideoType.MusicVideo;
+	}
+
 	/**
 	 * Removes an extension from a release's name
 	 * For example, if the release Name is 'My Album (Deluxe Edition)', the parent
@@ -573,6 +633,33 @@ export default class ParserService {
 			),
 		);
 		return { parsedName, extensions };
+	}
+
+	// The following are unchanged
+	// A (Lyric Video)
+	// A (Bedroom Video)
+	// A (Alternative Music Video)
+	//
+	// A (Video) becomes A
+	// A (Music Video) becomes A
+	removeVideoExtensions(videoName: string) {
+		const groups = this.splitGroups(videoName, { keepDelimiters: true });
+		const res: string[] = [];
+		for (const group of groups) {
+			const groupSlug = new Slug(group).toString();
+			if (
+				[
+					"music-video",
+					"video",
+					"official video",
+					"official music video",
+				].includes(groupSlug)
+			) {
+				continue;
+			}
+			res.push(group);
+		}
+		return res.join(" ");
 	}
 
 	/**

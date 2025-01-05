@@ -31,5 +31,9 @@ export class CreateSearchHistoryEntry {
 	@ApiPropertyOptional()
 	@IsPositive()
 	@IsOptional()
+	videoId?: number;
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
 	artistId?: number;
 }

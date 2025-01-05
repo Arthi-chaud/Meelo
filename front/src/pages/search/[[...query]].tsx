@@ -42,6 +42,8 @@ import ArtistItem from "../../components/list-item/artist-item";
 import { useMutation } from "react-query";
 import { SaveSearchItem, SearchResult } from "../../models/search";
 import formatArtists from "../../utils/formatArtists";
+import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import VideoItem from "../../components/list-item/video-item";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -63,6 +65,11 @@ const prepareSSR = (context: NextPageContext) => {
 						API.getSongs({ query: searchQuery }, undefined, [
 							"artist",
 							"featuring",
+							"master",
+							"illustration",
+						]),
+						API.getVideos({ query: searchQuery }, undefined, [
+							"artist",
 							"master",
 							"illustration",
 						]),
@@ -92,7 +99,7 @@ const buildSearchUrl = (
 	return "/search/" + (query ?? "") + (type ? `?t=${type}` : "");
 };
 
-const tabs = ["all", "artist", "album", "song"] as const;
+const tabs = ["all", "artist", "album", "song", "video"] as const;
 
 const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
@@ -242,6 +249,21 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										)}`,
 								]}
 							/>
+						) : item.video ? (
+							<VideoItem
+								onClick={() =>
+									saveSearch.mutate({
+										videoId: item.video.id,
+									})
+								}
+								video={item.video}
+								subtitles={[
+									async (video) =>
+										`${t("video")} • ${formatArtists(
+											video.artist,
+										)}`,
+								]}
+							/>
 						) : (
 							<ArtistItem
 								artist={item.artist}
@@ -305,6 +327,26 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							},
 							undefined,
 							["artist", "featuring", "master", "illustration"],
+						)
+					}
+				/>
+			)}
+
+			{query && selectedTab == "video" && (
+				<InfiniteVideoView
+					onItemClick={(item) =>
+						item && saveSearch.mutate({ videoId: item.id })
+					}
+					subtitle="artist"
+					query={({ library, type: newType }) =>
+						API.getVideos(
+							{
+								query: encodeURIComponent(query),
+								type: newType,
+								library: library ?? undefined,
+							},
+							undefined,
+							["artist", "master", "illustration"],
 						)
 					}
 				/>

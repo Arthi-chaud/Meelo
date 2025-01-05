@@ -22,7 +22,7 @@ import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { GetPropsTypesFrom, Page } from "../../../ssr";
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
-import { SongSortingKeys } from "../../../models/song";
+import { VideoSortingKeys } from "../../../models/video";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 import { useQuery } from "../../../api/use-query";
 import { NextPageContext } from "next";
@@ -36,7 +36,10 @@ const artistQuery = (identifier: string | number) =>
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
 	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
+	const sortBy = getSortingFieldParams(
+		context.query.sortBy,
+		VideoSortingKeys,
+	);
 
 	return {
 		additionalProps: { artistIdentifier, order, sortBy },
@@ -45,7 +48,7 @@ const prepareSSR = (context: NextPageContext) => {
 			API.getVideos(
 				{ artist: artistIdentifier },
 				{ sortBy: sortBy, order: order },
-				["artist", "featuring"],
+				["artist", "master", "illustration"],
 			),
 		],
 	};
@@ -82,7 +85,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							library: library ?? undefined,
 						},
 						{ sortBy, order },
-						["artist", "featuring"],
+						["artist", "master", "illustration"],
 					)
 				}
 				subtitle="duration"

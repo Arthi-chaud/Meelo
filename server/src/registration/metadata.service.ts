@@ -29,6 +29,7 @@ import GenreService from "src/genre/genre.service";
 import { File } from "src/prisma/models";
 import ParserService from "../parser/parser.service";
 import Slug from "src/slug/slug";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export default class MetadataService {
@@ -47,6 +48,8 @@ export default class MetadataService {
 		private genreService: GenreService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 	) {}
 
 	/**
@@ -95,42 +98,71 @@ export default class MetadataService {
 				}),
 			),
 		);
+		const videoName =
+			this.parserService.removeVideoExtensions(parsedSongName);
+		const videoType = this.parserService.getVideoType(videoName);
+
 		const parsedTrackName =
 			this.parserService.parseTrackExtensions(parsedSongName);
-		const song = await this.songService.getOrCreate(
-			{
-				name: parsedTrackName.parsedName,
-				group: {
-					slug: new Slug(
-						songArtist.name,
-						this.parserService.stripGroups(
-							parsedTrackName.parsedName,
-						) || parsedTrackName.parsedName,
-						// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
-						// If it does, let's just pass the entire song name
-					),
-				},
-				artist: { id: songArtist.id },
-				featuring: featuringArtists.map(({ slug }) => ({
-					slug: new Slug(slug),
-				})),
-				genres: genres.map((genre) => ({ id: genre.id })),
-				registeredAt: file.registerDate,
-			},
-			{
-				genres: true,
-				master: true,
-			},
+		const songGroupSlug = new Slug(
+			songArtist.name,
+			this.parserService.stripGroups(parsedTrackName.parsedName) ||
+				parsedTrackName.parsedName,
+			// If there is no root (e.g. `(Exchange)`), `stripGroups` will return an empty string.
+			// If it does, let's just pass the entire song name
 		);
 
-		await this.songService.update(
-			{
-				genres: song.genres
-					.concat(genres)
-					.map((genre) => ({ id: genre.id })),
-			},
-			{ id: song.id },
-		);
+		const song =
+			metadata.type == TrackType.Audio ||
+			!VideoService.videoTypeIsExtra(videoType)
+				? await this.songService.getOrCreate(
+						{
+							name: parsedTrackName.parsedName,
+							group: {
+								slug: songGroupSlug,
+							},
+							artist: { id: songArtist.id },
+							featuring: featuringArtists.map(({ slug }) => ({
+								slug: new Slug(slug),
+							})),
+							genres: genres.map((genre) => ({ id: genre.id })),
+							registeredAt: file.registerDate,
+						},
+						{
+							genres: true,
+							master: true,
+						},
+				  )
+				: null;
+
+		if (song) {
+			await this.songService.update(
+				{
+					genres: song.genres
+						.concat(genres)
+						.map((genre) => ({ id: genre.id })),
+				},
+				{ id: song.id },
+			);
+		}
+
+		const video =
+			metadata.type == TrackType.Video
+				? await this.videoService.getOrCreate(
+						{
+							name: videoName,
+							type: videoType,
+							artist: { id: songArtist.id },
+							group: {
+								slug: songGroupSlug,
+							},
+							registeredAt: file.registerDate,
+							song: song ? { id: song.id } : undefined,
+						},
+						{ master: true },
+				  )
+				: null;
+
 		const album = metadata.album
 			? await this.albumService.getOrCreate(
 					{
@@ -145,6 +177,7 @@ export default class MetadataService {
 					{ releases: true },
 			  )
 			: undefined;
+		//TODO Link to album
 		const parsedReleaseName = metadata.release
 			? this.parserService.parseReleaseExtension(metadata.release)
 			: undefined;
@@ -163,7 +196,7 @@ export default class MetadataService {
 				  )
 				: undefined;
 		const track: TrackQueryParameters.CreateInput = {
-			name: parsedTrackName.parsedName,
+			name: video ? videoName : parsedTrackName.parsedName,
 			isBonus: parsedTrackName.bonus,
 			isRemastered: parsedTrackName.remastered,
 			discIndex: metadata.discIndex ?? null,
@@ -180,7 +213,11 @@ export default class MetadataService {
 					: null,
 			sourceFile: { id: file.id },
 			release: release ? { id: release.id } : undefined,
-			song: { id: song.id },
+			song:
+				song && (!video || !VideoService.videoTypeIsExtra(video.type))
+					? { id: song.id }
+					: undefined,
+			video: video ? { id: video.id } : undefined,
 		};
 		if (release && album) {
 			if (
@@ -209,13 +246,28 @@ export default class MetadataService {
 		if (overwrite) {
 			await this.trackService.delete({ sourceFileId: file.id });
 		}
-		return this.trackService.create(track).then((res) => {
+		return this.trackService.create(track).then(async (res) => {
 			if (
+				song &&
 				(song.masterId === null ||
 					song.master?.type == TrackType.Video) &&
 				track.type === TrackType.Audio
 			) {
-				this.songService.setMasterTrack({ id: res.id });
+				await this.songService.update(
+					{ master: { id: res.id } },
+					{ id: song.id },
+				);
+			}
+
+			if (
+				video &&
+				(!video.master ||
+					(video.master.bitrate ?? 0) < (track.bitrate ?? 0))
+			) {
+				await this.videoService.update(
+					{ master: { id: res.id } },
+					{ id: video.id },
+				);
 			}
 			return res;
 		});

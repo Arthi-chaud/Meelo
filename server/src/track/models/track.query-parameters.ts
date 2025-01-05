@@ -28,6 +28,7 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import VideoQueryParameters from "src/video/models/video.query-parameters";
 
 namespace TrackQueryParameters {
 	/**
@@ -40,6 +41,8 @@ namespace TrackQueryParameters {
 		| "sourceFileId"
 		| "release"
 		| "releaseId"
+		| "video"
+		| "videoId"
 		| "song"
 		| "songId"
 		| "thumbnail"
@@ -49,7 +52,8 @@ namespace TrackQueryParameters {
 	> & {
 		sourceFile: FileQueryParameters.WhereInput;
 		release?: ReleaseQueryParameters.WhereInput;
-		song: SongQueryParameters.WhereInput;
+		song?: SongQueryParameters.WhereInput;
+		video?: VideoQueryParameters.WhereInput;
 	};
 
 	/**
@@ -69,6 +73,7 @@ namespace TrackQueryParameters {
 				type: TrackType;
 				id: { in: number[] };
 				song: SongQueryParameters.WhereInput;
+				video: VideoQueryParameters.WhereInput;
 				library: LibraryQueryParameters.WhereInput;
 			} & RequireExactlyOne<{
 				artist: ArtistQueryParameters.WhereInput;
@@ -114,6 +119,7 @@ namespace TrackQueryParameters {
 		"song",
 		"release",
 		"sourceFile",
+		"video",
 		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes =

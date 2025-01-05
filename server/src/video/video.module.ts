@@ -16,18 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { VideoController } from "./video.controller";
 import SongModule from "src/song/song.module";
 import { VideoResponseBuilder } from "./models/video.response";
 import VideoService from "./video.service";
 import TrackModule from "src/track/track.module";
 import PrismaModule from "src/prisma/prisma.module";
+import ArtistModule from "src/artist/artist.module";
+import ParserModule from "src/parser/parser.module";
 
 @Module({
-	imports: [SongModule, TrackModule, PrismaModule],
+	imports: [
+		forwardRef(() => SongModule),
+		forwardRef(() => TrackModule),
+		PrismaModule,
+		forwardRef(() => ArtistModule),
+		forwardRef(() => ParserModule),
+	],
 	controllers: [VideoController],
-	exports: [VideoResponseBuilder],
+	exports: [VideoResponseBuilder, VideoService],
 	providers: [VideoResponseBuilder, VideoService],
 })
 export default class VideoModule {}

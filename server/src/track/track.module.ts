@@ -26,11 +26,13 @@ import TrackService from "./track.service";
 import IllustrationModule from "src/illustration/illustration.module";
 import AlbumModule from "src/album/album.module";
 import { TrackResponseBuilder } from "./models/track.response";
+import VideoModule from "src/video/video.module";
 
 @Module({
 	imports: [
 		PrismaModule,
 		forwardRef(() => SongModule),
+		forwardRef(() => VideoModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => IllustrationModule),

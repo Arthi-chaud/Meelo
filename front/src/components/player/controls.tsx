@@ -57,7 +57,6 @@ import ListItem from "../list-item/item";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import formatDuration from "../../utils/formatDuration";
 import formatArtists from "../../utils/formatArtists";
-import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
 
 const parentSongQuery = (id: number) =>
@@ -112,7 +111,10 @@ const PreviousButton = (props: Omit<ControlButtonProps, "icon">) => (
 	<ControlButton {...props} icon={<RewindIcon />} />
 );
 const MinimizedPlayerControls = (props: PlayerControlsProps) => {
-	const parentSong = useQuery(parentSongQuery, props.track?.songId);
+	const parentSong = useQuery(
+		parentSongQuery,
+		props.track?.songId ?? undefined,
+	);
 
 	return (
 		<ButtonBase
@@ -229,14 +231,14 @@ const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	);
 };
 
-const Panels = ["lyrics", "playlist"] as const;
-
 const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> },
 ) => {
 	const theme = useTheme();
-	const { t } = useTranslation();
-	const parentSong = useQuery(parentSongQuery, props.track?.songId);
+	const parentSong = useQuery(
+		parentSongQuery,
+		props.track?.songId ?? undefined,
+	);
 	const { playlist, cursor, reorder, skipTrack } = usePlayerContext();
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
 		"player",
@@ -451,14 +453,14 @@ const ExpandedPlayerControls = (
 							</Grid>
 							<Grid item xs={1}>
 								{
-									props.track &&
-									parentSong.data &&
-									props.artist ? (
+									props.track && props.artist ? (
 										<ReleaseTrackContextualMenu
 											artist={props.artist}
 											track={{
 												...props.track,
-												song: parentSong.data,
+												song: props.track.songId
+													? parentSong.data ?? null
+													: null,
 											}}
 											onSelect={() =>
 												props.onExpand(false)

@@ -30,7 +30,7 @@ import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
-import ChangeAlbumType from "../actions/album-type";
+import { ChangeAlbumType } from "../actions/resource-type";
 import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
 import { useTranslation } from "react-i18next";
 
@@ -64,7 +64,10 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				Promise.allSettled(
 					tracks
 						.reverse()
-						.map((track) => API.setTrackAsMaster(track.id)),
+						.filter((track) => track.songId != null)
+						.map((track) =>
+							API.setTrackAsSongMaster(track.id, track.songId!),
+						),
 				)
 					.then(() => {
 						toast.success(t("tracksUpdated"));

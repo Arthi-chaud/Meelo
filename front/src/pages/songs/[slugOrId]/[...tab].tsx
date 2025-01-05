@@ -21,6 +21,7 @@ import API from "../../../api/api";
 import { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
+	prepareMeeloQuery,
 	useInfiniteQuery,
 	useQuery,
 	useQueryClient,
@@ -50,16 +51,19 @@ import { useThemedSxValue } from "../../../utils/themed-sx-value";
 import { useAccentColor } from "../../../utils/accent-color";
 import { useTabRouter } from "../../../components/tab-router";
 import ExternalMetadataBadge from "../../../components/external-metadata-badge";
+import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
+import { QueryClient } from "react-query";
 
 const externalMetadataQuery = (songIdentifier: string | number) =>
 	API.getSongExternalMetadata(songIdentifier);
 
-const prepareSSR = (context: NextPageContext) => {
+const prepareSSR = async (
+	context: NextPageContext,
+	queryClient: QueryClient,
+) => {
 	const songIdentifier = getSlugOrId(context.query);
-
-	return {
-		additionalProps: { songIdentifier },
-		queries: [
+	const song = await queryClient.fetchQuery(
+		prepareMeeloQuery(() =>
 			API.getSong(songIdentifier, [
 				"artist",
 				"featuring",
@@ -67,8 +71,12 @@ const prepareSSR = (context: NextPageContext) => {
 				"master",
 				"illustration",
 			]),
-			externalMetadataQuery(songIdentifier),
-		],
+		),
+	);
+
+	return {
+		additionalProps: { songIdentifier },
+		queries: [externalMetadataQuery(songIdentifier)],
 		infiniteQueries: [
 			API.getGenres({ song: songIdentifier }),
 			API.getSongs(
@@ -76,16 +84,22 @@ const prepareSSR = (context: NextPageContext) => {
 				{ sortBy: "name", order: "asc" },
 				["artist", "featuring", "master", "illustration"],
 			),
+
+			API.getVideos(
+				{ group: song.groupId },
+				{ sortBy: "name", order: "asc" },
+				["artist", "master", "illustration"],
+			),
 			API.getTracks(
 				{ song: songIdentifier },
 				{ sortBy: "name", order: "asc" },
-				["release", "song", "illustration"],
+				["release", "song", "illustration", "video"],
 			),
 		],
 	};
 };
 
-const tabs = ["lyrics", "versions", "tracks", "more"] as const;
+const tabs = ["lyrics", "versions", "videos", "tracks", "more"] as const;
 
 const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { selectedTab, selectTab } = useTabRouter(
@@ -271,6 +285,31 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					</>
 				)}
+
+				{selectedTab == "videos" && (
+					<>
+						<Head
+							title={
+								song.data &&
+								`${song.data.name} (${t("videos")})`
+							}
+						/>
+						<InfiniteVideoView
+							query={({ library, sortBy, order, type }) =>
+								API.getVideos(
+									{
+										library: library ?? undefined,
+										type,
+										group: song.data?.groupId,
+									},
+									{ sortBy, order },
+									["artist", "master", "illustration"],
+								)
+							}
+							subtitle="duration"
+						/>
+					</>
+				)}
 				{selectedTab == "tracks" && (
 					<>
 						<Head
@@ -284,7 +323,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								API.getTracks(
 									{ song: songIdentifier },
 									{ sortBy, order },
-									["release", "song", "illustration"],
+									[
+										"release",
+										"song",
+										"illustration",
+										"video",
+									],
 								)
 							}
 						/>

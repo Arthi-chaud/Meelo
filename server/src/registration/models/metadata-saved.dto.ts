@@ -24,7 +24,9 @@ export default class MetadataSavedResponse {
 	@ApiProperty()
 	libraryId: number;
 	@ApiProperty()
-	songId: number;
+	videoId: number | null;
+	@ApiProperty()
+	songId: number | null;
 	@ApiProperty()
 	sourceFileId: number;
 	@ApiProperty()

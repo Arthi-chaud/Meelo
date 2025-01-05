@@ -21,17 +21,19 @@ import Illustration from "../illustration";
 import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
-import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { usePlayerContext } from "../../contexts/player";
-import Video, { VideoWithRelations } from "../../models/video";
+import { VideoWithRelations } from "../../models/video";
+import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 
 type VideoTileProps = (
 	| {
-			video: Video | undefined;
+			video: VideoWithRelations<"master" | "illustration"> | undefined;
 			subtitle: "duration";
 	  }
 	| {
-			video: VideoWithRelations<"artist"> | undefined;
+			video:
+				| VideoWithRelations<"artist" | "master" | "illustration">
+				| undefined;
 			subtitle: "artist";
 	  }
 ) & { onClick?: () => void };
@@ -49,7 +51,7 @@ const VideoTile = ({
 				subtitle:
 					subtitleType == "artist"
 						? video.artist.name
-						: formatDuration(video.track.duration),
+						: formatDuration(video.master.duration),
 				secondaryHref:
 					subtitleType == "artist"
 						? `/artists/${video.artist.slug}`
@@ -58,14 +60,7 @@ const VideoTile = ({
 
 	return (
 		<Tile
-			contextualMenu={
-				video && (
-					<TrackContextualMenu
-						isVideo
-						track={{ ...video.track, song: video }}
-					/>
-				)
-			}
+			contextualMenu={video && <VideoContextualMenu video={video} />}
 			onClick={
 				video
 					? () => {
@@ -74,7 +69,10 @@ const VideoTile = ({
 								.fetchQuery(API.getArtist(video.artistId))
 								.then((artist) =>
 									playTrack({
-										track: video.track,
+										track: {
+											...video.master,
+											illustration: video.illustration,
+										},
 										artist: artist,
 									}),
 								);
@@ -88,7 +86,7 @@ const VideoTile = ({
 				<Illustration
 					quality="medium"
 					aspectRatio={16 / 9}
-					illustration={video?.track.illustration}
+					illustration={video?.illustration}
 					imgProps={{ objectFit: "cover" }}
 				/>
 			}

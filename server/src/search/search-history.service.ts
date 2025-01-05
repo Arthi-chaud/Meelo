@@ -18,7 +18,7 @@
 
 import { Injectable } from "@nestjs/common";
 import PrismaService from "src/prisma/prisma.service";
-import { Prisma } from "@prisma/client";
+import { Prisma, Video } from "@prisma/client";
 import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 import {
 	HistoryEntryResourceNotFoundException,
@@ -33,6 +33,7 @@ import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import SongService from "src/song/song.service";
 import { Artist, Song } from "src/prisma/models";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export class SearchHistoryService {
@@ -41,6 +42,7 @@ export class SearchHistoryService {
 		private artistService: ArtistService,
 		private songService: SongService,
 		private albumService: AlbumService,
+		private videoService: VideoService,
 	) {}
 
 	async createEntry(
@@ -56,9 +58,9 @@ export class SearchHistoryService {
 				songId: dto.songId,
 				albumId: dto.albumId,
 				artistId: dto.artistId,
+				videoId: dto.videoId,
 			},
 		});
-		//TODO Check resource exists
 		return this.prismaService.searchHistory
 			.create({
 				data: {
@@ -66,6 +68,7 @@ export class SearchHistoryService {
 					songId: dto.songId,
 					albumId: dto.albumId,
 					artistId: dto.artistId,
+					videoId: dto.videoId,
 				},
 			})
 			.catch((error) => {
@@ -83,7 +86,7 @@ export class SearchHistoryService {
 	async getHistory(
 		userId: number,
 		paginationParameters?: PaginationParameters,
-	): Promise<(Artist | Song | AlbumModel)[]> {
+	): Promise<(Artist | Song | AlbumModel | Video)[]> {
 		const history = await this.prismaService.searchHistory.findMany({
 			where: { userId },
 			orderBy: { searchAt: "desc" },
@@ -113,6 +116,19 @@ export class SearchHistoryService {
 			undefined,
 			{ illustration: true, artist: true, master: true, featuring: true },
 		);
+
+		const videos = await this.videoService.getMany(
+			{
+				id: {
+					in: history
+						.filter((item) => item.videoId !== null)
+						.map(({ videoId }) => videoId!),
+				},
+			},
+			undefined,
+			{ illustration: true, artist: true, master: true },
+			undefined,
+		);
 		const albums = await this.albumService.getMany(
 			{
 				id: {
@@ -126,9 +142,14 @@ export class SearchHistoryService {
 			{ illustration: true, artist: true },
 		);
 
-		return [...artists, ...songs, ...albums].sort((a, b) => {
+		return [...artists, ...songs, ...albums, ...videos].sort((a, b) => {
 			const getIndex = (t: any) => {
 				if (t["groupId"]) {
+					if ("songId" in t) {
+						return history.findIndex(
+							({ videoId }) => videoId == t["id"],
+						);
+					}
 					return history.findIndex(({ songId }) => songId == t["id"]);
 				}
 				if (t["masterId"]) {

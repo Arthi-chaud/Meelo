@@ -16,9 +16,20 @@ import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
 import ParserModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
+import { SongNotFoundException } from "src/song/song.exceptions";
+import {
+	VideoAlreadyExistsException,
+	VideoNotFoundException,
+} from "./video.exceptions";
+import { Video, VideoType } from "@prisma/client";
+import Slug from "src/slug/slug";
+import TrackService from "src/track/track.service";
 
 describe("Video Service", () => {
 	let videoService: VideoService;
+	let trackService: TrackService;
+	let video1: Video;
 	let dummyRepository: TestPrismaService;
 
 	let module: TestingModule;
@@ -44,6 +55,7 @@ describe("Video Service", () => {
 			.compile();
 		dummyRepository = module.get(PrismaService);
 		videoService = module.get(VideoService);
+		trackService = module.get(TrackService);
 
 		await dummyRepository.onModuleInit();
 	});
@@ -57,15 +69,105 @@ describe("Video Service", () => {
 		expect(dummyRepository).toBeDefined();
 	});
 
-	describe("Get Songs With Videos", () => {
+	describe("Create Video", () => {
+		it("should create the video", async () => {
+			const video = await videoService.create({
+				name: "My Video",
+				type: VideoType.Interview,
+				artist: { id: dummyRepository.artistB.id },
+			});
+			expect(video.name).toBe("My Video");
+			expect(video.nameSlug).toBe("my-video");
+
+			expect(video.slug).toBe(dummyRepository.artistB.slug + "-my-video");
+			expect(video.type).toBe(VideoType.Interview);
+			video1 = video;
+		});
+
+		it("should fail, video already exists", () => {
+			const test = () =>
+				videoService.create({
+					name: "My Video",
+					artist: { id: dummyRepository.artistB.id },
+				});
+			expect(test()).rejects.toThrow(VideoAlreadyExistsException);
+		});
+
+		it("should fail, song does not exist", () => {
+			const test = () =>
+				videoService.create({
+					name: "test",
+					song: { id: -1 },
+					artist: { id: dummyRepository.artistA.id },
+				});
+			expect(test()).rejects.toThrow(SongNotFoundException);
+		});
+
+		it("should fail, artist does not exist", () => {
+			const test = () =>
+				videoService.create({
+					name: "test",
+					artist: { id: -1 },
+				});
+			expect(test()).rejects.toThrow(ArtistNotFoundException);
+		});
+	});
+
+	describe("Get Video", () => {
+		it("should find video", async () => {
+			const video = await videoService.get(
+				{
+					slug: new Slug(dummyRepository.artistB.name, "My Video"),
+				},
+				{ artist: true },
+			);
+			expect(video.id).toBe(video1.id);
+			expect(video.name).toBe("My Video");
+			expect(video.artist).toStrictEqual(dummyRepository.artistB);
+		});
+
+		it("should fail to find video by slug", async () => {
+			const test = () =>
+				videoService.get({
+					slug: new Slug("A"),
+				});
+			expect(test()).rejects.toThrow(VideoNotFoundException);
+		});
+	});
+
+	describe("Get Or Create Video", () => {
+		it("should get video", async () => {
+			const video = await videoService.getOrCreate({
+				name: "My Video",
+				artist: { id: dummyRepository.artistB.id },
+			});
+			expect(video.id).toBe(video1.id);
+		});
+
+		it("should create video", async () => {
+			const video = await videoService.getOrCreate({
+				name: "My Video 2",
+				artist: { id: dummyRepository.artistB.id },
+			});
+			expect(video.id).not.toBe(video1.id);
+			expect(video.slug).toBe(
+				dummyRepository.artistB.slug + "-my-video-2",
+			);
+		});
+	});
+
+	describe("Get Videos", () => {
 		it("should return the songs With video", async () => {
-			const videoSongs = await videoService.getMany({});
+			const videoSongs = await videoService.getMany({}, undefined, {
+				master: true,
+				illustration: true,
+			});
 			expect(videoSongs.length).toBe(1);
-			expect(videoSongs[0]).toStrictEqual({
-				...dummyRepository.songA1,
-				track: {
+			expect(videoSongs[0]).toMatchObject({
+				...dummyRepository.videoA1,
+				illustration: null,
+				master: {
 					...dummyRepository.trackA1_2Video,
-					illustration: null,
 				},
 			});
 		});
@@ -81,13 +183,44 @@ describe("Video Service", () => {
 			);
 			expect(videoSongs.length).toBe(1);
 			expect(videoSongs[0]).toStrictEqual({
-				...dummyRepository.songA1,
+				...dummyRepository.videoA1,
 				artist: dummyRepository.artistA,
-				track: {
-					...dummyRepository.trackA1_2Video,
-					illustration: null,
-				},
 			});
+		});
+	});
+
+	describe("Update Video", () => {
+		it("should set video as extra", async () => {
+			const updated = await videoService.update(
+				{ type: VideoType.Documentary },
+				{ id: dummyRepository.videoA1.id },
+			);
+			expect(updated.type).toBe(VideoType.Documentary);
+			expect(updated.songId).toBe(null);
+			expect(updated.groupId).toBe(dummyRepository.songA1.groupId);
+			const videoTracks = await trackService.getMany({
+				video: { id: dummyRepository.videoA1.id },
+			});
+			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			videoTracks.forEach((track) => expect(track.songId).toBe(null));
+		});
+
+		it("should set video back as video", async () => {
+			const updated = await videoService.update(
+				{ type: VideoType.MusicVideo },
+				{ id: dummyRepository.videoA1.id },
+			);
+			expect(updated.type).toBe(VideoType.MusicVideo);
+			expect(updated.songId).toBe(dummyRepository.songA1.id);
+			expect(updated.groupId).toBe(dummyRepository.songA1.groupId);
+
+			const videoTracks = await trackService.getMany({
+				video: { id: dummyRepository.videoA1.id },
+			});
+			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			videoTracks.forEach((track) =>
+				expect(track.songId).toBe(dummyRepository.songA1.id),
+			);
 		});
 	});
 });

@@ -53,38 +53,41 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 				onClose={handleClose}
 				style={{ zIndex: 99999 }}
 			>
-				{props.actions.map((actions, actionGroupIndex, allActions) =>
-					[
-						actions.map((action, actionIndex) => (
-							<Box
-								key={`${actionGroupIndex}/${actionIndex}`}
-								onClick={() => {
-									// If the action is NOT a dialog, close and unmount the menu.
-									// If it is a dialog, we need to keep it mounted, so we have to keep it open
-									if (!action.dialog) {
-										handleClose();
-									}
-									props.onSelect && props.onSelect(action);
-								}}
-							>
-								<ContextualMenuItem
-									{...action}
-									onDialogClose={handleClose}
-								/>
-							</Box>
-						)),
-					].concat(
-						actionGroupIndex < allActions.length - 1
-							? [
-									<Divider
-										key={actionGroupIndex}
-										sx={{ marginY: 0.5 }}
-										variant="middle"
-									/>,
-								]
-							: [],
-					),
-				)}
+				{props.actions
+					.filter((actionList) => actionList.length > 0)
+					.map((actions, actionGroupIndex, allActions) =>
+						[
+							actions.map((action, actionIndex) => (
+								<Box
+									key={`${actionGroupIndex}/${actionIndex}`}
+									onClick={() => {
+										// If the action is NOT a dialog, close and unmount the menu.
+										// If it is a dialog, we need to keep it mounted, so we have to keep it open
+										if (!action.dialog) {
+											handleClose();
+										}
+										props.onSelect &&
+											props.onSelect(action);
+									}}
+								>
+									<ContextualMenuItem
+										{...action}
+										onDialogClose={handleClose}
+									/>
+								</Box>
+							)),
+						].concat(
+							actionGroupIndex < allActions.length - 1
+								? [
+										<Divider
+											key={actionGroupIndex}
+											sx={{ marginY: 0.5 }}
+											variant="middle"
+										/>,
+									]
+								: [],
+						),
+					)}
 			</Menu>
 		</>
 	);
