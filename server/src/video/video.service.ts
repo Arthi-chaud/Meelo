@@ -44,10 +44,16 @@ import AlbumService from "src/album/album.service";
 import LibraryService from "src/library/library.service";
 import TrackService from "src/track/track.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
+import MeiliSearch from "meilisearch";
+import Logger from "src/logger/logger";
 
 @Injectable()
-export default class VideoService {
+export default class VideoService extends SearchableRepositoryService {
+	private readonly logger = new Logger(VideoService.name);
 	constructor(
+		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
@@ -57,7 +63,9 @@ export default class VideoService {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-	) {}
+	) {
+		super("videos", ["name", "slug", "nameSlug", "type"], meiliSearch);
+	}
 
 	async create<I extends VideoQueryParameters.RelationInclude = {}>(
 		data: VideoQueryParameters.CreateInput,
@@ -99,7 +107,14 @@ export default class VideoService {
 				args,
 			)
 			.then((res) => {
-				//TODO Meilisearch
+				this.meiliSearch.index(this.indexName).addDocuments([
+					{
+						id: res.id,
+						nameSlug: res.nameSlug,
+						slug: res.slug,
+						name: res.name,
+					},
+				]);
 				return res;
 			})
 			.catch(async (error) => {
@@ -137,6 +152,23 @@ export default class VideoService {
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
 			});
+	}
+
+	async search<I extends VideoQueryParameters.RelationInclude = {}>(
+		token: string,
+		where: VideoQueryParameters.ManyWhereInput,
+		pagination: PaginationParameters = {},
+		include?: I,
+	) {
+		const matchingIds = await this.getMatchingIds(token, pagination);
+		const artists = await this.getMany(
+			{ ...where, id: { in: matchingIds } },
+			{},
+			include,
+			{},
+		);
+
+		return this.sortItemsUsingMatchList(matchingIds, artists);
 	}
 
 	async update(
@@ -500,10 +532,12 @@ export default class VideoService {
 
 	async delete(where: VideoQueryParameters.WhereInput) {
 		await this.get(where);
-		await this.prismaService.video.delete({
+		const deleted = await this.prismaService.video.delete({
 			where: VideoService.formatWhereInput(where),
 		});
-		//TODO Delete in meilisearch
+		this.meiliSearch.index(this.indexName).deleteDocument(deleted.id);
+		this.logger.warn(`Video '${deleted.slug}' deleted`);
+		return deleted;
 	}
 
 	/**

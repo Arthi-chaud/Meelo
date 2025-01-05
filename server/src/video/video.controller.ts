@@ -82,6 +82,12 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
+		description: "Search videos using a string token",
+	})
+	query?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional({
 		description: "Get related songs ",
 	})
 	@TransformIdentifier({
@@ -151,7 +157,7 @@ export class VideoController {
 		type: ResponseType.Page,
 	})
 	@Get()
-	async getVideosByLibrary(
+	async getVideos(
 		@Query() selector: Selector,
 		@Query() sort: VideoQueryParameters.SortingParameter,
 		@Query()
@@ -159,6 +165,14 @@ export class VideoController {
 		@RelationIncludeQuery(VideoQueryParameters.AvailableAtomicIncludes)
 		include: VideoQueryParameters.RelationInclude,
 	) {
+		if (selector.query) {
+			return this.videoService.search(
+				decodeURI(selector.query),
+				selector,
+				paginationParameters,
+				include,
+			);
+		}
 		return this.videoService.getMany(
 			selector,
 			paginationParameters,
