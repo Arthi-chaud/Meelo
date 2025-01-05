@@ -397,6 +397,7 @@ describe("Parser Service", () => {
 					"Clean",
 					"Live",
 					"Credits",
+					"Live to Tell",
 				],
 			],
 			[
@@ -579,6 +580,7 @@ describe("Parser Service", () => {
 					"A (Clip Video)",
 					"A (Official Music Video)",
 					"A (Music Video)",
+					"Live to Tell",
 				],
 			],
 			[

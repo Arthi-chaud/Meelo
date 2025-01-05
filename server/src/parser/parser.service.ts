@@ -557,8 +557,10 @@ export default class ParserService {
 
 		const containsWord = (word: string) =>
 			extensionWords.includes(word) || lowercaseSongName.includes(word);
+		const containsExtension = (word: string) =>
+			extensionWords.includes(word);
 
-		if (containsWord("lyrics") || containsWord("lyric")) {
+		if (containsExtension("lyrics") || containsExtension("lyric")) {
 			return VideoType.LyricsVideo;
 		}
 		if (containsWord("interview")) {
@@ -593,7 +595,7 @@ export default class ParserService {
 		if (containsWord("television special") || containsWord("mtv special")) {
 			return VideoType.Interview;
 		}
-		if (containsWord("live") || containsWord("performance")) {
+		if (containsExtension("live") || containsExtension("performance")) {
 			return VideoType.Live;
 		}
 		return VideoType.MusicVideo;
