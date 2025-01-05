@@ -299,6 +299,25 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							),
 						] as const,
 				)
+
+				.sort(
+					([v1, i1], [v2, i2]) =>
+						i1 - i2 || v1.slug.localeCompare(v2.slug),
+				)
+				.map(([video, tracklistIndex], _, videosWithIndexes) => {
+					if (album.data?.type === "Single") {
+						return [video, tracklistIndex] as const;
+					}
+					const firstVideoOfSameGroup = videosWithIndexes.find(
+						([__, i]) => i == tracklistIndex,
+					)!;
+					return [
+						video,
+						firstVideoOfSameGroup[0].id == video.id
+							? tracklistIndex
+							: 10000 + tracklistIndex,
+					] as const;
+				})
 				.sort(([_, i1], [__, i2]) => i1 - i2)
 				.map(([v, _]) => v)
 				.reduce(
