@@ -326,13 +326,14 @@ model Video {
     /// @description The date the video was registered
     registeredAt DateTime @default(now())
 
-    type         VideoType
+    type          VideoType
     /// @description The main/most used track of the video, by default the first one
-    master       Track?             @relation("VideoMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    master        Track?             @relation("VideoMaster", fields: [masterId], references: [id], onDelete: SetNull)
     /// @description Unique numeric identifier of the main track, if there is one
     /// @example 123
-    masterId     Int?               @unique
-    illustration VideoIllustration?
+    masterId      Int?               @unique
+    illustration  VideoIllustration?
+    searchHistory SearchHistory[]
 
     @@map("videos")
 }
@@ -647,11 +648,13 @@ model SearchHistory {
     albumId  Int?
     artist   Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
     artistId Int?
+    video    Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+    videoId  Int?
 
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
 
-    @@unique([songId, albumId, artistId, userId])
+    @@unique([songId, albumId, artistId, videoId, userId])
     @@map("search_history")
 }
 

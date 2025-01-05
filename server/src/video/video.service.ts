@@ -474,9 +474,7 @@ export default class VideoService extends SearchableRepositoryService {
 	 * @param pagination the pagination parameters
 	 * @param include the relations to include with the returned videos
 	 */
-	async getMany<
-		I extends Omit<VideoQueryParameters.RelationInclude, "tracks">,
-	>(
+	async getMany<I extends VideoQueryParameters.RelationInclude>(
 		where: VideoQueryParameters.ManyWhereInput,
 		pagination?: PaginationParameters,
 		include?: I,
