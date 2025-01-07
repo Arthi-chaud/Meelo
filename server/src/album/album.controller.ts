@@ -21,7 +21,7 @@ import {
 	Controller,
 	Get,
 	Inject,
-	Post,
+	Put,
 	Query,
 	forwardRef,
 } from "@nestjs/common";
@@ -173,7 +173,7 @@ export default class AlbumController {
 	})
 	@Role(Roles.Admin, Roles.Microservice)
 	@Response({ handler: AlbumResponseBuilder })
-	@Post(":idOrSlug")
+	@Put(":idOrSlug")
 	async updateAlbum(
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,

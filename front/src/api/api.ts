@@ -553,7 +553,7 @@ export default class API {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
 			data: { type: newType },
