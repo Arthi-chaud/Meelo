@@ -29,6 +29,10 @@ export class IllustrationDimensionsDto {
 			"Illustration's width: Expected a strictly positive number",
 	})
 	@IsOptional()
+	@ApiProperty({
+		description:
+			"If set, will resize so that the image's width matches. Aspect ratio is preserved.",
+	})
 	width?: number;
 
 	@IsPositive({
@@ -36,12 +40,17 @@ export class IllustrationDimensionsDto {
 			"Illustration's height: Expected a strictly positive number",
 	})
 	@IsOptional()
+	@ApiProperty({
+		description:
+			"If set, will resize so that the image's height matches. Aspect ratio is preserved.",
+	})
 	height?: number;
 
 	@IsEnum(ImageQuality)
 	@IsOptional()
 	@ApiProperty({
 		enum: ImageQuality,
+		description: "Quality preset",
 	})
 	quality?: ImageQuality;
 }
