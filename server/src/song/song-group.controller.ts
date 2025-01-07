@@ -18,7 +18,7 @@
 
 import { Controller, Get, Query } from "@nestjs/common";
 import SongGroupService from "./song-group.service";
-import { ApiOperation, PickType } from "@nestjs/swagger";
+import { ApiOperation, ApiTags, PickType } from "@nestjs/swagger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SongQueryParameters from "./models/song.query-params";
@@ -36,11 +36,12 @@ class SongGroupSelector extends PickType(Selector, [
 	"type",
 ]) {}
 
+@ApiTags("Song Groups")
 @Controller("song-groups")
 export class SongGroupController {
 	constructor(private songGroupService: SongGroupService) {}
 	@ApiOperation({
-		summary: "Get many songs",
+		description: "Get song groups",
 	})
 	@Response({
 		handler: SongGroupResponseBuilder,
