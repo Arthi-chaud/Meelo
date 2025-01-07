@@ -52,7 +52,7 @@ export default class LibraryController {
 		returns: Library,
 	})
 	@Admin()
-	@Post("new")
+	@Post()
 	async createLibrary(@Body() createLibraryDto: CreateLibraryDto) {
 		return this.libraryService.create(createLibraryDto);
 	}
@@ -83,7 +83,7 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
-		summary: "Get all libraries",
+		summary: "Get many libraries",
 	})
 	@Get()
 	@Response({
@@ -105,7 +105,8 @@ export default class LibraryController {
 	}
 
 	@ApiOperation({
-		summary: "Delete a library. Hangs while the library gets deleted.",
+		summary: "Delete a library",
+		description: "Hangs while the library gets deleted",
 	})
 	@SetMetadata("request-timeout", 60000)
 	@Admin()

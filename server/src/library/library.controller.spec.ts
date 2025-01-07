@@ -68,7 +68,7 @@ describe("Library Controller", () => {
 	describe("Create Library (POST /libraries/new)", () => {
 		it("should create a library", async () => {
 			return request(app.getHttpServer())
-				.post("/libraries/new")
+				.post("/libraries")
 				.send({
 					path: "Music 3/",
 					name: "My New Library",
@@ -85,7 +85,7 @@ describe("Library Controller", () => {
 		});
 		it("should fail, as the body is incomplete", async () => {
 			return request(app.getHttpServer())
-				.post("/libraries/new")
+				.post("/libraries")
 				.send({
 					path: "/Path",
 				})
@@ -93,7 +93,7 @@ describe("Library Controller", () => {
 		});
 		it("should fail, as it already exists", async () => {
 			return request(app.getHttpServer())
-				.post("/libraries/new")
+				.post("/libraries")
 				.send({
 					path: "/Path",
 					name: "Library",

@@ -429,7 +429,7 @@ export default class API {
 		libraryPath: string,
 	): Promise<Library> {
 		return API.fetch({
-			route: "/libraries/new",
+			route: "/libraries",
 			data: { name: libraryName, path: libraryPath },
 			errorMessage: "Library Creation Failed",
 			parameters: {},
