@@ -1240,7 +1240,7 @@ export default class API {
 			key: ["artist", slugOrId, "external-metadata"],
 			exec: () =>
 				API.fetch({
-					route: `/external-metadata/artist/${slugOrId}`,
+					route: `/external-metadata?artist=${slugOrId}`,
 					errorMessage: "Metadata could not be loaded",
 					parameters: {},
 					validator: ArtistExternalMetadata,
@@ -1255,7 +1255,7 @@ export default class API {
 			key: ["song", slugOrId, "external-metadata"],
 			exec: () =>
 				API.fetch({
-					route: `/external-metadata/song/${slugOrId}`,
+					route: `/external-metadata?song=${slugOrId}`,
 					errorMessage: "Metadata could not be loaded",
 					parameters: {},
 					validator: SongExternalMetadata,
@@ -1269,7 +1269,7 @@ export default class API {
 			key: ["album", slugOrId, "external-metadata"],
 			exec: () =>
 				API.fetch({
-					route: `/external-metadata/album/${slugOrId}`,
+					route: `/external-metadata?album=${slugOrId}`,
 					errorMessage: "Metadata could not be loaded",
 					parameters: {},
 					validator: AlbumExternalMetadata,
@@ -1284,7 +1284,7 @@ export default class API {
 			key: ["release", slugOrId, "external-metadata"],
 			exec: () =>
 				API.fetch({
-					route: `/external-metadata/release/${slugOrId}`,
+					route: `/external-metadata?release=${slugOrId}`,
 					errorMessage: "Metadata could not be loaded",
 					parameters: {},
 					validator: ReleaseExternalMetadata,

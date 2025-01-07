@@ -8,7 +8,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SetupApp from "test/setup-app";
 import { Provider } from "src/prisma/models";
-import { createReadStream, existsSync, readFileSync, ReadStream } from "fs";
+import { createReadStream, existsSync } from "fs";
 import IllustrationService from "src/illustration/illustration.service";
 import ProviderService from "./provider.service";
 

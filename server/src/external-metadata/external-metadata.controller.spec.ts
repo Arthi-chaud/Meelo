@@ -109,7 +109,7 @@ describe("External Metadata Controller", () => {
 	describe("Get Metadata", () => {
 		it("should get album metadata", () => {
 			return request(app.getHttpServer())
-				.get(`/external-metadata/album/${dummyRepository.albumA1.id}`)
+				.get(`/external-metadata?album=${dummyRepository.albumA1.id}`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual(createdMetadata);
@@ -117,13 +117,23 @@ describe("External Metadata Controller", () => {
 		});
 		it("should return an error, as metadata does not exists", () => {
 			return request(app.getHttpServer())
-				.get(`/external-metadata/album/${dummyRepository.albumB1.id}`)
+				.get(`/external-metadata?album=${dummyRepository.albumB1.id}`)
 				.expect(404);
 		});
 		it("should return an error, as album does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/external-metadata/album/-1`)
+				.get(`/external-metadata?album=-1`)
 				.expect(404);
+		});
+		it("should return an error, as no selector were given", () => {
+			return request(app.getHttpServer())
+				.get(`/external-metadata`)
+				.expect(400);
+		});
+		it("should return an error, as too many selector were given", () => {
+			return request(app.getHttpServer())
+				.get(`/external-metadata?album=a&artist=b`)
+				.expect(400);
 		});
 	});
 });
