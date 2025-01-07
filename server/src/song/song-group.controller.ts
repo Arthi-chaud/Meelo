@@ -41,7 +41,7 @@ class SongGroupSelector extends PickType(Selector, [
 export class SongGroupController {
 	constructor(private songGroupService: SongGroupService) {}
 	@ApiOperation({
-		description: "Get song groups",
+		summary: "Get song groups",
 	})
 	@Response({
 		handler: SongGroupResponseBuilder,
