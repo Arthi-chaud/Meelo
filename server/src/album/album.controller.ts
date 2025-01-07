@@ -177,10 +177,16 @@ export default class AlbumController {
 	async updateAlbum(
 		@IdentifierParam(AlbumService)
 		where: AlbumQueryParameters.WhereInput,
-		@Body() updateDTO: UpdateAlbumDTO,
+		@Body() { masterReleaseId, ...updateAlbumDTO }: UpdateAlbumDTO,
 	) {
 		const album = await this.albumService.get(where);
 
-		return this.albumService.update(updateDTO, { id: album.id });
+		return this.albumService.update(
+			{
+				master: masterReleaseId ? { id: masterReleaseId } : undefined,
+				...updateAlbumDTO,
+			},
+			{ id: album.id },
+		);
 	}
 }

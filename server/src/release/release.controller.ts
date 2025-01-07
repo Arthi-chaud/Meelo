@@ -37,7 +37,6 @@ import type { Response as ExpressResponse } from "express";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { ReleaseResponseBuilder } from "./models/release.response";
@@ -71,8 +70,6 @@ export default class ReleaseController {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 	) {}
 
 	@ApiOperation({
@@ -164,21 +161,5 @@ export default class ReleaseController {
 		@Res() response: ExpressResponse,
 	) {
 		return this.releaseService.pipeArchive(where, response);
-	}
-
-	@ApiOperation({
-		summary: "Set a release as master release",
-	})
-	@Admin()
-	@Response({ handler: ReleaseResponseBuilder })
-	@Put(":idOrSlug/master")
-	async setAsMaster(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-	) {
-		const release = await this.releaseService.get(where);
-
-		await this.albumService.setMasterRelease(where);
-		return release;
 	}
 }

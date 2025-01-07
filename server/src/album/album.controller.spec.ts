@@ -491,6 +491,32 @@ describe("Album Controller", () => {
 					]);
 				});
 		});
+		it("should set release as master", async () => {
+			await request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.albumA1.id}`)
+				.send({
+					masterReleaseId: dummyRepository.releaseA1_2.id,
+				})
+				.expect(200)
+				.expect((res) => {
+					const releaseId = res.body.masterId;
+					expect(releaseId).toBe(dummyRepository.releaseA1_2.id);
+				});
+			// teardown
+			await dummyRepository.album.update({
+				where: { id: dummyRepository.albumA1.id },
+				data: { masterId: dummyRepository.releaseA1_1.id },
+			});
+		});
+
+		it("should no set release as master (unrelated release)", () => {
+			return request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.albumA1.id}`)
+				.send({
+					masterReleaseId: dummyRepository.releaseB1_1.id,
+				})
+				.expect(400);
+		});
 	});
 
 	describe("Album Illustration", () => {

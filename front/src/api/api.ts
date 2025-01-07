@@ -1470,13 +1470,15 @@ export default class API {
 	 */
 	static async setReleaseAsMaster(
 		releaseSlugOrId: string | number,
+		albumSlugOrId: string | number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/releases/${releaseSlugOrId}/master`,
-			errorMessage: "Release update failed",
-			parameters: {},
+			route: `/albums/${albumSlugOrId}`,
 			method: "PUT",
-			validator: yup.mixed(),
+			parameters: {},
+			emptyResponse: true,
+			data: { masterReleaseId: releaseSlugOrId },
+			errorMessage: "Release update failed",
 		});
 	}
 

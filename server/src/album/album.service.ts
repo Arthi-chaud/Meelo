@@ -33,7 +33,6 @@ import { buildStringSearchParameters } from "src/utils/search-string-input";
 import SongService from "src/song/song.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import Logger from "src/logger/logger";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
 import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
@@ -53,6 +52,7 @@ import {
 	ResourceEventPriority,
 } from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export default class AlbumService extends SearchableRepositoryService {
@@ -429,10 +429,26 @@ export default class AlbumService extends SearchableRepositoryService {
 		what: AlbumQueryParameters.UpdateInput,
 		where: AlbumQueryParameters.WhereInput,
 	) {
+		if (what.master) {
+			const newMaster = await this.releaseService.get(what.master);
+			const album = await this.get(where);
+			if (newMaster.albumId !== album.id) {
+				throw new InvalidRequestException(
+					"Master release of album should be release of said album",
+				);
+			}
+		}
 		return this.prismaService.album
 			.update({
 				data: {
 					...what,
+					master: what.master
+						? {
+								connect: ReleaseService.formatWhereInput(
+									what.master,
+								),
+						  }
+						: undefined,
 					releaseDate: what.releaseDate ?? undefined,
 					genres: what.genres
 						? {
@@ -558,32 +574,6 @@ export default class AlbumService extends SearchableRepositoryService {
 				.filter((q) => q !== null)
 				.map((q) => q!),
 		);
-	}
-
-	/**
-	 * Set the release as album's master
-	 * @param releaseWhere the query parameters of the release
-	 * @returns the updated album
-	 */
-	async setMasterRelease(releaseWhere: ReleaseQueryParameters.WhereInput) {
-		const release = await this.releaseService.get(releaseWhere);
-
-		return this.prismaService.album.update({
-			where: { id: release.albumId },
-			data: { masterId: release.id },
-		});
-	}
-
-	/**
-	 * unset album's master release
-	 * @param albumWhere the query parameters of the album
-	 * @returns the updated album
-	 */
-	async unsetMasterRelease(albumWhere: AlbumQueryParameters.WhereInput) {
-		return this.prismaService.album.update({
-			where: AlbumService.formatWhereInput(albumWhere),
-			data: { masterId: null },
-		});
 	}
 
 	async onNotFound(error: Error, where: AlbumQueryParameters.WhereInput) {
