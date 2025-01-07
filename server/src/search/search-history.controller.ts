@@ -17,7 +17,12 @@
  */
 
 import { Body, Controller, Get, Post, Query, Req } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	getSchemaPath,
+} from "@nestjs/swagger";
 import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 import { SearchHistoryService } from "./search-history.service";
 import Roles from "src/authentication/roles/roles.enum";
@@ -30,10 +35,22 @@ import {
 	Video,
 } from "src/prisma/models";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { ArtistResponseBuilder } from "src/artist/models/artist.response";
-import { AlbumResponseBuilder } from "src/album/models/album.response";
-import { SongResponseBuilder } from "src/song/models/song.response";
-import { VideoResponseBuilder } from "src/video/models/video.response";
+import {
+	ArtistResponse,
+	ArtistResponseBuilder,
+} from "src/artist/models/artist.response";
+import {
+	AlbumResponse,
+	AlbumResponseBuilder,
+} from "src/album/models/album.response";
+import {
+	SongResponse,
+	SongResponseBuilder,
+} from "src/song/models/song.response";
+import {
+	VideoResponse,
+	VideoResponseBuilder,
+} from "src/video/models/video.response";
 
 @ApiTags("Search")
 @Controller("search/history")
@@ -47,7 +64,8 @@ export class SearchHistoryController {
 	) {}
 
 	@ApiOperation({
-		summary: "Save a searched item",
+		summary: "Save an entry in the search history",
+		description: "There should be exactly one ID in the DTO.",
 	})
 	@Role(Roles.User)
 	@Post()
@@ -66,6 +84,19 @@ export class SearchHistoryController {
 	})
 	@Role(Roles.User)
 	@Get()
+	@ApiOkResponse({
+		schema: {
+			type: "array",
+			items: {
+				oneOf: [
+					ArtistResponse,
+					AlbumResponse,
+					SongResponse,
+					VideoResponse,
+				].map((resType) => ({ $ref: getSchemaPath(resType) })),
+			},
+		},
+	})
 	async getSearchHistory(
 		@Query() pagination: PaginationParameters,
 		@Req() request: Express.Request,

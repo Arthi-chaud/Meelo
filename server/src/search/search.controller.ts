@@ -17,14 +17,31 @@
  */
 
 import { Controller, Get, Query } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	getSchemaPath,
+} from "@nestjs/swagger";
 import { SearchService } from "./search.service";
-import { ArtistResponseBuilder } from "src/artist/models/artist.response";
-import { SongResponseBuilder } from "src/song/models/song.response";
-import { AlbumResponseBuilder } from "src/album/models/album.response";
+import {
+	ArtistResponse,
+	ArtistResponseBuilder,
+} from "src/artist/models/artist.response";
+import {
+	SongResponse,
+	SongResponseBuilder,
+} from "src/song/models/song.response";
+import {
+	AlbumResponse,
+	AlbumResponseBuilder,
+} from "src/album/models/album.response";
 import { AlbumWithRelations, Artist, Song } from "src/prisma/models";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import { VideoResponseBuilder } from "src/video/models/video.response";
+import {
+	VideoResponse,
+	VideoResponseBuilder,
+} from "src/video/models/video.response";
 import { Video } from "@prisma/client";
 
 @ApiTags("Search")
@@ -44,10 +61,23 @@ export class SearchController {
 			No pagination paramters. \
 			Artists come with their respective illustration. \
 			Songs come with their artist, featuring artist, illustration and master track. \
-			Videos come with their artist,  illustration and master track. \
+			Videos come with their artist, illustration and master track. \
 			Albums come with their artist and illustration.",
 	})
 	@Get()
+	@ApiOkResponse({
+		schema: {
+			type: "array",
+			items: {
+				oneOf: [
+					ArtistResponse,
+					AlbumResponse,
+					SongResponse,
+					VideoResponse,
+				].map((resType) => ({ $ref: getSchemaPath(resType) })),
+			},
+		},
+	})
 	async search(@Query("query") query?: string) {
 		if (!query) {
 			throw new InvalidRequestException(
