@@ -24,11 +24,12 @@ import RoleEnum from "src/authentication/roles/roles.enum";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { RegistrationService } from "./registration.service";
 
-@ApiTags("Metadata")
+@ApiTags("Registration")
 @Controller("metadata")
 export class MetadataController {
 	constructor(private registrationService: RegistrationService) {}
 	@ApiOperation({
+		summary: "Submit a new file and its metadata",
 		description:
 			"Handles the metadata of a single media file, and creates the related artist, album, etc.",
 	})
@@ -41,6 +42,7 @@ export class MetadataController {
 	}
 
 	@ApiOperation({
+		summary: "Update a file and its metadata",
 		description:
 			"Handles the metadata of a single media file, and updates the related artist, album, etc.",
 	})
