@@ -91,12 +91,28 @@ export default class MetadataService {
 			registeredAt: file.registerDate,
 		});
 		const featuringArtists = await Promise.all(
-			parsedFeaturingArtists.map((artist) =>
-				this.artistService.getOrCreate({
-					name: artist,
-					registeredAt: file.registerDate,
-				}),
-			),
+			parsedFeaturingArtists
+				.map(
+					(artistName) => [artistName, new Slug(artistName)] as const,
+				)
+
+				// The same artist can be twice in this list
+				// We filter out duplicates using their slug
+				.filter(([_, artistSlug], artistIndex, featuringSlugs) => {
+					const firstOccurence = featuringSlugs.findIndex(
+						([__, otherArtistSlug]) =>
+							artistSlug.toString() == otherArtistSlug.toString(),
+					);
+					return (
+						firstOccurence == -1 || firstOccurence == artistIndex
+					);
+				})
+				.map(([artist, _]) =>
+					this.artistService.getOrCreate({
+						name: artist,
+						registeredAt: file.registerDate,
+					}),
+				),
 		);
 		const videoName =
 			this.parserService.removeVideoExtensions(parsedSongName);
