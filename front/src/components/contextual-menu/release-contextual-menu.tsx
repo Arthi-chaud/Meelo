@@ -46,7 +46,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const confirm = useConfirm();
 	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
-		return API.setReleaseAsMaster(props.release.id, props.release.albumId)
+		return API.updateAlbum(props.release.albumId, {
+			masterReleaseId: props.release.id,
+		})
 			.then(() => {
 				toast.success(t("releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();

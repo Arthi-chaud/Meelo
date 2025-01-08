@@ -547,7 +547,7 @@ export default class API {
 	 */
 	static async updateAlbum(
 		albumSlugOrId: number | string,
-		newType: AlbumType,
+		dto: Partial<{ type: AlbumType; masterReleaseId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
@@ -555,7 +555,7 @@ export default class API {
 			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
@@ -1446,25 +1446,6 @@ export default class API {
 			parameters: {},
 			method: "PUT",
 			validator: yup.mixed(),
-		});
-	}
-
-	/**
-	 * Mark a release as master
-	 * @param releaseSlugOrId
-	 * @returns
-	 */
-	static async setReleaseAsMaster(
-		releaseSlugOrId: string | number,
-		albumSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/albums/${albumSlugOrId}`,
-			method: "PUT",
-			parameters: {},
-			emptyResponse: true,
-			data: { masterReleaseId: releaseSlugOrId },
-			errorMessage: "Release update failed",
 		});
 	}
 

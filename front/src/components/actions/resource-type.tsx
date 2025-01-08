@@ -149,7 +149,7 @@ const ChangeAlbumType = (
 		"changeAlbumType",
 		client,
 		(newType: AlbumType) =>
-			API.updateAlbum(a.id, newType).then((res) => {
+			API.updateAlbum(a.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("albums");
 				return res;
 			}),
