@@ -419,7 +419,9 @@ const ExpandedPlayerControls = (
 										href={
 											props.track.releaseId
 												? `/releases/${props.track.releaseId}`
-												: `/songs/${props.track.songId}/lyrics`
+												: props.track.songId
+													? `/songs/${props.track.songId}/lyrics`
+													: {}
 										}
 										style={{
 											overflow: "hidden",
