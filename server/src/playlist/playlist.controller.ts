@@ -163,21 +163,23 @@ export default class PlaylistController {
 	@ApiOperation({
 		summary: "Add song to playlist",
 	})
-	@Post("entries")
+	@Post(":idOrSlug/entries")
 	async addSongToPlaylist(
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
 		@Body()
 		playlistEntryDTO: CreatePlaylistEntryDTO,
 	) {
 		await this.playlistService.addSong(
 			{ id: playlistEntryDTO.songId },
-			{ id: playlistEntryDTO.playlistId },
+			where,
 		);
 	}
 
 	@ApiOperation({
 		summary: "Reorder entries in playlist",
 	})
-	@Put(":idOrSlug/reorder")
+	@Put(":idOrSlug/entries/reorder")
 	async moveEntryInPlaylist(
 		@Body()
 		{ entryIds }: ReorderPlaylistDTO,

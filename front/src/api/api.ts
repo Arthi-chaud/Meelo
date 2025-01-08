@@ -283,7 +283,7 @@ export default class API {
 		entriesIds: number[],
 	): Promise<void> {
 		return API.fetch({
-			route: `/playlists/${playlistSlugOrId}/reorder`,
+			route: `/playlists/${playlistSlugOrId}/entries/reorder`,
 			data: { entryIds: entriesIds },
 			parameters: {},
 			method: "PUT",
@@ -1406,10 +1406,10 @@ export default class API {
 		playlistId: number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/playlists/entries`,
+			route: `/playlists/${playlistId}/entries`,
 			errorMessage: "Failed to add song to playlist",
 			parameters: {},
-			data: { songId, playlistId },
+			data: { songId },
 			method: "POST",
 			emptyResponse: true,
 		});
