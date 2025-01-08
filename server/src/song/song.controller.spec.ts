@@ -533,11 +533,11 @@ describe("Song Controller", () => {
 	describe("Update Song", () => {
 		it("Should update Song's Type", () => {
 			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songB1.id}`)
+				.put(`/songs/${dummyRepository.songB1.id}`)
 				.send({
 					type: SongType.Remix,
 				})
-				.expect(201)
+				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;
 					expect(song).toStrictEqual({
@@ -549,11 +549,11 @@ describe("Song Controller", () => {
 
 		it("Should update Song's Type", () => {
 			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songB1.id}`)
+				.put(`/songs/${dummyRepository.songB1.id}`)
 				.send({
 					genres: ["a", "B", "c"],
 				})
-				.expect(201)
+				.expect(200)
 				.expect(async () => {
 					const songGenres = await dummyRepository.genre
 						.findMany({
@@ -574,7 +574,7 @@ describe("Song Controller", () => {
 
 		it("should set track as master", () => {
 			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songA1.id}`)
+				.put(`/songs/${dummyRepository.songA1.id}`)
 				.send({
 					masterTrackId: dummyRepository.trackA1_2Video.id,
 				})
@@ -588,7 +588,7 @@ describe("Song Controller", () => {
 
 		it("should fail as track does not belong to song", () => {
 			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songA1.id}`)
+				.put(`/songs/${dummyRepository.songA1.id}`)
 				.send({
 					masterTrackId: dummyRepository.trackC1_1.id,
 				})

@@ -53,7 +53,7 @@ import SongQueryParameters from "src/song/models/song.query-params";
 export class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Filter playlist by albums that entries belong to",
+		description: "Get playlists that have a song in common with an album",
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
@@ -65,7 +65,7 @@ export default class PlaylistController {
 	constructor(private playlistService: PlaylistService) {}
 
 	@ApiOperation({
-		summary: "Get one Playlist",
+		summary: "Get one playlist",
 	})
 	@Get(":idOrSlug")
 	@Response({ handler: PlaylistResponseBuilder })
@@ -79,7 +79,7 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Get Playlists",
+		summary: "Get many playlists",
 	})
 	@Get()
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
@@ -100,7 +100,8 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Get Playlist's entries",
+		summary: "Get a playlist's entries",
+		description: "Entries as song with an 'entryId' field",
 	})
 	@Get(":idOrSlug/entries")
 	@Response({
@@ -123,9 +124,9 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Create Playlist",
+		summary: "Create playlist",
 	})
-	@Post("new")
+	@Post()
 	@Response({ handler: PlaylistResponseBuilder })
 	async createPlaylist(
 		@Body()
@@ -135,7 +136,7 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Update Playlist",
+		summary: "Update playlist",
 	})
 	@Put(":idOrSlug")
 	@Response({ handler: PlaylistResponseBuilder })
@@ -149,7 +150,7 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Get one Playlist",
+		summary: "Delete playlist",
 	})
 	@Delete(":idOrSlug")
 	async delete(
@@ -160,23 +161,25 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Add Song to Playlist",
+		summary: "Add song to playlist",
 	})
-	@Post("entries/new")
+	@Post(":idOrSlug/entries")
 	async addSongToPlaylist(
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
 		@Body()
 		playlistEntryDTO: CreatePlaylistEntryDTO,
 	) {
 		await this.playlistService.addSong(
 			{ id: playlistEntryDTO.songId },
-			{ id: playlistEntryDTO.playlistId },
+			where,
 		);
 	}
 
 	@ApiOperation({
-		summary: "Reorder Entries in Playlist",
+		summary: "Reorder entries in playlist",
 	})
-	@Put(":idOrSlug/reorder")
+	@Put(":idOrSlug/entries/reorder")
 	async moveEntryInPlaylist(
 		@Body()
 		{ entryIds }: ReorderPlaylistDTO,
@@ -187,7 +190,8 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Delete Entry in Playlist",
+		summary: "Delete playlist entry",
+		description: "This will delete a song from the playlist",
 	})
 	@Delete("entries/:id")
 	async deleteEntryInPlaylist(

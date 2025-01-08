@@ -16,12 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Get, Injectable, Post } from "@nestjs/common";
-import { ExternalMetadataResponse } from "./models/external-metadata.response";
-import { ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Injectable, Post, Query } from "@nestjs/common";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
-import IdentifierParam from "src/identifier/identifier.pipe";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
@@ -33,49 +31,68 @@ import ExternalMetadataService from "./external-metadata.service";
 import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 import Roles from "src/authentication/roles/roles.enum";
 import { Role } from "src/authentication/roles/roles.decorators";
+import { IsOptional } from "class-validator";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+
+class Selector {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Identifier for album",
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Identifier for artist",
+	})
+	@TransformIdentifier(ArtistService)
+	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Identifier for release",
+	})
+	@TransformIdentifier(ReleaseService)
+	release?: ReleaseQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Identifier for song",
+	})
+	@TransformIdentifier(SongService)
+	song?: SongQueryParameters.WhereInput;
+}
 
 @ApiTags("External Metadata")
 @Controller("external-metadata")
 @Injectable()
 export default class ExternalMetadataController {
 	constructor(private externalMetadataService: ExternalMetadataService) {}
+
+	@ApiOperation({
+		summary: "Create an new metadata entry for any kind of resource",
+	})
 	@Role(Roles.Admin, Roles.Microservice)
 	@Post()
 	async saveMetadata(@Body() creationDto: CreateExternalMetadataDto) {
 		return this.externalMetadataService.saveMetadata(creationDto);
 	}
-	@Get("album/:idOrSlug")
-	async getAlbumExternalMetadataEntry(
-		@IdentifierParam(AlbumService)
-		where: AlbumQueryParameters.WhereInput,
-	) {
-		return this.getExternalMetadataEntry({ album: where });
-	}
-	@Get("artist/:idOrSlug")
-	async getArtistExternalMetadataEntry(
-		@IdentifierParam(ArtistService)
-		where: ArtistQueryParameters.WhereInput,
-	) {
-		return this.getExternalMetadataEntry({ artist: where });
-	}
-	@Get("song/:idOrSlug")
-	async getSongExternalMetadataEntry(
-		@IdentifierParam(SongService)
-		where: SongQueryParameters.WhereInput,
-	) {
-		return this.getExternalMetadataEntry({ song: where });
-	}
-	@Get("release/:idOrSlug")
-	async getReleaseExternalMetadataEntry(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-	) {
-		return this.getExternalMetadataEntry({ release: where });
-	}
 
-	private getExternalMetadataEntry(
-		where: ExternalMetadataQueryParameters.WhereInput,
-	): Promise<ExternalMetadataResponse> {
-		return this.externalMetadataService.get(where);
+	@ApiOperation({
+		summary: "Get the metadata entry",
+	})
+	@Get()
+	async getExternalMetadataEntry(@Query() where: Selector) {
+		const selectorSize = Object.keys(where).length;
+		if (selectorSize != 1) {
+			throw new InvalidRequestException(
+				`Expected at least one query parameter. Got ${selectorSize}`,
+			);
+		}
+		return this.externalMetadataService.get(
+			where as ExternalMetadataQueryParameters.WhereInput,
+		);
 	}
 }

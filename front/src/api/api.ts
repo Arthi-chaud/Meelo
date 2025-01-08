@@ -73,7 +73,6 @@ import { TaskResponse } from "../models/task";
 import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
-	ReleaseExternalMetadata,
 	SongExternalMetadata,
 } from "../models/external-metadata";
 import {
@@ -174,7 +173,7 @@ export default class API {
 	 */
 	static async register(credentials: AuthenticationInput): Promise<User> {
 		return API.fetch({
-			route: "/users/new",
+			route: "/users",
 			data: {
 				name: credentials.username,
 				password: credentials.password,
@@ -256,7 +255,7 @@ export default class API {
 
 	static async createPlaylist(playlistName: string): Promise<Playlist> {
 		return API.fetch({
-			route: "/playlists/new",
+			route: "/playlists",
 			data: { name: playlistName },
 			errorMessage: "Playlist Creation Failed",
 			parameters: {},
@@ -283,7 +282,7 @@ export default class API {
 		entriesIds: number[],
 	): Promise<void> {
 		return API.fetch({
-			route: `/playlists/${playlistSlugOrId}/reorder`,
+			route: `/playlists/${playlistSlugOrId}/entries/reorder`,
 			data: { entryIds: entriesIds },
 			parameters: {},
 			method: "PUT",
@@ -429,7 +428,7 @@ export default class API {
 		libraryPath: string,
 	): Promise<Library> {
 		return API.fetch({
-			route: "/libraries/new",
+			route: "/libraries",
 			data: { name: libraryName, path: libraryPath },
 			errorMessage: "Library Creation Failed",
 			parameters: {},
@@ -548,15 +547,15 @@ export default class API {
 	 */
 	static async updateAlbum(
 		albumSlugOrId: number | string,
-		newType: AlbumType,
+		dto: Partial<{ type: AlbumType; masterReleaseId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
@@ -565,29 +564,29 @@ export default class API {
 	 */
 	static async updateSong(
 		songSlugOrId: number | string,
-		newType: SongType,
+		dto: Partial<{ type: SongType; masterTrackId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
 	static async updateVideo(
 		videoSlugOrId: number | string,
-		newType: VideoType,
+		dto: Partial<{ type: VideoType; masterTrackId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/videos/${videoSlugOrId}`,
 			errorMessage: "Update Video Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
@@ -1236,58 +1235,45 @@ export default class API {
 	static getArtistExternalMetadata(
 		slugOrId: string | number,
 	): Query<ArtistExternalMetadata | null> {
-		return {
-			key: ["artist", slugOrId, "external-metadata"],
-			exec: () =>
-				API.fetch({
-					route: `/external-metadata/artist/${slugOrId}`,
-					errorMessage: "Metadata could not be loaded",
-					parameters: {},
-					validator: ArtistExternalMetadata,
-				}).catch(() => null),
-		};
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"artist",
+			ArtistExternalMetadata,
+		);
 	}
 
 	static getSongExternalMetadata(
 		slugOrId: string | number,
 	): Query<SongExternalMetadata | null> {
-		return {
-			key: ["song", slugOrId, "external-metadata"],
-			exec: () =>
-				API.fetch({
-					route: `/external-metadata/song/${slugOrId}`,
-					errorMessage: "Metadata could not be loaded",
-					parameters: {},
-					validator: SongExternalMetadata,
-				}).catch(() => null),
-		};
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"song",
+			SongExternalMetadata,
+		);
 	}
 	static getAlbumExternalMetadata(
 		slugOrId: string | number,
 	): Query<AlbumExternalMetadata | null> {
-		return {
-			key: ["album", slugOrId, "external-metadata"],
-			exec: () =>
-				API.fetch({
-					route: `/external-metadata/album/${slugOrId}`,
-					errorMessage: "Metadata could not be loaded",
-					parameters: {},
-					validator: AlbumExternalMetadata,
-				}).catch(() => null),
-		};
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"album",
+			AlbumExternalMetadata,
+		);
 	}
 
-	static getReleaseExternalMetadata(
-		slugOrId: string | number,
-	): Query<ReleaseExternalMetadata | null> {
+	static getResourceExternalMetadata<T, V extends yup.Schema<T>>(
+		resourceSlugOrId: string | number,
+		resourceType: "artist" | "album" | "song",
+		validator: V,
+	): Query<T | null> {
 		return {
-			key: ["release", slugOrId, "external-metadata"],
+			key: [resourceType, resourceSlugOrId, "external-metadata"],
 			exec: () =>
 				API.fetch({
-					route: `/external-metadata/release/${slugOrId}`,
+					route: `/external-metadata?${resourceType}=${resourceSlugOrId}`,
 					errorMessage: "Metadata could not be loaded",
 					parameters: {},
-					validator: ReleaseExternalMetadata,
+					validator: validator,
 				}).catch(() => null),
 		};
 	}
@@ -1406,10 +1392,10 @@ export default class API {
 		playlistId: number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/playlists/entries/new`,
+			route: `/playlists/${playlistId}/entries`,
 			errorMessage: "Failed to add song to playlist",
 			parameters: {},
-			data: { songId, playlistId },
+			data: { songId },
 			method: "POST",
 			emptyResponse: true,
 		});
@@ -1460,61 +1446,6 @@ export default class API {
 			parameters: {},
 			method: "PUT",
 			validator: yup.mixed(),
-		});
-	}
-
-	/**
-	 * Mark a release as master
-	 * @param releaseSlugOrId
-	 * @returns
-	 */
-	static async setReleaseAsMaster(
-		releaseSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/releases/${releaseSlugOrId}/master`,
-			errorMessage: "Release update failed",
-			parameters: {},
-			method: "PUT",
-			validator: yup.mixed(),
-		});
-	}
-
-	/**
-	 * Mark a track as master
-	 * @param trackSlugOrId
-	 * @returns
-	 */
-	static async setTrackAsSongMaster(
-		trackSlugOrId: string | number,
-		songSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}`,
-			errorMessage: "Update Song Failed",
-			method: "POST",
-			parameters: {},
-			emptyResponse: true,
-			data: { masterTrackId: trackSlugOrId },
-		});
-	}
-
-	/**
-	 * Mark a track as master
-	 * @param trackSlugOrId
-	 * @returns
-	 */
-	static async setTrackAsVideoMaster(
-		trackSlugOrId: string | number,
-		videoSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/videos/${videoSlugOrId}`,
-			errorMessage: "Update Video Failed",
-			method: "POST",
-			parameters: {},
-			emptyResponse: true,
-			data: { masterTrackId: trackSlugOrId },
 		});
 	}
 

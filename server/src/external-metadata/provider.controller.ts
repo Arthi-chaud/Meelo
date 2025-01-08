@@ -19,7 +19,6 @@
 import { Body, Controller, Get, Injectable, Post, Query } from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import ProviderService from "./provider.service";
-import { CreatePlaylistDTO } from "src/playlist/models/playlist.dto";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import IllustrationRepository from "src/illustration/illustration.repository";
@@ -27,7 +26,10 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import ProviderQueryParameters from "./models/provider.query-parameters";
 import { Illustration, Provider } from "src/prisma/models";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
-import { ProviderIconRegistrationDto } from "./models/provider.dto";
+import {
+	CreateProviderDTO,
+	ProviderIconRegistrationDto,
+} from "./models/provider.dto";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
@@ -47,7 +49,7 @@ export default class ProviderController {
 	})
 	@Role(Roles.Default, Roles.Microservice)
 	@ApiOperation({
-		summary: "Save a Provider",
+		summary: "Get many providers",
 	})
 	async getProviders(
 		@Query()
@@ -59,9 +61,9 @@ export default class ProviderController {
 	@Post()
 	@Role(Roles.Admin, Roles.Microservice)
 	@ApiOperation({
-		summary: "Save a Provider",
+		summary: "Save a provider",
 	})
-	async createProvider(@Body() dto: CreatePlaylistDTO): Promise<Provider> {
+	async createProvider(@Body() dto: CreateProviderDTO): Promise<Provider> {
 		return this.providerService.create(dto.name);
 	}
 

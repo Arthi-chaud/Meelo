@@ -174,7 +174,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({ name: "user3", password: "password3" })
 				.auth(adminToken, { type: "bearer" })
 				.expect(201);
@@ -196,7 +196,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({ name: "user1", password: "password1" })
 				.auth(userToken, { type: "bearer" })
 				.expect(201);
@@ -212,7 +212,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({ name: "user2", password: "password1" })
 				.expect(201);
 		});

@@ -70,7 +70,9 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const { t } = useTranslation();
 	const { playNext, playAfter } = usePlayerContext();
 	const masterMutation = useMutation(async () => {
-		return API.setTrackAsSongMaster(props.track.id, props.track.songId!)
+		return API.updateSong(props.track.songId!, {
+			masterTrackId: props.track.id,
+		})
 			.then(() => {
 				toast.success(t("trackSetAsMaster"));
 				queryClient.client.invalidateQueries();

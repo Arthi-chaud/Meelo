@@ -435,11 +435,11 @@ describe("Album Controller", () => {
 	describe("Update the album", () => {
 		it("should reassign the compilation album to an artist + change the type", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/${dummyRepository.compilationAlbumA.slug}`)
+				.put(`/albums/${dummyRepository.compilationAlbumA.slug}`)
 				.send({
 					type: "RemixAlbum",
 				})
-				.expect(201)
+				.expect(200)
 				.expect((res) => {
 					const artist: Album = res.body;
 					expect(artist).toStrictEqual({
@@ -453,11 +453,11 @@ describe("Album Controller", () => {
 
 		it("should change release date", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
+				.put(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send({
 					releaseDate: new Date(2024, 0, 2),
 				})
-				.expect(201)
+				.expect(200)
 				.expect((res) => {
 					const artist: Album = res.body;
 					expect(artist).toStrictEqual({
@@ -471,11 +471,11 @@ describe("Album Controller", () => {
 		});
 		it("should add genres", async () => {
 			await request(app.getHttpServer())
-				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
+				.put(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send({
 					genres: ["Genre 1", "Genre 2", "Genre 3", "Genre 2"],
 				})
-				.expect(201);
+				.expect(200);
 			await request(app.getHttpServer())
 				.get(
 					`/albums/${dummyRepository.compilationAlbumA.id}?with=genres`,
@@ -490,6 +490,32 @@ describe("Album Controller", () => {
 						"Genre 3",
 					]);
 				});
+		});
+		it("should set release as master", async () => {
+			await request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.albumA1.id}`)
+				.send({
+					masterReleaseId: dummyRepository.releaseA1_2.id,
+				})
+				.expect(200)
+				.expect((res) => {
+					const releaseId = res.body.masterId;
+					expect(releaseId).toBe(dummyRepository.releaseA1_2.id);
+				});
+			// teardown
+			await dummyRepository.album.update({
+				where: { id: dummyRepository.albumA1.id },
+				data: { masterId: dummyRepository.releaseA1_1.id },
+			});
+		});
+
+		it("should no set release as master (unrelated release)", () => {
+			return request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.albumA1.id}`)
+				.send({
+					masterReleaseId: dummyRepository.releaseB1_1.id,
+				})
+				.expect(400);
 		});
 	});
 

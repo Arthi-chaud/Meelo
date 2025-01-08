@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { IsBoolean, IsString } from "class-validator";
 
@@ -36,7 +36,7 @@ export default class Settings {
 	/**
 	 * The folder where `settings.json` and metadata are stored
 	 */
-	@ApiProperty()
+	@ApiHideProperty()
 	@IsString()
 	@Exclude({ toPlainOnly: true })
 	meeloFolder: string;
@@ -44,7 +44,7 @@ export default class Settings {
 	/**
 	 * The base folder where every libraries must be located
 	 */
-	@ApiProperty()
+	@ApiHideProperty()
 	@IsString()
 	@Exclude({ toPlainOnly: true })
 	dataFolder: string;

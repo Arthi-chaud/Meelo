@@ -63,7 +63,7 @@ export default class UserController {
 	})
 	@Public()
 	@Response({ handler: UserResponseBuilder })
-	@Post("new")
+	@Post()
 	async createUserAccount(@Body() userDTO: UserCreateDTO) {
 		return this.userService.create(userDTO);
 	}

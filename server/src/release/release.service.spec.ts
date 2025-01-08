@@ -303,9 +303,12 @@ describe("Release Service", () => {
 		});
 		it("should delete the master release", async () => {
 			await trackService.delete({ id: dummyRepository.trackB1_1.id });
-			await albumService.setMasterRelease({
-				id: dummyRepository.releaseB1_1.id,
-			});
+			await albumService.update(
+				{
+					master: { id: dummyRepository.releaseB1_1.id },
+				},
+				{ id: dummyRepository.albumB1.id },
+			);
 			await releaseService.delete({ id: dummyRepository.releaseB1_1.id });
 			const testRelease = async () =>
 				await releaseService.get({

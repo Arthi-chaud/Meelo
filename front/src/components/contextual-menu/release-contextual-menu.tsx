@@ -46,7 +46,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const confirm = useConfirm();
 	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
-		return API.setReleaseAsMaster(props.release.id)
+		return API.updateAlbum(props.release.albumId, {
+			masterReleaseId: props.release.id,
+		})
 			.then(() => {
 				toast.success(t("releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();
@@ -66,7 +68,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						.reverse()
 						.filter((track) => track.songId != null)
 						.map((track) =>
-							API.setTrackAsSongMaster(track.id, track.songId!),
+							API.updateSong(track.songId!, {
+								masterTrackId: track.id,
+							}),
 						),
 				)
 					.then(() => {

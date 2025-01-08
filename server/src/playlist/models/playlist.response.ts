@@ -36,7 +36,7 @@ export class PlaylistEntryResponse extends SongResponse {
 	})
 	entryId: number;
 	@ApiProperty({
-		description: "Index of the song",
+		description: "Index of the song in the playlist",
 	})
 	index: number;
 }
@@ -53,7 +53,7 @@ export class PlaylistEntryResponseBuilder extends ResponseBuilderInterceptor<
 		super();
 	}
 
-	returnType = PlaylistResponse;
+	returnType = PlaylistEntryResponse;
 
 	async buildResponse(
 		entry: PlaylistEntryModel,

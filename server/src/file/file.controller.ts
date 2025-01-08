@@ -47,7 +47,7 @@ class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description:
-			"Filter files by folder. The folder os relative to the parent library",
+			"Filter files by folder. The folder is relative to the parent library",
 	})
 	inFolder?: string;
 
@@ -67,21 +67,21 @@ class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files release`,
+		description: `Filter files by release`,
 	})
 	@TransformIdentifier(ReleaseService)
 	release?: ReleaseQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files song`,
+		description: `Filter files by song`,
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files track`,
+		description: `Filter files by track`,
 	})
 	@TransformIdentifier(TrackService)
 	track?: TrackQueryParameters.WhereInput;
@@ -97,7 +97,7 @@ export default class FileController {
 	) {}
 
 	@ApiOperation({
-		summary: "Get one 'File'",
+		summary: "Get one file entry",
 	})
 	@Get(":idOrSlug")
 	@Role(Roles.Default, Roles.Microservice)
@@ -111,7 +111,7 @@ export default class FileController {
 	}
 
 	@ApiOperation({
-		summary: "Get multiple File entries",
+		summary: "Get multiple file entries",
 	})
 	@Role(Roles.Admin, Roles.Microservice)
 	@Get()
@@ -128,7 +128,7 @@ export default class FileController {
 	}
 
 	@ApiOperation({
-		summary: "Delete multiple File entries",
+		summary: "Delete multiple file entries",
 	})
 	@Role(Roles.Admin, Roles.Microservice)
 	@Delete()

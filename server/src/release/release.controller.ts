@@ -22,7 +22,6 @@ import {
 	Get,
 	Inject,
 	ParseBoolPipe,
-	Put,
 	Query,
 	Res,
 	forwardRef,
@@ -34,10 +33,14 @@ import TrackService from "src/track/track.service";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type { Response as ExpressResponse } from "express";
-import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+} from "@nestjs/swagger";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { ReleaseResponseBuilder } from "./models/release.response";
@@ -71,8 +74,6 @@ export default class ReleaseController {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => AlbumService))
-		private albumService: AlbumService,
 	) {}
 
 	@ApiOperation({
@@ -129,6 +130,7 @@ export default class ReleaseController {
 
 	@ApiOperation({
 		summary: "Get the ordered tracklist of a release",
+		description: "The returned entries are tracks",
 	})
 	@Response({ handler: TrackResponseBuilder, type: ResponseType.Page })
 	@Get(":idOrSlug/tracklist")
@@ -157,6 +159,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: "Download an archive of the release",
 	})
+	@ApiOkResponse({ description: "A ZIP Binary" })
 	@Get(":idOrSlug/archive")
 	async getReleaseArcive(
 		@IdentifierParam(ReleaseService)
@@ -164,21 +167,5 @@ export default class ReleaseController {
 		@Res() response: ExpressResponse,
 	) {
 		return this.releaseService.pipeArchive(where, response);
-	}
-
-	@ApiOperation({
-		summary: "Set a release as master release",
-	})
-	@Admin()
-	@Response({ handler: ReleaseResponseBuilder })
-	@Put(":idOrSlug/master")
-	async setAsMaster(
-		@IdentifierParam(ReleaseService)
-		where: ReleaseQueryParameters.WhereInput,
-	) {
-		const release = await this.releaseService.get(where);
-
-		await this.albumService.setMasterRelease(where);
-		return release;
 	}
 }

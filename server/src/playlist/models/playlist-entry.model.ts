@@ -16,9 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ApiProperty } from "@nestjs/swagger";
 import { SongWithRelations } from "src/prisma/models";
 
-export type PlaylistEntryModel = SongWithRelations & {
+export class PlaylistEntryModel extends SongWithRelations {
+	@ApiProperty()
 	entryId: number;
+	@ApiProperty()
 	index: number;
-};
+}

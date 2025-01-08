@@ -23,6 +23,7 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
 import {
@@ -81,6 +82,7 @@ namespace AlbumQueryParameters {
 	export class UpdateInput extends PartialType(
 		PickType(Album, ["type", "releaseDate"] as const),
 	) {
+		master?: ReleaseQueryParameters.WhereInput;
 		genres?: string[];
 	}
 

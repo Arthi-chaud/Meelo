@@ -127,7 +127,7 @@ const ChangeSongType = (
 		"changeSongType",
 		client,
 		(newType: SongType) =>
-			API.updateSong(s.id, newType).then((res) => {
+			API.updateSong(s.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("songs");
 				client.client.invalidateQueries("release");
 				client.client.invalidateQueries("tracks");
@@ -149,7 +149,7 @@ const ChangeAlbumType = (
 		"changeAlbumType",
 		client,
 		(newType: AlbumType) =>
-			API.updateAlbum(a.id, newType).then((res) => {
+			API.updateAlbum(a.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("albums");
 				return res;
 			}),
@@ -167,7 +167,7 @@ const ChangeVideoType = (
 		"changeVideoType",
 		client,
 		(newType: VideoType) =>
-			API.updateVideo(v.id, newType).then((res) => {
+			API.updateVideo(v.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("videos");
 				return res;
 			}),

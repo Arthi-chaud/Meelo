@@ -53,6 +53,22 @@ class API:
             raise Exception(response.content)
         return response
 
+    def _put(
+        self, route: str, json: dict = {}, file_path: str = ""
+    ) -> requests.Response:
+        response = requests.put(
+            f"{self._url}{route}",
+            headers={
+                "x-api-key": self._key,
+            },
+            files={"file": open(file_path, "rb")} if len(file_path) else None,
+            json=json if len(json.keys()) else None,
+        )
+        if response.status_code != 200:
+            logging.error("PUTting API failed: ")
+            raise Exception(response.content)
+        return response
+
     def post_external_metadata(self, dto: ExternalMetadataDto):
         self._post("/external-metadata", json=dto.to_dict())
 
@@ -101,13 +117,13 @@ class API:
             genres=genres,
             type=type.value if type else None,
         )
-        self._post(f"/albums/{album_id}", json=dto.to_dict())
+        self._put(f"/albums/{album_id}", json=dto.to_dict())
 
     def post_song_lyrics(self, song_id: int, lyrics: str):
         self._post(f"/songs/{song_id}/lyrics", json={"lyrics": lyrics})
 
     def post_song_genres(self, song_id: int, genres: List[str]):
-        self._post(f"/songs/{song_id}", json={"genres": genres})
+        self._put(f"/songs/{song_id}", json={"genres": genres})
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:

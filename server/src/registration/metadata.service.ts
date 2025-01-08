@@ -230,7 +230,10 @@ export default class MetadataService {
 				);
 			}
 			if (album.masterId === null) {
-				this.albumService.setMasterRelease({ id: release.id });
+				this.albumService.update(
+					{ master: { id: release.id } },
+					{ id: album.id },
+				);
 			}
 			if (
 				!release.releaseDate ||

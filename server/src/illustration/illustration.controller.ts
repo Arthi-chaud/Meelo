@@ -28,7 +28,12 @@ import {
 	Query,
 	Response,
 } from "@nestjs/common";
-import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiConsumes,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from "@nestjs/swagger";
 import IllustrationService from "./illustration.service";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
@@ -55,6 +60,7 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Get an illustration",
 	})
+	@ApiOkResponse({ description: "A JPEG binary" })
 	@Cached()
 	@Get(":id")
 	async getIllustration(

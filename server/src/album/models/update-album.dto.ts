@@ -41,4 +41,10 @@ export default class UpdateAlbumDTO {
 	})
 	@IsOptional()
 	releaseDate?: Date;
+
+	@ApiProperty({
+		description: "ID of the release to set as master",
+	})
+	@IsOptional()
+	masterReleaseId?: number;
 }

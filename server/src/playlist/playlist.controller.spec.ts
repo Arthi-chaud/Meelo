@@ -143,7 +143,7 @@ describe("Playlist Controller", () => {
 	describe("Create Playlist", () => {
 		it("Should Create Playlist", async () => {
 			return request(app.getHttpServer())
-				.post(`/playlists/new`)
+				.post(`/playlists`)
 				.send({
 					name: "New Playlist",
 				})
@@ -161,7 +161,7 @@ describe("Playlist Controller", () => {
 		});
 		it("Should Error: Playlist Already Exists", async () => {
 			return request(app.getHttpServer())
-				.post(`/playlists/new`)
+				.post(`/playlists`)
 				.send({
 					name: dummyRepository.playlist1.name,
 				})
@@ -211,9 +211,8 @@ describe("Playlist Controller", () => {
 	describe("Add Song To Playlist", () => {
 		it("Should Add Song to Playlist Entry", async () => {
 			await request(app.getHttpServer())
-				.post(`/playlists/entries/new`)
+				.post(`/playlists/${dummyRepository.playlist1.id}/entries`)
 				.send({
-					playlistId: dummyRepository.playlist1.id,
 					songId: dummyRepository.songB1.id,
 				})
 				.expect(201);
@@ -232,9 +231,8 @@ describe("Playlist Controller", () => {
 
 		it("Should Error: Song not found", async () => {
 			await request(app.getHttpServer())
-				.post(`/playlists/entries/new`)
+				.post(`/playlists/${dummyRepository.playlist1.id}/entries`)
 				.send({
-					playlistId: dummyRepository.playlist1.id,
 					songId: -1,
 				})
 				.expect(404);
@@ -242,9 +240,8 @@ describe("Playlist Controller", () => {
 
 		it("Should Error: Playlist not Found", async () => {
 			await request(app.getHttpServer())
-				.post(`/playlists/entries/new`)
+				.post(`/playlists/${-1}/entries`)
 				.send({
-					playlistId: -1,
 					songId: dummyRepository.songB1.id,
 				})
 				.expect(404);
@@ -254,7 +251,9 @@ describe("Playlist Controller", () => {
 	describe("Reorder Entry", () => {
 		it("Should Error: Negative Number", async () => {
 			await request(app.getHttpServer())
-				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.put(
+					`/playlists/${dummyRepository.playlist1.id}/entries/reorder`,
+				)
 				.send({
 					entryIds: [
 						dummyRepository.playlistEntry1.id,
@@ -267,7 +266,9 @@ describe("Playlist Controller", () => {
 
 		it("Should Error: Incomplete List", async () => {
 			await request(app.getHttpServer())
-				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.put(
+					`/playlists/${dummyRepository.playlist1.id}/entries/reorder`,
+				)
 				.send({
 					entryIds: [
 						dummyRepository.playlistEntry1.id,
@@ -279,7 +280,9 @@ describe("Playlist Controller", () => {
 
 		it("Should Error: Unknown Index", async () => {
 			await request(app.getHttpServer())
-				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.put(
+					`/playlists/${dummyRepository.playlist1.id}/entries/reorder`,
+				)
 				.send({
 					entryIds: [
 						dummyRepository.playlistEntry1.id,
@@ -292,7 +295,9 @@ describe("Playlist Controller", () => {
 
 		it("Should Error: Duplicate Index", async () => {
 			await request(app.getHttpServer())
-				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.put(
+					`/playlists/${dummyRepository.playlist1.id}/entries/reorder`,
+				)
 				.send({
 					entryIds: [
 						dummyRepository.playlistEntry1.id,
@@ -304,7 +309,9 @@ describe("Playlist Controller", () => {
 		});
 		it("Should Move Entries", async () => {
 			await request(app.getHttpServer())
-				.put(`/playlists/${dummyRepository.playlist1.id}/reorder`)
+				.put(
+					`/playlists/${dummyRepository.playlist1.id}/entries/reorder`,
+				)
 				.send({
 					entryIds: [
 						dummyRepository.playlistEntry1.id,
