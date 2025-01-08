@@ -19,7 +19,7 @@ class Artist(DataClassJsonMixin):
 @dataclass
 class Album(DataClassJsonMixin):
     name: str
-    artist: Artist
+    artist: Optional[Artist] = None
     type: AlbumType = AlbumType.OTHER
     release_date: Optional[str] = None
 

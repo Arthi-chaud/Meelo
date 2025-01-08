@@ -21,7 +21,10 @@ def match_and_post_album(album_id: int, album_name: str):
         context = Context.get()
         album = context.client.get_album(album_id)
         (dto, release_date, album_type, genres) = match_album(
-            album_id, album_name, album.artist.name, album.type
+            album_id,
+            album_name,
+            album.artist.name if album.artist else None,
+            album.type,
         )
         # We only care about the new album type if the previous type is Studio
         album_type = (
