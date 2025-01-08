@@ -73,7 +73,6 @@ import { TaskResponse } from "../models/task";
 import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
-	ReleaseExternalMetadata,
 	SongExternalMetadata,
 } from "../models/external-metadata";
 import {
@@ -1236,58 +1235,45 @@ export default class API {
 	static getArtistExternalMetadata(
 		slugOrId: string | number,
 	): Query<ArtistExternalMetadata | null> {
-		return {
-			key: ["artist", slugOrId, "external-metadata"],
-			exec: () =>
-				API.fetch({
-					route: `/external-metadata?artist=${slugOrId}`,
-					errorMessage: "Metadata could not be loaded",
-					parameters: {},
-					validator: ArtistExternalMetadata,
-				}).catch(() => null),
-		};
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"artist",
+			ArtistExternalMetadata,
+		);
 	}
 
 	static getSongExternalMetadata(
 		slugOrId: string | number,
 	): Query<SongExternalMetadata | null> {
-		return {
-			key: ["song", slugOrId, "external-metadata"],
-			exec: () =>
-				API.fetch({
-					route: `/external-metadata?song=${slugOrId}`,
-					errorMessage: "Metadata could not be loaded",
-					parameters: {},
-					validator: SongExternalMetadata,
-				}).catch(() => null),
-		};
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"song",
+			SongExternalMetadata,
+		);
 	}
 	static getAlbumExternalMetadata(
 		slugOrId: string | number,
 	): Query<AlbumExternalMetadata | null> {
-		return {
-			key: ["album", slugOrId, "external-metadata"],
-			exec: () =>
-				API.fetch({
-					route: `/external-metadata?album=${slugOrId}`,
-					errorMessage: "Metadata could not be loaded",
-					parameters: {},
-					validator: AlbumExternalMetadata,
-				}).catch(() => null),
-		};
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"album",
+			AlbumExternalMetadata,
+		);
 	}
 
-	static getReleaseExternalMetadata(
-		slugOrId: string | number,
-	): Query<ReleaseExternalMetadata | null> {
+	static getResourceExternalMetadata<T, V extends yup.Schema<T>>(
+		resourceSlugOrId: string | number,
+		resourceType: "artist" | "album" | "song",
+		validator: V,
+	): Query<T | null> {
 		return {
-			key: ["release", slugOrId, "external-metadata"],
+			key: [resourceType, resourceSlugOrId, "external-metadata"],
 			exec: () =>
 				API.fetch({
-					route: `/external-metadata?release=${slugOrId}`,
+					route: `/external-metadata?${resourceType}=${resourceSlugOrId}`,
 					errorMessage: "Metadata could not be loaded",
 					parameters: {},
-					validator: ReleaseExternalMetadata,
+					validator: validator,
 				}).catch(() => null),
 		};
 	}
