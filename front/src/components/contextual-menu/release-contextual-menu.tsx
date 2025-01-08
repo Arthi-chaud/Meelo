@@ -66,7 +66,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						.reverse()
 						.filter((track) => track.songId != null)
 						.map((track) =>
-							API.setTrackAsSongMaster(track.id, track.songId!),
+							API.updateSong(track.songId!, {
+								masterTrackId: track.id,
+							}),
 						),
 				)
 					.then(() => {

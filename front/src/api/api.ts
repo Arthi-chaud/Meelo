@@ -565,7 +565,7 @@ export default class API {
 	 */
 	static async updateSong(
 		songSlugOrId: number | string,
-		newType: SongType,
+		dto: Partial<{ type: SongType; masterTrackId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
@@ -573,13 +573,13 @@ export default class API {
 			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
 	static async updateVideo(
 		videoSlugOrId: number | string,
-		newType: VideoType,
+		dto: Partial<{ type: VideoType; masterTrackId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/videos/${videoSlugOrId}`,
@@ -587,7 +587,7 @@ export default class API {
 			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
@@ -1479,44 +1479,6 @@ export default class API {
 			emptyResponse: true,
 			data: { masterReleaseId: releaseSlugOrId },
 			errorMessage: "Release update failed",
-		});
-	}
-
-	/**
-	 * Mark a track as master
-	 * @param trackSlugOrId
-	 * @returns
-	 */
-	static async setTrackAsSongMaster(
-		trackSlugOrId: string | number,
-		songSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/songs/${songSlugOrId}`,
-			errorMessage: "Update Song Failed",
-			method: "PUT",
-			parameters: {},
-			emptyResponse: true,
-			data: { masterTrackId: trackSlugOrId },
-		});
-	}
-
-	/**
-	 * Mark a track as master
-	 * @param trackSlugOrId
-	 * @returns
-	 */
-	static async setTrackAsVideoMaster(
-		trackSlugOrId: string | number,
-		videoSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/videos/${videoSlugOrId}`,
-			errorMessage: "Update Video Failed",
-			method: "PUT",
-			parameters: {},
-			emptyResponse: true,
-			data: { masterTrackId: trackSlugOrId },
 		});
 	}
 
