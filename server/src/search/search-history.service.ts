@@ -34,6 +34,7 @@ import ArtistService from "src/artist/artist.service";
 import SongService from "src/song/song.service";
 import { Artist, Song } from "src/prisma/models";
 import VideoService from "src/video/video.service";
+import { getSearchResourceType } from "./search.utils";
 
 @Injectable()
 export class SearchHistoryService {
@@ -143,21 +144,25 @@ export class SearchHistoryService {
 		);
 
 		return [...artists, ...songs, ...albums, ...videos].sort((a, b) => {
-			const getIndex = (t: any) => {
-				if (t["groupId"]) {
-					if ("songId" in t) {
+			const getIndex = (item: any) => {
+				switch (getSearchResourceType(item)) {
+					case "video":
 						return history.findIndex(
-							({ videoId }) => videoId == t["id"],
+							({ videoId }) => videoId == item.id,
 						);
-					}
-					return history.findIndex(({ songId }) => songId == t["id"]);
+					case "album":
+						return history.findIndex(
+							({ albumId }) => albumId == item.id,
+						);
+					case "song":
+						return history.findIndex(
+							({ songId }) => songId == item.id,
+						);
+					case "artist":
+						return history.findIndex(
+							({ artistId }) => artistId == item.id,
+						);
 				}
-				if (t["masterId"]) {
-					return history.findIndex(
-						({ albumId }) => albumId == t["id"],
-					);
-				}
-				return history.findIndex(({ artistId }) => artistId == t["id"]);
 			};
 			return getIndex(a) - getIndex(b);
 		});

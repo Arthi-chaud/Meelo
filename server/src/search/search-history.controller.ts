@@ -51,6 +51,7 @@ import {
 	VideoResponse,
 	VideoResponseBuilder,
 } from "src/video/models/video.response";
+import { getSearchResourceType } from "./search.utils";
 
 @ApiTags("Search")
 @Controller("search/history")
@@ -106,20 +107,25 @@ export class SearchHistoryController {
 			pagination,
 		);
 		return Promise.all(
-			history.map(async (item: any) => {
-				if (item["groupId"] !== undefined) {
-					if ("songId" in item) {
+			history.map((item) => {
+				switch (getSearchResourceType(item)) {
+					case "video":
 						return this.videoResponseBuilder.buildResponse(
 							item as Video,
 						);
-					}
-					return this.songResponseBuilder.buildResponse(item as Song);
-				} else if (item["masterId"] !== undefined) {
-					return this.albumResponseBuilder.buildResponse(
-						item as unknown as AlbumWithRelations,
-					);
+					case "album":
+						return this.albumResponseBuilder.buildResponse(
+							item as AlbumWithRelations,
+						);
+					case "song":
+						return this.songResponseBuilder.buildResponse(
+							item as Song,
+						);
+					case "artist":
+						return this.artistResponseBuilder.buildResponse(
+							item as Artist,
+						);
 				}
-				return this.artistResponseBuilder.buildResponse(item as Artist);
 			}),
 		);
 	}
