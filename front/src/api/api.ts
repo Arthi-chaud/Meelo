@@ -174,7 +174,7 @@ export default class API {
 	 */
 	static async register(credentials: AuthenticationInput): Promise<User> {
 		return API.fetch({
-			route: "/users/new",
+			route: "/users",
 			data: {
 				name: credentials.username,
 				password: credentials.password,
