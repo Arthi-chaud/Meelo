@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -48,7 +48,7 @@ export class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		enum: VideoType,
-		description: "Filter the videos by type",
+		description: "Filter videos by type",
 	})
 	type?: VideoType;
 
@@ -75,7 +75,7 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Get related songs",
+		description: "Filter videos by song",
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
@@ -88,7 +88,7 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Get related songs ",
+		description: "Get videos of songs from group",
 	})
 	@TransformIdentifier({
 		formatIdentifierToWhereInput: (identifier) =>
@@ -102,7 +102,7 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "The Seed to Sort the items",
+		description: "The seed to sort the items",
 	})
 	@IsNumber()
 	@IsPositive()
@@ -132,7 +132,7 @@ export class VideoController {
 		summary: "Update a video",
 	})
 	@Response({ handler: VideoResponseBuilder })
-	@Post(":idOrSlug")
+	@Put(":idOrSlug")
 	@Role(Roles.Default)
 	async updateSong(
 		@Body() updateDTO: UpdateVideoDTO,
@@ -150,7 +150,7 @@ export class VideoController {
 	}
 
 	@ApiOperation({
-		summary: "Get many Videos",
+		summary: "Get many videos",
 	})
 	@Response({
 		handler: VideoResponseBuilder,

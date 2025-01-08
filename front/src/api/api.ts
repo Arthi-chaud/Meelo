@@ -584,7 +584,7 @@ export default class API {
 		return API.fetch({
 			route: `/videos/${videoSlugOrId}`,
 			errorMessage: "Update Video Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
 			data: { type: newType },
@@ -1513,7 +1513,7 @@ export default class API {
 		return API.fetch({
 			route: `/videos/${videoSlugOrId}`,
 			errorMessage: "Update Video Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
 			data: { masterTrackId: trackSlugOrId },

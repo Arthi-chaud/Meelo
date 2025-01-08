@@ -144,7 +144,7 @@ describe("Video Controller", () => {
 	describe("Update Video", () => {
 		it("should set track as master", () => {
 			return request(app.getHttpServer())
-				.post(`/videos/${dummyRepository.videoA1.id}`)
+				.put(`/videos/${dummyRepository.videoA1.id}`)
 				.send({
 					masterTrackId: dummyRepository.trackA1_2Video.id,
 				})
@@ -158,7 +158,7 @@ describe("Video Controller", () => {
 
 		it("should fail as track does not belong to video", () => {
 			return request(app.getHttpServer())
-				.post(`/videos/${dummyRepository.videoA1.id}`)
+				.put(`/videos/${dummyRepository.videoA1.id}`)
 				.send({
 					masterTrackId: dummyRepository.trackA1_1.id,
 				})
