@@ -123,7 +123,7 @@ class API:
         self._post(f"/songs/{song_id}/lyrics", json={"lyrics": lyrics})
 
     def post_song_genres(self, song_id: int, genres: List[str]):
-        self._post(f"/songs/{song_id}", json={"genres": genres})
+        self._put(f"/songs/{song_id}", json={"genres": genres})
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:

@@ -22,7 +22,6 @@ import {
 	Get,
 	Inject,
 	ParseBoolPipe,
-	Put,
 	Query,
 	Res,
 	forwardRef,
@@ -34,7 +33,12 @@ import TrackService from "src/track/track.service";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type { Response as ExpressResponse } from "express";
-import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+} from "@nestjs/swagger";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
@@ -126,6 +130,7 @@ export default class ReleaseController {
 
 	@ApiOperation({
 		summary: "Get the ordered tracklist of a release",
+		description: "The returned entries are tracks",
 	})
 	@Response({ handler: TrackResponseBuilder, type: ResponseType.Page })
 	@Get(":idOrSlug/tracklist")
@@ -154,6 +159,7 @@ export default class ReleaseController {
 	@ApiOperation({
 		summary: "Download an archive of the release",
 	})
+	@ApiOkResponse({ description: "A ZIP Binary" })
 	@Get(":idOrSlug/archive")
 	async getReleaseArcive(
 		@IdentifierParam(ReleaseService)

@@ -570,7 +570,7 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
 			data: { type: newType },
@@ -1494,7 +1494,7 @@ export default class API {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
 			data: { masterTrackId: trackSlugOrId },
