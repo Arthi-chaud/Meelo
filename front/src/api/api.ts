@@ -256,7 +256,7 @@ export default class API {
 
 	static async createPlaylist(playlistName: string): Promise<Playlist> {
 		return API.fetch({
-			route: "/playlists/new",
+			route: "/playlists",
 			data: { name: playlistName },
 			errorMessage: "Playlist Creation Failed",
 			parameters: {},
@@ -1406,7 +1406,7 @@ export default class API {
 		playlistId: number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/playlists/entries/new`,
+			route: `/playlists/entries`,
 			errorMessage: "Failed to add song to playlist",
 			parameters: {},
 			data: { songId, playlistId },
