@@ -112,6 +112,10 @@ class TestMusicbrainz(unittest.TestCase):
 
     def test_get_album_type(self):
         scenarios: List[Tuple[str, AlbumType]] = [
+            # Madonna - I'm Going to tell you a secret
+            ("876da970-473b-3a01-9aea-79d1fa6b053a", AlbumType.LIVE),
+            # Madonna - Finally Enough Love
+            ("7316f52d-7421-43af-b9e8-02e1cab17153", AlbumType.REMIXES),
             # Massive Attack - No Protection
             ("54bd7d44-86e1-3e3c-82e0-10febdedcbda", AlbumType.REMIXES),
             # Girls Aloud - Mixed Up

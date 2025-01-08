@@ -219,6 +219,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             return AlbumType.STUDIO
         if "remix" in raw_types:
             return AlbumType.REMIXES
+        if "live" in raw_types:
+            return AlbumType.LIVE
         if "compilation" in raw_types:
             return AlbumType.COMPILATION
         if "dj-mix" in raw_types:
