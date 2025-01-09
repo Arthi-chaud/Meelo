@@ -69,6 +69,39 @@ describe("Video Service", () => {
 		expect(dummyRepository).toBeDefined();
 	});
 
+	describe("Get Videos", () => {
+		it("should return the video", async () => {
+			const videoSongs = await videoService.getMany({}, undefined, {
+				master: true,
+				illustration: true,
+			});
+			expect(videoSongs.length).toBe(1);
+			expect(videoSongs[0]).toMatchObject({
+				...dummyRepository.videoA1,
+				illustration: null,
+				master: {
+					...dummyRepository.trackA1_2Video,
+				},
+			});
+		});
+		it("should return an empty list (pagination)", async () => {
+			const videoSongs = await videoService.getMany({}, { skip: 1 });
+			expect(videoSongs.length).toBe(0);
+		});
+		it("should return videos with their artist", async () => {
+			const videoSongs = await videoService.getMany(
+				{},
+				{},
+				{ artist: true },
+			);
+			expect(videoSongs.length).toBe(1);
+			expect(videoSongs[0]).toStrictEqual({
+				...dummyRepository.videoA1,
+				artist: dummyRepository.artistA,
+			});
+		});
+	});
+
 	describe("Create Video", () => {
 		it("should create the video", async () => {
 			const video = await videoService.create({
@@ -153,39 +186,6 @@ describe("Video Service", () => {
 			expect(video.slug).toBe(
 				dummyRepository.artistB.slug + "-my-video-2",
 			);
-		});
-	});
-
-	describe("Get Videos", () => {
-		it("should return the songs With video", async () => {
-			const videoSongs = await videoService.getMany({}, undefined, {
-				master: true,
-				illustration: true,
-			});
-			expect(videoSongs.length).toBe(1);
-			expect(videoSongs[0]).toMatchObject({
-				...dummyRepository.videoA1,
-				illustration: null,
-				master: {
-					...dummyRepository.trackA1_2Video,
-				},
-			});
-		});
-		it("should return an empty list (pagination)", async () => {
-			const videoSongs = await videoService.getMany({}, { skip: 1 });
-			expect(videoSongs.length).toBe(0);
-		});
-		it("should return songs with their artist", async () => {
-			const videoSongs = await videoService.getMany(
-				{},
-				{},
-				{ artist: true },
-			);
-			expect(videoSongs.length).toBe(1);
-			expect(videoSongs[0]).toStrictEqual({
-				...dummyRepository.videoA1,
-				artist: dummyRepository.artistA,
-			});
 		});
 	});
 
