@@ -107,11 +107,9 @@ export class SearchHistoryService {
 		);
 		const songs = await this.songService.getMany(
 			{
-				id: {
-					in: history
-						.filter((item) => item.songId !== null)
-						.map(({ songId }) => songId!),
-				},
+				songs: history
+					.filter((item) => item.songId !== null)
+					.map(({ songId }) => ({ id: songId! })),
 			},
 			undefined,
 			undefined,

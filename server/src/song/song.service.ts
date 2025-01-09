@@ -27,7 +27,7 @@ import GenreService from "src/genre/genre.service";
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { Song, SongWithRelations } from "src/prisma/models";
+import { SongWithRelations } from "src/prisma/models";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import {
@@ -235,7 +235,10 @@ export default class SongService extends SearchableRepositoryService {
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
 		const artists = await this.getMany(
-			{ ...where, id: { in: matchingIds } },
+			{
+				...where,
+				songs: matchingIds.map((id) => ({ id })),
+			},
 			{},
 			{},
 			include,
@@ -257,7 +260,10 @@ export default class SongService extends SearchableRepositoryService {
 				pagination,
 			);
 			return this.getMany(
-				{ ...where, id: { in: randomIds } },
+				{
+					...where,
+					songs: randomIds.map((id) => ({ id })),
+				},
 				undefined,
 				undefined,
 				include,
@@ -306,8 +312,12 @@ export default class SongService extends SearchableRepositoryService {
 			type: where.type,
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.songs) {
+			query = deepmerge(query, {
+				OR: where.songs.map((song) =>
+					SongService.formatWhereInput(song),
+				),
+			});
 		}
 		if (where.genre) {
 			query = deepmerge(query, {
@@ -554,48 +564,50 @@ export default class SongService extends SearchableRepositoryService {
 	 * Deletes a song
 	 * @param where Query parameters to find the song to delete
 	 */
-	async delete(where: SongQueryParameters.DeleteInput): Promise<Song> {
-		return this.prismaService.song
-			.delete({
-				where: SongService.formatWhereInput(where),
-				include: { tracks: true, videos: true },
-			})
-			.then((deleted) => {
-				this.meiliSearch
-					.index(this.indexName)
-					.deleteDocument(deleted.id);
-				this.logger.warn(`Song '${deleted.slug}' deleted`);
-				return deleted;
-			})
-			.catch(async (error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.ForeignConstraintViolation
-				) {
-					throw new SongNotEmptyException(where.id);
-				}
-				throw await this.onNotFound(error, where);
-			});
+	async delete(where: SongQueryParameters.DeleteInput[]) {
+		const toDelete = await this.getMany(
+			{ songs: where },
+			undefined,
+			undefined,
+			{ tracks: true },
+		);
+
+		for (const song of toDelete) {
+			if (song.tracks!.length > 0) {
+				throw new SongNotEmptyException(song.id);
+			}
+		}
+		const deleted = await this.prismaService.song.deleteMany({
+			where: SongService.formatManyWhereInput({ songs: where }),
+		});
+
+		this.meiliSearch
+			.index(this.indexName)
+			.deleteDocuments(toDelete.map((video) => video.id));
+		return deleted.count;
 	}
 
 	/**
 	 * Call 'delete' on all songs that do not have tracks
 	 */
 	async housekeeping(): Promise<void> {
-		const emptySongs = await this.prismaService.song
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: { tracks: true, videos: true },
-					},
-				},
-			})
-			.then((songs) =>
-				songs.filter(({ _count }) => !_count.videos && !_count.tracks),
-			);
+		const emptySongs = await this.prismaService.song.findMany({
+			select: {
+				id: true,
+			},
+			where: {
+				videos: { none: {} },
+				tracks: { none: {} },
+			},
+		});
 
-		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
+		const deletedSongCount = await this.delete(
+			emptySongs.map(({ id }) => ({ id })),
+		);
+		if (deletedSongCount) {
+			this.logger.warn(`Deleted ${deletedSongCount} songs`);
+		}
+
 		await this.prismaService.songGroup.deleteMany({
 			where: {
 				versions: {
@@ -653,7 +665,7 @@ export default class SongService extends SearchableRepositoryService {
 		return this.getMany(
 			{
 				...where,
-				id: { in: playedSongs.map(({ songId }) => songId) },
+				songs: playedSongs.map(({ songId }) => ({ id: songId })),
 			},
 			undefined,
 			pagination,
@@ -685,12 +697,11 @@ export default class SongService extends SearchableRepositoryService {
 		const olderStudioReleasesWhereSongAppears = await this.releaseService
 			.getMany(
 				{
-					id: {
-						in: albumSongs
-							.filter((s) => s.type == SongType.Original)
-							.flatMap((s) => s.tracks!.map((t) => t.releaseId))
-							.filter((rid): rid is number => rid !== null),
-					},
+					releases: albumSongs
+						.filter((s) => s.type == SongType.Original)
+						.flatMap((s) => s.tracks!.map((t) => t.releaseId))
+						.filter((rid): rid is number => rid !== null)
+						.map((rid) => ({ id: rid })),
 				},
 				undefined,
 				undefined,
