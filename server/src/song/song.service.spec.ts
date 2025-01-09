@@ -20,7 +20,6 @@ import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
-import { LyricsNotFoundException } from "src/lyrics/lyrics.exceptions";
 import ReleaseModule from "src/release/release.module";
 import { Artist, SongType } from "@prisma/client";
 import ParserModule from "src/parser/parser.module";
@@ -374,7 +373,7 @@ describe("Song Service", () => {
 				versionsOf: { id: dummyRepository.songA2.id },
 			});
 			expect(versions).toStrictEqual([dummyRepository.songA2, version]);
-			await songService.delete({ id: version.id });
+			await songService.delete([{ id: version.id }]);
 		});
 	});
 
@@ -468,14 +467,9 @@ describe("Song Service", () => {
 	});
 
 	describe("Delete Song", () => {
-		it("should throw, as the song does not exist", async () => {
-			const test = async () => await songService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(SongNotFoundException);
-		});
-
 		it("should throw, as the song is not empty", async () => {
 			const test = async () =>
-				await songService.delete({ id: dummyRepository.songA1.id });
+				await songService.delete([{ id: dummyRepository.songA1.id }]);
 			return expect(test()).rejects.toThrow(SongNotEmptyException);
 		});
 		it("should delete the song", async () => {
@@ -491,7 +485,7 @@ describe("Song Service", () => {
 				content: "1234",
 				songId: tmpSong.id,
 			});
-			await songService.delete({ id: tmpSong.id });
+			await songService.delete([{ id: tmpSong.id }]);
 			const test = async () => await songService.get({ id: tmpSong.id });
 			await expect(test()).rejects.toThrow(SongNotFoundException);
 			const testLyrics = async () =>

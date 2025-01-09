@@ -79,7 +79,7 @@ export class SearchService {
 				[
 					(ids: number[]) =>
 						this.songService.getMany(
-							{ id: { in: ids } },
+							{ songs: ids.map((id) => ({ id })) },
 							undefined,
 							undefined,
 							{

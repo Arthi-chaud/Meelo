@@ -82,7 +82,7 @@ namespace SongQueryParameters {
 			group: SongGroupQueryParameters.WhereInput;
 			versionsOf: SongQueryParameters.WhereInput;
 			type?: SongType;
-			id: { in: number[] };
+			songs: SongQueryParameters.WhereInput[];
 		}>
 	>;
 
