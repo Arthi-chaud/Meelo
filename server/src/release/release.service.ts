@@ -19,7 +19,6 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import AlbumService from "src/album/album.service";
 import Slug from "src/slug/slug";
-import { Release } from "src/prisma/models";
 import { Prisma } from "@prisma/client";
 import {
 	MasterReleaseNotFoundException,
@@ -182,8 +181,12 @@ export default class ReleaseService {
 			name: buildStringSearchParameters(where.name),
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.releases) {
+			query = deepmerge(query, {
+				OR: where.releases.map((release) =>
+					ReleaseService.formatWhereInput(release),
+				),
+			});
 		}
 		if (where.library) {
 			query = deepmerge(query, {
@@ -344,58 +347,66 @@ export default class ReleaseService {
 	}
 
 	/**
-	 * Deletes a release
-	 * Also delete related tracks.
-	 * @param where Query parameters to find the release to delete
+	 * Delete releases
+	 * @param where Query parameters to find the releases to delete
 	 */
-	async delete(where: ReleaseQueryParameters.DeleteInput): Promise<Release> {
-		const { tracks } = await this.get(where, { tracks: true });
-
-		if (tracks.length > 0) {
-			throw new ReleaseNotEmptyException(where.id);
+	async delete(where: ReleaseQueryParameters.DeleteInput[]) {
+		const toDelete = await this.getMany(
+			{ releases: where },
+			undefined,
+			undefined,
+			{ tracks: true },
+		);
+		for (const release of toDelete) {
+			if (release.tracks.length > 0) {
+				throw new ReleaseNotEmptyException(release.id);
+			}
 		}
-		this.illustrationRepository
-			.getReleaseIllustrations(where)
-			.then((relatedIllustrations) => {
-				Promise.allSettled(
-					relatedIllustrations.map(({ illustration }) =>
-						this.illustrationRepository.deleteIllustration(
-							illustration.id,
+		await Promise.allSettled(
+			toDelete.map((release) =>
+				this.illustrationRepository
+					.getReleaseIllustrations({ id: release.id })
+					.then((relatedIllustrations) =>
+						Promise.allSettled(
+							relatedIllustrations.map(({ illustration }) =>
+								this.illustrationRepository.deleteIllustration(
+									illustration.id,
+								),
+							),
 						),
 					),
-				);
-			});
+			),
+		);
+
 		return this.prismaService.release
-			.delete({
-				where: ReleaseService.formatWhereInput(where),
-			})
-			.then((deleted) => {
-				this.logger.warn(`Release '${deleted.slug}' deleted`);
-				return deleted;
+			.deleteMany({
+				where: ReleaseService.formatManyWhereInput({ releases: where }),
 			})
 			.catch((error) => {
 				throw new UnhandledORMErrorException(error, where);
-			});
+			})
+			.then((res) => res.count);
 	}
 
 	/**
 	 * Calls 'delete' on all releases that do not have tracks
 	 */
 	async housekeeping(): Promise<void> {
-		const emptyReleases = await this.prismaService.release
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: { tracks: true },
-					},
+		const emptyReleases = await this.prismaService.release.findMany({
+			select: {
+				id: true,
+				_count: {
+					select: { tracks: true },
 				},
-			})
-			.then((releases) =>
-				releases.filter((release) => !release._count.tracks),
-			);
-
-		await Promise.all(emptyReleases.map(({ id }) => this.delete({ id })));
+			},
+			where: { tracks: { none: {} } },
+		});
+		const deletedReleaseCount = await this.delete(
+			emptyReleases.map(({ id }) => ({ id })),
+		);
+		if (deletedReleaseCount) {
+			this.logger.warn(`Deleted ${deletedReleaseCount} releases`);
+		}
 	}
 
 	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {

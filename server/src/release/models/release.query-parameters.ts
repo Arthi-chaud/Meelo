@@ -63,7 +63,7 @@ namespace ReleaseQueryParameters {
 		name: SearchStringInput;
 		album: AlbumQueryParameters.WhereInput;
 		library: LibraryQueryParameters.WhereInput;
-		id: { in: number[] };
+		releases: ReleaseQueryParameters.WhereInput[];
 	}>;
 
 	/**

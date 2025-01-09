@@ -414,7 +414,7 @@ describe("Track Service", () => {
 				id: dummyRepository.songA1.id,
 			});
 			await trackService.delete({ id: tmpTrack.id });
-			await releaseService.delete({ id: tmpRelease.id });
+			await releaseService.delete([{ id: tmpRelease.id }]);
 			expect(track).toStrictEqual(dummyRepository.trackA1_1);
 		});
 

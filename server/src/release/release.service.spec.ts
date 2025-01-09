@@ -128,7 +128,7 @@ describe("Release Service", () => {
 			});
 			expect(album.id).toStrictEqual(dummyRepository.albumA1.id);
 			expect(album.releaseDate).toStrictEqual(new Date("2006"));
-			await releaseService.delete({ id: newRelease2.id });
+			await releaseService.delete([{ id: newRelease2.id }]);
 		});
 
 		it("should not have updated the parent album metadata", async () => {
@@ -294,9 +294,11 @@ describe("Release Service", () => {
 		});
 		it("should not delete release,as it is not empty", async () => {
 			const testRelease = async () =>
-				await releaseService.delete({
-					id: dummyRepository.releaseB1_1.id,
-				});
+				await releaseService.delete([
+					{
+						id: dummyRepository.releaseB1_1.id,
+					},
+				]);
 			return expect(testRelease()).rejects.toThrow(
 				ReleaseNotEmptyException,
 			);
@@ -309,7 +311,9 @@ describe("Release Service", () => {
 				},
 				{ id: dummyRepository.albumB1.id },
 			);
-			await releaseService.delete({ id: dummyRepository.releaseB1_1.id });
+			await releaseService.delete([
+				{ id: dummyRepository.releaseB1_1.id },
+			]);
 			const testRelease = async () =>
 				await releaseService.get({
 					id: dummyRepository.releaseB1_1.id,
