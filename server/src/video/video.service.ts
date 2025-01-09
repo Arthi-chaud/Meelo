@@ -162,7 +162,7 @@ export default class VideoService extends SearchableRepositoryService {
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
 		const artists = await this.getMany(
-			{ ...where, id: { in: matchingIds } },
+			{ ...where, videos: matchingIds.map((id) => ({ id })) },
 			{},
 			include,
 			{},
@@ -298,8 +298,12 @@ export default class VideoService extends SearchableRepositoryService {
 			type: where.type,
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.videos) {
+			query = deepmerge(query, {
+				OR: where.videos.map((videoIdentifier) =>
+					VideoService.formatWhereInput(videoIdentifier),
+				),
+			});
 		}
 		if (where.name) {
 			query = deepmerge(query, {
@@ -466,13 +470,7 @@ export default class VideoService extends SearchableRepositoryService {
 				],
 			});
 		}
-		return deepmerge(query, {
-			AND: {
-				tracks: {
-					some: {},
-				},
-			},
-		});
+		return query;
 	}
 
 	private async getManyRandomIds(
@@ -516,7 +514,7 @@ export default class VideoService extends SearchableRepositoryService {
 				pagination,
 			);
 			return this.getMany(
-				{ ...where, id: { in: randomIds } },
+				{ ...where, videos: randomIds.map((id) => ({ id })) },
 				undefined,
 				include,
 			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
@@ -557,14 +555,16 @@ export default class VideoService extends SearchableRepositoryService {
 		return sort;
 	}
 
-	async delete(where: VideoQueryParameters.WhereInput) {
-		await this.get(where);
-		const deleted = await this.prismaService.video.delete({
-			where: VideoService.formatWhereInput(where),
+	async delete(where: VideoQueryParameters.WhereInput[]) {
+		const toDelete = await this.getMany({ videos: where });
+		const deleted = await this.prismaService.video.deleteMany({
+			where: VideoService.formatManyWhereInput({ videos: where }),
 		});
-		this.meiliSearch.index(this.indexName).deleteDocument(deleted.id);
-		this.logger.warn(`Video '${deleted.slug}' deleted`);
-		return deleted;
+
+		this.meiliSearch
+			.index(this.indexName)
+			.deleteDocuments(toDelete.map((video) => video.id));
+		return deleted.count;
 	}
 
 	/**
@@ -581,8 +581,12 @@ export default class VideoService extends SearchableRepositoryService {
 				},
 			},
 		});
-
-		await Promise.all(emptyVideos.map(({ id }) => this.delete({ id })));
+		const deletedVideoCount = await this.delete(
+			emptyVideos.map(({ id }) => ({ id })),
+		);
+		if (deletedVideoCount) {
+			this.logger.warn(`Deleted ${deletedVideoCount} videos`);
+		}
 	}
 
 	async getOrCreate<I extends VideoQueryParameters.RelationInclude = {}>(

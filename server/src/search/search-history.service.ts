@@ -120,11 +120,9 @@ export class SearchHistoryService {
 
 		const videos = await this.videoService.getMany(
 			{
-				id: {
-					in: history
-						.filter((item) => item.videoId !== null)
-						.map(({ videoId }) => videoId!),
-				},
+				videos: history
+					.filter((item) => item.videoId !== null)
+					.map(({ videoId }) => ({ id: videoId! })),
 			},
 			undefined,
 			{ illustration: true, artist: true, master: true },

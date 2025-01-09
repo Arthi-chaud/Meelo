@@ -60,7 +60,7 @@ namespace VideoQueryParameters {
 			group: SongGroupQueryParameters.WhereInput;
 			song: SongQueryParameters.WhereInput;
 			type?: VideoType;
-			id: { in: number[] };
+			videos: VideoQueryParameters.WhereInput[];
 		}>
 	>;
 

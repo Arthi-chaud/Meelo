@@ -107,7 +107,7 @@ export class SearchService {
 				[
 					(ids: number[]) =>
 						this.videoService.getMany(
-							{ id: { in: ids } },
+							{ videos: ids.map((id) => ({ id })) },
 							undefined,
 							{
 								illustration: true,
