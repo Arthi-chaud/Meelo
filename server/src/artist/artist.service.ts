@@ -95,7 +95,7 @@ export default class ArtistService extends SearchableRepositoryService {
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
 		const artists = await this.getMany(
-			{ ...where, id: { in: matchingIds } },
+			{ ...where, artists: matchingIds.map((id) => ({ id })) },
 			{},
 			{},
 			include,
@@ -187,8 +187,12 @@ export default class ArtistService extends SearchableRepositoryService {
 			name: buildStringSearchParameters(where.name),
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.artists) {
+			query = deepmerge(query, {
+				OR: where.artists.map((artist) =>
+					ArtistService.formatWhereInput(artist),
+				),
+			});
 		}
 		if (where.library) {
 			query = deepmerge(query, {
@@ -305,63 +309,66 @@ export default class ArtistService extends SearchableRepositoryService {
 		}
 	}
 
-	async delete(where: ArtistQueryParameters.DeleteInput) {
-		const artist = await this.get(where);
-		if (artist.illustrationId) {
-			await this.illustrationRepository.deleteIllustration(
-				artist.illustrationId,
-			);
+	async delete(where: ArtistQueryParameters.DeleteInput[]) {
+		const artists = await this.getMany(
+			{ artists: where },
+			undefined,
+			undefined,
+			{ songs: true, featuredOn: true, videos: true, albums: true },
+		);
+
+		for (const artist of artists) {
+			if (
+				artist.songs.length ||
+				artist.featuredOn.length ||
+				artist.videos.length ||
+				artist.albums.length
+			) {
+				throw new ArtistNotEmptyException(artist.id);
+			}
 		}
+		await Promise.allSettled(
+			artists
+				.filter(({ illustrationId }) => illustrationId !== null)
+				.map(({ illustrationId }) =>
+					this.illustrationRepository.deleteIllustration(
+						illustrationId!,
+					),
+				),
+		);
 		const deletedArtist = await this.prismaService.artist
-			.delete({
-				where: {
-					id: where.id,
-					slug: where.slug?.toString(),
-				},
+			.deleteMany({
+				where: ArtistService.formatManyWhereInput({ artists: where }),
 			})
 			.catch((error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.ForeignConstraintViolation
-				) {
-					throw new ArtistNotEmptyException(where.slug ?? where.id);
-				}
-
 				throw new UnhandledORMErrorException(error, where);
 			});
-		this.meiliSearch.index(this.indexName).deleteDocument(deletedArtist.id);
-		this.logger.warn(`Artist '${deletedArtist.slug}' deleted`);
-		return deletedArtist;
+		this.meiliSearch
+			.index(this.indexName)
+			.deleteDocuments(artists.map(({ id }) => id));
+		return deletedArtist.count;
 	}
 
 	/**
 	 * Call 'delete' method on all artist that do not have any songs or albums
 	 */
 	async housekeeping(): Promise<void> {
-		const emptyArtists = await this.prismaService.artist
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: {
-							albums: true,
-							songs: true,
-							featuredOn: true,
-							videos: true,
-						},
-					},
-				},
-			})
-			.then((artists) =>
-				artists.filter(
-					({ _count }) =>
-						!_count.videos &&
-						!_count.albums &&
-						!_count.songs &&
-						!_count.featuredOn,
-				),
-			);
-
-		await Promise.all(emptyArtists.map(({ id }) => this.delete({ id })));
+		const emptyArtists = await this.prismaService.artist.findMany({
+			select: {
+				id: true,
+			},
+			where: {
+				albums: { none: {} },
+				songs: { none: {} },
+				featuredOn: { none: {} },
+				videos: { none: {} },
+			},
+		});
+		const deletedArtistCount = await this.delete(
+			emptyArtists.map((artist) => ({ id: artist.id })),
+		);
+		if (deletedArtistCount) {
+			this.logger.warn(`Deleted ${deletedArtistCount} artists`);
+		}
 	}
 }

@@ -53,7 +53,7 @@ namespace ArtistQueryParameters {
 		RequireAtLeastOne<{
 			library: LibraryQueryParameters.WhereInput;
 			name: SearchStringInput;
-			id: { in: Artist["id"][] };
+			artists: ArtistQueryParameters.WhereInput[];
 			genre: GenreQueryParameters.WhereInput;
 			albumArtistOnly: boolean;
 			album: AlbumQueryParameters.WhereInput;

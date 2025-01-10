@@ -69,7 +69,7 @@ export class SearchService {
 					// Note: I know it's ugly, but needed for correct typing
 					(ids: number[]) =>
 						this.artistService.getMany(
-							{ id: { in: ids } },
+							{ artists: ids.map((id) => ({ id })) },
 							undefined,
 							undefined,
 							{ illustration: true },
