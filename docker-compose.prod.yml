@@ -148,6 +148,7 @@ services:
       - PORT=5000
       - FRONT_URL=http://front:3000
       - SERVER_URL=http://server:4000
+      - SCANNER_URL=http://scanner:8133
     volumes:
       - ./nginx.conf.template:/etc/nginx/templates/meelo.conf.template:ro
 volumes:
