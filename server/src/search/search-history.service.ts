@@ -128,11 +128,9 @@ export class SearchHistoryService {
 		);
 		const albums = await this.albumService.getMany(
 			{
-				id: {
-					in: history
-						.filter((item) => item.albumId !== null)
-						.map(({ albumId }) => albumId!),
-				},
+				albums: history
+					.filter((item) => item.albumId !== null)
+					.map(({ albumId }) => ({ id: albumId! })),
 			},
 			undefined,
 			undefined,

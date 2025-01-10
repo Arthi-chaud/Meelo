@@ -70,7 +70,7 @@ namespace AlbumQueryParameters {
 			releaseDate: SearchDateInput;
 			genre: GenreQueryParameters.WhereInput;
 			type: AlbumType;
-			id: { in: number[] };
+			albums: AlbumQueryParameters.WhereInput[];
 			// Get albums with a song in common. Does not include the given album
 			related: AlbumQueryParameters.WhereInput;
 		}>

@@ -94,7 +94,7 @@ export class SearchService {
 				[
 					(ids: number[]) =>
 						this.albumService.getMany(
-							{ id: { in: ids } },
+							{ albums: ids.map((id) => ({ id })) },
 							undefined,
 							undefined,
 							{

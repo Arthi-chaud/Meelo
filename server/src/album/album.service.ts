@@ -210,7 +210,7 @@ export default class AlbumService extends SearchableRepositoryService {
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
 		const artists = await this.getMany(
-			{ ...where, id: { in: matchingIds } },
+			{ ...where, albums: matchingIds.map((id) => ({ id })) },
 			{},
 			{},
 			include,
@@ -232,7 +232,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				pagination,
 			);
 			return this.getMany(
-				{ ...where, id: { in: randomIds } },
+				{ ...where, albums: randomIds.map((id) => ({ id })) },
 				undefined,
 				undefined,
 				include,
@@ -278,8 +278,12 @@ export default class AlbumService extends SearchableRepositoryService {
 			name: buildStringSearchParameters(where.name),
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.albums) {
+			query = deepmerge(query, {
+				OR: where.albums.map((album) =>
+					AlbumService.formatWhereInput(album),
+				),
+			});
 		}
 		if (where.related) {
 			// Related albums have at least one song group in common
@@ -510,42 +514,49 @@ export default class AlbumService extends SearchableRepositoryService {
 	 * Deletes an album
 	 * @param where the query parameter
 	 */
-	async delete(where: AlbumQueryParameters.DeleteInput): Promise<AlbumModel> {
-		try {
-			const album = await this.prismaService.album.delete({
-				where: AlbumService.formatWhereInput(where),
-			});
+	async delete(where: AlbumQueryParameters.DeleteInput[]): Promise<number> {
+		const albums = await this.getMany(
+			{ albums: where },
+			undefined,
+			undefined,
+			{ releases: true },
+		);
 
-			this.meiliSearch.index(this.indexName).deleteDocument(album.id);
-			this.logger.warn(`Album '${album.slug}' deleted`);
-			return album;
-		} catch (error) {
-			if (
-				error instanceof Prisma.PrismaClientKnownRequestError &&
-				error.code == PrismaError.ForeignConstraintViolation
-			) {
-				throw new AlbumNotEmptyException(where.id);
+		for (const album of albums) {
+			if (album.releases!.length) {
+				throw new AlbumNotEmptyException(album.id);
 			}
-			throw await this.onNotFound(error, where);
 		}
+		const deletedAlbum = await this.prismaService.album
+			.deleteMany({
+				where: AlbumService.formatManyWhereInput({ albums: where }),
+			})
+			.catch((error) => {
+				throw new UnhandledORMErrorException(error, where);
+			});
+		this.meiliSearch
+			.index(this.indexName)
+			.deleteDocuments(albums.map(({ id }) => id));
+		return deletedAlbum.count;
 	}
 
 	/**
 	 * Delete all albums that do not have relaed releases
 	 */
 	async housekeeping(): Promise<void> {
-		const emptyAlbums = await this.prismaService.album
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: { releases: true },
-					},
-				},
-			})
-			.then((albums) => albums.filter((album) => !album._count.releases));
+		const emptyAlbums = await this.prismaService.album.findMany({
+			select: {
+				id: true,
+			},
+			where: { releases: { none: {} } },
+		});
+		const deletedAlbumCount = await this.delete(
+			emptyAlbums.map(({ id }) => ({ id })),
+		);
 
-		await Promise.all(emptyAlbums.map(({ id }) => this.delete({ id })));
+		if (deletedAlbumCount) {
+			this.logger.warn(`Deleted ${deletedAlbumCount} albums`);
+		}
 		await this.resolveMasterReleases();
 	}
 
