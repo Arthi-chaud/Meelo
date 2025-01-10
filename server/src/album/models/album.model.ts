@@ -31,4 +31,5 @@ export type AlbumModel = {
 	type: AlbumType;
 	artistId: number | null;
 	artist?: ArtistModel | null;
+	releases?: Release[];
 };
