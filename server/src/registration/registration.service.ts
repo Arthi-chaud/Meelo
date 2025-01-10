@@ -88,7 +88,7 @@ export class RegistrationService {
 				releaseId: createdTrack.releaseId,
 			};
 		} catch (e) {
-			await this.fileService.delete({ id: fileEntry.id });
+			await this.fileService.delete([{ id: fileEntry.id }]);
 			throw e;
 		}
 	}
@@ -128,17 +128,21 @@ export class RegistrationService {
 		};
 	}
 
-	public async unregisterFile(
-		where: FileQueryParameters.DeleteInput,
+	public async unregisterFiles(
+		where: FileQueryParameters.DeleteInput[],
 		housekeeping = false,
 	) {
-		await this.trackService
-			.delete({ sourceFileId: where.id })
+		const deletedTrackCount = await this.trackService
+			.delete(where.map(({ id: sourceFileId }) => ({ sourceFileId })))
 			.catch((error) => {
 				if (!(error instanceof NotFoundException)) {
 					throw error;
 				}
+				return 0;
 			});
+		if (deletedTrackCount) {
+			this.logger.warn(`Deleted ${deletedTrackCount} tracks`);
+		}
 		await this.fileService.delete(where);
 		if (housekeeping) {
 			await this.housekeepingService.runHousekeeping();

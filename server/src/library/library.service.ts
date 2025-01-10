@@ -184,10 +184,8 @@ export default class LibraryService {
 	async delete(where: LibraryQueryParameters.WhereInput): Promise<Library> {
 		const relatedFiles = await this.fileService.getMany({ library: where });
 
-		await Promise.all(
-			relatedFiles.map((file) =>
-				this.registrationService.unregisterFile({ id: file.id }),
-			),
+		await this.registrationService.unregisterFiles(
+			relatedFiles.map((file) => ({ id: file.id })),
 		);
 		await this.housekeepingService.runHousekeeping();
 		return this.prismaService.library

@@ -71,7 +71,7 @@ namespace TrackQueryParameters {
 		RequireAtLeastOne<
 			{
 				type: TrackType;
-				id: { in: number[] };
+				tracks: TrackQueryParameters.WhereInput[];
 				song: SongQueryParameters.WhereInput;
 				video: VideoQueryParameters.WhereInput;
 				library: LibraryQueryParameters.WhereInput;

@@ -263,7 +263,7 @@ export default class MetadataService {
 			}
 		}
 		if (overwrite) {
-			await this.trackService.delete({ sourceFileId: file.id });
+			await this.trackService.delete([{ sourceFileId: file.id }]);
 		}
 		return this.trackService.create(track).then(async (res) => {
 			if (

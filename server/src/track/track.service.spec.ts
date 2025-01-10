@@ -413,7 +413,7 @@ describe("Track Service", () => {
 			const track = await trackService.getSongMasterTrack({
 				id: dummyRepository.songA1.id,
 			});
-			await trackService.delete({ id: tmpTrack.id });
+			await trackService.delete([{ id: tmpTrack.id }]);
 			await releaseService.delete([{ id: tmpRelease.id }]);
 			expect(track).toStrictEqual(dummyRepository.trackA1_1);
 		});
@@ -487,7 +487,7 @@ describe("Track Service", () => {
 				},
 				{ id: dummyRepository.songA1.id },
 			);
-			await trackService.delete({ id: dummyRepository.trackA1_1.id });
+			await trackService.delete([{ id: dummyRepository.trackA1_1.id }]);
 
 			const test = async () =>
 				await trackService.get({ id: dummyRepository.trackA1_1.id });

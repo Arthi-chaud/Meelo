@@ -1,7 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import type { Release } from "src/prisma/models";
-import { AlbumNotFoundException } from "src/album/album.exceptions";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -304,7 +303,7 @@ describe("Release Service", () => {
 			);
 		});
 		it("should delete the master release", async () => {
-			await trackService.delete({ id: dummyRepository.trackB1_1.id });
+			await trackService.delete([{ id: dummyRepository.trackB1_1.id }]);
 			await albumService.update(
 				{
 					master: { id: dummyRepository.releaseB1_1.id },
