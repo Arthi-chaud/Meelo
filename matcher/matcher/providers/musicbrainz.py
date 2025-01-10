@@ -133,7 +133,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     ) -> AlbumSearchResult | None:
         album_name = self._sanitise_acronyms(album_name)
         # TODO It's ugly, use an album_type variable from API
-        sanitised_album_name = re.sub("\\s*-\\s*(Single|EP)$", "", album_name)
+        sanitised_album_name = re.sub(
+            "(\\s*-\\s*(Single|EP))|(\\s*[\\(\\[]Remixes[\\)\\]])$",
+            "",
+            album_name,
+            flags=re.IGNORECASE,
+        )
         album_slug = to_slug(sanitised_album_name)
 
         artist_slug = to_slug(artist_name) if artist_name else None

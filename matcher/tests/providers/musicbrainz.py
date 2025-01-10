@@ -64,6 +64,17 @@ class TestMusicbrainz(unittest.TestCase):
                 "Madonna",
                 "a0aa8b0a-5e10-3627-afde-7235b86042f6",
             ),
+            ## Test handling of '(Remixes)' Suffix
+            (
+                "Love Profusion (Remixes)",
+                "Madonna",
+                "618ac790-9456-3c5b-80ff-94a341c51aba",
+            ),
+            (
+                "American Life (Remixes)",
+                "Madonna",
+                "2db09a30-3e77-3ada-ab03-5b9bff66c8a8",
+            ),
             (
                 "Protection - Single",
                 "Massive Attack",
