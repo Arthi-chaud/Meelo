@@ -50,7 +50,7 @@ namespace GenreQueryParameters {
 			artist: ArtistQueryParameters.WhereInput;
 			album: AlbumQueryParameters.WhereInput;
 			slug: SearchStringInput;
-			id: { in: number[] };
+			genres: GenreQueryParameters.WhereInput[];
 		}>
 	>;
 

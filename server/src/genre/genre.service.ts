@@ -20,17 +20,13 @@ import { Injectable } from "@nestjs/common";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import type GenreQueryParameters from "./models/genre.query-parameters";
-import { Genre } from "src/prisma/models";
 import SongService from "src/song/song.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import ArtistService from "src/artist/artist.service";
 import { Prisma } from "@prisma/client";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
-import {
-	GenreNotEmptyException,
-	GenreNotFoundException,
-} from "./genre.exceptions";
+import { GenreNotFoundException } from "./genre.exceptions";
 import AlbumService from "src/album/album.service";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -70,8 +66,12 @@ export default class GenreService {
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
 		let query: Prisma.GenreWhereInput = {};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.genres) {
+			query = deepmerge(query, {
+				OR: where.genres.map((genre) =>
+					GenreService.formatWhereInput(genre),
+				),
+			});
 		}
 		if (where.slug) {
 			query = deepmerge(query, {
@@ -178,45 +178,35 @@ export default class GenreService {
 	}
 
 	/**
-	 * Deletes a genre
-	 * @param where the query parameter to find the genre to delete
+	 * Delete genres
+	 * Note: Will delete genre even if not empty
+	 * @param where the query parameter to find the genres to delete
 	 */
-	async delete(where: GenreQueryParameters.DeleteInput): Promise<Genre> {
-		const genre = await this.get(where, { songs: true });
+	async delete(where: GenreQueryParameters.DeleteInput[]): Promise<number> {
+		const deleted = await this.prismaService.genre.deleteMany({
+			where: GenreService.formatManyWhereInput({ genres: where }),
+		});
 
-		if (genre.songs.length == 0) {
-			return this.prismaService.genre
-				.delete({
-					where: { id: genre.id },
-				})
-				.then((deleted) => {
-					this.logger.warn(`Genre '${deleted.slug}' deleted`);
-					return deleted;
-				});
-		}
-		throw new GenreNotEmptyException(genre.id);
+		return deleted.count;
 	}
 
 	/**
 	 * Delete all genres that do not have related songs
 	 */
 	async housekeeping(): Promise<void> {
-		const emptyGenres = await this.prismaService.genre
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: { songs: true, albums: true },
-					},
-				},
-			})
-			.then((genres) =>
-				genres.filter(
-					(genre) => !genre._count.songs && !genre._count.albums,
-				),
-			);
+		const emptyGenres = await this.prismaService.genre.findMany({
+			select: {
+				id: true,
+			},
+			where: { songs: { none: {} }, albums: { none: {} } },
+		});
+		const deletedGenreCount = await this.delete(
+			emptyGenres.map((genre) => ({ id: genre.id })),
+		);
 
-		await Promise.all(emptyGenres.map(({ id }) => this.delete({ id })));
+		if (deletedGenreCount) {
+			this.logger.warn(`Deleted ${deletedGenreCount} genres`);
+		}
 	}
 
 	onNotFound(error: Error, where: GenreQueryParameters.WhereInput) {
