@@ -13,14 +13,13 @@ import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import {
-	GenreAlreadyExistsException,
 	GenreNotEmptyException,
 	GenreNotFoundException,
 } from "./genre.exceptions";
 import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
 
@@ -38,7 +37,7 @@ describe("Genre Service", () => {
 				PrismaModule,
 				LibraryModule,
 				IllustrationModule,
-				ScannerModule,
+				ParserModule,
 				ArtistModule,
 				TrackModule,
 				AlbumModule,
@@ -223,24 +222,12 @@ describe("Genre Service", () => {
 	});
 
 	describe("Delete Genre", () => {
-		it("should have deleted the genre, because it is empty", async () => {
+		it("should have deleted the genre", async () => {
 			const tmpGenre = await genreService.getOrCreate({ name: "12345" });
-			await genreService.delete({ id: tmpGenre.id });
+			await genreService.delete([{ id: tmpGenre.id }]);
 
 			const test = async () =>
 				await genreService.get({ id: tmpGenre.id });
-
-			return expect(test()).rejects.toThrow(GenreNotFoundException);
-		});
-		it("should not delete the genre, because it is not empty", async () => {
-			const test = () =>
-				genreService.delete({ id: dummyRepository.genreB.id });
-
-			return expect(test()).rejects.toThrow(GenreNotEmptyException);
-		});
-
-		it("should throw, as the genre does not exist", async () => {
-			const test = async () => await genreService.delete({ id: -1 });
 
 			return expect(test()).rejects.toThrow(GenreNotFoundException);
 		});

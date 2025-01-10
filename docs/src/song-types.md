@@ -11,12 +11,14 @@ Meelo supports the following song types:
 - Acoustic
 - Remix
 - Instrumental
-- Acapella
+- A Cappella
 - Edit
   - Of the original version.
   - If the song is an edit of a remix, it will be categorised as 'Remix'
 - Clean
 - Demo
+- Medley
+- Non-Music (e.g. Interviews)
 
 ## Type recognition
 

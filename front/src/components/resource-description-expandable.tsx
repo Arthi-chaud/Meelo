@@ -17,17 +17,16 @@
  */
 
 import { Box, Link, Skeleton } from "@mui/material";
-import ExternalId from "../models/external-id";
+import { type CommonExternalMetadata } from "../models/external-metadata";
 import { useState } from "react";
-import { capitalCase } from "change-case";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
 
 type Props = {
-	externalDescription: ExternalId | undefined;
+	externalMetadata: CommonExternalMetadata | undefined;
 };
 
-const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
+const ResourceDescriptionExpandable = ({ externalMetadata }: Props) => {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const maxLine = 5;
 	const smallBoxStyle = {
@@ -42,27 +41,13 @@ const ResourceDescriptionExpandable = ({ externalDescription }: Props) => {
 
 	return (
 		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
-			{externalDescription
-				? externalDescription.description
-				: generateArray(5).map((_, index) => <Skeleton key={index} />)}
-			{isExpanded && (
-				<>
-					{" Source: "}
-					<Link
-						href={externalDescription?.url ?? undefined}
-						rel="noopener noreferrer"
-						target="_blank"
-					>
-						{externalDescription ? (
-							capitalCase(externalDescription?.provider.name)
-						) : (
-							<Skeleton width={50} />
-						)}
-					</Link>
-					{"."}
-				</>
-			)}{" "}
-			{externalDescription && (
+			{externalMetadata?.description ||
+				(externalMetadata?.description === undefined &&
+					generateArray(5).map((_, index) => (
+						<Skeleton key={index} />
+					)))}
+
+			{externalMetadata?.description && (
 				<Link
 					href="#description"
 					onClick={() => setIsExpanded(!isExpanded)}

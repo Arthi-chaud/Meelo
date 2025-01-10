@@ -20,13 +20,18 @@ import { RequireExactlyOne } from "type-fest";
 import { SongWithRelations } from "./song";
 import { ArtistWithRelations } from "./artist";
 import { AlbumWithRelations } from "./album";
+import { VideoWithRelations } from "./video";
 
 export type SearchResult = RequireExactlyOne<{
 	song: SongWithRelations<"artist" | "featuring" | "illustration" | "master">;
 	album: AlbumWithRelations<"artist" | "illustration">;
 	artist: ArtistWithRelations<"illustration">;
+	video: VideoWithRelations<"illustration" | "master" | "artist">;
 }>;
 
+export type SaveSearchItem = Partial<
+	Record<"songId" | "albumId" | "artistId" | "videoId", number>
+>;
 export const SearchResultTransformer = (
 	results: unknown,
 ): Promise<SearchResult[]> => {
@@ -36,6 +41,15 @@ export const SearchResultTransformer = (
 	return Promise.all(
 		results.map(async (result) => {
 			if ("groupId" in result) {
+				if ("songId" in result) {
+					return {
+						video: await VideoWithRelations([
+							"artist",
+							"illustration",
+							"master",
+						] as const).validate(result),
+					};
+				}
 				return {
 					song: await SongWithRelations([
 						"artist",

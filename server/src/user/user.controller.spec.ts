@@ -42,7 +42,7 @@ describe("User Controller", () => {
 	describe("Create a user account", () => {
 		it("Should create the admin user", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({
 					name: "admin",
 					password: "admin1234",
@@ -59,7 +59,7 @@ describe("User Controller", () => {
 
 		it("Should create the user user", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({
 					name: "user",
 					password: "user1234",
@@ -76,7 +76,7 @@ describe("User Controller", () => {
 
 		it("Should return an error, as user already exists", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({
 					name: "user",
 					password: "user123456",
@@ -86,7 +86,7 @@ describe("User Controller", () => {
 
 		it("Should return an error, as username is not long enough", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({
 					name: "use",
 					password: "user123456",
@@ -96,7 +96,7 @@ describe("User Controller", () => {
 
 		it("Should return an error, as password is badly formed", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({
 					name: "admi",
 					password: "user",

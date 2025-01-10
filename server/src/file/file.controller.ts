@@ -16,23 +16,91 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get } from "@nestjs/common";
-import type { File } from "src/prisma/models";
+import { Body, Controller, Delete, Get, Query } from "@nestjs/common";
+import { File } from "src/prisma/models";
 import FileService from "./file.service";
 import FileQueryParameters from "./models/file.query-parameters";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import { IsOptional } from "class-validator";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import LibraryService from "src/library/library.service";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import Response, { ResponseType } from "src/response/response.decorator";
+import FileDeletionDto from "./models/file-deletion.dto";
+import { Role } from "src/authentication/roles/roles.decorators";
+import AlbumService from "src/album/album.service";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ReleaseService from "src/release/release.service";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import SongService from "src/song/song.service";
+import SongQueryParameters from "src/song/models/song.query-params";
+import TrackService from "src/track/track.service";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
+import Roles from "src/authentication/roles/roles.enum";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import { RegistrationService } from "src/registration/registration.service";
+
+class Selector {
+	@IsOptional()
+	@ApiPropertyOptional({
+		description:
+			"Filter files by folder. The folder is relative to the parent library",
+	})
+	inFolder?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter files by library",
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files by album`,
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files by release`,
+	})
+	@TransformIdentifier(ReleaseService)
+	release?: ReleaseQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files by song`,
+	})
+	@TransformIdentifier(SongService)
+	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: `Filter files by track`,
+	})
+	@TransformIdentifier(TrackService)
+	track?: TrackQueryParameters.WhereInput;
+}
 
 @ApiTags("Files")
 @Controller("files")
 export default class FileController {
-	constructor(private fileService: FileService) {}
+	constructor(
+		private fileService: FileService,
+		private registrationService: RegistrationService,
+		private housekeepingService: HousekeepingService,
+	) {}
 
 	@ApiOperation({
-		summary: "Get one 'File'",
+		summary: "Get one file entry",
 	})
 	@Get(":idOrSlug")
+	@Role(Roles.Default, Roles.Microservice)
 	get(
 		@RelationIncludeQuery(FileQueryParameters.AvailableAtomicIncludes)
 		include: FileQueryParameters.RelationInclude,
@@ -40,5 +108,34 @@ export default class FileController {
 		where: FileQueryParameters.WhereInput,
 	): Promise<File> {
 		return this.fileService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Get multiple file entries",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Get()
+	@Response({
+		returns: File,
+		type: ResponseType.Page,
+	})
+	getMany(
+		@Query() selector: Selector,
+		@Query()
+		paginationParameters: PaginationParameters,
+	) {
+		return this.fileService.getMany(selector, paginationParameters);
+	}
+
+	@ApiOperation({
+		summary: "Delete multiple file entries",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Delete()
+	async deleteMany(@Body() toDelete: FileDeletionDto) {
+		await this.registrationService.unregisterFiles(
+			toDelete.ids.map((id) => ({ id })),
+		);
+		await this.housekeepingService.runHousekeeping();
 	}
 }

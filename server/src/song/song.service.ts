@@ -27,9 +27,8 @@ import GenreService from "src/genre/genre.service";
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { Song, SongWithRelations } from "src/prisma/models";
+import { SongWithRelations } from "src/prisma/models";
 import Logger from "src/logger/logger";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
 import { PrismaError } from "prisma-error-enum";
 import {
 	SongAlreadyExistsException,
@@ -39,7 +38,7 @@ import {
 import AlbumService from "src/album/album.service";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import ParserService from "src/scanner/parser.service";
+import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
@@ -53,7 +52,13 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
+import GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { shuffle } from "src/utils/shuffle";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
@@ -71,6 +76,7 @@ export default class SongService extends SearchableRepositoryService {
 		private genreService: GenreService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
+		private eventService: EventsService,
 	) {
 		super(
 			"songs",
@@ -147,6 +153,14 @@ export default class SongService extends SearchableRepositoryService {
 						type: created.type,
 					},
 				]);
+				this.eventService.publishItemCreationEvent(
+					"song",
+					created.name,
+					created.id,
+					created.type == SongType.Original
+						? ResourceEventPriority.OriginalSong
+						: ResourceEventPriority.NonOriginalSong,
+				);
 				return created;
 			})
 			.catch(async (error) => {
@@ -221,7 +235,10 @@ export default class SongService extends SearchableRepositoryService {
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
 		const artists = await this.getMany(
-			{ ...where, id: { in: matchingIds } },
+			{
+				...where,
+				songs: matchingIds.map((id) => ({ id })),
+			},
 			{},
 			{},
 			include,
@@ -243,7 +260,10 @@ export default class SongService extends SearchableRepositoryService {
 				pagination,
 			);
 			return this.getMany(
-				{ ...where, id: { in: randomIds } },
+				{
+					...where,
+					songs: randomIds.map((id) => ({ id })),
+				},
 				undefined,
 				undefined,
 				include,
@@ -292,8 +312,12 @@ export default class SongService extends SearchableRepositoryService {
 			type: where.type,
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.songs) {
+			query = deepmerge(query, {
+				OR: where.songs.map((song) =>
+					SongService.formatWhereInput(song),
+				),
+			});
 		}
 		if (where.genre) {
 			query = deepmerge(query, {
@@ -443,11 +467,35 @@ export default class SongService extends SearchableRepositoryService {
 	): Prisma.SongUpdateInput {
 		return {
 			...what,
+			master:
+				what.master === null
+					? { disconnect: true }
+					: what.master
+					? {
+							connect: TrackService.formatWhereInput(what.master),
+					  }
+					: undefined,
 			genres: what.genres
 				? {
-						connect: what.genres.map((genre) =>
-							GenreService.formatWhereInput(genre),
-						),
+						connect: what.genres
+							.filter((genre) => typeof genre !== "string")
+							.map((genre: GenreQueryParameters.WhereInput) => ({
+								id: genre.id,
+								slug: genre.slug?.toString(),
+							})),
+						connectOrCreate: what.genres
+							.filter((genre) => typeof genre === "string")
+							.map((genre: string) => [
+								genre,
+								new Slug(genre).toString(),
+							])
+							.map(([genreName, genreSlug]) => ({
+								where: { slug: genreSlug },
+								create: {
+									name: genreName,
+									slug: genreSlug,
+								},
+							})),
 				  }
 				: undefined,
 		};
@@ -465,10 +513,22 @@ export default class SongService extends SearchableRepositoryService {
 	) {
 		if (what.genres) {
 			await Promise.all(
-				what.genres.map((genreWhere) =>
-					this.genreService.get(genreWhere),
-				),
+				what.genres
+					.filter((genre) => typeof genre !== "string")
+					.map((genreWhere: GenreQueryParameters.WhereInput) =>
+						this.genreService.get(genreWhere),
+					),
 			);
+		}
+
+		if (what.master) {
+			const newMaster = await this.trackService.get(what.master);
+			const song = await this.get(where);
+			if (newMaster.songId !== song.id) {
+				throw new InvalidRequestException(
+					"Master track of song should be track of said song",
+				);
+			}
 		}
 		return this.prismaService.song
 			.update({
@@ -478,32 +538,6 @@ export default class SongService extends SearchableRepositoryService {
 			.catch(async (error) => {
 				throw await this.onNotFound(error, where);
 			});
-	}
-
-	/**
-	 * Set the track as song's master
-	 * @param trackWhere the query parameters of the track
-	 * @returns the updated song
-	 */
-	async setMasterTrack(trackWhere: TrackQueryParameters.WhereInput) {
-		const track = await this.trackService.get(trackWhere);
-
-		return this.prismaService.song.update({
-			where: { id: track.songId },
-			data: { masterId: track.id },
-		});
-	}
-
-	/**
-	 * Unset song's master track
-	 * @param song the query parameters of the song
-	 * @returns the updated song
-	 */
-	async unsetMasterTrack(songWhere: SongQueryParameters.WhereInput) {
-		return this.prismaService.song.update({
-			where: SongService.formatWhereInput(songWhere),
-			data: { masterId: null },
-		});
 	}
 
 	/**
@@ -530,50 +564,56 @@ export default class SongService extends SearchableRepositoryService {
 	 * Deletes a song
 	 * @param where Query parameters to find the song to delete
 	 */
-	async delete(where: SongQueryParameters.DeleteInput): Promise<Song> {
-		return this.prismaService.song
-			.delete({
-				where: SongService.formatWhereInput(where),
-			})
-			.then((deleted) => {
-				this.meiliSearch
-					.index(this.indexName)
-					.deleteDocument(deleted.id);
-				this.logger.warn(`Song '${deleted.slug}' deleted`);
-				return deleted;
-			})
-			.catch(async (error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.ForeignConstraintViolation
-				) {
-					throw new SongNotEmptyException(where.id);
-				}
-				throw await this.onNotFound(error, where);
-			});
+	async delete(where: SongQueryParameters.DeleteInput[]) {
+		const toDelete = await this.getMany(
+			{ songs: where },
+			undefined,
+			undefined,
+			{ tracks: true },
+		);
+
+		for (const song of toDelete) {
+			if (song.tracks!.length > 0) {
+				throw new SongNotEmptyException(song.id);
+			}
+		}
+		const deleted = await this.prismaService.song.deleteMany({
+			where: SongService.formatManyWhereInput({ songs: where }),
+		});
+
+		this.meiliSearch
+			.index(this.indexName)
+			.deleteDocuments(toDelete.map((video) => video.id));
+		return deleted.count;
 	}
 
 	/**
 	 * Call 'delete' on all songs that do not have tracks
 	 */
 	async housekeeping(): Promise<void> {
-		const emptySongs = await this.prismaService.song
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: { tracks: true },
-					},
-				},
-			})
-			.then((genres) => genres.filter((genre) => !genre._count.tracks));
+		const emptySongs = await this.prismaService.song.findMany({
+			select: {
+				id: true,
+			},
+			where: {
+				videos: { none: {} },
+				tracks: { none: {} },
+			},
+		});
 
-		await Promise.all(emptySongs.map(({ id }) => this.delete({ id })));
+		const deletedSongCount = await this.delete(
+			emptySongs.map(({ id }) => ({ id })),
+		);
+		if (deletedSongCount) {
+			this.logger.warn(`Deleted ${deletedSongCount} songs`);
+		}
+
 		await this.prismaService.songGroup.deleteMany({
 			where: {
 				versions: {
 					none: {},
 				},
+				videos: { none: {} },
 			},
 		});
 		await this.resolveMasterTracks();
@@ -625,7 +665,7 @@ export default class SongService extends SearchableRepositoryService {
 		return this.getMany(
 			{
 				...where,
-				id: { in: playedSongs.map(({ songId }) => songId) },
+				songs: playedSongs.map(({ songId }) => ({ id: songId })),
 			},
 			undefined,
 			pagination,
@@ -652,6 +692,34 @@ export default class SongService extends SearchableRepositoryService {
 			undefined,
 			{ tracks: true },
 		);
+
+		// IDs of studio releases where any of the release's tracks appear
+		const olderStudioReleasesWhereSongAppears = await this.releaseService
+			.getMany(
+				{
+					releases: albumSongs
+						.filter((s) => s.type == SongType.Original)
+						.flatMap((s) => s.tracks!.map((t) => t.releaseId))
+						.filter((rid): rid is number => rid !== null)
+						.map((rid) => ({ id: rid })),
+				},
+				undefined,
+				undefined,
+				{ album: true },
+			)
+			.then((releases) =>
+				releases
+					.filter((r) => r.album.type == AlbumType.StudioRecording)
+					.filter((r) => r.album.id != album.id)
+					.filter(({ album: a }) => {
+						if (!a.releaseDate || !album.releaseDate) {
+							return false;
+						}
+						return a.releaseDate < album.releaseDate;
+					})
+					.map((r) => r.id),
+			);
+
 		const albumSongsBaseNames = albumSongs
 			// Some albums have live songs from previous albums, we ignore them
 			.filter((song) => song.type != SongType.Live)
@@ -664,12 +732,26 @@ export default class SongService extends SearchableRepositoryService {
 							track.releaseId == release.id,
 					) != undefined,
 			)
+			// We exclude the songs that appear on older studio albums
+			// Because we dont want to get BSide from their singles
+			// See #795
+			.filter(
+				(song) =>
+					song.tracks!.find(
+						(t) =>
+							t.releaseId &&
+							olderStudioReleasesWhereSongAppears.includes(
+								t.releaseId,
+							),
+					) == undefined,
+			)
 			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());
 
 		return this.prismaService.song.findMany({
 			where: {
 				tracks: {
 					some: {
+						type: "Audio",
 						release: {
 							album: {
 								OR: [
@@ -686,7 +768,7 @@ export default class SongService extends SearchableRepositoryService {
 												),
 												type: AlbumType.Single,
 											},
-											//... that are relates to the current tracklist
+											//... that are related to the current tracklist
 											{
 												OR: [
 													...albumSongsBaseNames.map(
@@ -708,6 +790,14 @@ export default class SongService extends SearchableRepositoryService {
 									{
 										id: release.albumId,
 									},
+									// Get songs from video albums, where the name starts with the album's name
+									// E.g. 'In The Zone DVD'
+									{
+										type: AlbumType.VideoAlbum,
+										nameSlug: {
+											startsWith: album.nameSlug,
+										},
+									},
 								],
 							},
 						},
@@ -722,13 +812,15 @@ export default class SongService extends SearchableRepositoryService {
 							},
 						},
 					},
-					// We only want songs that have at least one audtio tracks
+					// We only want songs that have at least one audio tracks
 					{ tracks: { some: { type: TrackType.Audio } } },
 					{
 						OR: [
-							// We take original songs or extras
+							// We take original songs, medleys or extras
 							{
-								type: { in: ["Original", "NonMusic"] },
+								type: {
+									in: ["Original", "NonMusic", "Medley"],
+								},
 							},
 							// Or songs that are only available as demos/acoustic versions
 							{
@@ -849,6 +941,19 @@ export default class SongService extends SearchableRepositoryService {
 									},
 								},
 							},
+							// Take all audio tracks that appear only on video albums
+							{
+								tracks: {
+									every: {
+										release: {
+											album: {
+												type: AlbumType.VideoAlbum,
+											},
+										},
+										type: TrackType.Audio,
+									},
+								},
+							},
 							{
 								tracks: {
 									some: {
@@ -875,7 +980,7 @@ export default class SongService extends SearchableRepositoryService {
 		return this.parserService.stripGroups(songName);
 	}
 
-	private static formatSongGroupCreateInput(
+	static formatSongGroupCreateInput(
 		input: SongGroupQueryParameters.CreateInput,
 	) {
 		return {
@@ -883,7 +988,7 @@ export default class SongService extends SearchableRepositoryService {
 		};
 	}
 
-	private static formatSongGroupWhereInput(
+	static formatSongGroupWhereInput(
 		input: SongGroupQueryParameters.WhereInput,
 	) {
 		return {

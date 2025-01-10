@@ -24,7 +24,7 @@ import {
 	AlbumNotEmptyException,
 	AlbumNotFoundException,
 } from "./album.exceptions";
-import { Prisma } from "@prisma/client";
+import { AlbumType, Prisma } from "@prisma/client";
 import PrismaService from "src/prisma/prisma.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import ReleaseService from "src/release/release.service";
@@ -33,9 +33,8 @@ import { buildStringSearchParameters } from "src/utils/search-string-input";
 import SongService from "src/song/song.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import Logger from "src/logger/logger";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import { PrismaError } from "prisma-error-enum";
-import ParserService from "src/scanner/parser.service";
+import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
 import GenreService from "src/genre/genre.service";
 import MeiliSearch from "meilisearch";
@@ -48,12 +47,18 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import { AlbumModel } from "./models/album.model";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
 @Injectable()
 export default class AlbumService extends SearchableRepositoryService {
 	private readonly logger = new Logger(AlbumService.name);
 	constructor(
+		private eventService: EventsService,
 		private prismaService: PrismaService,
 		@Inject(forwardRef(() => ArtistService))
 		private artistServce: ArtistService,
@@ -138,6 +143,14 @@ export default class AlbumService extends SearchableRepositoryService {
 						type: created.type,
 					},
 				]);
+				this.eventService.publishItemCreationEvent(
+					"album",
+					created.name,
+					created.id,
+					created.type == AlbumType.StudioRecording
+						? ResourceEventPriority.StudioAlbum
+						: ResourceEventPriority.NonStudioAlbum,
+				);
 				return created;
 			})
 			.catch(async (error) => {
@@ -197,7 +210,7 @@ export default class AlbumService extends SearchableRepositoryService {
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
 		const artists = await this.getMany(
-			{ ...where, id: { in: matchingIds } },
+			{ ...where, albums: matchingIds.map((id) => ({ id })) },
 			{},
 			{},
 			include,
@@ -219,7 +232,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				pagination,
 			);
 			return this.getMany(
-				{ ...where, id: { in: randomIds } },
+				{ ...where, albums: randomIds.map((id) => ({ id })) },
 				undefined,
 				undefined,
 				include,
@@ -265,8 +278,12 @@ export default class AlbumService extends SearchableRepositoryService {
 			name: buildStringSearchParameters(where.name),
 		};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.albums) {
+			query = deepmerge(query, {
+				OR: where.albums.map((album) =>
+					AlbumService.formatWhereInput(album),
+				),
+			});
 		}
 		if (where.related) {
 			// Related albums have at least one song group in common
@@ -416,9 +433,44 @@ export default class AlbumService extends SearchableRepositoryService {
 		what: AlbumQueryParameters.UpdateInput,
 		where: AlbumQueryParameters.WhereInput,
 	) {
+		if (what.master) {
+			const newMaster = await this.releaseService.get(what.master);
+			const album = await this.get(where);
+			if (newMaster.albumId !== album.id) {
+				throw new InvalidRequestException(
+					"Master release of album should be release of said album",
+				);
+			}
+		}
 		return this.prismaService.album
 			.update({
-				data: what,
+				data: {
+					...what,
+					master: what.master
+						? {
+								connect: ReleaseService.formatWhereInput(
+									what.master,
+								),
+						  }
+						: undefined,
+					releaseDate: what.releaseDate ?? undefined,
+					genres: what.genres
+						? {
+								connectOrCreate: what.genres
+									.map((genre) => [
+										genre,
+										new Slug(genre).toString(),
+									])
+									.map(([genreName, genreSlug]) => ({
+										where: { slug: genreSlug },
+										create: {
+											name: genreName,
+											slug: genreSlug,
+										},
+									})),
+						  }
+						: undefined,
+				},
 				where: AlbumService.formatWhereInput(where),
 			})
 			.catch(async (error) => {
@@ -433,6 +485,16 @@ export default class AlbumService extends SearchableRepositoryService {
 	async updateAlbumDate(where: AlbumQueryParameters.WhereInput) {
 		const album = await this.get(where, { releases: true });
 
+		// If the album's release date has been updated by the matcher
+		// We ignore
+		// Usually, a date that has a month and a day is provided by the matcher (the scanner only gives years)
+		// I know it's ugly
+		if (
+			album.releaseDate?.getMonth() ||
+			(album.releaseDate?.getDate() ?? 1) > 1
+		) {
+			return;
+		}
 		album.releaseDate = album.releases?.at(0)?.releaseDate ?? null;
 		for (const release of album.releases) {
 			if (
@@ -452,42 +514,49 @@ export default class AlbumService extends SearchableRepositoryService {
 	 * Deletes an album
 	 * @param where the query parameter
 	 */
-	async delete(where: AlbumQueryParameters.DeleteInput): Promise<AlbumModel> {
-		try {
-			const album = await this.prismaService.album.delete({
-				where: AlbumService.formatWhereInput(where),
-			});
+	async delete(where: AlbumQueryParameters.DeleteInput[]): Promise<number> {
+		const albums = await this.getMany(
+			{ albums: where },
+			undefined,
+			undefined,
+			{ releases: true },
+		);
 
-			this.meiliSearch.index(this.indexName).deleteDocument(album.id);
-			this.logger.warn(`Album '${album.slug}' deleted`);
-			return album;
-		} catch (error) {
-			if (
-				error instanceof Prisma.PrismaClientKnownRequestError &&
-				error.code == PrismaError.ForeignConstraintViolation
-			) {
-				throw new AlbumNotEmptyException(where.id);
+		for (const album of albums) {
+			if (album.releases!.length) {
+				throw new AlbumNotEmptyException(album.id);
 			}
-			throw await this.onNotFound(error, where);
 		}
+		const deletedAlbum = await this.prismaService.album
+			.deleteMany({
+				where: AlbumService.formatManyWhereInput({ albums: where }),
+			})
+			.catch((error) => {
+				throw new UnhandledORMErrorException(error, where);
+			});
+		this.meiliSearch
+			.index(this.indexName)
+			.deleteDocuments(albums.map(({ id }) => id));
+		return deletedAlbum.count;
 	}
 
 	/**
 	 * Delete all albums that do not have relaed releases
 	 */
 	async housekeeping(): Promise<void> {
-		const emptyAlbums = await this.prismaService.album
-			.findMany({
-				select: {
-					id: true,
-					_count: {
-						select: { releases: true },
-					},
-				},
-			})
-			.then((albums) => albums.filter((album) => !album._count.releases));
+		const emptyAlbums = await this.prismaService.album.findMany({
+			select: {
+				id: true,
+			},
+			where: { releases: { none: {} } },
+		});
+		const deletedAlbumCount = await this.delete(
+			emptyAlbums.map(({ id }) => ({ id })),
+		);
 
-		await Promise.all(emptyAlbums.map(({ id }) => this.delete({ id })));
+		if (deletedAlbumCount) {
+			this.logger.warn(`Deleted ${deletedAlbumCount} albums`);
+		}
 		await this.resolveMasterReleases();
 	}
 
@@ -516,32 +585,6 @@ export default class AlbumService extends SearchableRepositoryService {
 				.filter((q) => q !== null)
 				.map((q) => q!),
 		);
-	}
-
-	/**
-	 * Set the release as album's master
-	 * @param releaseWhere the query parameters of the release
-	 * @returns the updated album
-	 */
-	async setMasterRelease(releaseWhere: ReleaseQueryParameters.WhereInput) {
-		const release = await this.releaseService.get(releaseWhere);
-
-		return this.prismaService.album.update({
-			where: { id: release.albumId },
-			data: { masterId: release.id },
-		});
-	}
-
-	/**
-	 * unset album's master release
-	 * @param albumWhere the query parameters of the album
-	 * @returns the updated album
-	 */
-	async unsetMasterRelease(albumWhere: AlbumQueryParameters.WhereInput) {
-		return this.prismaService.album.update({
-			where: AlbumService.formatWhereInput(albumWhere),
-			data: { masterId: null },
-		});
 	}
 
 	async onNotFound(error: Error, where: AlbumQueryParameters.WhereInput) {

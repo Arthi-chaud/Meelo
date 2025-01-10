@@ -41,7 +41,12 @@ import {
 	SongType,
 	SongWithRelations,
 } from "../models/song";
-import { VideoWithRelations } from "../models/video";
+import {
+	VideoInclude,
+	VideoSortingKeys,
+	VideoType,
+	VideoWithRelations,
+} from "../models/video";
 import {
 	TrackInclude,
 	TrackSortingKeys,
@@ -50,7 +55,6 @@ import {
 } from "../models/track";
 import { TracklistItemWithRelations } from "../models/tracklist";
 import { SortingParameters } from "../utils/sorting";
-import LibraryTaskResponse from "../models/library-task-response";
 import { ResourceNotFound } from "../exceptions";
 import User, { UserSortingKeys } from "../models/user";
 import store from "../state/store";
@@ -65,8 +69,17 @@ import Playlist, {
 	PlaylistWithRelations,
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
-import { ActiveTask, Task } from "../models/task";
-import { SearchResult, SearchResultTransformer } from "../models/search";
+import { TaskResponse } from "../models/task";
+import {
+	AlbumExternalMetadata,
+	ArtistExternalMetadata,
+	SongExternalMetadata,
+} from "../models/external-metadata";
+import {
+	SaveSearchItem,
+	SearchResult,
+	SearchResultTransformer,
+} from "../models/search";
 import {
 	SongGroupSortingKeys,
 	SongGroupWithRelations,
@@ -77,8 +90,6 @@ const AuthenticationResponse = yup.object({
 });
 
 type Identifier = number | string;
-
-type NullableIdentifier = Identifier | null;
 
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
@@ -93,11 +104,18 @@ type AuthenticationInput = {
 	password: string;
 };
 
+// eslint-disable-next-line no-shadow
+enum Service {
+	API,
+	Scanner,
+}
+
 type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	route: string;
 	parameters: QueryParameters<Keys>;
 	otherParameters?: any;
 	errorMessage?: string;
+	service?: Service;
 	data?: Record<string, any>;
 	method?: "GET" | "PUT" | "POST" | "DELETE";
 } & RequireExactlyOne<{
@@ -127,6 +145,8 @@ export default class API {
 	private static isDev = () => process.env.NODE_ENV === "development";
 	private static SSR_API_URL =
 		process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
+	private static SSR_SCANNER_URL =
+		process.env.SSR_SCANNER_URL ?? process.env.PUBLIC_SCANNER_URL!;
 	static defaultPageSize = 35;
 
 	/**
@@ -153,7 +173,7 @@ export default class API {
 	 */
 	static async register(credentials: AuthenticationInput): Promise<User> {
 		return API.fetch({
-			route: "/users/new",
+			route: "/users",
 			data: {
 				name: credentials.username,
 				password: credentials.password,
@@ -176,9 +196,12 @@ export default class API {
 					route: `/tasks`,
 					errorMessage: "Tasks could not be loaded",
 					parameters: {},
+					service: Service.Scanner,
 					validator: yup.object({
-						active: ActiveTask.required().nullable(),
-						pending: yup.array(Task).required(),
+						current_task: yup.string().required().nullable(),
+						pending_tasks: yup
+							.array(yup.string().required())
+							.required(),
 					}),
 				}),
 		};
@@ -232,7 +255,7 @@ export default class API {
 
 	static async createPlaylist(playlistName: string): Promise<Playlist> {
 		return API.fetch({
-			route: "/playlists/new",
+			route: "/playlists",
 			data: { name: playlistName },
 			errorMessage: "Playlist Creation Failed",
 			parameters: {},
@@ -259,7 +282,7 @@ export default class API {
 		entriesIds: number[],
 	): Promise<void> {
 		return API.fetch({
-			route: `/playlists/${playlistSlugOrId}/reorder`,
+			route: `/playlists/${playlistSlugOrId}/entries/reorder`,
 			data: { entryIds: entriesIds },
 			parameters: {},
 			method: "PUT",
@@ -322,25 +345,14 @@ export default class API {
 	 * Calls for a task to clean all libraries
 	 * @returns A object with the status of the task
 	 */
-	static async cleanLibraries(): Promise<LibraryTaskResponse> {
+	static async cleanLibraries(): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/tasks/clean`,
+			route: `/clean`,
 			errorMessage: "Library clean failed",
 			parameters: {},
-			validator: LibraryTaskResponse,
-		});
-	}
-
-	/**
-	 * Calls for a task to fetch external metadata
-	 * @returns A object with the status of the task
-	 */
-	static async fetchExternalMetadata(): Promise<LibraryTaskResponse> {
-		return API.fetch({
-			route: `/tasks/fetch-external-metadata`,
-			errorMessage: "Fetch failed",
-			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -350,12 +362,14 @@ export default class API {
 	 */
 	static async scanLibrary(
 		librarySlugOrId: number | string,
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/tasks/scan/${librarySlugOrId}`,
+			route: `/scan/${librarySlugOrId}`,
 			errorMessage: "Library scan failed",
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -365,12 +379,14 @@ export default class API {
 	 */
 	static async cleanLibrary(
 		librarySlugOrId: number | string,
-	): Promise<LibraryTaskResponse> {
+	): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/tasks/clean/${librarySlugOrId}`,
+			route: `/clean/${librarySlugOrId}`,
 			errorMessage: "Library clean failed",
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -378,11 +394,13 @@ export default class API {
 	 * Calls for a task to scan all libraries
 	 * @returns the status of the task
 	 */
-	static scanLibraries(): Promise<LibraryTaskResponse> {
-		return API.fetch<LibraryTaskResponse, []>({
-			route: `/tasks/scan`,
+	static scanLibraries(): Promise<TaskResponse> {
+		return API.fetch<TaskResponse, []>({
+			route: `/scan`,
 			parameters: {},
-			validator: LibraryTaskResponse,
+			service: Service.Scanner,
+			method: "POST",
+			validator: TaskResponse,
 		});
 	}
 
@@ -395,10 +413,12 @@ export default class API {
 		resourceSlugOrId: number | string,
 	): Promise<void> {
 		return API.fetch({
-			route: `/tasks/refresh-metadata`,
-			errorMessage: "Library refresh failed",
+			method: "POST",
+			route: `/refresh`,
+			errorMessage: "Metadata Refresh request failed",
 			otherParameters: { [parentResourceType]: resourceSlugOrId },
 			parameters: {},
+			service: Service.Scanner,
 			emptyResponse: true,
 		});
 	}
@@ -408,7 +428,7 @@ export default class API {
 		libraryPath: string,
 	): Promise<Library> {
 		return API.fetch({
-			route: "/libraries/new",
+			route: "/libraries",
 			data: { name: libraryName, path: libraryPath },
 			errorMessage: "Library Creation Failed",
 			parameters: {},
@@ -452,13 +472,13 @@ export default class API {
 	 * Update Artist Illustration
 	 */
 	static async updateArtistIllustration(
-		artistSlugOrId: number | string,
+		artistId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			artistSlugOrId,
+			artistId,
 			illustrationUrl,
-			"artists",
+			"artist",
 		);
 	}
 
@@ -466,13 +486,13 @@ export default class API {
 	 * Update Release Illustration
 	 */
 	static async updateReleaseIllustration(
-		releaseSlugOrId: number | string,
+		releaseId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			releaseSlugOrId,
+			releaseId,
 			illustrationUrl,
-			"releases",
+			"release",
 		);
 	}
 
@@ -480,13 +500,13 @@ export default class API {
 	 * Update Track Illustration
 	 */
 	static async updateTrackIllustration(
-		trackSlugOrId: number | string,
+		trackId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			trackSlugOrId,
+			trackId,
 			illustrationUrl,
-			"tracks",
+			"track",
 		);
 	}
 
@@ -494,13 +514,13 @@ export default class API {
 	 * Update Track Illustration
 	 */
 	static async updatePlaylistIllustration(
-		playlistSlugOrId: number | string,
+		playlistId: number,
 		illustrationUrl: string,
 	): Promise<unknown> {
 		return API.updateResourceIllustration(
-			playlistSlugOrId,
+			playlistId,
 			illustrationUrl,
-			"playlists",
+			"playlist",
 		);
 	}
 
@@ -508,17 +528,17 @@ export default class API {
 	 * Update Resourse Illustration
 	 */
 	private static async updateResourceIllustration(
-		resourceSlugOrId: number | string,
+		resourceId: number,
 		illustrationUrl: string,
-		resourceType: "artists" | "releases" | "tracks" | "playlists",
+		resourceType: "artist" | "release" | "track" | "playlist",
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/${resourceType}/${resourceSlugOrId}/illustration`,
+			route: `/illustrations/url`,
 			errorMessage: "Update Illustration Failed",
 			method: "POST",
 			parameters: {},
 			emptyResponse: true,
-			data: { url: illustrationUrl },
+			data: { url: illustrationUrl, [`${resourceType}Id`]: resourceId },
 		});
 	}
 
@@ -527,15 +547,15 @@ export default class API {
 	 */
 	static async updateAlbum(
 		albumSlugOrId: number | string,
-		newType: AlbumType,
-	): Promise<unknown> {
+		dto: Partial<{ type: AlbumType; masterReleaseId: number }>,
+	): Promise<void> {
 		return API.fetch({
 			route: `/albums/${albumSlugOrId}`,
 			errorMessage: "Update Album Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
 		});
 	}
 
@@ -544,15 +564,29 @@ export default class API {
 	 */
 	static async updateSong(
 		songSlugOrId: number | string,
-		newType: SongType,
+		dto: Partial<{ type: SongType; masterTrackId: number }>,
 	): Promise<void> {
 		return API.fetch({
 			route: `/songs/${songSlugOrId}`,
 			errorMessage: "Update Song Failed",
-			method: "POST",
+			method: "PUT",
 			parameters: {},
 			emptyResponse: true,
-			data: { type: newType },
+			data: dto,
+		});
+	}
+
+	static async updateVideo(
+		videoSlugOrId: number | string,
+		dto: Partial<{ type: VideoType; masterTrackId: number }>,
+	): Promise<void> {
+		return API.fetch({
+			route: `/videos/${videoSlugOrId}`,
+			errorMessage: "Update Video Failed",
+			method: "PUT",
+			parameters: {},
+			emptyResponse: true,
+			data: dto,
 		});
 	}
 
@@ -731,19 +765,20 @@ export default class API {
 	}
 
 	/**
-	 * Fetch all songs
-	 * @returns An InfiniteQuery of Songs
+	 * @returns An InfiniteQuery of Videos
 	 */
-	static getVideos<I extends SongInclude | never = never>(
+	static getVideos<I extends VideoInclude | never = never>(
 		filter: {
 			library?: Identifier;
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
+			group?: Identifier;
 			random?: number;
-			type?: SongType;
+			type?: VideoType;
+			query?: string;
 		},
-		sort?: SortingParameters<typeof SongSortingKeys>,
+		sort?: SortingParameters<typeof VideoSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<VideoWithRelations<I>> {
 		return {
@@ -757,7 +792,11 @@ export default class API {
 				API.fetch({
 					route: `/videos`,
 					errorMessage: "Videos could not be loaded",
-					parameters: { pagination: pagination, include, sort },
+					parameters: {
+						pagination: pagination,
+						include,
+						sort,
+					},
 					otherParameters: filter,
 					validator: PaginatedResponse(
 						VideoWithRelations(include ?? []),
@@ -786,13 +825,28 @@ export default class API {
 		};
 	}
 
+	static getVideo<I extends VideoInclude | never = never>(
+		videoSlugOrId: string | number,
+		include?: I[],
+	): Query<VideoWithRelations<I>> {
+		return {
+			key: ["video", videoSlugOrId, ...API.formatIncludeKeys(include)],
+			exec: () =>
+				API.fetch({
+					route: `/videos/${videoSlugOrId}`,
+					parameters: { include },
+					validator: VideoWithRelations(include ?? []),
+				}),
+		};
+	}
+
 	/**
 	 * Get the master track of a song
 	 * @param songSlugOrId the identifier of a song
 	 * @param include the fields to include in the fetched item
 	 * @returns a Query for a Track
 	 */
-	static getMasterTrack<I extends TrackInclude | never = never>(
+	static getSongMasterTrack<I extends TrackInclude | never = never>(
 		songSlugOrId: string | number,
 		include?: I[],
 	): Query<TrackWithRelations<I>> {
@@ -805,7 +859,7 @@ export default class API {
 			],
 			exec: () =>
 				API.fetch({
-					route: `/tracks/master/${songSlugOrId}`,
+					route: `/tracks/master/song/${songSlugOrId}`,
 					parameters: { include },
 					validator: TrackWithRelations(include ?? []),
 				}),
@@ -881,12 +935,40 @@ export default class API {
 			key: ["search", query],
 			exec: () =>
 				API.fetch({
-					route: `/search/${query}`,
+					route: `/search`,
 					errorMessage: "Search failed",
+					parameters: {},
+					otherParameters: { query },
+					customValidator: SearchResultTransformer,
+				}),
+		};
+	}
+
+	static getSearchHistory(): Query<SearchResult[]> {
+		return {
+			key: ["search-history-items"],
+			exec: () =>
+				API.fetch({
+					route: `/search/history`,
+					errorMessage: "Getting Search History failed",
 					parameters: {},
 					customValidator: SearchResultTransformer,
 				}),
 		};
+	}
+
+	/**
+	 * Search artists, albums and songs, all at once
+	 */
+	static saveSearchHistoryEntry(resource: SaveSearchItem): Promise<void> {
+		return API.fetch({
+			method: "POST",
+			route: `/search/history`,
+			errorMessage: "Saving Search History failed",
+			parameters: {},
+			data: resource,
+			emptyResponse: true,
+		});
 	}
 
 	/**
@@ -1150,6 +1232,52 @@ export default class API {
 		};
 	}
 
+	static getArtistExternalMetadata(
+		slugOrId: string | number,
+	): Query<ArtistExternalMetadata | null> {
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"artist",
+			ArtistExternalMetadata,
+		);
+	}
+
+	static getSongExternalMetadata(
+		slugOrId: string | number,
+	): Query<SongExternalMetadata | null> {
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"song",
+			SongExternalMetadata,
+		);
+	}
+	static getAlbumExternalMetadata(
+		slugOrId: string | number,
+	): Query<AlbumExternalMetadata | null> {
+		return API.getResourceExternalMetadata(
+			slugOrId,
+			"album",
+			AlbumExternalMetadata,
+		);
+	}
+
+	static getResourceExternalMetadata<T, V extends yup.Schema<T>>(
+		resourceSlugOrId: string | number,
+		resourceType: "artist" | "album" | "song",
+		validator: V,
+	): Query<T | null> {
+		return {
+			key: [resourceType, resourceSlugOrId, "external-metadata"],
+			exec: () =>
+				API.fetch({
+					route: `/external-metadata?${resourceType}=${resourceSlugOrId}`,
+					errorMessage: "Metadata could not be loaded",
+					parameters: {},
+					validator: validator,
+				}).catch(() => null),
+		};
+	}
+
 	private static async fetch<ReturnType, Keys extends readonly string[]>({
 		route,
 		parameters,
@@ -1160,6 +1288,7 @@ export default class API {
 		validator,
 		customValidator,
 		emptyResponse,
+		service,
 	}: FetchParameters<Keys, ReturnType>): Promise<ReturnType> {
 		const accessToken = store.getState().user.accessToken;
 		const header = {
@@ -1167,7 +1296,7 @@ export default class API {
 		};
 
 		const response = await fetch(
-			this.buildURL(route, parameters, otherParameters),
+			this.buildURL(route, parameters, otherParameters, service),
 			{
 				method: method ?? "GET",
 				body: data ? JSON.stringify(data) : undefined,
@@ -1263,10 +1392,10 @@ export default class API {
 		playlistId: number,
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/playlists/entries/new`,
+			route: `/playlists/${playlistId}/entries`,
 			errorMessage: "Failed to add song to playlist",
 			parameters: {},
-			data: { songId, playlistId },
+			data: { songId },
 			method: "POST",
 			emptyResponse: true,
 		});
@@ -1320,51 +1449,18 @@ export default class API {
 		});
 	}
 
-	/**
-	 * Mark a release as master
-	 * @param releaseSlugOrId
-	 * @returns
-	 */
-	static async setReleaseAsMaster(
-		releaseSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/releases/${releaseSlugOrId}/master`,
-			errorMessage: "Release update failed",
-			parameters: {},
-			method: "PUT",
-			validator: yup.mixed(),
-		});
-	}
-
-	/**
-	 * Mark a track as master
-	 * @param trackSlugOrId
-	 * @returns
-	 */
-	static async setTrackAsMaster(
-		trackSlugOrId: string | number,
-	): Promise<unknown> {
-		return API.fetch({
-			route: `/tracks/${trackSlugOrId}/master`,
-			errorMessage: "Track update failed",
-			parameters: {},
-			method: "PUT",
-			validator: yup.mixed(),
-		});
-	}
-
 	private static buildURL(
 		route: string,
 		parameters: QueryParameters<any>,
 		otherParameters?: any,
+		service: Service = Service.API,
 	): string {
 		const apiHost = isSSR() ? this.SSR_API_URL : "/api";
+		const scannerHost = isSSR() ? this.SSR_SCANNER_URL : "/scanner";
 
-		return `${apiHost}${route}${this.formatQueryParameters(
-			parameters,
-			otherParameters,
-		)}`;
+		return `${
+			service == Service.API ? apiHost : scannerHost
+		}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
 	private static formatQueryParameters<Keys extends string[]>(

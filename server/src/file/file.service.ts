@@ -24,10 +24,8 @@ import {
 	FileNotFoundFromTrackIDException,
 } from "./file.exceptions";
 import PrismaService from "src/prisma/prisma.service";
-import type { File, Library } from "src/prisma/models";
+import type { File } from "src/prisma/models";
 import type FileQueryParameters from "./models/file.query-parameters";
-import { FileNotReadableException } from "src/file-manager/file-manager.exceptions";
-// eslint-disable-next-line no-restricted-imports
 import { buildDateSearchParameters } from "src/utils/search-date-input";
 import LibraryService from "src/library/library.service";
 import { Prisma } from "@prisma/client";
@@ -35,8 +33,16 @@ import Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { formatIdentifier } from "src/repository/repository.utils";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import AlbumService from "src/album/album.service";
+import SongService from "src/song/song.service";
+import TrackService from "src/track/track.service";
+import ReleaseService from "src/release/release.service";
 
 @Injectable()
 export default class FileService {
@@ -66,6 +72,19 @@ export default class FileService {
 				throw this.onNotFound(error, where);
 			});
 	}
+	async update(
+		where: FileQueryParameters.WhereInput,
+		what: Pick<File, "checksum" | "registerDate">,
+	) {
+		return this.prismaService.file
+			.update({
+				where: FileService.formatWhereInput(where),
+				data: what,
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
+			});
+	}
 
 	/**
 	 * find a file
@@ -85,27 +104,71 @@ export default class FileService {
 		};
 	}
 
-	async getMany(where: FileQueryParameters.ManyWhereInput) {
+	async getMany(
+		where: FileQueryParameters.ManyWhereInput,
+		pagination: PaginationParameters = {},
+	) {
 		return this.prismaService.file.findMany({
 			where: FileService.formatManyWhereInput(where),
+			orderBy: { id: "asc" },
+			...formatPaginationParameters(pagination),
 		});
 	}
 
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
 		let query: Prisma.FileWhereInput = {};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.files) {
+			query = deepmerge(query, {
+				OR: where.files.map((file) =>
+					FileService.formatWhereInput(file),
+				),
+			});
 		}
 		if (where.library) {
-			query = deepmerge(query, {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
 				library: LibraryService.formatWhereInput(where.library),
+			});
+		}
+		if (where.album) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: {
+					release: {
+						album: AlbumService.formatWhereInput(where.album),
+					},
+				},
+			});
+		}
+		if (where.release) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: {
+					release: ReleaseService.formatWhereInput(where.release),
+				},
+			});
+		}
+		if (where.song) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: {
+					song: SongService.formatWhereInput(where.song),
+				},
+			});
+		}
+		if (where.track) {
+			query = deepmerge<Prisma.FileWhereInput>(query, {
+				track: TrackService.formatWhereInput(where.track),
 			});
 		}
 		if (where.paths) {
 			query = deepmerge(query, {
 				path: {
 					in: where.paths,
+				},
+			});
+		}
+		if (where.inFolder) {
+			query = deepmerge(query, {
+				path: {
+					startsWith: where.inFolder,
 				},
 			});
 		}
@@ -145,9 +208,10 @@ export default class FileService {
 			.create({
 				data: {
 					path: input.path,
-					md5Checksum: input.md5Checksum,
+					checksum: input.checksum,
 					registerDate: input.registerDate,
 					libraryId: input.libraryId,
+					fingerprint: input.fingerprint,
 				},
 			})
 			.catch((error) => {
@@ -165,33 +229,6 @@ export default class FileService {
 	}
 
 	/**
-	 * Register a file in the Database
-	 * @param filePath The path to the file to register, relative to parent library path
-	 * @param parentLibrary The parent Library the new file will be registered under
-	 */
-	async registerFile(
-		filePath: string,
-		parentLibrary: Library,
-		registrationDate?: Date,
-	): Promise<File> {
-		const libraryPath =
-			this.fileManagerService.getLibraryFullPath(parentLibrary);
-		const fullFilePath = `${libraryPath}/${filePath}`;
-
-		if (!this.fileManagerService.fileIsReadable(fullFilePath)) {
-			throw new FileNotReadableException(filePath);
-		}
-		return this.create({
-			md5Checksum: await this.fileManagerService.getMd5Checksum(
-				fullFilePath,
-			),
-			path: filePath,
-			libraryId: parentLibrary.id,
-			registerDate: registrationDate ?? new Date(),
-		});
-	}
-
-	/**
 	 * Builds full path of file
 	 * @param where the query parameters to find the file entry in the database
 	 */
@@ -205,13 +242,9 @@ export default class FileService {
 		return `${libraryPath}/${file.path}`.normalize();
 	}
 
-	async delete(where: FileQueryParameters.DeleteInput) {
-		return this.prismaService.file
-			.delete({
-				where: FileService.formatWhereInput(where),
-			})
-			.catch((error) => {
-				throw this.onNotFound(error, where);
-			});
+	async delete(where: FileQueryParameters.DeleteInput[]) {
+		return this.prismaService.file.deleteMany({
+			where: FileService.formatManyWhereInput({ files: where }),
+		});
 	}
 }

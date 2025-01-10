@@ -30,11 +30,13 @@ If a provider is disabled, no call to its service will be done.
 
 | Provider Name | Key           | Additional Properties                                                                      | Artist Description | Artist Illustration | Album Description | Album Rating | Song Description | Song Lyrics | Release Identification | Album Genres |
 |---------------|---------------|--------------------------------------------------------------------------------------------|--------------------|---------------------|-------------------|--------------|------------------|-------------|------------------------|--------------|
-| Genius        | `genius`      | `apiKey`: Access Token, you can get it [here](https://genius.com/api-clients)              | x                  | x                   | x                 |              |                  | x           |                        |              |
+| Genius        | `genius`      | `apiKey`: Access Token, you can get it [here](https://genius.com/api-clients)              | x                  | x                   | x                 |              | x                | x           |                        |              |
 | MusicBrainz   | `musicbrainz` | None                                                                                       |                    |                     |                   |              |                  |             |                        | x            |
 | AllMusic      | `allmusic`    | None                                                                                       |                    |                     | x                 | x            |                  |             |                        |              |
 | MetaCritic    | `metacritic`  | None                                                                                       |                    |                     | x                 | x            |                  |             |                        |              |
 | Wikipedia     | `wikipedia`   | None                                                                                       | x                  |                     | x                 |              | x                |             |                        |              |
 | Discogs       | `discogs`     | `apiKey`: Access Token, you can get it [here](https://www.discogs.com/settings/developers) | x                  |                     |                   |              |                  |             | x                      | x            |
 
-**Warning**: Meelo heavily relies on Wikidata to optimize the metadata fetching. It is used if, and only if the MusicBrainz Provider is enabled. It is not possible to use one without the other.
+**Warning**: Meelo heavily relies on Wikidata to optimize the metadata fetching. It is used if, and only if the MusicBrainz Provider is enabled. It is not possible to use one without the other. 
+
+*Note*: If MusicBrainz is enabled, we might make requests to [AcoustID](https://acoustid.org)'s API to match songs using audio fingerprints (No data will be submitted).

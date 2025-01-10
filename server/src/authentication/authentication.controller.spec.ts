@@ -5,7 +5,7 @@ import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -22,6 +22,12 @@ import AuthenticationModule from "./authentication.module";
 import { User } from "src/prisma/models";
 import SetupApp from "test/setup-app";
 import * as Plugins from "../app.plugins";
+import {
+	MissingApiKeyPermissionsException,
+	UnauthorizedAnonymousRequestException,
+} from "./authentication.exception";
+import SettingsService from "src/settings/settings.service";
+import Settings from "src/settings/models/settings";
 
 jest.setTimeout(120000);
 
@@ -35,7 +41,7 @@ jest.setTimeout(120000);
 		AlbumModule,
 		PrismaModule,
 		ReleaseModule,
-		ScannerModule,
+		ParserModule,
 		SongModule,
 		TrackModule,
 		IllustrationModule,
@@ -59,6 +65,7 @@ describe("Authentication Controller & Role Management", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let userService: UserService;
+	let settings: SettingsService;
 	let admin: User;
 	let user: User;
 	let adminToken: string;
@@ -78,6 +85,7 @@ describe("Authentication Controller & Role Management", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		userService = module.get(UserService);
+		settings = module.get(SettingsService);
 		await dummyRepository.onModuleInit();
 		admin = await userService.create({
 			name: "admin",
@@ -166,7 +174,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({ name: "user3", password: "password3" })
 				.auth(adminToken, { type: "bearer" })
 				.expect(201);
@@ -188,7 +196,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({ name: "user1", password: "password1" })
 				.auth(userToken, { type: "bearer" })
 				.expect(201);
@@ -204,9 +212,50 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users/new`)
+				.post(`/users`)
 				.send({ name: "user2", password: "password1" })
 				.expect(201);
+		});
+	});
+	describe("Test Microservice role", () => {
+		it("Should deny access to admin-only route", () => {
+			return request(app.getHttpServer())
+				.get(`/settings`)
+				.set("x-api-key", "a")
+				.expect(401)
+				.expect((r) => {
+					expect(r.body.message).toBe(
+						new UnauthorizedAnonymousRequestException().message,
+					);
+				});
+		});
+		it("Should deny access to route", () => {
+			return request(app.getHttpServer())
+				.get(`/albums`)
+				.set("x-api-key", "a")
+				.expect(401)
+				.expect((r) => {
+					expect(r.body.message).toBe(
+						new UnauthorizedAnonymousRequestException().message,
+					);
+				});
+		});
+		it("Should allow access to route", () => {
+			return request(app.getHttpServer())
+				.get(`/libraries`)
+				.set("x-api-key", "a")
+				.expect(200);
+		});
+		it("Should deny access to route (bad api key)", () => {
+			return request(app.getHttpServer())
+				.get(`/libraries`)
+				.set("x-api-key", "b")
+				.expect(401)
+				.expect((r) => {
+					expect(r.body.message).toBe(
+						new MissingApiKeyPermissionsException().message,
+					);
+				});
 		});
 	});
 	describe("Test User Deletion", () => {
@@ -234,6 +283,46 @@ describe("Authentication Controller & Role Management", () => {
 				.get(`/settings`)
 				.set("cookie", `access_token=${adminToken}`)
 				.expect(200);
+		});
+	});
+
+	describe("Test allowed Anonymous access", () => {
+		it("Should Reject Anonymous request ", () => {
+			jest.spyOn(
+				SettingsService.prototype,
+				"settingsValues",
+				"get",
+			).mockReturnValueOnce({
+				allowAnonymous: true,
+			} as Settings);
+			return request(app.getHttpServer()).get(`/settings`).expect(401);
+		});
+		it("Should Accept Anonymous request ", () => {
+			jest.spyOn(
+				SettingsService.prototype,
+				"settingsValues",
+				"get",
+			).mockReturnValueOnce({
+				allowAnonymous: true,
+			} as Settings);
+			return request(app.getHttpServer()).get(`/libraries`).expect(200);
+		});
+		it("Should Reject Anonymous request for User route ", () => {
+			jest.spyOn(
+				SettingsService.prototype,
+				"settingsValues",
+				"get",
+			).mockReturnValueOnce({
+				allowAnonymous: true,
+			} as Settings);
+			return request(app.getHttpServer())
+				.get(`/users/me`)
+				.expect(401)
+				.expect((r) => {
+					expect(r.body.message).toBe(
+						new UnauthorizedAnonymousRequestException().message,
+					);
+				});
 		});
 	});
 });

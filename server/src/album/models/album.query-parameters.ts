@@ -23,6 +23,7 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchDateInput } from "src/utils/search-date-input";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { Album } from "src/prisma/models";
 import {
@@ -69,7 +70,7 @@ namespace AlbumQueryParameters {
 			releaseDate: SearchDateInput;
 			genre: GenreQueryParameters.WhereInput;
 			type: AlbumType;
-			id: { in: number[] };
+			albums: AlbumQueryParameters.WhereInput[];
 			// Get albums with a song in common. Does not include the given album
 			related: AlbumQueryParameters.WhereInput;
 		}>
@@ -80,7 +81,10 @@ namespace AlbumQueryParameters {
 	 */
 	export class UpdateInput extends PartialType(
 		PickType(Album, ["type", "releaseDate"] as const),
-	) {}
+	) {
+		master?: ReleaseQueryParameters.WhereInput;
+		genres?: string[];
+	}
 
 	/**
 	 * The input to find or create an album
@@ -98,14 +102,13 @@ namespace AlbumQueryParameters {
 	export const AvailableIncludes = [
 		"releases",
 		"artist",
-		"externalIds",
 		"master",
 		"genres",
 		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["externalIds", "genres"],
+		["genres"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 

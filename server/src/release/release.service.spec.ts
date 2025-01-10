@@ -1,7 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import type { Release } from "src/prisma/models";
-import { AlbumNotFoundException } from "src/album/album.exceptions";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -16,15 +15,13 @@ import {
 } from "./release.exceptions";
 import ReleaseService from "./release.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
 import TrackService from "src/track/track.service";
-import ProvidersModule from "src/providers/providers.module";
-import ProviderService from "src/providers/provider.service";
 
 describe("Release Service", () => {
 	let releaseService: ReleaseService;
@@ -46,10 +43,9 @@ describe("Release Service", () => {
 				TrackModule,
 				IllustrationModule,
 				SongModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
 				FileModule,
-				ProvidersModule,
 			],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		})
@@ -61,7 +57,6 @@ describe("Release Service", () => {
 		trackService = module.get(TrackService);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		await module.get(ProviderService).onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -132,7 +127,7 @@ describe("Release Service", () => {
 			});
 			expect(album.id).toStrictEqual(dummyRepository.albumA1.id);
 			expect(album.releaseDate).toStrictEqual(new Date("2006"));
-			await releaseService.delete({ id: newRelease2.id });
+			await releaseService.delete([{ id: newRelease2.id }]);
 		});
 
 		it("should not have updated the parent album metadata", async () => {
@@ -298,19 +293,26 @@ describe("Release Service", () => {
 		});
 		it("should not delete release,as it is not empty", async () => {
 			const testRelease = async () =>
-				await releaseService.delete({
-					id: dummyRepository.releaseB1_1.id,
-				});
+				await releaseService.delete([
+					{
+						id: dummyRepository.releaseB1_1.id,
+					},
+				]);
 			return expect(testRelease()).rejects.toThrow(
 				ReleaseNotEmptyException,
 			);
 		});
 		it("should delete the master release", async () => {
-			await trackService.delete({ id: dummyRepository.trackB1_1.id });
-			await albumService.setMasterRelease({
-				id: dummyRepository.releaseB1_1.id,
-			});
-			await releaseService.delete({ id: dummyRepository.releaseB1_1.id });
+			await trackService.delete([{ id: dummyRepository.trackB1_1.id }]);
+			await albumService.update(
+				{
+					master: { id: dummyRepository.releaseB1_1.id },
+				},
+				{ id: dummyRepository.albumB1.id },
+			);
+			await releaseService.delete([
+				{ id: dummyRepository.releaseB1_1.id },
+			]);
 			const testRelease = async () =>
 				await releaseService.get({
 					id: dummyRepository.releaseB1_1.id,

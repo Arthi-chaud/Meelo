@@ -28,6 +28,7 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import VideoQueryParameters from "src/video/models/video.query-parameters";
 
 namespace TrackQueryParameters {
 	/**
@@ -40,11 +41,20 @@ namespace TrackQueryParameters {
 		| "sourceFileId"
 		| "release"
 		| "releaseId"
+		| "video"
+		| "videoId"
 		| "song"
 		| "songId"
-	> & { sourceFile: FileQueryParameters.WhereInput } & {
-		release: ReleaseQueryParameters.WhereInput;
-	} & { song: SongQueryParameters.WhereInput };
+		| "thumbnail"
+		| "thumbnailId"
+		| "standaloneIllustration"
+		| "standaloneIllustrationId"
+	> & {
+		sourceFile: FileQueryParameters.WhereInput;
+		release?: ReleaseQueryParameters.WhereInput;
+		song?: SongQueryParameters.WhereInput;
+		video?: VideoQueryParameters.WhereInput;
+	};
 
 	/**
 	 * Query parameters to find one track
@@ -61,8 +71,9 @@ namespace TrackQueryParameters {
 		RequireAtLeastOne<
 			{
 				type: TrackType;
-				id: { in: number[] };
+				tracks: TrackQueryParameters.WhereInput[];
 				song: SongQueryParameters.WhereInput;
+				video: VideoQueryParameters.WhereInput;
 				library: LibraryQueryParameters.WhereInput;
 			} & RequireExactlyOne<{
 				artist: ArtistQueryParameters.WhereInput;
@@ -76,7 +87,9 @@ namespace TrackQueryParameters {
 	/**
 	 * The input required to update a track in the database
 	 */
-	export type UpdateInput = Partial<CreateInput>;
+	export type UpdateInput = Partial<
+		CreateInput & { thumbnailId: number; standaloneIllustrationId: number }
+	>;
 
 	/**
 	 * The input to find or create a track
@@ -106,6 +119,7 @@ namespace TrackQueryParameters {
 		"song",
 		"release",
 		"sourceFile",
+		"video",
 		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes =

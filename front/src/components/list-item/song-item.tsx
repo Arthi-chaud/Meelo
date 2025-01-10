@@ -33,11 +33,12 @@ type SongItemProps<
 	>,
 > = {
 	song: T | undefined;
+	onClick?: () => void;
 	subtitles?: ((
 		song: SongWithRelations<
 			"artist" | "featuring" | "master" | "illustration"
 		>,
-	) => Promise<string>)[];
+	) => Promise<string | null>)[];
 };
 
 export const SongGroupItem = <
@@ -86,11 +87,12 @@ const SongItem = <
 >({
 	song,
 	subtitles,
+	onClick,
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
 	const { playTrack } = usePlayerContext();
 	const queryClient = useQueryClient();
-	const [subtitle, setSubtitle] = useState(
+	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)
 			: song
@@ -103,8 +105,13 @@ const SongItem = <
 			Promise.allSettled(subtitles.map((s) => s(song))).then((r) =>
 				setSubtitle(
 					r
-						.map((s) => (s as PromiseFulfilledResult<string>).value)
-						.join(" • "),
+						.map(
+							(s) =>
+								(s as PromiseFulfilledResult<string | null>)
+									.value,
+						)
+						.filter((s): s is string => s !== null)
+						.join(" • ") || null,
 				),
 			);
 		}
@@ -122,14 +129,16 @@ const SongItem = <
 			onClick={
 				song &&
 				artist &&
-				(() =>
+				(() => {
+					onClick?.();
 					playTrack({
 						artist,
 						track: {
 							...song.master,
 							illustration: song.illustration,
 						},
-					}))
+					});
+				})
 			}
 			secondTitle={subtitle}
 			trailing={song && <SongContextualMenu song={song} />}

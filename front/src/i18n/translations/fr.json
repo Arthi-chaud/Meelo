@@ -48,7 +48,6 @@
 	"extension": "Extension",
 	"path": "Chemin",
 	"registrationDate": "Date d'ajout",
-
 	"nameOfLibrary": "Nom de la bibliothèque",
 	"nameIsRequired": "Le nom est obligatoire",
 	"pathOfLibrary": "Chemin de la bibliothèque",
@@ -57,12 +56,11 @@
 	"oops": "Oups",
 	"by": "de",
 	"noLyricsFound": "Aucune Parole Trouvée",
-
 	"warning": "Attention",
 	"downloadWarning": "Il est interdit de télécharger du contenu sans en posséder l'original. Ne téléchagez pas si vous ne le posséder pas légalement.",
 	"download": "Télécharger",
-
 	"compilation": "Compilation",
+	"deletingLibrary": "Suppression de la bibliothèque",
 	"libraryDeleted": "Bibliothèque Supprimée",
 	"libraryDeletionFail": "Echec de l'effacement de la Bibliothèque",
 	"libraryCreated": "Bibliothèque créée",
@@ -76,7 +74,6 @@
 	"deleteLibrary": "Supprimer la Bibliothèque",
 	"deleteLibraryAction": "Supprimer une Bibliothèque",
 	"deleteLibraryWarning": "Vous êtes sur le point de supprimer une bibliothèque. Il sera impossible de revenir en arrière.",
-
 	"deleteUser": "Supprimer Compte",
 	"deleteUserWarning": "Vous allez supprimer un compte utilisateur. Cela ne pourra pas être annulé.",
 	"userDeleted": "Compte Supprimé",
@@ -89,7 +86,6 @@
 	"you": "Vous",
 	"admin": "Administrateur",
 	"enabled": "Activé",
-
 	"All": "Tous Types",
 	"StudioRecording": "Album Studio",
 	"Single": "Single",
@@ -98,6 +94,14 @@
 	"Soundtrack": "Bande Originale",
 	"RemixAlbum": "Album de Remixes",
 	"VideoAlbum": "Collection de Vidéos",
+	"MusicVideo": "Clip Video",
+	"LyricsVideo": "Paroles",
+	"BehindTheScenes": "Making Of",
+	"Interview": "Interview",
+	"Advert": "Teaser",
+	"PhotoGallery": "Galerie Photo",
+	"Documentary": "Documentaire",
+	"Other": "Autre",
 	"pluralStudioRecording": "Albums",
 	"pluralSingle": "Singles",
 	"pluralLiveRecording": "Albums Live",
@@ -105,19 +109,14 @@
 	"pluralSoundtrack": "Bandes Originales",
 	"pluralRemixAlbum": "Remixes",
 	"pluralVideoAlbum": "Albums Vidéos",
-
 	"groupVersions": "Grouper les versions",
 	"showAllSongs": "Afficher toutes les versions",
-
 	"backToTop": "Retour en haut",
 	"changeLayout": "Changer la disposition",
-
 	"showAllTrack": "Afficher toutes les morceaux",
 	"showOnlyExclusiveTracks": "Afficher seulement les morceaux exclusifs",
-
 	"changeAlbumType": "Changer le Type de l'Album",
 	"onThisAlbum": "Artistes Invités",
-
 	"sortBy": "Trier par",
 	"order": "Ordre",
 	"asc": "Asc",
@@ -137,6 +136,7 @@
 	"artist": "Artiste",
 	"artists": "Artistes",
 	"album": "Album",
+	"video": "Vidéo",
 	"songs": "Morceaux",
 	"song": "Titre",
 	"search": "Rechercher",
@@ -187,13 +187,12 @@
 	"darkMode": "Thème Sombre",
 	"autoMode": "Thème Automatique",
 	"logout": "Se Déconnecter",
-
 	"appearsOn": "Apparaît sur",
 	"featuredOnPlaylists": "Apparaît dans",
 	"bonusTracks": "Pistes Bonus",
 	"relatedAlbums": "Albums Associés",
 	"changeSongType": "Changer le type",
-
+	"changeVideoType": "Change le type",
 	"Original": "Version Originale",
 	"Remix": "Remix",
 	"Live": "Version Live",
@@ -203,9 +202,8 @@
 	"Clean": "Version Clean",
 	"Demo": "Maquette",
 	"Unknown": "Type Inconnu",
-	"Acapella": "Acapella",
+	"Acappella": "A Cappella",
 	"Medley": "Medley/Megamix",
-
 	"refreshMetadataStarted": "Mise à jour des métadonées... (Rechargez la page pour actualiser)",
 	"refreshMetadataFailed": "Oups... La mise à jour des données a échoué.",
 	"more": "Plus",
@@ -236,7 +234,6 @@
 	"encounteredABug": "Vous avez rencontré un problème?",
 	"openAnIssue": "Ouvrir une issue sur GitHub!",
 	"readTheDoc": "Accéder à la documentation utilisateur",
-
 	"en": "Anglais",
 	"fr": "Français",
 	"yes": "Oui",

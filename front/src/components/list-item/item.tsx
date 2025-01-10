@@ -27,7 +27,6 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { RequireExactlyOne } from "type-fest";
 import Link from "next/link";
 
 type ListItemProps = {
@@ -35,10 +34,9 @@ type ListItemProps = {
 	title: string | undefined;
 	secondTitle: string | undefined | null;
 	trailing?: JSX.Element;
-} & RequireExactlyOne<{
-	href: string | undefined;
-	onClick: (() => void) | undefined;
-}>;
+	href?: string;
+	onClick?: () => void;
+};
 
 const textStyle = {
 	whiteSpace: "nowrap",

@@ -1,5 +1,5 @@
 FROM node:18-alpine3.18 AS base
-RUN apk update && apk add openssl1.1-compat ffmpeg
+RUN apk update && apk add openssl1.1-compat
 
 FROM base AS builder
 WORKDIR /app

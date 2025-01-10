@@ -41,7 +41,6 @@ import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,
-	FetchExternalMetadata,
 	ScanAllLibrariesAction,
 	ScanLibraryAction,
 } from "../actions/library-task";
@@ -51,7 +50,6 @@ import { ComponentProps, useMemo, useState } from "react";
 import LibraryForm from "../library-form";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
 import SectionHeader from "../section-header";
-import { capitalCase } from "change-case";
 import { useTranslation } from "react-i18next";
 
 const actionButtonStyle = {
@@ -102,25 +100,21 @@ const LibrariesSettings = () => {
 			CleanAllLibrariesAction.onClick?.();
 		},
 	};
-	const fetchMetadata = {
-		...FetchExternalMetadata,
-		onClick: () => {
-			tasks.refetch();
-			FetchExternalMetadata.onClick?.();
-		},
-	};
 	const confirm = useConfirm();
 	const [createModalOpen, setCreateModalOpen] = useState(false);
 	const [libraryEdit, setLibraryEdit] = useState<Library | undefined>(); // If set, open modal to edit library
 	const closeEditModal = () => setLibraryEdit(undefined);
 	const closeCreateModal = () => setCreateModalOpen(false);
 	const deletionMutation = useMutation((libraryId: number) =>
-		API.deleteLibrary(libraryId)
-			.then(() => {
-				toast.success(t("libraryDeleted"));
-				queryClient.client.invalidateQueries(["libraries"]);
+		toast
+			.promise(API.deleteLibrary(libraryId), {
+				loading: t("deletingLibrary"),
+				success: t("libraryDeleted"),
+				error: t("libraryDeletionFail"),
 			})
-			.catch(() => toast.error(t("libraryDeletionFail"))),
+			.then(() => {
+				queryClient.client.invalidateQueries(["libraries"]);
+			}),
 	);
 	const createMutation = useMutation(
 		(createForm: { name: string; path: string }) =>
@@ -243,19 +237,17 @@ const LibrariesSettings = () => {
 						{t("createLibrary")}
 					</Button>
 				</Grid>
-				{[cleanAllLibaries, scanAllLibaries, fetchMetadata].map(
-					(action, index) => (
-						<Grid item key={"Library-action-" + index}>
-							<Button
-								variant={index % 2 ? "contained" : "outlined"}
-								startIcon={action.icon}
-								onClick={action.onClick}
-							>
-								{t(action.label)}
-							</Button>
-						</Grid>
-					),
-				)}
+				{[cleanAllLibaries, scanAllLibaries].map((action, index) => (
+					<Grid item key={"Library-action-" + index}>
+						<Button
+							variant={index % 2 ? "contained" : "outlined"}
+							startIcon={action.icon}
+							onClick={action.onClick}
+						>
+							{t(action.label)}
+						</Button>
+					</Grid>
+				))}
 			</Grid>
 			<Dialog
 				open={libraryEdit != undefined}
@@ -298,16 +290,9 @@ const LibrariesSettings = () => {
 					<ListItemText
 						primary={
 							tasks.data ? (
-								`${t("current")}: ${capitalCase(
-									tasks.data.active?.name ?? t("none"),
-								)}`
-							) : (
-								<Skeleton />
-							)
-						}
-						secondary={
-							tasks.data ? (
-								tasks.data.active?.description
+								`${t("current")}: ${
+									tasks.data.current_task ?? t("none")
+								}`
 							) : (
 								<Skeleton />
 							)
@@ -319,7 +304,7 @@ const LibrariesSettings = () => {
 						primary={
 							tasks.data ? (
 								`${t("pending")}: ${
-									tasks.data.pending.length || t("none")
+									tasks.data.pending_tasks.length || t("none")
 								}`
 							) : (
 								<Skeleton />
@@ -327,13 +312,9 @@ const LibrariesSettings = () => {
 						}
 					/>
 				</ListItem>
-				{tasks.data?.pending.map((task, index) => (
+				{tasks.data?.pending_tasks.map((task, index) => (
 					<ListItem key={"task-" + index}>
-						<ListItemText
-							inset
-							primary={capitalCase(task.name)}
-							secondary={task.description}
-						/>
+						<ListItemText inset primary={task} />
 					</ListItem>
 				))}
 			</List>

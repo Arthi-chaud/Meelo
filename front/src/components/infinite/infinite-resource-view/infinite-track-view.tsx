@@ -26,7 +26,7 @@ import InfiniteView from "../infinite-view";
 
 const InfiniteTrackView = (
 	props: InfiniteResourceViewProps<
-		TrackWithRelations<"song" | "release" | "illustration">,
+		TrackWithRelations<"video" | "song" | "release" | "illustration">,
 		typeof TrackSortingKeys
 	>,
 ) => {
@@ -55,7 +55,12 @@ const InfiniteTrackView = (
 						order: options?.order ?? "asc",
 					})
 				}
-				renderListItem={(item) => <TrackItem track={item} />}
+				renderListItem={(item) => (
+					<TrackItem
+						track={item}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
 				renderGridItem={(item) => <></>}
 			/>
 		</>

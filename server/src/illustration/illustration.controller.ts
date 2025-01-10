@@ -17,27 +17,34 @@
  */
 
 import {
+	Body,
 	Controller,
 	Delete,
 	Get,
 	Header,
 	Param,
 	ParseIntPipe,
+	Post,
 	Query,
 	Response,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiConsumes,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+} from "@nestjs/swagger";
 import IllustrationService from "./illustration.service";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
-import { Admin } from "src/authentication/roles/roles.decorators";
-import { parse } from "path";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import { NoIllustrationException } from "./illustration.exceptions";
-import ProviderIllustrationService from "src/providers/provider-illustration.service";
-import ProviderService from "src/providers/provider.service";
-import ProvidersSettings from "src/providers/models/providers.settings";
-import { UnknownProviderError } from "src/providers/provider.exception";
 import IllustrationRepository from "./illustration.repository";
 import { IllustrationResponse } from "./models/illustration.response";
+import Roles from "src/authentication/roles/roles.enum";
+import IllustrationRegistrationDto from "./models/illustration-registration.dto";
+import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import { RegistrationService } from "src/registration/registration.service";
+import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
 
@@ -47,13 +54,13 @@ export class IllustrationController {
 	constructor(
 		private illustrationService: IllustrationService,
 		private illustrationRepository: IllustrationRepository,
-		private providerIllustrationService: ProviderIllustrationService,
-		private providerService: ProviderService,
+		private registrationService: RegistrationService,
 	) {}
 
 	@ApiOperation({
 		summary: "Get an illustration",
 	})
+	@ApiOkResponse({ description: "A JPEG binary" })
 	@Cached()
 	@Get(":id")
 	async getIllustration(
@@ -76,16 +83,37 @@ export class IllustrationController {
 				dimensions,
 				res,
 			)
-			.catch((err) => {
-				if (err instanceof NoIllustrationException) {
-					this.illustrationRepository.deleteIllustration(
-						illustration.id,
-					);
-				}
+			.catch(() => {
 				throw new NoIllustrationException(
 					"Illustration file not found",
 				);
 			});
+	}
+
+	@ApiOperation({
+		summary: "Register an illustration from a file",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Post("file")
+	@ApiConsumes("multipart/form-data")
+	@FormDataRequest({ storage: MemoryStoredFile })
+	async registerIllustration(@Body() dto: IllustrationRegistrationDto) {
+		return this.registrationService.registerTrackIllustration(
+			{
+				id: dto.trackId,
+			},
+			dto.file.buffer,
+			dto.type,
+		);
+	}
+
+	@ApiOperation({
+		summary: "Save an illustration from a url",
+	})
+	@Role(Roles.Admin, Roles.Microservice)
+	@Post("url")
+	async saveIllustration(@Body() dto: IllustrationDownloadDto) {
+		return this.illustrationRepository.saveIllustrationFromUrl(dto);
 	}
 
 	@ApiOperation({
@@ -113,36 +141,9 @@ export class IllustrationController {
 		@Param("id", new ParseIntPipe())
 		illustrationId: number,
 	) {
+		// Note: `deleteIllustration` now fails silently to avoid crash during housekeeping
+		// This is a hot fixto have a 404 when image does not exist.
+		await this.illustrationRepository.getIllustration(illustrationId);
 		await this.illustrationRepository.deleteIllustration(illustrationId);
-	}
-
-	@ApiOperation({
-		summary: "Get a Provider's icon",
-	})
-	@Cached()
-	@Get("providers/:name/icon")
-	async getProviderIillustration(
-		@Param("name") providerName: string,
-		@Query() dimensions: IllustrationDimensionsDto,
-		@Response({ passthrough: true }) res: Response,
-	) {
-		const pNameIsValid = (str: string): str is keyof ProvidersSettings =>
-			this.providerService.providerCatalogue.find(
-				({ name }) => name == str,
-			) !== undefined;
-		let illustrationPath = "";
-
-		if (!pNameIsValid(providerName)) {
-			throw new UnknownProviderError(providerName);
-		}
-		illustrationPath =
-			this.providerIllustrationService.buildIconPath(providerName);
-		return this.illustrationService.streamIllustration(
-			illustrationPath,
-			`${providerName}-${parse(illustrationPath).name}`,
-			dimensions,
-			res,
-			parse(illustrationPath).ext,
-		);
 	}
 }

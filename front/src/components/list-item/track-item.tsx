@@ -27,7 +27,10 @@ import { MasterIcon, TrackIcon } from "../icons";
 import { usePlayerContext } from "../../contexts/player";
 
 type TrackItemProps = {
-	track: TrackWithRelations<"release" | "song" | "illustration"> | undefined;
+	track:
+		| TrackWithRelations<"video" | "release" | "song" | "illustration">
+		| undefined;
+	onClick?: () => void;
 };
 
 /**
@@ -35,10 +38,10 @@ type TrackItemProps = {
  * @param props
  * @returns
  */
-const TrackItem = ({ track }: TrackItemProps) => {
+const TrackItem = ({ track, onClick }: TrackItemProps) => {
 	const release = track?.release;
 	const { playTrack } = usePlayerContext();
-	const isMaster = track ? track.song.masterId == track.id : false;
+	const isMaster = track ? track.song?.masterId == track.id : false;
 	const queryClient = useQueryClient();
 
 	return (
@@ -52,19 +55,24 @@ const TrackItem = ({ track }: TrackItemProps) => {
 			}
 			onClick={
 				track &&
-				release &&
-				(() =>
+				(() => {
+					onClick?.();
 					queryClient
-						.fetchQuery(API.getSong(track.songId, ["artist"]))
-						.then((song) => {
+						.fetchQuery(
+							track.song
+								? API.getArtist(track.song.artistId)
+								: API.getArtist(track.video!.artistId),
+						)
+						.then((artist) => {
 							playTrack({
-								artist: song.artist,
+								artist,
 								track,
 							});
-						}))
+						});
+				})
 			}
 			title={track?.name}
-			secondTitle={release?.name}
+			secondTitle={release?.name ?? null}
 			trailing={
 				<Grid
 					container
@@ -72,7 +80,7 @@ const TrackItem = ({ track }: TrackItemProps) => {
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
 					<Grid item sx={{ display: "flex", alignItems: "center" }}>
-						{isMaster ? <MasterIcon /> : undefined}
+						{track?.song && isMaster ? <MasterIcon /> : undefined}
 					</Grid>
 					<Grid item>
 						{track && <TrackContextualMenu track={track} />}

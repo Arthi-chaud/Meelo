@@ -15,7 +15,6 @@ RUN yarn run build && yarn workspaces focus --all --production
 
 FROM base as runner
 WORKDIR /app
-RUN apk add ffmpeg
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json /app/yarn.lock ./
 COPY --from=builder /app/prisma ./prisma

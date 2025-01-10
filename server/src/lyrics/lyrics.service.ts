@@ -27,7 +27,6 @@ import type LyricsQueryParameters from "./models/lyrics.query-parameters";
 import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import Slug from "src/slug/slug";
-import ProviderService from "src/providers/provider.service";
 import Logger from "src/logger/logger";
 import MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
@@ -41,8 +40,6 @@ export class LyricsService {
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
-		@Inject(forwardRef(() => ProviderService))
-		private providerService: ProviderService,
 	) {}
 
 	async createOrUpdate(input: LyricsQueryParameters.CreateInput) {
@@ -126,36 +123,4 @@ export class LyricsService {
 	}
 
 	async housekeeping(): Promise<void> {}
-
-	async fetchMissingLyrics() {
-		const songs = await this.prismaService.song.findMany({
-			where: { lyrics: null },
-			include: { externalIds: true },
-		});
-
-		for (const song of songs) {
-			try {
-				const lyrics = await this.providerService.runAction(
-					async (provider) => {
-						const songExternalId = song.externalIds.find(
-							(id) =>
-								this.providerService.getProviderById(
-									id.providerId,
-								).name == provider.name,
-						)?.value;
-
-						if (!songExternalId) {
-							throw new Error("Missing External ID");
-						}
-						return provider.getSongLyrics(songExternalId);
-					},
-				);
-
-				this.logger.verbose(`Lyrics found for song '${song.name}'`);
-				await this.createOrUpdate({ content: lyrics, songId: song.id });
-			} catch {
-				continue;
-			}
-		}
-	}
 }

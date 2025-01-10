@@ -18,18 +18,20 @@
 
 import toast from "react-hot-toast";
 import API from "../../api/api";
-import LibraryTaskResponse from "../../models/library-task-response";
+import { TaskResponse } from "../../models/task";
 import Action from "./action";
-import { CleanIcon, MetadataRefreshIcon, ScanIcon } from "../icons";
+import { CleanIcon, ScanIcon } from "../icons";
 
 /**
  * Using the resolved value of the task porimise, triggers an appropriate toast
  * @param task the returned promised from an API call to run a task
  */
-const handleTask = <T extends LibraryTaskResponse>(task: Promise<T>) =>
+const handleTask = <T extends TaskResponse>(task: Promise<T>) =>
 	task
-		.then(({ status }) => toast.success(status))
-		.catch(({ status }) => toast.error(status));
+		.then((s) => toast.success(s.message))
+		.catch((s) =>
+			toast.error(s.message ?? s.status ?? "Task request failed"),
+		);
 
 export const ScanAllLibrariesAction: Action = {
 	label: "scanLibraries",
@@ -58,9 +60,3 @@ export const CleanLibraryAction = (
 	icon: CleanAllLibrariesAction.icon,
 	onClick: () => handleTask(API.cleanLibrary(librarySlugOrId)),
 });
-
-export const FetchExternalMetadata: Action = {
-	label: "fetchMetadata",
-	icon: <MetadataRefreshIcon />,
-	onClick: () => handleTask(API.fetchExternalMetadata()),
-};

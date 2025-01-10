@@ -48,7 +48,7 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 				[
 					UpdatePlaylistIllustrationAction(
 						queryClient,
-						props.playlist.slug,
+						props.playlist.id,
 					),
 				],
 				[SharePlaylistAction(props.playlist.slug, t)],

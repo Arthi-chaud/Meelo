@@ -21,21 +21,28 @@ import Illustration from "../illustration";
 import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
-import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { usePlayerContext } from "../../contexts/player";
-import Video, { VideoWithRelations } from "../../models/video";
+import { VideoWithRelations } from "../../models/video";
+import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 
-type VideoTileProps =
+type VideoTileProps = (
 	| {
-			video: Video | undefined;
+			video: VideoWithRelations<"master" | "illustration"> | undefined;
 			subtitle: "duration";
 	  }
 	| {
-			video: VideoWithRelations<"artist"> | undefined;
+			video:
+				| VideoWithRelations<"artist" | "master" | "illustration">
+				| undefined;
 			subtitle: "artist";
-	  };
+	  }
+) & { onClick?: () => void };
 
-const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
+const VideoTile = ({
+	video,
+	subtitle: subtitleType,
+	onClick,
+}: VideoTileProps) => {
 	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
 	const { subtitle, secondaryHref } = !video
@@ -44,7 +51,7 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 				subtitle:
 					subtitleType == "artist"
 						? video.artist.name
-						: formatDuration(video.track.duration),
+						: formatDuration(video.master.duration),
 				secondaryHref:
 					subtitleType == "artist"
 						? `/artists/${video.artist.slug}`
@@ -53,25 +60,23 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 
 	return (
 		<Tile
-			contextualMenu={
-				video && (
-					<TrackContextualMenu
-						isVideo
-						track={{ ...video.track, song: video }}
-					/>
-				)
-			}
+			contextualMenu={video && <VideoContextualMenu video={video} />}
 			onClick={
 				video
-					? () =>
+					? () => {
+							onClick?.();
 							queryClient
 								.fetchQuery(API.getArtist(video.artistId))
 								.then((artist) =>
 									playTrack({
-										track: video.track,
+										track: {
+											...video.master,
+											illustration: video.illustration,
+										},
 										artist: artist,
 									}),
-								)
+								);
+						}
 					: undefined
 			}
 			title={video?.name}
@@ -81,7 +86,7 @@ const VideoTile = ({ video, subtitle: subtitleType }: VideoTileProps) => {
 				<Illustration
 					quality="medium"
 					aspectRatio={16 / 9}
-					illustration={video?.track.illustration}
+					illustration={video?.illustration}
 					imgProps={{ objectFit: "cover" }}
 				/>
 			}

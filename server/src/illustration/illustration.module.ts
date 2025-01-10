@@ -27,12 +27,13 @@ import { IllustrationController } from "./illustration.controller";
 import ArtistModule from "src/artist/artist.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
-import ProvidersModule from "src/providers/providers.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import IllustrationRepository from "./illustration.repository";
 import PrismaModule from "src/prisma/prisma.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import { HttpModule } from "@nestjs/axios";
+import { RegistrationModule } from "src/registration/registration.module";
+import { ExternalMetadataModule } from "src/external-metadata/external-metadata.module";
 
 @Module({
 	imports: [
@@ -45,10 +46,11 @@ import { HttpModule } from "@nestjs/axios";
 		forwardRef(() => TrackModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => FileModule),
-		forwardRef(() => ProvidersModule),
 		forwardRef(() => PlaylistModule),
+		forwardRef(() => RegistrationModule),
 		SettingsModule,
-		forwardRef(() => ScannerModule),
+		forwardRef(() => ExternalMetadataModule),
+		forwardRef(() => ParserModule),
 	],
 	controllers: [IllustrationController],
 	providers: [IllustrationService, IllustrationRepository],

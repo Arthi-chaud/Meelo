@@ -28,4 +28,23 @@ export default class UpdateAlbumDTO {
 	@IsEnum(AlbumType)
 	@IsOptional()
 	type?: AlbumType;
+
+	@ApiProperty({
+		description: "The Genres of the album",
+		isArray: true,
+	})
+	@IsOptional()
+	genres?: string[];
+
+	@ApiProperty({
+		description: "The original release date of the album",
+	})
+	@IsOptional()
+	releaseDate?: Date;
+
+	@ApiProperty({
+		description: "ID of the release to set as master",
+	})
+	@IsOptional()
+	masterReleaseId?: number;
 }

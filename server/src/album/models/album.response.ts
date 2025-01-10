@@ -25,10 +25,6 @@ import {
 import { Album, AlbumWithRelations, Genre } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
-	AlbumExternalIdResponse,
-	ExternalIdResponseBuilder,
-} from "src/providers/models/external-id.response";
-import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
@@ -45,7 +41,6 @@ export class AlbumResponse extends IntersectionType(
 	class {
 		artist?: ArtistResponse | null;
 		master?: ReleaseResponse;
-		externalIds?: AlbumExternalIdResponse[];
 		genres?: Genre[];
 	},
 ) {}
@@ -59,8 +54,6 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	constructor(
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
-		@Inject(forwardRef(() => ExternalIdResponseBuilder))
-		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 		@Inject(forwardRef(() => ReleaseResponseBuilder))
 		private releaseResponseBuilder: ReleaseResponseBuilder,
 		@Inject(forwardRef(() => ReleaseService))
@@ -100,13 +93,6 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 			artist: album.artist
 				? await this.artistResponseBuilder.buildResponse(album.artist)
 				: album.artist,
-			externalIds: album.externalIds
-				? ((await Promise.all(
-						album.externalIds.map((id) =>
-							this.externalIdResponseBuilder.buildResponse(id),
-						),
-				  )) as AlbumExternalIdResponse[])
-				: album.externalIds,
 			master: album.master
 				? await this.releaseResponseBuilder.buildResponse(album.master)
 				: album.master,

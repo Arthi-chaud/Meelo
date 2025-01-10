@@ -10,7 +10,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -32,10 +32,10 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import LibraryModule from "src/library/library.module";
 import FileManagerService from "src/file-manager/file-manager.service";
-import ProvidersModule from "src/providers/providers.module";
 import Slug from "src/slug/slug";
 import { FileNotFoundException } from "src/file/file.exceptions";
 import { ReleaseNotFoundException } from "src/release/release.exceptions";
+import VideoModule from "src/video/video.module";
 
 describe("Track Service", () => {
 	let trackService: TrackService;
@@ -57,7 +57,7 @@ describe("Track Service", () => {
 			imports: [
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				IllustrationModule,
 				TrackModule,
 				ArtistModule,
@@ -69,7 +69,7 @@ describe("Track Service", () => {
 				GenreModule,
 				LyricsModule,
 				LibraryModule,
-				ProvidersModule,
+				VideoModule,
 			],
 			providers: [
 				PrismaService,
@@ -105,19 +105,22 @@ describe("Track Service", () => {
 			path: "My Artist/My Album/1-02 My dummyRepository.songA1.m4a",
 			libraryId: dummyRepository.library1.id,
 			registerDate: new Date(),
-			md5Checksum: "",
+			checksum: "",
+			fingerprint: null,
 		});
 		file2 = await fileService.create({
 			path: "My Artist/My Album (Special Edition)/1-02 My dummyRepository.songA1.m4a",
 			libraryId: secondLibrary.id,
 			registerDate: new Date(),
-			md5Checksum: "",
+			checksum: "",
+			fingerprint: null,
 		});
 		tmpFile = await fileService.create({
 			path: "My Artist/My Album (Special Edition)/2-01 My dummyRepository.songA1 video.m4a",
 			libraryId: secondLibrary.id,
 			registerDate: new Date(),
-			md5Checksum: "",
+			checksum: "",
+			fingerprint: null,
 		});
 	});
 
@@ -407,17 +410,17 @@ describe("Track Service", () => {
 				},
 				song: { id: dummyRepository.songA1.id },
 			});
-			const track = await trackService.getMasterTrack({
+			const track = await trackService.getSongMasterTrack({
 				id: dummyRepository.songA1.id,
 			});
-			await trackService.delete({ id: tmpTrack.id });
-			await releaseService.delete({ id: tmpRelease.id });
+			await trackService.delete([{ id: tmpTrack.id }]);
+			await releaseService.delete([{ id: tmpRelease.id }]);
 			expect(track).toStrictEqual(dummyRepository.trackA1_1);
 		});
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = async () =>
-				await trackService.getMasterTrack({ id: -1 });
+				await trackService.getSongMasterTrack({ id: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 		it("should throw, as the parent song does not have tracks", async () => {
@@ -430,7 +433,7 @@ describe("Track Service", () => {
 				},
 			});
 			const test = async () =>
-				await trackService.getMasterTrack({ id: tmpSong.id });
+				await trackService.getSongMasterTrack({ id: tmpSong.id });
 			return expect(test()).rejects.toThrow(MasterTrackNotFoundException);
 		});
 	});
@@ -478,10 +481,13 @@ describe("Track Service", () => {
 
 	describe("Delete Track", () => {
 		it("should delete the track", async () => {
-			await songService.setMasterTrack({
-				id: dummyRepository.trackA1_1.id,
-			});
-			await trackService.delete({ id: dummyRepository.trackA1_1.id });
+			await songService.update(
+				{
+					master: { id: dummyRepository.trackA1_1.id },
+				},
+				{ id: dummyRepository.songA1.id },
+			);
+			await trackService.delete([{ id: dummyRepository.trackA1_1.id }]);
 
 			const test = async () =>
 				await trackService.get({ id: dummyRepository.trackA1_1.id });

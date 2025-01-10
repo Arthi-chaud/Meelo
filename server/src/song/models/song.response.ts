@@ -24,9 +24,6 @@ import {
 } from "src/artist/models/artist.response";
 import { Lyrics, Song, SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import ExternalIdResponse, {
-	ExternalIdResponseBuilder,
-} from "src/providers/models/external-id.response";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
@@ -46,7 +43,6 @@ export class SongResponse extends IntersectionType(
 		artist?: ArtistResponse;
 		master?: TrackResponse;
 		featuring?: ArtistResponse[];
-		externalIds?: ExternalIdResponse[];
 	},
 ) {}
 
@@ -63,8 +59,6 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 		private trackResponseBuilder: TrackResponseBuilder,
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
-		@Inject(forwardRef(() => ExternalIdResponseBuilder))
-		private externalIdResponseBuilder: ExternalIdResponseBuilder,
 	) {
 		super();
 	}
@@ -79,7 +73,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 					"This should happen only during a scan or a clean. " +
 					"If it is not the case, this is a bug.",
 			);
-			song.master = await this.trackService.getMasterTrack({
+			song.master = await this.trackService.getSongMasterTrack({
 				id: song.id,
 			});
 		}
@@ -110,13 +104,6 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			illustration: song.illustration
 				? IllustrationResponse.from(song.illustration)
 				: song.illustration,
-			externalIds: song.externalIds
-				? await Promise.all(
-						song.externalIds.map((id) =>
-							this.externalIdResponseBuilder.buildResponse(id),
-						),
-				  )
-				: song.externalIds,
 		};
 	}
 }

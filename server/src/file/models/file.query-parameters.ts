@@ -23,6 +23,10 @@ import type { SearchDateInput } from "src/utils/search-date-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
+import SongQueryParameters from "src/song/models/song.query-params";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace FileQueryParameters {
 	/**
@@ -46,8 +50,13 @@ namespace FileQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
+			inFolder: string;
 			library: LibraryQueryParameters.WhereInput;
-			id: { in: File["id"][] };
+			album: AlbumQueryParameters.WhereInput;
+			release: ReleaseQueryParameters.WhereInput;
+			song: SongQueryParameters.WhereInput;
+			track: TrackQueryParameters.WhereInput;
+			files: FileQueryParameters.WhereInput[];
 			paths: File["path"][];
 			registrationDate: SearchDateInput;
 		}>

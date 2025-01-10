@@ -289,24 +289,19 @@ describe("Album Service", () => {
 	});
 
 	describe("Delete Album", () => {
-		it("should throw, as the album does not exist (by id)", () => {
-			const test = async () => albumService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(AlbumNotFoundException);
-		});
-
 		it("should not delete the album, as it has releases", async () => {
 			const albumQueryParameters = {
 				id: dummyRepository.compilationAlbumA.id,
 			};
 
 			const test = async () =>
-				await albumService.delete(albumQueryParameters);
+				await albumService.delete([albumQueryParameters]);
 			return expect(test()).rejects.toThrow(AlbumNotEmptyException);
 		});
 
 		it("should delete the album", async () => {
 			const tmpAlbum = await albumService.create({ name: "1234" });
-			await albumService.delete({ id: tmpAlbum.id });
+			await albumService.delete([{ id: tmpAlbum.id }]);
 			const test = async () => albumService.get({ id: tmpAlbum.id });
 			return expect(test()).rejects.toThrow(AlbumNotFoundException);
 		});

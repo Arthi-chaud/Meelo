@@ -41,6 +41,7 @@ export class IllustrationResponse extends Illustration {
 export class IllustratedResponse {
 	@ApiProperty({
 		nullable: true,
+		type: IllustrationResponse,
 		description: "Use 'with' query parameter to include this field",
 	})
 	illustration?: IllustrationResponse | null;

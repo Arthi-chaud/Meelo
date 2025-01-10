@@ -11,20 +11,17 @@ import LibraryModule from "./library.module";
 import PrismaModule from "src/prisma/prisma.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import TrackModule from "src/track/track.module";
 import TestPrismaService from "test/test-prisma.service";
 import type { Library } from "src/prisma/models";
-import FileService from "src/file/file.service";
-import TrackService from "src/track/track.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import TasksModule from "src/tasks/tasks.module";
+import { RegistrationModule } from "src/registration/registration.module";
+import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 
 describe("Library Service", () => {
 	let libraryService: LibraryService;
-	let fileService: FileService;
-	let trackService: TrackService;
 	let dummyRepository: TestPrismaService;
 	let newLibrary: Library;
 
@@ -35,12 +32,13 @@ describe("Library Service", () => {
 				LibraryModule,
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
+				RegistrationModule,
+				HousekeepingModule,
 				FileManagerModule,
 				IllustrationModule,
 				TrackModule,
 				LyricsModule,
-				TasksModule,
 			],
 			providers: [LibraryService],
 		})
@@ -48,8 +46,6 @@ describe("Library Service", () => {
 			.useClass(TestPrismaService)
 			.compile();
 		libraryService = module.get<LibraryService>(LibraryService);
-		fileService = module.get(FileService);
-		trackService = module.get(TrackService);
 		dummyRepository = module.get(PrismaService);
 
 		await dummyRepository.onModuleInit();

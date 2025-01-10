@@ -16,37 +16,163 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Query } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Put, Query } from "@nestjs/common";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SongQueryParameters from "src/song/models/song.query-params";
 import { VideoResponseBuilder } from "./models/video.response";
-import { Selector } from "src/song/song.controller";
 import VideoService from "./video.service";
+import { VideoType } from "@prisma/client";
+import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import ArtistService from "src/artist/artist.service";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import AlbumService from "src/album/album.service";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import LibraryService from "src/library/library.service";
+import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import SongService from "src/song/song.service";
+import SongGroupQueryParameters from "src/song/models/song-group.query-params";
+import Slug from "src/slug/slug";
+import { formatIdentifier } from "src/repository/repository.utils";
+import VideoQueryParameters from "./models/video.query-parameters";
+import Roles from "src/authentication/roles/roles.enum";
+import { Role } from "src/authentication/roles/roles.decorators";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import UpdateVideoDTO from "./models/update-video.dto";
 
+export class Selector {
+	@IsEnum(VideoType)
+	@IsOptional()
+	@ApiPropertyOptional({
+		enum: VideoType,
+		description: "Filter videos by type",
+	})
+	type?: VideoType;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter videos by artist",
+	})
+	@TransformIdentifier(ArtistService)
+	artist?: ArtistQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter videos by album",
+	})
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter videos by library",
+	})
+	@TransformIdentifier(LibraryService)
+	library?: LibraryQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter videos by song",
+	})
+	@TransformIdentifier(SongService)
+	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Search videos using a string token",
+	})
+	query?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Get videos of songs from group",
+	})
+	@TransformIdentifier({
+		formatIdentifierToWhereInput: (identifier) =>
+			formatIdentifier<SongGroupQueryParameters.WhereInput>(
+				identifier,
+				(id: string) => ({ slug: new Slug(id) }),
+				(id: number) => ({ id: id }),
+			),
+	})
+	group?: SongGroupQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "The seed to sort the items",
+	})
+	@IsNumber()
+	@IsPositive()
+	random?: number;
+}
 @ApiTags("Videos")
 @Controller("videos")
 export class VideoController {
 	constructor(private videoService: VideoService) {}
 
 	@ApiOperation({
-		summary: "Get many Videos (Song with video track)",
+		summary: "Get a video",
+	})
+	@Role(Roles.Default)
+	@Response({ handler: VideoResponseBuilder })
+	@Get(":idOrSlug")
+	async getVideo(
+		@RelationIncludeQuery(VideoQueryParameters.AvailableAtomicIncludes)
+		include: VideoQueryParameters.RelationInclude,
+		@IdentifierParam(VideoService)
+		where: VideoQueryParameters.WhereInput,
+	) {
+		return this.videoService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Update a video",
+	})
+	@Response({ handler: VideoResponseBuilder })
+	@Put(":idOrSlug")
+	@Role(Roles.Default)
+	async updateSong(
+		@Body() updateDTO: UpdateVideoDTO,
+		@IdentifierParam(VideoService)
+		where: VideoQueryParameters.WhereInput,
+	) {
+		const { masterTrackId, ...dtoRest } = updateDTO;
+		return this.videoService.update(
+			{
+				...dtoRest,
+				master: masterTrackId ? { id: masterTrackId } : undefined,
+			},
+			where,
+		);
+	}
+
+	@ApiOperation({
+		summary: "Get many videos",
 	})
 	@Response({
 		handler: VideoResponseBuilder,
 		type: ResponseType.Page,
 	})
 	@Get()
-	async getVideosByLibrary(
+	async getVideos(
 		@Query() selector: Selector,
-		@Query() sort: SongQueryParameters.SortingParameter,
+		@Query() sort: VideoQueryParameters.SortingParameter,
 		@Query()
 		paginationParameters: PaginationParameters,
-		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
-		include: SongQueryParameters.RelationInclude,
+		@RelationIncludeQuery(VideoQueryParameters.AvailableAtomicIncludes)
+		include: VideoQueryParameters.RelationInclude,
 	) {
+		if (selector.query) {
+			return this.videoService.search(
+				decodeURI(selector.query),
+				selector,
+				paginationParameters,
+				include,
+			);
+		}
 		return this.videoService.getMany(
 			selector,
 			paginationParameters,

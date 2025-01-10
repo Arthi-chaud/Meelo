@@ -29,6 +29,7 @@ import { filterAtomicRelationInclude } from "src/relation-include/atomic-relatio
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { SongType } from "@prisma/client";
 import SongGroupQueryParameters from "./song-group.query-params";
+import TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace SongQueryParameters {
 	/**
@@ -81,7 +82,7 @@ namespace SongQueryParameters {
 			group: SongGroupQueryParameters.WhereInput;
 			versionsOf: SongQueryParameters.WhereInput;
 			type?: SongType;
-			id: { in: number[] };
+			songs: SongQueryParameters.WhereInput[];
 		}>
 	>;
 
@@ -90,7 +91,8 @@ namespace SongQueryParameters {
 	 */
 	export type UpdateInput = Partial<{
 		type: SongType;
-		genres: GenreQueryParameters.WhereInput[];
+		master: TrackQueryParameters.WhereInput | null;
+		genres: (GenreQueryParameters.WhereInput | string)[];
 	}>;
 	export type DeleteInput = {
 		id: Song["id"];
@@ -109,12 +111,11 @@ namespace SongQueryParameters {
 		"genres",
 		"master",
 		"lyrics",
-		"externalIds",
 		"illustration",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["lyrics", "externalIds"],
+		["lyrics"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 

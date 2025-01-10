@@ -6,7 +6,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -35,7 +35,7 @@ describe("File Service", () => {
 			imports: [
 				FileModule,
 				PrismaModule,
-				ScannerModule,
+				ParserModule,
 				FileManagerModule,
 				IllustrationModule,
 				ArtistModule,
@@ -72,12 +72,13 @@ describe("File Service", () => {
 			newFile = await fileService.create({
 				path: "Me",
 				libraryId: dummyRepository.library1.id,
-				md5Checksum: "Sum",
+				checksum: "Sum",
 				registerDate: now,
+				fingerprint: null,
 			});
 			expect(newFile.id).toBeDefined();
 			expect(newFile.libraryId).toBe(dummyRepository.library1.id);
-			expect(newFile.md5Checksum).toBe("Sum");
+			expect(newFile.checksum).toBe("Sum");
 			expect(newFile.path).toBe("Me");
 			expect(newFile.registerDate).toStrictEqual(now);
 		});
@@ -88,8 +89,9 @@ describe("File Service", () => {
 				await fileService.create({
 					path: "Me",
 					libraryId: dummyRepository.library1.id,
-					md5Checksum: "Sum",
+					checksum: "Sum",
 					registerDate: now,
+					fingerprint: null,
 				});
 			return expect(test()).rejects.toThrow(FileAlreadyExistsException);
 		});
@@ -97,13 +99,8 @@ describe("File Service", () => {
 
 	describe("Delete File", () => {
 		it("should delete a file (from id)", async () => {
-			await fileService.delete({ id: newFile.id });
+			await fileService.delete([{ id: newFile.id }]);
 			const test = async () => fileService.get({ id: newFile.id });
-			return expect(test()).rejects.toThrow(FileNotFoundException);
-		});
-
-		it("should throw, as the file does not exist (from id)", () => {
-			const test = async () => fileService.delete({ id: -1 });
 			return expect(test()).rejects.toThrow(FileNotFoundException);
 		});
 	});

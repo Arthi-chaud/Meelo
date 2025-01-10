@@ -91,14 +91,14 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Get related songs ",
+		description: "Get other versions of the song",
 	})
 	@TransformIdentifier(SongService)
 	versionsOf?: SongQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Get related songs ",
+		description: "Filter songs by group",
 	})
 	@TransformIdentifier({
 		formatIdentifierToWhereInput: (identifier) =>
@@ -126,7 +126,7 @@ export class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description:
-			"Filter songs that are B-Sides of a release.\nThe release must be a studio recording, otherwise returns an  emtpy list",
+			"Filter songs that are B-Sides of a release. The release must be a studio recording, otherwise returns an  emtpy list",
 	})
 	@TransformIdentifier(ReleaseService)
 	bsides: ReleaseQueryParameters.WhereInput;
@@ -140,7 +140,7 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "The Seed to Sort the items",
+		description: "The seed to sort the items",
 	})
 	@IsNumber()
 	@IsPositive()
@@ -215,6 +215,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Get a song",
 	})
+	@Role(Roles.Default, Roles.Microservice)
 	@Response({ handler: SongResponseBuilder })
 	@Get(":idOrSlug")
 	async getSong(
@@ -230,13 +231,21 @@ export class SongController {
 		summary: "Update a song",
 	})
 	@Response({ handler: SongResponseBuilder })
-	@Post(":idOrSlug")
+	@Put(":idOrSlug")
+	@Role(Roles.Default, Roles.Microservice)
 	async updateSong(
 		@Body() updateDTO: UpdateSongDTO,
 		@IdentifierParam(SongService)
 		where: SongQueryParameters.WhereInput,
 	) {
-		return this.songService.update(updateDTO, where);
+		const { masterTrackId, ...dtoRest } = updateDTO;
+		return this.songService.update(
+			{
+				...dtoRest,
+				master: masterTrackId ? { id: masterTrackId } : undefined,
+			},
+			where,
+		);
 	}
 
 	@ApiOperation({
@@ -274,7 +283,7 @@ export class SongController {
 	@ApiOperation({
 		summary: "Update a song's lyrics",
 	})
-	@Admin()
+	@Role(Roles.Admin, Roles.Microservice)
 	@Post(":idOrSlug/lyrics")
 	async updateSongLyrics(
 		@IdentifierParam(SongService)

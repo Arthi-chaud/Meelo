@@ -69,8 +69,9 @@ const prepareSSR = async (
 			artistQuery(artistIdentifier),
 			...songs.pages
 				.flatMap(({ items }) => items)
+				.filter(({ master }) => master.releaseId)
 				.map(({ master }) =>
-					API.getRelease(master.releaseId, ["album"]),
+					API.getRelease(master.releaseId!, ["album"]),
 				),
 		],
 		infiniteQueries: [],
@@ -83,10 +84,12 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const router = useRouter();
 	const isRareSongs = isRareSongsPage(router);
 	const queryClient = useQueryClient();
-	const getTrackReleaseName = (track: Track) =>
-		queryClient
-			.fetchQuery(API.getRelease(track.releaseId))
-			.then((release) => release.name);
+	const getTrackReleaseName = (track: Track): Promise<string | null> =>
+		track.releaseId
+			? queryClient
+					.fetchQuery(API.getRelease(track.releaseId))
+					.then((release) => release.name)
+			: Promise.resolve(null);
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);

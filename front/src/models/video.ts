@@ -16,24 +16,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Song, { SongInclude, SongRelations } from "./song";
-import { TrackWithRelations } from "./track";
+import Artist from "./artist";
+import Illustration from "./illustration";
+import Resource from "./resource";
+import Song from "./song";
+import Track from "./track";
 import * as yup from "yup";
 
-const Video = Song.concat(
+export const VideoType = [
+	"MusicVideo",
+	"LyricsVideo",
+	"Live",
+	"BehindTheScenes",
+	"Interview",
+	"Advert",
+	"PhotoGallery",
+	"Documentary",
+	"Other",
+] as const;
+
+export const VideoTypeIsExtra = (vType: VideoType) =>
+	!["MusicVideo", "LyricsVideo", "Live"].includes(vType);
+
+export type VideoType = (typeof VideoType)[number];
+
+const Video = Resource.concat(
 	yup.object({
-		track: TrackWithRelations(["illustration"]).required(),
+		id: yup.number().required(),
+		slug: yup.string().required(),
+		name: yup.string().required(),
+		nameSlug: yup.string().required(),
+		artistId: yup.number().required(),
+		songId: yup.number().required().nullable(),
+		groupId: yup.number().required().nullable(),
+		registeredAt: yup.date().required(),
+		type: yup.mixed<VideoType>().oneOf(VideoType).required(),
 	}),
 );
 
 type Video = yup.InferType<typeof Video>;
 
-const VideoWithRelations = <Selection extends SongInclude | never = never>(
-	relation: Selection[],
-) => Video.concat(SongRelations.pick(relation));
+export type VideoInclude = "artist" | "song" | "illustration" | "master";
+export const VideoRelations = yup.object({
+	artist: Artist.required(),
+	song: yup.lazy(() => Song.required().nullable()),
+	master: yup.lazy(() => Track.required()),
+	illustration: Illustration.required().nullable(),
+});
 
-type VideoWithRelations<Selection extends SongInclude | never = never> =
+const VideoWithRelations = <Selection extends VideoInclude | never = never>(
+	relation: Selection[],
+) => Video.concat(VideoRelations.pick(relation));
+
+type VideoWithRelations<Selection extends VideoInclude | never = never> =
 	yup.InferType<ReturnType<typeof VideoWithRelations<Selection>>>;
 
 export default Video;
+export const videoTypeIsExtra = (type: VideoType) =>
+	[
+		"BehindTheScenes",
+		"Interview",
+		"Advert",
+		"PhotoGallery",
+		"Documentary",
+	].includes(type);
+export const VideoSortingKeys = ["name", "artistName", "addDate"] as const;
 export { VideoWithRelations };

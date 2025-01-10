@@ -14,7 +14,7 @@ import SongService from "src/song/song.service";
 import AlbumService from "src/album/album.service";
 import TrackModule from "src/track/track.module";
 import ReleaseModule from "src/release/release.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import ReleaseService from "src/release/release.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -23,17 +23,12 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import FileModule from "src/file/file.module";
 import { expectedArtistResponse } from "test/expected-responses";
-import ProvidersModule from "src/providers/providers.module";
 import SettingsModule from "src/settings/settings.module";
-import SettingsService from "src/settings/settings.service";
-import ProviderService from "src/providers/provider.service";
-import { Meilisearch } from "meilisearch";
 import { IllustrationType } from "@prisma/client";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let providerService: ProviderService;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -45,12 +40,11 @@ describe("Artist Controller", () => {
 				SongModule,
 				AlbumModule,
 				TrackModule,
-				ScannerModule,
+				ParserModule,
 				IllustrationModule,
 				GenreModule,
 				LyricsModule,
 				FileModule,
-				ProvidersModule,
 				SettingsModule,
 			],
 			providers: [
@@ -66,9 +60,6 @@ describe("Artist Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		providerService = module.get(ProviderService);
-		module.get(SettingsService).loadFromFile();
-		await providerService.onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -165,43 +156,6 @@ describe("Artist Controller", () => {
 					expect(artist).toStrictEqual(
 						expectedArtistResponse(dummyRepository.artistB),
 					);
-				});
-		});
-
-		it("should return artist w/ external ID", async () => {
-			const provider = await dummyRepository.provider.findFirstOrThrow();
-			await dummyRepository.artistExternalId.create({
-				data: {
-					artistId: dummyRepository.artistA.id,
-					providerId: provider.id,
-					description: "Artist Desc.",
-					value: "1234",
-				},
-			});
-			return request(app.getHttpServer())
-				.get(`/artists/${dummyRepository.artistA.id}?with=externalIds`)
-				.expect(200)
-				.expect((res) => {
-					const artist: Artist = res.body;
-					expect(artist).toStrictEqual({
-						...expectedArtistResponse(dummyRepository.artistA),
-						externalIds: [
-							{
-								provider: {
-									name: provider.name,
-									homepage: providerService
-										.getProviderById(provider.id)
-										.getProviderHomepage(),
-									icon: `/illustrations/providers/${provider.name}/icon`,
-								},
-								description: "Artist Desc.",
-								value: "1234",
-								url: providerService
-									.getProviderById(provider.id)
-									.getArtistURL("1234"),
-							},
-						],
-					});
 				});
 		});
 

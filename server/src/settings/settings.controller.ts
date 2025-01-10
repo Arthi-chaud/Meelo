@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, HttpStatus, Redirect } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import type Settings from "./models/settings";
 import SettingsService from "./settings.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -34,14 +34,5 @@ export default class SettingsController {
 	})
 	getSettings(): Settings {
 		return this.settingsService.settingsValues;
-	}
-
-	@Get("reload")
-	@ApiOperation({
-		summary: "Reload settings",
-	})
-	@Redirect("/settings", HttpStatus.FOUND)
-	reload() {
-		this.settingsService.loadFromFile();
 	}
 }

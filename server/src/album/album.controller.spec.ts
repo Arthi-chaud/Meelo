@@ -10,7 +10,7 @@ import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
 import { createTestingModule } from "test/test-module";
 import AlbumModule from "./album.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import SetupApp from "test/setup-app";
@@ -18,22 +18,17 @@ import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
-import AlbumService from "./album.service";
 import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
 } from "test/expected-responses";
-import ProviderService from "src/providers/provider.service";
-import SettingsService from "src/settings/settings.service";
-import ProvidersModule from "src/providers/providers.module";
-import { IllustrationType } from "@prisma/client";
+import { Genre, IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
 
 describe("Album Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
-	let providerService: ProviderService;
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
@@ -42,13 +37,12 @@ describe("Album Controller", () => {
 				AlbumModule,
 				PrismaModule,
 				ReleaseModule,
-				ScannerModule,
+				ParserModule,
 				SongModule,
 				TrackModule,
 				IllustrationModule,
 				GenreModule,
 				FileModule,
-				ProvidersModule,
 			],
 			providers: [ArtistService, ReleaseService],
 		})
@@ -58,9 +52,6 @@ describe("Album Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		providerService = module.get(ProviderService);
-		module.get(SettingsService).loadFromFile();
-		await providerService.onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -323,43 +314,6 @@ describe("Album Controller", () => {
 					});
 				});
 		});
-		it("should return album w/ external ID", async () => {
-			const provider = await dummyRepository.provider.findFirstOrThrow();
-			await dummyRepository.albumExternalId.create({
-				data: {
-					albumId: dummyRepository.albumA1.id,
-					providerId: provider.id,
-					description: "Album blah blah blah",
-					value: "1234",
-				},
-			});
-			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumA1.id}?with=externalIds`)
-				.expect(200)
-				.expect((res) => {
-					const album: Album = res.body;
-					expect(album).toStrictEqual({
-						...expectedAlbumResponse(dummyRepository.albumA1),
-						externalIds: [
-							{
-								provider: {
-									name: provider.name,
-									homepage: providerService
-										.getProviderById(provider.id)
-										.getProviderHomepage(),
-									icon: `/illustrations/providers/${provider.name}/icon`,
-								},
-								description: "Album blah blah blah",
-								value: "1234",
-								rating: null,
-								url: providerService
-									.getProviderById(provider.id)
-									.getAlbumURL("1234"),
-							},
-						],
-					});
-				});
-		});
 		it("Should include related artist (null)", () => {
 			return request(app.getHttpServer())
 				.get(
@@ -481,11 +435,11 @@ describe("Album Controller", () => {
 	describe("Update the album", () => {
 		it("should reassign the compilation album to an artist + change the type", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/${dummyRepository.compilationAlbumA.slug}`)
+				.put(`/albums/${dummyRepository.compilationAlbumA.slug}`)
 				.send({
 					type: "RemixAlbum",
 				})
-				.expect(201)
+				.expect(200)
 				.expect((res) => {
 					const artist: Album = res.body;
 					expect(artist).toStrictEqual({
@@ -497,23 +451,71 @@ describe("Album Controller", () => {
 				});
 		});
 
-		it("should reassign the album as a compilation", () => {
+		it("should change release date", () => {
 			return request(app.getHttpServer())
-				.post(`/albums/${dummyRepository.compilationAlbumA.id}`)
+				.put(`/albums/${dummyRepository.compilationAlbumA.id}`)
 				.send({
-					artistId: null,
+					releaseDate: new Date(2024, 0, 2),
 				})
-				.expect(201)
+				.expect(200)
 				.expect((res) => {
 					const artist: Album = res.body;
 					expect(artist).toStrictEqual({
 						...expectedAlbumResponse(
 							dummyRepository.compilationAlbumA,
 						),
-						artistId: null,
+						releaseDate: "2024-01-02T00:00:00.000Z",
 						type: "RemixAlbum",
 					});
 				});
+		});
+		it("should add genres", async () => {
+			await request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.compilationAlbumA.id}`)
+				.send({
+					genres: ["Genre 1", "Genre 2", "Genre 3", "Genre 2"],
+				})
+				.expect(200);
+			await request(app.getHttpServer())
+				.get(
+					`/albums/${dummyRepository.compilationAlbumA.id}?with=genres`,
+				)
+				.expect((res) => {
+					const genres = res.body.genres.map(
+						(genre: Genre) => genre.name,
+					);
+					expect(genres).toStrictEqual([
+						"Genre 1",
+						"Genre 2",
+						"Genre 3",
+					]);
+				});
+		});
+		it("should set release as master", async () => {
+			await request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.albumA1.id}`)
+				.send({
+					masterReleaseId: dummyRepository.releaseA1_2.id,
+				})
+				.expect(200)
+				.expect((res) => {
+					const releaseId = res.body.masterId;
+					expect(releaseId).toBe(dummyRepository.releaseA1_2.id);
+				});
+			// teardown
+			await dummyRepository.album.update({
+				where: { id: dummyRepository.albumA1.id },
+				data: { masterId: dummyRepository.releaseA1_1.id },
+			});
+		});
+
+		it("should no set release as master (unrelated release)", () => {
+			return request(app.getHttpServer())
+				.put(`/albums/${dummyRepository.albumA1.id}`)
+				.send({
+					masterReleaseId: dummyRepository.releaseB1_1.id,
+				})
+				.expect(400);
 		});
 	});
 

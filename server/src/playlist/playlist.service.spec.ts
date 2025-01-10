@@ -4,7 +4,6 @@ import TestPrismaService from "test/test-prisma.service";
 import PlaylistModule from "./playlist.module";
 import PlaylistService from "./playlist.service";
 import SettingsModule from "src/settings/settings.module";
-import SettingsService from "src/settings/settings.service";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import {
@@ -28,7 +27,6 @@ describe("Playlist Service", () => {
 			.compile();
 		dummyRepository = module.get(PrismaService);
 		playlistService = module.get(PlaylistService);
-		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
 	});
 

@@ -17,12 +17,18 @@
  */
 
 import { Controller, Get, Param, Req, Res, Response } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiParam,
+	ApiTags,
+} from "@nestjs/swagger";
 import FileService from "src/file/file.service";
 import FileQueryParameters from "src/file/models/file.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { StreamService } from "./stream.service";
 
+@ApiTags("Streaming")
 @Controller("stream")
 export class StreamController {
 	constructor(private streamService: StreamService) {}
@@ -31,6 +37,7 @@ export class StreamController {
 		summary: "Stream File",
 	})
 	@Get(":idOrSlug/direct")
+	@ApiOkResponse({ description: "The raw binary content of the file" })
 	async streamFile(
 		@IdentifierParam(FileService)
 		where: FileQueryParameters.WhereInput,
@@ -43,11 +50,18 @@ export class StreamController {
 	@ApiOperation({
 		summary: "Transcode File",
 	})
+	@ApiParam({
+		name: "path",
+		description:
+			"Endpoint of of the transcoder. See the possible endpoints [here](https://github.com/zoriya/Kyoo/blob/master/transcoder/main.go)",
+		example: "master.m3u8",
+	})
 	@Get(":idOrSlug/:path(*)")
 	async transcodeFile(
 		@IdentifierParam(FileService)
 		where: FileQueryParameters.WhereInput,
-		@Param("path") path: string,
+		@Param("path")
+		path: string,
 		@Res() res: Response,
 		@Req() req: Express.Request,
 	) {

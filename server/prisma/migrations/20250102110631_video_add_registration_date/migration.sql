@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "videos"
+    ADD COLUMN "registeredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+

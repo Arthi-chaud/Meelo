@@ -10,12 +10,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:4000"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - ./server/src:/app/src
       - ./server/prisma:/app/prisma
       - ./server/test:/app/test
       - ./server/package.json:/app/package.json
       - ./server/.yarn:/app/.yarn
+      - server_deps:/app/node_modules
       - ./server/.yarnrc.yml:/app/.yarnrc.yml
       - ./server/tsconfig.json:/app/tsconfig.json
       - ./server/tsconfig.build.json:/app/tsconfig.build.json
@@ -26,16 +34,44 @@ services:
       - .env
     environment:
       - TRANSCODER_URL=http://transcoder:7666
-      - POSTGRES_HOST=db
       - MEILI_HOST=http://meilisearch:7700
-      - REDIS_HOST=redis
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+  scanner:
+    build:
+      context: ./scanner
+      dockerfile: Dockerfile.dev
+    restart: on-failure
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:8133"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8133:8133"
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - INTERNAL_DATA_DIR=${INTERNAL_DATA_DIR}
+      - API_KEYS=${API_KEYS}
+    volumes:
+      - ./scanner:/app
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   front:
     build:
       context: ./front
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
+    depends_on:
+      server:
+        condition: service_healthy
+      scanner:
+        condition: service_healthy
     volumes:
       - ./front/src:/app/src
       - ./front/public:/app/public
@@ -43,17 +79,30 @@ services:
       - ./front/package.json:/app/package.json
       - ./front/tsconfig.json:/app/tsconfig.json
       - ./front/yarn.lock:/app/yarn.lock
+      - front_deps:/app/node_modules
     environment:
       # This can be commented out. see front/next.config.js
       - PUBLIC_SERVER_URL=http://localhost:4000
       - SSR_SERVER_URL=http://server:4000
-  redis:
-    image: redis:7.0-alpine
-    healthcheck:
-      test: ["CMD", "redis-cli","ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - PUBLIC_SCANNER_URL=http://localhost:8133
+      - SSR_SCANNER_URL=http://scanner:8133
+  matcher:
+    build:
+      context: ./matcher
+    restart: on-failure
+    depends_on:
+      server:
+        condition: service_healthy
+      mq:
+        condition: service_healthy
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - API_KEYS=${API_KEYS}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+    volumes:
+      - ./matcher:/app
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   meilisearch:
     image: getmeili/meilisearch:v1.5
     restart: on-failure
@@ -85,6 +134,9 @@ services:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - transcoder_cache:/cache
     profiles: ['', 'cpu']
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: postgres:alpine3.16
     healthcheck:
@@ -94,7 +146,22 @@ services:
       retries: 5
     env_file:
       - .env
-
+  mq:
+    image: rabbitmq:4.0-alpine
+    environment:
+      - RABBITMQ_NODENAME=meelo
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 volumes:
   search:
   transcoder_cache:
+  front_deps:
+  server_deps:
+  rabbitmq_data:

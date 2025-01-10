@@ -26,19 +26,19 @@ import IllustrationModule from "src/illustration/illustration.module";
 import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
 import { AlbumResponseBuilder } from "./models/album.response";
-import ProvidersModule from "src/providers/providers.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
+import { EventsModule } from "src/events/events.module";
 
 @Module({
 	imports: [
 		PrismaModule,
-		forwardRef(() => ProvidersModule),
+		EventsModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => ArtistModule),
 		forwardRef(() => ReleaseModule),
 		forwardRef(() => TrackModule),
 		GenreModule,
-		forwardRef(() => ScannerModule),
+		forwardRef(() => ParserModule),
 	],
 	exports: [AlbumService, AlbumResponseBuilder],
 	providers: [AlbumService, AlbumResponseBuilder],

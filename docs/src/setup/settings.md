@@ -16,6 +16,7 @@ All fields are **required**
   - `Track`: The name of the track
   - `Genre`: The genre of the material
   - `DiscogsID`: The Discogs ID of the parent release. A Discogs ID should take the form of a digit-only string. This ID can be found in the URL of the release's Discogs page or in the top-right corner of that page (displayed as `[rXXXXXXXX]`)
+  - *Note*: **If you do not use embedded data**, most regex groups are optional. Only `Track` and (`AlbumArtist` or `Artist`) are required for the file to be accepted by the scanner.
 - `metadata`: Configuration of the **metadata extraction** system:
   - `source`: The **primary metadata source** to use:
     - `embedded`: Using the embedded tags
@@ -30,3 +31,5 @@ All fields are **required**
   - `useID3CompTag`: If true, use iTunes' non-standard ID3 tags for compilations.
 
 *Note*: The provided Regular Expression uses the iTunes file architecture.
+
+*Note*: Regular Expression must use the Golang Flavour.

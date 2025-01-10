@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ExternalId from "./external-id";
 import Illustration from "./illustration";
 import Resource from "./resource";
 import * as yup from "yup";
@@ -37,7 +36,7 @@ const Artist = Resource.concat(
 
 type Artist = yup.InferType<typeof Artist>;
 
-export type ArtistInclude = "externalIds" | "illustration";
+export type ArtistInclude = "illustration";
 
 const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
 	relation: Selection[],
@@ -45,7 +44,6 @@ const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
 	Artist.concat(
 		yup
 			.object({
-				externalIds: yup.array(ExternalId.required()).required(),
 				illustration: Illustration.required().nullable(),
 			})
 			.pick(relation),

@@ -21,13 +21,11 @@ import {
 	Controller,
 	Delete,
 	Get,
-	Inject,
 	Param,
 	ParseIntPipe,
 	Post,
 	Put,
 	Query,
-	forwardRef,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import PlaylistService from "./playlist.service";
@@ -50,17 +48,12 @@ import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import { Admin } from "src/authentication/roles/roles.decorators";
-import { IllustrationDownloadDto } from "src/illustration/models/illustration-dl.dto";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import IllustrationService from "src/illustration/illustration.service";
-import { IllustrationResponse } from "src/illustration/models/illustration.response";
 import SongQueryParameters from "src/song/models/song.query-params";
 
 export class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Filter playlist by albums that entries belong to",
+		description: "Get playlists that have a song in common with an album",
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
@@ -69,16 +62,10 @@ export class Selector {
 @Controller("playlists")
 @ApiTags("Playlists")
 export default class PlaylistController {
-	constructor(
-		private playlistService: PlaylistService,
-		@Inject(forwardRef(() => IllustrationService))
-		private illustrationService: IllustrationService,
-		@Inject(forwardRef(() => IllustrationRepository))
-		private illustrationRepository: IllustrationRepository,
-	) {}
+	constructor(private playlistService: PlaylistService) {}
 
 	@ApiOperation({
-		summary: "Get one Playlist",
+		summary: "Get one playlist",
 	})
 	@Get(":idOrSlug")
 	@Response({ handler: PlaylistResponseBuilder })
@@ -92,7 +79,7 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Get Playlists",
+		summary: "Get many playlists",
 	})
 	@Get()
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
@@ -113,7 +100,8 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Get Playlist's entries",
+		summary: "Get a playlist's entries",
+		description: "Entries as song with an 'entryId' field",
 	})
 	@Get(":idOrSlug/entries")
 	@Response({
@@ -136,9 +124,9 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Create Playlist",
+		summary: "Create playlist",
 	})
-	@Post("new")
+	@Post()
 	@Response({ handler: PlaylistResponseBuilder })
 	async createPlaylist(
 		@Body()
@@ -148,7 +136,7 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Update Playlist",
+		summary: "Update playlist",
 	})
 	@Put(":idOrSlug")
 	@Response({ handler: PlaylistResponseBuilder })
@@ -162,7 +150,7 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Get one Playlist",
+		summary: "Delete playlist",
 	})
 	@Delete(":idOrSlug")
 	async delete(
@@ -173,23 +161,25 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Add Song to Playlist",
+		summary: "Add song to playlist",
 	})
-	@Post("entries/new")
+	@Post(":idOrSlug/entries")
 	async addSongToPlaylist(
+		@IdentifierParam(PlaylistService)
+		where: PlaylistQueryParameters.WhereInput,
 		@Body()
 		playlistEntryDTO: CreatePlaylistEntryDTO,
 	) {
 		await this.playlistService.addSong(
 			{ id: playlistEntryDTO.songId },
-			{ id: playlistEntryDTO.playlistId },
+			where,
 		);
 	}
 
 	@ApiOperation({
-		summary: "Reorder Entries in Playlist",
+		summary: "Reorder entries in playlist",
 	})
-	@Put(":idOrSlug/reorder")
+	@Put(":idOrSlug/entries/reorder")
 	async moveEntryInPlaylist(
 		@Body()
 		{ entryIds }: ReorderPlaylistDTO,
@@ -200,7 +190,8 @@ export default class PlaylistController {
 	}
 
 	@ApiOperation({
-		summary: "Delete Entry in Playlist",
+		summary: "Delete playlist entry",
+		description: "This will delete a song from the playlist",
 	})
 	@Delete("entries/:id")
 	async deleteEntryInPlaylist(
@@ -208,24 +199,5 @@ export default class PlaylistController {
 		entryId: number,
 	) {
 		await this.playlistService.removeEntry(entryId);
-	}
-
-	@ApiOperation({
-		summary: "Change a playlist's illustration",
-	})
-	@Admin()
-	@Post(":idOrSlug/illustration")
-	async updatePlaylistIllustration(
-		@IdentifierParam(PlaylistService)
-		where: PlaylistQueryParameters.WhereInput,
-		@Body() illustrationDto: IllustrationDownloadDto,
-	): Promise<IllustrationResponse> {
-		const buffer = await this.illustrationService.downloadIllustration(
-			illustrationDto.url,
-		);
-
-		return this.illustrationRepository
-			.savePlaylistIllustration(buffer, where)
-			.then(IllustrationResponse.from);
 	}
 }

@@ -1,6 +1,6 @@
 import { createTestingModule } from "test/test-module";
 import { TestingModule } from "@nestjs/testing";
-import type { Lyrics, Song, Track } from "src/prisma/models";
+import type { Lyrics, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
 import { INestApplication } from "@nestjs/common";
@@ -12,10 +12,7 @@ import {
 	expectedSongResponse,
 	expectedArtistResponse,
 	expectedTrackResponse,
-	expectedReleaseResponse,
 } from "test/expected-responses";
-import ProviderService from "src/providers/provider.service";
-import SettingsService from "src/settings/settings.service";
 import { IllustrationType, SongType } from "@prisma/client";
 import Slug from "src/slug/slug";
 
@@ -25,7 +22,6 @@ describe("Song Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let songService: SongService;
-	let providerService: ProviderService;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -38,10 +34,7 @@ describe("Song Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		songService = module.get(SongService);
-		providerService = module.get(ProviderService);
-		module.get(SettingsService).loadFromFile();
 		await dummyRepository.onModuleInit();
-		await providerService.onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -177,42 +170,6 @@ describe("Song Controller", () => {
 							dummyRepository.trackA1_1,
 						),
 						featuring: [],
-					});
-				});
-		});
-		it("should return song w/ external ID", async () => {
-			const provider = await dummyRepository.provider.findFirstOrThrow();
-			await dummyRepository.songExternalId.create({
-				data: {
-					songId: dummyRepository.songA1.id,
-					providerId: provider.id,
-					description: "Hey",
-					value: "1234",
-				},
-			});
-			return request(app.getHttpServer())
-				.get(`/songs/${dummyRepository.songA1.id}?with=externalIds`)
-				.expect(200)
-				.expect((res) => {
-					const song: Song = res.body;
-					expect(song).toStrictEqual({
-						...expectedSongResponse(dummyRepository.songA1),
-						externalIds: [
-							{
-								provider: {
-									name: provider.name,
-									homepage: providerService
-										.getProviderById(provider.id)
-										.getProviderHomepage(),
-									icon: `/illustrations/providers/${provider.name}/icon`,
-								},
-								description: "Hey",
-								value: "1234",
-								url: providerService
-									.getProviderById(provider.id)
-									.getSongURL("1234"),
-							},
-						],
 					});
 				});
 		});
@@ -576,11 +533,11 @@ describe("Song Controller", () => {
 	describe("Update Song", () => {
 		it("Should update Song's Type", () => {
 			return request(app.getHttpServer())
-				.post(`/songs/${dummyRepository.songB1.id}`)
+				.put(`/songs/${dummyRepository.songB1.id}`)
 				.send({
 					type: SongType.Remix,
 				})
-				.expect(201)
+				.expect(200)
 				.expect((res) => {
 					const song: Song = res.body;
 					expect(song).toStrictEqual({
@@ -588,6 +545,54 @@ describe("Song Controller", () => {
 						type: SongType.Remix,
 					});
 				});
+		});
+
+		it("Should update Song's Type", () => {
+			return request(app.getHttpServer())
+				.put(`/songs/${dummyRepository.songB1.id}`)
+				.send({
+					genres: ["a", "B", "c"],
+				})
+				.expect(200)
+				.expect(async () => {
+					const songGenres = await dummyRepository.genre
+						.findMany({
+							where: {
+								songs: {
+									some: { id: dummyRepository.songB1.id },
+								},
+							},
+						})
+						.then((genres) => genres.map(({ name }) => name));
+					expect(songGenres).toContain("a");
+					expect(songGenres).toContain("B");
+					expect(songGenres).toContain("c");
+					// Check previously linked genre still exists
+					expect(songGenres).toContain("My Genre B");
+				});
+		});
+
+		it("should set track as master", () => {
+			return request(app.getHttpServer())
+				.put(`/songs/${dummyRepository.songA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackA1_2Video.id,
+				})
+				.expect((res) => {
+					const song: Song = res.body;
+					expect(song.masterId).toBe(
+						dummyRepository.trackA1_2Video.id,
+					);
+				});
+		});
+
+		it("should fail as track does not belong to song", () => {
+			return request(app.getHttpServer())
+				.put(`/songs/${dummyRepository.songA1.id}`)
+				.send({
+					masterTrackId: dummyRepository.trackC1_1.id,
+				})
+				.expect(400);
 		});
 	});
 });

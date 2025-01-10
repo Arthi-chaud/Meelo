@@ -121,7 +121,9 @@ const Player = () => {
 					progress.current = player.current!.currentTime;
 				};
 				player.current!.onended = () => {
-					API.setSongAsPlayed(currentTrack.track.songId);
+					if (currentTrack.track.songId) {
+						API.setSongAsPlayed(currentTrack.track.songId);
+					}
 					progress.current = null;
 					skipTrack();
 				};

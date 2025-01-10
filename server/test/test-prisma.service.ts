@@ -13,6 +13,8 @@ import {
 	SongType,
 	Track,
 	TrackType,
+	Video,
+	VideoType,
 } from "@prisma/client";
 import Logger from "src/logger/logger";
 import { Playlist } from "src/prisma/models";
@@ -61,6 +63,8 @@ export default class TestPrismaService extends PrismaService {
 
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
+
+	public videoA1: Video;
 
 	private baseTrack = {
 		bitrate: 0,
@@ -169,10 +173,11 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA1_1 = await this.file.create({
 			data: {
-				path: "a",
-				md5Checksum: "",
+				path: "Artist A/Album A/1-02 My Song.m4a",
+				checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
+				fingerprint: "ACOUSTID",
 			},
 		});
 		this.trackA1_1 = await this.track.create({
@@ -189,10 +194,25 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA1_2Video = await this.file.create({
 			data: {
-				path: "b",
-				md5Checksum: "",
+				path: "Artist A/Album A/My Song.m4v",
+				checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
+			},
+		});
+		this.videoA1 = await this.video.create({
+			data: {
+				name: "My Song",
+				slug: "my-artist-my-song",
+				nameSlug: "my-song",
+				artist: { connect: { id: this.artistA.id } },
+				song: { connect: { id: this.songA1.id } },
+				type: VideoType.MusicVideo,
+				group: {
+					connect: {
+						slug: new Slug(this.artistA.name, "my-song").toString(),
+					},
+				},
 			},
 		});
 		this.trackA1_2Video = await this.track.create({
@@ -201,11 +221,15 @@ export default class TestPrismaService extends PrismaService {
 				name: "My Song 2 (Video)",
 				songId: this.songA1.id,
 				discIndex: 2,
+				videoId: this.videoA1.id,
 				releaseId: this.releaseA1_2.id,
 				type: TrackType.Video,
 				sourceFileId: this.fileA1_2Video.id,
+				masterOfVideo: { connect: { id: this.videoA1.id } },
 			},
 		});
+		//To update master track id
+		this.videoA1.masterId = this.trackA1_2Video.id;
 		this.songA2 = await this.song.create({
 			data: {
 				name: "My Other Song",
@@ -226,8 +250,8 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileA2_1 = await this.file.create({
 			data: {
-				path: "c",
-				md5Checksum: "",
+				path: "Artist A/Album B/My Other Song.m4a",
+				checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
 			},
@@ -283,8 +307,8 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileB1_1 = await this.file.create({
 			data: {
-				path: "a",
-				md5Checksum: "",
+				path: "Artist B/Album B/My Second Song.m4a",
+				checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library2.id,
 			},
@@ -341,8 +365,8 @@ export default class TestPrismaService extends PrismaService {
 		});
 		this.fileC1_1 = await this.file.create({
 			data: {
-				path: "e",
-				md5Checksum: "",
+				path: "Compilations/Album C/My C Song.m4a",
+				checksum: "",
 				registerDate: new Date(),
 				libraryId: this.library1.id,
 			},
@@ -362,18 +386,23 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My Playlist 1",
 				slug: "my-playlist-1",
+				createdAt: new Date("2000-01-01"),
 			},
 		});
 		this.playlist2 = await this.playlist.create({
 			data: {
 				name: "The Playlist 2",
 				slug: "the-playlist-2",
+
+				createdAt: new Date("2000-01-02"),
 			},
 		});
 		this.playlist3 = await this.playlist.create({
 			data: {
 				name: "Playlist 3",
 				slug: "playlist-3",
+
+				createdAt: new Date("2000-01-03"),
 			},
 		});
 		this.playlistEntry2 = await this.playlistEntry.create({

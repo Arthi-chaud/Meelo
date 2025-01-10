@@ -10,7 +10,7 @@ import { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
@@ -24,6 +24,12 @@ import {
 	expectedReleaseResponse,
 } from "test/expected-responses";
 import { IllustrationType } from "@prisma/client";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
+import { createReadStream, existsSync, rmSync } from "fs";
+import { dirname } from "path";
 
 describe("Track Controller", () => {
 	let app: INestApplication;
@@ -40,7 +46,7 @@ describe("Track Controller", () => {
 				TrackModule,
 				IllustrationModule,
 				SongModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
 				LyricsModule,
 				LibraryModule,
@@ -138,10 +144,10 @@ describe("Track Controller", () => {
 		});
 	});
 
-	describe("Get Song Master (GET /tracks/master/:id)", () => {
+	describe("Get Song Master (GET /tracks/master/song/:id)", () => {
 		it("should return master track", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks/master/${dummyRepository.songB1.id}`)
+				.get(`/tracks/master/song/${dummyRepository.songB1.id}`)
 				.expect(200)
 				.expect((res) => {
 					const track: Track = res.body;
@@ -153,7 +159,7 @@ describe("Track Controller", () => {
 		it("should return master track w/ song & release", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/tracks/master/${dummyRepository.songA1.id}?with=song,release`,
+					`/tracks/master/song/${dummyRepository.songA1.id}?with=song,release`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -169,7 +175,7 @@ describe("Track Controller", () => {
 		});
 		it("should return an error, as the song does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks/master/${-1}`)
+				.get(`/tracks/master/song/${-1}`)
 				.expect(404);
 		});
 	});
@@ -417,22 +423,6 @@ describe("Track Controller", () => {
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
 					expect(tracks.length).toBe(0);
-				});
-		});
-	});
-
-	describe("Set Track as master (POST /tracks/:id/master)", () => {
-		it("should set track as master", () => {
-			return request(app.getHttpServer())
-				.put(`/tracks/${dummyRepository.trackA1_2Video.id}/master`)
-				.expect(200)
-				.expect((res) => {
-					const track: Track = res.body;
-					expect(track).toStrictEqual({
-						...expectedTrackResponse(
-							dummyRepository.trackA1_2Video,
-						),
-					});
 				});
 		});
 	});

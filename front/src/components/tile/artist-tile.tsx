@@ -24,6 +24,7 @@ import { Box } from "@mui/material";
 
 const ArtistTile = (props: {
 	artist: ArtistWithRelations<"illustration"> | undefined;
+	onClick?: () => void;
 }) => {
 	return (
 		<Tile
@@ -31,6 +32,7 @@ const ArtistTile = (props: {
 			contextualMenu={
 				props.artist && <ArtistContextualMenu artist={props.artist} />
 			}
+			onClick={props.onClick}
 			subtitle={null}
 			title={props.artist?.name}
 			href={props.artist && `/artists/${props.artist.slug}`}

@@ -26,16 +26,14 @@ import {
 	TrackNotFoundException,
 } from "./track.exceptions";
 import ReleaseService from "src/release/release.service";
-import type TrackQueryParameters from "./models/track.query-parameters";
+import TrackQueryParameters from "./models/track.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import FileService from "src/file/file.service";
 import Slug from "src/slug/slug";
 import AlbumService from "src/album/album.service";
 import LibraryService from "src/library/library.service";
-import { Track } from "src/prisma/models";
 import Identifier from "src/identifier/models/identifier";
-import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import { FileNotFoundException } from "src/file/file.exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
@@ -47,13 +45,15 @@ import {
 } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import VideoService from "src/video/video.service";
 
 @Injectable()
 export default class TrackService {
-	private readonly logger = new Logger(TrackService.name);
 	constructor(
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
+		@Inject(forwardRef(() => VideoService))
+		private videoService: VideoService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => FileService))
@@ -109,15 +109,24 @@ export default class TrackService {
 			include: include ?? ({} as I),
 			data: {
 				...input,
-				song: {
-					connect: SongService.formatWhereInput(input.song),
-				},
-				release: {
-					connect: ReleaseService.formatWhereInput(input.release),
-				},
+				song: input.song
+					? {
+							connect: SongService.formatWhereInput(input.song),
+					  }
+					: undefined,
+				release: input.release
+					? {
+							connect: ReleaseService.formatWhereInput(
+								input.release,
+							),
+					  }
+					: undefined,
 				sourceFile: {
 					connect: FileService.formatWhereInput(input.sourceFile),
 				},
+				video: input.video
+					? { connect: VideoService.formatWhereInput(input.video) }
+					: undefined,
 			},
 		};
 		return this.prismaService.track
@@ -126,20 +135,29 @@ export default class TrackService {
 			)
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					const parentSong = await this.songService.get(input.song, {
-						artist: true,
-					});
-					const parentRelease = await this.releaseService.get(
-						input.release,
-					);
+					const parentSong = input.song
+						? await this.songService.get(input.song, {
+								artist: true,
+						  })
+						: undefined;
 
 					await this.fileService.get(input.sourceFile);
-					if (error.code === PrismaError.RequiredRelationViolation) {
-						throw new TrackAlreadyExistsException(
-							input.name,
-							new Slug(parentRelease.slug),
-							new Slug(parentSong.artist.slug),
+					if (input.release) {
+						const parentRelease = await this.releaseService.get(
+							input.release,
 						);
+
+						if (
+							error.code === PrismaError.RequiredRelationViolation
+						) {
+							throw new TrackAlreadyExistsException(
+								input.name,
+								new Slug(parentRelease.slug),
+								parentSong
+									? new Slug(parentSong.artist.slug)
+									: undefined,
+							);
+						}
 					}
 				}
 				throw new UnhandledORMErrorException(error, input);
@@ -165,15 +183,23 @@ export default class TrackService {
 			type: where.type,
 		};
 
-		if (where.id) {
-			queryParameters = deepmerge(queryParameters, { id: where.id });
+		if (where.tracks) {
+			queryParameters = deepmerge(queryParameters, {
+				OR: where.tracks.map((track) =>
+					TrackService.formatWhereInput(track),
+				),
+			});
 		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
 				song: SongService.formatWhereInput(where.song),
 			});
 		}
-
+		if (where.video) {
+			queryParameters = deepmerge(queryParameters, {
+				video: VideoService.formatWhereInput(where.video),
+			});
+		}
 		if (where.library) {
 			queryParameters = deepmerge(queryParameters, {
 				sourceFile: {
@@ -310,7 +336,7 @@ export default class TrackService {
 	 * @param include the relation to include in the returned object
 	 * @returns the master track of the song
 	 */
-	async getMasterTrack(
+	async getSongMasterTrack(
 		where: SongQueryParameters.WhereInput,
 		include?: TrackQueryParameters.RelationInclude,
 	) {
@@ -344,6 +370,43 @@ export default class TrackService {
 	}
 
 	/**
+	 * Fetch the master tracks of a video
+	 * @param where the parameters to find the parent video
+	 * @param include the relation to include in the returned object
+	 * @returns the master track of the video
+	 */
+	async getVideoMasterTrack(
+		where: SongQueryParameters.WhereInput,
+		include?: TrackQueryParameters.RelationInclude,
+	) {
+		return this.videoService
+			.get(where, { artist: true })
+			.then(async (video) => {
+				if (video.masterId != null) {
+					return this.get({ id: video.masterId }, include);
+				}
+				const tracks = await this.prismaService.track.findMany({
+					where: { video: VideoService.formatWhereInput(where) },
+					include: include,
+					orderBy: {
+						bitrate: { sort: "desc", nulls: "last" },
+					},
+				});
+				const master =
+					tracks.find((track) => track.type == "Video") ??
+					tracks.at(0);
+
+				if (!master) {
+					throw new MasterTrackNotFoundException(
+						new Slug(video.slug),
+						new Slug(video.artist.slug),
+					);
+				}
+				return master;
+			});
+	}
+
+	/**
 	 * Get Playlist of release
 	 * @param where query paremeters to find the release
 	 * @returns all the tracks, ordered, from a release
@@ -363,7 +426,11 @@ export default class TrackService {
 				{ discIndex: { sort: "asc", nulls: "last" } },
 			],
 			...formatPaginationParameters(pagination),
-			include: { illustration: true, song: { include: include } },
+			include: {
+				illustration: true,
+				song: { include: include },
+				video: { include: { artist: include?.artist ?? false } },
+			},
 		});
 
 		if (tracks.length == 0) {
@@ -382,6 +449,21 @@ export default class TrackService {
 				where: TrackService.formatWhereInput(where),
 				data: {
 					...what,
+					standaloneIllustrationId: undefined,
+					standaloneIllustration: what.standaloneIllustrationId
+						? { connect: { id: what.standaloneIllustrationId } }
+						: undefined,
+					thumbnailId: undefined,
+					thumbnail: what.thumbnailId
+						? { connect: { id: what.thumbnailId } }
+						: undefined,
+					video: what.video
+						? {
+								connect: VideoService.formatWhereInput(
+									what.video,
+								),
+						  }
+						: undefined,
 					song: what.song
 						? {
 								connect: SongService.formatWhereInput(
@@ -420,40 +502,61 @@ export default class TrackService {
 	}
 
 	/**
-	 * Deletes a track
-	 * @param where Query parameters to find the track to delete
+	 * Delete tracks
+	 * @param where Query parameters to find the tracks to delete
 	 */
-	async delete(where: TrackQueryParameters.DeleteInput): Promise<Track> {
-		return this.prismaService.track
-			.delete({
-				where: where,
-			})
-			.then((deleted) => {
-				this.illustrationRepository
-					.getReleaseIllustrations({ id: deleted.releaseId })
-					.then((relatedIllustrations) => {
-						const exactIllustration = relatedIllustrations.find(
-							(i) =>
-								i.disc !== null &&
-								i.track !== null &&
-								i.disc === deleted.discIndex &&
-								i.track === deleted.trackIndex,
-						);
-						if (exactIllustration) {
-							this.illustrationRepository.deleteIllustration(
-								exactIllustration.id,
-							);
-						}
-					});
-				this.logger.warn(`Track '${deleted.name}' deleted`);
-				return deleted;
-			})
-			.catch((error) => {
-				throw this.onNotFound(
-					error,
-					this.formatDeleteInputToWhereInput(where),
-				);
+	async delete(where: TrackQueryParameters.DeleteInput[]): Promise<number> {
+		const chunkSize = 30;
+		let totalDeleted = 0;
+		for (let idx = 0; idx < where.length; idx += chunkSize) {
+			const whereChunk = where
+				.slice(idx, idx + chunkSize)
+				.map((track) => this.formatDeleteInputToWhereInput(track));
+
+			const toDelete = await this.getMany({
+				tracks: whereChunk,
 			});
+			await Promise.allSettled(
+				toDelete
+					.filter(({ thumbnailId }) => thumbnailId !== null)
+					.map(({ thumbnailId }) =>
+						this.illustrationRepository.deleteIllustration(
+							thumbnailId!,
+						),
+					),
+			);
+
+			await Promise.allSettled(
+				toDelete
+					.filter(({ releaseId }) => releaseId !== null)
+					.map(({ releaseId, discIndex, trackIndex }) =>
+						this.illustrationRepository
+							.getReleaseIllustrations({ id: releaseId! })
+							.then(async (relatedIllustrations) => {
+								const exactIllustration =
+									relatedIllustrations.find(
+										(i) =>
+											i.disc !== null &&
+											i.track !== null &&
+											i.disc === discIndex &&
+											i.track === trackIndex,
+									);
+								if (exactIllustration) {
+									await this.illustrationRepository.deleteIllustration(
+										exactIllustration.id,
+									);
+								}
+							}),
+					),
+			);
+			const deleted = await this.prismaService.track.deleteMany({
+				where: TrackService.formatManyWhereInput({
+					tracks: whereChunk,
+				}),
+			});
+			totalDeleted = totalDeleted + deleted.count;
+		}
+		return totalDeleted;
 	}
 
 	/**

@@ -15,7 +15,7 @@ import ReleaseModule from "./release.module";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
 import FileModule from "src/file/file.module";
@@ -26,9 +26,8 @@ import {
 	expectedTrackResponse,
 	expectedSongResponse,
 	expectedArtistResponse,
+	expectedVideoResponse,
 } from "test/expected-responses";
-import ProvidersModule from "src/providers/providers.module";
-import ProviderService from "src/providers/provider.service";
 import { IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
@@ -49,9 +48,8 @@ describe("Release Controller", () => {
 				IllustrationModule,
 				SongModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				GenreModule,
-				ProvidersModule,
 			],
 			providers: [
 				ReleaseService,
@@ -66,7 +64,6 @@ describe("Release Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		await module.get(ProviderService).onModuleInit();
 	});
 
 	afterAll(async () => {
@@ -178,42 +175,6 @@ describe("Release Controller", () => {
 					expect(release).toStrictEqual(
 						expectedReleaseResponse(dummyRepository.releaseA1_1),
 					);
-				});
-		});
-
-		it("should return the release w/ discogs ID", async () => {
-			await module.get(PrismaService).releaseExternalId.create({
-				data: {
-					provider: { connect: { name: "discogs" } },
-					value: "1234567",
-					description: "ABCDE",
-					release: {
-						connect: { id: dummyRepository.releaseA1_1.id },
-					},
-				},
-			});
-			return request(app.getHttpServer())
-				.get(
-					`/releases/${dummyRepository.releaseA1_1.id}?with=externalIds`,
-				)
-				.expect(200)
-				.expect((res) => {
-					const release: Release = res.body;
-					expect(release).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.releaseA1_1),
-						externalIds: [
-							{
-								provider: {
-									name: "discogs",
-									homepage: "https://www.discogs.com",
-									icon: "/illustrations/providers/discogs/icon",
-								},
-								description: "ABCDE",
-								value: "1234567",
-								url: "https://www.discogs.com/release/1234567",
-							},
-						],
-					});
 				});
 		});
 
@@ -408,6 +369,7 @@ describe("Release Controller", () => {
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							illustration: null,
+							video: null,
 							song: expectedSongResponse(dummyRepository.songA2),
 						},
 						{
@@ -415,6 +377,9 @@ describe("Release Controller", () => {
 								dummyRepository.trackA1_2Video,
 							),
 							illustration: null,
+							video: expectedVideoResponse(
+								dummyRepository.videoA1,
+							),
 							song: expectedSongResponse(dummyRepository.songA1),
 						},
 					]);
@@ -433,6 +398,7 @@ describe("Release Controller", () => {
 						{
 							...expectedTrackResponse(dummyRepository.trackA2_1),
 							illustration: null,
+							video: null,
 							song: {
 								...expectedSongResponse(dummyRepository.songA2),
 								artist: expectedArtistResponse(
@@ -444,6 +410,14 @@ describe("Release Controller", () => {
 							...expectedTrackResponse(
 								dummyRepository.trackA1_2Video,
 							),
+							video: {
+								...expectedVideoResponse(
+									dummyRepository.videoA1,
+								),
+								artist: expectedArtistResponse(
+									dummyRepository.artistA,
+								),
+							},
 							illustration: null,
 							song: {
 								...expectedSongResponse(dummyRepository.songA1),
@@ -507,20 +481,6 @@ describe("Release Controller", () => {
 					expect(res.body).toStrictEqual({
 						...expectedReleaseResponse(dummyRepository.releaseB1_1),
 						album: expectedAlbumResponse(dummyRepository.albumB1),
-					});
-				});
-		});
-	});
-
-	describe("Set Release as master (POST /releases/:id/master)", () => {
-		it("should set release as master", () => {
-			return request(app.getHttpServer())
-				.put(`/releases/${dummyRepository.releaseA1_2.id}/master`)
-				.expect(200)
-				.expect((res) => {
-					const release: Release = res.body;
-					expect(release).toStrictEqual({
-						...expectedReleaseResponse(dummyRepository.releaseA1_2),
 					});
 				});
 		});

@@ -1,4 +1,4 @@
-import { SongType } from "@prisma/client";
+import { File, SongType, VideoType } from "@prisma/client";
 import {
 	Release,
 	Track,
@@ -6,11 +6,17 @@ import {
 	Album,
 	SongWithRelations,
 	Playlist,
+	VideoWithRelations,
 } from "src/prisma/models";
 
 export const expectedArtistResponse = (artist: Artist) => ({
 	...artist,
 	registeredAt: artist.registeredAt.toISOString(),
+});
+
+export const expectedFileResponse = (file: File) => ({
+	...file,
+	registerDate: file.registerDate.toISOString(),
 });
 
 export const expectedAlbumResponse = (album: Album) => ({
@@ -23,6 +29,12 @@ export const expectedSongResponse = (song: SongWithRelations) => ({
 	...song,
 	registeredAt: song.registeredAt.toISOString(),
 	type: SongType.Original,
+});
+
+export const expectedVideoResponse = (video: VideoWithRelations) => ({
+	...video,
+	registeredAt: video.registeredAt.toISOString(),
+	type: VideoType.MusicVideo,
 });
 
 export const expectedSongGroupResponse = (
@@ -41,7 +53,11 @@ export const expectedReleaseResponse = (release: Release) => ({
 	releaseDate: release.releaseDate?.toISOString() ?? null,
 });
 
-export const expectedTrackResponse = (track: Track) => ({
+export const expectedTrackResponse = ({
+	thumbnailId,
+	standaloneIllustrationId,
+	...track
+}: Track) => ({
 	...track,
 });
 

@@ -27,7 +27,6 @@ describe("Settings Controller", () => {
 		jest.spyOn(fileService, "getFileContent").mockImplementationOnce(() =>
 			fs.readFileSync("test/assets/settings.json").toString(),
 		);
-		controller.reload();
 	});
 
 	afterAll(async () => {
@@ -44,21 +43,7 @@ describe("Settings Controller", () => {
 			.get("/settings")
 			.expect(200)
 			.expect({
-				...JSON.parse(
-					fs.readFileSync("test/assets/settings.json").toString(),
-				),
 				allowAnonymous: false,
-				providers: {
-					genius: { enabled: true },
-					musicbrainz: { enabled: true },
-				},
 			});
-	});
-
-	it("/GET /settings/reload", () => {
-		jest.spyOn(fileService, "getFileContent").mockImplementation(() =>
-			fs.readFileSync("test/assets/settings2.json").toString(),
-		);
-		return request(app.getHttpServer()).get("/settings/reload").expect(302);
 	});
 });

@@ -37,7 +37,7 @@ import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
-import ChangeSongType from "../actions/song-type";
+import { ChangeSongType } from "../actions/resource-type";
 import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
 
@@ -48,7 +48,7 @@ type ReleaseTrackContextualMenuProps = {
 };
 
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
-	const songSlug = props.track.song.slug;
+	const songSlug = props.track.song?.slug;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
@@ -59,25 +59,37 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 			onSelect={props.onSelect}
 			actions={[
 				[GoToArtistAction(props.artist.slug)],
-				[GoToSongLyricsAction(songSlug)],
+				songSlug ? [GoToSongLyricsAction(songSlug)] : [],
 				[
 					PlayNextAction(async () => props, playNext),
 					PlayAfterAction(async () => props, playAfter),
 				],
-				[AddToPlaylistAction(props.track.song.id, queryClient)],
+				props.track.songId
+					? [AddToPlaylistAction(props.track.songId, queryClient)]
+					: [],
+				songSlug
+					? [
+							GoToSongVersionAction(songSlug),
+							GoToRelatedTracksAction(songSlug),
+						]
+					: [],
 				[
-					GoToSongVersionAction(songSlug),
-					GoToRelatedTracksAction(songSlug),
-				],
-				[
-					ChangeSongType(props.track.song, queryClient, confirm),
+					...(props.track.song
+						? [
+								ChangeSongType(
+									props.track.song,
+									queryClient,
+									confirm,
+								),
+							]
+						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
 					DownloadAction(confirm, props.track.sourceFileId, t),
-					ShareSongAction(songSlug, t),
+					...(songSlug ? [ShareSongAction(songSlug, t)] : []),
 				],
 			]}
 		/>

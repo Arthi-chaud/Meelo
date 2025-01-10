@@ -23,7 +23,6 @@ import { useInfiniteQuery, useQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { GetPropsTypesFrom, Page } from "../../../ssr";
 import SectionHeader from "../../../components/section-header";
-import ExternalIdBadge from "../../../components/external-id-badge";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { AlbumType } from "../../../models/album";
@@ -39,6 +38,8 @@ import {
 	VideoListPageSection,
 } from "../../../components/page-section";
 import { Head } from "../../../components/head";
+import ExternalMetadataBadge from "../../../components/external-metadata-badge";
+import { VideoTypeIsExtra } from "../../../models/video";
 
 // Number of Song item in the 'Top Song' section
 const SongListSize = 6;
@@ -60,8 +61,8 @@ const latestAlbumsQuery = AlbumType.map((type) => ({
 const videosQuery = (artistSlugOrId: string | number) =>
 	API.getVideos(
 		{ artist: artistSlugOrId },
-		{ sortBy: "totalPlayCount", order: "desc" },
-		["artist"],
+		{ sortBy: "addDate", order: "desc" },
+		["artist", "master", "illustration"],
 	);
 
 const topSongsQuery = (artistSlugOrId: string | number) =>
@@ -79,8 +80,10 @@ const rareSongsQuery = (artistSlugOrId: string | number) =>
 	);
 
 const artistQuery = (artistSlugOrId: string | number) =>
-	API.getArtist(artistSlugOrId, ["externalIds", "illustration"]);
+	API.getArtist(artistSlugOrId, ["illustration"]);
 
+const externalMetadataQuery = (artistSlugOrId: string | number) =>
+	API.getArtistExternalMetadata(artistSlugOrId);
 const appearanceQuery = (artistSlugOrId: string | number) =>
 	API.getAlbums(
 		{ appearance: artistSlugOrId },
@@ -93,7 +96,10 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { artistIdentifier },
-		queries: [artistQuery(artistIdentifier)],
+		queries: [
+			artistQuery(artistIdentifier),
+			externalMetadataQuery(artistIdentifier),
+		],
 		infiniteQueries: [
 			rareSongsQuery(artistIdentifier),
 			videosQuery(artistIdentifier),
@@ -119,20 +125,20 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const topSongs = useInfiniteQuery(topSongsQuery, artistIdentifier);
 	const rareSongs = useInfiniteQuery(rareSongsQuery, artistIdentifier);
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
-	const externalIdWithDescription = artist.data?.externalIds
-		.filter(({ provider }) => provider.name.toLowerCase() !== "discogs")
-		.find(({ description }) => description !== null);
+	const externalMetadata = useQuery(externalMetadataQuery, artistIdentifier);
 	const { musicVideos, liveVideos, extras } = useMemo(() => {
 		const firstPage = videos.data?.pages.at(0)?.items;
 		return {
 			musicVideos:
 				firstPage?.filter(
-					(video) => video.type != "NonMusic" && video.type != "Live",
+					(video) =>
+						!VideoTypeIsExtra(video.type) && video.type != "Live",
 				) ?? [],
 			liveVideos:
 				firstPage?.filter((video) => video.type == "Live") ?? [],
 			extras:
-				firstPage?.filter((video) => video.type == "NonMusic") ?? [],
+				firstPage?.filter((video) => VideoTypeIsExtra(video.type)) ??
+				[],
 		};
 	}, [videos]);
 	const { GradientBackground } = useGradientBackground(
@@ -143,9 +149,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		<Box sx={{ width: "100%" }}>
 			<Head
 				title={artist.data?.name}
-				description={
-					externalIdWithDescription?.description ?? undefined
-				}
+				description={externalMetadata.data?.description ?? undefined}
 			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
@@ -217,7 +221,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					subtitleIs="artistName"
 					query={appearances}
 				/>
-				{externalIdWithDescription && (
+				{externalMetadata.data?.description && (
 					<>
 						<Divider sx={{ marginBottom: SectionPadding }} />
 						<SectionHeader heading={t("about")} />
@@ -226,12 +230,13 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							sx={{ paddingBottom: 4, paddingTop: 3 }}
 						>
 							<ResourceDescriptionExpandable
-								externalDescription={externalIdWithDescription}
+								externalMetadata={externalMetadata.data}
 							/>
 						</Container>
 					</>
 				)}
-				{(!artist.data || artist.data.externalIds.length != 0) && (
+				{(externalMetadata.data === undefined ||
+					externalMetadata.data?.sources.length) && (
 					<>
 						<Divider />
 						<Grid
@@ -244,12 +249,14 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								<SectionHeader heading={t("externalLinks")} />
 							</Grid>
 							{(
-								artist.data?.externalIds.filter(
+								externalMetadata.data?.sources.filter(
 									({ url }) => url !== null,
 								) ?? generateArray(2)
-							).map((externalId, index) => (
+							).map((externalSource, index) => (
 								<Grid item key={index}>
-									<ExternalIdBadge externalId={externalId} />
+									<ExternalMetadataBadge
+										source={externalSource}
+									/>
 								</Grid>
 							)) ?? []}
 						</Grid>

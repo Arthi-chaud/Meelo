@@ -6,7 +6,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ScannerModule from "src/scanner/scanner.module";
+import ParserModule from "src/parser/parser.module";
 import AlbumModule from "src/album/album.module";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
@@ -19,11 +19,12 @@ const fs = require("fs");
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import SetupApp from "test/setup-app";
-import ProvidersModule from "src/providers/providers.module";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { IllustrationType } from "@prisma/client";
 import { Illustration } from "src/prisma/models";
 import { IllustrationResponse } from "./models/illustration.response";
+import { createReadStream, existsSync, rmSync } from "fs";
+import { dirname } from "path";
+import IllustrationService from "./illustration.service";
 
 jest.setTimeout(60000);
 
@@ -39,7 +40,7 @@ describe("Illustration Controller", () => {
 				FileManagerModule,
 				PrismaModule,
 				FileModule,
-				ScannerModule,
+				ParserModule,
 				FileModule,
 				ArtistModule,
 				AlbumModule,
@@ -48,7 +49,6 @@ describe("Illustration Controller", () => {
 				TrackModule,
 				GenreModule,
 				LyricsModule,
-				ProvidersModule,
 			],
 		})
 			.overrideProvider(PrismaService)
@@ -58,8 +58,16 @@ describe("Illustration Controller", () => {
 		fileManagerService = module.get<FileManagerService>(FileManagerService);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
+
+		jest.spyOn(
+			IllustrationService.prototype,
+			"getImageStats",
+		).mockImplementation(async () => ({
+			blurhash: "",
+			colors: [],
+			aspectRatio: 0,
+		}));
 	});
-	const baseMetadataFolder = "test/assets/metadata";
 
 	afterAll(async () => {
 		await app.close();
@@ -67,15 +75,14 @@ describe("Illustration Controller", () => {
 	});
 
 	const getDummyIllustrationStream = () =>
-		fs.createReadStream("test/assets/settings.json");
-	const dummyIllustrationBytes = fs.readFileSync("test/assets/settings.json");
+		fs.createReadStream("test/sequencer.ts");
+	const dummyIllustrationBytes = fs.readFileSync("test/sequencer.ts");
 
 	const illustrationUrlExample =
-		"https://i.discogs.com/VEV-yWsS3J9SfeTVaY8Q_3Bw3dWqHHgf2WLDL5mGqxo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY1NDkzNDk3LTQ2/MDYuanBlZw.jpeg";
-	// const distantIllustrationContent = axios.get(illustrationUrlExample).then((r) => r.data);
+		"https://sample-videos.com/img/Sample-jpg-image-50kb.jpg";
 
 	const illustration2UrlExample =
-		"https://i.discogs.com/OoRFxbWuLADDqiPFOUU_7t9k5P1Zui3V__PsTXd_LYo/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTY2Ny0x/NjY2NTM3ODUxLTIz/NzQuanBlZw.jpeg";
+		"https://sample-videos.com/img/Sample-jpg-image-100kb.jpg";
 
 	describe("Stream Illustration", () => {
 		it("should return the artist illustration", async () => {
@@ -132,8 +139,9 @@ describe("Illustration Controller", () => {
 		let firstIllustration: IllustrationResponse | null = null;
 		it("should create the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					artistId: dummyRepository.artistB.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -149,8 +157,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should update the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/artists/${dummyRepository.artistB.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					artistId: dummyRepository.artistB.id,
 					url: illustration2UrlExample,
 				})
 				.expect(201)
@@ -172,8 +181,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/artists/-1/artists`)
+				.post(`/illustrations/url`)
 				.send({
+					artistId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
@@ -184,10 +194,9 @@ describe("Illustration Controller", () => {
 		let firstIllustration: IllustrationResponse | null = null;
 		it("should create the release illustration", async () => {
 			return request(app.getHttpServer())
-				.post(
-					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
-				)
+				.post(`/illustrations/url`)
 				.send({
+					releaseId: dummyRepository.releaseB1_1.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -203,10 +212,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should update the release illustration", async () => {
 			return request(app.getHttpServer())
-				.post(
-					`/releases/${dummyRepository.releaseB1_1.id}/illustration`,
-				)
+				.post(`/illustrations/url`)
 				.send({
+					releaseId: dummyRepository.releaseB1_1.id,
 					url: illustration2UrlExample,
 				})
 				.expect(201)
@@ -229,8 +237,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when release does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/releases/-1/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					releaseId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
@@ -240,8 +249,9 @@ describe("Illustration Controller", () => {
 	describe("Update Track Illustration", () => {
 		it("should create the track illustration", async () => {
 			return request(app.getHttpServer())
-				.post(`/tracks/${dummyRepository.trackC1_1.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					trackId: dummyRepository.trackC1_1.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -256,8 +266,9 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/tracks/-1/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					trackId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
@@ -267,8 +278,9 @@ describe("Illustration Controller", () => {
 	describe("Update Playlist Illustration", () => {
 		it("should create the Playlist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/playlists/${dummyRepository.playlist1.id}/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					playlistId: dummyRepository.playlist1.id,
 					url: illustrationUrlExample,
 				})
 				.expect(201)
@@ -283,11 +295,81 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when playlist does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/playlists/-1/illustration`)
+				.post(`/illustrations/url`)
 				.send({
+					playlistId: -1,
 					url: illustrationUrlExample,
 				})
 				.expect(404);
+		});
+	});
+
+	describe("POST Illustration", () => {
+		it("should not save the illustration (2 resource ids)", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/url`)
+				.send({
+					artistId: 1,
+					releaseId: 2,
+					url: illustrationUrlExample,
+				})
+				.expect(400);
+		});
+		it("should not save the illustration (no resource id)", () => {
+			return request(app.getHttpServer())
+				.post(`/illustrations/url`)
+				.send({
+					url: illustrationUrlExample,
+				})
+				.expect(400);
+		});
+	});
+
+	describe("Register Illustration", () => {
+		const buildData = (r: request.Test, trackId: number) => {
+			return r
+				.field("type", "Thumbnail")
+				.field("trackId", trackId)
+				.attach("file", createReadStream("test/assets/cover2.jpg"));
+		};
+		describe("Error handling", () => {
+			it("Should throw, as target track does not exist", async () => {
+				return buildData(
+					request(app.getHttpServer()).post(`/illustrations/file`),
+					1,
+				).expect(404);
+			});
+			it("Should throw, as target track is not a video", async () => {
+				return buildData(
+					request(app.getHttpServer()).post(`/illustrations/file`),
+					dummyRepository.trackA1_1.id,
+				).expect(400);
+			});
+			it("Should throw, as type is not valid", async () => {
+				return buildData(
+					request(app.getHttpServer()).post(`/illustrations/file`),
+					dummyRepository.trackC1_1.id,
+				)
+					.expect(400)
+					.field("type", "Avatar");
+			});
+		});
+		it("Should set the image's illustration", async () => {
+			return buildData(
+				request(app.getHttpServer()).post(`/illustrations/file`),
+				dummyRepository.trackA1_2Video.id,
+			)
+				.expect(201)
+				.expect((res) => {
+					const illustration: IllustrationResponse = res.body;
+					const illustrationPath = `test/assets/metadata/${illustration.id}/cover.jpg`;
+					expect(illustration.type).toBe("Thumbnail");
+					expect(existsSync(illustrationPath)).toBe(true);
+					rmSync(dirname(illustrationPath), {
+						recursive: true,
+						force: true,
+					});
+				});
 		});
 	});
 });

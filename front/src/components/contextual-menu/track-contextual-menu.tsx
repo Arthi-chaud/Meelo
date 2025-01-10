@@ -26,11 +26,7 @@ import { RootState } from "../../state/store";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
-import {
-	GoToArtistAction,
-	GoToReleaseAction,
-	GoToSongLyricsAction,
-} from "../actions/link";
+import { GoToReleaseAction, GoToSongLyricsAction } from "../actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
@@ -40,13 +36,13 @@ import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
-import ChangeSongType from "../actions/song-type";
 import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
+import Action from "../actions/action";
+import { ChangeSongType } from "../actions/resource-type";
 
 type TrackContextualMenuProps = {
-	track: TrackWithRelations<"song" | "illustration">;
-	isVideo?: true; // If true, will add 'go to artist' to menu
+	track: TrackWithRelations<"video" | "song" | "illustration">;
 	onSelect?: () => void;
 };
 
@@ -56,11 +52,16 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
-	const isMaster = props.track.song.masterId == props.track.id;
+	const isMaster = props.track.song?.masterId === props.track.id;
 	const getPlayNextProps = () =>
 		Promise.all([
-			queryClient.fetchQuery(API.getArtist(props.track.song.artistId)),
-			queryClient.fetchQuery(API.getRelease(props.track.releaseId)),
+			queryClient.fetchQuery(
+				API.getArtist(
+					(props.track.song ?? props.track.video)!.artistId,
+				),
+			),
+			props.track.releaseId &&
+				queryClient.fetchQuery(API.getRelease(props.track.releaseId)),
 		]).then(([artist, release]) => ({
 			track: props.track,
 			artist,
@@ -69,7 +70,9 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const { t } = useTranslation();
 	const { playNext, playAfter } = usePlayerContext();
 	const masterMutation = useMutation(async () => {
-		return API.setTrackAsMaster(props.track.id)
+		return API.updateSong(props.track.songId!, {
+			masterTrackId: props.track.id,
+		})
 			.then(() => {
 				toast.success(t("trackSetAsMaster"));
 				queryClient.client.invalidateQueries();
@@ -81,28 +84,41 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		<ContextualMenu
 			onSelect={props.onSelect}
 			actions={[
-				props.isVideo
-					? [
-							GoToArtistAction(props.track.song.artistId),
-							GoToReleaseAction(props.track.releaseId),
-						]
-					: [GoToReleaseAction(props.track.releaseId)],
-				[GoToSongLyricsAction(props.track.song.slug)],
+				[
+					props.track.releaseId
+						? GoToReleaseAction(props.track.releaseId)
+						: undefined,
+				].filter((a): a is Action => a !== undefined),
+				props.track.song
+					? [GoToSongLyricsAction(props.track.song.slug)]
+					: [],
 				[
 					PlayNextAction(getPlayNextProps, playNext),
 					PlayAfterAction(getPlayNextProps, playAfter),
 				],
-				[AddToPlaylistAction(props.track.songId, queryClient)],
+				props.track.songId
+					? [AddToPlaylistAction(props.track.songId, queryClient)]
+					: [],
+				props.track.songId
+					? [
+							{
+								label: "setAsMaster",
+								disabled: isMaster || !userIsAdmin,
+								icon: <MasterIcon />,
+								onClick: () => masterMutation.mutate(),
+							},
+						]
+					: [],
 				[
-					{
-						label: "setAsMaster",
-						disabled: isMaster || !userIsAdmin,
-						icon: <MasterIcon />,
-						onClick: () => masterMutation.mutate(),
-					},
-				],
-				[
-					ChangeSongType(props.track.song, queryClient, confirm),
+					...(props.track.song
+						? [
+								ChangeSongType(
+									props.track.song,
+									queryClient,
+									confirm,
+								),
+							]
+						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id, t),
 				],

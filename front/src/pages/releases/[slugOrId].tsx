@@ -49,7 +49,6 @@ import { GetPropsTypesFrom, Page } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
 import TileRow from "../../components/tile-row";
 import VideoTile from "../../components/tile/video-tile";
-import ExternalIdBadge from "../../components/external-id-badge";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
@@ -61,7 +60,7 @@ import ResourceDescriptionExpandable from "../../components/resource-description
 import { Star1 } from "iconsax-react";
 import GenreButton from "../../components/genre-button";
 import { SongWithRelations } from "../../models/song";
-import Video from "../../models/video";
+import { VideoTypeIsExtra, VideoWithRelations } from "../../models/video";
 import { useAccentColor } from "../../utils/accent-color";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../utils/gen-list";
@@ -73,9 +72,10 @@ import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
 import { Head } from "../../components/head";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
 import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
+import ExternalMetadataBadge from "../../components/external-metadata-badge";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
-	API.getRelease(releaseIdentifier, ["album", "externalIds", "illustration"]);
+	API.getRelease(releaseIdentifier, ["album", "illustration"]);
 const releaseTracklistQuery = (
 	releaseIdentifier: number | string,
 	exclusiveOnly: boolean,
@@ -107,7 +107,9 @@ const releaseTracklistQuery = (
 	};
 };
 const albumQuery = (albumId: number) =>
-	API.getAlbum(albumId, ["externalIds", "genres", "artist"]);
+	API.getAlbum(albumId, ["genres", "artist"]);
+const externalMetadataQuery = (albumIdentifier: string | number) =>
+	API.getAlbumExternalMetadata(albumIdentifier);
 const artistsOnAlbumQuery = (albumId: number) => {
 	const query = API.getArtists({ album: albumId }, undefined, [
 		"illustration",
@@ -127,7 +129,8 @@ const releaseBSidesQuery = (releaseId: number) =>
 		"master",
 		"illustration",
 	]);
-const albumVideosQuery = (albumId: number) => API.getVideos({ album: albumId });
+const albumVideosQuery = (albumId: number) =>
+	API.getVideos({ album: albumId }, undefined, ["master", "illustration"]);
 const relatedAlbumsQuery = (albumId: number) =>
 	API.getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
 		"artist",
@@ -155,6 +158,7 @@ const prepareSSR = async (
 			releaseTracklistQuery(releaseIdentifier, false),
 			albumQuery(release.albumId),
 			artistsOnAlbumQuery(release.albumId),
+			externalMetadataQuery(release.albumId),
 		],
 		infiniteQueries: [
 			albumGenreQuery(release.albumId),
@@ -198,6 +202,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const theme = useTheme();
 	const { playTracks } = usePlayerContext();
 	const release = useQuery(releaseQuery, releaseIdentifier);
+	const externalMetadata = useQuery(
+		externalMetadataQuery,
+		release.data?.albumId,
+	);
 	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const album = useQuery(albumQuery, release.data?.albumId);
 	const tracklistQuery = useQuery(
@@ -240,7 +248,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		() =>
 			(bSidesQuery.data?.pages.at(0)?.items ?? []).reduce(
 				(prev, current) => {
-					if (current.type === "NonMusic") {
+					if (["NonMusic", "Medley"].includes(current.type)) {
 						return {
 							bSides: prev.bSides,
 							extras: prev.extras.concat(current),
@@ -280,20 +288,41 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { videos, liveVideos, videoExtras } = useMemo(
 		() =>
 			(albumVideos.data?.pages.at(0)?.items ?? [])
-				.map(
-					(video) =>
-						[
-							video,
-							tracks.findIndex(
-								(track) => track.song.groupId == video.groupId,
-							),
-						] as const,
+				.map((video) => {
+					const videoIndex = tracks.findIndex(
+						(track) =>
+							(track.song ?? track.video)!.groupId ==
+							video.groupId,
+					);
+					return [
+						video,
+						videoIndex == -1 ? tracks.length : videoIndex,
+					] as const;
+				})
+
+				.sort(
+					([v1, i1], [v2, i2]) =>
+						i1 - i2 || v1.slug.localeCompare(v2.slug),
 				)
+				.map(([video, tracklistIndex], _, videosWithIndexes) => {
+					if (album.data?.type === "Single") {
+						return [video, tracklistIndex] as const;
+					}
+					const firstVideoOfSameGroup = videosWithIndexes.find(
+						([__, i]) => i == tracklistIndex,
+					)!;
+					return [
+						video,
+						firstVideoOfSameGroup[0].id == video.id
+							? tracklistIndex
+							: 10000 + tracklistIndex,
+					] as const;
+				})
 				.sort(([_, i1], [__, i2]) => i1 - i2)
 				.map(([v, _]) => v)
 				.reduce(
 					(prev, current) => {
-						if (current.type === "NonMusic") {
+						if (VideoTypeIsExtra(current.type)) {
 							return {
 								videos: prev.videos,
 								liveVideos: prev.liveVideos,
@@ -313,10 +342,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						};
 					},
 					{
-						videos: [] as Video[],
-						videoExtras: [] as Video[],
-						liveVideos: [] as Video[],
-					},
+						videos: [],
+						videoExtras: [],
+						liveVideos: [],
+					} as Record<
+						"videos" | "videoExtras" | "liveVideos",
+						VideoWithRelations<"master" | "illustration">[]
+					>,
 				),
 		[albumVideos.data, tracks],
 	);
@@ -324,31 +356,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		() => release.data?.illustration,
 		[release.data],
 	);
-	const externalIdWithDescription = useMemo(
-		() =>
-			album.data?.externalIds
-				.filter(
-					({ provider }) => provider.name.toLowerCase() !== "discogs",
-				)
-				.find(({ description }) => description !== null),
-		[album.data],
-	);
-	const externalIds = useMemo(() => {
-		if (album.data === undefined || release.data === undefined) {
-			return undefined;
-		}
-		return [...album.data.externalIds, ...release.data.externalIds];
-	}, [album.data, release.data]);
-
-	const albumRating = useMemo(() => {
-		return album.data
-			? album.data.externalIds
-					.map(({ rating }) => rating)
-					.filter((rating) => rating !== null)
-					.sort()
-					.at(-1) ?? null
-			: undefined;
-	}, [album.data]);
 	const accentColor = useAccentColor(illustration);
 	const { GradientBackground } = useGradientBackground(illustration?.colors);
 	const ratingColor = useThemedSxValue(
@@ -487,14 +494,14 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									<Skeleton width={"100px"} />
 								)}
 							</Typography>
-							{albumRating && (
+							{externalMetadata.data?.rating && (
 								<Rating
 									sx={{
 										paddingLeft: 1.5,
 										...ratingColor,
 									}}
 									readOnly
-									value={albumRating / 20}
+									value={externalMetadata.data.rating / 20}
 									icon={
 										<Star1
 											size={18}
@@ -543,7 +550,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													artist: artists.data.find(
 														(artist) =>
 															artist.id ==
-															track.song.artistId,
+															(track.song ??
+																track.video)!
+																.artistId,
 													)!,
 													release: release.data,
 												}),
@@ -648,7 +657,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												discKey,
 												discTracks.map((discTrack) => ({
 													...discTrack,
-													song: discTrack.song,
+													song: discTrack.song!,
+													video: discTrack.video!,
 												})),
 											]),
 										)
@@ -831,28 +841,32 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						}
 					/>
 				</RelatedContentSection>
-				{externalIdWithDescription && (
+				{externalMetadata.data?.description && (
 					<RelatedContentSection display title={t("about")}>
 						<Box sx={{ paddingBottom: 2 }}>
 							<ResourceDescriptionExpandable
-								externalDescription={externalIdWithDescription}
+								externalMetadata={externalMetadata.data}
 							/>
 						</Box>
 					</RelatedContentSection>
 				)}
 				<RelatedContentSection
 					display={
-						externalIds === undefined || externalIds.length > 0
+						externalMetadata.data === undefined ||
+						(externalMetadata.data?.sources.length ?? 0) > 0
 					}
 					title={t("externalLinks")}
 				>
 					<Grid container spacing={1}>
 						{(
-							externalIds?.filter(({ url }) => url !== null) ??
-							generateArray(2)
-						).map((externalId, index) => (
+							externalMetadata.data?.sources.filter(
+								({ url }) => url !== null,
+							) ?? generateArray(2)
+						).map((externalSource, index) => (
 							<Grid item key={index}>
-								<ExternalIdBadge externalId={externalId} />
+								<ExternalMetadataBadge
+									source={externalSource}
+								/>
 							</Grid>
 						))}
 					</Grid>

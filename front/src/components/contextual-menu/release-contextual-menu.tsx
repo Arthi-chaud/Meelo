@@ -30,7 +30,7 @@ import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
 import { ReleaseWithRelations } from "../../models/release";
 import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
-import ChangeAlbumType from "../actions/album-type";
+import { ChangeAlbumType } from "../actions/resource-type";
 import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
 import { useTranslation } from "react-i18next";
 
@@ -46,7 +46,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const confirm = useConfirm();
 	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
-		return API.setReleaseAsMaster(props.release.id)
+		return API.updateAlbum(props.release.albumId, {
+			masterReleaseId: props.release.id,
+		})
 			.then(() => {
 				toast.success(t("releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();
@@ -64,7 +66,12 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				Promise.allSettled(
 					tracks
 						.reverse()
-						.map((track) => API.setTrackAsMaster(track.id)),
+						.filter((track) => track.songId != null)
+						.map((track) =>
+							API.updateSong(track.songId!, {
+								masterTrackId: track.id,
+							}),
+						),
 				)
 					.then(() => {
 						toast.success(t("tracksUpdated"));

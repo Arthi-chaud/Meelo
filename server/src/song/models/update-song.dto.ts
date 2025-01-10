@@ -28,4 +28,17 @@ export default class UpdateSongDTO {
 	@IsEnum(SongType)
 	@IsOptional()
 	type?: SongType;
+
+	@ApiProperty({
+		description: "The Genres of the song",
+		isArray: true,
+	})
+	@IsOptional()
+	genres?: string[];
+
+	@ApiProperty({
+		description: "ID of the track to set as master",
+	})
+	@IsOptional()
+	masterTrackId?: number;
 }

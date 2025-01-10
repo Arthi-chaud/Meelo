@@ -40,12 +40,6 @@ import { version } from "package.json";
 import IllustrationStats from "./models/illustration-stats";
 import md5 from "md5";
 
-type IllustrationExtractStatus =
-	| "extracted"
-	| "error"
-	| "already-extracted"
-	| "different-illustration";
-
 /**
  * A service to handle illustration files (downloads, extractions, conversion & streaming)
  * For anything related to Illustration models, see `Illustration Repository`
@@ -225,28 +219,63 @@ export default class IllustrationService {
 
 	async getImageStats(buffer: Buffer): Promise<IllustrationStats> {
 		const image = await Jimp.read(buffer);
+		const aspectRatio = image.getWidth() / image.getHeight();
 
 		return Promise.all([
 			new Promise<string>((resolve) => {
+				const [componentX, componentY] =
+					this.getBlurhashComponentCountFromAspectRatio(aspectRatio);
+				const isHorizontal = image.getWidth() > image.getHeight();
+				const ratio = isHorizontal
+					? image.getWidth() / image.getHeight()
+					: image.getHeight() / image.getWidth();
+				const width = 50;
+				const height = isHorizontal ? width / ratio : width * ratio;
+				const smallImage = image.resize(width, height);
 				resolve(
 					Blurhash.encode(
-						Uint8ClampedArray.from(image.bitmap.data),
-						image.getWidth(),
-						image.getHeight(),
-						// Represent the max number of colors on each axis
-						4,
-						4,
+						Uint8ClampedArray.from(smallImage.bitmap.data),
+						smallImage.getWidth(),
+						smallImage.getHeight(),
+						componentX,
+						componentY,
 					),
 				);
 			}),
 			getColors(buffer, { type: image.getMIME() }).then((colors) =>
 				colors.map((color) => color.hex()),
 			),
-			image.getWidth() / image.getHeight(),
-		]).then(([blurhash, colors, aspectRatio]) => ({
+		]).then(([blurhash, colors]) => ({
 			blurhash,
 			colors,
 			aspectRatio,
 		}));
+	}
+
+	/**
+	 * Computes the values of componentX and componentY used by the blurhasing function
+	 * These components represent the max number of colors on each axis
+	 */
+	private getBlurhashComponentCountFromAspectRatio(
+		aspectRatio: number,
+		baseComponentCount = 4,
+	): [number, number] {
+		return [
+			// there should be at least 1 component per axis
+			Math.max(
+				1,
+				Math.min(
+					Math.round(baseComponentCount * aspectRatio),
+					baseComponentCount,
+				),
+			),
+			Math.max(
+				1,
+				Math.min(
+					Math.round(baseComponentCount / aspectRatio),
+					baseComponentCount,
+				),
+			),
+		];
 	}
 }

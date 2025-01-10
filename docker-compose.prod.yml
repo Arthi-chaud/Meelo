@@ -10,6 +10,8 @@ services:
         condition: service_healthy
       meilisearch:
         condition: service_healthy
+      mq:
+        condition: service_healthy
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}
       - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}
@@ -18,14 +20,33 @@ services:
     environment:
       - TRANSCODER_URL=http://transcoder:7666
       - MEILI_HOST=http://meilisearch:7700
-      - REDIS_HOST=redis
-      - POSTGRES_HOST=db
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?schema=public
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
       interval: 5s
       timeout: 5s
       retries: 5
+  scanner:
+    image: ghcr.io/arthi-chaud/meelo-scanner:latest
+    expose:
+      - 8133
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:8133"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - INTERNAL_DATA_DIR=${INTERNAL_DATA_DIR}
+      - API_KEYS=${API_KEYS}
+    volumes:
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   front:
     image: ghcr.io/arthi-chaud/meelo-front:latest
     expose:
@@ -33,16 +54,28 @@ services:
     depends_on:
       server:
         condition: service_healthy
+      scanner:
+        condition: service_healthy
     environment:
-      - PUBLIC_SERVER_URL=${PUBLIC_SERVER_URL}
+      - PUBLIC_SERVER_URL=${PUBLIC_URL}/api
       - SSR_SERVER_URL=http://server:4000
-  redis:
-    image: redis:7.0-alpine
-    healthcheck:
-      test: ["CMD", "redis-cli","ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
+      - SSR_SCANNER_URL=http://scanner:8133
+  matcher:
+    image: ghcr.io/arthi-chaud/meelo-matcher:latest
+    restart: on-failure
+    depends_on:
+      server:
+        condition: service_healthy
+      mq:
+        condition: service_healthy
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - API_KEYS=${API_KEYS}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+    volumes:
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   db:
     image: postgres:alpine3.14
     healthcheck:
@@ -84,7 +117,23 @@ services:
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - transcoder_cache:/cache
+    depends_on:
+      db:
+        condition: service_healthy
     profiles: ['', 'cpu']
+  mq:
+    image: rabbitmq:4.0-alpine
+    environment:
+      - RABBITMQ_NODENAME=meelo
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
   nginx:
     restart: on-failure
     image: nginx:1.24.0-alpine
@@ -107,3 +156,4 @@ volumes:
   data:
   search:
   transcoder_cache:
+  rabbitmq_data:

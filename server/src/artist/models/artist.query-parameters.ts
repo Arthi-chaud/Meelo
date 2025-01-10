@@ -53,7 +53,7 @@ namespace ArtistQueryParameters {
 		RequireAtLeastOne<{
 			library: LibraryQueryParameters.WhereInput;
 			name: SearchStringInput;
-			id: { in: Artist["id"][] };
+			artists: ArtistQueryParameters.WhereInput[];
 			genre: GenreQueryParameters.WhereInput;
 			albumArtistOnly: boolean;
 			album: AlbumQueryParameters.WhereInput;
@@ -83,13 +83,10 @@ namespace ArtistQueryParameters {
 	export const AvailableIncludes = [
 		"albums",
 		"songs",
-		"externalIds",
 		"illustration",
 	] as const;
-	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
-		AvailableIncludes,
-		["externalIds"],
-	);
+	export const AvailableAtomicIncludes =
+		filterAtomicRelationInclude(AvailableIncludes);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
