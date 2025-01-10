@@ -151,37 +151,51 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 limit=10,
             )["releases"]
             release_group_key = "release-group"
-            if is_single:
-                releases = [
-                    r
-                    for r in releases
-                    if r[release_group_key].get("primary-type") == "Single"
-                ]
-            else:
-                releases = [
-                    r
-                    for r in releases
-                    if r[release_group_key].get("primary-type") != "Single"
-                ]
-            releases = (
-                sorted(
-                    [r for r in releases if "date" in r.keys()],
-                    key=lambda r: r["date"],
-                )
-                or releases
-            )
-            releases = (
-                [
-                    r
-                    for r in releases
-                    if to_slug(r["artist-credit"][0]["name"]) == artist_slug
-                ]
-                if artist_name
-                else releases
-            )
-            exact_matches = [
+            typed_releases = [
                 r
                 for r in releases
+                if (
+                    r[release_group_key].get("primary-type") == "Single"
+                    if is_single
+                    else r[release_group_key].get("primary-type") != "Single"
+                )
+            ]
+            ordered_releases = (
+                sorted(
+                    [r for r in typed_releases if "date" in r.keys()],
+                    key=lambda r: r["date"],
+                )
+                or typed_releases
+            )
+            artist_releases = [
+                r
+                for r in ordered_releases
+                if (
+                    to_slug(r["artist-credit"][0]["name"]) == artist_slug
+                    if artist_name
+                    # Album artist is 'Various Artist'
+                    else (
+                        r["artist-credit"][0]["artist"]["id"]
+                        == self.compilation_artist_id()
+                        or any(
+                            [
+                                type
+                                in [
+                                    r[release_group_key]["primary-type"],
+                                    *(
+                                        r[release_group_key].get("secondary-types")
+                                        or []
+                                    ),
+                                ]
+                                for type in ["Compilation", "Soundtrack"]
+                            ]
+                        )
+                    )
+                )
+            ]
+            exact_matches = [
+                r
+                for r in artist_releases
                 if to_slug(self._sanitise_acronyms(r[release_group_key]["title"]))
                 == album_slug
             ]

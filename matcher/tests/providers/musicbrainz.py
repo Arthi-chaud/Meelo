@@ -44,6 +44,15 @@ class TestMusicbrainz(unittest.TestCase):
     def test_search_album(self):
         scenarios: List[Tuple[str, str | None, str | None]] = [
             ("Nova Tunes 01", None, "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
+            # Test when is not actually various artist, but has type 'compilation'
+            ("Hotel Costes, Vol. 4", None, "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
+            ("Hotel Costes: Best Of...", None, "16b9cdb4-1219-3bde-b538-b33fbf5d0626"),
+            # Test when is not actually various artist, but has type 'Soundtrack'
+            (
+                "Challengers: Original Score",
+                None,
+                "5f2a4d8a-3511-4656-9c9a-0ad5c604a421",
+            ),
             ("Protection", "Massive Attack", "ded46e46-788d-3c1f-b21b-9f5e9c37b1bc"),
             (
                 "Revolution In Me",
