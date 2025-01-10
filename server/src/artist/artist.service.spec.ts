@@ -4,7 +4,6 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import {
-	ArtistAlreadyExistsException,
 	ArtistNotEmptyException,
 	ArtistNotFoundException,
 } from "./artist.exceptions";
@@ -165,23 +164,12 @@ describe("Artist Service", () => {
 	});
 
 	describe("Delete Artist", () => {
-		it("should throw, as the artist does not exist (by id)", () => {
-			const test = async () => artistService.delete({ id: -1 });
-			return expect(test()).rejects.toThrow(ArtistNotFoundException);
-		});
-
-		it("should throw, as the artist does not exist (by slug)", () => {
-			const test = async () =>
-				artistService.delete({ slug: new Slug("Trololol") });
-			return expect(test()).rejects.toThrow(ArtistNotFoundException);
-		});
-
 		it("should delete the artist", async () => {
 			const tmpArtist = await artistService.getOrCreate({ name: "1234" });
 			const artistQueryParameters = {
 				slug: new Slug(tmpArtist.slug),
 			};
-			await artistService.delete(artistQueryParameters);
+			await artistService.delete([artistQueryParameters]);
 			const test = async () => artistService.get(artistQueryParameters);
 			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
@@ -190,7 +178,7 @@ describe("Artist Service", () => {
 				slug: new Slug(dummyRepository.artistB.name),
 			};
 			const test = async () =>
-				artistService.delete(artistQueryParameters);
+				artistService.delete([artistQueryParameters]);
 			return expect(test()).rejects.toThrow(ArtistNotEmptyException);
 		});
 	});

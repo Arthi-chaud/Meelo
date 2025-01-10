@@ -95,11 +95,11 @@ export class SearchHistoryService {
 		});
 		const artists = await this.artistService.getMany(
 			{
-				id: {
-					in: history
-						.filter((item) => item.artistId !== null)
-						.map(({ artistId }) => artistId!),
-				},
+				artists: history
+					.filter((item) => item.artistId !== null)
+					.map(({ artistId }) => ({
+						id: artistId!,
+					})),
 			},
 			undefined,
 			undefined,
