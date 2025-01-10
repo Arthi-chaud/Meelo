@@ -118,8 +118,12 @@ export default class FileService {
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
 		let query: Prisma.FileWhereInput = {};
 
-		if (where.id) {
-			query = deepmerge(query, { id: where.id });
+		if (where.files) {
+			query = deepmerge(query, {
+				OR: where.files.map((file) =>
+					FileService.formatWhereInput(file),
+				),
+			});
 		}
 		if (where.library) {
 			query = deepmerge<Prisma.FileWhereInput>(query, {
@@ -238,13 +242,9 @@ export default class FileService {
 		return `${libraryPath}/${file.path}`.normalize();
 	}
 
-	async delete(where: FileQueryParameters.DeleteInput) {
-		return this.prismaService.file
-			.delete({
-				where: FileService.formatWhereInput(where),
-			})
-			.catch((error) => {
-				throw this.onNotFound(error, where);
-			});
+	async delete(where: FileQueryParameters.DeleteInput[]) {
+		return this.prismaService.file.deleteMany({
+			where: FileService.formatManyWhereInput({ files: where }),
+		});
 	}
 }

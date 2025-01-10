@@ -99,13 +99,8 @@ describe("File Service", () => {
 
 	describe("Delete File", () => {
 		it("should delete a file (from id)", async () => {
-			await fileService.delete({ id: newFile.id });
+			await fileService.delete([{ id: newFile.id }]);
 			const test = async () => fileService.get({ id: newFile.id });
-			return expect(test()).rejects.toThrow(FileNotFoundException);
-		});
-
-		it("should throw, as the file does not exist (from id)", () => {
-			const test = async () => fileService.delete({ id: -1 });
 			return expect(test()).rejects.toThrow(FileNotFoundException);
 		});
 	});

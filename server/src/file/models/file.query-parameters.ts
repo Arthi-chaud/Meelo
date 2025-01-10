@@ -56,7 +56,7 @@ namespace FileQueryParameters {
 			release: ReleaseQueryParameters.WhereInput;
 			song: SongQueryParameters.WhereInput;
 			track: TrackQueryParameters.WhereInput;
-			id: { in: File["id"][] };
+			files: FileQueryParameters.WhereInput[];
 			paths: File["path"][];
 			registrationDate: SearchDateInput;
 		}>
