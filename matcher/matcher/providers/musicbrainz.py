@@ -121,15 +121,21 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
         return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
 
+    # To search albums, sometimes we need to replace acronyms
+    def _sanitise_acronyms(self, s: str) -> str:
+        return re.sub(r"volume", "Vol.", s, flags=re.IGNORECASE)
+
     # Album
     def _search_album(
         self,
         album_name: str,
         artist_name: str | None,
     ) -> AlbumSearchResult | None:
+        album_name = self._sanitise_acronyms(album_name)
         # TODO It's ugly, use an album_type variable from API
         sanitised_album_name = re.sub("\\s*-\\s*(Single|EP)$", "", album_name)
         album_slug = to_slug(sanitised_album_name)
+
         artist_slug = to_slug(artist_name) if artist_name else None
         is_single = sanitised_album_name != album_name
         try:
@@ -171,7 +177,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             exact_matches = [
                 r
                 for r in releases
-                if to_slug(r[release_group_key]["title"]) == album_slug
+                if to_slug(self._sanitise_acronyms(r[release_group_key]["title"]))
+                == album_slug
             ]
             if len(exact_matches) > 0:
                 return AlbumSearchResult(exact_matches[0][release_group_key]["id"])
@@ -254,7 +261,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             recordings = self._fetch(
                 "/recording",
                 {
-                    "query": f"work:{song_name.replace('.','')} and artistname:{artist_name}",
+                    "query": f"work:{song_name.replace('.', '')} and artistname:{artist_name}",
                     "limit": 100,
                 },
             )["recordings"]
@@ -292,7 +299,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             song_slug = to_slug(song_name)
             recordings = requests.get(
                 # Note: the 'params' are does not allow the '+' for the 'meta' field
-                f"https://api.acoustid.org/v2/lookup?client={"3WWOxoNbNH"}&duration={duration}&fingerprint={acoustid}&meta=recordings+sources",
+                f"https://api.acoustid.org/v2/lookup?client={'3WWOxoNbNH'}&duration={duration}&fingerprint={acoustid}&meta=recordings+sources",
             ).json()["results"][0]["recordings"]
 
             recordings = [r for r in recordings if r.get("sources") and r.get("title")]

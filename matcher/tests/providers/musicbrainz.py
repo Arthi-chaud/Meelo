@@ -54,7 +54,13 @@ class TestMusicbrainz(unittest.TestCase):
             ("Volumen Plus", "Björk", None),
             ("Celebration", "Madonna", "bd252c17-ff32-4369-8e73-4d0a65a316bd"),
             (
-                "GHV2 (Greatest Hits, Volume. 2)",
+                "GHV2 (Greatest Hits, Volume 2)",
+                "Madonna",
+                "a0aa8b0a-5e10-3627-afde-7235b86042f6",
+            ),
+            ## Test handling of 'vol.' acronyms
+            (
+                "GHV2 (Greatest Hits, Vol. 2)",
                 "Madonna",
                 "a0aa8b0a-5e10-3627-afde-7235b86042f6",
             ),
