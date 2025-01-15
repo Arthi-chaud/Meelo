@@ -182,6 +182,10 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}}
 					InputProps={{
 						value: inputValue,
+						autoComplete: "off",
+						autoCorrect: "off",
+						spellCheck: false,
+						autoCapitalize: "off",
 						startAdornment: (
 							<InputAdornment position="start">
 								<SearchIcon />
