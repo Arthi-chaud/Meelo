@@ -48,7 +48,7 @@
 		"genius-lyrics-api": "^3.2.1",
 		"get-image-colors": "^4.0.1",
 		"helmet": "^6.0.0",
-		"http-proxy-middleware": "^3.0.0",
+		"http-proxy-middleware": "^3.0.3",
 		"jimp": "^0.16.1",
 		"md5": "^2.3.0",
 		"meilisearch": "^0.36.0",
