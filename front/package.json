@@ -24,7 +24,7 @@
 		"accept-language-parser": "^1.5.0",
 		"blurhash": "^2.0.5",
 		"change-case": "^5.1.2",
-		"cookies-next": "^2.1.1",
+		"cookies-next": "^5.1.0",
 		"core-js": "^3.26.1",
 		"d3-array": "^3.2.0",
 		"format-duration": "^2.0.0",
