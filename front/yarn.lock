@@ -2132,13 +2132,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cookie@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@types/cookie@npm:0.4.1"
-  checksum: 10c0/f96afe12bd51be1ec61410b0641243d93fa3a494702407c787a4c872b5c8bcd39b224471452055e44a9ce42af1a636e87d161994226eaf4c2be9c30f60418409
-  languageName: node
-  linkType: hard
-
 "@types/d3-array@npm:^3.0.3":
   version: 3.0.3
   resolution: "@types/d3-array@npm:3.0.3"
@@ -2222,13 +2215,6 @@ __metadata:
   version: 18.7.7
   resolution: "@types/node@npm:18.7.7"
   checksum: 10c0/58c25c59fc1e731646e11059c0dcac3c47cf8eded76543f7ef0dce0765fa06f36502aada522e56f955f82ba059646198cee25520d97ed1a8e1ac7519effda754
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^16.10.2":
-  version: 16.18.3
-  resolution: "@types/node@npm:16.18.3"
-  checksum: 10c0/058ddd61a3d39f517bc9c30b82b9d6257d903e84c42ba66aae63bd13203b6deb2acf7f7e14caefd5d7cebadbe8c90604c04f9851cd41cd6a1bc2fc4dcec85f01
   languageName: node
   linkType: hard
 
@@ -3337,21 +3323,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:^0.4.0":
-  version: 0.4.2
-  resolution: "cookie@npm:0.4.2"
-  checksum: 10c0/beab41fbd7c20175e3a2799ba948c1dcc71ef69f23fe14eeeff59fc09f50c517b0f77098db87dbb4c55da802f9d86ee86cdc1cd3efd87760341551838d53fca2
+"cookie@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "cookie@npm:1.0.2"
+  checksum: 10c0/fd25fe79e8fbcfcaf6aa61cd081c55d144eeeba755206c058682257cb38c4bd6795c6620de3f064c740695bb65b7949ebb1db7a95e4636efb8357a335ad3f54b
   languageName: node
   linkType: hard
 
-"cookies-next@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "cookies-next@npm:2.1.1"
+"cookies-next@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "cookies-next@npm:5.1.0"
   dependencies:
-    "@types/cookie": "npm:^0.4.1"
-    "@types/node": "npm:^16.10.2"
-    cookie: "npm:^0.4.0"
-  checksum: 10c0/6fccfe491f713c404f26e123d38217a88012963bc168666f5200af1535cf3f9fdae743652d011af3e9cef8a1710843bcf66a29a2fb9e043e4471b8c1cf3580a0
+    cookie: "npm:^1.0.1"
+  peerDependencies:
+    next: ">=15.0.0"
+    react: ">= 16.8.0"
+  checksum: 10c0/0769e18dcaa2d9b4c51593014a8a7e360dbe809c54fdfc61310b8b53edd670ee6bdf01593067dcf81760827956cb17c07786efe22bb3d94b23e0dd388457fddb
   languageName: node
   linkType: hard
 
@@ -6103,7 +6090,7 @@ __metadata:
     accept-language-parser: "npm:^1.5.0"
     blurhash: "npm:^2.0.5"
     change-case: "npm:^5.1.2"
-    cookies-next: "npm:^2.1.1"
+    cookies-next: "npm:^5.1.0"
     core-js: "npm:^3.26.1"
     d3-array: "npm:^3.2.0"
     eslint: "npm:^8.57.0"
