@@ -32,7 +32,6 @@ import PrismaModule from "./prisma/prisma.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
 import GenreModule from "./genre/genre.module";
 import AppController from "./app.controller";
-import { ScheduleModule } from "@nestjs/schedule";
 import AuthenticationModule from "./authentication/authentication.module";
 import UserModule from "./user/user.module";
 import LoggerModule from "./logger/logger.module";
@@ -51,7 +50,6 @@ import { EventsModule } from "./events/events.module";
 
 @Module({
 	imports: [
-		ScheduleModule.forRoot(),
 		ConfigModule.forRoot(),
 		MeiliSearchModule.forRoot({
 			host: process.env.MEILI_HOST!,
