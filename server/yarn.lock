@@ -1977,17 +1977,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/debug@npm:3.15.2":
-  version: 3.15.2
-  resolution: "@prisma/debug@npm:3.15.2"
-  dependencies:
-    "@types/debug": "npm:4.1.7"
-    debug: "npm:4.3.4"
-    strip-ansi: "npm:6.0.1"
-  checksum: 10c0/34417ce289622b29c552cbeb4c2b8a11df1bbb37ed3e2c7a061dd5a469c0eaf1cd869cedfc4de9557edce2b9e4d02dc3656d46267c57839a393fdfe1400aeed4
-  languageName: node
-  linkType: hard
-
 "@prisma/debug@npm:6.2.1":
   version: 6.2.1
   resolution: "@prisma/debug@npm:6.2.1"
@@ -2031,18 +2020,6 @@ __metadata:
   dependencies:
     "@prisma/debug": "npm:6.2.1"
   checksum: 10c0/b484f755543267819cbf0ee2e0fc1d4443ebee62fe45c207bafde9af15c102a28c40202ec232369cef5411dd67dccb2d6f9c6421618cc26befb3ec059f4350ea
-  languageName: node
-  linkType: hard
-
-"@prisma/generator-helper@npm:^3.15.2":
-  version: 3.15.2
-  resolution: "@prisma/generator-helper@npm:3.15.2"
-  dependencies:
-    "@prisma/debug": "npm:3.15.2"
-    "@types/cross-spawn": "npm:6.0.2"
-    chalk: "npm:4.1.2"
-    cross-spawn: "npm:7.0.3"
-  checksum: 10c0/362b903eb1b32f610e0eec0fb6c2c9368072a5aad9bf2c8071c15b2469aa9168b52a71ed1a2c7b95647137a3b5ef2ffa1aaa1d8c9cdfffe1ca50506737ef14a8
   languageName: node
   linkType: hard
 
@@ -2259,28 +2236,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cross-spawn@npm:6.0.2":
-  version: 6.0.2
-  resolution: "@types/cross-spawn@npm:6.0.2"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/658bd49267a7200e87e67c48ef1e58ee7418bbd4417fb191393b7051d47f590023090cad7b69eb3821d1907b82392b764e1114b1ec6000b01e98126926c8b06f
-  languageName: node
-  linkType: hard
-
 "@types/damerau-levenshtein@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/damerau-levenshtein@npm:1.0.0"
   checksum: 10c0/9c8f347d69eada1503824905b46e9d66c2a12c53f0c49c60d195e21f2705b727497d486e12ec594d404dc798003c13d98f7281a9d6e728938e6fed01330dafe8
-  languageName: node
-  linkType: hard
-
-"@types/debug@npm:4.1.7":
-  version: 4.1.7
-  resolution: "@types/debug@npm:4.1.7"
-  dependencies:
-    "@types/ms": "npm:*"
-  checksum: 10c0/742b752b60e14a752d9bf172e64f28e172f630b9933e763d2b54c7c8c1f33b99b1ef067d7312665a4d0539d8df7ea3eb664a8039f900e4b8234c647a569d123a
   languageName: node
   linkType: hard
 
@@ -2447,13 +2406,6 @@ __metadata:
   version: 3.0.1
   resolution: "@types/mime@npm:3.0.1"
   checksum: 10c0/c4c0fc89042822a3b5ffd6ef0da7006513454ee8376ffa492372d17d2925a4e4b1b194c977b718c711df38b33eb9d06deb5dbf9f851bcfb7e5e65f06b2a87f97
-  languageName: node
-  linkType: hard
-
-"@types/ms@npm:*":
-  version: 0.7.31
-  resolution: "@types/ms@npm:0.7.31"
-  checksum: 10c0/19fae4f587651e8761c76a0c72ba8af1700d37054476878d164b758edcc926f4420ed06037a1a7fdddc1dbea25265895d743c8b2ea44f3f3f7ac06c449b9221e
   languageName: node
   linkType: hard
 
@@ -4316,7 +4268,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:7.0.3, cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
+"cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-spawn@npm:7.0.3"
   dependencies:
@@ -4394,7 +4346,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:4.3.4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.2, debug@npm:^4.3.4":
+"debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.2, debug@npm:^4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -10104,7 +10056,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1, strip-ansi@npm:6.0.1, strip-ansi@npm:^6.0.0, strip-ansi@npm:^6.0.1":
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1, strip-ansi@npm:^6.0.0, strip-ansi@npm:^6.0.1":
   version: 6.0.1
   resolution: "strip-ansi@npm:6.0.1"
   dependencies:

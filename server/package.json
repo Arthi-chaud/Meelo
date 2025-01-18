@@ -65,7 +65,7 @@
 	},
 	"resolutions": {
 		"jpeg-js": "^0.4.4",
-		"@prisma/geneator-helper": "6.2.1",
+		"@prisma/generator-helper": "6.2.1",
 		"@prisma/internals": "6.2.1"
 	},
 	"devDependencies": {
