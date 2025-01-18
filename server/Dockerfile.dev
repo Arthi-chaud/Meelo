@@ -1,10 +1,13 @@
-FROM node:18-alpine3.18 AS base
-RUN apk update && apk add openssl1.1-compat
+FROM node:22-alpine3.20 AS base
+RUN apk update && apk add openssl
 
 FROM base AS builder
 WORKDIR /app
 COPY ./*.json ./
 COPY ./*.lock ./
+COPY .yarn ./.yarn
+COPY .yarnrc.yml ./
+RUN corepack enable
 RUN yarn
 COPY ./prisma ./prisma
 RUN yarn build
