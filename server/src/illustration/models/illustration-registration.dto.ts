@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { IllustrationType } from "@prisma/client";
 import { IsDefined, IsEnum, IsIn, IsNumber, IsString } from "class-validator";
 import {
@@ -29,14 +29,10 @@ import {
 export default class IllustrationRegistrationDto {
 	@IsFile()
 	@IsDefined()
-	@ApiPropertyOptional({
-		type: "file",
-		properties: {
-			file: {
-				type: "string",
-				format: "binary",
-			},
-		},
+	@ApiProperty({
+		// See https://swagger.io/docs/specification/v3_0/data-models/data-types/#files
+		type: "string",
+		format: "binary",
 	})
 	@HasMimeType(["image/*"])
 	@MaxFileSize(20 * 1e6)
@@ -50,7 +46,7 @@ export default class IllustrationRegistrationDto {
 	@IsIn([IllustrationType.Cover, IllustrationType.Thumbnail])
 	@IsString()
 	@IsDefined()
-	@ApiPropertyOptional({
+	@ApiProperty({
 		enum: [IllustrationType.Cover, IllustrationType.Thumbnail],
 	})
 	type: IllustrationType;
