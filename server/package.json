@@ -47,7 +47,7 @@
 		"get-image-colors": "^4.0.1",
 		"helmet": "^6.0.0",
 		"http-proxy-middleware": "^3.0.3",
-		"jimp": "^0.16.1",
+		"jimp": "^1.6.0",
 		"md5": "^2.3.0",
 		"meilisearch": "^0.36.0",
 		"mime": "^3.0.0",

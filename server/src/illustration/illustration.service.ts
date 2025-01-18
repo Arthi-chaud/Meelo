@@ -26,7 +26,7 @@ import {
 import * as fs from "fs";
 import * as dir from "path";
 import type { IllustrationPath } from "./models/illustration-path.model";
-import Jimp from "jimp";
+import { Jimp } from "jimp";
 import { Readable } from "stream";
 import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import Logger from "src/logger/logger";
@@ -132,16 +132,16 @@ export default class IllustrationService {
 		const image = await Jimp.read(sourcePath);
 		switch (quality) {
 			case "low":
-				image.resize(100, Jimp.AUTO);
+				image.resize({ w: 100 });
 				break;
 			case "medium":
-				image.resize(300, Jimp.AUTO);
+				image.resize({ w: 300 });
 				break;
 			case "high":
-				image.resize(500, Jimp.AUTO);
+				image.resize({ w: 500 });
 				break;
 		}
-		await image.writeAsync(outputPath);
+		await image.write(outputPath as any);
 	}
 
 	/**
@@ -183,22 +183,22 @@ export default class IllustrationService {
 				const image = await Jimp.read(sourceFilePath);
 
 				if (dimensions.width && dimensions.height) {
-					image.cover(dimensions.width, dimensions.height);
+					image.cover({ w: dimensions.width, h: dimensions.height });
 				} else {
 					const [originalWidth, originalHeight] = [
-						image.getWidth(),
-						image.getHeight(),
+						image.width,
+						image.height,
 					];
 					const ratio = dimensions.height
 						? dimensions.height / originalHeight
 						: dimensions.width! / originalWidth;
-					image.cover(
-						dimensions.width ?? originalWidth * ratio,
-						dimensions.height ?? originalHeight * ratio,
-					);
+					image.cover({
+						w: dimensions.width ?? originalWidth * ratio,
+						h: dimensions.height ?? originalHeight * ratio,
+					});
 				}
 				return image
-					.getBufferAsync(Jimp.MIME_JPEG)
+					.getBuffer("image/jpeg")
 					.then(
 						(buffer) => new StreamableFile(Readable.from(buffer)),
 					);
@@ -219,30 +219,30 @@ export default class IllustrationService {
 
 	async getImageStats(buffer: Buffer): Promise<IllustrationStats> {
 		const image = await Jimp.read(buffer);
-		const aspectRatio = image.getWidth() / image.getHeight();
+		const aspectRatio = image.width / image.height;
 
 		return Promise.all([
 			new Promise<string>((resolve) => {
 				const [componentX, componentY] =
 					this.getBlurhashComponentCountFromAspectRatio(aspectRatio);
-				const isHorizontal = image.getWidth() > image.getHeight();
+				const isHorizontal = image.width > image.height;
 				const ratio = isHorizontal
-					? image.getWidth() / image.getHeight()
-					: image.getHeight() / image.getWidth();
+					? image.width / image.height
+					: image.height / image.width;
 				const width = 50;
 				const height = isHorizontal ? width / ratio : width * ratio;
-				const smallImage = image.resize(width, height);
+				const smallImage = image.resize({ w: width, h: height });
 				resolve(
 					Blurhash.encode(
 						Uint8ClampedArray.from(smallImage.bitmap.data),
-						smallImage.getWidth(),
-						smallImage.getHeight(),
+						smallImage.width,
+						smallImage.height,
 						componentX,
 						componentY,
 					),
 				);
 			}),
-			getColors(buffer, { type: image.getMIME() }).then((colors) =>
+			getColors(buffer, { type: image.mime }).then((colors) =>
 				colors.map((color) => color.hex()),
 			),
 		]).then(([blurhash, colors]) => ({
