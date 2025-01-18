@@ -56,7 +56,7 @@ export class StreamController {
 			"Endpoint of of the transcoder. See the possible endpoints [here](https://github.com/zoriya/Kyoo/blob/master/transcoder/main.go)",
 		example: "master.m3u8",
 	})
-	@Get(":idOrSlug/:path(*)")
+	@Get(":idOrSlug/*path")
 	async transcodeFile(
 		@IdentifierParam(FileService)
 		where: FileQueryParameters.WhereInput,
@@ -65,6 +65,11 @@ export class StreamController {
 		@Res() res: Response,
 		@Req() req: Express.Request,
 	) {
-		return this.streamService.callTranscoder(where, path, res, req);
+		return this.streamService.callTranscoder(
+			where,
+			path.replace(/,/g, "/"),
+			res,
+			req,
+		);
 	}
 }
