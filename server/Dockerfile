@@ -1,5 +1,5 @@
-FROM node:18-alpine3.18 AS base
-RUN apk update && apk add openssl1.1-compat
+FROM node:22-alpine3.20 AS base
+RUN apk update && apk add openssl
 
 FROM base AS builder
 WORKDIR /app
@@ -7,6 +7,7 @@ WORKDIR /app
 ENV NODE_OPTIONS=--max-old-space-size=16384
 COPY ./*.json ./.yarnrc.yml ./*.lock  ./
 COPY ./.yarn ./.yarn
+RUN corepack enable
 RUN yarn workspaces focus
 COPY ./src ./src
 COPY ./prisma/ ./prisma
@@ -16,8 +17,11 @@ RUN yarn run build && yarn workspaces focus --all --production
 FROM base as runner
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
+COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
+RUN corepack enable
 
 CMD yarn run prisma migrate dev --skip-generate && yarn run start:prod
+
