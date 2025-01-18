@@ -31,7 +31,6 @@ import { Readable } from "stream";
 import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import Logger from "src/logger/logger";
 import * as Blurhash from "blurhash";
-import getColors from "get-image-colors";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
@@ -39,6 +38,8 @@ import { HttpService } from "@nestjs/axios";
 import { version } from "package.json";
 import IllustrationStats from "./models/illustration-stats";
 import md5 from "md5";
+// eslint-disable-next-line
+const getPalette = require("get-rgba-palette");
 
 /**
  * A service to handle illustration files (downloads, extractions, conversion & streaming)
@@ -242,14 +243,23 @@ export default class IllustrationService {
 					),
 				);
 			}),
-			getColors(buffer, { type: image.mime }).then((colors) =>
-				colors.map((color) => color.hex()),
-			),
+			this.getImageColors(image.bitmap.data),
 		]).then(([blurhash, colors]) => ({
 			blurhash,
 			colors,
 			aspectRatio,
 		}));
+	}
+
+	// Returns a list of 5 prominent colors
+	async getImageColors(buffer: Buffer): Promise<string[]> {
+		const colors = getPalette(buffer, 5);
+		return colors.map(
+			(rgb: number[]) =>
+				`#${rgb
+					.reduce((total, curr) => total * 256 + curr, 0)
+					.toString(16)}`,
+		);
 	}
 
 	/**
