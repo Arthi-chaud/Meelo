@@ -129,4 +129,21 @@ describe("Illustration Service", () => {
 			expect(y).toBe(2);
 		});
 	});
+
+	describe("Get Illustration Colors", () => {
+		it("should return the correct set of colors", async () => {
+			const img = fs.readFileSync("test/assets/artwork.jpeg");
+			const colorsSet = await illustrationService.getImageColors(
+				img,
+				"image/jpeg",
+			);
+			expect(colorsSet).toEqual([
+				"#1b160f",
+				"#c6c38c",
+				"#a6a55b",
+				"#867134",
+				"#adc19d",
+			]);
+		});
+	});
 });

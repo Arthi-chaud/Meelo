@@ -242,14 +242,19 @@ export default class IllustrationService {
 					),
 				);
 			}),
-			getColors(buffer, { type: image.mime }).then((colors) =>
-				colors.map((color) => color.hex()),
-			),
+			await this.getImageColors(buffer, image.mime),
 		]).then(([blurhash, colors]) => ({
 			blurhash,
 			colors,
 			aspectRatio,
 		}));
+	}
+
+	// Returns a list of 5 prominent colors
+	async getImageColors(buffer: Buffer, mimeType?: string): Promise<string[]> {
+		return getColors(buffer, { type: mimeType }).then((colors) =>
+			colors.map((color) => color.hex()),
+		);
 	}
 
 	/**
