@@ -31,7 +31,7 @@ jobs:
   Build:
     needs: changes
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
-    container: node:18-alpine3.18
+    container: node:22-alpine3.20
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -44,7 +44,7 @@ jobs:
         run: yarn build
   Lint:
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
-    container: node:18-alpine3.18
+    container: node:22-alpine3.20
     runs-on: ubuntu-latest
     needs: [ Build ]
     steps:
@@ -58,7 +58,7 @@ jobs:
         run: yarn lint
   Format:
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
-    container: node:18-alpine3.18
+    container: node:22-alpine3.20
     runs-on: ubuntu-latest
     needs: [ Build ]
     steps:
@@ -72,7 +72,7 @@ jobs:
         run: yarn prettier --check src
   Tests:
     runs-on: ubuntu-latest
-    container: node:18-alpine3.18
+    container: node:22-alpine3.20
     needs: [ Build ]
     if: ${{ needs.changes.outputs.server == 'true' && always() }}
     env:
