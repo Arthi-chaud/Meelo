@@ -13,6 +13,7 @@ import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
 import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
+import { Jimp } from "jimp";
 
 jest.setTimeout(120000);
 
@@ -134,15 +135,16 @@ describe("Illustration Service", () => {
 		it("should return the correct set of colors", async () => {
 			const img = fs.readFileSync("test/assets/artwork.jpeg");
 			const colorsSet = await illustrationService.getImageColors(
-				img,
-				"image/jpeg",
+				(
+					await Jimp.read(img)
+				).bitmap.data,
 			);
 			expect(colorsSet).toEqual([
-				"#1b160f",
-				"#c6c38c",
-				"#a6a55b",
-				"#867134",
-				"#adc19d",
+				"#babc85",
+				"#211a11",
+				"#a0893e",
+				"#736e39",
+				"#949c7c",
 			]);
 		});
 	});
