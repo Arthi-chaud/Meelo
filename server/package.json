@@ -69,6 +69,7 @@
 		"@prisma/internals": "6.2.1"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
 		"@golevelup/ts-jest": "^0.5.5",
 		"@nestjs/cli": "^10.4.9",
 		"@nestjs/schematics": "^11.0.0",

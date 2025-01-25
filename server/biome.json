@@ -1,0 +1,7 @@
+{
+	"extends": ["../biome.json"],
+	"formatter": {
+		"lineWidth": 80,
+		"ignore": ["src/prisma/models"]
+	}
+}
