@@ -1,4 +1,4 @@
-import { type INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { Album, Artist } from "src/prisma/models";
 import request from "supertest";
@@ -22,7 +22,7 @@ import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
 } from "test/expected-responses";
-import { Genre, IllustrationType } from "@prisma/client";
+import { type Genre, IllustrationType } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -62,7 +62,7 @@ describe("Album Controller", () => {
 	describe("Get Albums (GET /albums)", () => {
 		it("Should return all albums", () => {
 			return request(app.getHttpServer())
-				.get(`/albums`)
+				.get("/albums")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -82,7 +82,7 @@ describe("Album Controller", () => {
 		});
 		it("Should return best-of albums only", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?type=Compilation`)
+				.get("/albums?type=Compilation")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -96,7 +96,7 @@ describe("Album Controller", () => {
 		});
 		it("Should sort all albums", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?sortBy=name&order=desc`)
+				.get("/albums?sortBy=name&order=desc")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -116,7 +116,7 @@ describe("Album Controller", () => {
 		});
 		it("Should return some albums (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?skip=1&take=1`)
+				.get("/albums?skip=1&take=1")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -158,7 +158,7 @@ describe("Album Controller", () => {
 		});
 		it("Should include related artist", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?with=artist&take=1`)
+				.get("/albums?with=artist&take=1")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -174,7 +174,7 @@ describe("Album Controller", () => {
 	describe("Get Compilations Albums", () => {
 		it("Should return all albums", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?artist=compilations`)
+				.get("/albums?artist=compilations")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
@@ -301,7 +301,7 @@ describe("Album Controller", () => {
 				});
 		});
 		it("Should return an error, as the album does not exist", () => {
-			return request(app.getHttpServer()).get(`/albums/-1`).expect(404);
+			return request(app.getHttpServer()).get("/albums/-1").expect(404);
 		});
 		it("Should include related artist", () => {
 			return request(app.getHttpServer())
@@ -548,7 +548,7 @@ describe("Album Controller", () => {
 						...album,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -11,9 +11,9 @@ import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
 import { RegistrationModule } from "./registration.module";
 import { MetadataController } from "./registration.controller";
-import MetadataDto from "./models/metadata.dto";
+import type MetadataDto from "./models/metadata.dto";
 import request from "supertest";
-import MetadataSavedResponse from "./models/metadata-saved.dto";
+import type MetadataSavedResponse from "./models/metadata-saved.dto";
 import FileService from "src/file/file.service";
 import SongService from "src/song/song.service";
 import SongModule from "src/song/song.module";
@@ -22,7 +22,7 @@ import ReleaseModule from "src/release/release.module";
 import TrackModule from "src/track/track.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import SettingsModule from "src/settings/settings.module";
-import { File, Song } from "@prisma/client";
+import type { File, Song } from "@prisma/client";
 import TrackService from "src/track/track.service";
 
 const validMetadata: MetadataDto = {
@@ -41,7 +41,7 @@ const validMetadata: MetadataDto = {
 };
 
 const applyFormFields = (r: request.Test, object: MetadataDto) => {
-	Object.entries(object).forEach(([key, value]) => {
+	for (const [key, value] of Object.entries(object)) {
 		if (Array.isArray(value)) {
 			(value as any[]).forEach((arrayValue, index) => {
 				r.field(`${key}[${index}]`, arrayValue);
@@ -49,7 +49,7 @@ const applyFormFields = (r: request.Test, object: MetadataDto) => {
 		} else if (value !== undefined) {
 			r.field(key, value.toString());
 		}
-	});
+	}
 	return r;
 };
 
@@ -101,7 +101,7 @@ describe("Registration Controller", () => {
 			describe("Path", () => {
 				it("should fail, path contains '..'", () => {
 					return applyFormFields(
-						request(app.getHttpServer()).post(`/metadata`),
+						request(app.getHttpServer()).post("/metadata"),
 						{
 							...validMetadata,
 							path: "test/assets/Music 2/../...Baby One More Time.m4a",
@@ -116,7 +116,7 @@ describe("Registration Controller", () => {
 				});
 				it("should fail, path not in DATA_DIR", () => {
 					return applyFormFields(
-						request(app.getHttpServer()).post(`/metadata`),
+						request(app.getHttpServer()).post("/metadata"),
 						{
 							...validMetadata,
 							path: "/videos/Music/...Baby One More Time.m4a",
@@ -133,7 +133,7 @@ describe("Registration Controller", () => {
 				});
 				it("should fail, path not in a known library", () => {
 					return applyFormFields(
-						request(app.getHttpServer()).post(`/metadata`),
+						request(app.getHttpServer()).post("/metadata"),
 						{
 							...validMetadata,
 							path: "test/assets/Music 3/...Baby One More Time.m4a",
@@ -153,7 +153,7 @@ describe("Registration Controller", () => {
 
 		it("Should register metadata", async () => {
 			const res = await applyFormFields(
-				request(app.getHttpServer()).post(`/metadata`),
+				request(app.getHttpServer()).post("/metadata"),
 				validMetadata,
 			).expect(201);
 			const createdMetadata: MetadataSavedResponse = res.body;
@@ -197,7 +197,7 @@ describe("Registration Controller", () => {
 
 		it("Should register metadata (standalone track)", async () => {
 			const res = await applyFormFields(
-				request(app.getHttpServer()).post(`/metadata`),
+				request(app.getHttpServer()).post("/metadata"),
 				{
 					...validMetadata,
 					album: undefined,
@@ -230,7 +230,7 @@ describe("Registration Controller", () => {
 	describe("Metadata Update", () => {
 		it("Should update metadata", async () => {
 			const res = await applyFormFields(
-				request(app.getHttpServer()).put(`/metadata`),
+				request(app.getHttpServer()).put("/metadata"),
 				{
 					...validMetadata,
 					checksum: "zzz",

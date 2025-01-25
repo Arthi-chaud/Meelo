@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Illustration } from "@prisma/client";
+import type { Illustration } from "@prisma/client";
 
 export default class IllustrationStats {
 	blurhash: string;

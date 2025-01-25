@@ -17,7 +17,7 @@
  */
 
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import Identifier from "./models/identifier";
+import type Identifier from "./models/identifier";
 
 export default class InvalidIdentifierSlugs extends InvalidRequestException {
 	constructor(

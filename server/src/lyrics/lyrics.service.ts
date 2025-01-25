@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import SongService from "src/song/song.service";
 import {
 	LyricsAlreadyExistsExceptions,
@@ -28,7 +28,7 @@ import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import Slug from "src/slug/slug";
 import Logger from "src/logger/logger";
-import MeiliSearch from "meilisearch";
+import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 
@@ -73,7 +73,7 @@ export class LyricsService {
 						id: input.songId,
 					});
 
-					if (error.code == PrismaError.RequiredRelationViolation) {
+					if (error.code === PrismaError.RequiredRelationViolation) {
 						throw new LyricsAlreadyExistsExceptions(
 							new Slug(parentSong.slug),
 						);
@@ -93,7 +93,7 @@ export class LyricsService {
 			.catch(async (error) => {
 				await this.songService.get({ id: where.songId });
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					if (error.code == PrismaError.RecordsNotFound) {
+					if (error.code === PrismaError.RecordsNotFound) {
 						throw new LyricsNotFoundBySongException(where.songId);
 					}
 				}

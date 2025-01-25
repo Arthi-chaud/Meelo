@@ -17,15 +17,15 @@
  */
 
 import { Controller, Get, Query } from "@nestjs/common";
-import SongGroupService from "./song-group.service";
+import type SongGroupService from "./song-group.service";
 import { ApiOperation, ApiTags, PickType } from "@nestjs/swagger";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import SongQueryParameters from "./models/song.query-params";
 import { Selector } from "./song.controller";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { SongGroupResponseBuilder } from "./models/song-group.response";
-import SongGroupQueryParameters from "./models/song-group.query-params";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
 
 class SongGroupSelector extends PickType(Selector, [
 	"artist",

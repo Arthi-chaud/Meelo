@@ -22,10 +22,10 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import { Artist } from "src/prisma/models";
+import type { Artist } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace ArtistQueryParameters {
 	/**

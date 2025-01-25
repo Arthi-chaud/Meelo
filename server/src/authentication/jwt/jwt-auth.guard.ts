@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExecutionContext, Injectable } from "@nestjs/common";
+import { type ExecutionContext, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import RolesGuard from "../roles/roles.guard";
+import type RolesGuard from "../roles/roles.guard";
 import { AuthMethod } from "../models/auth.enum";
 
 @Injectable()

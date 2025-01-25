@@ -11,7 +11,8 @@ import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import IllustrationService from "./illustration.service";
 import IllustrationModule from "./illustration.module";
-import * as fs from "fs";
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import * as fs from "node:fs";
 import TestPrismaService from "test/test-prisma.service";
 import { Jimp } from "jimp";
 
@@ -52,6 +53,7 @@ describe("Illustration Service", () => {
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
 		getBlurhashComponentCountFromAspectRatio =
+			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
 			illustrationService["getBlurhashComponentCountFromAspectRatio"];
 
 		await dummyRepository.onModuleInit();

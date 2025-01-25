@@ -17,8 +17,8 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
-import PrismaService from "src/prisma/prisma.service";
+import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
+import type PrismaService from "src/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import {
@@ -29,14 +29,14 @@ import {
 	MissingExternalMetadataResourceIdException,
 } from "./external-metadata.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { ExternalMetadataResponse } from "./models/external-metadata.response";
-import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
-import {
+import type { ExternalMetadataResponse } from "./models/external-metadata.response";
+import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import type {
 	ExternalMetadata,
 	ExternalMetadataSource,
 	Provider,
 } from "src/prisma/models";
-import ProviderService from "./provider.service";
+import type ProviderService from "./provider.service";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import SongService from "src/song/song.service";
@@ -61,7 +61,7 @@ export default class ExternalMetadataService {
 		data.sources
 			.map((source) => source.providerId)
 			.forEach((providerId, index, ids) => {
-				if (ids.indexOf(providerId) != index) {
+				if (ids.indexOf(providerId) !== index) {
 					throw new DuplicateSourcesInExternalMetadataDto();
 				}
 			});
@@ -82,17 +82,17 @@ export default class ExternalMetadataService {
 			})
 			.then((res) => this.formatResponse(res))
 			.catch(async (error) => {
-				if (error.code == PrismaError.RecordsNotFound) {
+				if (error.code === PrismaError.RecordsNotFound) {
 					await Promise.all(
 						data.sources.map((s) =>
 							this.providerService.get({ id: s.providerId }),
 						),
 					);
 				}
-				if (error.code == PrismaError.ForeignConstraintViolation) {
+				if (error.code === PrismaError.ForeignConstraintViolation) {
 					throw new ExternalMetadataResourceNotFoundException(data);
 				}
-				if (error.code == PrismaError.UniqueConstraintViolation) {
+				if (error.code === PrismaError.UniqueConstraintViolation) {
 					throw new ExternalMetadataEntryExistsException(data);
 				}
 				throw new UnhandledORMErrorException(error, data);
@@ -129,7 +129,7 @@ export default class ExternalMetadataService {
 			.catch((error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.RecordsNotFound
+					error.code === PrismaError.RecordsNotFound
 				) {
 					throw new ExternalMetadataNotFoundException(where);
 				}

@@ -42,7 +42,7 @@ export class PaginationParameters {
 
 	@ApiProperty({
 		required: false,
-		description: `Specifies the number of elements to return`,
+		description: "Specifies the number of elements to return",
 		default: defaultPageSize,
 	})
 	@IsPositive()

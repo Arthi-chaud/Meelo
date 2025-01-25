@@ -7,9 +7,9 @@ import { ExternalMetadataModule } from "./external-metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SetupApp from "test/setup-app";
-import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
-import { Provider } from "@prisma/client";
-import { ExternalMetadataResponse } from "./models/external-metadata.response";
+import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import type { Provider } from "@prisma/client";
+import type { ExternalMetadataResponse } from "./models/external-metadata.response";
 import { DuplicateSourcesInExternalMetadataDto } from "./external-metadata.exceptions";
 
 describe("External Metadata Controller", () => {
@@ -43,7 +43,7 @@ describe("External Metadata Controller", () => {
 	describe("Save Metadata", () => {
 		it("should save album metadata", () => {
 			return request(app.getHttpServer())
-				.post(`/external-metadata`)
+				.post("/external-metadata")
 				.send({
 					albumId: dummyRepository.albumA1.id,
 					description: "a",
@@ -63,7 +63,7 @@ describe("External Metadata Controller", () => {
 		});
 		it("should return an error, as metadata already exists", () => {
 			return request(app.getHttpServer())
-				.post(`/external-metadata`)
+				.post("/external-metadata")
 				.send({
 					albumId: dummyRepository.albumA1.id,
 					description: "a",
@@ -74,7 +74,7 @@ describe("External Metadata Controller", () => {
 		});
 		it("should return an error, as album does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/external-metadata`)
+				.post("/external-metadata")
 				.send({
 					albumId: 0,
 					description: "a",
@@ -86,7 +86,7 @@ describe("External Metadata Controller", () => {
 
 		it("should return an error, duplicate source", () => {
 			return request(app.getHttpServer())
-				.post(`/external-metadata`)
+				.post("/external-metadata")
 				.send({
 					albumId: dummyRepository.compilationAlbumA.id,
 					description: "a",
@@ -122,17 +122,17 @@ describe("External Metadata Controller", () => {
 		});
 		it("should return an error, as album does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/external-metadata?album=-1`)
+				.get("/external-metadata?album=-1")
 				.expect(404);
 		});
 		it("should return an error, as no selector were given", () => {
 			return request(app.getHttpServer())
-				.get(`/external-metadata`)
+				.get("/external-metadata")
 				.expect(400);
 		});
 		it("should return an error, as too many selector were given", () => {
 			return request(app.getHttpServer())
-				.get(`/external-metadata?album=a&artist=b`)
+				.get("/external-metadata?album=a&artist=b")
 				.expect(400);
 		});
 	});

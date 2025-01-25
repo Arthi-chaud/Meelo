@@ -16,7 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Param, Req, Res, Response } from "@nestjs/common";
+import {
+	Controller,
+	Get,
+	Param,
+	Req,
+	Res,
+	type Response,
+} from "@nestjs/common";
 import {
 	ApiOkResponse,
 	ApiOperation,
@@ -24,9 +31,9 @@ import {
 	ApiTags,
 } from "@nestjs/swagger";
 import FileService from "src/file/file.service";
-import FileQueryParameters from "src/file/models/file.query-parameters";
+import type FileQueryParameters from "src/file/models/file.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import { StreamService } from "./stream.service";
+import type { StreamService } from "./stream.service";
 
 @ApiTags("Streaming")
 @Controller("stream")

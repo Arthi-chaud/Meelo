@@ -1,4 +1,4 @@
-import { TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
 import ParserService from "./parser.service";
 import { createTestingModule } from "test/test-module";
 import { AlbumType, SongType, VideoType } from "@prisma/client";

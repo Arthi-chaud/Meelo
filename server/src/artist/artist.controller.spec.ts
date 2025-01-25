@@ -70,7 +70,7 @@ describe("Artist Controller", () => {
 	describe("Get Artists (GET /artists)", () => {
 		it("should get all the artists", () => {
 			return request(app.getHttpServer())
-				.get(`/artists`)
+				.get("/artists")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -89,7 +89,7 @@ describe("Artist Controller", () => {
 
 		it("should get all the artists, sorted by name, desc", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?sortBy=name&order=desc`)
+				.get("/artists?sortBy=name&order=desc")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -107,7 +107,7 @@ describe("Artist Controller", () => {
 		});
 		it("should get only the album artists", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?albumArtistOnly=true`)
+				.get("/artists?albumArtistOnly=true")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -122,7 +122,7 @@ describe("Artist Controller", () => {
 		});
 		it("should get some artists (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?skip=1&take=1`)
+				.get("/artists?skip=1&take=1")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -318,7 +318,7 @@ describe("Artist Controller", () => {
 						...artist,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

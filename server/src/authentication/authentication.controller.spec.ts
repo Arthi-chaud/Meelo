@@ -1,5 +1,9 @@
-import { INestApplication, MiddlewareConsumer, Module } from "@nestjs/common";
-import { TestingModule } from "@nestjs/testing";
+import {
+	type INestApplication,
+	type MiddlewareConsumer,
+	Module,
+} from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -19,7 +23,7 @@ import TestPrismaService from "test/test-prisma.service";
 import request from "supertest";
 import UserController from "src/user/user.controller";
 import AuthenticationModule from "./authentication.module";
-import { User } from "src/prisma/models";
+import type { User } from "src/prisma/models";
 import SetupApp from "test/setup-app";
 import * as Plugins from "../app.plugins";
 import {
@@ -27,7 +31,7 @@ import {
 	UnauthorizedAnonymousRequestException,
 } from "./authentication.exception";
 import SettingsService from "src/settings/settings.service";
-import Settings from "src/settings/models/settings";
+import type Settings from "src/settings/models/settings";
 
 jest.setTimeout(120000);
 
@@ -107,7 +111,7 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Login", () => {
 		it("Should get the Admin's access token", () => {
 			return request(app.getHttpServer())
-				.post(`/auth/login`)
+				.post("/auth/login")
 				.send({
 					username: admin.name,
 					password: "azerty1234",
@@ -119,7 +123,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should return an error, as user is not enabled", () => {
 			return request(app.getHttpServer())
-				.post(`/auth/login`)
+				.post("/auth/login")
 				.send({
 					username: user.name,
 					password: "azerty1234",
@@ -129,7 +133,7 @@ describe("Authentication Controller & Role Management", () => {
 		it("Should get the user's access token", async () => {
 			await userService.update({ enabled: true }, { name: "user" });
 			return request(app.getHttpServer())
-				.post(`/auth/login`)
+				.post("/auth/login")
 				.send({
 					username: user.name,
 					password: "azerty1234",
@@ -141,7 +145,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should return an error, as user does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/auth/login`)
+				.post("/auth/login")
 				.send({
 					username: "azerty",
 					password: "azertyPassword",
@@ -150,7 +154,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should return an error, as credentials are invalid", () => {
 			return request(app.getHttpServer())
-				.post(`/auth/login`)
+				.post("/auth/login")
 				.send({
 					username: user.name,
 					password: "userPassword",
@@ -162,19 +166,19 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Test Admin Role", () => {
 		it("Should allow access to admin-only route", () => {
 			return request(app.getHttpServer())
-				.get(`/settings`)
+				.get("/settings")
 				.auth(adminToken, { type: "bearer" })
 				.expect(200);
 		});
 		it("Should allow access to route", () => {
 			return request(app.getHttpServer())
-				.get(`/albums`)
+				.get("/albums")
 				.auth(adminToken, { type: "bearer" })
 				.expect(200);
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({ name: "user3", password: "password3" })
 				.auth(adminToken, { type: "bearer" })
 				.expect(201);
@@ -184,19 +188,19 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Test User Role", () => {
 		it("Should deny access to admin-only route", () => {
 			return request(app.getHttpServer())
-				.get(`/settings`)
+				.get("/settings")
 				.auth(userToken, { type: "bearer" })
 				.expect(401);
 		});
 		it("Should allow access to route", () => {
 			return request(app.getHttpServer())
-				.get(`/albums`)
+				.get("/albums")
 				.auth(userToken, { type: "bearer" })
 				.expect(200);
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({ name: "user1", password: "password1" })
 				.auth(userToken, { type: "bearer" })
 				.expect(201);
@@ -205,14 +209,14 @@ describe("Authentication Controller & Role Management", () => {
 
 	describe("Test Anonymous Role", () => {
 		it("Should deny access to admin-only route", () => {
-			return request(app.getHttpServer()).get(`/settings`).expect(401);
+			return request(app.getHttpServer()).get("/settings").expect(401);
 		});
 		it("Should deny access to route", () => {
-			return request(app.getHttpServer()).get(`/albums`).expect(401);
+			return request(app.getHttpServer()).get("/albums").expect(401);
 		});
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({ name: "user2", password: "password1" })
 				.expect(201);
 		});
@@ -220,7 +224,7 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Test Microservice role", () => {
 		it("Should deny access to admin-only route", () => {
 			return request(app.getHttpServer())
-				.get(`/settings`)
+				.get("/settings")
 				.set("x-api-key", "a")
 				.expect(401)
 				.expect((r) => {
@@ -231,7 +235,7 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should deny access to route", () => {
 			return request(app.getHttpServer())
-				.get(`/albums`)
+				.get("/albums")
 				.set("x-api-key", "a")
 				.expect(401)
 				.expect((r) => {
@@ -242,13 +246,13 @@ describe("Authentication Controller & Role Management", () => {
 		});
 		it("Should allow access to route", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries`)
+				.get("/libraries")
 				.set("x-api-key", "a")
 				.expect(200);
 		});
 		it("Should deny access to route (bad api key)", () => {
 			return request(app.getHttpServer())
-				.get(`/libraries`)
+				.get("/libraries")
 				.set("x-api-key", "b")
 				.expect(401)
 				.expect((r) => {
@@ -280,7 +284,7 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Test Access Token Middlewre", () => {
 		it("Should Accept access token cookie", () => {
 			return request(app.getHttpServer())
-				.get(`/settings`)
+				.get("/settings")
 				.set("cookie", `access_token=${adminToken}`)
 				.expect(200);
 		});
@@ -295,7 +299,7 @@ describe("Authentication Controller & Role Management", () => {
 			).mockReturnValueOnce({
 				allowAnonymous: true,
 			} as Settings);
-			return request(app.getHttpServer()).get(`/settings`).expect(401);
+			return request(app.getHttpServer()).get("/settings").expect(401);
 		});
 		it("Should Accept Anonymous request ", () => {
 			jest.spyOn(
@@ -305,7 +309,7 @@ describe("Authentication Controller & Role Management", () => {
 			).mockReturnValueOnce({
 				allowAnonymous: true,
 			} as Settings);
-			return request(app.getHttpServer()).get(`/libraries`).expect(200);
+			return request(app.getHttpServer()).get("/libraries").expect(200);
 		});
 		it("Should Reject Anonymous request for User route ", () => {
 			jest.spyOn(
@@ -316,7 +320,7 @@ describe("Authentication Controller & Role Management", () => {
 				allowAnonymous: true,
 			} as Settings);
 			return request(app.getHttpServer())
-				.get(`/users/me`)
+				.get("/users/me")
 				.expect(401)
 				.expect((r) => {
 					expect(r.body.message).toBe(

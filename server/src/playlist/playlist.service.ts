@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import PlaylistQueryParameters from "./models/playlist.query-parameters";
+import type PlaylistQueryParameters from "./models/playlist.query-parameters";
 import { Prisma } from "@prisma/client";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
@@ -29,19 +29,18 @@ import {
 	PlaylistNotFoundException,
 	PlaylistReorderInvalidArrayException,
 } from "./playlist.exceptions";
-import PrismaService from "src/prisma/prisma.service";
-import SongQueryParameters from "src/song/models/song.query-params";
+import type PrismaService from "src/prisma/prisma.service";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import Logger from "src/logger/logger";
-// eslint-disable-next-line no-restricted-imports
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import AlbumService from "src/album/album.service";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import IllustrationRepository from "src/illustration/illustration.repository";
-import { PlaylistEntryModel } from "./models/playlist-entry.model";
+import type { PlaylistEntryModel } from "./models/playlist-entry.model";
 
 @Injectable()
 export default class PlaylistService {
@@ -64,7 +63,7 @@ export default class PlaylistService {
 			});
 		} catch (error) {
 			if (error instanceof Prisma.PrismaClientKnownRequestError) {
-				if (error.code == PrismaError.UniqueConstraintViolation) {
+				if (error.code === PrismaError.UniqueConstraintViolation) {
 					throw new PlaylistAlreadyExistsException(input.name);
 				}
 			}
@@ -151,7 +150,7 @@ export default class PlaylistService {
 	): Error | Promise<Error> {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			return new PlaylistNotFoundException(where.id ?? where.slug);
 		}
@@ -232,7 +231,7 @@ export default class PlaylistService {
 			})
 			.catch((error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					if (error.code == PrismaError.UniqueConstraintViolation) {
+					if (error.code === PrismaError.UniqueConstraintViolation) {
 						throw new PlaylistAlreadyExistsException(what.name);
 					}
 				}
@@ -274,16 +273,16 @@ export default class PlaylistService {
 			},
 		});
 		const missingEntryIds = entries.filter(
-			({ id }) => entryIds.indexOf(id) == -1,
+			({ id }) => entryIds.indexOf(id) === -1,
 		);
 		const unknownEntryIds = entryIds.filter(
-			(id) => !entries.find((entry) => entry.id == id),
+			(id) => !entries.find((entry) => entry.id === id),
 		);
 
 		if (
-			entries.length != entryIds.length ||
-			unknownEntryIds.length != 0 ||
-			missingEntryIds.length != 0
+			entries.length !== entryIds.length ||
+			unknownEntryIds.length !== 0 ||
+			missingEntryIds.length !== 0
 		) {
 			throw new PlaylistReorderInvalidArrayException();
 		}

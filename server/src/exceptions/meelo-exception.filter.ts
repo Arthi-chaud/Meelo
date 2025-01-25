@@ -16,7 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ArgumentsHost, Catch, ExceptionFilter } from "@nestjs/common";
+import {
+	type ArgumentsHost,
+	Catch,
+	type ExceptionFilter,
+} from "@nestjs/common";
 import type { Response } from "express";
 import { MeeloException } from "./meelo-exception";
 

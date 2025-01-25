@@ -17,19 +17,19 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import FileManagerService from "../file-manager/file-manager.service";
+import type FileManagerService from "../file-manager/file-manager.service";
 import {
 	FileAlreadyExistsException,
 	FileNotFoundException,
 	FileNotFoundFromTrackIDException,
 } from "./file.exceptions";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import type { File } from "src/prisma/models";
 import type FileQueryParameters from "./models/file.query-parameters";
 import { buildDateSearchParameters } from "src/utils/search-date-input";
 import LibraryService from "src/library/library.service";
 import { Prisma } from "@prisma/client";
-import Identifier from "src/identifier/models/identifier";
+import type Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -38,7 +38,7 @@ import {
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import AlbumService from "src/album/album.service";
 import SongService from "src/song/song.service";
 import TrackService from "src/track/track.service";
@@ -193,7 +193,7 @@ export default class FileService {
 	onNotFound(error: Error, where: FileQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			if (where.trackId !== undefined) {
 				return new FileNotFoundFromTrackIDException(where.trackId);
@@ -217,7 +217,7 @@ export default class FileService {
 			.catch((error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.UniqueConstraintViolation
+					error.code === PrismaError.UniqueConstraintViolation
 				) {
 					throw new FileAlreadyExistsException(
 						input.path,

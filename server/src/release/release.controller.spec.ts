@@ -10,7 +10,7 @@ import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "./release.service";
 import ReleaseController from "./release.controller";
 import request from "supertest";
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import ReleaseModule from "./release.module";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
@@ -205,7 +205,7 @@ describe("Release Controller", () => {
 		});
 
 		it("should throw, as the release does not exist", () => {
-			return request(app.getHttpServer()).get(`/releases/-1`).expect(404);
+			return request(app.getHttpServer()).get("/releases/-1").expect(404);
 		});
 
 		it("should return the release, w/ parent album", () => {
@@ -460,7 +460,7 @@ describe("Release Controller", () => {
 		});
 		it("Should return an error, as the album does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/releases/master/-1`)
+				.get("/releases/master/-1")
 				.expect(404);
 		});
 		it("Should throw, as the album does not have releases", async () => {
@@ -517,7 +517,7 @@ describe("Release Controller", () => {
 						...release,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

@@ -17,28 +17,27 @@
  */
 
 import { Injectable, StreamableFile } from "@nestjs/common";
-import FileManagerService from "src/file-manager/file-manager.service";
+import type FileManagerService from "src/file-manager/file-manager.service";
 import {
 	CantDownloadIllustrationException,
 	NoIllustrationException,
 } from "./illustration.exceptions";
-// eslint-disable-next-line no-restricted-imports
-import * as fs from "fs";
-import * as dir from "path";
+// biome-ignore lint/nursery/noRestrictedImports: TODO
+import * as fs from "node:fs";
+import * as dir from "node:path";
 import type { IllustrationPath } from "./models/illustration-path.model";
 import { Jimp } from "jimp";
-import { Readable } from "stream";
+import { Readable } from "node:stream";
 import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import Logger from "src/logger/logger";
 import * as Blurhash from "blurhash";
 import mime from "mime";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ImageQuality } from "./models/illustration-quality";
-import { HttpService } from "@nestjs/axios";
+import type { HttpService } from "@nestjs/axios";
 import { version } from "package.json";
-import IllustrationStats from "./models/illustration-stats";
+import type IllustrationStats from "./models/illustration-stats";
 import md5 from "md5";
-// eslint-disable-next-line
 const getPalette = require("get-rgba-palette");
 
 /**
@@ -67,7 +66,7 @@ export default class IllustrationService {
 					await this.httpService.axiosRef.get(illustrationURL, {
 						responseType: "arraybuffer",
 						headers: {
-							"User-Agent": "Meelo v" + version,
+							"User-Agent": `Meelo v${version}`,
 						},
 					})
 				).data,
@@ -104,7 +103,7 @@ export default class IllustrationService {
 			try {
 				const pathOfFile = dir.join(
 					dir.dirname(path),
-					dir.parse(path).name + "-" + quality + dir.extname(path),
+					`${dir.parse(path).name}-${quality}${dir.extname(path)}`,
 				);
 				this.fileManagerService.deleteFile(pathOfFile);
 			} catch {
@@ -171,7 +170,7 @@ export default class IllustrationService {
 			const quality = dimensions.quality;
 			const pathOfFile = dir.join(
 				dir.dirname(sourceFilePath),
-				dir.parse(sourceFilePath).name + "-" + quality + ext,
+				`${dir.parse(sourceFilePath).name}-${quality}${ext}`,
 			);
 			if (!this.fileManagerService.fileExists(pathOfFile)) {
 				await this.resizeImageTo(sourceFilePath, pathOfFile, quality);
@@ -179,7 +178,8 @@ export default class IllustrationService {
 			return new StreamableFile(fs.createReadStream(pathOfFile), {
 				type: mime.getType(pathOfFile)?.toString(),
 			});
-		} else if (dimensions.width || dimensions.height) {
+		}
+		if (dimensions.width || dimensions.height) {
 			try {
 				const image = await Jimp.read(sourceFilePath);
 

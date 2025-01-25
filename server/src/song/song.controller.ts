@@ -29,13 +29,13 @@ import {
 	forwardRef,
 } from "@nestjs/common";
 import ArtistService from "src/artist/artist.service";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { LyricsService } from "src/lyrics/lyrics.service";
-import LyricsDto from "src/lyrics/models/update-lyrics.dto";
+import type LyricsDto from "src/lyrics/models/update-lyrics.dto";
 import { SongResponseBuilder } from "./models/song.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
@@ -43,18 +43,18 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import LibraryService from "src/library/library.service";
-import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import GenreService from "src/genre/genre.service";
 import AlbumService from "src/album/album.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import { SongType, User } from "@prisma/client";
-import UpdateSongDTO from "./models/update-song.dto";
-import SongGroupQueryParameters from "./models/song-group.query-params";
-import { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import { SongType, type User } from "@prisma/client";
+import type UpdateSongDTO from "./models/update-song.dto";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
+import type { LyricsResponse } from "src/lyrics/models/lyrics.response";
 import { formatIdentifier } from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
 import Roles from "src/authentication/roles/roles.enum";
@@ -181,7 +181,8 @@ export class SongController {
 				paginationParameters,
 				include,
 			);
-		} else if (sort.sortBy == "userPlayCount" && request.user) {
+		}
+		if (sort.sortBy === "userPlayCount" && request.user) {
 			return this.songService.getManyByPlayCount(
 				(request.user as User).id,
 				selector,
@@ -189,14 +190,16 @@ export class SongController {
 				include,
 				sort.order,
 			);
-		} else if (selector.bsides) {
+		}
+		if (selector.bsides) {
 			return this.songService.getReleaseBSides(
 				selector.bsides,
 				paginationParameters,
 				include,
 				sort,
 			);
-		} else if (selector.rare) {
+		}
+		if (selector.rare) {
 			return this.songService.getRareSongsByArtist(
 				selector.rare,
 				paginationParameters,

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MeiliSearch from "meilisearch";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type MeiliSearch from "meilisearch";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { sortItemsUsingOrderedIdList } from "./repository.utils";
 
 /// Base functions for a Repository that integrates Meilisearch

@@ -22,7 +22,7 @@ import {
 	VideoAlreadyExistsException,
 	VideoNotFoundException,
 } from "./video.exceptions";
-import { Video, VideoType } from "@prisma/client";
+import { type Video, VideoType } from "@prisma/client";
 import Slug from "src/slug/slug";
 import TrackService from "src/track/track.service";
 
@@ -112,7 +112,7 @@ describe("Video Service", () => {
 			expect(video.name).toBe("My Video");
 			expect(video.nameSlug).toBe("my-video");
 
-			expect(video.slug).toBe(dummyRepository.artistB.slug + "-my-video");
+			expect(video.slug).toBe(`${dummyRepository.artistB.slug}-my-video`);
 			expect(video.type).toBe(VideoType.Interview);
 			video1 = video;
 		});
@@ -184,7 +184,7 @@ describe("Video Service", () => {
 			});
 			expect(video.id).not.toBe(video1.id);
 			expect(video.slug).toBe(
-				dummyRepository.artistB.slug + "-my-video-2",
+				`${dummyRepository.artistB.slug}-my-video-2`,
 			);
 		});
 	});
@@ -202,6 +202,7 @@ describe("Video Service", () => {
 				video: { id: dummyRepository.videoA1.id },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			// biome-ignore lint/complexity/noForEach: Test
 			videoTracks.forEach((track) => expect(track.songId).toBe(null));
 		});
 
@@ -218,6 +219,7 @@ describe("Video Service", () => {
 				video: { id: dummyRepository.videoA1.id },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			// biome-ignore lint/complexity/noForEach: Test
 			videoTracks.forEach((track) =>
 				expect(track.songId).toBe(dummyRepository.songA1.id),
 			);

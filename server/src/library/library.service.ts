@@ -20,24 +20,24 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import FileService from "src/file/file.service";
 import Slug from "src/slug/slug";
 import { Prisma } from "@prisma/client";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import type LibraryQueryParameters from "./models/library.query-parameters";
 import normalize from "normalize-path";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
-import { Library } from "src/prisma/models";
+import type { Library } from "src/prisma/models";
 import { PrismaError } from "prisma-error-enum";
 import {
 	LibraryAlreadyExistsException,
 	LibraryNotFoundException,
 } from "./library.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
-import { HousekeepingService } from "src/housekeeping/housekeeping.service";
-import { RegistrationService } from "src/registration/registration.service";
+import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import type { RegistrationService } from "src/registration/registration.service";
 
 @Injectable()
 export default class LibraryService {
@@ -61,7 +61,7 @@ export default class LibraryService {
 		} catch (error) {
 			if (
 				error instanceof Prisma.PrismaClientKnownRequestError &&
-				error.code == PrismaError.UniqueConstraintViolation
+				error.code === PrismaError.UniqueConstraintViolation
 			) {
 				throw new LibraryAlreadyExistsException(
 					new Slug(input.name),
@@ -169,7 +169,7 @@ export default class LibraryService {
 	onNotFound(error: Error, where: LibraryQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			return new LibraryNotFoundException(where.slug ?? where.id);
 		}

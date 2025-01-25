@@ -26,22 +26,22 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
-import FileDeletionDto from "./models/file-deletion.dto";
+import type FileDeletionDto from "./models/file-deletion.dto";
 import { Role } from "src/authentication/roles/roles.decorators";
 import AlbumService from "src/album/album.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ReleaseService from "src/release/release.service";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import SongService from "src/song/song.service";
-import SongQueryParameters from "src/song/models/song.query-params";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import TrackService from "src/track/track.service";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import Roles from "src/authentication/roles/roles.enum";
-import { HousekeepingService } from "src/housekeeping/housekeeping.service";
-import { RegistrationService } from "src/registration/registration.service";
+import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import type { RegistrationService } from "src/registration/registration.service";
 
 class Selector {
 	@IsOptional()
@@ -60,28 +60,28 @@ class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files by album`,
+		description: "Filter files by album",
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files by release`,
+		description: "Filter files by release",
 	})
 	@TransformIdentifier(ReleaseService)
 	release?: ReleaseQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files by song`,
+		description: "Filter files by song",
 	})
 	@TransformIdentifier(SongService)
 	song?: SongQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Filter files by track`,
+		description: "Filter files by track",
 	})
 	@TransformIdentifier(TrackService)
 	track?: TrackQueryParameters.WhereInput;

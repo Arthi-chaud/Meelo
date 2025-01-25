@@ -17,31 +17,31 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import MetadataDto from "./models/metadata.dto";
-import MetadataService from "src/registration/metadata.service";
-import SettingsService from "src/settings/settings.service";
+import type MetadataDto from "./models/metadata.dto";
+import type MetadataService from "src/registration/metadata.service";
+import type SettingsService from "src/settings/settings.service";
 import LibraryService from "src/library/library.service";
 import {
-	Illustration,
+	type Illustration,
 	IllustrationType,
-	Library,
+	type Library,
 	TrackType,
 } from "@prisma/client";
 import { LibraryNotFoundException } from "src/library/library.exceptions";
 import FileService from "src/file/file.service";
-import * as path from "path";
+import * as path from "node:path";
 import {
 	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import MetadataSavedResponse from "./models/metadata-saved.dto";
+import type MetadataSavedResponse from "./models/metadata-saved.dto";
 import escapeRegex from "src/utils/escape-regex";
-import { HousekeepingService } from "src/housekeeping/housekeeping.service";
-import FileQueryParameters from "src/file/models/file.query-parameters";
+import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import type FileQueryParameters from "src/file/models/file.query-parameters";
 import TrackService from "src/track/track.service";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import IllustrationService from "src/illustration/illustration.service";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import type IllustrationRepository from "src/illustration/illustration.repository";
+import type IllustrationService from "src/illustration/illustration.service";
 import Logger from "src/logger/logger";
 
 @Injectable()
@@ -159,8 +159,8 @@ export class RegistrationService {
 		type: IllustrationType = IllustrationType.Cover,
 	): Promise<Illustration> {
 		const track = await this.trackService.get(where, { release: true });
-		if (type == IllustrationType.Thumbnail) {
-			if (track.type != TrackType.Video) {
+		if (type === IllustrationType.Thumbnail) {
+			if (track.type !== TrackType.Video) {
 				throw new InvalidRequestException(
 					"Cannot save a thumbnail for an audio track",
 				);
@@ -196,7 +196,10 @@ export class RegistrationService {
 			(i) => i.disc === track.discIndex,
 		);
 		// If there is no illustration at all for the release or there is none for the current disc
-		if (parentReleaseIllustrations.length == 0 || !parentDiscIllustration) {
+		if (
+			parentReleaseIllustrations.length === 0 ||
+			!parentDiscIllustration
+		) {
 			logRegistration(null, null);
 			const newIllustration =
 				await this.illustrationRepository.saveReleaseIllustration(

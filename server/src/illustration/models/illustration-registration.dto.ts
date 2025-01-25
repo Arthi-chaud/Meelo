@@ -23,7 +23,7 @@ import {
 	HasMimeType,
 	IsFile,
 	MaxFileSize,
-	MemoryStoredFile,
+	type MemoryStoredFile,
 } from "nestjs-form-data";
 
 export default class IllustrationRegistrationDto {

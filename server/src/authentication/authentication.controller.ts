@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AuthenticationService from "./authentication.service";
+import type AuthenticationService from "./authentication.service";
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import LoginDTO from "./models/login.dto";
+import type LoginDTO from "./models/login.dto";
 import { Public } from "./roles/roles.decorators";
 
 @ApiTags("Authentication")

@@ -19,7 +19,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { SongResponse, SongResponseBuilder } from "./song.response";
 import { Injectable } from "@nestjs/common";
-import { SongWithRelations } from "src/prisma/models";
+import type { SongWithRelations } from "src/prisma/models";
 
 export class SongGroupResponse extends SongResponse {
 	@ApiProperty()

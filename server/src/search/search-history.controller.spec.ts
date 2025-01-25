@@ -1,8 +1,8 @@
 import { createTestingModule } from "test/test-module";
-import { TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import SongModule from "src/song/song.module";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
@@ -50,11 +50,8 @@ describe("Search History Controller", () => {
 			password: "azerty1234",
 			admin: true,
 		});
-	});
-
-	beforeAll(async () => {
 		const res = await request(app.getHttpServer())
-			.post(`/auth/login`)
+			.post("/auth/login")
 			.send({
 				username: "admin",
 				password: "azerty1234",
@@ -69,7 +66,7 @@ describe("Search History Controller", () => {
 	describe("POST Search History Entry", () => {
 		it("should save search history entry", () => {
 			return request(app.getHttpServer())
-				.post(`/search/history`)
+				.post("/search/history")
 				.send({ songId: dummyRepository.songA2.id })
 				.auth(token, { type: "bearer" })
 				.expect(201);
@@ -77,27 +74,27 @@ describe("Search History Controller", () => {
 
 		it("should return an error (unauthorised)", () => {
 			return request(app.getHttpServer())
-				.post(`/search/history`)
+				.post("/search/history")
 				.send({ songId: dummyRepository.songA2.id })
 				.expect(401);
 		});
 		it("should return an error (song not found)", () => {
 			return request(app.getHttpServer())
-				.post(`/search/history`)
+				.post("/search/history")
 				.send({ songId: 2 ^ 53 })
 				.auth(token, { type: "bearer" })
 				.expect(404);
 		});
 		it("should return an error (empty dto)", () => {
 			return request(app.getHttpServer())
-				.post(`/search/history`)
+				.post("/search/history")
 				.send({})
 				.auth(token, { type: "bearer" })
 				.expect(400);
 		});
 		it("should return an error (multiple fields set in dto)", () => {
 			return request(app.getHttpServer())
-				.post(`/search/history`)
+				.post("/search/history")
 				.send({
 					songId: dummyRepository.songA2.id,
 					artistId: dummyRepository.artistA.id,

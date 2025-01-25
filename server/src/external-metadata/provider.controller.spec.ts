@@ -7,8 +7,9 @@ import { ExternalMetadataModule } from "./external-metadata.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SetupApp from "test/setup-app";
-import { Provider } from "src/prisma/models";
-import { createReadStream, existsSync } from "fs";
+import type { Provider } from "src/prisma/models";
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import { createReadStream, existsSync } from "node:fs";
 import IllustrationService from "src/illustration/illustration.service";
 import ProviderService from "./provider.service";
 
@@ -47,7 +48,7 @@ describe("External Provider Controller", () => {
 	describe("Create a Provider", () => {
 		it("should create a provider", () => {
 			return request(app.getHttpServer())
-				.post(`/external-providers`)
+				.post("/external-providers")
 				.send({
 					name: "Wikipedia",
 				})
@@ -61,7 +62,7 @@ describe("External Provider Controller", () => {
 		});
 		it("should fail as provider already exists", () => {
 			return request(app.getHttpServer())
-				.post(`/external-providers`)
+				.post("/external-providers")
 				.send({
 					name: "wikipedia",
 				})
@@ -92,7 +93,7 @@ describe("External Provider Controller", () => {
 		});
 		it("should fail as provider does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/external-providers/a/icon`)
+				.post("/external-providers/a/icon")
 				.attach("file", createReadStream("test/assets/cover2.jpg"))
 				.expect(404);
 		});

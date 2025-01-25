@@ -37,10 +37,7 @@ export default class SettingsService {
 	) {
 		const meeloDir = process.env.INTERNAL_CONFIG_DIR;
 
-		if (
-			meeloDir == undefined ||
-			!this.fileManagerService.folderExists(meeloDir)
-		) {
+		if (!meeloDir || !this.fileManagerService.folderExists(meeloDir)) {
 			throw new InvalidMeeloDirVarException(meeloDir);
 		}
 		this.load();
@@ -61,21 +58,20 @@ export default class SettingsService {
 		}).at(0);
 
 		if (validationError) {
-			validationError.children
-				?.concat(validationError)
-				.forEach((error) => {
-					const undefinedChild = error.children?.find(
-						(child) => child.value === undefined,
-					);
+			for (const error of validationError.children?.concat(
+				validationError,
+			) ?? []) {
+				const undefinedChild = error.children?.find(
+					(child) => child.value === undefined,
+				);
 
-					if (error.value === undefined) {
-						throw new MissingSettingsException(error.property);
-					} else if (error.value && undefinedChild) {
-						throw new MissingSettingsException(
-							undefinedChild.property,
-						);
-					}
-				});
+				if (error.value === undefined) {
+					throw new MissingSettingsException(error.property);
+				}
+				if (error.value && undefinedChild) {
+					throw new MissingSettingsException(undefinedChild.property);
+				}
+			}
 			try {
 				const constraint =
 					validationError.constraints ??
@@ -83,7 +79,7 @@ export default class SettingsService {
 				const constraintName = Object.keys(constraint!).at(0)!;
 				const constraintError = constraint![constraintName];
 
-				if (constraintName == "nestedValidation") {
+				if (constraintName === "nestedValidation") {
 					throw new InvalidSettingsFileException();
 				}
 				throw new InvalidSettingsFileException(constraintError);

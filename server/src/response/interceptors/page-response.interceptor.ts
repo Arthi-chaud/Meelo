@@ -17,13 +17,13 @@
  */
 
 import {
-	CallHandler,
-	ExecutionContext,
+	type CallHandler,
+	type ExecutionContext,
 	Injectable,
-	NestInterceptor,
+	type NestInterceptor,
 } from "@nestjs/common";
 import { map } from "rxjs";
-// eslint-disable-next-line no-restricted-imports
+// biome-ignore lint/nursery/noRestrictedImports: Internal use
 import PaginatedResponse from "src/pagination/models/paginated-response";
 
 /**

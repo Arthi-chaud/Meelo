@@ -3,7 +3,8 @@
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
-		"useIgnoreFile": true
+		"useIgnoreFile": true,
+		"defaultBranch": "main"
 	},
 	"files": {
 		"ignore": ["**/.yarn/**", "**/dist/**"]
@@ -19,7 +20,22 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"style": {
+				"noParameterAssign": "off"
+			},
+			"performance": {
+				"noAccumulatingSpread": "off"
+			},
+			"complexity": {
+				"noBannedTypes": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
+			"correctness": {
+				"noUnusedImports": "warn"
+			}
 		}
 	},
 	"javascript": {

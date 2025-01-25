@@ -23,33 +23,33 @@ import {
 	ApiTags,
 	getSchemaPath,
 } from "@nestjs/swagger";
-import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
-import { SearchHistoryService } from "./search-history.service";
+import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import type { SearchHistoryService } from "./search-history.service";
 import Roles from "src/authentication/roles/roles.enum";
 import { Role } from "src/authentication/roles/roles.decorators";
-import {
+import type {
 	AlbumWithRelations,
 	Artist,
 	Song,
 	User,
 	Video,
 } from "src/prisma/models";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
 	ArtistResponse,
-	ArtistResponseBuilder,
+	type ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import {
 	AlbumResponse,
-	AlbumResponseBuilder,
+	type AlbumResponseBuilder,
 } from "src/album/models/album.response";
 import {
 	SongResponse,
-	SongResponseBuilder,
+	type SongResponseBuilder,
 } from "src/song/models/song.response";
 import {
 	VideoResponse,
-	VideoResponseBuilder,
+	type VideoResponseBuilder,
 } from "src/video/models/video.response";
 import { getSearchResourceType } from "./search.utils";
 

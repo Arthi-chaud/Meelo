@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import Metadata from "../registration/models/metadata";
+import type Metadata from "../registration/models/metadata";
 import { AlbumType, SongType, VideoType } from "@prisma/client";
 import escapeRegex from "src/utils/escape-regex";
 import ArtistService from "src/artist/artist.service";
@@ -53,7 +53,8 @@ export default class ParserService {
 
 				i += (nestedGroup?.length ?? 1) + 1;
 				continue;
-			} else if (istart == null && startMatch) {
+			}
+			if (istart == null && startMatch) {
 				istart = i;
 			} else if (endMatch && istart !== null) {
 				return token.slice(istart, i + 1);
@@ -124,7 +125,7 @@ export default class ParserService {
 		const tokens: string[] = [];
 		const groups = this.getGroups(tokenString);
 
-		groups.forEach((group) => {
+		for (const group of groups) {
 			const offset = tokenString.indexOf(group);
 			const root = tokenString.slice(0, offset).trim(); // Anything before the group
 			const [gstart, strippedGroup, gend] =
@@ -156,14 +157,14 @@ export default class ParserService {
 				tokens.push(
 					...subGroups.map((g) => {
 						if (g.startsWith("- ")) {
-							g = " " + g;
+							g = ` ${g}`;
 						}
 						return this.stripGroupDelimiters(g)[1];
 					}),
 				);
 			}
 			tokenString = tokenString.slice(offset + group.length);
-		});
+		}
 		tokenString = tokenString.trim();
 		if (tokenString.length && !opt?.removeRoot) {
 			tokens.push(tokenString);
@@ -229,7 +230,6 @@ export default class ParserService {
 					.trim();
 
 				if (strippedGroupWithoutSub) {
-					// eslint-disable-next-line max-depth
 					if (sstart && ssend) {
 						groupsWithoutFeaturings.push(
 							sstart + strippedGroupWithoutSub + ssend,
@@ -270,12 +270,10 @@ export default class ParserService {
 				artistName.split(/\s*,\s*/).map(async (s) => {
 					const splitted = s
 						.split(/\s+&\s+/)
-						.map((t) => t.split(/\s+vs\.\s+/i))
-						.flat()
-						.map((t) => t.split(/\s+vs\s+/i))
-						.flat();
+						.flatMap((t) => t.split(/\s+vs\.\s+/i))
+						.flatMap((t) => t.split(/\s+vs\s+/i));
 
-					if (splitted.length == 1) {
+					if (splitted.length === 1) {
 						return splitted;
 					}
 					const [mainA, ...feat] = splitted;
@@ -306,9 +304,9 @@ export default class ParserService {
 			keepDelimiters: true,
 		});
 
-		groups.forEach((group) => {
+		for (const group of groups) {
 			songName = songName.replace(group, "").trim();
-		});
+		}
 		return songName.trim();
 	}
 
@@ -378,7 +376,7 @@ export default class ParserService {
 			titleContainsWord("mashup") ||
 			titleContainsWord("mash-up") ||
 			titleContainsWord("medley");
-		if (songExtensions.length == 0) {
+		if (songExtensions.length === 0) {
 			if (isMegamix()) {
 				return SongType.Medley;
 			}
@@ -416,7 +414,7 @@ export default class ParserService {
 		if (jointExtensionWords.includes("rough mix")) {
 			return SongType.Demo;
 		}
-		if (jointExtensionWords == "original mix") {
+		if (jointExtensionWords === "original mix") {
 			return SongType.Original;
 		}
 		if (containsWord("mix") && containsWord("edit")) {
@@ -445,7 +443,7 @@ export default class ParserService {
 		if (containsWord("single") || containsWord("radio")) {
 			return SongType.Edit;
 		}
-		if (extensionWords.at(-1) == "beats") {
+		if (extensionWords.at(-1) === "beats") {
 			return SongType.Remix;
 		}
 		if (
@@ -474,7 +472,8 @@ export default class ParserService {
 			jointExtensionWords.includes("original version")
 		) {
 			return SongType.Original;
-		} else if (containsWord("version")) {
+		}
+		if (containsWord("version")) {
 			return SongType.Remix;
 		}
 		return SongType.Original;
@@ -503,7 +502,7 @@ export default class ParserService {
 			return AlbumType.VideoAlbum;
 		}
 		if (
-			albumName.search(/.+(live).*/g) != -1 ||
+			albumName.search(/.+(live).*/g) !== -1 ||
 			albumName.includes("unplugged") ||
 			albumName.includes(" tour") ||
 			albumName.includes("live from ") ||
@@ -708,7 +707,7 @@ export default class ParserService {
 				return {
 					...reduced,
 					parsedName: stripped,
-					[currentKeyword]: stripped != reduced.parsedName,
+					[currentKeyword]: stripped !== reduced.parsedName,
 				} as const;
 			},
 			{ parsedName: source } as { parsedName: string } & Record<
@@ -735,21 +734,21 @@ export default class ParserService {
 		return this.splitGroups(source, { keepDelimiters: true })
 			.filter((group) => {
 				// If root
-				if (group == this.stripGroupDelimiters(group)[1]) {
+				if (group === this.stripGroupDelimiters(group)[1]) {
 					return true;
 				}
 				if (
 					ignore.length &&
 					new RegExp(`.*(${ignoreGroup}).*`, "i")
 						.exec(group)
-						?.at(0) != undefined
+						?.at(0) !== undefined
 				) {
 					return true;
 				}
 				return (
 					new RegExp(`.*(${extensionsGroup}).*`, "i")
 						.exec(group)
-						?.at(0) == undefined
+						?.at(0) === undefined
 				);
 			})
 			.map((group) => group.trim())

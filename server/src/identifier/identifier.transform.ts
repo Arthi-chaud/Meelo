@@ -17,7 +17,7 @@
  */
 
 import { applyDecorators } from "@nestjs/common";
-import Identifier from "./models/identifier";
+import type Identifier from "./models/identifier";
 import { Transform } from "class-transformer";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -42,12 +42,14 @@ export default function TransformIdentifier<
 			}
 			const stringValue = value as string;
 
-			if (isNaN(+stringValue)) {
+			if (Number.isNaN(+stringValue)) {
 				return service.formatIdentifierToWhereInput(
 					stringValue.replace(/\s+/, "+"),
 				);
 			}
-			return service.formatIdentifierToWhereInput(parseInt(stringValue));
+			return service.formatIdentifierToWhereInput(
+				Number.parseInt(stringValue),
+			);
 		}),
 	);
 }

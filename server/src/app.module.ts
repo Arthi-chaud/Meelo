@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { type MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import FileModule from "./file/file.module";
 import ArtistModule from "./artist/artist.module";

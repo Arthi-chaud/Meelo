@@ -25,12 +25,12 @@ import {
 	Query,
 	forwardRef,
 } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import AlbumService from "./album.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import UpdateAlbumDTO from "./models/update-album.dto";
+import type UpdateAlbumDTO from "./models/update-album.dto";
 import { AlbumResponseBuilder } from "./models/album.response";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import {
@@ -40,13 +40,13 @@ import {
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
 import GenreService from "src/genre/genre.service";
-import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
 import { AlbumType } from "@prisma/client";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import ArtistService from "src/artist/artist.service";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import LibraryService from "src/library/library.service";
 import Roles from "src/authentication/roles/roles.enum";
 
@@ -74,7 +74,8 @@ class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: `Get albums where an artist appear (i.e. is not their main artist), using their identifier.`,
+		description:
+			"Get albums where an artist appear (i.e. is not their main artist), using their identifier.",
 	})
 	@TransformIdentifier(ArtistService)
 	appearance?: ArtistQueryParameters.WhereInput;

@@ -17,17 +17,17 @@
  */
 
 import { HttpStatus, Injectable } from "@nestjs/common";
-import FileManagerService from "src/file-manager/file-manager.service";
-import FileService from "src/file/file.service";
-import FileQueryParameters from "src/file/models/file.query-parameters";
-// eslint-disable-next-line no-restricted-imports
-import * as fs from "fs";
-import path from "path";
+import type FileManagerService from "src/file-manager/file-manager.service";
+import type FileService from "src/file/file.service";
+import type FileQueryParameters from "src/file/models/file.query-parameters";
+// biome-ignore lint/nursery/noRestrictedImports: Not needed
+import * as fs from "node:fs";
+import path from "node:path";
 import mime from "mime";
 import { SourceFileNotFoundException } from "src/file/file.exceptions";
 import Slug from "src/slug/slug";
 import Logger from "src/logger/logger";
-import { HttpService } from "@nestjs/axios";
+import type { HttpService } from "@nestjs/axios";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { MeeloException } from "src/exceptions/meelo-exception";
 
@@ -110,7 +110,7 @@ export class StreamService {
 			path.parse(fullFilePath).name,
 		).toString();
 
-		if (this.fileManagerService.fileExists(fullFilePath) == false) {
+		if (this.fileManagerService.fileExists(fullFilePath) === false) {
 			throw new SourceFileNotFoundException(
 				path.parse(fullFilePath).name,
 			);
@@ -120,13 +120,13 @@ export class StreamService {
 			"Content-Type":
 				mime.getType(fullFilePath) ?? "application/octet-stream",
 		});
+		// biome-ignore lint/complexity/useLiteralKeys: Headers is more like a dict than an object
 		const rangeHeader = req.headers["range"] ?? req.headers["Range"];
 		let requestedStartByte: number | undefined = undefined;
 		let requestedEndByte: number | undefined = undefined;
 
 		if (rangeHeader) {
 			res.status(HttpStatus.PARTIAL_CONTENT);
-			// eslint-disable-next-line no-useless-escape
 			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
 
 			if (bytes) {

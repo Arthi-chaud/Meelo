@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import FileManagerModule from "src/file-manager/file-manager.module";

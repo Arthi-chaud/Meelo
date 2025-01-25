@@ -9,7 +9,6 @@ import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
 import IllustrationService from "src/illustration/illustration.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import * as fs from "fs";
 import TestPrismaService from "test/test-prisma.service";
 import { RegistrationService } from "./registration.service";
 
@@ -87,7 +86,7 @@ describe("Registration Service", () => {
 			);
 		});
 
-		let trackIllustrationPath: string = "";
+		let trackIllustrationPath = "";
 		it("should extract track illustration, mocking the illustration bytes", async () => {
 			jest.spyOn(
 				IllustrationService.prototype,

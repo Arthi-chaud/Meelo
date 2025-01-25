@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
 import SongService from "src/song/song.service";
 import {
@@ -26,14 +26,14 @@ import {
 	TrackNotFoundException,
 } from "./track.exceptions";
 import ReleaseService from "src/release/release.service";
-import TrackQueryParameters from "./models/track.query-parameters";
+import type TrackQueryParameters from "./models/track.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import FileService from "src/file/file.service";
 import Slug from "src/slug/slug";
 import AlbumService from "src/album/album.service";
 import LibraryService from "src/library/library.service";
-import Identifier from "src/identifier/models/identifier";
+import type Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import { FileNotFoundException } from "src/file/file.exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
@@ -44,7 +44,7 @@ import {
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import VideoService from "src/video/video.service";
 
 @Injectable()
@@ -319,7 +319,7 @@ export default class TrackService {
 	onNotFound(error: Error, where: TrackQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			if (where.id !== undefined) {
 				return new TrackNotFoundException(where.id);
@@ -344,7 +344,7 @@ export default class TrackService {
 		return this.songService
 			.get(where, { artist: true })
 			.then(async (song) => {
-				if (song.masterId != null) {
+				if (song.masterId !== null) {
 					return this.get({ id: song.masterId }, include);
 				}
 				const tracks = await this.prismaService.track.findMany({
@@ -357,7 +357,7 @@ export default class TrackService {
 					},
 				});
 				const master =
-					tracks.find((track) => track.type == "Audio") ??
+					tracks.find((track) => track.type === "Audio") ??
 					tracks.at(0);
 
 				if (!master) {
@@ -383,7 +383,7 @@ export default class TrackService {
 		return this.videoService
 			.get(where, { artist: true })
 			.then(async (video) => {
-				if (video.masterId != null) {
+				if (video.masterId !== null) {
 					return this.get({ id: video.masterId }, include);
 				}
 				const tracks = await this.prismaService.track.findMany({
@@ -394,7 +394,7 @@ export default class TrackService {
 					},
 				});
 				const master =
-					tracks.find((track) => track.type == "Video") ??
+					tracks.find((track) => track.type === "Video") ??
 					tracks.at(0);
 
 				if (!master) {
@@ -434,7 +434,7 @@ export default class TrackService {
 			},
 		});
 
-		if (tracks.length == 0) {
+		if (tracks.length === 0) {
 			await this.releaseService.get(where);
 		}
 

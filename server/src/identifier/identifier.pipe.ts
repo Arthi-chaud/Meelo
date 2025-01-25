@@ -16,8 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ArgumentMetadata, Param, PipeTransform } from "@nestjs/common";
-import Identifier from "./models/identifier";
+import {
+	type ArgumentMetadata,
+	Param,
+	type PipeTransform,
+} from "@nestjs/common";
+import type Identifier from "./models/identifier";
 import { ApiParam } from "@nestjs/swagger";
 
 type ParsingService<WhereInput> = {
@@ -50,18 +54,14 @@ export default function IdentifierParam<
 	 */
 	class IdentifierPipe implements PipeTransform {
 		transform(value: string, _metadata: ArgumentMetadata) {
-			if (isNaN(+value)) {
+			if (Number.isNaN(+value)) {
 				return service.formatIdentifierToWhereInput(value);
 			}
-			return service.formatIdentifierToWhereInput(parseInt(value));
+			return service.formatIdentifierToWhereInput(Number.parseInt(value));
 		}
 	}
 
-	return function (
-		target: any,
-		functionName: string,
-		parameterIndex: number,
-	) {
+	return (target: any, functionName: string, parameterIndex: number) => {
 		const descriptor = Reflect.getOwnPropertyDescriptor(
 			target,
 			functionName,

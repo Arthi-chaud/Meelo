@@ -17,7 +17,6 @@
  */
 
 // The Authentication Method used for the request
-// eslint-disable-next-line no-shadow
 export enum AuthMethod {
 	Nothing,
 	JWT,

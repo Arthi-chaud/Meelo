@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TrackType } from "@prisma/client";
-import { Track } from "src/prisma/models";
+import type { TrackType } from "@prisma/client";
+import type { Track } from "src/prisma/models";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -28,7 +28,7 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import VideoQueryParameters from "src/video/models/video.query-parameters";
+import type VideoQueryParameters from "src/video/models/video.query-parameters";
 
 namespace TrackQueryParameters {
 	/**

@@ -92,7 +92,7 @@ describe("File Controller", () => {
 		describe("In Directory", () => {
 			it("should get files in one directory", async () => {
 				return request(app.getHttpServer())
-					.get(`/files?inFolder=Artist A/Album A`)
+					.get("/files?inFolder=Artist A/Album A")
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;
@@ -107,7 +107,7 @@ describe("File Controller", () => {
 			});
 			it("should get files in sub directory", async () => {
 				return request(app.getHttpServer())
-					.get(`/files?inFolder=Artist A/Album B`)
+					.get("/files?inFolder=Artist A/Album B")
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;
@@ -119,7 +119,7 @@ describe("File Controller", () => {
 			});
 			it("should get one file in directory", async () => {
 				return request(app.getHttpServer())
-					.get(`/files?inFolder=Compilations`)
+					.get("/files?inFolder=Compilations")
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;

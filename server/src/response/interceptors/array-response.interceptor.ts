@@ -17,17 +17,17 @@
  */
 
 import {
-	CallHandler,
-	ExecutionContext,
+	type CallHandler,
+	type ExecutionContext,
 	Global,
 	Inject,
 	Injectable,
-	NestInterceptor,
-	Type,
+	type NestInterceptor,
+	type Type,
 } from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
 import type { Constructor } from "type-fest";
-import ResponseBuilderInterceptor from "./response.interceptor";
+import type ResponseBuilderInterceptor from "./response.interceptor";
 
 export default function ArrayResponseBuilderInterceptor<
 	FormData,

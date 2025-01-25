@@ -21,8 +21,8 @@ import type { RequireExactlyOne } from "type-fest";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import { SongGroup } from "@prisma/client";
-import SongQueryParameters from "./song.query-params";
+import type { SongGroup } from "@prisma/client";
+import type SongQueryParameters from "./song.query-params";
 
 namespace SongGroupQueryParameters {
 	/**

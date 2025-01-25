@@ -18,7 +18,7 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ApiProperty, IntersectionType } from "@nestjs/swagger";
-import { Playlist, PlaylistWithRelations } from "src/prisma/models";
+import { Playlist, type PlaylistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
 	SongResponse,
@@ -28,7 +28,7 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import { PlaylistEntryModel } from "./playlist-entry.model";
+import type { PlaylistEntryModel } from "./playlist-entry.model";
 
 export class PlaylistEntryResponse extends SongResponse {
 	@ApiProperty({
@@ -76,10 +76,6 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 	PlaylistWithRelations,
 	PlaylistResponse
 > {
-	constructor() {
-		super();
-	}
-
 	returnType = PlaylistResponse;
 
 	async buildResponse(

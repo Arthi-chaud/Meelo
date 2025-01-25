@@ -33,7 +33,7 @@ export class IllustrationResponse extends Illustration {
 			colors: illustration.colors,
 			blurhash: illustration.blurhash,
 			type: illustration.type,
-			url: "/illustrations/" + illustration.id,
+			url: `/illustrations/${illustration.id}`,
 		};
 	}
 }

@@ -1,6 +1,6 @@
-import { INestApplication } from "@nestjs/common";
-import { TestingModule } from "@nestjs/testing";
-import { User } from "src/prisma/models";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import type { User } from "src/prisma/models";
 import FileModule from "src/file/file.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -33,16 +33,13 @@ describe("User Controller", () => {
 
 	afterAll(async () => {
 		await module.close();
-	});
-
-	afterAll(async () => {
 		await app.close();
 	});
 
 	describe("Create a user account", () => {
 		it("Should create the admin user", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({
 					name: "admin",
 					password: "admin1234",
@@ -59,7 +56,7 @@ describe("User Controller", () => {
 
 		it("Should create the user user", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({
 					name: "user",
 					password: "user1234",
@@ -76,7 +73,7 @@ describe("User Controller", () => {
 
 		it("Should return an error, as user already exists", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({
 					name: "user",
 					password: "user123456",
@@ -86,7 +83,7 @@ describe("User Controller", () => {
 
 		it("Should return an error, as username is not long enough", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({
 					name: "use",
 					password: "user123456",
@@ -96,7 +93,7 @@ describe("User Controller", () => {
 
 		it("Should return an error, as password is badly formed", () => {
 			return request(app.getHttpServer())
-				.post(`/users`)
+				.post("/users")
 				.send({
 					name: "admi",
 					password: "user",
@@ -108,7 +105,7 @@ describe("User Controller", () => {
 	describe("Get all user accounts", () => {
 		it("Should get all the user account", () => {
 			return request(app.getHttpServer())
-				.get(`/users`)
+				.get("/users")
 				.expect(200)
 				.expect((res) => {
 					const users: User[] = res.body.items;
@@ -120,7 +117,7 @@ describe("User Controller", () => {
 
 		it("Should get the first user account (using sort)", () => {
 			return request(app.getHttpServer())
-				.get(`/users?take=1&sortBy=id`)
+				.get("/users?take=1&sortBy=id")
 				.expect(200)
 				.expect((res) => {
 					const users: User[] = res.body.items;
@@ -133,7 +130,7 @@ describe("User Controller", () => {
 	describe("Get all disabled user accounts", () => {
 		it("Should get all the user account", () => {
 			return request(app.getHttpServer())
-				.get(`/users/disabled`)
+				.get("/users/disabled")
 				.expect(200)
 				.expect((res) => {
 					const users: User[] = res.body.items;
@@ -146,7 +143,7 @@ describe("User Controller", () => {
 	describe("Get all admin user accounts", () => {
 		it("Should get all admin account", () => {
 			return request(app.getHttpServer())
-				.get(`/users/admins`)
+				.get("/users/admins")
 				.expect(200)
 				.expect((res) => {
 					const users: User[] = res.body.items;
@@ -174,7 +171,7 @@ describe("User Controller", () => {
 		});
 
 		it("Should return an error, as id is not known", () => {
-			return request(app.getHttpServer()).put(`/users/-1`).expect(404);
+			return request(app.getHttpServer()).put("/users/-1").expect(404);
 		});
 
 		it("Should return an error, as username is not valid", () => {

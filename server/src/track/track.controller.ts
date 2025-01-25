@@ -17,7 +17,7 @@
  */
 
 import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import TrackQueryParameters from "./models/track.query-parameters";
 import TrackService from "./track.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
@@ -30,15 +30,15 @@ import SongService from "src/song/song.service";
 import { IsEnum, IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import SongQueryParameters from "src/song/models/song.query-params";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import ArtistService from "src/artist/artist.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
-import VideoQueryParameters from "src/video/models/video.query-parameters";
+import type VideoQueryParameters from "src/video/models/video.query-parameters";
 import VideoService from "src/video/video.service";
 
 class Selector {

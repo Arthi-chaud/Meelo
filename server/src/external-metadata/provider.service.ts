@@ -20,19 +20,19 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import {
 	ProviderAlreadyExistsException,
 	ProviderNotFoundException,
 } from "./external-metadata.exceptions";
-import ProviderQueryParameters from "./models/provider.query-parameters";
+import type ProviderQueryParameters from "./models/provider.query-parameters";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
-import { Provider } from "src/prisma/models";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { Provider } from "src/prisma/models";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class ProviderService {
@@ -49,7 +49,7 @@ export default class ProviderService {
 			})
 			.catch((error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					if (error.code == PrismaError.UniqueConstraintViolation) {
+					if (error.code === PrismaError.UniqueConstraintViolation) {
 						throw new ProviderAlreadyExistsException(providerSlug);
 					}
 				}
@@ -70,7 +70,7 @@ export default class ProviderService {
 			.catch((error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.RecordsNotFound
+					error.code === PrismaError.RecordsNotFound
 				) {
 					throw new ProviderNotFoundException(
 						where.id ?? where.slug!,

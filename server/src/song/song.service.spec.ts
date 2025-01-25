@@ -5,7 +5,7 @@ import ArtistService from "src/artist/artist.service";
 import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import { Song } from "src/prisma/models";
+import type { Song } from "src/prisma/models";
 import Slug from "src/slug/slug";
 import {
 	SongAlreadyExistsException,
@@ -21,7 +21,7 @@ import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import ReleaseModule from "src/release/release.module";
-import { Artist, SongType } from "@prisma/client";
+import { type Artist, SongType } from "@prisma/client";
 import ParserModule from "src/parser/parser.module";
 import SongModule from "./song.module";
 import { GenreNotFoundException } from "src/genre/genre.exceptions";
@@ -533,7 +533,7 @@ describe("Song Service", () => {
 		});
 
 		it("should get the base song", async () => {
-			let res = await songService.getOrCreate({
+			const res = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
 				group: {
@@ -545,7 +545,7 @@ describe("Song Service", () => {
 		});
 
 		it("should get the featuring song", async () => {
-			let res = await songService.getOrCreate({
+			const res = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
 				group: {
@@ -558,7 +558,7 @@ describe("Song Service", () => {
 		});
 
 		it("should get the featuring song, with featured artists", async () => {
-			let res = await songService.get(
+			const res = await songService.get(
 				{ id: songWithFeaturing.id },
 				{ featuring: true },
 			);

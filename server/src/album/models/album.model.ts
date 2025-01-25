@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AlbumType } from "@prisma/client";
-import { ArtistModel } from "src/artist/models/artist.model";
-import { Release } from "src/prisma/models";
+import type { AlbumType } from "@prisma/client";
+import type { ArtistModel } from "src/artist/models/artist.model";
+import type { Release } from "src/prisma/models";
 
 export type AlbumModel = {
 	id: number;

@@ -18,7 +18,7 @@ import SongModule from "src/song/song.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
-import { Album } from "src/prisma/models";
+import type { Album } from "src/prisma/models";
 
 describe("Album Service", () => {
 	let albumService: AlbumService;

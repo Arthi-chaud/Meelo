@@ -37,8 +37,8 @@ import {
 	PlaylistResponseBuilder,
 } from "./models/playlist.response";
 import Response, { ResponseType } from "src/response/response.decorator";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import {
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type {
 	CreatePlaylistDTO,
 	CreatePlaylistEntryDTO,
 	ReorderPlaylistDTO,
@@ -47,7 +47,7 @@ import {
 import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import AlbumService from "src/album/album.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import SongQueryParameters from "src/song/models/song.query-params";
 
 export class Selector {

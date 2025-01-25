@@ -20,16 +20,16 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
-	TrackResponse,
+	type TrackResponse,
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import {
-	SongResponse,
+	type SongResponse,
 	SongResponseBuilder,
 } from "../../song/models/song.response";
-import { Video, VideoWithRelations } from "src/prisma/models";
+import { Video, type VideoWithRelations } from "src/prisma/models";
 import {
-	ArtistResponse,
+	type ArtistResponse,
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import {

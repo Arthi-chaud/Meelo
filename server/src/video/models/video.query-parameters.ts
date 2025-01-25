@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { VideoType } from "@prisma/client";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type { VideoType } from "@prisma/client";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import Slug from "src/slug/slug";
-import SongQueryParameters from "src/song/models/song.query-params";
+import type Slug from "src/slug/slug";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
-import SongGroupQueryParameters from "src/song/models/song-group.query-params";
-import { SearchStringInput } from "src/utils/search-string-input";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
+import type SongGroupQueryParameters from "src/song/models/song-group.query-params";
+import type { SearchStringInput } from "src/utils/search-string-input";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace VideoQueryParameters {
 	export type CreateInput = {

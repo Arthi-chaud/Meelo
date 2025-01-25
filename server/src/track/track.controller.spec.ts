@@ -6,7 +6,7 @@ import ArtistModule from "src/artist/artist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import TrackModule from "src/track/track.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
@@ -14,7 +14,6 @@ import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
 import GenreModule from "src/genre/genre.module";
 import TestPrismaService from "test/test-prisma.service";
-import type ReassignTrackDTO from "./models/reassign-track.dto";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import LibraryModule from "src/library/library.module";
 import SetupApp from "test/setup-app";
@@ -24,12 +23,6 @@ import {
 	expectedReleaseResponse,
 } from "test/expected-responses";
 import { IllustrationType } from "@prisma/client";
-import {
-	IllustratedResponse,
-	IllustrationResponse,
-} from "src/illustration/models/illustration.response";
-import { createReadStream, existsSync, rmSync } from "fs";
-import { dirname } from "path";
 
 describe("Track Controller", () => {
 	let app: INestApplication;
@@ -68,7 +61,7 @@ describe("Track Controller", () => {
 	describe("Get Tracks (GET /tracks)", () => {
 		it("should return all the tracks", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks`)
+				.get("/tracks")
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -92,7 +85,7 @@ describe("Track Controller", () => {
 		});
 		it("should return all the tracks, sorted by name", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?sortBy=name`)
+				.get("/tracks?sortBy=name")
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -116,7 +109,7 @@ describe("Track Controller", () => {
 		});
 		it("should return some tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?skip=1&take=2&sortBy=name`)
+				.get("/tracks?skip=1&take=2&sortBy=name")
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -131,7 +124,7 @@ describe("Track Controller", () => {
 		});
 		it("should return tracks w/ related song", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?take=1&skip=1&with=song&sortBy=name`)
+				.get("/tracks?take=1&skip=1&with=song&sortBy=name")
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -346,7 +339,7 @@ describe("Track Controller", () => {
 	describe("Get Videos Tracks", () => {
 		it("should return all the tracks", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?type=Video`)
+				.get("/tracks?type=Video")
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -359,7 +352,7 @@ describe("Track Controller", () => {
 
 		it("should return some the tracks (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/tracks?type=Video&skip=1`)
+				.get("/tracks?type=Video&skip=1")
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
@@ -398,7 +391,7 @@ describe("Track Controller", () => {
 				});
 		});
 		it("should return an error, as the track does not exist", () => {
-			return request(app.getHttpServer()).get(`/tracks/-1`).expect(404);
+			return request(app.getHttpServer()).get("/tracks/-1").expect(404);
 		});
 	});
 
@@ -460,7 +453,7 @@ describe("Track Controller", () => {
 						...track,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

@@ -22,7 +22,7 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import { Artist, ArtistWithRelations } from "src/prisma/models";
+import { Artist, type ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ArtistResponse extends IntersectionType(

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Library } from "src/prisma/models";
+import type { Library } from "src/prisma/models";
 import type Slug from "src/slug/slug";
 import type { RequireExactlyOne } from "type-fest";
 import type { SearchStringInput } from "src/utils/search-string-input";

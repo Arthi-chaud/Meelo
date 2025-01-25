@@ -24,12 +24,12 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import { Song } from "src/prisma/models";
+import type { Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import { SongType } from "@prisma/client";
-import SongGroupQueryParameters from "./song-group.query-params";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type { SongType } from "@prisma/client";
+import type SongGroupQueryParameters from "./song-group.query-params";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
 
 namespace SongQueryParameters {
 	/**

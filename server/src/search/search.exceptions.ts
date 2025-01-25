@@ -20,7 +20,7 @@ import {
 	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 
 export class InvalidCreateHistoryEntryException extends InvalidRequestException {
 	constructor(dto: CreateSearchHistoryEntry) {
@@ -34,6 +34,6 @@ export class InvalidCreateHistoryEntryException extends InvalidRequestException 
 
 export class HistoryEntryResourceNotFoundException extends NotFoundException {
 	constructor() {
-		super(`Could not find related resource`);
+		super("Could not find related resource");
 	}
 }

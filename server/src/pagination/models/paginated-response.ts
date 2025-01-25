@@ -87,15 +87,15 @@ export default class PaginatedResponse<
 		this.items = items;
 		const route: string = request.path;
 		const itemsCount = items.length;
-		const take = Number(request.query["take"] ?? defaultPageSize).valueOf();
-		const afterId = Number(request.query["afterId"]).valueOf();
+		const take = Number(request.query.take ?? defaultPageSize).valueOf();
+		const afterId = Number(request.query.afterId).valueOf();
 
-		if (take == 0) {
+		if (take === 0) {
 			throw new InvalidPaginationParameterValue("take");
 		}
-		let skipped: number = Number(request.query["skip"] ?? 0).valueOf();
+		let skipped: number = Number(request.query.skip ?? 0).valueOf();
 
-		if (!isNaN(afterId)) {
+		if (Number.isNaN(afterId)) {
 			this.metadata = {
 				count: this.items.length,
 				this: this.buildUrl(route, request.query),
@@ -140,8 +140,8 @@ export default class PaginatedResponse<
 	}
 
 	private buildUrl(route: string, queryParameters: any) {
-		if (queryParameters.skip == 0) {
-			delete queryParameters.skip;
+		if (queryParameters.skip === 0) {
+			queryParameters.skip = undefined;
 		}
 		const builtQueryParameters = new URLSearchParams(
 			queryParameters,

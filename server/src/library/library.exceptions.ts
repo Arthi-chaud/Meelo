@@ -33,9 +33,9 @@ export class LibraryAlreadyExistsException extends AlreadyExistsException {
 export class LibraryNotFoundException extends NotFoundException {
 	constructor(libraryIdentifierOrPath: Slug | number | string) {
 		super(
-			typeof libraryIdentifierOrPath == "number"
+			typeof libraryIdentifierOrPath === "number"
 				? `No library found with id '${libraryIdentifierOrPath}'`
-				: typeof libraryIdentifierOrPath == "string"
+				: typeof libraryIdentifierOrPath === "string"
 					? "Libraty could not be found using path"
 					: `'${libraryIdentifierOrPath.toString()}': No such library`,
 		);

@@ -23,7 +23,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type { SearchStringInput } from "src/utils/search-string-input";
-import { Release } from "src/prisma/models";
+import type { Release } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 
 namespace ReleaseQueryParameters {

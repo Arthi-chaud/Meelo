@@ -1,20 +1,19 @@
 import { createTestingModule } from "test/test-module";
-import { TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import SongModule from "src/song/song.module";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import { VideoResponse } from "./models/video.response";
+import type { VideoResponse } from "./models/video.response";
 import {
 	expectedArtistResponse,
-	expectedSongResponse,
 	expectedTrackResponse,
 	expectedVideoResponse,
 } from "test/expected-responses";
 import VideoModule from "./video.module";
-import { Video } from "@prisma/client";
+import type { Video } from "@prisma/client";
 
 jest.setTimeout(60000);
 
@@ -42,7 +41,7 @@ describe("Video Controller", () => {
 	describe("Get Videos", () => {
 		it("should return videos", () => {
 			return request(app.getHttpServer())
-				.get(`/videos?with=master,illustration`)
+				.get("/videos?with=master,illustration")
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;
@@ -60,7 +59,7 @@ describe("Video Controller", () => {
 		});
 		it("should return an empty list (pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/videos?skip=1`)
+				.get("/videos?skip=1")
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;
@@ -69,7 +68,7 @@ describe("Video Controller", () => {
 		});
 		it("should return video with their artist", () => {
 			return request(app.getHttpServer())
-				.get(`/videos?with=artist`)
+				.get("/videos?with=artist")
 				.expect(200)
 				.expect((res) => {
 					const videoSongs: VideoResponse[] = res.body.items;

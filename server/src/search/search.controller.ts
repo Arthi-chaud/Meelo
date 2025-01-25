@@ -23,26 +23,26 @@ import {
 	ApiTags,
 	getSchemaPath,
 } from "@nestjs/swagger";
-import { SearchService } from "./search.service";
+import type { SearchService } from "./search.service";
 import {
 	ArtistResponse,
-	ArtistResponseBuilder,
+	type ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import {
 	SongResponse,
-	SongResponseBuilder,
+	type SongResponseBuilder,
 } from "src/song/models/song.response";
 import {
 	AlbumResponse,
-	AlbumResponseBuilder,
+	type AlbumResponseBuilder,
 } from "src/album/models/album.response";
-import { AlbumWithRelations, Artist, Song } from "src/prisma/models";
+import type { AlbumWithRelations, Artist, Song } from "src/prisma/models";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import {
 	VideoResponse,
-	VideoResponseBuilder,
+	type VideoResponseBuilder,
 } from "src/video/models/video.response";
-import { Video } from "@prisma/client";
+import type { Video } from "@prisma/client";
 import { getSearchResourceType } from "./search.utils";
 
 @ApiTags("Search")

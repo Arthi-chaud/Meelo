@@ -12,10 +12,7 @@ import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import {
-	GenreNotEmptyException,
-	GenreNotFoundException,
-} from "./genre.exceptions";
+import { GenreNotFoundException } from "./genre.exceptions";
 import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
 import LibraryModule from "src/library/library.module";

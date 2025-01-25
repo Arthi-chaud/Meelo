@@ -17,7 +17,7 @@
  */
 
 import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ArtistService from "./artist.service";
 import ArtistQueryParameters from "./models/artist.query-parameters";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
@@ -29,9 +29,9 @@ import { IsOptional } from "class-validator";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import GenreService from "src/genre/genre.service";
 import LibraryService from "src/library/library.service";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import AlbumService from "src/album/album.service";
 
 class Selector {

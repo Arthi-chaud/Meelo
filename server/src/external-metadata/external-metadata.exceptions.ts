@@ -21,9 +21,9 @@ import {
 	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import Slug from "src/slug/slug";
-import ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
-import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import type Slug from "src/slug/slug";
+import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
+import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 
 export class ProviderAlreadyExistsException extends AlreadyExistsException {
 	constructor(providerSlug: Slug) {
@@ -34,7 +34,7 @@ export class ProviderAlreadyExistsException extends AlreadyExistsException {
 export class ProviderNotFoundException extends NotFoundException {
 	constructor(providerSlugOrId: Slug | number) {
 		super(
-			typeof providerSlugOrId == "number"
+			typeof providerSlugOrId === "number"
 				? `Provider with id ${providerSlugOrId} does not exist`
 				: `Provider '${providerSlugOrId.toString()}' not found`,
 		);
@@ -67,6 +67,6 @@ export class ExternalMetadataResourceNotFoundException extends NotFoundException
 
 export class ExternalMetadataEntryExistsException extends AlreadyExistsException {
 	constructor(data: CreateExternalMetadataDto) {
-		super(`External Metadata entry already exists for this resource`);
+		super("External Metadata entry already exists for this resource");
 	}
 }

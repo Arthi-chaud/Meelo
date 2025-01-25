@@ -20,7 +20,7 @@ import {
 	AlreadyExistsException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import Slug from "src/slug/slug";
+import type Slug from "src/slug/slug";
 
 export class VideoAlreadyExistsException extends AlreadyExistsException {
 	constructor(videoName: string, artistName: string) {

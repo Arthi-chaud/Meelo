@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import type GenreQueryParameters from "./models/genre.query-parameters";
 import SongService from "src/song/song.service";
@@ -30,7 +30,7 @@ import { GenreNotFoundException } from "./genre.exceptions";
 import AlbumService from "src/album/album.service";
 import deepmerge from "deepmerge";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
@@ -213,7 +213,7 @@ export default class GenreService {
 	onNotFound(error: Error, where: GenreQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			return new GenreNotFoundException(where.slug ?? where.id);
 		}

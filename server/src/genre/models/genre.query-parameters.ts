@@ -23,9 +23,9 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import { Genre } from "src/prisma/models";
+import type { Genre } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 
 namespace GenreQueryParameters {
 	/**

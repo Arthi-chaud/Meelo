@@ -20,7 +20,7 @@ import { Injectable } from "@nestjs/common";
 import type { User } from "src/prisma/models";
 import { Prisma } from "@prisma/client";
 import type UserQueryParameters from "./models/user.query-params";
-import PrismaService from "src/prisma/prisma.service";
+import type PrismaService from "src/prisma/prisma.service";
 import bcrypt from "bcrypt";
 import {
 	InvalidPasswordException,
@@ -31,7 +31,7 @@ import {
 	UserNotFoundFromIDException,
 	UserNotFoundFromJwtPayload,
 } from "./user.exceptions";
-import Identifier from "src/identifier/models/identifier";
+import type Identifier from "src/identifier/models/identifier";
 import { PrismaError } from "prisma-error-enum";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import {
@@ -39,7 +39,7 @@ import {
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class UserService {
@@ -56,8 +56,7 @@ export default class UserService {
 	 * @returns true if username is valid
 	 */
 	usernameIsValid(usernameCandidate: string): boolean {
-		// eslint-disable-next-line no-useless-escape
-		return usernameCandidate.match("^[a-zA-Z0-9-_]{4,}$") != null;
+		return usernameCandidate.match("^[a-zA-Z0-9-_]{4,}$") !== null;
 	}
 
 	/**
@@ -65,7 +64,7 @@ export default class UserService {
 	 * @returns true if password is valid
 	 */
 	passwordIsValid(passwordCandidate: string): boolean {
-		return passwordCandidate.match("^\\S{6,}$") != null;
+		return passwordCandidate.match("^\\S{6,}$") !== null;
 	}
 
 	/**
@@ -88,7 +87,7 @@ export default class UserService {
 
 	async create(input: UserQueryParameters.CreateInput): Promise<User> {
 		this.checkCredentialsAreValid(input);
-		const isFirstUser = (await this.prismaService.user.count({})) == 0;
+		const isFirstUser = (await this.prismaService.user.count({})) === 0;
 
 		return this.prismaService.user
 			.create({
@@ -102,7 +101,7 @@ export default class UserService {
 			.catch((error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.UniqueConstraintViolation
+					error.code === PrismaError.UniqueConstraintViolation
 				) {
 					throw new UserAlreadyExistsException(input.name);
 				}
@@ -161,9 +160,11 @@ export default class UserService {
 				return new InvalidUserCredentialsException(
 					where.byCredentials.name,
 				);
-			} else if (where.id !== undefined) {
+			}
+			if (where.id !== undefined) {
 				return new UserNotFoundFromIDException(where.id);
-			} else if (where.name !== undefined) {
+			}
+			if (where.name !== undefined) {
 				return new UserNotFoundException(where.name);
 			}
 			return new UserNotFoundFromJwtPayload(

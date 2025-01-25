@@ -18,11 +18,11 @@
 
 import { PickType } from "@nestjs/swagger";
 import { Playlist } from "src/prisma/models";
-import Slug from "src/slug/slug";
-import SongQueryParameters from "src/song/models/song.query-params";
+import type Slug from "src/slug/slug";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 

@@ -1,12 +1,12 @@
-import { HttpStatus, INestApplication } from "@nestjs/common";
-import { TestingModule } from "@nestjs/testing";
+import { HttpStatus, type INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
 import { createTestingModule } from "test/test-module";
 import PlaylistModule from "./playlist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import TestPrismaService from "test/test-prisma.service";
 import SetupApp from "test/setup-app";
-import { IllustrationType, Playlist } from "@prisma/client";
+import { IllustrationType, type Playlist } from "@prisma/client";
 import {
 	expectedPlaylistEntryResponse,
 	expectedPlaylistResponse,
@@ -14,7 +14,7 @@ import {
 import request from "supertest";
 import PlaylistService from "./playlist.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import { PlaylistEntryResponse } from "./models/playlist.response";
+import type { PlaylistEntryResponse } from "./models/playlist.response";
 
 describe("Playlist Controller", () => {
 	let app: INestApplication;
@@ -66,7 +66,7 @@ describe("Playlist Controller", () => {
 		});
 		it("Should Error: Playlist Does not exist", async () => {
 			return request(app.getHttpServer())
-				.get(`/playlists/-1`)
+				.get("/playlists/-1")
 				.expect(404);
 		});
 	});
@@ -102,7 +102,7 @@ describe("Playlist Controller", () => {
 	describe("Get Playlists", () => {
 		it("Should get All Playlist, by name", async () => {
 			return request(app.getHttpServer())
-				.get(`/playlists?sortBy=name`)
+				.get("/playlists?sortBy=name")
 				.expect(200)
 				.expect((res) => {
 					const playlists: Playlist[] = res.body.items;
@@ -115,7 +115,7 @@ describe("Playlist Controller", () => {
 		});
 		it("Should get Some Playlists", () => {
 			return request(app.getHttpServer())
-				.get(`/playlists?sortBy=id&order=desc&take=2`)
+				.get("/playlists?sortBy=id&order=desc&take=2")
 				.expect(200)
 				.expect((res) => {
 					const playlists: Playlist[] = res.body.items;
@@ -127,7 +127,7 @@ describe("Playlist Controller", () => {
 		});
 		it("Should sort playlists", () => {
 			return request(app.getHttpServer())
-				.get(`/playlists?sortBy=creationDate&order=desc`)
+				.get("/playlists?sortBy=creationDate&order=desc")
 				.expect(200)
 				.expect((res) => {
 					const playlists: Playlist[] = res.body.items;
@@ -143,7 +143,7 @@ describe("Playlist Controller", () => {
 	describe("Create Playlist", () => {
 		it("Should Create Playlist", async () => {
 			return request(app.getHttpServer())
-				.post(`/playlists`)
+				.post("/playlists")
 				.send({
 					name: "New Playlist",
 				})
@@ -161,7 +161,7 @@ describe("Playlist Controller", () => {
 		});
 		it("Should Error: Playlist Already Exists", async () => {
 			return request(app.getHttpServer())
-				.post(`/playlists`)
+				.post("/playlists")
 				.send({
 					name: dummyRepository.playlist1.name,
 				})
@@ -403,7 +403,7 @@ describe("Playlist Controller", () => {
 						...playlist,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

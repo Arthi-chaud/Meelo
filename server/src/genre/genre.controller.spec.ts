@@ -1,4 +1,4 @@
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { Genre } from "src/prisma/models";
 import request from "supertest";
@@ -56,7 +56,7 @@ describe("Genre Controller", () => {
 	describe("Get Genres", () => {
 		it("Should get all the genres", () => {
 			return request(app.getHttpServer())
-				.get(`/genres`)
+				.get("/genres")
 				.expect(200)
 				.expect((res) => {
 					const genres: Genre[] = res.body.items;
@@ -69,7 +69,7 @@ describe("Genre Controller", () => {
 
 		it("Should get some genres (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/genres?take=2&sortBy=name`)
+				.get("/genres?take=2&sortBy=name")
 				.expect(200)
 				.expect((res) => {
 					const genres: Genre[] = res.body.items;
@@ -81,7 +81,7 @@ describe("Genre Controller", () => {
 
 		it("Should get all genres, sorted", () => {
 			return request(app.getHttpServer())
-				.get(`/genres?sortBy=name&order=desc`)
+				.get("/genres?sortBy=name&order=desc")
 				.expect(200)
 				.expect((res) => {
 					const genres: Genre[] = res.body.items;

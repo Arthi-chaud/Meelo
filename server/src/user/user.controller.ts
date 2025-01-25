@@ -27,15 +27,15 @@ import {
 	Req,
 	Request,
 } from "@nestjs/common";
-import { User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import UserService from "./user.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import UserCreateDTO from "./models/create-user.dto";
+import type UserCreateDTO from "./models/create-user.dto";
 import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { UserResponseBuilder } from "./models/user.response";
-import UserQueryParameters from "./models/user.query-params";
-import UpdateUserDTO from "./models/update-user.dto";
+import type UserQueryParameters from "./models/user.query-params";
+import type UpdateUserDTO from "./models/update-user.dto";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import Response, { ResponseType } from "src/response/response.decorator";
@@ -54,7 +54,6 @@ export default class UserController {
 	@Response({ handler: UserResponseBuilder })
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
-		// eslint-disable-next-line no-extra-parens
 		return this.userService.get({ id: (request.user as User).id });
 	}
 
@@ -96,7 +95,7 @@ export default class UserController {
 		const user = await this.userService.get(where);
 		const authenticatedUser = request.user as User;
 
-		if (authenticatedUser.id == user.id) {
+		if (authenticatedUser.id === user.id) {
 			throw new InvalidRequestException(
 				"Users can not delete themselves",
 			);

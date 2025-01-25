@@ -20,8 +20,8 @@
 
 import {
 	ClassSerializerInterceptor,
-	INestApplication,
-	MiddlewareConsumer,
+	type INestApplication,
+	type MiddlewareConsumer,
 	RequestMethod,
 	ValidationPipe,
 } from "@nestjs/common";

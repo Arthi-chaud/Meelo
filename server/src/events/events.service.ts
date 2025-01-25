@@ -19,7 +19,7 @@
 import { Injectable } from "@nestjs/common";
 import Logger from "src/logger/logger";
 import {
-	ClientProxy,
+	type ClientProxy,
 	ClientProxyFactory,
 	RmqRecord,
 	Transport,
@@ -31,7 +31,6 @@ const QueueName = "meelo";
 type ResourceCreationEventType = "artist" | "album" | "song";
 
 // Should be numbers between 1 and 5. The higher, the more important
-// eslint-disable-next-line no-shadow
 export enum ResourceEventPriority {
 	Artist = 4,
 	OriginalSong = 3,

@@ -17,9 +17,9 @@
  */
 
 import {
-	ArgumentsHost,
+	type ArgumentsHost,
 	Catch,
-	ExceptionFilter,
+	type ExceptionFilter,
 	HttpStatus,
 	NotFoundException,
 } from "@nestjs/common";

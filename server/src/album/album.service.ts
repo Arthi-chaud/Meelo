@@ -25,8 +25,8 @@ import {
 	AlbumNotFoundException,
 } from "./album.exceptions";
 import { AlbumType, Prisma } from "@prisma/client";
-import PrismaService from "src/prisma/prisma.service";
-import AlbumQueryParameters from "./models/album.query-parameters";
+import type PrismaService from "src/prisma/prisma.service";
+import type AlbumQueryParameters from "./models/album.query-parameters";
 import ReleaseService from "src/release/release.service";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
@@ -37,18 +37,18 @@ import { PrismaError } from "prisma-error-enum";
 import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
 import GenreService from "src/genre/genre.service";
-import MeiliSearch from "meilisearch";
+import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
-import { AlbumModel } from "./models/album.model";
+import type { AlbumModel } from "./models/album.model";
 import {
-	EventsService,
+	type EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
 import { shuffle } from "src/utils/shuffle";
@@ -105,13 +105,13 @@ export default class AlbumService extends SearchableRepositoryService {
 						name: album.name,
 						artist: null,
 					},
-				})) != 0
+				})) !== 0
 			) {
 				throw new AlbumAlreadyExistsException(new Slug(album.name));
 			}
 		}
 		const artistSlug =
-			album.artist == undefined
+			album.artist === undefined
 				? compilationAlbumArtistKeyword
 				: (await this.artistServce.get(album.artist)).slug;
 		const albumNameSlug = new Slug(album.name).toString();
@@ -147,7 +147,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					"album",
 					created.name,
 					created.id,
-					created.type == AlbumType.StudioRecording
+					created.type === AlbumType.StudioRecording
 						? ResourceEventPriority.StudioAlbum
 						: ResourceEventPriority.NonStudioAlbum,
 				);
@@ -160,7 +160,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					if (album.artist) {
 						await this.artistServce.get(album.artist);
 					}
-					if (error.code == PrismaError.UniqueConstraintViolation) {
+					if (error.code === PrismaError.UniqueConstraintViolation) {
 						throw new AlbumAlreadyExistsException(
 							albumSlug,
 							album.artist?.slug ?? album.artist?.id,
@@ -225,7 +225,7 @@ export default class AlbumService extends SearchableRepositoryService {
 		pagination?: PaginationParameters,
 		include?: I,
 	): Promise<AlbumModel[]> {
-		if (typeof sort == "number") {
+		if (typeof sort === "number") {
 			const randomIds = await this.getManyRandomIds(
 				where,
 				sort,
@@ -290,7 +290,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			// Related albums have at least one song group in common
 			// Such song must have at least one audio track
 			query = deepmerge(query, {
-				NOT: this.formatWhereInput(where.related),
+				NOT: AlbumService.formatWhereInput(where.related),
 				releases: {
 					some: {
 						tracks: {
@@ -304,7 +304,7 @@ export default class AlbumService extends SearchableRepositoryService {
 													some: {
 														type: "Audio",
 														release: {
-															album: this.formatWhereInput(
+															album: AlbumService.formatWhereInput(
 																where.related,
 															),
 														},
@@ -591,7 +591,7 @@ export default class AlbumService extends SearchableRepositoryService {
 	async onNotFound(error: Error, where: AlbumQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			return new AlbumNotFoundException(where.id ?? where.slug);
 		}

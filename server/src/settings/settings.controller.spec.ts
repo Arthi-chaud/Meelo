@@ -2,7 +2,8 @@ import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import SettingsController from "./settings.controller";
 import SettingsModule from "./settings.module";
-import * as fs from "fs";
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import * as fs from "node:fs";
 import FileManagerService from "src/file-manager/file-manager.service";
 import type { INestApplication } from "@nestjs/common";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -38,7 +39,7 @@ describe("Settings Controller", () => {
 		expect(controller).toBeDefined();
 	});
 
-	it(`/GET /settings`, () => {
+	it("/GET /settings", () => {
 		return request(app.getHttpServer())
 			.get("/settings")
 			.expect(200)

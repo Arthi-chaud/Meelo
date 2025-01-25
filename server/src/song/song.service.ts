@@ -20,14 +20,14 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
 import { AlbumType, Prisma, SongType, TrackType } from "@prisma/client";
-import PrismaService from "src/prisma/prisma.service";
-import SongQueryParameters from "./models/song.query-params";
+import type PrismaService from "src/prisma/prisma.service";
+import type SongQueryParameters from "./models/song.query-params";
 import TrackService from "src/track/track.service";
 import GenreService from "src/genre/genre.service";
 import { CompilationArtistException } from "src/artist/artist.exceptions";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { SongWithRelations } from "src/prisma/models";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { SongWithRelations } from "src/prisma/models";
 import Logger from "src/logger/logger";
 import { PrismaError } from "prisma-error-enum";
 import {
@@ -36,14 +36,14 @@ import {
 	SongNotFoundException,
 } from "./song.exceptions";
 import AlbumService from "src/album/album.service";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
 import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
-import MeiliSearch from "meilisearch";
+import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
-import SortingOrder from "src/sort/models/sorting-order";
-import SongGroupQueryParameters from "./models/song-group.query-params";
+import type SortingOrder from "src/sort/models/sorting-order";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import {
@@ -51,12 +51,12 @@ import {
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import {
-	EventsService,
+	type EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
-import GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import { shuffle } from "src/utils/shuffle";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 
@@ -157,7 +157,7 @@ export default class SongService extends SearchableRepositoryService {
 					"song",
 					created.name,
 					created.id,
-					created.type == SongType.Original
+					created.type === SongType.Original
 						? ResourceEventPriority.OriginalSong
 						: ResourceEventPriority.NonOriginalSong,
 				);
@@ -253,7 +253,7 @@ export default class SongService extends SearchableRepositoryService {
 		pagination?: PaginationParameters,
 		include?: I,
 	): Promise<SongWithRelations[]> {
-		if (typeof sort == "number") {
+		if (typeof sort === "number") {
 			const randomIds = await this.getManyRandomIds(
 				where,
 				sort,
@@ -273,7 +273,7 @@ export default class SongService extends SearchableRepositoryService {
 			include: include ?? ({} as I),
 			where: SongService.formatManyWhereInput(where),
 			orderBy:
-				sort == undefined ? undefined : this.formatSortingInput(sort),
+				sort === undefined ? undefined : this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
 		return this.prismaService.song.findMany<
@@ -449,9 +449,9 @@ export default class SongService extends SearchableRepositoryService {
 	async onNotFound(error: Error, where: SongQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
-			if (where.id != undefined) {
+			if (where.id !== undefined) {
 				throw new SongNotFoundException(where.id);
 			}
 			throw new SongNotFoundException(where.slug);
@@ -685,7 +685,7 @@ export default class SongService extends SearchableRepositoryService {
 			album: true,
 		});
 
-		if (album.type != AlbumType.StudioRecording) {
+		if (album.type !== AlbumType.StudioRecording) {
 			return [];
 		}
 		const albumSongs = await this.getMany(
@@ -700,7 +700,7 @@ export default class SongService extends SearchableRepositoryService {
 			.getMany(
 				{
 					releases: albumSongs
-						.filter((s) => s.type == SongType.Original)
+						.filter((s) => s.type === SongType.Original)
 						.flatMap((s) => s.tracks!.map((t) => t.releaseId))
 						.filter((rid): rid is number => rid !== null)
 						.map((rid) => ({ id: rid })),
@@ -711,8 +711,8 @@ export default class SongService extends SearchableRepositoryService {
 			)
 			.then((releases) =>
 				releases
-					.filter((r) => r.album.type == AlbumType.StudioRecording)
-					.filter((r) => r.album.id != album.id)
+					.filter((r) => r.album.type === AlbumType.StudioRecording)
+					.filter((r) => r.album.id !== album.id)
 					.filter(({ album: a }) => {
 						if (!a.releaseDate || !album.releaseDate) {
 							return false;
@@ -724,15 +724,15 @@ export default class SongService extends SearchableRepositoryService {
 
 		const albumSongsBaseNames = albumSongs
 			// Some albums have live songs from previous albums, we ignore them
-			.filter((song) => song.type != SongType.Live)
+			.filter((song) => song.type !== SongType.Live)
 			// We remove songs that are present only on video in the release
 			.filter(
 				(song) =>
 					song.tracks!.find(
 						(track) =>
-							track.type == "Audio" &&
-							track.releaseId == release.id,
-					) != undefined,
+							track.type === "Audio" &&
+							track.releaseId === release.id,
+					) !== undefined,
 			)
 			// We exclude the songs that appear on older studio albums
 			// Because we dont want to get BSide from their singles
@@ -745,7 +745,7 @@ export default class SongService extends SearchableRepositoryService {
 							olderStudioReleasesWhereSongAppears.includes(
 								t.releaseId,
 							),
-					) == undefined,
+					) === undefined,
 			)
 			.map(({ name }) => new Slug(this.getBaseSongName(name)).toString());
 
@@ -854,7 +854,7 @@ export default class SongService extends SearchableRepositoryService {
 			.get(where, { albums: true })
 			.catch(() => null);
 
-		if (!artist || artist.albums.length == 0) {
+		if (!artist || artist.albums.length === 0) {
 			// if the artist does not have albums, lets skip this
 			return [];
 		}

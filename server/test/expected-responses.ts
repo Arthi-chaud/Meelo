@@ -1,5 +1,5 @@
-import { File, SongType, VideoType } from "@prisma/client";
-import {
+import { type File, SongType, VideoType } from "@prisma/client";
+import type {
 	Release,
 	Track,
 	Artist,
