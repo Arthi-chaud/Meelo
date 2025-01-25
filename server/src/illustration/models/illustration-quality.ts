@@ -18,4 +18,4 @@
 
 export const ImageQuality = ["low", "medium", "high"] as const;
 
-export type ImageQuality = typeof ImageQuality[number];
+export type ImageQuality = (typeof ImageQuality)[number];

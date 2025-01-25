@@ -92,13 +92,13 @@ export default class VideoService extends SearchableRepositoryService {
 								where: SongService.formatSongGroupWhereInput(
 									data.group,
 								),
-						  }
+							}
 						: undefined,
 				},
 				song: data.song
 					? {
 							connect: SongService.formatWhereInput(data.song),
-					  }
+						}
 					: undefined,
 			},
 		};
@@ -193,12 +193,12 @@ export default class VideoService extends SearchableRepositoryService {
 						what.master === null
 							? { disconnect: true }
 							: what.master
-							? {
-									connect: TrackService.formatWhereInput(
-										what.master,
-									),
-							  }
-							: undefined,
+								? {
+										connect: TrackService.formatWhereInput(
+											what.master,
+										),
+									}
+								: undefined,
 					song: what.song
 						? { connect: SongService.formatWhereInput(what.song) }
 						: undefined,

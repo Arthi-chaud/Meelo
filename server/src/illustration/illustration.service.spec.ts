@@ -135,9 +135,7 @@ describe("Illustration Service", () => {
 		it("should return the correct set of colors", async () => {
 			const img = fs.readFileSync("test/assets/artwork.jpeg");
 			const colorsSet = await illustrationService.getImageColors(
-				(
-					await Jimp.read(img)
-				).bitmap.data,
+				(await Jimp.read(img)).bitmap.data,
 			);
 			expect(colorsSet).toEqual([
 				"#babc85",

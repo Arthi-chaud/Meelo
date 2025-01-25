@@ -109,7 +109,7 @@ export default class ReleaseService {
 									},
 								},
 							},
-					  }
+						}
 					: undefined,
 				nameSlug: releaseNameSlug,
 			},
@@ -268,9 +268,10 @@ export default class ReleaseService {
 				sort == undefined ? undefined : this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
-		const releases = await this.prismaService.release.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>
-		>(args);
+		const releases =
+			await this.prismaService.release.findMany<
+				Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>
+			>(args);
 		return releases;
 	}
 

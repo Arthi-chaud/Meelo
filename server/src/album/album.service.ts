@@ -124,7 +124,7 @@ export default class AlbumService extends SearchableRepositoryService {
 								connect: ArtistService.formatWhereInput(
 									album.artist,
 								),
-						  }
+							}
 						: undefined,
 					slug: new Slug(artistSlug, albumNameSlug).toString(),
 					nameSlug: albumNameSlug,
@@ -245,9 +245,10 @@ export default class AlbumService extends SearchableRepositoryService {
 				sort === undefined ? undefined : this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
-		const albums = await this.prismaService.album.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.AlbumFindManyArgs>
-		>(args);
+		const albums =
+			await this.prismaService.album.findMany<
+				Prisma.SelectSubset<typeof args, Prisma.AlbumFindManyArgs>
+			>(args);
 		return albums;
 	}
 
@@ -451,7 +452,7 @@ export default class AlbumService extends SearchableRepositoryService {
 								connect: ReleaseService.formatWhereInput(
 									what.master,
 								),
-						  }
+							}
 						: undefined,
 					releaseDate: what.releaseDate ?? undefined,
 					genres: what.genres
@@ -468,7 +469,7 @@ export default class AlbumService extends SearchableRepositoryService {
 											slug: genreSlug,
 										},
 									})),
-						  }
+							}
 						: undefined,
 				},
 				where: AlbumService.formatWhereInput(where),

@@ -107,7 +107,7 @@ export default class PaginatedResponse<
 									items.at(-1)?.[
 										(paginationIdKey ?? "id") as keyof T
 									] ?? null,
-						  })
+							})
 						: null,
 				previous: null,
 				page: null,
@@ -127,13 +127,13 @@ export default class PaginatedResponse<
 					? this.buildUrl(route, {
 							...request.query,
 							skip: skipped + take,
-					  })
+						})
 					: null,
 			previous: skipped
 				? this.buildUrl(route, {
 						...request.query,
 						skip: Math.max(0, skipped - take),
-				  })
+					})
 				: null,
 			page: itemsCount ? currentPage : null,
 		};

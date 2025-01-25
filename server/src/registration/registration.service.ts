@@ -210,9 +210,8 @@ export class RegistrationService {
 				);
 			return newIllustration;
 		}
-		const hash = await this.illustrationService.getImageHash(
-			illustrationBytes,
-		);
+		const hash =
+			await this.illustrationService.getImageHash(illustrationBytes);
 		if (hash === parentDiscIllustration.hash) {
 			// The scanned illustration is the disc's one
 			return parentDiscIllustration.illustration;

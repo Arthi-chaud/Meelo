@@ -36,8 +36,8 @@ export class LibraryNotFoundException extends NotFoundException {
 			typeof libraryIdentifierOrPath == "number"
 				? `No library found with id '${libraryIdentifierOrPath}'`
 				: typeof libraryIdentifierOrPath == "string"
-				? "Libraty could not be found using path"
-				: `'${libraryIdentifierOrPath.toString()}': No such library`,
+					? "Libraty could not be found using path"
+					: `'${libraryIdentifierOrPath.toString()}': No such library`,
 		);
 	}
 }

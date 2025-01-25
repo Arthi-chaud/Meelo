@@ -90,7 +90,7 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 				? await this.songResponseBuilder.buildResponse({
 						...video.song,
 						featuring: undefined,
-				  })
+					})
 				: video.song,
 			illustration: video.illustration
 				? IllustrationResponse.from(video.illustration)

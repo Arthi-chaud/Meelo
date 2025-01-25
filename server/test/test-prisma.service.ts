@@ -99,12 +99,14 @@ export default class TestPrismaService extends PrismaService {
 	override async onModuleInit() {
 		await this.$connect();
 		await this.flushDatabase();
-		[this.library1, this.library2] = await this.library.createManyAndReturn({
-			data: [
-				{ name: "Library", path: "Music", slug: "library" },
-				{ name: "Library 2", path: "Music 2/", slug: "library-2" },
-			],
-		});
+		[this.library1, this.library2] = await this.library.createManyAndReturn(
+			{
+				data: [
+					{ name: "Library", path: "Music", slug: "library" },
+					{ name: "Library 2", path: "Music 2/", slug: "library-2" },
+				],
+			},
+		);
 
 		[this.genreA, this.genreB, this.genreC] =
 			await this.genre.createManyAndReturn({
@@ -190,13 +192,22 @@ export default class TestPrismaService extends PrismaService {
 					{ slug: new Slug(this.artistA.name, "my-song").toString() },
 
 					{
-						slug: new Slug(this.artistA.name, "my-other-song").toString(),
+						slug: new Slug(
+							this.artistA.name,
+							"my-other-song",
+						).toString(),
 					},
 					{
-						slug: new Slug(this.artistB.name, "my-second-song").toString(),
+						slug: new Slug(
+							this.artistB.name,
+							"my-second-song",
+						).toString(),
 					},
 					{
-						slug: new Slug(this.artistC.name, "my-c-song").toString(),
+						slug: new Slug(
+							this.artistC.name,
+							"my-c-song",
+						).toString(),
 					},
 				],
 			});
@@ -241,7 +252,10 @@ export default class TestPrismaService extends PrismaService {
 			this.song.update({
 				data: {
 					genres: {
-						connect: [{ id: this.genreA.id }, { id: this.genreB.id }],
+						connect: [
+							{ id: this.genreA.id },
+							{ id: this.genreB.id },
+						],
 					},
 				},
 				where: { id: this.songA1.id },

@@ -44,7 +44,7 @@ export default class SongGroupService {
 				? ({
 						[sort.sortBy == "name" ? "slug" : sort.sortBy]:
 							sort?.order ?? "asc",
-				  } as const)
+					} as const)
 				: undefined,
 			include: {
 				_count: { select: { versions: true } },

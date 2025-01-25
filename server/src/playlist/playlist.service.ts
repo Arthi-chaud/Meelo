@@ -177,24 +177,24 @@ export default class PlaylistService {
 						some: {
 							song: SongService.formatWhereInput(input.song),
 						},
-				  }
+					}
 				: input.album
-				? {
-						some: {
-							song: {
-								tracks: {
-									some: {
-										release: {
-											album: AlbumService.formatWhereInput(
-												input.album,
-											),
+					? {
+							some: {
+								song: {
+									tracks: {
+										some: {
+											release: {
+												album: AlbumService.formatWhereInput(
+													input.album,
+												),
+											},
 										},
 									},
 								},
 							},
-						},
-				  }
-				: undefined,
+						}
+					: undefined,
 		};
 	}
 

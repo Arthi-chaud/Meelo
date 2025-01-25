@@ -133,7 +133,7 @@ export default class SongService extends SearchableRepositoryService {
 							connect: song.featuring.map(
 								ArtistService.formatWhereInput,
 							),
-					  }
+						}
 					: undefined,
 				registeredAt: song.registeredAt,
 				type: this.parserService.getSongType(song.name),
@@ -471,10 +471,12 @@ export default class SongService extends SearchableRepositoryService {
 				what.master === null
 					? { disconnect: true }
 					: what.master
-					? {
-							connect: TrackService.formatWhereInput(what.master),
-					  }
-					: undefined,
+						? {
+								connect: TrackService.formatWhereInput(
+									what.master,
+								),
+							}
+						: undefined,
 			genres: what.genres
 				? {
 						connect: what.genres
@@ -496,7 +498,7 @@ export default class SongService extends SearchableRepositoryService {
 									slug: genreSlug,
 								},
 							})),
-				  }
+					}
 				: undefined,
 		};
 	}
@@ -997,7 +999,7 @@ export default class SongService extends SearchableRepositoryService {
 			songs: input.song
 				? {
 						some: SongService.formatWhereInput(input.song),
-				  }
+					}
 				: undefined,
 		};
 	}

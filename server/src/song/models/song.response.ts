@@ -93,7 +93,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 						song.featuring.map((artist) =>
 							this.artistResponseBuilder.buildResponse(artist),
 						),
-				  )
+					)
 				: song.featuring,
 			master: song.master
 				? await this.trackResponseBuilder.buildResponse(song.master)

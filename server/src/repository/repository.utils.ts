@@ -74,7 +74,7 @@ export function formatPaginationParameters(
 			pagination?.afterId !== undefined
 				? {
 						id: pagination.afterId,
-				  }
+					}
 				: undefined,
 	};
 }

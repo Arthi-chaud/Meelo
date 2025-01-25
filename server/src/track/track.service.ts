@@ -95,9 +95,10 @@ export default class TrackService {
 			orderBy: this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
-		const tracks = await this.prismaService.track.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.TrackFindManyArgs>
-		>(args);
+		const tracks =
+			await this.prismaService.track.findMany<
+				Prisma.SelectSubset<typeof args, Prisma.TrackFindManyArgs>
+			>(args);
 		return tracks;
 	}
 
@@ -112,14 +113,14 @@ export default class TrackService {
 				song: input.song
 					? {
 							connect: SongService.formatWhereInput(input.song),
-					  }
+						}
 					: undefined,
 				release: input.release
 					? {
 							connect: ReleaseService.formatWhereInput(
 								input.release,
 							),
-					  }
+						}
 					: undefined,
 				sourceFile: {
 					connect: FileService.formatWhereInput(input.sourceFile),
@@ -138,7 +139,7 @@ export default class TrackService {
 					const parentSong = input.song
 						? await this.songService.get(input.song, {
 								artist: true,
-						  })
+							})
 						: undefined;
 
 					await this.fileService.get(input.sourceFile);
@@ -462,28 +463,28 @@ export default class TrackService {
 								connect: VideoService.formatWhereInput(
 									what.video,
 								),
-						  }
+							}
 						: undefined,
 					song: what.song
 						? {
 								connect: SongService.formatWhereInput(
 									what.song,
 								),
-						  }
+							}
 						: undefined,
 					release: what.release
 						? {
 								connect: ReleaseService.formatWhereInput(
 									what.release,
 								),
-						  }
+							}
 						: undefined,
 					sourceFile: what.sourceFile
 						? {
 								connect: FileService.formatWhereInput(
 									what.sourceFile,
 								),
-						  }
+							}
 						: undefined,
 				},
 			})

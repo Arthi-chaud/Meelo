@@ -171,9 +171,10 @@ export default class GenreService {
 			orderBy: this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
-		const artists = await this.prismaService.genre.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.GenreFindManyArgs>
-		>(args);
+		const artists =
+			await this.prismaService.genre.findMany<
+				Prisma.SelectSubset<typeof args, Prisma.GenreFindManyArgs>
+			>(args);
 		return artists;
 	}
 

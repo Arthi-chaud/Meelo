@@ -95,7 +95,7 @@ export default class FileService {
 			track: where.trackId
 				? {
 						id: where.trackId,
-				  }
+					}
 				: undefined,
 			path: where.byPath?.path,
 			library: where.byPath

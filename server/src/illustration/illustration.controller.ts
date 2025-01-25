@@ -70,9 +70,8 @@ export class IllustrationController {
 		res: Response,
 		@Query() dimensions: IllustrationDimensionsDto,
 	) {
-		const illustration = await this.illustrationRepository.getIllustration(
-			illustrationId,
-		);
+		const illustration =
+			await this.illustrationRepository.getIllustration(illustrationId);
 		const illustrationPath =
 			this.illustrationRepository.buildIllustrationPath(illustration.id);
 
@@ -125,9 +124,8 @@ export class IllustrationController {
 		@Param("id", new ParseIntPipe())
 		illustrationId: number,
 	): Promise<IllustrationResponse> {
-		const illustration = await this.illustrationRepository.getIllustration(
-			illustrationId,
-		);
+		const illustration =
+			await this.illustrationRepository.getIllustration(illustrationId);
 
 		return IllustrationResponse.from(illustration);
 	}

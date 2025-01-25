@@ -68,7 +68,7 @@ export default class MetadataService {
 			? await this.artistService.getOrCreate({
 					name: metadata.albumArtist ?? metadata.artist!,
 					registeredAt: file.registerDate,
-			  })
+				})
 			: undefined;
 		const { name: parsedSongName, featuring: parsedFeaturingArtists } =
 			await this.parserService.extractFeaturedArtistsFromSongName(
@@ -148,7 +148,7 @@ export default class MetadataService {
 							genres: true,
 							master: true,
 						},
-				  )
+					)
 				: null;
 
 		if (song) {
@@ -176,7 +176,7 @@ export default class MetadataService {
 							song: song ? { id: song.id } : undefined,
 						},
 						{ master: true },
-				  )
+					)
 				: null;
 
 		const album = metadata.album
@@ -191,7 +191,7 @@ export default class MetadataService {
 						registeredAt: file.registerDate,
 					},
 					{ releases: true },
-			  )
+				)
 			: undefined;
 		//TODO Link to album
 		const parsedReleaseName = metadata.release
@@ -209,7 +209,7 @@ export default class MetadataService {
 							discogsId: metadata.discogsId,
 						},
 						{ album: true },
-				  )
+					)
 				: undefined;
 		const track: TrackQueryParameters.CreateInput = {
 			name: video ? videoName : parsedTrackName.parsedName,
