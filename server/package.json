@@ -104,16 +104,30 @@
 	},
 	"jest": {
 		"testTimeout": 150000,
-		"moduleFileExtensions": ["js", "json", "ts"],
-		"roots": ["<rootDir>", "src"],
-		"modulePaths": ["<rootDir>", "src"],
+		"moduleFileExtensions": [
+			"js",
+			"json",
+			"ts"
+		],
+		"roots": [
+			"<rootDir>",
+			"src"
+		],
+		"modulePaths": [
+			"<rootDir>",
+			"src"
+		],
 		"testRegex": ".*\\.spec\\.ts$",
 		"transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
 		},
-		"collectCoverageFrom": ["<rootDir>/src/**/*.(t|j)s"],
+		"collectCoverageFrom": [
+			"<rootDir>/src/**/*.(t|j)s"
+		],
 		"coverageDirectory": "coverage",
-		"coverageReporters": ["lcov"],
+		"coverageReporters": [
+			"lcov"
+		],
 		"testEnvironment": "node",
 		"testSequencer": "<rootDir>/test/sequencer.ts"
 	},

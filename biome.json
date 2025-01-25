@@ -7,7 +7,7 @@
 		"defaultBranch": "main"
 	},
 	"files": {
-		"ignore": ["**/.yarn/**", "**/dist/**"]
+		"ignore": ["**/.yarn/**", "**/dist/**", "**/package.json"]
 	},
 	"formatter": {
 		"enabled": true,
