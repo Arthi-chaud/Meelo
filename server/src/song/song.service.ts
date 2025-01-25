@@ -17,48 +17,48 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import ArtistService from "src/artist/artist.service";
-import Slug from "src/slug/slug";
 import { AlbumType, Prisma, SongType, TrackType } from "@prisma/client";
-import type PrismaService from "src/prisma/prisma.service";
-import type SongQueryParameters from "./models/song.query-params";
-import TrackService from "src/track/track.service";
-import GenreService from "src/genre/genre.service";
-import { CompilationArtistException } from "src/artist/artist.exceptions";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import type { SongWithRelations } from "src/prisma/models";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import {
-	SongAlreadyExistsException,
-	SongNotEmptyException,
-	SongNotFoundException,
-} from "./song.exceptions";
-import AlbumService from "src/album/album.service";
-import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
-import ReleaseService from "src/release/release.service";
-import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
-import type SortingOrder from "src/sort/models/sorting-order";
-import type SongGroupQueryParameters from "./models/song-group.query-params";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import SearchableRepositoryService from "src/repository/searchable-repository.service";
-import {
-	formatIdentifierToIdOrSlug,
-	formatPaginationParameters,
-	sortItemsUsingOrderedIdList,
-} from "src/repository/repository.utils";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import { CompilationArtistException } from "src/artist/artist.exceptions";
+import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import {
 	type EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
-import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import { shuffle } from "src/utils/shuffle";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import GenreService from "src/genre/genre.service";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import ParserService from "src/parser/parser.service";
+import type { SongWithRelations } from "src/prisma/models";
+import type PrismaService from "src/prisma/prisma.service";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ReleaseService from "src/release/release.service";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+	sortItemsUsingOrderedIdList,
+} from "src/repository/repository.utils";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import Slug from "src/slug/slug";
+import type SortingOrder from "src/sort/models/sorting-order";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import { shuffle } from "src/utils/shuffle";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
+import type SongQueryParameters from "./models/song.query-params";
+import {
+	SongAlreadyExistsException,
+	SongNotEmptyException,
+	SongNotFoundException,
+} from "./song.exceptions";
 
 @Injectable()
 export default class SongService extends SearchableRepositoryService {

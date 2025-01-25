@@ -21,9 +21,9 @@ import type { PaginationParameters } from "src/pagination/models/pagination-para
 import type { SongWithRelations } from "src/prisma/models";
 import type PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
 import type SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
-import type SongGroupQueryParameters from "./models/song-group.query-params";
 
 @Injectable()
 export default class SongGroupService {

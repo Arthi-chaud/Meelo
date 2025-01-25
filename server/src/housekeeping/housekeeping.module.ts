@@ -17,14 +17,14 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import { HousekeepingService } from "./housekeeping.service";
-import SongModule from "src/song/song.module";
-import ReleaseModule from "src/release/release.module";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import GenreModule from "src/genre/genre.module";
 import PlaylistModule from "src/playlist/playlist.module";
+import ReleaseModule from "src/release/release.module";
+import SongModule from "src/song/song.module";
 import VideoModule from "src/video/video.module";
+import { HousekeepingService } from "./housekeeping.service";
 
 @Module({
 	imports: [

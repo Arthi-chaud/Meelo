@@ -16,24 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { HttpModule } from "@nestjs/axios";
 import { Module, forwardRef } from "@nestjs/common";
-import IllustrationService from "./illustration.service";
-import FileManagerModule from "src/file-manager/file-manager.module";
-import ReleaseModule from "src/release/release.module";
 import AlbumModule from "src/album/album.module";
-import TrackModule from "src/track/track.module";
-import FileModule from "src/file/file.module";
-import { IllustrationController } from "./illustration.controller";
 import ArtistModule from "src/artist/artist.module";
+import { ExternalMetadataModule } from "src/external-metadata/external-metadata.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
+import FileModule from "src/file/file.module";
+import ParserModule from "src/parser/parser.module";
+import PlaylistModule from "src/playlist/playlist.module";
+import PrismaModule from "src/prisma/prisma.module";
+import { RegistrationModule } from "src/registration/registration.module";
+import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
-import PlaylistModule from "src/playlist/playlist.module";
+import TrackModule from "src/track/track.module";
+import { IllustrationController } from "./illustration.controller";
 import IllustrationRepository from "./illustration.repository";
-import PrismaModule from "src/prisma/prisma.module";
-import ParserModule from "src/parser/parser.module";
-import { HttpModule } from "@nestjs/axios";
-import { RegistrationModule } from "src/registration/registration.module";
-import { ExternalMetadataModule } from "src/external-metadata/external-metadata.module";
+import IllustrationService from "./illustration.service";
 
 @Module({
 	imports: [

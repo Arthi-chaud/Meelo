@@ -17,19 +17,19 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import type Metadata from "./models/metadata";
-import TrackService from "src/track/track.service";
-import SongService from "src/song/song.service";
 import { AlbumType, TrackType } from "@prisma/client";
-import ReleaseService from "src/release/release.service";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
-import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import GenreService from "src/genre/genre.service";
 import type { File } from "src/prisma/models";
-import ParserService from "../parser/parser.service";
+import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";
+import SongService from "src/song/song.service";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import TrackService from "src/track/track.service";
 import VideoService from "src/video/video.service";
+import ParserService from "../parser/parser.service";
+import type Metadata from "./models/metadata";
 
 @Injectable()
 export default class MetadataService {

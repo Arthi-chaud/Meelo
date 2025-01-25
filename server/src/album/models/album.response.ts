@@ -22,18 +22,18 @@ import {
 	type ArtistResponse,
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
-import { Album, type AlbumWithRelations, type Genre } from "src/prisma/models";
-import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
+import Logger from "src/logger/logger";
+import { Album, type AlbumWithRelations, type Genre } from "src/prisma/models";
 import {
 	type ReleaseResponse,
 	ReleaseResponseBuilder,
 } from "src/release/models/release.response";
 import ReleaseService from "src/release/release.service";
-import Logger from "src/logger/logger";
+import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class AlbumResponse extends IntersectionType(
 	Album,

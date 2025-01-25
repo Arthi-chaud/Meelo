@@ -17,17 +17,17 @@
  */
 
 import type { VideoType } from "@prisma/client";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import type Slug from "src/slug/slug";
-import type SongQueryParameters from "src/song/models/song.query-params";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
-import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import type Slug from "src/slug/slug";
 import type SongGroupQueryParameters from "src/song/models/song-group.query-params";
-import type { SearchStringInput } from "src/utils/search-string-input";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import type { SearchStringInput } from "src/utils/search-string-input";
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 
 namespace VideoQueryParameters {
 	export type CreateInput = {

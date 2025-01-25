@@ -1,24 +1,24 @@
-import AlbumService from "./album.service";
-import { AlbumType } from "@prisma/client";
-import ArtistService from "src/artist/artist.service";
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import { AlbumType } from "@prisma/client";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
+import ArtistService from "src/artist/artist.service";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import type { Album } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
-import AlbumModule from "./album.module";
 import PrismaService from "src/prisma/prisma.service";
+import Slug from "src/slug/slug";
+import SongModule from "src/song/song.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	AlbumAlreadyExistsException,
 	AlbumNotEmptyException,
 	AlbumNotFoundException,
 } from "./album.exceptions";
-import Slug from "src/slug/slug";
-import { ArtistNotFoundException } from "src/artist/artist.exceptions";
-import SongModule from "src/song/song.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import type { Album } from "src/prisma/models";
+import AlbumModule from "./album.module";
+import AlbumService from "./album.service";
 
 describe("Album Service", () => {
 	let albumService: AlbumService;

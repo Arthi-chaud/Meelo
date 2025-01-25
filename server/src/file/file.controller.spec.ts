@@ -1,16 +1,16 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { File } from "src/prisma/models";
 import LibraryModule from "src/library/library.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import type { File } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import request from "supertest";
+import { expectedFileResponse } from "test/expected-responses";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
-import FileModule from "./file.module";
-import request from "supertest";
 import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import { expectedFileResponse } from "test/expected-responses";
+import FileModule from "./file.module";
 
 describe("File Controller", () => {
 	let app: INestApplication;

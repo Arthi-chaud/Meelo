@@ -17,11 +17,23 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import type PlaylistQueryParameters from "./models/playlist.query-parameters";
 import { Prisma } from "@prisma/client";
-import Slug from "src/slug/slug";
-import SongService from "src/song/song.service";
 import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type PrismaService from "src/prisma/prisma.service";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import Slug from "src/slug/slug";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import SongService from "src/song/song.service";
+import type { PlaylistEntryModel } from "./models/playlist-entry.model";
+import type PlaylistQueryParameters from "./models/playlist.query-parameters";
 import {
 	AddSongToPlaylistFailureException,
 	PlaylistAlreadyExistsException,
@@ -29,18 +41,6 @@ import {
 	PlaylistNotFoundException,
 	PlaylistReorderInvalidArrayException,
 } from "./playlist.exceptions";
-import type PrismaService from "src/prisma/prisma.service";
-import type SongQueryParameters from "src/song/models/song.query-params";
-import Logger from "src/logger/logger";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import AlbumService from "src/album/album.service";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import {
-	formatIdentifierToIdOrSlug,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import type { PlaylistEntryModel } from "./models/playlist-entry.model";
 
 @Injectable()
 export default class PlaylistService {

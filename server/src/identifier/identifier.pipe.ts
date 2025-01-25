@@ -21,8 +21,8 @@ import {
 	Param,
 	type PipeTransform,
 } from "@nestjs/common";
-import type Identifier from "./models/identifier";
 import { ApiParam } from "@nestjs/swagger";
+import type Identifier from "./models/identifier";
 
 type ParsingService<WhereInput> = {
 	formatIdentifierToWhereInput: (identifier: Identifier) => WhereInput;

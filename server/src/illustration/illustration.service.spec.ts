@@ -1,6 +1,8 @@
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import * as fs from "node:fs";
 import { HttpModule } from "@nestjs/axios";
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import { Jimp } from "jimp";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -9,12 +11,10 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
-import IllustrationService from "./illustration.service";
-import IllustrationModule from "./illustration.module";
-// biome-ignore lint/nursery/noRestrictedImports: Test
-import * as fs from "node:fs";
+import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import { Jimp } from "jimp";
+import IllustrationModule from "./illustration.module";
+import IllustrationService from "./illustration.service";
 
 jest.setTimeout(120000);
 

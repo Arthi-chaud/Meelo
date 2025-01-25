@@ -1,20 +1,20 @@
 import { HttpStatus, type INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import { createTestingModule } from "test/test-module";
-import PlaylistModule from "./playlist.module";
+import { IllustrationType, type Playlist } from "@prisma/client";
+import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import TestPrismaService from "test/test-prisma.service";
-import SetupApp from "test/setup-app";
-import { IllustrationType, type Playlist } from "@prisma/client";
+import request from "supertest";
 import {
 	expectedPlaylistEntryResponse,
 	expectedPlaylistResponse,
 } from "test/expected-responses";
-import request from "supertest";
-import PlaylistService from "./playlist.service";
-import IllustrationModule from "src/illustration/illustration.module";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import type { PlaylistEntryResponse } from "./models/playlist.response";
+import PlaylistModule from "./playlist.module";
+import PlaylistService from "./playlist.service";
 
 describe("Playlist Controller", () => {
 	let app: INestApplication;

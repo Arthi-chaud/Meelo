@@ -17,12 +17,12 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import ProviderService from "./provider.service";
-import ExternalMetadataService from "./external-metadata.service";
-import PrismaModule from "src/prisma/prisma.module";
 import IllustrationModule from "src/illustration/illustration.module";
-import ProviderController from "./provider.controller";
+import PrismaModule from "src/prisma/prisma.module";
 import ExternalMetadataController from "./external-metadata.controller";
+import ExternalMetadataService from "./external-metadata.service";
+import ProviderController from "./provider.controller";
+import ProviderService from "./provider.service";
 
 @Module({
 	imports: [PrismaModule, forwardRef(() => IllustrationModule)],

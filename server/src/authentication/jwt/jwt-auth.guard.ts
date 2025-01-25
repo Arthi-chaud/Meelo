@@ -18,8 +18,8 @@
 
 import { type ExecutionContext, Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import type RolesGuard from "../roles/roles.guard";
 import { AuthMethod } from "../models/auth.enum";
+import type RolesGuard from "../roles/roles.guard";
 
 @Injectable()
 export default class JwtAuthGuard extends AuthGuard("jwt") {

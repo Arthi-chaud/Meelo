@@ -17,9 +17,9 @@
  */
 
 import { applyDecorators } from "@nestjs/common";
-import type Identifier from "./models/identifier";
-import { Transform } from "class-transformer";
 import { ApiPropertyOptional } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
+import type Identifier from "./models/identifier";
 
 type ParsingService<WhereInput> = {
 	formatIdentifierToWhereInput: (identifier: Identifier) => WhereInput;

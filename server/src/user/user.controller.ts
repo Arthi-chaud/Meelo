@@ -27,19 +27,19 @@ import {
 	Req,
 	Request,
 } from "@nestjs/common";
-import type { User } from "@prisma/client";
-import UserService from "./user.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import type UserCreateDTO from "./models/create-user.dto";
+import type { User } from "@prisma/client";
 import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { UserResponseBuilder } from "./models/user.response";
-import type UserQueryParameters from "./models/user.query-params";
-import type UpdateUserDTO from "./models/update-user.dto";
+import Roles from "src/authentication/roles/roles.enum";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
-import Roles from "src/authentication/roles/roles.enum";
+import type UserCreateDTO from "./models/create-user.dto";
+import type UpdateUserDTO from "./models/update-user.dto";
+import type UserQueryParameters from "./models/user.query-params";
+import { UserResponseBuilder } from "./models/user.response";
+import UserService from "./user.service";
 
 @ApiTags("Users")
 @Controller("users")

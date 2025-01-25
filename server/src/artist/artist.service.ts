@@ -17,39 +17,39 @@
  */
 
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+import deepmerge from "deepmerge";
+import type MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import {
+	type EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import GenreService from "src/genre/genre.service";
+import type Identifier from "src/identifier/models/identifier";
+import type IllustrationRepository from "src/illustration/illustration.repository";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type PrismaService from "src/prisma/prisma.service";
+import ReleaseService from "src/release/release.service";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
 import {
 	ArtistNotEmptyException,
 	ArtistNotFoundException,
 	CompilationArtistException,
 } from "./artist.exceptions";
-import { Prisma } from "@prisma/client";
-import type PrismaService from "src/prisma/prisma.service";
 import type ArtistQueryParameters from "./models/artist.query-parameters";
-import SearchableRepositoryService from "src/repository/searchable-repository.service";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import GenreService from "src/genre/genre.service";
-import ReleaseService from "src/release/release.service";
-import TrackService from "src/track/track.service";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
-import type Identifier from "src/identifier/models/identifier";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import AlbumService from "src/album/album.service";
-import type IllustrationRepository from "src/illustration/illustration.repository";
-import deepmerge from "deepmerge";
-import type MeiliSearch from "meilisearch";
-import { InjectMeiliSearch } from "nestjs-meilisearch";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import {
-	formatIdentifier,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import {
-	type EventsService,
-	ResourceEventPriority,
-} from "src/events/events.service";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {

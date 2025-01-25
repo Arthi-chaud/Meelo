@@ -1,16 +1,16 @@
-import { createTestingModule } from "test/test-module";
+import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import type { Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
-import request from "supertest";
-import type { INestApplication } from "@nestjs/common";
 import SongModule from "src/song/song.module";
-import TestPrismaService from "test/test-prisma.service";
-import SetupApp from "test/setup-app";
+import request from "supertest";
 import {
 	expectedArtistResponse,
 	expectedSongGroupResponse,
 } from "test/expected-responses";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import type { SongGroupResponse } from "./models/song-group.response";
 
 describe("Song Group Controller", () => {

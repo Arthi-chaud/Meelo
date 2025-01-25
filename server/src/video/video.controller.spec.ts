@@ -1,19 +1,19 @@
-import { createTestingModule } from "test/test-module";
-import type { TestingModule } from "@nestjs/testing";
-import PrismaService from "src/prisma/prisma.service";
-import request from "supertest";
 import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import type { Video } from "@prisma/client";
+import PrismaService from "src/prisma/prisma.service";
 import SongModule from "src/song/song.module";
-import TestPrismaService from "test/test-prisma.service";
-import SetupApp from "test/setup-app";
-import type { VideoResponse } from "./models/video.response";
+import request from "supertest";
 import {
 	expectedArtistResponse,
 	expectedTrackResponse,
 	expectedVideoResponse,
 } from "test/expected-responses";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import type { VideoResponse } from "./models/video.response";
 import VideoModule from "./video.module";
-import type { Video } from "@prisma/client";
 
 jest.setTimeout(60000);
 

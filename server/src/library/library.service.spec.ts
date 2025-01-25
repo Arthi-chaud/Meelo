@@ -1,24 +1,24 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import FileManagerModule from "src/file-manager/file-manager.module";
+import FileModule from "src/file/file.module";
+import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import type { Library } from "src/prisma/models";
+import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { RegistrationModule } from "src/registration/registration.module";
 import Slug from "src/slug/slug";
+import TrackModule from "src/track/track.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	LibraryAlreadyExistsException,
 	LibraryNotFoundException,
 } from "./library.exceptions";
-import LibraryService from "./library.service";
 import LibraryModule from "./library.module";
-import PrismaModule from "src/prisma/prisma.module";
-import FileManagerModule from "src/file-manager/file-manager.module";
-import FileModule from "src/file/file.module";
-import ParserModule from "src/parser/parser.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import TrackModule from "src/track/track.module";
-import TestPrismaService from "test/test-prisma.service";
-import type { Library } from "src/prisma/models";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import { RegistrationModule } from "src/registration/registration.module";
-import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import LibraryService from "./library.service";
 
 describe("Library Service", () => {
 	let libraryService: LibraryService;

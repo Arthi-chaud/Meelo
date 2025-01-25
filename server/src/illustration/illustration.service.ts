@@ -16,28 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// biome-ignore lint/nursery/noRestrictedImports: TODO
+import * as fs from "node:fs";
+import * as dir from "node:path";
+import { Readable } from "node:stream";
+import type { HttpService } from "@nestjs/axios";
 import { Injectable, StreamableFile } from "@nestjs/common";
+import * as Blurhash from "blurhash";
+import { Jimp } from "jimp";
+import md5 from "md5";
+import mime from "mime";
+import { version } from "package.json";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import type FileManagerService from "src/file-manager/file-manager.service";
+import Logger from "src/logger/logger";
 import {
 	CantDownloadIllustrationException,
 	NoIllustrationException,
 } from "./illustration.exceptions";
-// biome-ignore lint/nursery/noRestrictedImports: TODO
-import * as fs from "node:fs";
-import * as dir from "node:path";
-import type { IllustrationPath } from "./models/illustration-path.model";
-import { Jimp } from "jimp";
-import { Readable } from "node:stream";
 import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
-import Logger from "src/logger/logger";
-import * as Blurhash from "blurhash";
-import mime from "mime";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import type { IllustrationPath } from "./models/illustration-path.model";
 import { ImageQuality } from "./models/illustration-quality";
-import type { HttpService } from "@nestjs/axios";
-import { version } from "package.json";
 import type IllustrationStats from "./models/illustration-stats";
-import md5 from "md5";
 const getPalette = require("get-rgba-palette");
 
 /**

@@ -17,16 +17,16 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import PlaylistController from "./playlist.controller";
-import PlaylistService from "./playlist.service";
+import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
-import SongModule from "src/song/song.module";
 import SettingsModule from "src/settings/settings.module";
+import SongModule from "src/song/song.module";
 import {
 	PlaylistEntryResponseBuilder,
 	PlaylistResponseBuilder,
 } from "./models/playlist.response";
-import IllustrationModule from "src/illustration/illustration.module";
+import PlaylistController from "./playlist.controller";
+import PlaylistService from "./playlist.service";
 
 @Module({
 	imports: [

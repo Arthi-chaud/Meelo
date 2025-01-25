@@ -17,42 +17,42 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import ArtistService from "src/artist/artist.service";
-import Slug from "src/slug/slug";
-import {
-	AlbumAlreadyExistsException,
-	AlbumNotEmptyException,
-	AlbumNotFoundException,
-} from "./album.exceptions";
 import { AlbumType, Prisma } from "@prisma/client";
-import type PrismaService from "src/prisma/prisma.service";
-import type AlbumQueryParameters from "./models/album.query-parameters";
-import ReleaseService from "src/release/release.service";
-import SearchableRepositoryService from "src/repository/searchable-repository.service";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import SongService from "src/song/song.service";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import ParserService from "src/parser/parser.service";
 import deepmerge from "deepmerge";
-import GenreService from "src/genre/genre.service";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { PrismaError } from "prisma-error-enum";
+import ArtistService from "src/artist/artist.service";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import {
+	type EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import GenreService from "src/genre/genre.service";
+import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import ParserService from "src/parser/parser.service";
+import type PrismaService from "src/prisma/prisma.service";
+import ReleaseService from "src/release/release.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
-import type { AlbumModel } from "./models/album.model";
-import {
-	type EventsService,
-	ResourceEventPriority,
-} from "src/events/events.service";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import Slug from "src/slug/slug";
+import SongService from "src/song/song.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import {
+	AlbumAlreadyExistsException,
+	AlbumNotEmptyException,
+	AlbumNotFoundException,
+} from "./album.exceptions";
+import type { AlbumModel } from "./models/album.model";
+import type AlbumQueryParameters from "./models/album.query-parameters";
 
 @Injectable()
 export default class AlbumService extends SearchableRepositoryService {

@@ -1,28 +1,28 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Artist } from "src/prisma/models";
-import request from "supertest";
+import { type Genre, IllustrationType } from "@prisma/client";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
+import FileModule from "src/file/file.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import ParserModule from "src/parser/parser.module";
+import type { Album, Artist } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
-import { createTestingModule } from "test/test-module";
-import AlbumModule from "./album.module";
-import ParserModule from "src/parser/parser.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
-import SetupApp from "test/setup-app";
-import IllustrationModule from "src/illustration/illustration.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import FileModule from "src/file/file.module";
+import request from "supertest";
 import {
 	expectedAlbumResponse,
 	expectedArtistResponse,
 } from "test/expected-responses";
-import { type Genre, IllustrationType } from "@prisma/client";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import AlbumModule from "./album.module";
 
 jest.setTimeout(60000);
 

@@ -28,36 +28,36 @@ import {
 	Req,
 	forwardRef,
 } from "@nestjs/common";
-import ArtistService from "src/artist/artist.service";
-import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import SongQueryParameters from "./models/song.query-params";
-import SongService from "./song.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { LyricsService } from "src/lyrics/lyrics.service";
-import type LyricsDto from "src/lyrics/models/update-lyrics.dto";
-import { SongResponseBuilder } from "./models/song.response";
-import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import { Admin, Role } from "src/authentication/roles/roles.decorators";
-import IdentifierParam from "src/identifier/identifier.pipe";
-import Response, { ResponseType } from "src/response/response.decorator";
+import { SongType, type User } from "@prisma/client";
 import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
-import TransformIdentifier from "src/identifier/identifier.transform";
-import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import LibraryService from "src/library/library.service";
-import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import GenreService from "src/genre/genre.service";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistService from "src/artist/artist.service";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Admin, Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
+import GenreService from "src/genre/genre.service";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import LibraryService from "src/library/library.service";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import { LyricsService } from "src/lyrics/lyrics.service";
+import type { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import type LyricsDto from "src/lyrics/models/update-lyrics.dto";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import { SongType, type User } from "@prisma/client";
-import type UpdateSongDTO from "./models/update-song.dto";
-import type SongGroupQueryParameters from "./models/song-group.query-params";
-import type { LyricsResponse } from "src/lyrics/models/lyrics.response";
 import { formatIdentifier } from "src/repository/repository.utils";
+import Response, { ResponseType } from "src/response/response.decorator";
 import Slug from "src/slug/slug";
-import Roles from "src/authentication/roles/roles.enum";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
+import SongQueryParameters from "./models/song.query-params";
+import { SongResponseBuilder } from "./models/song.response";
+import type UpdateSongDTO from "./models/update-song.dto";
+import SongService from "./song.service";
 
 export class Selector {
 	@IsEnum(SongType)

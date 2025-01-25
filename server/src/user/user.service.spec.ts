@@ -1,18 +1,18 @@
 import type { TestingModule } from "@nestjs/testing";
 import FileModule from "src/file/file.module";
+import type { User } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import UserModule from "./user.module";
-import UserService from "./user.service";
-import type { User } from "src/prisma/models";
 import {
 	InvalidUserCredentialsException,
 	UserAlreadyExistsException,
 	UserNotFoundException,
 	UserNotFoundFromIDException,
 } from "./user.exceptions";
+import UserModule from "./user.module";
+import UserService from "./user.service";
 
 describe("User Service", () => {
 	let userService: UserService;

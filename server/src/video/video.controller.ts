@@ -18,30 +18,30 @@
 
 import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import Response, { ResponseType } from "src/response/response.decorator";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import type SongQueryParameters from "src/song/models/song.query-params";
-import { VideoResponseBuilder } from "./models/video.response";
-import VideoService from "./video.service";
 import { VideoType } from "@prisma/client";
 import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
-import TransformIdentifier from "src/identifier/identifier.transform";
-import ArtistService from "src/artist/artist.service";
-import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistService from "src/artist/artist.service";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import SongService from "src/song/song.service";
-import type SongGroupQueryParameters from "src/song/models/song-group.query-params";
-import Slug from "src/slug/slug";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import { formatIdentifier } from "src/repository/repository.utils";
-import VideoQueryParameters from "./models/video.query-parameters";
-import Roles from "src/authentication/roles/roles.enum";
-import { Role } from "src/authentication/roles/roles.decorators";
-import IdentifierParam from "src/identifier/identifier.pipe";
+import Response, { ResponseType } from "src/response/response.decorator";
+import Slug from "src/slug/slug";
+import type SongGroupQueryParameters from "src/song/models/song-group.query-params";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import SongService from "src/song/song.service";
 import type UpdateVideoDTO from "./models/update-video.dto";
+import VideoQueryParameters from "./models/video.query-parameters";
+import { VideoResponseBuilder } from "./models/video.response";
+import VideoService from "./video.service";
 
 export class Selector {
 	@IsEnum(VideoType)

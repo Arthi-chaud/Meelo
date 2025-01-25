@@ -28,27 +28,27 @@ import {
 	Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import PlaylistService from "./playlist.service";
-import PlaylistQueryParameters from "./models/playlist.query-parameters";
+import { IsOptional } from "class-validator";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import {
-	PlaylistEntryResponseBuilder,
-	PlaylistResponseBuilder,
-} from "./models/playlist.response";
-import Response, { ResponseType } from "src/response/response.decorator";
+import TransformIdentifier from "src/identifier/identifier.transform";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import Response, { ResponseType } from "src/response/response.decorator";
+import SongQueryParameters from "src/song/models/song.query-params";
 import type {
 	CreatePlaylistDTO,
 	CreatePlaylistEntryDTO,
 	ReorderPlaylistDTO,
 	UpdatePlaylistDTO,
 } from "./models/playlist.dto";
-import { IsOptional } from "class-validator";
-import TransformIdentifier from "src/identifier/identifier.transform";
-import AlbumService from "src/album/album.service";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import SongQueryParameters from "src/song/models/song.query-params";
+import PlaylistQueryParameters from "./models/playlist.query-parameters";
+import {
+	PlaylistEntryResponseBuilder,
+	PlaylistResponseBuilder,
+} from "./models/playlist.response";
+import PlaylistService from "./playlist.service";
 
 export class Selector {
 	@IsOptional()

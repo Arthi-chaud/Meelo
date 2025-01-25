@@ -1,29 +1,29 @@
 import type { INestApplication } from "@nestjs/common";
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import type { File, Song } from "@prisma/client";
+import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
+import FileService from "src/file/file.service";
 import ParserModule from "src/parser/parser.module";
+import PlaylistModule from "src/playlist/playlist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import LibraryModule from "../library/library.module";
-import TestPrismaService from "test/test-prisma.service";
-import SetupApp from "test/setup-app";
-import { RegistrationModule } from "./registration.module";
-import { MetadataController } from "./registration.controller";
-import type MetadataDto from "./models/metadata.dto";
-import request from "supertest";
-import type MetadataSavedResponse from "./models/metadata-saved.dto";
-import FileService from "src/file/file.service";
-import SongService from "src/song/song.service";
-import SongModule from "src/song/song.module";
-import ArtistModule from "src/artist/artist.module";
 import ReleaseModule from "src/release/release.module";
-import TrackModule from "src/track/track.module";
-import PlaylistModule from "src/playlist/playlist.module";
 import SettingsModule from "src/settings/settings.module";
-import type { File, Song } from "@prisma/client";
+import SongModule from "src/song/song.module";
+import SongService from "src/song/song.service";
+import TrackModule from "src/track/track.module";
 import TrackService from "src/track/track.service";
+import request from "supertest";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import LibraryModule from "../library/library.module";
+import type MetadataSavedResponse from "./models/metadata-saved.dto";
+import type MetadataDto from "./models/metadata.dto";
+import { MetadataController } from "./registration.controller";
+import { RegistrationModule } from "./registration.module";
 
 const validMetadata: MetadataDto = {
 	path: "test/assets/Music/Album/01 ...Baby One More Time.m4a",

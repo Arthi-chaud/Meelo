@@ -1,23 +1,23 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Genre } from "src/prisma/models";
-import request from "supertest";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import IllustrationModule from "src/illustration/illustration.module";
-import PrismaModule from "src/prisma/prisma.module";
-import PrismaService from "src/prisma/prisma.service";
-import SongService from "src/song/song.service";
-import TrackModule from "src/track/track.module";
-import { createTestingModule } from "test/test-module";
-import GenreModule from "./genre.module";
-import TestPrismaService from "test/test-prisma.service";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
-import SetupApp from "test/setup-app";
+import type { Genre } from "src/prisma/models";
+import PrismaModule from "src/prisma/prisma.module";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
+import SongService from "src/song/song.service";
+import TrackModule from "src/track/track.module";
+import request from "supertest";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import GenreModule from "./genre.module";
 
 describe("Genre Controller", () => {
 	let app: INestApplication;

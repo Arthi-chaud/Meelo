@@ -17,11 +17,11 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import type Metadata from "../registration/models/metadata";
 import { AlbumType, SongType, VideoType } from "@prisma/client";
-import escapeRegex from "src/utils/escape-regex";
 import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
+import escapeRegex from "src/utils/escape-regex";
+import type Metadata from "../registration/models/metadata";
 
 @Injectable()
 export default class ParserService {

@@ -23,10 +23,17 @@ import {
 	ApiTags,
 	getSchemaPath,
 } from "@nestjs/swagger";
-import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
-import type { SearchHistoryService } from "./search-history.service";
-import Roles from "src/authentication/roles/roles.enum";
+import {
+	AlbumResponse,
+	type AlbumResponseBuilder,
+} from "src/album/models/album.response";
+import {
+	ArtistResponse,
+	type ArtistResponseBuilder,
+} from "src/artist/models/artist.response";
 import { Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type {
 	AlbumWithRelations,
 	Artist,
@@ -34,15 +41,6 @@ import type {
 	User,
 	Video,
 } from "src/prisma/models";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import {
-	ArtistResponse,
-	type ArtistResponseBuilder,
-} from "src/artist/models/artist.response";
-import {
-	AlbumResponse,
-	type AlbumResponseBuilder,
-} from "src/album/models/album.response";
 import {
 	SongResponse,
 	type SongResponseBuilder,
@@ -51,6 +49,8 @@ import {
 	VideoResponse,
 	type VideoResponseBuilder,
 } from "src/video/models/video.response";
+import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import type { SearchHistoryService } from "./search-history.service";
 import { getSearchResourceType } from "./search.utils";
 
 @ApiTags("Search")

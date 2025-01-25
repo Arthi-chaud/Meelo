@@ -18,6 +18,10 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType, OmitType } from "@nestjs/swagger";
+import {
+	IllustratedResponse,
+	IllustrationResponse,
+} from "src/illustration/models/illustration.response";
 import { Track, type TrackWithRelations } from "src/prisma/models";
 import {
 	type ReleaseResponse,
@@ -28,10 +32,6 @@ import {
 	type SongResponse,
 	SongResponseBuilder,
 } from "src/song/models/song.response";
-import {
-	IllustratedResponse,
-	IllustrationResponse,
-} from "src/illustration/models/illustration.response";
 import {
 	type VideoResponse,
 	VideoResponseBuilder,

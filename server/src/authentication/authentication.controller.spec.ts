@@ -10,28 +10,28 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import ParserModule from "src/parser/parser.module";
+import type { User } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
+import type Settings from "src/settings/models/settings";
 import SettingsModule from "src/settings/settings.module";
+import SettingsService from "src/settings/settings.service";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
+import UserController from "src/user/user.controller";
 import UserModule from "src/user/user.module";
 import UserService from "src/user/user.service";
+import request from "supertest";
+import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import request from "supertest";
-import UserController from "src/user/user.controller";
-import AuthenticationModule from "./authentication.module";
-import type { User } from "src/prisma/models";
-import SetupApp from "test/setup-app";
 import * as Plugins from "../app.plugins";
 import {
 	MissingApiKeyPermissionsException,
 	UnauthorizedAnonymousRequestException,
 } from "./authentication.exception";
-import SettingsService from "src/settings/settings.service";
-import type Settings from "src/settings/models/settings";
+import AuthenticationModule from "./authentication.module";
 
 jest.setTimeout(120000);
 

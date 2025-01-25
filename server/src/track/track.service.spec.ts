@@ -1,25 +1,34 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import { TrackType, RipSource } from "@prisma/client";
-import type { File, Library, Track } from "src/prisma/models";
+import { RipSource, TrackType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import FileManagerModule from "src/file-manager/file-manager.module";
+import FileManagerService from "src/file-manager/file-manager.service";
+import { FileNotFoundException } from "src/file/file.exceptions";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
+import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LibraryModule from "src/library/library.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
+import type { File, Library, Track } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { ReleaseNotFoundException } from "src/release/release.exceptions";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
+import Slug from "src/slug/slug";
 import { SongNotFoundException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
+import VideoModule from "src/video/video.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	MasterTrackNotFoundException,
 	TrackAlreadyExistsException,
@@ -27,15 +36,6 @@ import {
 } from "./track.exceptions";
 import TrackModule from "./track.module";
 import TrackService from "./track.service";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import LibraryModule from "src/library/library.module";
-import FileManagerService from "src/file-manager/file-manager.service";
-import Slug from "src/slug/slug";
-import { FileNotFoundException } from "src/file/file.exceptions";
-import { ReleaseNotFoundException } from "src/release/release.exceptions";
-import VideoModule from "src/video/video.module";
 
 describe("Track Service", () => {
 	let trackService: TrackService;

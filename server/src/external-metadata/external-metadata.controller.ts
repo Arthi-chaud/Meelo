@@ -18,22 +18,22 @@
 
 import { Body, Controller, Get, Injectable, Post, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ReleaseService from "src/release/release.service";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
-import ReleaseService from "src/release/release.service";
-import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
-import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 import type ExternalMetadataService from "./external-metadata.service";
 import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
-import Roles from "src/authentication/roles/roles.enum";
-import { Role } from "src/authentication/roles/roles.decorators";
-import { IsOptional } from "class-validator";
-import TransformIdentifier from "src/identifier/identifier.transform";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 
 class Selector {
 	@IsOptional()

@@ -18,16 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
-import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
-import {
-	type TrackResponse,
-	TrackResponseBuilder,
-} from "src/track/models/track.response";
-import {
-	type SongResponse,
-	SongResponseBuilder,
-} from "../../song/models/song.response";
-import { Video, type VideoWithRelations } from "src/prisma/models";
 import {
 	type ArtistResponse,
 	ArtistResponseBuilder,
@@ -36,8 +26,18 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import TrackService from "src/track/track.service";
 import Logger from "src/logger/logger";
+import { Video, type VideoWithRelations } from "src/prisma/models";
+import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
+import {
+	type TrackResponse,
+	TrackResponseBuilder,
+} from "src/track/models/track.response";
+import TrackService from "src/track/track.service";
+import {
+	type SongResponse,
+	SongResponseBuilder,
+} from "../../song/models/song.response";
 
 export class VideoResponse extends IntersectionType(
 	Video,

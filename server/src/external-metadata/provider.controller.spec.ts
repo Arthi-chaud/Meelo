@@ -1,16 +1,16 @@
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import { createReadStream, existsSync } from "node:fs";
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
+import IllustrationService from "src/illustration/illustration.service";
+import type { Provider } from "src/prisma/models";
+import PrismaModule from "src/prisma/prisma.module";
+import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";
+import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { ExternalMetadataModule } from "./external-metadata.module";
-import PrismaModule from "src/prisma/prisma.module";
-import PrismaService from "src/prisma/prisma.service";
-import SetupApp from "test/setup-app";
-import type { Provider } from "src/prisma/models";
-// biome-ignore lint/nursery/noRestrictedImports: Test
-import { createReadStream, existsSync } from "node:fs";
-import IllustrationService from "src/illustration/illustration.service";
 import ProviderService from "./provider.service";
 
 describe("External Provider Controller", () => {

@@ -22,8 +22,8 @@ import {
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
-import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 
 export class ProviderAlreadyExistsException extends AlreadyExistsException {
 	constructor(providerSlug: Slug) {

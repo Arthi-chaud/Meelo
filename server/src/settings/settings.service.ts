@@ -17,6 +17,8 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { plainToClass } from "class-transformer";
+import { validateSync } from "class-validator";
 import FileManagerService from "src/file-manager/file-manager.service";
 import Settings from "./models/settings";
 import {
@@ -24,8 +26,6 @@ import {
 	InvalidSettingsFileException,
 	MissingSettingsException,
 } from "./settings.exception";
-import { plainToClass } from "class-transformer";
-import { validateSync } from "class-validator";
 
 @Injectable()
 export default class SettingsService {

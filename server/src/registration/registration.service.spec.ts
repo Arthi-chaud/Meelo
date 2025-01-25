@@ -1,14 +1,14 @@
 import { HttpModule } from "@nestjs/axios";
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import IllustrationService from "src/illustration/illustration.service";
 import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
-import IllustrationService from "src/illustration/illustration.service";
-import IllustrationModule from "src/illustration/illustration.module";
+import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { RegistrationService } from "./registration.service";
 

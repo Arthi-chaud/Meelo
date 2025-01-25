@@ -17,20 +17,20 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import LibraryController from "./library.controller";
-import LibraryService from "./library.service";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
-import PrismaModule from "src/prisma/prisma.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import ArtistModule from "src/artist/artist.module";
-import AlbumModule from "src/album/album.module";
-import SongModule from "src/song/song.module";
-import ReleaseModule from "src/release/release.module";
-import TrackModule from "src/track/track.module";
-import { LyricsModule } from "src/lyrics/lyrics.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import PrismaModule from "src/prisma/prisma.module";
 import { RegistrationModule } from "src/registration/registration.module";
+import ReleaseModule from "src/release/release.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import LibraryController from "./library.controller";
+import LibraryService from "./library.service";
 
 @Module({
 	imports: [

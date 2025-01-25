@@ -17,22 +17,22 @@
  */
 
 import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ArtistService from "./artist.service";
-import ArtistQueryParameters from "./models/artist.query-parameters";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { ArtistResponseBuilder } from "./models/artist.response";
-import IdentifierParam from "src/identifier/identifier.pipe";
-import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import Response, { ResponseType } from "src/response/response.decorator";
 import { IsOptional } from "class-validator";
-import TransformIdentifier from "src/identifier/identifier.transform";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import GenreService from "src/genre/genre.service";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import AlbumService from "src/album/album.service";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import Response, { ResponseType } from "src/response/response.decorator";
+import ArtistService from "./artist.service";
+import ArtistQueryParameters from "./models/artist.query-parameters";
+import { ArtistResponseBuilder } from "./models/artist.response";
 
 class Selector {
 	@IsOptional()

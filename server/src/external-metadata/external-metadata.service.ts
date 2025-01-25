@@ -17,10 +17,19 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
-import type PrismaService from "src/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import type {
+	ExternalMetadata,
+	ExternalMetadataSource,
+	Provider,
+} from "src/prisma/models";
+import type PrismaService from "src/prisma/prisma.service";
+import ReleaseService from "src/release/release.service";
+import SongService from "src/song/song.service";
 import {
 	DuplicateSourcesInExternalMetadataDto,
 	ExternalMetadataEntryExistsException,
@@ -28,19 +37,10 @@ import {
 	ExternalMetadataResourceNotFoundException,
 	MissingExternalMetadataResourceIdException,
 } from "./external-metadata.exceptions";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import type { ExternalMetadataResponse } from "./models/external-metadata.response";
 import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
-import type {
-	ExternalMetadata,
-	ExternalMetadataSource,
-	Provider,
-} from "src/prisma/models";
+import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
+import type { ExternalMetadataResponse } from "./models/external-metadata.response";
 import type ProviderService from "./provider.service";
-import AlbumService from "src/album/album.service";
-import ArtistService from "src/artist/artist.service";
-import SongService from "src/song/song.service";
-import ReleaseService from "src/release/release.service";
 
 @Injectable()
 export default class ExternalMetadataService {

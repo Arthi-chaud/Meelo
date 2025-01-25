@@ -1,16 +1,16 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import request from "supertest";
-import { createTestingModule } from "test/test-module";
-import TestPrismaService from "test/test-prisma.service";
-import { ExternalMetadataModule } from "./external-metadata.module";
+import type { Provider } from "@prisma/client";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import request from "supertest";
 import SetupApp from "test/setup-app";
-import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
-import type { Provider } from "@prisma/client";
-import type { ExternalMetadataResponse } from "./models/external-metadata.response";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import { DuplicateSourcesInExternalMetadataDto } from "./external-metadata.exceptions";
+import { ExternalMetadataModule } from "./external-metadata.module";
+import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import type { ExternalMetadataResponse } from "./models/external-metadata.response";
 
 describe("External Metadata Controller", () => {
 	let app: INestApplication;

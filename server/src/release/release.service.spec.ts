@@ -1,27 +1,27 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import type { Release } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
+import FileModule from "src/file/file.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import ParserModule from "src/parser/parser.module";
+import type { Release } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import TrackService from "src/track/track.service";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	MasterReleaseNotFoundException,
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
 } from "./release.exceptions";
 import ReleaseService from "./release.service";
-import IllustrationModule from "src/illustration/illustration.module";
-import ParserModule from "src/parser/parser.module";
-import SongModule from "src/song/song.module";
-import TrackModule from "src/track/track.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import FileModule from "src/file/file.module";
-import TrackService from "src/track/track.service";
 
 describe("Release Service", () => {
 	let releaseService: ReleaseService;

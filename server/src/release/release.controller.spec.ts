@@ -1,34 +1,34 @@
-import { createTestingModule } from "test/test-module";
+import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Album, Release, Track } from "src/prisma/models";
+import { IllustrationType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
+import FileModule from "src/file/file.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import ParserModule from "src/parser/parser.module";
+import type { Album, Release, Track } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import ReleaseService from "./release.service";
-import ReleaseController from "./release.controller";
-import request from "supertest";
-import type { INestApplication } from "@nestjs/common";
-import ReleaseModule from "./release.module";
-import TrackModule from "src/track/track.module";
-import IllustrationModule from "src/illustration/illustration.module";
 import SongModule from "src/song/song.module";
-import ParserModule from "src/parser/parser.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import FileModule from "src/file/file.module";
-import SetupApp from "test/setup-app";
+import TrackModule from "src/track/track.module";
+import request from "supertest";
 import {
-	expectedReleaseResponse,
 	expectedAlbumResponse,
-	expectedTrackResponse,
-	expectedSongResponse,
 	expectedArtistResponse,
+	expectedReleaseResponse,
+	expectedSongResponse,
+	expectedTrackResponse,
 	expectedVideoResponse,
 } from "test/expected-responses";
-import { IllustrationType } from "@prisma/client";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import ReleaseController from "./release.controller";
+import ReleaseModule from "./release.module";
+import ReleaseService from "./release.service";
 
 jest.setTimeout(60000);
 

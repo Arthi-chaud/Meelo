@@ -1,15 +1,15 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { User } from "src/prisma/models";
 import FileModule from "src/file/file.module";
+import type { User } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import request from "supertest";
+import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import UserModule from "./user.module";
 import UserService from "./user.service";
-import request from "supertest";
-import SetupApp from "test/setup-app";
 
 describe("User Controller", () => {
 	let app: INestApplication;

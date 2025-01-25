@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { PassportStrategy } from "@nestjs/passport";
 import { Injectable } from "@nestjs/common";
-import type { JwtPayload } from "../models/jwt.models";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
 import type UserService from "src/user/user.service";
 import { UnknownUserFromAccessTokenException } from "../authentication.exception";
+import type { JwtPayload } from "../models/jwt.models";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

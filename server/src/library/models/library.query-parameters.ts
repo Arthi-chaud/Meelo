@@ -17,12 +17,12 @@
  */
 
 import type { Library } from "src/prisma/models";
-import type Slug from "src/slug/slug";
-import type { RequireExactlyOne } from "type-fest";
-import type { SearchStringInput } from "src/utils/search-string-input";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type Slug from "src/slug/slug";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import type { SearchStringInput } from "src/utils/search-string-input";
+import type { RequireExactlyOne } from "type-fest";
 
 namespace LibraryQueryParameters {
 	/**

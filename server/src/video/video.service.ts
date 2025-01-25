@@ -17,37 +17,37 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { AlbumType, Prisma, VideoType } from "@prisma/client";
+import deepmerge from "deepmerge";
+import type MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import LibraryService from "src/library/library.service";
+import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import ParserService from "src/parser/parser.service";
+import type { VideoWithRelations } from "src/prisma/models";
 import type PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
-import { AlbumType, Prisma, VideoType } from "@prisma/client";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
 import type VideoQueryParameters from "./models/video.query-parameters";
-import ArtistService from "src/artist/artist.service";
-import ParserService from "src/parser/parser.service";
-import Slug from "src/slug/slug";
-import { PrismaError } from "prisma-error-enum";
 import {
 	VideoAlreadyExistsException,
 	VideoNotFoundException,
 } from "./video.exceptions";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import type { VideoWithRelations } from "src/prisma/models";
-import deepmerge from "deepmerge";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import AlbumService from "src/album/album.service";
-import LibraryService from "src/library/library.service";
-import TrackService from "src/track/track.service";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import SearchableRepositoryService from "src/repository/searchable-repository.service";
-import { InjectMeiliSearch } from "nestjs-meilisearch";
-import type MeiliSearch from "meilisearch";
-import Logger from "src/logger/logger";
 
 @Injectable()
 export default class VideoService extends SearchableRepositoryService {

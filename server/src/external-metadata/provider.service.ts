@@ -20,19 +20,19 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { Provider } from "src/prisma/models";
 import type PrismaService from "src/prisma/prisma.service";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
 import {
 	ProviderAlreadyExistsException,
 	ProviderNotFoundException,
 } from "./external-metadata.exceptions";
 import type ProviderQueryParameters from "./models/provider.query-parameters";
-import {
-	formatIdentifierToIdOrSlug,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import type { Provider } from "src/prisma/models";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class ProviderService {

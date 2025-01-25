@@ -17,7 +17,6 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import Logger from "src/logger/logger";
 import {
 	type ClientProxy,
 	ClientProxyFactory,
@@ -25,6 +24,7 @@ import {
 	Transport,
 } from "@nestjs/microservices";
 import { catchError } from "rxjs";
+import Logger from "src/logger/logger";
 
 const QueueName = "meelo";
 

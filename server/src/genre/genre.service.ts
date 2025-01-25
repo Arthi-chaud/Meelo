@@ -17,24 +17,24 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import type PrismaService from "src/prisma/prisma.service";
-import Slug from "src/slug/slug";
-import type GenreQueryParameters from "./models/genre.query-parameters";
-import SongService from "src/song/song.service";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import ArtistService from "src/artist/artist.service";
 import { Prisma } from "@prisma/client";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import { GenreNotFoundException } from "./genre.exceptions";
-import AlbumService from "src/album/album.service";
 import deepmerge from "deepmerge";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
+import Slug from "src/slug/slug";
+import SongService from "src/song/song.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import { GenreNotFoundException } from "./genre.exceptions";
+import type GenreQueryParameters from "./models/genre.query-parameters";
 
 @Injectable()
 export default class GenreService {

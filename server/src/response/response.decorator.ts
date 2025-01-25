@@ -17,13 +17,13 @@
  */
 
 import { type Type, UseInterceptors } from "@nestjs/common";
-import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import { ApiOkResponse } from "@nestjs/swagger";
-import ResponseType from "./response-type.enum";
+import type { Constructor, RequireExactlyOne } from "type-fest";
+import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import ArrayResponseBuilderInterceptor from "./interceptors/array-response.interceptor";
 import PaginatedResponseBuilderInterceptor from "./interceptors/page-response.interceptor";
 import type ResponseBuilderInterceptor from "./interceptors/response.interceptor";
-import type { Constructor, RequireExactlyOne } from "type-fest";
+import ResponseType from "./response-type.enum";
 
 type ResponseDecoratorParam<
 	ToType extends Type<Record<PaginationKey, number>>,

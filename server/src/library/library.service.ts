@@ -17,27 +17,27 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import FileService from "src/file/file.service";
-import Slug from "src/slug/slug";
 import { Prisma } from "@prisma/client";
-import type PrismaService from "src/prisma/prisma.service";
-import type LibraryQueryParameters from "./models/library.query-parameters";
 import normalize from "normalize-path";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import type { Library } from "src/prisma/models";
 import { PrismaError } from "prisma-error-enum";
-import {
-	LibraryAlreadyExistsException,
-	LibraryNotFoundException,
-} from "./library.exceptions";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import FileService from "src/file/file.service";
+import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { Library } from "src/prisma/models";
+import type PrismaService from "src/prisma/prisma.service";
+import type { RegistrationService } from "src/registration/registration.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
-import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
-import type { RegistrationService } from "src/registration/registration.service";
+import Slug from "src/slug/slug";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import {
+	LibraryAlreadyExistsException,
+	LibraryNotFoundException,
+} from "./library.exceptions";
+import type LibraryQueryParameters from "./models/library.query-parameters";
 
 @Injectable()
 export default class LibraryService {

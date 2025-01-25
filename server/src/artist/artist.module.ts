@@ -17,16 +17,16 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import ArtistService from "./artist.service";
-import PrismaModule from "src/prisma/prisma.module";
-import ArtistController from "./artist.controller";
 import AlbumModule from "src/album/album.module";
-import SongModule from "src/song/song.module";
-import { ArtistResponseBuilder } from "./models/artist.response";
-import SettingsModule from "src/settings/settings.module";
-import TrackModule from "src/track/track.module";
-import IllustrationModule from "src/illustration/illustration.module";
 import { EventsModule } from "src/events/events.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import PrismaModule from "src/prisma/prisma.module";
+import SettingsModule from "src/settings/settings.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import ArtistController from "./artist.controller";
+import ArtistService from "./artist.service";
+import { ArtistResponseBuilder } from "./models/artist.response";
 
 @Module({
 	imports: [

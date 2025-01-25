@@ -17,18 +17,18 @@
  */
 
 import type { TrackType } from "@prisma/client";
-import type { Track } from "src/prisma/models";
-import type FileQueryParameters from "src/file/models/file.query-parameters";
-import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
-import type SongQueryParameters from "src/song/models/song.query-params";
-import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type FileQueryParameters from "src/file/models/file.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type { Track } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type VideoQueryParameters from "src/video/models/video.query-parameters";
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 
 namespace TrackQueryParameters {
 	/**

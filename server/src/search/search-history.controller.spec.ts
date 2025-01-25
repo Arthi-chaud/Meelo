@@ -1,20 +1,20 @@
-import { createTestingModule } from "test/test-module";
-import type { TestingModule } from "@nestjs/testing";
-import PrismaService from "src/prisma/prisma.service";
-import request from "supertest";
 import type { INestApplication } from "@nestjs/common";
-import SongModule from "src/song/song.module";
-import TestPrismaService from "test/test-prisma.service";
-import SetupApp from "test/setup-app";
-import * as Plugins from "../app.plugins";
-import ArtistModule from "src/artist/artist.module";
+import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
-import { SearchModule } from "./search.module";
+import ArtistModule from "src/artist/artist.module";
+import AuthenticationModule from "src/authentication/authentication.module";
+import PrismaModule from "src/prisma/prisma.module";
+import PrismaService from "src/prisma/prisma.service";
+import SettingsModule from "src/settings/settings.module";
+import SongModule from "src/song/song.module";
 import UserModule from "src/user/user.module";
 import UserService from "src/user/user.service";
-import PrismaModule from "src/prisma/prisma.module";
-import AuthenticationModule from "src/authentication/authentication.module";
-import SettingsModule from "src/settings/settings.module";
+import request from "supertest";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import * as Plugins from "../app.plugins";
+import { SearchModule } from "./search.module";
 
 jest.setTimeout(60000);
 

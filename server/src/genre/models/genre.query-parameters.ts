@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import type Slug from "src/slug/slug";
-import type SongQueryParameters from "src/song/models/song.query-params";
-import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
-import type { SearchStringInput } from "src/utils/search-string-input";
-import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type { Genre } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type Slug from "src/slug/slug";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import type { SearchStringInput } from "src/utils/search-string-input";
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 
 namespace GenreQueryParameters {
 	/**

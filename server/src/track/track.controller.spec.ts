@@ -1,28 +1,28 @@
-import { createTestingModule } from "test/test-module";
+import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Track } from "src/prisma/models";
+import { IllustrationType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import LibraryModule from "src/library/library.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import type { Track } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import request from "supertest";
-import type { INestApplication } from "@nestjs/common";
-import TrackModule from "src/track/track.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import SongModule from "src/song/song.module";
-import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import LibraryModule from "src/library/library.module";
-import SetupApp from "test/setup-app";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import request from "supertest";
 import {
-	expectedTrackResponse,
-	expectedSongResponse,
 	expectedReleaseResponse,
+	expectedSongResponse,
+	expectedTrackResponse,
 } from "test/expected-responses";
-import { IllustrationType } from "@prisma/client";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 
 describe("Track Controller", () => {
 	let app: INestApplication;

@@ -16,33 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as path from "node:path";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import type MetadataDto from "./models/metadata.dto";
-import type MetadataService from "src/registration/metadata.service";
-import type SettingsService from "src/settings/settings.service";
-import LibraryService from "src/library/library.service";
 import {
 	type Illustration,
 	IllustrationType,
 	type Library,
 	TrackType,
 } from "@prisma/client";
-import { LibraryNotFoundException } from "src/library/library.exceptions";
-import FileService from "src/file/file.service";
-import * as path from "node:path";
 import {
 	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import type MetadataSavedResponse from "./models/metadata-saved.dto";
-import escapeRegex from "src/utils/escape-regex";
-import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import FileService from "src/file/file.service";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
-import TrackService from "src/track/track.service";
-import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
 import type IllustrationRepository from "src/illustration/illustration.repository";
 import type IllustrationService from "src/illustration/illustration.service";
+import { LibraryNotFoundException } from "src/library/library.exceptions";
+import LibraryService from "src/library/library.service";
 import Logger from "src/logger/logger";
+import type MetadataService from "src/registration/metadata.service";
+import type SettingsService from "src/settings/settings.service";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import TrackService from "src/track/track.service";
+import escapeRegex from "src/utils/escape-regex";
+import type MetadataSavedResponse from "./models/metadata-saved.dto";
+import type MetadataDto from "./models/metadata.dto";
 
 @Injectable()
 export class RegistrationService {

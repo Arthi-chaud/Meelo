@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { HttpStatus, Injectable } from "@nestjs/common";
-import type FileManagerService from "src/file-manager/file-manager.service";
-import type FileService from "src/file/file.service";
-import type FileQueryParameters from "src/file/models/file.query-parameters";
 // biome-ignore lint/nursery/noRestrictedImports: Not needed
 import * as fs from "node:fs";
 import path from "node:path";
-import mime from "mime";
-import { SourceFileNotFoundException } from "src/file/file.exceptions";
-import Slug from "src/slug/slug";
-import Logger from "src/logger/logger";
 import type { HttpService } from "@nestjs/axios";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import mime from "mime";
 import { MeeloException } from "src/exceptions/meelo-exception";
+import type FileManagerService from "src/file-manager/file-manager.service";
+import { SourceFileNotFoundException } from "src/file/file.exceptions";
+import type FileService from "src/file/file.service";
+import type FileQueryParameters from "src/file/models/file.query-parameters";
+import Logger from "src/logger/logger";
+import Slug from "src/slug/slug";
 
 @Injectable()
 export class StreamService {

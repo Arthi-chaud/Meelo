@@ -17,11 +17,20 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import type { User } from "src/prisma/models";
 import { Prisma } from "@prisma/client";
-import type UserQueryParameters from "./models/user.query-params";
-import type PrismaService from "src/prisma/prisma.service";
 import bcrypt from "bcrypt";
+import { PrismaError } from "prisma-error-enum";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import type Identifier from "src/identifier/models/identifier";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { User } from "src/prisma/models";
+import type PrismaService from "src/prisma/prisma.service";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import type UserQueryParameters from "./models/user.query-params";
 import {
 	InvalidPasswordException,
 	InvalidUserCredentialsException,
@@ -31,15 +40,6 @@ import {
 	UserNotFoundFromIDException,
 	UserNotFoundFromJwtPayload,
 } from "./user.exceptions";
-import type Identifier from "src/identifier/models/identifier";
-import { PrismaError } from "prisma-error-enum";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import {
-	formatIdentifier,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class UserService {

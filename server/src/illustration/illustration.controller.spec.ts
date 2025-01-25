@@ -1,32 +1,32 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import FileManagerService from "src/file-manager/file-manager.service";
-import PrismaService from "src/prisma/prisma.service";
-import PrismaModule from "src/prisma/prisma.module";
-import TestPrismaService from "test/test-prisma.service";
+import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ParserModule from "src/parser/parser.module";
-import AlbumModule from "src/album/album.module";
+import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import PrismaModule from "src/prisma/prisma.module";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 // Import as a require to mock
 // biome-ignore lint/nursery/noRestrictedImports: Test
 const fs = require("node:fs");
-import type { INestApplication } from "@nestjs/common";
-import request from "supertest";
-import SetupApp from "test/setup-app";
-import { IllustrationType } from "@prisma/client";
-import type { Illustration } from "src/prisma/models";
-import type { IllustrationResponse } from "./models/illustration.response";
 // biome-ignore lint/nursery/noRestrictedImports: Test
 import { createReadStream, existsSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
+import type { INestApplication } from "@nestjs/common";
+import { IllustrationType } from "@prisma/client";
+import type { Illustration } from "src/prisma/models";
+import request from "supertest";
+import SetupApp from "test/setup-app";
 import IllustrationService from "./illustration.service";
+import type { IllustrationResponse } from "./models/illustration.response";
 
 jest.setTimeout(60000);
 

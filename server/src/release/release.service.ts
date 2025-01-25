@@ -16,39 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// biome-ignore lint/nursery/noRestrictedImports: Not needed
+import { createReadStream } from "node:fs";
+import { basename } from "node:path";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import AlbumService from "src/album/album.service";
-import Slug from "src/slug/slug";
 import { Prisma } from "@prisma/client";
+import archiver from "archiver";
+import deepmerge from "deepmerge";
+import type { Response } from "express";
+import mime from "mime";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import FileService from "src/file/file.service";
+import type IllustrationRepository from "src/illustration/illustration.repository";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type PrismaService from "src/prisma/prisma.service";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import Slug from "src/slug/slug";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import type ReleaseQueryParameters from "./models/release.query-parameters";
 import {
 	MasterReleaseNotFoundException,
 	ReleaseAlreadyExists,
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
 } from "./release.exceptions";
-import { basename } from "node:path";
-import type PrismaService from "src/prisma/prisma.service";
-import type ReleaseQueryParameters from "./models/release.query-parameters";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import TrackService from "src/track/track.service";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import FileService from "src/file/file.service";
-import archiver from "archiver";
-// biome-ignore lint/nursery/noRestrictedImports: Not needed
-import { createReadStream } from "node:fs";
-import type { Response } from "express";
-import mime from "mime";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import type IllustrationRepository from "src/illustration/illustration.repository";
-import deepmerge from "deepmerge";
-import {
-	formatIdentifierToIdOrSlug,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class ReleaseService {

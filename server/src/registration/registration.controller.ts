@@ -18,10 +18,10 @@
 
 import { Body, Controller, Post, Put } from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
-import type MetadataDto from "./models/metadata.dto";
+import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Role } from "src/authentication/roles/roles.decorators";
 import RoleEnum from "src/authentication/roles/roles.enum";
-import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import type MetadataDto from "./models/metadata.dto";
 import type { RegistrationService } from "./registration.service";
 
 @ApiTags("Registration")
