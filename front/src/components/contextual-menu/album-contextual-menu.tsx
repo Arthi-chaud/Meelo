@@ -22,7 +22,7 @@ import { DownloadReleaseAsyncAction } from "../actions/download";
 import { GoToArtistAction } from "../actions/link";
 import { ShareAlbumAction } from "../actions/share";
 import ContextualMenu from "./contextual-menu";
-import { AlbumWithRelations } from "../../models/album";
+import type { AlbumWithRelations } from "../../models/album";
 import { useQueryClient } from "../../api/use-query";
 import { ChangeAlbumType } from "../actions/resource-type";
 import { RefreshAlbumMetadataAction } from "../actions/refresh-metadata";

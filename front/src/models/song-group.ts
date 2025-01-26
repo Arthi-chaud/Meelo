@@ -17,7 +17,7 @@
  */
 
 import * as yup from "yup";
-import Song, { SongInclude, SongRelations } from "./song";
+import Song, { type SongInclude, SongRelations } from "./song";
 
 /**
  * Abstract data model, instanciated by tracks

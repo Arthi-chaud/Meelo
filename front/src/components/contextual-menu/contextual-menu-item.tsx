@@ -18,7 +18,7 @@
 
 import { Dialog, ListItemIcon, ListItemText, MenuItem } from "@mui/material";
 import Link from "next/link";
-import Action from "../actions/action";
+import type Action from "../actions/action";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 

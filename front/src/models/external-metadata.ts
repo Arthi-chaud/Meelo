@@ -61,10 +61,10 @@ type ReleaseExternalMetadata = yup.InferType<typeof CommonExternalMetadata>;
 type ExternalMetadataSource = yup.InferType<typeof ExternalMetadataSource>;
 
 export {
-	CommonExternalMetadata,
+	type CommonExternalMetadata,
 	ArtistExternalMetadata,
 	AlbumExternalMetadata,
-	SongExternalMetadata,
+	type SongExternalMetadata,
 	ReleaseExternalMetadata,
 	ExternalMetadataSource,
 };

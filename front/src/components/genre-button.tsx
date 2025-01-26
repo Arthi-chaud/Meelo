@@ -17,9 +17,9 @@
  */
 
 import Link from "next/link";
-import Genre from "../models/genre";
+import type Genre from "../models/genre";
 import { Chip, Skeleton } from "@mui/material";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug"> | undefined;

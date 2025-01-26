@@ -17,7 +17,7 @@
  */
 
 import { Box, Stack } from "@mui/material";
-import Tile from "./tile/tile";
+import type Tile from "./tile/tile";
 
 type TileRowProps = {
 	tiles: ReturnType<typeof Tile>[];

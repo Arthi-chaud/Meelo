@@ -17,7 +17,7 @@
  */
 
 import API from "../../api/api";
-import { TrackWithRelations } from "../../models/track";
+import type { TrackWithRelations } from "../../models/track";
 import Illustration from "../illustration";
 import ListItem from "./item";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";

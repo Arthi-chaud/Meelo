@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { QueryClient } from "../../api/use-query";
+import type { QueryClient } from "../../api/use-query";
 import {
 	Button,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
 } from "@mui/material";
-import Action from "./action";
+import type Action from "./action";
 import store from "../../state/store";
 import { toast } from "react-hot-toast";
 import API from "../../api/api";

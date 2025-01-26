@@ -17,10 +17,10 @@
  */
 
 import { Divider, List } from "@mui/material";
-import Resource from "../../models/resource";
+import type Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
 import { Fragment } from "react";
-import { IllustratedResource } from "../../models/illustration";
+import type { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RequireExactlyOne } from "type-fest";
+import type { RequireExactlyOne } from "type-fest";
 import { SongWithRelations } from "./song";
 import { ArtistWithRelations } from "./artist";
 import { AlbumWithRelations } from "./album";

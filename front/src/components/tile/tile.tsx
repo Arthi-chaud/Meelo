@@ -28,8 +28,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
-import { ComponentProps } from "react";
-import { RequireAllOrNone } from "type-fest";
+import type { ComponentProps } from "react";
+import type { RequireAllOrNone } from "type-fest";
 
 const PREFIX = "Tile";
 

@@ -20,14 +20,14 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import UsersSettings from "../../components/settings/users-settings";
-import { GetPropsTypesFrom, Page } from "../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
 import LibrariesSettings from "../../components/settings/libraries-settings";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import LoadingPage from "../../components/loading/loading-page";
 import UserSettings from "../../components/settings/user-settings";
 import { useTranslation } from "react-i18next";
-import { NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import { Head } from "../../components/head";
 
 // NOTE: Data Grid do not support SSR

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Playlist from "../../models/playlist";
+import type Playlist from "../../models/playlist";
 import { SharePlaylistAction } from "../actions/share";
 import { UpdatePlaylistIllustrationAction } from "../actions/update-illustration";
 import ContextualMenu from "./contextual-menu";

@@ -17,7 +17,7 @@
  */
 
 import * as yup from "yup";
-import Resource from "./resource";
+import type Resource from "./resource";
 
 const Illustration = yup
 	.object({

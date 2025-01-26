@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ArtistWithRelations } from "../../models/artist";
+import type { ArtistWithRelations } from "../../models/artist";
 import Tile from "./tile";
 import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
 import ArtistAvatar from "../artist-avatar";

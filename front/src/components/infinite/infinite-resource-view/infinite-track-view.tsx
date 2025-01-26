@@ -17,10 +17,13 @@
  */
 
 import { useState } from "react";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import Controls, { OptionState } from "../../controls/controls";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import Controls, { type OptionState } from "../../controls/controls";
 import { useRouter } from "next/router";
-import { TrackSortingKeys, TrackWithRelations } from "../../../models/track";
+import {
+	TrackSortingKeys,
+	type TrackWithRelations,
+} from "../../../models/track";
 import TrackItem from "../../list-item/track-item";
 import InfiniteView from "../infinite-view";
 

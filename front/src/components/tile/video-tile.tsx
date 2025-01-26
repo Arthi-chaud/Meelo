@@ -22,7 +22,7 @@ import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
 import formatDuration from "../../utils/formatDuration";
 import { usePlayerContext } from "../../contexts/player";
-import { VideoWithRelations } from "../../models/video";
+import type { VideoWithRelations } from "../../models/video";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 
 type VideoTileProps = (

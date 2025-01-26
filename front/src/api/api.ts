@@ -17,55 +17,57 @@
  */
 
 import {
-	AlbumInclude,
-	AlbumSortingKeys,
-	AlbumType,
+	type AlbumInclude,
+	type AlbumSortingKeys,
+	type AlbumType,
 	AlbumWithRelations,
 } from "../models/album";
 import {
-	ArtistInclude,
-	ArtistSortingKeys,
+	type ArtistInclude,
+	type ArtistSortingKeys,
 	ArtistWithRelations,
 } from "../models/artist";
 import Genre from "../models/genre";
 import Library from "../models/library";
-import PaginatedResponse, { PaginationParameters } from "../models/pagination";
+import PaginatedResponse, {
+	type PaginationParameters,
+} from "../models/pagination";
 import {
-	ReleaseInclude,
-	ReleaseSortingKeys,
+	type ReleaseInclude,
+	type ReleaseSortingKeys,
 	ReleaseWithRelations,
 } from "../models/release";
 import {
-	SongInclude,
-	SongSortingKeys,
-	SongType,
+	type SongInclude,
+	type SongSortingKeys,
+	type SongType,
 	SongWithRelations,
 } from "../models/song";
 import {
-	VideoInclude,
-	VideoSortingKeys,
-	VideoType,
+	type VideoInclude,
+	type VideoSortingKeys,
+	type VideoType,
 	VideoWithRelations,
 } from "../models/video";
 import {
-	TrackInclude,
-	TrackSortingKeys,
-	TrackType,
+	type TrackInclude,
+	type TrackSortingKeys,
+	type TrackType,
 	TrackWithRelations,
 } from "../models/track";
 import { TracklistItemWithRelations } from "../models/tracklist";
-import { SortingParameters } from "../utils/sorting";
+import type { SortingParameters } from "../utils/sorting";
 import { ResourceNotFound } from "../exceptions";
-import User, { UserSortingKeys } from "../models/user";
+import User, { type UserSortingKeys } from "../models/user";
 import store from "../state/store";
 import File from "../models/file";
-import { InfiniteQuery, Query } from "./use-query";
+import type { InfiniteQuery, Query } from "./use-query";
 import * as yup from "yup";
-import { RequireExactlyOne } from "type-fest";
+import type { RequireExactlyOne } from "type-fest";
 import Playlist, {
 	PlaylistEntryWithRelations,
-	PlaylistInclude,
-	PlaylistSortingKeys,
+	type PlaylistInclude,
+	type PlaylistSortingKeys,
 	PlaylistWithRelations,
 } from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
@@ -76,12 +78,12 @@ import {
 	SongExternalMetadata,
 } from "../models/external-metadata";
 import {
-	SaveSearchItem,
-	SearchResult,
+	type SaveSearchItem,
+	type SearchResult,
 	SearchResultTransformer,
 } from "../models/search";
 import {
-	SongGroupSortingKeys,
+	type SongGroupSortingKeys,
 	SongGroupWithRelations,
 } from "../models/song-group";
 
@@ -106,8 +108,8 @@ type AuthenticationInput = {
 
 // eslint-disable-next-line no-shadow
 enum Service {
-	API,
-	Scanner,
+	API = 0,
+	Scanner = 1,
 }
 
 type FetchParameters<Keys extends readonly string[], ReturnType> = {
@@ -1126,7 +1128,7 @@ export default class API {
 	 */
 	static getReleaseTracklist<I extends SongInclude | never = never>(
 		slugOrId: string | number,
-		exclusiveOnly: boolean = false,
+		exclusiveOnly = false,
 		include?: I[],
 	): InfiniteQuery<TracklistItemWithRelations<I>> {
 		return {

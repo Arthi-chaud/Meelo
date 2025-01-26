@@ -22,7 +22,7 @@ import { useMutation } from "react-query";
 import { useQueryClient } from "../../api/use-query";
 import { useSelector } from "react-redux";
 import API from "../../api/api";
-import { RootState } from "../../state/store";
+import type { RootState } from "../../state/store";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
@@ -33,12 +33,12 @@ import {
 	PlayNextAction,
 } from "../actions/playlist";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
-import { TrackWithRelations } from "../../models/track";
+import type { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
-import Action from "../actions/action";
+import type Action from "../actions/action";
 import { ChangeSongType } from "../actions/resource-type";
 
 type TrackContextualMenuProps = {

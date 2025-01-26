@@ -36,8 +36,8 @@ import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import { useTranslation } from "react-i18next";
 import { usePlayerContext } from "../../contexts/player";
-import Action from "../actions/action";
-import { VideoWithRelations } from "../../models/video";
+import type Action from "../actions/action";
+import type { VideoWithRelations } from "../../models/video";
 import { ChangeVideoType } from "../actions/resource-type";
 
 type VideoContextualMenuProps = {

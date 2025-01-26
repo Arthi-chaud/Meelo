@@ -20,7 +20,7 @@ import { Box, useTheme } from "@mui/material";
 import { generateArray } from "./gen-list";
 import { isSSR } from "./is-ssr";
 
-export const useGradientBackground = (colors?: string[], index: number = 0) => {
+export const useGradientBackground = (colors?: string[], index = 0) => {
 	const [color1, color2, color3, color4, color5] = Array.of(
 		...(colors ?? generateArray(5)),
 	).sort();

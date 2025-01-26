@@ -114,4 +114,4 @@ export const TrackSortingKeys = [
 	"discIndex",
 ] as const;
 
-export { TrackWithRelations };
+export type { TrackWithRelations };

@@ -44,13 +44,18 @@ import {
 	useTheme,
 } from "@mui/material";
 import Illustration from "../illustration";
-import { ComponentProps, LegacyRef, useCallback, useState } from "react";
+import {
+	type ComponentProps,
+	type LegacyRef,
+	useCallback,
+	useState,
+} from "react";
 import PlayerSlider from "./controls/slider";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import LyricsBox from "../lyrics";
-import { TrackWithRelations } from "../../models/track";
-import Artist from "../../models/artist";
+import type { TrackWithRelations } from "../../models/track";
+import type Artist from "../../models/artist";
 import Link from "next/link";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import ListItem from "../list-item/item";

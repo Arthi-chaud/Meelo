@@ -18,7 +18,7 @@
 
 import { Chip, Grid, Skeleton, Typography, useTheme } from "@mui/material";
 import Link from "next/link";
-import IllustrationModel from "../../models/illustration";
+import type IllustrationModel from "../../models/illustration";
 import Illustration from "../illustration";
 import { useMemo } from "react";
 import { useAccentColor } from "../../utils/accent-color";

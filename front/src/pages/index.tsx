@@ -18,12 +18,12 @@
 
 import { Box, Grid, Stack } from "@mui/material";
 import API from "../api/api";
-import { GetPropsTypesFrom, Page } from "../ssr";
+import type { GetPropsTypesFrom, Page } from "../ssr";
 import {
 	prepareMeeloInfiniteQuery,
 	useInfiniteQuery,
 	useQueries,
-	useQuery,
+	type useQuery,
 } from "../api/use-query";
 import SectionHeader from "../components/section-header";
 import TileRow from "../components/tile-row";
@@ -38,9 +38,9 @@ import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
 import { getRandomNumber } from "../utils/random";
 import { useGradientBackground } from "../utils/gradient-background";
-import { QueryClient } from "react-query";
-import { NextPageContext } from "next";
-import { AlbumExternalMetadata } from "../models/external-metadata";
+import type { QueryClient } from "react-query";
+import type { NextPageContext } from "next";
+import type { AlbumExternalMetadata } from "../models/external-metadata";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -169,8 +169,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		newlyAddedReleases,
 	];
 	const illustrations = queries
-		.map((query) => query.data?.pages.at(0)?.items ?? [])
-		.flat()
+		.flatMap((query) => query.data?.pages.at(0)?.items ?? [])
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
 	const selectedIllustrationColor = useMemo(() => {

@@ -19,7 +19,7 @@
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
 import { useEffect, useState } from "react";
-import NextApp, { AppContext, AppProps } from "next/app";
+import NextApp, { type AppContext, type AppProps } from "next/app";
 import {
 	Hydrate,
 	QueryClient,
@@ -49,11 +49,11 @@ import {
 	prepareMeeloQuery,
 } from "../api/use-query";
 import createEmotionCache from "../utils/createEmotionCache";
-import { CacheProvider, EmotionCache } from "@emotion/react";
+import { CacheProvider, type EmotionCache } from "@emotion/react";
 import Scaffold from "../components/scaffold/scaffold";
 import { withTranslations } from "../i18n/i18n";
 import { PlayerContextProvider } from "../contexts/player";
-import { Page } from "../ssr";
+import type { Page } from "../ssr";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import { setAccessToken } from "../state/userSlice";
 import API from "../api/api";

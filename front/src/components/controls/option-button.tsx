@@ -18,9 +18,10 @@
 
 import { CheckIcon } from "../icons";
 import { Button, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import Option, { OptionGroup } from "./option";
+import type Option from "./option";
+import type { OptionGroup } from "./option";
 import { useState } from "react";
-import { TranslationKey } from "../../i18n/i18n";
+import type { TranslationKey } from "../../i18n/i18n";
 import { useTranslation } from "react-i18next";
 
 type OptionButtonProps<

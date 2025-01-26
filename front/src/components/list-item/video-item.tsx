@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import { VideoIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
 import { usePlayerContext } from "../../contexts/player";
-import { VideoWithRelations } from "../../models/video";
+import type { VideoWithRelations } from "../../models/video";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 
 type VideoType = VideoWithRelations<"artist" | "master" | "illustration">;

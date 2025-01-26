@@ -17,9 +17,9 @@
  */
 
 import { Grid } from "@mui/material";
-import Resource from "../../models/resource";
+import type Resource from "../../models/resource";
 import InfiniteScroll from "./infinite-scroll";
-import { IllustratedResource } from "../../models/illustration";
+import type { IllustratedResource } from "../../models/illustration";
 import { useGradientBackground } from "../../utils/gradient-background";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Song, { SongInclude, SongRelations } from "./song";
+import Song, { type SongInclude, SongRelations } from "./song";
 import { TrackWithRelations } from "./track";
 import * as yup from "yup";
 import Video, { VideoRelations } from "./video";
@@ -55,4 +55,4 @@ type TracklistItemWithRelations<Selection extends SongInclude | never> =
 type Tracklist<T> = Record<string | "?", T[]>;
 
 export default Tracklist;
-export { TracklistItemWithRelations, TracklistItem };
+export { type TracklistItemWithRelations, TracklistItem };

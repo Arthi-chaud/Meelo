@@ -17,10 +17,10 @@
  */
 
 import { useTranslation } from "react-i18next";
-import { AlbumWithRelations } from "../../models/album";
+import type { AlbumWithRelations } from "../../models/album";
 import getYear from "../../utils/getYear";
 import HighlightCard from "./highlight-card";
-import { AlbumExternalMetadata } from "../../models/external-metadata";
+import type { AlbumExternalMetadata } from "../../models/external-metadata";
 
 type AlbumHighlightCardProps = {
 	album: AlbumWithRelations<"artist" | "genres" | "illustration"> | undefined;

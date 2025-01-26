@@ -17,7 +17,7 @@
  */
 
 import { Grid } from "@mui/material";
-import { ReleaseWithRelations } from "../../models/release";
+import type { ReleaseWithRelations } from "../../models/release";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 import Illustration from "../illustration";
 import ListItem from "./item";

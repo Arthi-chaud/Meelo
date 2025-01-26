@@ -20,9 +20,9 @@ import { SearchIcon } from "../../components/icons";
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { GetPropsTypesFrom, Page } from "../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
 import API from "../../api/api";
-import { NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import { Head } from "../../components/head";
 import { useTranslation } from "react-i18next";
 import { useTabRouter } from "../../components/tab-router";
@@ -31,7 +31,7 @@ import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/
 import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteView from "../../components/infinite/infinite-view";
 import {
-	Query,
+	type Query,
 	toInfiniteQuery,
 	transformPage,
 	useQueryClient,
@@ -40,7 +40,7 @@ import AlbumItem from "../../components/list-item/album-item";
 import SongItem from "../../components/list-item/song-item";
 import ArtistItem from "../../components/list-item/artist-item";
 import { useMutation } from "react-query";
-import { SaveSearchItem, SearchResult } from "../../models/search";
+import type { SaveSearchItem, SearchResult } from "../../models/search";
 import formatArtists from "../../utils/formatArtists";
 import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
 import VideoItem from "../../components/list-item/video-item";

@@ -22,7 +22,7 @@ import API from "../../../api/api";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import { GetPropsTypesFrom, Page } from "../../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import {
 	prepareMeeloInfiniteQuery,
 	useQuery,
@@ -30,9 +30,9 @@ import {
 } from "../../../api/use-query";
 import { SongSortingKeys } from "../../../models/song";
 import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
-import Track from "../../../models/track";
-import { NextPageContext } from "next";
-import { QueryClient } from "react-query";
+import type Track from "../../../models/track";
+import type { NextPageContext } from "next";
+import type { QueryClient } from "react-query";
 import { useGradientBackground } from "../../../utils/gradient-background";
 import { Head } from "../../../components/head";
 import { useTranslation } from "react-i18next";

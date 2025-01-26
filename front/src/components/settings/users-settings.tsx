@@ -18,14 +18,14 @@
 
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import API from "../../api/api";
-import User from "../../models/user";
+import type User from "../../models/user";
 import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import type { RootState } from "../../state/store";
 import { useMutation } from "react-query";
 import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
 import { useConfirm } from "material-ui-confirm";
-import { GridColDef } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import AdminGrid from "../admin-grid";
 import { DeleteIcon } from "../icons";
 import { useTranslation } from "react-i18next";

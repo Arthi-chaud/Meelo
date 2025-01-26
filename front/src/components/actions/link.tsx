@@ -25,8 +25,8 @@ import {
 	SettingsIcon,
 	SongIcon,
 } from "../icons";
-import { NextRouter } from "next/router";
-import Action from "./action";
+import type { NextRouter } from "next/router";
+import type Action from "./action";
 import toast from "react-hot-toast";
 
 export const GoToSongLyricsAction = (

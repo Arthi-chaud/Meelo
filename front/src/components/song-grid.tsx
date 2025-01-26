@@ -19,7 +19,7 @@
 import { Grid } from "@mui/material";
 import SongContextualMenu from "./contextual-menu/song-contextual-menu";
 import Illustration from "./illustration";
-import { SongWithRelations } from "../models/song";
+import type { SongWithRelations } from "../models/song";
 import { useQueryClient } from "../api/use-query";
 import ListItem from "./list-item/item";
 import formatArtists from "../utils/formatArtists";

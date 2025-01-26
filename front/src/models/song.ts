@@ -101,4 +101,4 @@ export const SongSortingKeys = [
 	"userPlayCount",
 	"totalPlayCount",
 ] as const;
-export { type SongInclude, SongWithRelations, SongRelations };
+export { type SongInclude, type SongWithRelations, SongRelations };

@@ -19,7 +19,7 @@
 import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
 import SectionHeader from "../section-header";
 import { useColorScheme } from "@mui/material/styles";
-import { Language, Languages, persistLanguage } from "../../i18n/i18n";
+import { type Language, Languages, persistLanguage } from "../../i18n/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";

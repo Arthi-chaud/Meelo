@@ -18,7 +18,7 @@
 
 import Tile from "./tile";
 import Illustration from "../illustration";
-import { ReleaseWithRelations } from "../../models/release";
+import type { ReleaseWithRelations } from "../../models/release";
 import getYear from "../../utils/getYear";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
 

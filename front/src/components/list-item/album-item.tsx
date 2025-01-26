@@ -19,7 +19,7 @@
 import Illustration from "../illustration";
 import ListItem from "./item";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
-import { AlbumWithRelations } from "../../models/album";
+import type { AlbumWithRelations } from "../../models/album";
 import { useTranslation } from "react-i18next";
 
 type AlbumItemProps = {

@@ -17,13 +17,13 @@
  */
 
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
-import Image, { ImageProps } from "next/image";
+import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import API from "../api/api";
 import whiteIllustrationFallback from "../../public/icon.png";
 import blackIllustrationFallback from "../../public/icon-black.png";
-import { RequireExactlyOne } from "type-fest";
-import IllustrationModel from "../models/illustration";
+import type { RequireExactlyOne } from "type-fest";
+import type IllustrationModel from "../models/illustration";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
 import ThemedImage from "./themed-image";

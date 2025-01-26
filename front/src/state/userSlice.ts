@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 // eslint-disable-next-line no-restricted-imports
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
-import User from "../models/user";
+import type User from "../models/user";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 
 type UserState = Partial<{

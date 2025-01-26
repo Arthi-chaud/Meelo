@@ -25,15 +25,15 @@ import {
 	Tooltip,
 	useTheme,
 } from "@mui/material";
-import { NextRouter } from "next/router";
+import type { NextRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import Option from "./option";
+import type Option from "./option";
 import OptionButton from "./option-button";
-import { LayoutOption, getLayoutParams } from "../../utils/layout";
-import { Order, getOrderParams } from "../../utils/sorting";
+import { type LayoutOption, getLayoutParams } from "../../utils/layout";
+import { type Order, getOrderParams } from "../../utils/sorting";
 import parseQueryParam from "../../utils/parse-query-param";
-import Action from "../actions/action";
-import { TranslationKey } from "../../i18n/i18n";
+import type Action from "../actions/action";
+import type { TranslationKey } from "../../i18n/i18n";
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";

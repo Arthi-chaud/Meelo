@@ -74,7 +74,7 @@ const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
 type ReleaseWithRelations<Selection extends ReleaseInclude | never = never> =
 	yup.InferType<ReturnType<typeof ReleaseWithRelations<Selection>>>;
 
-export { ReleaseWithRelations };
+export type { ReleaseWithRelations };
 
 export const ReleaseSortingKeys = [
 	"name",

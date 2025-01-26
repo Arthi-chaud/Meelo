@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Artist from "../../models/artist";
+import type Artist from "../../models/artist";
 import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
 import { DownloadAction } from "../actions/download";
@@ -33,7 +33,7 @@ import {
 } from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
-import { TrackWithRelations } from "../../models/track";
+import type { TrackWithRelations } from "../../models/track";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
 import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";

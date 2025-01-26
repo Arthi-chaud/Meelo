@@ -18,7 +18,7 @@
 
 import { useRouter } from "next/router";
 import API from "../../../api/api";
-import { GetPropsTypesFrom, Page } from "../../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
 	prepareMeeloQuery,
@@ -44,7 +44,7 @@ import GenreButton from "../../../components/genre-button";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
-import { NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
 import { Head } from "../../../components/head";
 import { useThemedSxValue } from "../../../utils/themed-sx-value";
@@ -52,7 +52,7 @@ import { useAccentColor } from "../../../utils/accent-color";
 import { useTabRouter } from "../../../components/tab-router";
 import ExternalMetadataBadge from "../../../components/external-metadata-badge";
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
-import { QueryClient } from "react-query";
+import type { QueryClient } from "react-query";
 
 const externalMetadataQuery = (songIdentifier: string | number) =>
 	API.getSongExternalMetadata(songIdentifier);

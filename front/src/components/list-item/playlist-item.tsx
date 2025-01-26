@@ -17,7 +17,7 @@
  */
 
 import { PlaylistIcon } from "../icons";
-import { PlaylistWithRelations } from "../../models/playlist";
+import type { PlaylistWithRelations } from "../../models/playlist";
 import Illustration from "../illustration";
 import ListItem from "./item";
 import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";

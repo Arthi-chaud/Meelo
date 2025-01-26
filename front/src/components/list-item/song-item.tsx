@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SongWithRelations } from "../../models/song";
+import type { SongWithRelations } from "../../models/song";
 import Illustration from "../illustration";
 import ListItem from "./item";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
 import { usePlayerContext } from "../../contexts/player";
-import { SongGroupWithRelations } from "../../models/song-group";
+import type { SongGroupWithRelations } from "../../models/song-group";
 
 type SongItemProps<
 	T extends SongWithRelations<

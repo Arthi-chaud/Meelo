@@ -31,12 +31,12 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
 import { useMutation } from "react-query";
 import { useQuery, useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
-import Library from "../../models/library";
+import type Library from "../../models/library";
 import AdminGrid from "../admin-grid";
 import {
 	CleanAllLibrariesAction,
@@ -45,8 +45,8 @@ import {
 	ScanLibraryAction,
 } from "../actions/library-task";
 import { useConfirm } from "material-ui-confirm";
-import Action from "../actions/action";
-import { ComponentProps, useMemo, useState } from "react";
+import type Action from "../actions/action";
+import { type ComponentProps, useMemo, useState } from "react";
 import LibraryForm from "../library-form";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
 import SectionHeader from "../section-header";

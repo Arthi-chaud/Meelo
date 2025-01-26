@@ -19,15 +19,15 @@
 import {
 	AlbumSortingKeys,
 	AlbumType,
-	AlbumWithRelations,
+	type AlbumWithRelations,
 } from "../../../models/album";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
-import Controls, { OptionState } from "../../controls/controls";
+import Controls, { type OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
 import { useRouter } from "next/router";
-import { ComponentProps, useState } from "react";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { type ComponentProps, useState } from "react";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { useTranslation } from "react-i18next";
 
 type AdditionalProps = { type?: AlbumType };

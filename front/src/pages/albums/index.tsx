@@ -16,16 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
 import { useRouter } from "next/router";
 import API from "../../api/api";
 import { AlbumSortingKeys } from "../../models/album";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import { GetPropsTypesFrom, Page } from "../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
 import { getLayoutParams } from "../../utils/layout";
 import { getAlbumTypeParam } from "../../utils/album-type";
-import { NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import { Head } from "../../components/head";
 import { useTranslation } from "react-i18next";
 

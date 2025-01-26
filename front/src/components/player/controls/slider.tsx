@@ -18,7 +18,7 @@
 
 import { Grid, Slider } from "@mui/material";
 import DurationComponent from "./duration";
-import { MutableRefObject, useEffect, useState } from "react";
+import { type MutableRefObject, useEffect, useState } from "react";
 
 type PlayerSliderProps = {
 	onSlide: (newProgress: number) => void;

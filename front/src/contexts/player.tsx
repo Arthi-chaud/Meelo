@@ -17,8 +17,8 @@
  */
 
 import { createContext, useContext, useState } from "react";
-import Artist from "../models/artist";
-import { TrackWithRelations } from "../models/track";
+import type Artist from "../models/artist";
+import type { TrackWithRelations } from "../models/track";
 
 export type TrackState = {
 	track: TrackWithRelations<"illustration">;

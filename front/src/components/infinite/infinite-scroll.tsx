@@ -17,11 +17,13 @@
  */
 
 import * as IScroll from "react-infinite-scroller";
-import Resource from "../../models/resource";
-import PaginatedResponse, {
-	PaginationParameters,
-} from "../../models/pagination";
-import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
+import type Resource from "../../models/resource";
+import type PaginatedResponse from "../../models/pagination";
+import type { PaginationParameters } from "../../models/pagination";
+import {
+	type MeeloInfiniteQueryFn,
+	useInfiniteQuery,
+} from "../../api/use-query";
 import { generateArray } from "../../utils/gen-list";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
@@ -97,7 +99,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 					data === undefined
 						? generateArray(3)
 						: [
-								...data.pages.map((page) => page.items).flat(),
+								...data.pages.flatMap((page) => page.items),
 								...(isFetchingNextPage ? generateArray(3) : []),
 							],
 				)}

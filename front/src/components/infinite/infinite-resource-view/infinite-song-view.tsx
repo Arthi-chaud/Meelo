@@ -17,27 +17,27 @@
  */
 
 import { useRouter } from "next/router";
-import { ComponentProps, useState } from "react";
+import { type ComponentProps, useState } from "react";
 import {
 	SongSortingKeys,
 	SongType,
-	SongWithRelations,
+	type SongWithRelations,
 } from "../../../models/song";
-import Controls, { OptionState } from "../../controls/controls";
+import Controls, { type OptionState } from "../../controls/controls";
 import SongItem, { SongGroupItem } from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import {
-	InfiniteQuery,
-	QueryClient,
+	type InfiniteQuery,
+	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { PlayerActions, usePlayerContext } from "../../../contexts/player";
+import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
 import {
 	SongGroupSortingKeys,
-	SongGroupWithRelations,
+	type SongGroupWithRelations,
 } from "../../../models/song-group";
 
 type AdditionalProps = {

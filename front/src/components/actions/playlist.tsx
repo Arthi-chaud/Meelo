@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Action from "./action";
+import type Action from "./action";
 import {
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
@@ -32,18 +32,19 @@ import {
 	DialogTitle,
 } from "@mui/material";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
+import type { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
 import { useMutation } from "react-query";
 import API from "../../api/api";
-import Playlist, { PlaylistWithRelations } from "../../models/playlist";
+import type Playlist from "../../models/playlist";
+import type { PlaylistWithRelations } from "../../models/playlist";
 import InfiniteList from "../infinite/infinite-list";
 import { WideLoadingComponent } from "../loading/loading";
 import ListItem from "../list-item/item";
 import Illustration from "../illustration";
-import { useConfirm } from "material-ui-confirm";
+import type { useConfirm } from "material-ui-confirm";
 import { Add, Edit } from "iconsax-react";
 import { useTranslation } from "react-i18next";
-import { PlayerActions, TrackState } from "../../contexts/player";
+import type { PlayerActions, TrackState } from "../../contexts/player";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,

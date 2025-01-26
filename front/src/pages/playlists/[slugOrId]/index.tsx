@@ -19,10 +19,10 @@
 import { useRouter } from "next/router";
 import API from "../../../api/api";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
-import { GetPropsTypesFrom, Page } from "../../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import {
-	Query,
+	type Query,
 	prepareMeeloQuery,
 	useQueries,
 	useQuery,
@@ -31,7 +31,7 @@ import {
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
 import Illustration from "../../../components/illustration";
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
-import { SongWithRelations } from "../../../models/song";
+import type { SongWithRelations } from "../../../models/song";
 import {
 	ContextualMenuIcon,
 	DoneIcon,
@@ -43,14 +43,14 @@ import {
 } from "../../../components/icons";
 import ListItem from "../../../components/list-item/item";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
-import {
+import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,
 } from "../../../models/playlist";
 import { useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
-import { QueryClient, useMutation } from "react-query";
+import { type QueryClient, useMutation } from "react-query";
 import { shuffle } from "d3-array";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import { useConfirm } from "material-ui-confirm";
@@ -58,8 +58,8 @@ import { useGradientBackground } from "../../../utils/gradient-background";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
 import { usePlayerContext } from "../../../contexts/player";
-import { NextPageContext } from "next";
-import Release from "../../../models/release";
+import type { NextPageContext } from "next";
+import type Release from "../../../models/release";
 import { Head } from "../../../components/head";
 
 const playlistQuery = (idOrSlug: number | string) =>

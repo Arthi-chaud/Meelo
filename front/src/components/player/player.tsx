@@ -24,10 +24,10 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
-import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
+import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import API from "../../api/api";
-import { RootState } from "../../state/store";
+import type { RootState } from "../../state/store";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 import { toast } from "react-hot-toast";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
@@ -213,7 +213,7 @@ const Player = () => {
 				// eslint-disable-next-line no-console
 				console.error(err, data);
 			});
-			hls.current!.on(Hls.Events.MEDIA_ATTACHED, function () {
+			hls.current!.on(Hls.Events.MEDIA_ATTACHED, () => {
 				startPlayback(true);
 			});
 		}

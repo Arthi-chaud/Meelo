@@ -35,7 +35,7 @@ import {
 } from "../actions/playlist";
 import { ShareSongAction } from "../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
-import { SongWithRelations } from "../../models/song";
+import type { SongWithRelations } from "../../models/song";
 import { useQueryClient } from "../../api/use-query";
 import { toast } from "react-hot-toast";
 import { ChangeSongType } from "../actions/resource-type";

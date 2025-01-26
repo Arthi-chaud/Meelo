@@ -18,9 +18,9 @@
 
 import { MetadataRefreshIcon } from "../icons";
 import API from "../../api/api";
-import Action from "./action";
+import type Action from "./action";
 import toast from "react-hot-toast";
-import { Translator } from "../../i18n/i18n";
+import type { Translator } from "../../i18n/i18n";
 
 const RefreshMetadataAction = (
 	t: Translator,

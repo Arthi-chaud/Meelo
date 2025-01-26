@@ -17,21 +17,21 @@
  */
 
 import { useRouter } from "next/router";
-import { ComponentProps, useState } from "react";
+import { type ComponentProps, useState } from "react";
 import {
 	VideoSortingKeys,
 	VideoType,
-	VideoWithRelations,
+	type VideoWithRelations,
 } from "../../../models/video";
-import Controls, { OptionState } from "../../controls/controls";
+import Controls, { type OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 import VideoTile from "../../tile/video-tile";
 import { PlayIcon, ShuffleIcon } from "../../icons";
-import { PlayerActions, usePlayerContext } from "../../../contexts/player";
+import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
 import {
-	InfiniteQuery,
-	QueryClient,
+	type InfiniteQuery,
+	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";

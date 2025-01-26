@@ -61,4 +61,4 @@ export const ArtistSortingKeys = [
 	"addDate",
 ] as const;
 
-export { ArtistWithRelations };
+export type { ArtistWithRelations };

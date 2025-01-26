@@ -17,15 +17,15 @@
  */
 
 import {
-	DependencyList,
+	type DependencyList,
 	createContext,
 	useContext,
 	useEffect,
 	useState,
 } from "react";
-import { TranslationKey } from "../i18n/i18n";
+import type { TranslationKey } from "../i18n/i18n";
 import { useKey as _useKey } from "react-use";
-import { Handler } from "react-use/lib/useKey";
+import type { Handler } from "react-use/lib/useKey";
 import { useRouter } from "next/router";
 
 type BindingKey = "esc" | "?" | "/" | "s" | "p" | "space";

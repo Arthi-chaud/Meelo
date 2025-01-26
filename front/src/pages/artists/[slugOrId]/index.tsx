@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 import API from "../../../api/api";
 import { useInfiniteQuery, useQuery } from "../../../api/use-query";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import { GetPropsTypesFrom, Page } from "../../../ssr";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import SectionHeader from "../../../components/section-header";
 import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
@@ -29,7 +29,7 @@ import { AlbumType } from "../../../models/album";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { generateArray } from "../../../utils/gen-list";
-import { NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import { useGradientBackground } from "../../../utils/gradient-background";
 import {
 	AlbumListPageSection,

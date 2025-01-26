@@ -43,7 +43,7 @@ import {
 import Link from "next/link";
 import Player from "../player/player";
 import { useRouter } from "next/router";
-import { IconProps } from "iconsax-react";
+import type { IconProps } from "iconsax-react";
 import { useEffect, useState } from "react";
 import scaffoldActions from "./actions";
 import type {} from "@mui/material/themeCssVarsAugmentation";

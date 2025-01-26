@@ -17,7 +17,7 @@
  */
 
 import Tile from "./tile";
-import { AlbumWithRelations } from "../../models/album";
+import type { AlbumWithRelations } from "../../models/album";
 import Illustration from "../illustration";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import { useTranslation } from "react-i18next";

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import API from "../api/api";
-import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
-import Resource from "../models/resource";
+import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
+import type Resource from "../models/resource";
 
 type AdminGridProps<DataType extends Resource> = {
 	infiniteQuery: MeeloInfiniteQueryFn<DataType>;

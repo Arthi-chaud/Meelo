@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Artist from "../../models/artist";
+import type Artist from "../../models/artist";
 import ContextualMenu from "./contextual-menu";
 import {
 	GoToArtistAction,

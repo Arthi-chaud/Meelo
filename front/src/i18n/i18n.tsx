@@ -16,14 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import i18next, { InitOptions, KeysBuilderWithoutReturnObjects } from "i18next";
+import i18next, {
+	type InitOptions,
+	type KeysBuilderWithoutReturnObjects,
+} from "i18next";
 import { I18nextProvider } from "react-i18next";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
 import { getCookie, setCookie } from "cookies-next";
 import { LanguageCookieKey } from "../utils/cookieKeys";
-import { ComponentType, useMemo } from "react";
-import { AppContext, AppInitialProps, AppProps } from "next/app";
+import { type ComponentType, useMemo } from "react";
+import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import ALParser from "accept-language-parser";
 import { isSSR } from "../utils/is-ssr";
 

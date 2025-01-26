@@ -17,14 +17,14 @@
  */
 
 import { Box, Button, Grid } from "@mui/material";
-import { ComponentProps, Fragment } from "react";
+import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { UseInfiniteQueryResult, UseQueryResult } from "react-query";
-import { TranslationKey } from "../i18n/i18n";
-import { AlbumWithRelations } from "../models/album";
-import Artist from "../models/artist";
-import { SongWithRelations } from "../models/song";
-import { VideoWithRelations } from "../models/video";
+import type { UseInfiniteQueryResult, UseQueryResult } from "react-query";
+import type { TranslationKey } from "../i18n/i18n";
+import type { AlbumWithRelations } from "../models/album";
+import type Artist from "../models/artist";
+import type { SongWithRelations } from "../models/song";
+import type { VideoWithRelations } from "../models/video";
 import { generateArray } from "../utils/gen-list";
 import getYear from "../utils/getYear";
 import { MoreIcon } from "./icons";

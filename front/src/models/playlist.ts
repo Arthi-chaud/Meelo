@@ -19,7 +19,7 @@
 import Illustration from "./illustration";
 import Resource from "./resource";
 import * as yup from "yup";
-import Song, { SongInclude, SongWithRelations } from "./song";
+import Song, { type SongInclude, SongWithRelations } from "./song";
 
 const PlaylistEntry = Song.concat(
 	yup.object({
@@ -87,4 +87,4 @@ export const PlaylistSortingKeys = [
 	"creationDate",
 ] as const;
 
-export { PlaylistEntryWithRelations, PlaylistWithRelations };
+export type { PlaylistEntryWithRelations, PlaylistWithRelations };

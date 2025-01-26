@@ -20,13 +20,13 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import {
 	PlaylistSortingKeys,
-	PlaylistWithRelations,
+	type PlaylistWithRelations,
 } from "../../../models/playlist";
-import Controls, { OptionState } from "../../controls/controls";
+import Controls, { type OptionState } from "../../controls/controls";
 import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
 import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 import { CreatePlaylistAction } from "../../actions/playlist";
 import { useQueryClient } from "../../../api/use-query";
 
