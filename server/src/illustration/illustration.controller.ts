@@ -34,17 +34,17 @@ import {
 	ApiOperation,
 	ApiTags,
 } from "@nestjs/swagger";
-import IllustrationService from "./illustration.service";
-import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
+import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
+import { RegistrationService } from "src/registration/registration.service";
 import { NoIllustrationException } from "./illustration.exceptions";
 import IllustrationRepository from "./illustration.repository";
-import { IllustrationResponse } from "./models/illustration.response";
-import Roles from "src/authentication/roles/roles.enum";
-import IllustrationRegistrationDto from "./models/illustration-registration.dto";
-import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
-import { RegistrationService } from "src/registration/registration.service";
+import IllustrationService from "./illustration.service";
+import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
+import IllustrationRegistrationDto from "./models/illustration-registration.dto";
+import { IllustrationResponse } from "./models/illustration.response";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
 
@@ -70,9 +70,8 @@ export class IllustrationController {
 		res: Response,
 		@Query() dimensions: IllustrationDimensionsDto,
 	) {
-		const illustration = await this.illustrationRepository.getIllustration(
-			illustrationId,
-		);
+		const illustration =
+			await this.illustrationRepository.getIllustration(illustrationId);
 		const illustrationPath =
 			this.illustrationRepository.buildIllustrationPath(illustration.id);
 
@@ -125,9 +124,8 @@ export class IllustrationController {
 		@Param("id", new ParseIntPipe())
 		illustrationId: number,
 	): Promise<IllustrationResponse> {
-		const illustration = await this.illustrationRepository.getIllustration(
-			illustrationId,
-		);
+		const illustration =
+			await this.illustrationRepository.getIllustration(illustrationId);
 
 		return IllustrationResponse.from(illustration);
 	}

@@ -1,30 +1,30 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import SongService from "src/song/song.service";
-import ArtistService from "src/artist/artist.service";
+import { type Video, VideoType } from "@prisma/client";
+import AlbumModule from "src/album/album.module";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
+import ArtistService from "src/artist/artist.service";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import TrackModule from "src/track/track.module";
-import AlbumModule from "src/album/album.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import VideoService from "./video.service";
-import VideoModule from "./video.module";
 import ReleaseModule from "src/release/release.module";
-import ParserModule from "src/parser/parser.module";
-import SongModule from "src/song/song.module";
-import { ArtistNotFoundException } from "src/artist/artist.exceptions";
+import Slug from "src/slug/slug";
 import { SongNotFoundException } from "src/song/song.exceptions";
+import SongModule from "src/song/song.module";
+import SongService from "src/song/song.service";
+import TrackModule from "src/track/track.module";
+import TrackService from "src/track/track.service";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	VideoAlreadyExistsException,
 	VideoNotFoundException,
 } from "./video.exceptions";
-import { Video, VideoType } from "@prisma/client";
-import Slug from "src/slug/slug";
-import TrackService from "src/track/track.service";
+import VideoModule from "./video.module";
+import VideoService from "./video.service";
 
 describe("Video Service", () => {
 	let videoService: VideoService;
@@ -112,7 +112,7 @@ describe("Video Service", () => {
 			expect(video.name).toBe("My Video");
 			expect(video.nameSlug).toBe("my-video");
 
-			expect(video.slug).toBe(dummyRepository.artistB.slug + "-my-video");
+			expect(video.slug).toBe(`${dummyRepository.artistB.slug}-my-video`);
 			expect(video.type).toBe(VideoType.Interview);
 			video1 = video;
 		});
@@ -184,7 +184,7 @@ describe("Video Service", () => {
 			});
 			expect(video.id).not.toBe(video1.id);
 			expect(video.slug).toBe(
-				dummyRepository.artistB.slug + "-my-video-2",
+				`${dummyRepository.artistB.slug}-my-video-2`,
 			);
 		});
 	});
@@ -202,6 +202,7 @@ describe("Video Service", () => {
 				video: { id: dummyRepository.videoA1.id },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			// biome-ignore lint/complexity/noForEach: Test
 			videoTracks.forEach((track) => expect(track.songId).toBe(null));
 		});
 
@@ -218,6 +219,7 @@ describe("Video Service", () => {
 				video: { id: dummyRepository.videoA1.id },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
+			// biome-ignore lint/complexity/noForEach: Test
 			videoTracks.forEach((track) =>
 				expect(track.songId).toBe(dummyRepository.songA1.id),
 			);

@@ -16,7 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CallHandler, ExecutionContext, NestInterceptor } from "@nestjs/common";
+import type {
+	CallHandler,
+	ExecutionContext,
+	NestInterceptor,
+} from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
 
 /**
@@ -30,7 +34,6 @@ export default abstract class ResponseBuilderInterceptor<
 		: never = ToClass extends InstanceType<infer T> ? T : never,
 > implements NestInterceptor<FromType, ToType>
 {
-	constructor() {}
 	/**
 	 * The Class of the Response instance
 	 * Used for OpenAPI

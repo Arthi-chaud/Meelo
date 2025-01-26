@@ -18,9 +18,9 @@
 
 import { NestFactory } from "@nestjs/core";
 import AppModule from "./app.module";
-import bootstrapSwagger from "./swagger/bootstrap";
-import Logger from "./logger/logger";
 import * as Plugins from "./app.plugins";
+import Logger from "./logger/logger";
+import bootstrapSwagger from "./swagger/bootstrap";
 
 async function bootstrap() {
 	Plugins.presetup();

@@ -19,21 +19,21 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import {
-	ArtistResponse,
+	type ArtistResponse,
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
-import { Lyrics, Song, SongWithRelations } from "src/prisma/models";
-import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
+import Logger from "src/logger/logger";
+import { type Lyrics, Song, type SongWithRelations } from "src/prisma/models";
+import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
-	TrackResponse,
+	type TrackResponse,
 	TrackResponseBuilder,
 } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
-import Logger from "src/logger/logger";
 
 export class SongResponse extends IntersectionType(
 	Song,
@@ -93,7 +93,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 						song.featuring.map((artist) =>
 							this.artistResponseBuilder.buildResponse(artist),
 						),
-				  )
+					)
 				: song.featuring,
 			master: song.master
 				? await this.trackResponseBuilder.buildResponse(song.master)

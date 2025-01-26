@@ -17,37 +17,37 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { AlbumType, Prisma, VideoType } from "@prisma/client";
+import deepmerge from "deepmerge";
+import type MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import ArtistService from "src/artist/artist.service";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import LibraryService from "src/library/library.service";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import ParserService from "src/parser/parser.service";
+import type { VideoWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
-import SongService from "src/song/song.service";
-import { AlbumType, Prisma, VideoType } from "@prisma/client";
-import { shuffle } from "src/utils/shuffle";
-import VideoQueryParameters from "./models/video.query-parameters";
-import ArtistService from "src/artist/artist.service";
-import ParserService from "src/parser/parser.service";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
-import { PrismaError } from "prisma-error-enum";
+import SongService from "src/song/song.service";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import { shuffle } from "src/utils/shuffle";
+import type VideoQueryParameters from "./models/video.query-parameters";
 import {
 	VideoAlreadyExistsException,
 	VideoNotFoundException,
 } from "./video.exceptions";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { VideoWithRelations } from "src/prisma/models";
-import deepmerge from "deepmerge";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import AlbumService from "src/album/album.service";
-import LibraryService from "src/library/library.service";
-import TrackService from "src/track/track.service";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import SearchableRepositoryService from "src/repository/searchable-repository.service";
-import { InjectMeiliSearch } from "nestjs-meilisearch";
-import MeiliSearch from "meilisearch";
-import Logger from "src/logger/logger";
 
 @Injectable()
 export default class VideoService extends SearchableRepositoryService {
@@ -92,13 +92,13 @@ export default class VideoService extends SearchableRepositoryService {
 								where: SongService.formatSongGroupWhereInput(
 									data.group,
 								),
-						  }
+							}
 						: undefined,
 				},
 				song: data.song
 					? {
 							connect: SongService.formatWhereInput(data.song),
-					  }
+						}
 					: undefined,
 			},
 		};
@@ -193,12 +193,12 @@ export default class VideoService extends SearchableRepositoryService {
 						what.master === null
 							? { disconnect: true }
 							: what.master
-							? {
-									connect: TrackService.formatWhereInput(
-										what.master,
-									),
-							  }
-							: undefined,
+								? {
+										connect: TrackService.formatWhereInput(
+											what.master,
+										),
+									}
+								: undefined,
 					song: what.song
 						? { connect: SongService.formatWhereInput(what.song) }
 						: undefined,
@@ -507,7 +507,7 @@ export default class VideoService extends SearchableRepositoryService {
 		include?: I,
 		sort?: VideoQueryParameters.SortingParameter | number,
 	): Promise<VideoWithRelations[]> {
-		if (typeof sort == "number") {
+		if (typeof sort === "number") {
 			const randomIds = await this.getManyRandomIds(
 				where,
 				sort,
@@ -609,9 +609,9 @@ export default class VideoService extends SearchableRepositoryService {
 	async onNotFound(error: Error, where: VideoQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
-			if (where.id != undefined) {
+			if (where.id !== undefined) {
 				throw new VideoNotFoundException(where.id);
 			}
 			throw new VideoNotFoundException(where.slug);

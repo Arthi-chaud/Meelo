@@ -17,14 +17,14 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import { VideoController } from "./video.controller";
-import SongModule from "src/song/song.module";
-import { VideoResponseBuilder } from "./models/video.response";
-import VideoService from "./video.service";
-import TrackModule from "src/track/track.module";
-import PrismaModule from "src/prisma/prisma.module";
 import ArtistModule from "src/artist/artist.module";
 import ParserModule from "src/parser/parser.module";
+import PrismaModule from "src/prisma/prisma.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import { VideoResponseBuilder } from "./models/video.response";
+import { VideoController } from "./video.controller";
+import VideoService from "./video.service";
 
 @Module({
 	imports: [

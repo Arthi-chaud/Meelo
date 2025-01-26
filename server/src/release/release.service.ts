@@ -16,39 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// biome-ignore lint/nursery/noRestrictedImports: Not needed
+import { createReadStream } from "node:fs";
+import { basename } from "node:path";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import AlbumService from "src/album/album.service";
-import Slug from "src/slug/slug";
 import { Prisma } from "@prisma/client";
+import archiver from "archiver";
+import deepmerge from "deepmerge";
+import type { Response } from "express";
+import mime from "mime";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import FileService from "src/file/file.service";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import PrismaService from "src/prisma/prisma.service";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import Slug from "src/slug/slug";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
+import type ReleaseQueryParameters from "./models/release.query-parameters";
 import {
 	MasterReleaseNotFoundException,
 	ReleaseAlreadyExists,
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
 } from "./release.exceptions";
-import { basename } from "path";
-import PrismaService from "src/prisma/prisma.service";
-import type ReleaseQueryParameters from "./models/release.query-parameters";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import TrackService from "src/track/track.service";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import FileService from "src/file/file.service";
-import archiver from "archiver";
-// eslint-disable-next-line no-restricted-imports
-import { createReadStream } from "fs";
-import { Response } from "express";
-import mime from "mime";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import deepmerge from "deepmerge";
-import {
-	formatIdentifierToIdOrSlug,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 
 @Injectable()
 export default class ReleaseService {
@@ -103,13 +103,11 @@ export default class ReleaseService {
 												},
 											},
 										},
-										url:
-											"https://www.discogs.com/release/" +
-											input.discogsId,
+										url: `https://www.discogs.com/release/${input.discogsId}`,
 									},
 								},
 							},
-					  }
+						}
 					: undefined,
 				nameSlug: releaseNameSlug,
 			},
@@ -128,7 +126,7 @@ export default class ReleaseService {
 						},
 					);
 
-					if (error.code == PrismaError.UniqueConstraintViolation) {
+					if (error.code === PrismaError.UniqueConstraintViolation) {
 						throw new ReleaseAlreadyExists(
 							new Slug(input.name),
 							parentAlbum.artist
@@ -265,12 +263,13 @@ export default class ReleaseService {
 			include: include ?? ({} as I),
 			where: ReleaseService.formatManyWhereInput(where),
 			orderBy:
-				sort == undefined ? undefined : this.formatSortingInput(sort),
+				sort === undefined ? undefined : this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
-		const releases = await this.prismaService.release.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>
-		>(args);
+		const releases =
+			await this.prismaService.release.findMany<
+				Prisma.SelectSubset<typeof args, Prisma.ReleaseFindManyArgs>
+			>(args);
 		return releases;
 	}
 
@@ -281,7 +280,7 @@ export default class ReleaseService {
 	async onNotFound(error: Error, where: ReleaseQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			return new ReleaseNotFoundException(where.id ?? where.slug);
 		}
@@ -304,7 +303,7 @@ export default class ReleaseService {
 			orderBy: { id: "asc" as const },
 		};
 		return this.albumService.get(where).then(async (album) => {
-			if (album.masterId != null) {
+			if (album.masterId !== null) {
 				return this.get({ id: album.masterId }, include);
 			}
 			return this.prismaService.release
@@ -429,13 +428,13 @@ export default class ReleaseService {
 			release.tracks.map((track) =>
 				this.fileService.buildFullPath({ id: track.sourceFileId }),
 			),
-		).then((paths) =>
-			paths.forEach((path) => {
+		).then((paths) => {
+			for (const path of paths) {
 				archive.append(createReadStream(path), {
 					name: basename(path),
 				});
-			}),
-		);
+			}
+		});
 		if (illustration) {
 			const illustrationPath =
 				this.illustrationRepository.buildIllustrationPath(

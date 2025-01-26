@@ -16,37 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { type MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import FileModule from "./file/file.module";
-import ArtistModule from "./artist/artist.module";
-import AlbumModule from "./album/album.module";
-import ReleaseModule from "./release/release.module";
-import TrackModule from "./track/track.module";
-import SongModule from "./song/song.module";
-import SettingsModule from "./settings/settings.module";
-import LibraryModule from "./library/library.module";
-import IllustrationModule from "./illustration/illustration.module";
-import FileManagerModule from "./file-manager/file-manager.module";
-import PrismaModule from "./prisma/prisma.module";
-import { LyricsModule } from "./lyrics/lyrics.module";
-import GenreModule from "./genre/genre.module";
-import AppController from "./app.controller";
-import AuthenticationModule from "./authentication/authentication.module";
-import UserModule from "./user/user.module";
-import LoggerModule from "./logger/logger.module";
-import * as Plugins from "./app.plugins";
-import VideoModule from "./video/video.module";
-import PlaylistModule from "./playlist/playlist.module";
-import { MeiliSearchModule } from "nestjs-meilisearch";
-import { StreamModule } from "./stream/stream.module";
-import { SearchModule } from "./search/search.module";
-import { RegistrationModule } from "./registration/registration.module";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
-import { HousekeepingModule } from "./housekeeping/housekeeping.module";
-import { ExternalMetadataModule } from "./external-metadata/external-metadata.module";
-import ParserModule from "./parser/parser.module";
+import { MeiliSearchModule } from "nestjs-meilisearch";
+import AlbumModule from "./album/album.module";
+import AppController from "./app.controller";
+import * as Plugins from "./app.plugins";
+import ArtistModule from "./artist/artist.module";
+import AuthenticationModule from "./authentication/authentication.module";
 import { EventsModule } from "./events/events.module";
+import { ExternalMetadataModule } from "./external-metadata/external-metadata.module";
+import FileManagerModule from "./file-manager/file-manager.module";
+import FileModule from "./file/file.module";
+import GenreModule from "./genre/genre.module";
+import { HousekeepingModule } from "./housekeeping/housekeeping.module";
+import IllustrationModule from "./illustration/illustration.module";
+import LibraryModule from "./library/library.module";
+import LoggerModule from "./logger/logger.module";
+import { LyricsModule } from "./lyrics/lyrics.module";
+import ParserModule from "./parser/parser.module";
+import PlaylistModule from "./playlist/playlist.module";
+import PrismaModule from "./prisma/prisma.module";
+import { RegistrationModule } from "./registration/registration.module";
+import ReleaseModule from "./release/release.module";
+import { SearchModule } from "./search/search.module";
+import SettingsModule from "./settings/settings.module";
+import SongModule from "./song/song.module";
+import { StreamModule } from "./stream/stream.module";
+import TrackModule from "./track/track.module";
+import UserModule from "./user/user.module";
+import VideoModule from "./video/video.module";
 
 @Module({
 	imports: [

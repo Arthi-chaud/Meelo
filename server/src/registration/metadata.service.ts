@@ -17,19 +17,19 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import Metadata from "./models/metadata";
-import TrackService from "src/track/track.service";
-import SongService from "src/song/song.service";
 import { AlbumType, TrackType } from "@prisma/client";
-import ReleaseService from "src/release/release.service";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
-import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import GenreService from "src/genre/genre.service";
-import { File } from "src/prisma/models";
-import ParserService from "../parser/parser.service";
+import type { File } from "src/prisma/models";
+import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";
+import SongService from "src/song/song.service";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import TrackService from "src/track/track.service";
 import VideoService from "src/video/video.service";
+import ParserService from "../parser/parser.service";
+import type Metadata from "./models/metadata";
 
 @Injectable()
 export default class MetadataService {
@@ -68,7 +68,7 @@ export default class MetadataService {
 			? await this.artistService.getOrCreate({
 					name: metadata.albumArtist ?? metadata.artist!,
 					registeredAt: file.registerDate,
-			  })
+				})
 			: undefined;
 		const { name: parsedSongName, featuring: parsedFeaturingArtists } =
 			await this.parserService.extractFeaturedArtistsFromSongName(
@@ -101,10 +101,11 @@ export default class MetadataService {
 				.filter(([_, artistSlug], artistIndex, featuringSlugs) => {
 					const firstOccurence = featuringSlugs.findIndex(
 						([__, otherArtistSlug]) =>
-							artistSlug.toString() == otherArtistSlug.toString(),
+							artistSlug.toString() ===
+							otherArtistSlug.toString(),
 					);
 					return (
-						firstOccurence == -1 || firstOccurence == artistIndex
+						firstOccurence === -1 || firstOccurence === artistIndex
 					);
 				})
 				.map(([artist, _]) =>
@@ -129,7 +130,7 @@ export default class MetadataService {
 		);
 
 		const song =
-			metadata.type == TrackType.Audio ||
+			metadata.type === TrackType.Audio ||
 			!VideoService.videoTypeIsExtra(videoType)
 				? await this.songService.getOrCreate(
 						{
@@ -148,7 +149,7 @@ export default class MetadataService {
 							genres: true,
 							master: true,
 						},
-				  )
+					)
 				: null;
 
 		if (song) {
@@ -163,7 +164,7 @@ export default class MetadataService {
 		}
 
 		const video =
-			metadata.type == TrackType.Video
+			metadata.type === TrackType.Video
 				? await this.videoService.getOrCreate(
 						{
 							name: videoName,
@@ -176,7 +177,7 @@ export default class MetadataService {
 							song: song ? { id: song.id } : undefined,
 						},
 						{ master: true },
-				  )
+					)
 				: null;
 
 		const album = metadata.album
@@ -191,7 +192,7 @@ export default class MetadataService {
 						registeredAt: file.registerDate,
 					},
 					{ releases: true },
-			  )
+				)
 			: undefined;
 		//TODO Link to album
 		const parsedReleaseName = metadata.release
@@ -209,7 +210,7 @@ export default class MetadataService {
 							discogsId: metadata.discogsId,
 						},
 						{ album: true },
-				  )
+					)
 				: undefined;
 		const track: TrackQueryParameters.CreateInput = {
 			name: video ? videoName : parsedTrackName.parsedName,
@@ -238,7 +239,7 @@ export default class MetadataService {
 		if (release && album) {
 			if (
 				albumArtist === undefined &&
-				release.album.type == AlbumType.StudioRecording
+				release.album.type === AlbumType.StudioRecording
 			) {
 				await this.albumService.update(
 					{ type: AlbumType.Compilation },
@@ -269,7 +270,7 @@ export default class MetadataService {
 			if (
 				song &&
 				(song.masterId === null ||
-					song.master?.type == TrackType.Video) &&
+					song.master?.type === TrackType.Video) &&
 				track.type === TrackType.Audio
 			) {
 				await this.songService.update(

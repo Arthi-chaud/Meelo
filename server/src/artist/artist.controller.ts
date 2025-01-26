@@ -17,22 +17,22 @@
  */
 
 import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ArtistService from "./artist.service";
-import ArtistQueryParameters from "./models/artist.query-parameters";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { ArtistResponseBuilder } from "./models/artist.response";
+import { IsOptional } from "class-validator";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import GenreService from "src/genre/genre.service";
+import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
+import LibraryService from "src/library/library.service";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
-import { IsOptional } from "class-validator";
-import TransformIdentifier from "src/identifier/identifier.transform";
-import GenreService from "src/genre/genre.service";
-import LibraryService from "src/library/library.service";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import GenreQueryParameters from "src/genre/models/genre.query-parameters";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import AlbumService from "src/album/album.service";
+import ArtistService from "./artist.service";
+import ArtistQueryParameters from "./models/artist.query-parameters";
+import { ArtistResponseBuilder } from "./models/artist.response";
 
 class Selector {
 	@IsOptional()

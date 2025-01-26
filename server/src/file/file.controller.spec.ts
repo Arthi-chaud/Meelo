@@ -1,16 +1,16 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { File } from "src/prisma/models";
 import LibraryModule from "src/library/library.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import type { File } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import request from "supertest";
+import { expectedFileResponse } from "test/expected-responses";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
-import FileModule from "./file.module";
-import request from "supertest";
 import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import { expectedFileResponse } from "test/expected-responses";
+import FileModule from "./file.module";
 
 describe("File Controller", () => {
 	let app: INestApplication;
@@ -92,7 +92,7 @@ describe("File Controller", () => {
 		describe("In Directory", () => {
 			it("should get files in one directory", async () => {
 				return request(app.getHttpServer())
-					.get(`/files?inFolder=Artist A/Album A`)
+					.get("/files?inFolder=Artist A/Album A")
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;
@@ -107,7 +107,7 @@ describe("File Controller", () => {
 			});
 			it("should get files in sub directory", async () => {
 				return request(app.getHttpServer())
-					.get(`/files?inFolder=Artist A/Album B`)
+					.get("/files?inFolder=Artist A/Album B")
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;
@@ -119,7 +119,7 @@ describe("File Controller", () => {
 			});
 			it("should get one file in directory", async () => {
 				return request(app.getHttpServer())
-					.get(`/files?inFolder=Compilations`)
+					.get("/files?inFolder=Compilations")
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;

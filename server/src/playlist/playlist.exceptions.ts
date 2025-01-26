@@ -21,7 +21,7 @@ import {
 	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
-import Slug from "src/slug/slug";
+import type Slug from "src/slug/slug";
 
 export class PlaylistNotFoundException extends NotFoundException {
 	constructor(playlistIdentifier: Slug | number) {
@@ -41,7 +41,7 @@ export class PlaylistAlreadyExistsException extends AlreadyExistsException {
 
 export class AddSongToPlaylistFailureException extends NotFoundException {
 	constructor() {
-		super(`Adding Song to playlist failed`);
+		super("Adding Song to playlist failed");
 	}
 }
 

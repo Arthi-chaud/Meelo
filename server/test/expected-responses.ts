@@ -1,11 +1,11 @@
-import { File, SongType, VideoType } from "@prisma/client";
-import {
-	Release,
-	Track,
-	Artist,
+import { type File, SongType, VideoType } from "@prisma/client";
+import type {
 	Album,
-	SongWithRelations,
+	Artist,
 	Playlist,
+	Release,
+	SongWithRelations,
+	Track,
 	VideoWithRelations,
 } from "src/prisma/models";
 

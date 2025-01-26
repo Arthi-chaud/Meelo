@@ -17,32 +17,32 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+import deepmerge from "deepmerge";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import type Identifier from "src/identifier/models/identifier";
+import LibraryService from "src/library/library.service";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { File } from "src/prisma/models";
+import PrismaService from "src/prisma/prisma.service";
+import ReleaseService from "src/release/release.service";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import SongService from "src/song/song.service";
+import TrackService from "src/track/track.service";
+import { buildDateSearchParameters } from "src/utils/search-date-input";
 import FileManagerService from "../file-manager/file-manager.service";
 import {
 	FileAlreadyExistsException,
 	FileNotFoundException,
 	FileNotFoundFromTrackIDException,
 } from "./file.exceptions";
-import PrismaService from "src/prisma/prisma.service";
-import type { File } from "src/prisma/models";
 import type FileQueryParameters from "./models/file.query-parameters";
-import { buildDateSearchParameters } from "src/utils/search-date-input";
-import LibraryService from "src/library/library.service";
-import { Prisma } from "@prisma/client";
-import Identifier from "src/identifier/models/identifier";
-import { PrismaError } from "prisma-error-enum";
-import deepmerge from "deepmerge";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import {
-	formatIdentifier,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import AlbumService from "src/album/album.service";
-import SongService from "src/song/song.service";
-import TrackService from "src/track/track.service";
-import ReleaseService from "src/release/release.service";
 
 @Injectable()
 export default class FileService {
@@ -95,7 +95,7 @@ export default class FileService {
 			track: where.trackId
 				? {
 						id: where.trackId,
-				  }
+					}
 				: undefined,
 			path: where.byPath?.path,
 			library: where.byPath
@@ -193,7 +193,7 @@ export default class FileService {
 	onNotFound(error: Error, where: FileQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			if (where.trackId !== undefined) {
 				return new FileNotFoundFromTrackIDException(where.trackId);
@@ -217,7 +217,7 @@ export default class FileService {
 			.catch((error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.UniqueConstraintViolation
+					error.code === PrismaError.UniqueConstraintViolation
 				) {
 					throw new FileAlreadyExistsException(
 						input.path,

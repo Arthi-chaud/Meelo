@@ -1,17 +1,17 @@
-import { createTestingModule } from "test/test-module";
-import { TestingModule } from "@nestjs/testing";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
 import type { Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
-import request from "supertest";
-import { INestApplication } from "@nestjs/common";
 import SongModule from "src/song/song.module";
-import TestPrismaService from "test/test-prisma.service";
-import SetupApp from "test/setup-app";
+import request from "supertest";
 import {
 	expectedArtistResponse,
 	expectedSongGroupResponse,
 } from "test/expected-responses";
-import { SongGroupResponse } from "./models/song-group.response";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import type { SongGroupResponse } from "./models/song-group.response";
 
 describe("Song Group Controller", () => {
 	let dummyRepository: TestPrismaService;
@@ -37,7 +37,7 @@ describe("Song Group Controller", () => {
 	describe("Get Songs Groups (GET /song-groups)", () => {
 		it("should return songs w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/song-groups?take=1&with=artist,featuring`)
+				.get("/song-groups?take=1&with=artist,featuring")
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;

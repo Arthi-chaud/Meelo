@@ -18,9 +18,9 @@
 
 import { Module } from "@nestjs/common";
 import PrismaModule from "src/prisma/prisma.module";
+import { UserResponseBuilder } from "./models/user.response";
 import UserController from "./user.controller";
 import UserService from "./user.service";
-import { UserResponseBuilder } from "./models/user.response";
 
 @Module({
 	imports: [PrismaModule],

@@ -1,6 +1,8 @@
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import * as fs from "node:fs";
 import { HttpModule } from "@nestjs/axios";
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import { Jimp } from "jimp";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -9,11 +11,10 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
-import IllustrationService from "./illustration.service";
-import IllustrationModule from "./illustration.module";
-import * as fs from "fs";
+import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import { Jimp } from "jimp";
+import IllustrationModule from "./illustration.module";
+import IllustrationService from "./illustration.service";
 
 jest.setTimeout(120000);
 
@@ -52,6 +53,7 @@ describe("Illustration Service", () => {
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
 		getBlurhashComponentCountFromAspectRatio =
+			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
 			illustrationService["getBlurhashComponentCountFromAspectRatio"];
 
 		await dummyRepository.onModuleInit();
@@ -135,9 +137,7 @@ describe("Illustration Service", () => {
 		it("should return the correct set of colors", async () => {
 			const img = fs.readFileSync("test/assets/artwork.jpeg");
 			const colorsSet = await illustrationService.getImageColors(
-				(
-					await Jimp.read(img)
-				).bitmap.data,
+				(await Jimp.read(img)).bitmap.data,
 			);
 			expect(colorsSet).toEqual([
 				"#babc85",

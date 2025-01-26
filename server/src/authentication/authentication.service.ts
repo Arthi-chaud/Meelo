@@ -18,7 +18,7 @@
 
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "src/prisma/models";
+import type { User } from "src/prisma/models";
 import UserService from "src/user/user.service";
 import {
 	DisabledUserAccountException,

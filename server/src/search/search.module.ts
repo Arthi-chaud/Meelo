@@ -17,15 +17,15 @@
  */
 
 import { Module } from "@nestjs/common";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
+import PrismaModule from "src/prisma/prisma.module";
+import SongModule from "src/song/song.module";
+import VideoModule from "src/video/video.module";
+import { SearchHistoryController } from "./search-history.controller";
+import { SearchHistoryService } from "./search-history.service";
 import { SearchController } from "./search.controller";
 import { SearchService } from "./search.service";
-import ArtistModule from "src/artist/artist.module";
-import SongModule from "src/song/song.module";
-import AlbumModule from "src/album/album.module";
-import { SearchHistoryService } from "./search-history.service";
-import { SearchHistoryController } from "./search-history.controller";
-import PrismaModule from "src/prisma/prisma.module";
-import VideoModule from "src/video/video.module";
 
 @Module({
 	controllers: [SearchController, SearchHistoryController],

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
+import { type ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
 import { BaseExceptionFilter } from "@nestjs/core";
 import type { Response } from "express";
 import Logger from "src/logger/logger";
@@ -34,8 +34,8 @@ export default class AllExceptionsFilter extends BaseExceptionFilter {
 				message: "Not found.",
 			});
 		} else {
-			if (process.env.NODE_ENV == "test") {
-				// eslint-disable-next-line no-console
+			if (process.env.NODE_ENV === "test") {
+				// biome-ignore lint/suspicious/noConsole: Handy for debugging
 				console.log(exception);
 			}
 			logger.error(exception);

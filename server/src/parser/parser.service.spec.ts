@@ -1,19 +1,19 @@
-import { TestingModule } from "@nestjs/testing";
-import ParserService from "./parser.service";
-import { createTestingModule } from "test/test-module";
+import type { TestingModule } from "@nestjs/testing";
 import { AlbumType, SongType, VideoType } from "@prisma/client";
-import ArtistModule from "src/artist/artist.module";
 import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
+import { createTestingModule } from "test/test-module";
 import ParserModule from "./parser.module";
-import PrismaService from "src/prisma/prisma.service";
+import ParserService from "./parser.service";
 
 describe("Parser Service", () => {
 	let parserService: ParserService;
@@ -564,8 +564,7 @@ describe("Parser Service", () => {
 					test(songName, () =>
 						expect(parserService.getSongType(songName)).toBe(
 							expectedSongType,
-						),
-					);
+						));
 				}
 			});
 		}
@@ -646,8 +645,7 @@ describe("Parser Service", () => {
 					test(videoName, () =>
 						expect(parserService.getVideoType(videoName)).toBe(
 							expectedVideoType,
-						),
-					);
+						));
 				}
 			});
 		}
@@ -729,8 +727,7 @@ describe("Parser Service", () => {
 					test(albumName, () =>
 						expect(parserService.getAlbumType(albumName)).toBe(
 							expectedAlbumType,
-						),
-					);
+						));
 				}
 			});
 		}

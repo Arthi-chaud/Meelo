@@ -26,7 +26,7 @@ import type Slug from "src/slug/slug";
 export class ArtistNotFoundException extends NotFoundException {
 	constructor(artistIdentifier: Slug | number) {
 		super(
-			typeof artistIdentifier == "number"
+			typeof artistIdentifier === "number"
 				? `Artist with id '${artistIdentifier}' not found`
 				: `Artist '${artistIdentifier.toString()}' not found`,
 		);

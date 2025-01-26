@@ -17,17 +17,17 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import AlbumService from "./album.service";
 import ArtistModule from "src/artist/artist.module";
-import PrismaModule from "src/prisma/prisma.module";
-import AlbumController from "./album.controller";
-import ReleaseModule from "src/release/release.module";
+import { EventsModule } from "src/events/events.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import ParserModule from "src/parser/parser.module";
+import PrismaModule from "src/prisma/prisma.module";
+import ReleaseModule from "src/release/release.module";
 import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
+import AlbumController from "./album.controller";
+import AlbumService from "./album.service";
 import { AlbumResponseBuilder } from "./models/album.response";
-import ParserModule from "src/parser/parser.module";
-import { EventsModule } from "src/events/events.module";
 
 @Module({
 	imports: [

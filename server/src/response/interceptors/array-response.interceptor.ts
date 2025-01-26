@@ -17,13 +17,13 @@
  */
 
 import {
-	CallHandler,
-	ExecutionContext,
+	type CallHandler,
+	type ExecutionContext,
 	Global,
 	Inject,
 	Injectable,
-	NestInterceptor,
-	Type,
+	type NestInterceptor,
+	type Type,
 } from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
 import type { Constructor } from "type-fest";

@@ -16,30 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { join } from "node:path";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { IllustrationType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { Illustration } from "src/prisma/models";
-import PrismaService from "src/prisma/prisma.service";
-import IllustrationService from "./illustration.service";
-import SettingsService from "src/settings/settings.service";
-import { join } from "path";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import type ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
+import ProviderService from "src/external-metadata/provider.service";
 import Logger from "src/logger/logger";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
-import TrackService from "src/track/track.service";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
-import ReleaseService from "src/release/release.service";
-import PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
+import type PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
+import type { Illustration } from "src/prisma/models";
+import PrismaService from "src/prisma/prisma.service";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import ReleaseService from "src/release/release.service";
+import SettingsService from "src/settings/settings.service";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import TrackService from "src/track/track.service";
 import {
 	IllustrationNotFoundException,
 	MissingIllustrationResourceIdException,
 } from "./illustration.exceptions";
-import { IllustrationType } from "@prisma/client";
-import IllustrationStats from "./models/illustration-stats";
-import ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
-import ProviderService from "src/external-metadata/provider.service";
-import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
+import IllustrationService from "./illustration.service";
+import type { IllustrationDownloadDto } from "./models/illustration-dl.dto";
+import type IllustrationStats from "./models/illustration-stats";
 import { IllustrationResponse } from "./models/illustration.response";
 
 /**
@@ -123,8 +123,8 @@ export default class IllustrationRepository {
 	async saveIllustrationFromUrl(
 		dto: IllustrationDownloadDto,
 	): Promise<IllustrationResponse> {
-		const resourceKeys = Object.keys(dto).filter((k) => k != "url");
-		if (resourceKeys.length != 1) {
+		const resourceKeys = Object.keys(dto).filter((k) => k !== "url");
+		if (resourceKeys.length !== 1) {
 			throw new MissingIllustrationResourceIdException();
 		}
 		const resourceKey = resourceKeys[0] as keyof IllustrationDownloadDto;

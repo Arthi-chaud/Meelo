@@ -51,6 +51,6 @@ export class LyricsNotFoundException extends NotFoundException {
  */
 export class MissingGeniusAPIKeyException extends InvalidRequestException {
 	constructor() {
-		super(`No (or empty) Genius API Key provided`);
+		super("No (or empty) Genius API Key provided");
 	}
 }

@@ -17,29 +17,29 @@
  */
 
 import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import TrackQueryParameters from "./models/track.query-parameters";
-import TrackService from "./track.service";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
-import { TrackResponseBuilder } from "./models/track.response";
-import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import IdentifierParam from "src/identifier/identifier.pipe";
-import Response, { ResponseType } from "src/response/response.decorator";
-import SongService from "src/song/song.service";
 import { IsEnum, IsOptional } from "class-validator";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistService from "src/artist/artist.service";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
-import LibraryQueryParameters from "src/library/models/library.query-parameters";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import SongQueryParameters from "src/song/models/song.query-params";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import ArtistService from "src/artist/artist.service";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import AlbumService from "src/album/album.service";
-import VideoQueryParameters from "src/video/models/video.query-parameters";
+import Response, { ResponseType } from "src/response/response.decorator";
+import type SongQueryParameters from "src/song/models/song.query-params";
+import SongService from "src/song/song.service";
+import type VideoQueryParameters from "src/video/models/video.query-parameters";
 import VideoService from "src/video/video.service";
+import TrackQueryParameters from "./models/track.query-parameters";
+import { TrackResponseBuilder } from "./models/track.response";
+import TrackService from "./track.service";
 
 class Selector {
 	@IsOptional()

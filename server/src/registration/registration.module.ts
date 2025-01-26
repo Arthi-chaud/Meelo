@@ -17,22 +17,22 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
+import AlbumModule from "src/album/album.module";
+import ArtistModule from "src/artist/artist.module";
+import FileModule from "src/file/file.module";
+import GenreModule from "src/genre/genre.module";
+import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import LibraryModule from "src/library/library.module";
+import ParserModule from "src/parser/parser.module";
+import ReleaseModule from "src/release/release.module";
+import SettingsModule from "src/settings/settings.module";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import VideoModule from "src/video/video.module";
+import MetadataService from "./metadata.service";
 import { MetadataController } from "./registration.controller";
 import { RegistrationService } from "./registration.service";
-import ParserModule from "src/parser/parser.module";
-import SettingsModule from "src/settings/settings.module";
-import LibraryModule from "src/library/library.module";
-import FileModule from "src/file/file.module";
-import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
-import MetadataService from "./metadata.service";
-import TrackModule from "src/track/track.module";
-import SongModule from "src/song/song.module";
-import ArtistModule from "src/artist/artist.module";
-import AlbumModule from "src/album/album.module";
-import GenreModule from "src/genre/genre.module";
-import ReleaseModule from "src/release/release.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import VideoModule from "src/video/video.module";
 
 @Module({
 	controllers: [MetadataController],

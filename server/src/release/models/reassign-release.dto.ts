@@ -18,7 +18,7 @@
 
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber } from "class-validator";
-import { Album } from "src/prisma/models";
+import type { Album } from "src/prisma/models";
 
 export default class ReassignReleaseDTO {
 	@ApiProperty({

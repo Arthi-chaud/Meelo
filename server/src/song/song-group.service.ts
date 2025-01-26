@@ -17,13 +17,13 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { SongWithRelations } from "src/prisma/models";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { SongWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";
-import SongQueryParameters from "./models/song.query-params";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
+import type SongQueryParameters from "./models/song.query-params";
 import SongService from "./song.service";
-import SongGroupQueryParameters from "./models/song-group.query-params";
 
 @Injectable()
 export default class SongGroupService {
@@ -42,9 +42,9 @@ export default class SongGroupService {
 			},
 			orderBy: sort?.sortBy
 				? ({
-						[sort.sortBy == "name" ? "slug" : sort.sortBy]:
+						[sort.sortBy === "name" ? "slug" : sort.sortBy]:
 							sort?.order ?? "asc",
-				  } as const)
+					} as const)
 				: undefined,
 			include: {
 				_count: { select: { versions: true } },

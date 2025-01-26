@@ -18,20 +18,20 @@
 
 import { Body, Controller, Get, Injectable, Post, Query } from "@nestjs/common";
 import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
-import ProviderService from "./provider.service";
+import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
-import IllustrationRepository from "src/illustration/illustration.repository";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import ProviderQueryParameters from "./models/provider.query-parameters";
-import { Illustration, Provider } from "src/prisma/models";
-import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { type Illustration, Provider } from "src/prisma/models";
+import Response, { ResponseType } from "src/response/response.decorator";
 import {
 	CreateProviderDTO,
 	ProviderIconRegistrationDto,
 } from "./models/provider.dto";
-import Response, { ResponseType } from "src/response/response.decorator";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type ProviderQueryParameters from "./models/provider.query-parameters";
+import ProviderService from "./provider.service";
 
 @ApiTags("External Metadata")
 @Controller("external-providers")

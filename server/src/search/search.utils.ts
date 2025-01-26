@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Artist, Song, Video } from "@prisma/client";
-import { AlbumModel } from "src/album/models/album.model";
+import type { Artist, Song, Video } from "@prisma/client";
+import type { AlbumModel } from "src/album/models/album.model";
 
 // Use this is you have a union type and need to identify what type is actually is
 export function getSearchResourceType(
@@ -28,7 +28,8 @@ export function getSearchResourceType(
 			return "video";
 		}
 		return "song";
-	} else if ("masterId" in item) {
+	}
+	if ("masterId" in item) {
 		return "album";
 	}
 	return "artist";

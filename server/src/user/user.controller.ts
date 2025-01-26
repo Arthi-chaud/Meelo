@@ -27,19 +27,19 @@ import {
 	Req,
 	Request,
 } from "@nestjs/common";
-import { User } from "@prisma/client";
-import UserService from "./user.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import UserCreateDTO from "./models/create-user.dto";
+import type { User } from "@prisma/client";
 import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { UserResponseBuilder } from "./models/user.response";
-import UserQueryParameters from "./models/user.query-params";
-import UpdateUserDTO from "./models/update-user.dto";
+import Roles from "src/authentication/roles/roles.enum";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
-import Roles from "src/authentication/roles/roles.enum";
+import UserCreateDTO from "./models/create-user.dto";
+import UpdateUserDTO from "./models/update-user.dto";
+import type UserQueryParameters from "./models/user.query-params";
+import { UserResponseBuilder } from "./models/user.response";
+import UserService from "./user.service";
 
 @ApiTags("Users")
 @Controller("users")
@@ -54,7 +54,6 @@ export default class UserController {
 	@Response({ handler: UserResponseBuilder })
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		// Required to return a proper build response
-		// eslint-disable-next-line no-extra-parens
 		return this.userService.get({ id: (request.user as User).id });
 	}
 
@@ -96,7 +95,7 @@ export default class UserController {
 		const user = await this.userService.get(where);
 		const authenticatedUser = request.user as User;
 
-		if (authenticatedUser.id == user.id) {
+		if (authenticatedUser.id === user.id) {
 			throw new InvalidRequestException(
 				"Users can not delete themselves",
 			);

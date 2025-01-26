@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsOptional, IsPositive } from "class-validator";
 import { ImageQuality } from "./illustration-quality";
-import { ApiProperty } from "@nestjs/swagger";
 
 /**
  * A DTO to request an illustration with special dimensions

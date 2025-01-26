@@ -27,12 +27,8 @@ import { ApiRelationInclude } from "./relation-include-route.decorator";
  * @returns
  */
 export default function RelationIncludeQuery(keys: readonly string[]) {
-	return function (
-		target: any,
-		functionName: string,
-		parameterIndex: number,
-	) {
-		if (keys.length != 0) {
+	return (target: any, functionName: string, parameterIndex: number) => {
+		if (keys.length !== 0) {
 			const descriptor = Reflect.getOwnPropertyDescriptor(
 				target,
 				functionName,

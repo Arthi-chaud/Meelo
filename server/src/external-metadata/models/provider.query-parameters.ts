@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Slug from "src/slug/slug";
-import { RequireExactlyOne } from "type-fest";
+import type Slug from "src/slug/slug";
+import type { RequireExactlyOne } from "type-fest";
 
 namespace ProviderQueryParameters {
 	/**

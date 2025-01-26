@@ -16,17 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { File, Track } from "src/prisma/models";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
-import type { SearchDateInput } from "src/utils/search-date-input";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type { File, Track } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
-import TrackQueryParameters from "src/track/models/track.query-parameters";
-import SongQueryParameters from "src/song/models/song.query-params";
-import ReleaseQueryParameters from "src/release/models/release.query-parameters";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import type { SearchDateInput } from "src/utils/search-date-input";
+import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 
 namespace FileQueryParameters {
 	/**

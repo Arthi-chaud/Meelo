@@ -1,16 +1,16 @@
-import { TestingModule } from "@nestjs/testing";
+import type { TestingModule } from "@nestjs/testing";
+import type { Playlist } from "src/prisma/models";
+import PrismaService from "src/prisma/prisma.service";
+import SettingsModule from "src/settings/settings.module";
+import Slug from "src/slug/slug";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import PlaylistModule from "./playlist.module";
-import PlaylistService from "./playlist.service";
-import SettingsModule from "src/settings/settings.module";
-import PrismaService from "src/prisma/prisma.service";
-import Slug from "src/slug/slug";
 import {
 	PlaylistAlreadyExistsException,
 	PlaylistNotFoundException,
 } from "./playlist.exceptions";
-import { Playlist } from "src/prisma/models";
+import PlaylistModule from "./playlist.module";
+import PlaylistService from "./playlist.service";
 
 describe("Playlist Service", () => {
 	let dummyRepository: TestPrismaService;

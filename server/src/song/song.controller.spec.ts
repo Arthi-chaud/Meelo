@@ -1,20 +1,20 @@
-import { createTestingModule } from "test/test-module";
-import { TestingModule } from "@nestjs/testing";
+import type { INestApplication } from "@nestjs/common";
+import type { TestingModule } from "@nestjs/testing";
+import { IllustrationType, SongType } from "@prisma/client";
 import type { Lyrics, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
-import request from "supertest";
-import { INestApplication } from "@nestjs/common";
+import Slug from "src/slug/slug";
 import SongModule from "src/song/song.module";
-import TestPrismaService from "test/test-prisma.service";
-import SongService from "./song.service";
-import SetupApp from "test/setup-app";
+import request from "supertest";
 import {
-	expectedSongResponse,
 	expectedArtistResponse,
+	expectedSongResponse,
 	expectedTrackResponse,
 } from "test/expected-responses";
-import { IllustrationType, SongType } from "@prisma/client";
-import Slug from "src/slug/slug";
+import SetupApp from "test/setup-app";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
+import SongService from "./song.service";
 
 jest.setTimeout(60000);
 
@@ -44,7 +44,7 @@ describe("Song Controller", () => {
 	describe("Get Songs (GET /songs)", () => {
 		it("should return all songs", () => {
 			return request(app.getHttpServer())
-				.get(`/songs`)
+				.get("/songs")
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -65,7 +65,7 @@ describe("Song Controller", () => {
 		});
 		it("should return all songs, sorted by name, desc", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?sortBy=name&order=desc`)
+				.get("/songs?sortBy=name&order=desc")
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -86,7 +86,7 @@ describe("Song Controller", () => {
 		});
 		it("should return some songs (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?skip=1&take=2`)
+				.get("/songs?skip=1&take=2")
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -101,7 +101,7 @@ describe("Song Controller", () => {
 		});
 		it("should return songs w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?with=artist&take=2`)
+				.get("/songs?with=artist&take=2")
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -118,7 +118,7 @@ describe("Song Controller", () => {
 		});
 		it("should return songs w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/songs?take=1&with=artist,featuring`)
+				.get("/songs?take=1&with=artist,featuring")
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
@@ -523,7 +523,7 @@ describe("Song Controller", () => {
 						...song,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

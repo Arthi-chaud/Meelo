@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Slug from "src/slug/slug";
-import type { RequireExactlyOne } from "type-fest";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
-import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import type { SongGroup } from "@prisma/client";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
-import { SongGroup } from "@prisma/client";
-import SongQueryParameters from "./song.query-params";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type Slug from "src/slug/slug";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import type { RequireExactlyOne } from "type-fest";
+import type SongQueryParameters from "./song.query-params";
 
 namespace SongGroupQueryParameters {
 	/**

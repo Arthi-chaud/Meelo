@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { SongResponse, SongResponseBuilder } from "./song.response";
 import { Injectable } from "@nestjs/common";
-import { SongWithRelations } from "src/prisma/models";
+import { ApiProperty } from "@nestjs/swagger";
+import type { SongWithRelations } from "src/prisma/models";
+import { SongResponse, SongResponseBuilder } from "./song.response";
 
 export class SongGroupResponse extends SongResponse {
 	@ApiProperty()

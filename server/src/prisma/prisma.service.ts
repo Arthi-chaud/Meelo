@@ -17,10 +17,10 @@
  */
 
 import {
-	INestApplication,
+	type INestApplication,
 	Injectable,
-	OnModuleDestroy,
-	OnModuleInit,
+	type OnModuleDestroy,
+	type OnModuleInit,
 } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
@@ -52,15 +52,15 @@ export default class PrismaService
 							master:
 								item.master === undefined
 									? undefined
-									: item.master ??
-									  item.releases?.at(0) ??
-									  null,
+									: (item.master ??
+										item.releases?.at(0) ??
+										null),
 							masterId:
 								item.master === undefined
 									? undefined
-									: item.masterId ??
-									  item.releases?.at(0)?.id ??
-									  null,
+									: (item.masterId ??
+										item.releases?.at(0)?.id ??
+										null),
 						}));
 					},
 				},

@@ -17,39 +17,39 @@
  */
 
 import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+import deepmerge from "deepmerge";
+import type MeiliSearch from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
+import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import GenreService from "src/genre/genre.service";
+import type Identifier from "src/identifier/models/identifier";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import Logger from "src/logger/logger";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import PrismaService from "src/prisma/prisma.service";
+import ReleaseService from "src/release/release.service";
+import {
+	formatIdentifier,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
+import TrackService from "src/track/track.service";
+import { buildStringSearchParameters } from "src/utils/search-string-input";
 import {
 	ArtistNotEmptyException,
 	ArtistNotFoundException,
 	CompilationArtistException,
 } from "./artist.exceptions";
-import { Prisma } from "@prisma/client";
-import PrismaService from "src/prisma/prisma.service";
 import type ArtistQueryParameters from "./models/artist.query-parameters";
-import SearchableRepositoryService from "src/repository/searchable-repository.service";
-import { buildStringSearchParameters } from "src/utils/search-string-input";
-import GenreService from "src/genre/genre.service";
-import ReleaseService from "src/release/release.service";
-import TrackService from "src/track/track.service";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
-import Identifier from "src/identifier/models/identifier";
-import Logger from "src/logger/logger";
-import { PrismaError } from "prisma-error-enum";
-import AlbumService from "src/album/album.service";
-import IllustrationRepository from "src/illustration/illustration.repository";
-import deepmerge from "deepmerge";
-import MeiliSearch from "meilisearch";
-import { InjectMeiliSearch } from "nestjs-meilisearch";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import {
-	formatIdentifier,
-	formatPaginationParameters,
-} from "src/repository/repository.utils";
-import {
-	EventsService,
-	ResourceEventPriority,
-} from "src/events/events.service";
 
 @Injectable()
 export default class ArtistService extends SearchableRepositoryService {
@@ -116,9 +116,10 @@ export default class ArtistService extends SearchableRepositoryService {
 			orderBy: this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),
 		};
-		const artists = await this.prismaService.artist.findMany<
-			Prisma.SelectSubset<typeof args, Prisma.ArtistFindManyArgs>
-		>(args);
+		const artists =
+			await this.prismaService.artist.findMany<
+				Prisma.SelectSubset<typeof args, Prisma.ArtistFindManyArgs>
+			>(args);
 		return artists;
 	}
 
@@ -172,7 +173,7 @@ export default class ArtistService extends SearchableRepositoryService {
 	onNotFound(error: Error, where: ArtistQueryParameters.WhereInput) {
 		if (
 			error instanceof Prisma.PrismaClientKnownRequestError &&
-			error.code == PrismaError.RecordsNotFound
+			error.code === PrismaError.RecordsNotFound
 		) {
 			return new ArtistNotFoundException(where.id ?? where.slug!);
 		}
@@ -282,7 +283,7 @@ export default class ArtistService extends SearchableRepositoryService {
 		identifier: Identifier,
 	): ArtistQueryParameters.WhereInput {
 		return formatIdentifier(identifier, (stringIdentifier) => {
-			if (stringIdentifier.toString() == compilationAlbumArtistKeyword) {
+			if (stringIdentifier.toString() === compilationAlbumArtistKeyword) {
 				return { compilationArtist: true };
 			}
 			return { slug: new Slug(stringIdentifier) };

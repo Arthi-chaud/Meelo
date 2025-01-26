@@ -17,23 +17,23 @@
  */
 
 import { Injectable } from "@nestjs/common";
+import { Prisma, type Video } from "@prisma/client";
+import { PrismaError } from "prisma-error-enum/dist";
+import AlbumService from "src/album/album.service";
+import type { AlbumModel } from "src/album/models/album.model";
+import ArtistService from "src/artist/artist.service";
+import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { Artist, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
-import { Prisma, Video } from "@prisma/client";
-import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import { formatPaginationParameters } from "src/repository/repository.utils";
+import SongService from "src/song/song.service";
+import VideoService from "src/video/video.service";
+import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 import {
 	HistoryEntryResourceNotFoundException,
 	InvalidCreateHistoryEntryException,
 } from "./search.exceptions";
-import { PrismaError } from "prisma-error-enum/dist";
-import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { formatPaginationParameters } from "src/repository/repository.utils";
-import { AlbumModel } from "src/album/models/album.model";
-import AlbumService from "src/album/album.service";
-import ArtistService from "src/artist/artist.service";
-import SongService from "src/song/song.service";
-import { Artist, Song } from "src/prisma/models";
-import VideoService from "src/video/video.service";
 import { getSearchResourceType } from "./search.utils";
 
 @Injectable()
@@ -50,7 +50,7 @@ export class SearchHistoryService {
 		dto: CreateSearchHistoryEntry,
 		userId: number,
 	): Promise<void> {
-		if (Object.entries(dto).length != 1) {
+		if (Object.entries(dto).length !== 1) {
 			throw new InvalidCreateHistoryEntryException(dto);
 		}
 		await this.prismaService.searchHistory.deleteMany({
@@ -75,7 +75,7 @@ export class SearchHistoryService {
 			.catch((error) => {
 				if (
 					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code == PrismaError.ForeignConstraintViolation
+					error.code === PrismaError.ForeignConstraintViolation
 				) {
 					throw new HistoryEntryResourceNotFoundException();
 				}
@@ -142,19 +142,19 @@ export class SearchHistoryService {
 				switch (getSearchResourceType(item)) {
 					case "video":
 						return history.findIndex(
-							({ videoId }) => videoId == item.id,
+							({ videoId }) => videoId === item.id,
 						);
 					case "album":
 						return history.findIndex(
-							({ albumId }) => albumId == item.id,
+							({ albumId }) => albumId === item.id,
 						);
 					case "song":
 						return history.findIndex(
-							({ songId }) => songId == item.id,
+							({ songId }) => songId === item.id,
 						);
 					case "artist":
 						return history.findIndex(
-							({ artistId }) => artistId == item.id,
+							({ artistId }) => artistId === item.id,
 						);
 				}
 			};

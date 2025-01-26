@@ -1,30 +1,30 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Artist } from "src/prisma/models";
+import { IllustrationType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
+import AlbumService from "src/album/album.service";
+import compilationAlbumArtistKeyword from "src/constants/compilation";
+import FileModule from "src/file/file.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import type { Artist } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import ReleaseModule from "src/release/release.module";
+import ReleaseService from "src/release/release.service";
+import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
+import SongService from "src/song/song.service";
+import TrackModule from "src/track/track.module";
+import request from "supertest";
+import { expectedArtistResponse } from "test/expected-responses";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service";
-import request from "supertest";
-import SongService from "src/song/song.service";
-import AlbumService from "src/album/album.service";
-import TrackModule from "src/track/track.module";
-import ReleaseModule from "src/release/release.module";
-import ParserModule from "src/parser/parser.module";
-import ReleaseService from "src/release/release.service";
-import compilationAlbumArtistKeyword from "src/constants/compilation";
-import IllustrationModule from "src/illustration/illustration.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import FileModule from "src/file/file.module";
-import { expectedArtistResponse } from "test/expected-responses";
-import SettingsModule from "src/settings/settings.module";
-import { IllustrationType } from "@prisma/client";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
@@ -70,7 +70,7 @@ describe("Artist Controller", () => {
 	describe("Get Artists (GET /artists)", () => {
 		it("should get all the artists", () => {
 			return request(app.getHttpServer())
-				.get(`/artists`)
+				.get("/artists")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -89,7 +89,7 @@ describe("Artist Controller", () => {
 
 		it("should get all the artists, sorted by name, desc", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?sortBy=name&order=desc`)
+				.get("/artists?sortBy=name&order=desc")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -107,7 +107,7 @@ describe("Artist Controller", () => {
 		});
 		it("should get only the album artists", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?albumArtistOnly=true`)
+				.get("/artists?albumArtistOnly=true")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -122,7 +122,7 @@ describe("Artist Controller", () => {
 		});
 		it("should get some artists (w/ pagination)", () => {
 			return request(app.getHttpServer())
-				.get(`/artists?skip=1&take=1`)
+				.get("/artists?skip=1&take=1")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -318,7 +318,7 @@ describe("Artist Controller", () => {
 						...artist,
 						illustration: {
 							...illustration,
-							url: "/illustrations/" + illustration.id,
+							url: `/illustrations/${illustration.id}`,
 						},
 					});
 				});

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import { StreamService } from "./stream.service";
-import { StreamController } from "./stream.controller";
-import FileModule from "src/file/file.module";
 import { HttpModule } from "@nestjs/axios";
+import { Module } from "@nestjs/common";
+import FileModule from "src/file/file.module";
+import { StreamController } from "./stream.controller";
+import { StreamService } from "./stream.service";
 
 @Module({
 	imports: [FileModule, HttpModule],

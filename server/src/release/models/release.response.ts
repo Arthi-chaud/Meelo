@@ -19,14 +19,14 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { IntersectionType } from "@nestjs/swagger";
 import {
-	AlbumResponse,
+	type AlbumResponse,
 	AlbumResponseBuilder,
 } from "src/album/models/album.response";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import { Release, ReleaseWithRelations } from "src/prisma/models";
+import { Release, type ReleaseWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ReleaseResponse extends IntersectionType(

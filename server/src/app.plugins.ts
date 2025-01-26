@@ -20,22 +20,22 @@
 
 import {
 	ClassSerializerInterceptor,
-	INestApplication,
-	MiddlewareConsumer,
+	type INestApplication,
+	type MiddlewareConsumer,
 	RequestMethod,
 	ValidationPipe,
 } from "@nestjs/common";
 import { APP_GUARD, HttpAdapterHost, Reflector } from "@nestjs/core";
-import { InvalidRequestException } from "./exceptions/meelo-exception";
-import AllExceptionsFilter from "./exceptions/all-exceptions.filter";
-import MeeloExceptionFilter from "./exceptions/meelo-exception.filter";
-import NotFoundExceptionFilter from "./exceptions/not-found.exception";
-import mime from "mime";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import { JwtCookieMiddleware } from "./authentication/jwt/jwt-middleware";
+import mime from "mime";
 import JwtAuthGuard from "./authentication/jwt/jwt-auth.guard";
+import { JwtCookieMiddleware } from "./authentication/jwt/jwt-middleware";
 import RolesGuard from "./authentication/roles/roles.guard";
+import AllExceptionsFilter from "./exceptions/all-exceptions.filter";
+import { InvalidRequestException } from "./exceptions/meelo-exception";
+import MeeloExceptionFilter from "./exceptions/meelo-exception.filter";
+import NotFoundExceptionFilter from "./exceptions/not-found.exception";
 
 // To call before application bootstrap/launch
 const presetup = () => {

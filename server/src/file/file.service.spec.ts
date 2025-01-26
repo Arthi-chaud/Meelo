@@ -1,12 +1,13 @@
 import type { TestingModule } from "@nestjs/testing";
-import type { File } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LibraryModule from "src/library/library.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
+import type { File } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
@@ -21,7 +22,6 @@ import {
 } from "./file.exceptions";
 import FileModule from "./file.module";
 import FileService from "./file.service";
-import LibraryModule from "src/library/library.module";
 
 describe("File Service", () => {
 	let fileService: FileService;

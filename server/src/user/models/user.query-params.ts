@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { User } from "src/prisma/models";
+import type { User } from "src/prisma/models";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type { RequireExactlyOne } from "type-fest";
 

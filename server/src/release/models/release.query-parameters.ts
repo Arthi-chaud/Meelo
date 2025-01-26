@@ -17,14 +17,14 @@
  */
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import type Slug from "src/slug/slug";
-import type { RequireExactlyOne } from "type-fest";
-import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type { Release } from "src/prisma/models";
+import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import type Slug from "src/slug/slug";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type { SearchStringInput } from "src/utils/search-string-input";
-import { Release } from "src/prisma/models";
-import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
+import type { RequireExactlyOne } from "type-fest";
 
 namespace ReleaseQueryParameters {
 	/**

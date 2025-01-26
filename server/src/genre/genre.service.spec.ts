@@ -1,27 +1,24 @@
 import type { TestingModule } from "@nestjs/testing";
-import type { Genre } from "src/prisma/models";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import IllustrationModule from "src/illustration/illustration.module";
+import LibraryModule from "src/library/library.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import type { Genre } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import ReleaseModule from "src/release/release.module";
 import Slug from "src/slug/slug";
+import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import {
-	GenreNotEmptyException,
-	GenreNotFoundException,
-} from "./genre.exceptions";
+import { GenreNotFoundException } from "./genre.exceptions";
 import GenreModule from "./genre.module";
 import GenreService from "./genre.service";
-import LibraryModule from "src/library/library.module";
-import ParserModule from "src/parser/parser.module";
-import ReleaseModule from "src/release/release.module";
-import SongModule from "src/song/song.module";
 
 describe("Genre Service", () => {
 	let genreService: GenreService;

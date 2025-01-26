@@ -17,8 +17,9 @@
  */
 
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import SortingOrder, { availableSortingOrders } from "./sorting-order";
 import { IsIn, IsOptional } from "class-validator";
+import type SortingOrder from "./sorting-order";
+import { availableSortingOrders } from "./sorting-order";
 
 class SortingParameter<Keys extends readonly string[]> {
 	@ApiPropertyOptional({

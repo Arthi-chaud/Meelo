@@ -18,21 +18,21 @@
 
 import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
+import AlbumService from "src/album/album.service";
+import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistService from "src/artist/artist.service";
+import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import SongQueryParameters from "src/song/models/song.query-params";
+import { Genre } from "src/prisma/models";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
+import Response, { ResponseType } from "src/response/response.decorator";
+import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
 import GenreService from "./genre.service";
 import GenreQueryParameters from "./models/genre.query-parameters";
-import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
-import Response, { ResponseType } from "src/response/response.decorator";
-import { Genre } from "src/prisma/models";
-import { IsOptional } from "class-validator";
-import AlbumQueryParameters from "src/album/models/album.query-parameters";
-import AlbumService from "src/album/album.service";
-import TransformIdentifier from "src/identifier/identifier.transform";
-import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import ArtistService from "src/artist/artist.service";
-import IdentifierParam from "src/identifier/identifier.pipe";
 
 class Selector {
 	@IsOptional()

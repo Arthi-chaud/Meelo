@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Identifier from "src/identifier/models/identifier";
-import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type Identifier from "src/identifier/models/identifier";
+import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Slug from "src/slug/slug";
-import { RequireExactlyOne } from "type-fest";
+import type { RequireExactlyOne } from "type-fest";
 
 export function sortItemsUsingOrderedIdList<T extends { id: number }>(
 	matches: number[],
@@ -43,7 +43,7 @@ export function formatIdentifier<RepoWhereInput>(
 	stringToWhereInput: (id: string) => RepoWhereInput,
 	numberToWhereInput?: (id: number) => RepoWhereInput,
 ): { id: number } | RepoWhereInput {
-	if (typeof identifier == "number") {
+	if (typeof identifier === "number") {
 		if (numberToWhereInput) {
 			return numberToWhereInput(identifier);
 		}
@@ -55,7 +55,7 @@ export function formatIdentifier<RepoWhereInput>(
 export function formatIdentifierToIdOrSlug(
 	identifier: Identifier,
 ): RequireExactlyOne<{ id: number; slug: Slug }> {
-	if (typeof identifier == "number") {
+	if (typeof identifier === "number") {
 		return { id: identifier };
 	}
 	return { slug: new Slug(identifier) };
@@ -74,7 +74,7 @@ export function formatPaginationParameters(
 			pagination?.afterId !== undefined
 				? {
 						id: pagination.afterId,
-				  }
+					}
 				: undefined,
 	};
 }

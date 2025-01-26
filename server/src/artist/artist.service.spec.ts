@@ -1,23 +1,23 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
+import AlbumModule from "src/album/album.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import type { Artist } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import ReleaseModule from "src/release/release.module";
 import Slug from "src/slug/slug";
+import SongModule from "src/song/song.module";
+import TrackModule from "src/track/track.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	ArtistNotEmptyException,
 	ArtistNotFoundException,
 } from "./artist.exceptions";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service";
-import SongModule from "src/song/song.module";
-import AlbumModule from "src/album/album.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import GenreModule from "src/genre/genre.module";
-import TrackModule from "src/track/track.module";
-import TestPrismaService from "test/test-prisma.service";
-import type { Artist } from "src/prisma/models";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import ReleaseModule from "src/release/release.module";
 
 describe("Artist Service", () => {
 	let artistService: ArtistService;

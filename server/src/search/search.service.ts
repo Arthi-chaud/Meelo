@@ -17,13 +17,13 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Video } from "@prisma/client";
-import MeiliSearch from "meilisearch";
+import type { Video } from "@prisma/client";
+import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import AlbumService from "src/album/album.service";
-import { AlbumModel } from "src/album/models/album.model";
+import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
-import { Artist, Song } from "src/prisma/models";
+import type { Artist, Song } from "src/prisma/models";
 import SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";
 
@@ -126,7 +126,7 @@ export class SearchService {
 				return fullItems.map((item) => ({
 					...item,
 					ranking:
-						matches.find((m) => m.id == item.id)?._rankingScore ??
+						matches.find((m) => m.id === item.id)?._rankingScore ??
 						0,
 				}));
 			}),

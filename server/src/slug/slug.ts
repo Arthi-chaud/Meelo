@@ -34,7 +34,7 @@ export default class Slug {
 	 * @return true is the string is already a slug
 	 */
 	static isSlug(str: string): boolean {
-		return str == new Slug(str).content;
+		return str === new Slug(str).content;
 	}
 
 	constructor(...args: string[]) {
@@ -78,7 +78,7 @@ export default class Slug {
 				.replace("…", " "),
 		);
 
-		if (isNaN(Number(formatted)) == false) {
+		if (Number.isNaN(Number(formatted)) === false) {
 			formatted += "!";
 		}
 		return formatted;

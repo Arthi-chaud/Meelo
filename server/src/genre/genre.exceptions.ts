@@ -25,7 +25,7 @@ import type Slug from "src/slug/slug";
 export class GenreNotFoundException extends NotFoundException {
 	constructor(genreIdentifier: Slug | number) {
 		super(
-			typeof genreIdentifier == "number"
+			typeof genreIdentifier === "number"
 				? `Genre with id '${genreIdentifier}' does not exist`
 				: `Genre '${genreIdentifier.toString()}' does not exist`,
 		);

@@ -1,30 +1,30 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import SongService from "src/song/song.service";
-import ArtistService from "src/artist/artist.service";
+import { type Artist, SongType } from "@prisma/client";
+import AlbumModule from "src/album/album.module";
+import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
+import ArtistService from "src/artist/artist.service";
+import { GenreNotFoundException } from "src/genre/genre.exceptions";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import { LyricsService } from "src/lyrics/lyrics.service";
+import ParserModule from "src/parser/parser.module";
+import type { Song } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
-import { Song } from "src/prisma/models";
+import ReleaseModule from "src/release/release.module";
 import Slug from "src/slug/slug";
+import SongService from "src/song/song.service";
+import TrackModule from "src/track/track.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 import {
 	SongAlreadyExistsException,
 	SongNotEmptyException,
 	SongNotFoundException,
 } from "./song.exceptions";
-import { ArtistNotFoundException } from "src/artist/artist.exceptions";
-import TrackModule from "src/track/track.module";
-import AlbumModule from "src/album/album.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import GenreModule from "src/genre/genre.module";
-import TestPrismaService from "test/test-prisma.service";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import { LyricsService } from "src/lyrics/lyrics.service";
-import ReleaseModule from "src/release/release.module";
-import { Artist, SongType } from "@prisma/client";
-import ParserModule from "src/parser/parser.module";
 import SongModule from "./song.module";
-import { GenreNotFoundException } from "src/genre/genre.exceptions";
 
 describe("Song Service", () => {
 	let songService: SongService;
@@ -533,7 +533,7 @@ describe("Song Service", () => {
 		});
 
 		it("should get the base song", async () => {
-			let res = await songService.getOrCreate({
+			const res = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
 				group: {
@@ -545,7 +545,7 @@ describe("Song Service", () => {
 		});
 
 		it("should get the featuring song", async () => {
-			let res = await songService.getOrCreate({
+			const res = await songService.getOrCreate({
 				name: "E.T.",
 				artist: { id: mainArtist.id },
 				group: {
@@ -558,7 +558,7 @@ describe("Song Service", () => {
 		});
 
 		it("should get the featuring song, with featured artists", async () => {
-			let res = await songService.get(
+			const res = await songService.get(
 				{ id: songWithFeaturing.id },
 				{ featuring: true },
 			);

@@ -2,7 +2,6 @@ import { Module, type ModuleMetadata } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { MeiliSearchModule } from "nestjs-meilisearch";
-import { createMock } from "@golevelup/ts-jest";
 import { EventsModule } from "src/events/events.module";
 import { EventsService } from "src/events/events.service";
 

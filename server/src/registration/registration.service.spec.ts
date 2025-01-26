@@ -1,15 +1,16 @@
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import * as fs from "node:fs";
 import { HttpModule } from "@nestjs/axios";
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import IllustrationService from "src/illustration/illustration.service";
 import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
-import IllustrationService from "src/illustration/illustration.service";
-import IllustrationModule from "src/illustration/illustration.module";
-import * as fs from "fs";
+import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { RegistrationService } from "./registration.service";
 
@@ -87,7 +88,7 @@ describe("Registration Service", () => {
 			);
 		});
 
-		let trackIllustrationPath: string = "";
+		let trackIllustrationPath = "";
 		it("should extract track illustration, mocking the illustration bytes", async () => {
 			jest.spyOn(
 				IllustrationService.prototype,

@@ -1,30 +1,32 @@
-import { createTestingModule } from "test/test-module";
 import type { TestingModule } from "@nestjs/testing";
-import FileManagerService from "src/file-manager/file-manager.service";
-import PrismaService from "src/prisma/prisma.service";
-import PrismaModule from "src/prisma/prisma.module";
-import TestPrismaService from "test/test-prisma.service";
+import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
-import ParserModule from "src/parser/parser.module";
-import AlbumModule from "src/album/album.module";
+import FileManagerService from "src/file-manager/file-manager.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import PrismaModule from "src/prisma/prisma.module";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
+import { createTestingModule } from "test/test-module";
+import TestPrismaService from "test/test-prisma.service";
 // Import as a require to mock
-const fs = require("fs");
-import { INestApplication } from "@nestjs/common";
+// biome-ignore lint/nursery/noRestrictedImports: Test
+const fs = require("node:fs");
+// biome-ignore lint/nursery/noRestrictedImports: Test
+import { createReadStream, existsSync, rmSync } from "node:fs";
+import { dirname } from "node:path";
+import type { INestApplication } from "@nestjs/common";
+import { IllustrationType } from "@prisma/client";
+import type { Illustration } from "src/prisma/models";
 import request from "supertest";
 import SetupApp from "test/setup-app";
-import { IllustrationType } from "@prisma/client";
-import { Illustration } from "src/prisma/models";
-import { IllustrationResponse } from "./models/illustration.response";
-import { createReadStream, existsSync, rmSync } from "fs";
-import { dirname } from "path";
 import IllustrationService from "./illustration.service";
+import type { IllustrationResponse } from "./models/illustration.response";
 
 jest.setTimeout(60000);
 
@@ -110,7 +112,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
-				.get(`/illustrations/-1`)
+				.get("/illustrations/-1")
 				.expect(404);
 		});
 	});
@@ -130,7 +132,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when illustration does not exist", () => {
 			return request(app.getHttpServer())
-				.delete(`/illustrations/-1`)
+				.delete("/illustrations/-1")
 				.expect(404);
 		});
 	});
@@ -139,7 +141,7 @@ describe("Illustration Controller", () => {
 		let firstIllustration: IllustrationResponse | null = null;
 		it("should create the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					artistId: dummyRepository.artistB.id,
 					url: illustrationUrlExample,
@@ -157,7 +159,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should update the artist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					artistId: dummyRepository.artistB.id,
 					url: illustration2UrlExample,
@@ -181,7 +183,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when artist does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					artistId: -1,
 					url: illustrationUrlExample,
@@ -194,7 +196,7 @@ describe("Illustration Controller", () => {
 		let firstIllustration: IllustrationResponse | null = null;
 		it("should create the release illustration", async () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					releaseId: dummyRepository.releaseB1_1.id,
 					url: illustrationUrlExample,
@@ -212,7 +214,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should update the release illustration", async () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					releaseId: dummyRepository.releaseB1_1.id,
 					url: illustration2UrlExample,
@@ -237,7 +239,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when release does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					releaseId: -1,
 					url: illustrationUrlExample,
@@ -249,7 +251,7 @@ describe("Illustration Controller", () => {
 	describe("Update Track Illustration", () => {
 		it("should create the track illustration", async () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					trackId: dummyRepository.trackC1_1.id,
 					url: illustrationUrlExample,
@@ -266,7 +268,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when track does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					trackId: -1,
 					url: illustrationUrlExample,
@@ -278,7 +280,7 @@ describe("Illustration Controller", () => {
 	describe("Update Playlist Illustration", () => {
 		it("should create the Playlist illustration", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					playlistId: dummyRepository.playlist1.id,
 					url: illustrationUrlExample,
@@ -295,7 +297,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should return 404, when playlist does not exist", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					playlistId: -1,
 					url: illustrationUrlExample,
@@ -307,7 +309,7 @@ describe("Illustration Controller", () => {
 	describe("POST Illustration", () => {
 		it("should not save the illustration (2 resource ids)", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					artistId: 1,
 					releaseId: 2,
@@ -317,7 +319,7 @@ describe("Illustration Controller", () => {
 		});
 		it("should not save the illustration (no resource id)", () => {
 			return request(app.getHttpServer())
-				.post(`/illustrations/url`)
+				.post("/illustrations/url")
 				.send({
 					url: illustrationUrlExample,
 				})
@@ -335,19 +337,19 @@ describe("Illustration Controller", () => {
 		describe("Error handling", () => {
 			it("Should throw, as target track does not exist", async () => {
 				return buildData(
-					request(app.getHttpServer()).post(`/illustrations/file`),
+					request(app.getHttpServer()).post("/illustrations/file"),
 					1,
 				).expect(404);
 			});
 			it("Should throw, as target track is not a video", async () => {
 				return buildData(
-					request(app.getHttpServer()).post(`/illustrations/file`),
+					request(app.getHttpServer()).post("/illustrations/file"),
 					dummyRepository.trackA1_1.id,
 				).expect(400);
 			});
 			it("Should throw, as type is not valid", async () => {
 				return buildData(
-					request(app.getHttpServer()).post(`/illustrations/file`),
+					request(app.getHttpServer()).post("/illustrations/file"),
 					dummyRepository.trackC1_1.id,
 				)
 					.expect(400)
@@ -356,7 +358,7 @@ describe("Illustration Controller", () => {
 		});
 		it("Should set the image's illustration", async () => {
 			return buildData(
-				request(app.getHttpServer()).post(`/illustrations/file`),
+				request(app.getHttpServer()).post("/illustrations/file"),
 				dummyRepository.trackA1_2Video.id,
 			)
 				.expect(201)

@@ -17,21 +17,21 @@
  */
 
 import { Module, forwardRef } from "@nestjs/common";
-import { SongController } from "./song.controller";
 import ArtistModule from "src/artist/artist.module";
-import PrismaModule from "src/prisma/prisma.module";
-import SongService from "./song.service";
-import TrackModule from "src/track/track.module";
-import GenreModule from "src/genre/genre.module";
-import { LyricsModule } from "src/lyrics/lyrics.module";
-import IllustrationModule from "src/illustration/illustration.module";
-import { SongResponseBuilder } from "./models/song.response";
-import ReleaseModule from "src/release/release.module";
-import ParserModule from "src/parser/parser.module";
 import { EventsModule } from "src/events/events.module";
+import GenreModule from "src/genre/genre.module";
+import IllustrationModule from "src/illustration/illustration.module";
+import { LyricsModule } from "src/lyrics/lyrics.module";
+import ParserModule from "src/parser/parser.module";
+import PrismaModule from "src/prisma/prisma.module";
+import ReleaseModule from "src/release/release.module";
+import TrackModule from "src/track/track.module";
 import { SongGroupResponseBuilder } from "./models/song-group.response";
-import SongGroupService from "./song-group.service";
+import { SongResponseBuilder } from "./models/song.response";
 import { SongGroupController } from "./song-group.controller";
+import SongGroupService from "./song-group.service";
+import { SongController } from "./song.controller";
+import SongService from "./song.service";
 
 @Module({
 	imports: [

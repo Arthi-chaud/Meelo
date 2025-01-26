@@ -19,7 +19,10 @@
 import { HttpStatus } from "@nestjs/common";
 
 export class MeeloException extends Error {
-	constructor(protected readonly errorStatus: HttpStatus, message: string) {
+	constructor(
+		protected readonly errorStatus: HttpStatus,
+		message: string,
+	) {
 		super(message);
 	}
 
@@ -77,6 +80,6 @@ export class InvalidRequestException extends MeeloException {
  */
 export class UnauthorizedRequestException extends MeeloException {
 	constructor(message: string) {
-		super(HttpStatus.UNAUTHORIZED, "Unauthorized: " + message);
+		super(HttpStatus.UNAUTHORIZED, `Unauthorized: ${message}`);
 	}
 }

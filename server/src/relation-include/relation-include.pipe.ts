@@ -45,18 +45,18 @@ export default class ParseRelationIncludePipe<
 		if (value.match(`[a-zA-Z]+(${separator}[a-zA-Z]+)*`) == null) {
 			throw new InvalidRelationIncludeParameterFormat();
 		}
-		keysArray.forEach((key: keyof T) => {
+		for (const key of keysArray) {
 			includes = { ...includes, [key]: false };
-		});
-		value.split(separator).forEach((requestedInclude: string) => {
-			if (this.keys.includes(requestedInclude) == false) {
+		}
+		for (const requestedInclude of value.split(separator)) {
+			if (this.keys.includes(requestedInclude) === false) {
 				throw new InvalidRelationIncludeParameter(
 					requestedInclude,
 					this.keys,
 				);
 			}
 			includes = { ...includes, [requestedInclude]: true };
-		});
+		}
 		return includes;
 	}
 }

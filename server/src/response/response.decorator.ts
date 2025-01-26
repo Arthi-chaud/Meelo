@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Type, UseInterceptors } from "@nestjs/common";
-import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
+import { type Type, UseInterceptors } from "@nestjs/common";
 import { ApiOkResponse } from "@nestjs/swagger";
-import ResponseType from "./response-type.enum";
+import type { Constructor, RequireExactlyOne } from "type-fest";
+import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import ArrayResponseBuilderInterceptor from "./interceptors/array-response.interceptor";
 import PaginatedResponseBuilderInterceptor from "./interceptors/page-response.interceptor";
 import ResponseBuilderInterceptor from "./interceptors/response.interceptor";
-import type { Constructor, RequireExactlyOne } from "type-fest";
+import ResponseType from "./response-type.enum";
 
 type ResponseDecoratorParam<
 	ToType extends Type<Record<PaginationKey, number>>,
@@ -53,13 +53,13 @@ const Response = <
 >(
 	params: ResponseDecoratorParam<ToType, PaginationKey>,
 ): MethodDecorator => {
-	return function (target: any, propertyKey: string, descriptor: any) {
+	return (target: any, propertyKey: string, descriptor: any) => {
 		const interceptors = [];
 		const openApiDecorators = [];
 		const returnType =
 			params.returns ?? Reflect.construct(params.handler!, []).returnType;
 
-		if (params.type == ResponseType.Page) {
+		if (params.type === ResponseType.Page) {
 			openApiDecorators.push(ApiPaginatedResponse(returnType));
 			interceptors.push(
 				new PaginatedResponseBuilderInterceptor(
@@ -70,14 +70,14 @@ const Response = <
 			openApiDecorators.push(
 				ApiOkResponse({
 					type: returnType,
-					isArray: params.type == ResponseType.Array,
+					isArray: params.type === ResponseType.Array,
 				}),
 			);
 		}
 		if (params.handler) {
 			if (
-				params.type == ResponseType.Array ||
-				params.type == ResponseType.Page
+				params.type === ResponseType.Array ||
+				params.type === ResponseType.Page
 			) {
 				interceptors.push(
 					ArrayResponseBuilderInterceptor(params.handler),
@@ -92,9 +92,9 @@ const Response = <
 			}
 		}
 		UseInterceptors(...interceptors)(target, propertyKey, descriptor);
-		openApiDecorators.forEach((decorator) =>
-			decorator(target, propertyKey, descriptor),
-		);
+		for (const decorator of openApiDecorators) {
+			decorator(target, propertyKey, descriptor);
+		}
 		return descriptor;
 	};
 };

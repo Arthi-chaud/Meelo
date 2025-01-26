@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ConsoleLogger, LogLevel } from "@nestjs/common";
+import { ConsoleLogger, type LogLevel } from "@nestjs/common";
 
 export default class Logger extends ConsoleLogger {
 	constructor(context?: string) {
@@ -25,7 +25,7 @@ export default class Logger extends ConsoleLogger {
 		} else {
 			super();
 		}
-		if (process.env.NODE_ENV == "test") {
+		if (process.env.NODE_ENV === "test") {
 			this.setLogLevels([]);
 		}
 	}

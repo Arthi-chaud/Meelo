@@ -68,7 +68,7 @@ export class UserNotEnabledException extends ForbiddenException {
 export class InvalidUsernameException extends InvalidRequestException {
 	constructor() {
 		super(
-			`Username is invalid. Must be at least 4 chars long, composed of letters, digits, dashes and underscores`,
+			"Username is invalid. Must be at least 4 chars long, composed of letters, digits, dashes and underscores",
 		);
 	}
 }
@@ -76,7 +76,7 @@ export class InvalidUsernameException extends InvalidRequestException {
 export class InvalidPasswordException extends InvalidRequestException {
 	constructor() {
 		super(
-			`Password is invalid. Must be at least 6 chars long, without spaces`,
+			"Password is invalid. Must be at least 6 chars long, without spaces",
 		);
 	}
 }
