@@ -35,6 +35,7 @@ export default class AllExceptionsFilter extends BaseExceptionFilter {
 			});
 		} else {
 			if (process.env.NODE_ENV === "test") {
+				// biome-ignore lint/suspicious/noConsole: Handy for debugging
 				console.log(exception);
 			}
 			logger.error(exception);

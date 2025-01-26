@@ -22,7 +22,7 @@ import type { Constructor, RequireExactlyOne } from "type-fest";
 import { ApiPaginatedResponse } from "../pagination/paginated-response.decorator";
 import ArrayResponseBuilderInterceptor from "./interceptors/array-response.interceptor";
 import PaginatedResponseBuilderInterceptor from "./interceptors/page-response.interceptor";
-import type ResponseBuilderInterceptor from "./interceptors/response.interceptor";
+import ResponseBuilderInterceptor from "./interceptors/response.interceptor";
 import ResponseType from "./response-type.enum";
 
 type ResponseDecoratorParam<

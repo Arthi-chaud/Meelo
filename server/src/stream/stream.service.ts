@@ -19,14 +19,14 @@
 // biome-ignore lint/nursery/noRestrictedImports: Not needed
 import * as fs from "node:fs";
 import path from "node:path";
-import type { HttpService } from "@nestjs/axios";
+import { HttpService } from "@nestjs/axios";
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import mime from "mime";
 import { MeeloException } from "src/exceptions/meelo-exception";
-import type FileManagerService from "src/file-manager/file-manager.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import { SourceFileNotFoundException } from "src/file/file.exceptions";
-import type FileService from "src/file/file.service";
+import FileService from "src/file/file.service";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import Logger from "src/logger/logger";
 import Slug from "src/slug/slug";

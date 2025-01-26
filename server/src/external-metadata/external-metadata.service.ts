@@ -27,7 +27,7 @@ import type {
 	ExternalMetadataSource,
 	Provider,
 } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import SongService from "src/song/song.service";
 import {
@@ -40,7 +40,7 @@ import {
 import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 import type { ExternalMetadataResponse } from "./models/external-metadata.response";
-import type ProviderService from "./provider.service";
+import ProviderService from "./provider.service";
 
 @Injectable()
 export default class ExternalMetadataService {

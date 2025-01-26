@@ -27,7 +27,7 @@ import {
 } from "@nestjs/common";
 import { from, mergeMap } from "rxjs";
 import type { Constructor } from "type-fest";
-import type ResponseBuilderInterceptor from "./response.interceptor";
+import ResponseBuilderInterceptor from "./response.interceptor";
 
 export default function ArrayResponseBuilderInterceptor<
 	FormData,

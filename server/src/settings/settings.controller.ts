@@ -20,7 +20,7 @@ import { Controller, Get } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Admin } from "src/authentication/roles/roles.decorators";
 import type Settings from "./models/settings";
-import type SettingsService from "./settings.service";
+import SettingsService from "./settings.service";
 
 @Admin()
 @ApiTags("Settings")

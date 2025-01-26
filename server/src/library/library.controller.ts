@@ -32,13 +32,13 @@ import {
 	DefaultRoleAndMicroservice,
 } from "src/authentication/roles/roles.decorators";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Library } from "src/prisma/models";
 import Response, { ResponseType } from "src/response/response.decorator";
 import LibraryService from "./library.service";
-import type CreateLibraryDto from "./models/create-library.dto";
-import type LibraryQueryParameters from "./models/library.query-parameters";
-import type UpdateLibraryDto from "./models/update-library.dto";
+import CreateLibraryDto from "./models/create-library.dto";
+import LibraryQueryParameters from "./models/library.query-parameters";
+import UpdateLibraryDto from "./models/update-library.dto";
 
 @ApiTags("Libraries")
 @Controller("libraries")

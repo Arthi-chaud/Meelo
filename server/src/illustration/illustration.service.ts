@@ -20,7 +20,7 @@
 import * as fs from "node:fs";
 import * as dir from "node:path";
 import { Readable } from "node:stream";
-import type { HttpService } from "@nestjs/axios";
+import { HttpService } from "@nestjs/axios";
 import { Injectable, StreamableFile } from "@nestjs/common";
 import * as Blurhash from "blurhash";
 import { Jimp } from "jimp";
@@ -28,7 +28,7 @@ import md5 from "md5";
 import mime from "mime";
 import { version } from "package.json";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import type FileManagerService from "src/file-manager/file-manager.service";
+import FileManagerService from "src/file-manager/file-manager.service";
 import Logger from "src/logger/logger";
 import {
 	CantDownloadIllustrationException,

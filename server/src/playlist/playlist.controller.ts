@@ -30,14 +30,14 @@ import {
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
-import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongQueryParameters from "src/song/models/song.query-params";
-import type {
+import {
 	CreatePlaylistDTO,
 	CreatePlaylistEntryDTO,
 	ReorderPlaylistDTO,

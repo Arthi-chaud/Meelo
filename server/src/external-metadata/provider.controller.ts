@@ -22,11 +22,11 @@ import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import type IllustrationRepository from "src/illustration/illustration.repository";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import IllustrationRepository from "src/illustration/illustration.repository";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { type Illustration, Provider } from "src/prisma/models";
 import Response, { ResponseType } from "src/response/response.decorator";
-import type {
+import {
 	CreateProviderDTO,
 	ProviderIconRegistrationDto,
 } from "./models/provider.dto";

@@ -23,14 +23,14 @@ import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
-import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { File } from "src/prisma/models";
-import type { RegistrationService } from "src/registration/registration.service";
+import { RegistrationService } from "src/registration/registration.service";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
@@ -40,7 +40,7 @@ import SongService from "src/song/song.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import FileService from "./file.service";
-import type FileDeletionDto from "./models/file-deletion.dto";
+import FileDeletionDto from "./models/file-deletion.dto";
 import FileQueryParameters from "./models/file.query-parameters";
 
 class Selector {

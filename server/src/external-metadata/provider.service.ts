@@ -22,7 +22,7 @@ import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type { Provider } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,

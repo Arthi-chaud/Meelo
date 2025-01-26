@@ -26,23 +26,23 @@ import {
 import type { Video } from "@prisma/client";
 import {
 	AlbumResponse,
-	type AlbumResponseBuilder,
+	AlbumResponseBuilder,
 } from "src/album/models/album.response";
 import {
 	ArtistResponse,
-	type ArtistResponseBuilder,
+	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import type { AlbumWithRelations, Artist, Song } from "src/prisma/models";
 import {
 	SongResponse,
-	type SongResponseBuilder,
+	SongResponseBuilder,
 } from "src/song/models/song.response";
 import {
 	VideoResponse,
-	type VideoResponseBuilder,
+	VideoResponseBuilder,
 } from "src/video/models/video.response";
-import type { SearchService } from "./search.service";
+import { SearchService } from "./search.service";
 import { getSearchResourceType } from "./search.utils";
 
 @ApiTags("Search")

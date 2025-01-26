@@ -18,8 +18,8 @@
 
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import type AuthenticationService from "./authentication.service";
-import type LoginDTO from "./models/login.dto";
+import AuthenticationService from "./authentication.service";
+import LoginDTO from "./models/login.dto";
 import { Public } from "./roles/roles.decorators";
 
 @ApiTags("Authentication")

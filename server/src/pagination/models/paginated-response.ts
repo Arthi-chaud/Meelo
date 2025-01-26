@@ -95,7 +95,7 @@ export default class PaginatedResponse<
 		}
 		let skipped: number = Number(request.query.skip ?? 0).valueOf();
 
-		if (Number.isNaN(afterId)) {
+		if (!Number.isNaN(afterId)) {
 			this.metadata = {
 				count: this.items.length,
 				this: this.buildUrl(route, request.query),
@@ -141,7 +141,8 @@ export default class PaginatedResponse<
 
 	private buildUrl(route: string, queryParameters: any) {
 		if (queryParameters.skip === 0) {
-			queryParameters.skip = undefined;
+			// biome-ignore lint/performance/noDelete: Setting it to undefined does not remove it from the query params
+			delete queryParameters.skip;
 		}
 		const builtQueryParameters = new URLSearchParams(
 			queryParameters,

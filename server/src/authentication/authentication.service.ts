@@ -17,14 +17,14 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import type { JwtService } from "@nestjs/jwt";
+import { JwtService } from "@nestjs/jwt";
 import type { User } from "src/prisma/models";
-import type UserService from "src/user/user.service";
+import UserService from "src/user/user.service";
 import {
 	DisabledUserAccountException,
 	UnknownUserException,
 } from "./authentication.exception";
-import type { JwtPayload, JwtResponse } from "./models/jwt.models";
+import { JwtPayload, JwtResponse } from "./models/jwt.models";
 
 @Injectable()
 export default class AuthenticationService {

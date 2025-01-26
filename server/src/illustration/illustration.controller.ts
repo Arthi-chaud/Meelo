@@ -37,13 +37,13 @@ import {
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
-import type { RegistrationService } from "src/registration/registration.service";
+import { RegistrationService } from "src/registration/registration.service";
 import { NoIllustrationException } from "./illustration.exceptions";
-import type IllustrationRepository from "./illustration.repository";
-import type IllustrationService from "./illustration.service";
-import type { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
-import type { IllustrationDownloadDto } from "./models/illustration-dl.dto";
-import type IllustrationRegistrationDto from "./models/illustration-registration.dto";
+import IllustrationRepository from "./illustration.repository";
+import IllustrationService from "./illustration.service";
+import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
+import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
+import IllustrationRegistrationDto from "./models/illustration-registration.dto";
 import { IllustrationResponse } from "./models/illustration.response";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);

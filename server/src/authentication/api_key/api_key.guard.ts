@@ -22,7 +22,7 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from "@nestjs/common";
-import type ApiKeyService from "./api_key.service";
+import ApiKeyService from "./api_key.service";
 
 @Injectable()
 export default class ApiKeyGuard implements CanActivate {

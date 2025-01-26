@@ -31,10 +31,10 @@ import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import FileService from "src/file/file.service";
-import type IllustrationRepository from "src/illustration/illustration.repository";
+import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,

@@ -21,8 +21,8 @@ import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Role } from "src/authentication/roles/roles.decorators";
 import RoleEnum from "src/authentication/roles/roles.enum";
-import type MetadataDto from "./models/metadata.dto";
-import type { RegistrationService } from "./registration.service";
+import MetadataDto from "./models/metadata.dto";
+import { RegistrationService } from "./registration.service";
 
 @ApiTags("Registration")
 @Controller("metadata")

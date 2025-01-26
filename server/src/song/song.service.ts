@@ -27,7 +27,7 @@ import { CompilationArtistException } from "src/artist/artist.exceptions";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import {
-	type EventsService,
+	EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -38,7 +38,7 @@ import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ParserService from "src/parser/parser.service";
 import type { SongWithRelations } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
 import {

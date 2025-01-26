@@ -25,15 +25,15 @@ import {
 } from "@nestjs/swagger";
 import {
 	AlbumResponse,
-	type AlbumResponseBuilder,
+	AlbumResponseBuilder,
 } from "src/album/models/album.response";
 import {
 	ArtistResponse,
-	type ArtistResponseBuilder,
+	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type {
 	AlbumWithRelations,
 	Artist,
@@ -43,14 +43,14 @@ import type {
 } from "src/prisma/models";
 import {
 	SongResponse,
-	type SongResponseBuilder,
+	SongResponseBuilder,
 } from "src/song/models/song.response";
 import {
 	VideoResponse,
-	type VideoResponseBuilder,
+	VideoResponseBuilder,
 } from "src/video/models/video.response";
-import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
-import type { SearchHistoryService } from "./search-history.service";
+import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import { SearchHistoryService } from "./search-history.service";
 import { getSearchResourceType } from "./search.utils";
 
 @ApiTags("Search")

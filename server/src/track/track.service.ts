@@ -29,7 +29,7 @@ import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import LibraryService from "src/library/library.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
 import {

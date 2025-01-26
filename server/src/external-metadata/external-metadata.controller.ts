@@ -31,8 +31,8 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import ReleaseService from "src/release/release.service";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
-import type ExternalMetadataService from "./external-metadata.service";
-import type { CreateExternalMetadataDto } from "./models/external-metadata.dto";
+import ExternalMetadataService from "./external-metadata.service";
+import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
 
 class Selector {

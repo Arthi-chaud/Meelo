@@ -27,7 +27,7 @@ import type Identifier from "src/identifier/models/identifier";
 import LibraryService from "src/library/library.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type { File } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import {
 	formatIdentifier,
@@ -36,7 +36,7 @@ import {
 import SongService from "src/song/song.service";
 import TrackService from "src/track/track.service";
 import { buildDateSearchParameters } from "src/utils/search-date-input";
-import type FileManagerService from "../file-manager/file-manager.service";
+import FileManagerService from "../file-manager/file-manager.service";
 import {
 	FileAlreadyExistsException,
 	FileNotFoundException,

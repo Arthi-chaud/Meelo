@@ -22,22 +22,22 @@ import { IllustrationType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
-import type ProviderService from "src/external-metadata/provider.service";
+import ProviderService from "src/external-metadata/provider.service";
 import Logger from "src/logger/logger";
 import type PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import PlaylistService from "src/playlist/playlist.service";
 import type { Illustration } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
-import type SettingsService from "src/settings/settings.service";
+import SettingsService from "src/settings/settings.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import {
 	IllustrationNotFoundException,
 	MissingIllustrationResourceIdException,
 } from "./illustration.exceptions";
-import type IllustrationService from "./illustration.service";
+import IllustrationService from "./illustration.service";
 import type { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import type IllustrationStats from "./models/illustration-stats";
 import { IllustrationResponse } from "./models/illustration.response";

@@ -33,7 +33,7 @@ import {
 import FileService from "src/file/file.service";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import type { StreamService } from "./stream.service";
+import { StreamService } from "./stream.service";
 
 @ApiTags("Streaming")
 @Controller("stream")

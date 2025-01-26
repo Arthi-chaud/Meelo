@@ -45,8 +45,8 @@ import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import type { LyricsResponse } from "src/lyrics/models/lyrics.response";
-import type LyricsDto from "src/lyrics/models/update-lyrics.dto";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import LyricsDto from "src/lyrics/models/update-lyrics.dto";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
@@ -56,7 +56,7 @@ import Slug from "src/slug/slug";
 import type SongGroupQueryParameters from "./models/song-group.query-params";
 import SongQueryParameters from "./models/song.query-params";
 import { SongResponseBuilder } from "./models/song.response";
-import type UpdateSongDTO from "./models/update-song.dto";
+import UpdateSongDTO from "./models/update-song.dto";
 import SongService from "./song.service";
 
 export class Selector {

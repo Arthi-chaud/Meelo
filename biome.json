@@ -31,7 +31,8 @@
 				"noBannedTypes": "off"
 			},
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "off",
+				"noConsole": "error"
 			},
 			"correctness": {
 				"noUnusedImports": "warn"

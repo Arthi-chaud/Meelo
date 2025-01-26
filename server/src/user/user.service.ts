@@ -25,7 +25,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type Identifier from "src/identifier/models/identifier";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type { User } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifier,
 	formatPaginationParameters,

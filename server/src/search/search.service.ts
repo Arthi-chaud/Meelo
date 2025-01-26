@@ -20,12 +20,12 @@ import { Injectable } from "@nestjs/common";
 import type { Video } from "@prisma/client";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
-import type AlbumService from "src/album/album.service";
+import AlbumService from "src/album/album.service";
 import type { AlbumModel } from "src/album/models/album.model";
-import type ArtistService from "src/artist/artist.service";
+import ArtistService from "src/artist/artist.service";
 import type { Artist, Song } from "src/prisma/models";
-import type SongService from "src/song/song.service";
-import type VideoService from "src/video/video.service";
+import SongService from "src/song/song.service";
+import VideoService from "src/video/video.service";
 
 type MeilisearchResultType = Record<"id" | "_rankingScore", number>;
 

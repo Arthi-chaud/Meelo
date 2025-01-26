@@ -19,7 +19,7 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import type UserService from "src/user/user.service";
+import UserService from "src/user/user.service";
 import { UnknownUserFromAccessTokenException } from "../authentication.exception";
 import type { JwtPayload } from "../models/jwt.models";
 

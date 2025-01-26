@@ -21,16 +21,16 @@ import {
 	type ExecutionContext,
 	Injectable,
 } from "@nestjs/common";
-import type { Reflector } from "@nestjs/core";
+import { Reflector } from "@nestjs/core";
 import type { User } from "@prisma/client";
 import {
 	InsufficientPermissionsException,
 	MissingApiKeyPermissionsException,
 	UnauthorizedAnonymousRequestException,
 } from "src/authentication/authentication.exception";
-import type SettingsService from "src/settings/settings.service";
-import type UserService from "src/user/user.service";
-import type ApiKeyService from "../api_key.service";
+import SettingsService from "src/settings/settings.service";
+import UserService from "src/user/user.service";
+import ApiKeyService from "../api_key.service";
 import { AuthMethod } from "../models/auth.enum";
 import { ROLES_KEY } from "./roles.decorators";
 import RoleEnum from "./roles.enum";

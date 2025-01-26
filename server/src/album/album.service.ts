@@ -25,7 +25,7 @@ import { PrismaError } from "prisma-error-enum";
 import ArtistService from "src/artist/artist.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import {
-	type EventsService,
+	EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -34,7 +34,7 @@ import GenreService from "src/genre/genre.service";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ParserService from "src/parser/parser.service";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import {
 	formatIdentifierToIdOrSlug,

@@ -18,13 +18,13 @@
 
 import { Controller, Get, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags, PickType } from "@nestjs/swagger";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
-import type SongGroupQueryParameters from "./models/song-group.query-params";
+import SongGroupQueryParameters from "./models/song-group.query-params";
 import { SongGroupResponseBuilder } from "./models/song-group.response";
 import SongQueryParameters from "./models/song.query-params";
-import type SongGroupService from "./song-group.service";
+import SongGroupService from "./song-group.service";
 import { Selector } from "./song.controller";
 
 class SongGroupSelector extends PickType(Selector, [

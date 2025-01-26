@@ -25,16 +25,16 @@ import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import {
-	type EventsService,
+	EventsService,
 	ResourceEventPriority,
 } from "src/events/events.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import GenreService from "src/genre/genre.service";
 import type Identifier from "src/identifier/models/identifier";
-import type IllustrationRepository from "src/illustration/illustration.repository";
+import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import type PrismaService from "src/prisma/prisma.service";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import {
 	formatIdentifier,

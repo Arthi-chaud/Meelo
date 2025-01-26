@@ -22,11 +22,11 @@ import normalize from "normalize-path";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import FileService from "src/file/file.service";
-import type { HousekeepingService } from "src/housekeeping/housekeeping.service";
+import { HousekeepingService } from "src/housekeeping/housekeeping.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type { Library } from "src/prisma/models";
-import type PrismaService from "src/prisma/prisma.service";
-import type { RegistrationService } from "src/registration/registration.service";
+import PrismaService from "src/prisma/prisma.service";
+import { RegistrationService } from "src/registration/registration.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,

@@ -41,7 +41,7 @@ import LibraryService from "./library.service";
 		forwardRef(() => ArtistModule),
 		forwardRef(() => AlbumModule),
 		LyricsModule,
-		HousekeepingModule,
+		forwardRef(() => HousekeepingModule),
 		forwardRef(() => RegistrationModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => ReleaseModule),

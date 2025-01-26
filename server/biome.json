@@ -2,13 +2,14 @@
 	"extends": ["../biome.json"],
 	"formatter": {
 		"lineWidth": 80,
-		"ignore": ["src/prisma/models"]
+		"ignore": ["src/prisma/models/**"]
 	},
 	"linter": {
 		"rules": {
 			"style": {
 				"useEnumInitializers": "off",
-				"noNonNullAssertion": "off"
+				"noNonNullAssertion": "off",
+				"useImportType": "off"
 			},
 			"nursery": {
 				"noRestrictedImports": {

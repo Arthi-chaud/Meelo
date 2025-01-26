@@ -42,13 +42,13 @@ import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
-import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
 import AlbumService from "./album.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import { AlbumResponseBuilder } from "./models/album.response";
-import type UpdateAlbumDTO from "./models/update-album.dto";
+import UpdateAlbumDTO from "./models/update-album.dto";
 
 class Selector {
 	@IsEnum(AlbumType, {
