@@ -30,7 +30,7 @@ type ReleaseItemProps = {
 };
 
 const ReleaseItem = ({ release, onClick }: ReleaseItemProps) => {
-	const isMaster = release.id == release.album.masterId;
+	const isMaster = release.id === release.album.masterId;
 
 	return (
 		<ListItem

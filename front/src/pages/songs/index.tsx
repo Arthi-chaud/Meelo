@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { SongSortingKeys } from "../../models/song";
 import API from "../../api/api";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
@@ -28,7 +27,6 @@ const prepareSSR = (context: NextPageContext) => {
 const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
-	const router = useRouter();
 	const { t } = useTranslation();
 
 	return (

@@ -20,7 +20,6 @@ import type { SongWithRelations } from "../../models/song";
 import Illustration from "../illustration";
 import ListItem from "./item";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
-import { useQueryClient } from "../../api/use-query";
 import { useEffect, useState } from "react";
 import { SongIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
@@ -91,7 +90,6 @@ const SongItem = <
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
 	const { playTrack } = usePlayerContext();
-	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)

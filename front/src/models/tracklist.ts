@@ -21,7 +21,7 @@ import { TrackWithRelations } from "./track";
 import * as yup from "yup";
 import Video, { VideoRelations } from "./video";
 
-const TracklistItem = TrackWithRelations(["illustration"])
+export const TracklistItem = TrackWithRelations(["illustration"])
 	.concat(
 		yup.object({
 			song: Song.required().nullable(),
@@ -30,7 +30,9 @@ const TracklistItem = TrackWithRelations(["illustration"])
 	)
 	.required();
 
-const TracklistItemWithRelations = <Selection extends SongInclude | never>(
+export const TracklistItemWithRelations = <
+	Selection extends SongInclude | never,
+>(
 	selection: Selection[],
 ) =>
 	TrackWithRelations(["illustration"])
@@ -48,11 +50,10 @@ const TracklistItemWithRelations = <Selection extends SongInclude | never>(
 		)
 		.required();
 
-type TracklistItem = yup.InferType<typeof TracklistItem>;
-type TracklistItemWithRelations<Selection extends SongInclude | never> =
+export type TracklistItem = yup.InferType<typeof TracklistItem>;
+export type TracklistItemWithRelations<Selection extends SongInclude | never> =
 	yup.InferType<ReturnType<typeof TracklistItemWithRelations<Selection>>>;
 
 type Tracklist<T> = Record<string | "?", T[]>;
 
 export default Tracklist;
-export { type TracklistItemWithRelations, TracklistItem };

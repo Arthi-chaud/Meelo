@@ -36,7 +36,7 @@ export const useTabRouter = <TabValue extends string>(
 	...otherTabs: TabValue[]
 ) => {
 	const router = useRouter();
-	const { t } = useTranslation();
+	const _ = useTranslation();
 	const tabs = useMemo(
 		() => [defaultTab, ...otherTabs],
 		[defaultTab, otherTabs],
@@ -44,7 +44,7 @@ export const useTabRouter = <TabValue extends string>(
 	const getTabFromQuery = () =>
 		tabs.find(
 			(availableTab) =>
-				availableTab.toLowerCase() ==
+				availableTab.toLowerCase() ===
 				getTabValueFromRouter(router)?.toString().toLowerCase(),
 		);
 	const [selectedTab, selectTab] = useState<TabValue>(
@@ -63,7 +63,6 @@ export const useTabRouter = <TabValue extends string>(
 		router.push(urlOnTabChange(selectedTab), undefined, {
 			shallow: true,
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [selectedTab]);
 
 	return { selectedTab, selectTab };

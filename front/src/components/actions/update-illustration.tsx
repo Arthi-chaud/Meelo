@@ -86,14 +86,13 @@ const UpdateIllustrationAction = (
 	resourceId: number,
 	resourceType: "artist" | "track" | "release" | "playlist",
 ): Action => {
-	const textFieldId = `update-illustration-${resourceType}-${resourceId}`;
 	const mutation = useMutation(async (newUrl: string) => {
 		const updator =
-			resourceType == "artist"
+			resourceType === "artist"
 				? API.updateArtistIllustration
-				: resourceType == "release"
+				: resourceType === "release"
 					? API.updateReleaseIllustration
-					: resourceType == "playlist"
+					: resourceType === "playlist"
 						? API.updatePlaylistIllustration
 						: API.updateTrackIllustration;
 
@@ -101,7 +100,7 @@ const UpdateIllustrationAction = (
 			.then(() => {
 				toast.success("Illustration updated!");
 				queryClient.client.invalidateQueries(resourceType);
-				queryClient.client.invalidateQueries(resourceType + "s");
+				queryClient.client.invalidateQueries(`${resourceType}s`);
 			})
 			.catch(() => toast.error("Illustration update failed"));
 	});

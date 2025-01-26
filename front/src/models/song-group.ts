@@ -22,29 +22,28 @@ import Song, { type SongInclude, SongRelations } from "./song";
 /**
  * Abstract data model, instanciated by tracks
  */
-const SongGroup = Song.concat(
+export const SongGroup = Song.concat(
 	yup.object({
 		versionCount: yup.number().required(),
 		songId: yup.number().required(),
 	}),
 );
 
-type SongGroup = yup.InferType<typeof SongGroup>;
+export type SongGroup = yup.InferType<typeof SongGroup>;
 
-type SongGroupInclude = SongInclude;
+export type SongGroupInclude = SongInclude;
 
-const SongGroupRelations = SongRelations;
+export const SongGroupRelations = SongRelations;
 
-const SongGroupWithRelations = <
+export const SongGroupWithRelations = <
 	Selection extends SongGroupInclude | never = never,
 >(
 	relation: Selection[],
 ) => SongGroup.concat(SongGroupRelations.pick(relation));
 
-type SongGroupWithRelations<
+export type SongGroupWithRelations<
 	Selection extends SongGroupInclude | never = never,
 > = yup.InferType<ReturnType<typeof SongGroupWithRelations<Selection>>>;
 
 export default SongGroup;
 export const SongGroupSortingKeys = ["name"] as const;
-export { type SongGroupInclude, SongGroupWithRelations, SongGroupRelations };

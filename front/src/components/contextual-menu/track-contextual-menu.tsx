@@ -48,7 +48,7 @@ type TrackContextualMenuProps = {
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const userIsAdmin = useSelector(
-		(state: RootState) => state.user.user?.admin == true,
+		(state: RootState) => state.user.user?.admin === true,
 	);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();

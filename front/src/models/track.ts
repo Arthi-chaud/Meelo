@@ -96,13 +96,12 @@ const TrackRelations = yup.object({
 	illustration: Illustration.required().nullable(),
 });
 
-const TrackWithRelations = <Selection extends TrackInclude | never>(
+export const TrackWithRelations = <Selection extends TrackInclude | never>(
 	relation: Selection[],
 ) => Track.concat(TrackRelations.pick(relation).clone());
 
-type TrackWithRelations<Selection extends TrackInclude | never> = yup.InferType<
-	ReturnType<typeof TrackWithRelations<Selection>>
->;
+export type TrackWithRelations<Selection extends TrackInclude | never> =
+	yup.InferType<ReturnType<typeof TrackWithRelations<Selection>>>;
 
 export const TrackSortingKeys = [
 	"name",
@@ -113,5 +112,3 @@ export const TrackSortingKeys = [
 	"trackIndex",
 	"discIndex",
 ] as const;
-
-export type { TrackWithRelations };

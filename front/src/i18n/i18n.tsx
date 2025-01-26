@@ -63,6 +63,7 @@ export const withTranslations = (
 							...commonOptions,
 							lng: props.pageProps.__lang,
 							resources: props.pageProps.__resources,
+							// biome-ignore lint/style/noCommaOperator: OK
 						}),
 						i18next),
 			[props.pageProps.__lang, props.pageProps.__resources],

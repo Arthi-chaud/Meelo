@@ -70,7 +70,7 @@ const InfiniteAlbumView = (
 				disableSorting={props.disableSorting}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={props.defaultLayout ?? "grid"}
 			/>
 			<InfiniteView
@@ -82,7 +82,7 @@ const InfiniteAlbumView = (
 						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 						type:
 							// @ts-ignore
-							options?.type == "All" ? undefined : options?.type,
+							options?.type === "All" ? undefined : options?.type,
 						sortBy:
 							options?.sortBy ??
 							props.initialSortingField ??

@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import { VideoSortingKeys } from "../../models/video";
 import API from "../../api/api";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
@@ -30,7 +29,6 @@ const prepareSSR = (context: NextPageContext) => {
 const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
-	const router = useRouter();
 	const { t } = useTranslation();
 
 	return (

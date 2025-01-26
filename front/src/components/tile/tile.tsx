@@ -96,7 +96,7 @@ type TileProps = {
 }>;
 
 const Tile = (props: TileProps) => {
-	const theme = useTheme();
+	const _theme = useTheme();
 	const contextualMenu = props.contextualMenu;
 	// If the title is not loaded, we remove the hovering effect on the title
 	const CardComponent = props.title === undefined ? Card : StyledCard;

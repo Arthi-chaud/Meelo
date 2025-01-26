@@ -96,7 +96,7 @@ const buildSearchUrl = (
 	query: string | undefined,
 	type: string | undefined,
 ) => {
-	return "/search/" + (query ?? "") + (type ? `?t=${type}` : "");
+	return `/search/${query ?? ""}${type ? `?t=${type}` : ""}`;
 };
 
 const tabs = ["all", "artist", "album", "song", "video"] as const;
@@ -176,7 +176,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					variant="outlined"
 					autoFocus
 					onKeyDown={(e) => {
-						if (e.key == "Escape") {
+						if (e.key === "Escape") {
 							(document.activeElement as any)?.blur();
 						}
 					}}
@@ -207,12 +207,12 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value == "all" ? "All" : `${value}s`)}
+						label={t(value === "all" ? "All" : `${value}s`)}
 					/>
 				))}
 			</Tabs>
 			<Box sx={{ paddingBottom: 2 }} />
-			{selectedTab == "all" && (
+			{selectedTab === "all" && (
 				<InfiniteView
 					view="list"
 					query={() =>
@@ -222,7 +222,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								: API.getSearchHistory(),
 						)
 					}
-					renderGridItem={(item) => <></>}
+					renderGridItem={() => <></>}
 					renderListItem={(item) =>
 						!item || item.album ? (
 							<AlbumItem
@@ -281,7 +281,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{query && selectedTab == "artist" && (
+			{query && selectedTab === "artist" && (
 				<InfiniteArtistView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ artistId: item.id })
@@ -298,7 +298,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{query && selectedTab == "album" && (
+			{query && selectedTab === "album" && (
 				<InfiniteAlbumView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ albumId: item.id })
@@ -317,7 +317,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{query && selectedTab == "song" && (
+			{query && selectedTab === "song" && (
 				<InfiniteSongView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ songId: item.id })
@@ -336,7 +336,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				/>
 			)}
 
-			{query && selectedTab == "video" && (
+			{query && selectedTab === "video" && (
 				<InfiniteVideoView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ videoId: item.id })

@@ -50,7 +50,7 @@ const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 						<Chip
 							label={t(type) as string}
 							variant={
-								type == currentType ? "filled" : "outlined"
+								type === currentType ? "filled" : "outlined"
 							}
 							onClick={() => {
 								setType(type);
@@ -126,7 +126,7 @@ const ChangeSongType = (
 ) =>
 	ChangeResourceType(
 		s,
-		SongType.filter((t) => t != "Unknown"),
+		SongType.filter((t) => t !== "Unknown"),
 		"changeSongType",
 		client,
 		(newType: SongType) =>

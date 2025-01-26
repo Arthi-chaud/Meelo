@@ -49,7 +49,7 @@ const AuthenticationWall = (props: { children: any }) => {
 		if (accessToken && status.data?.id && !status.error) {
 			setAuthenticationStatus(true);
 		}
-		if (status.error || accessToken?.valueOf() == undefined) {
+		if (status.error || accessToken?.valueOf() === undefined) {
 			setAuthenticationStatus(false);
 		}
 	}, [accessToken, status, authentified]);

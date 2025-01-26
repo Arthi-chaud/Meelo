@@ -16,18 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export class MeeloException extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-}
+export class MeeloException extends Error {}
 
 /**
  * Exception on resource not found
  * If caught by ErrorBoundary, renders 404 page
  */
-export class ResourceNotFound extends MeeloException {
-	constructor(message: string) {
-		super(message);
-	}
-}
+export class ResourceNotFound extends MeeloException {}

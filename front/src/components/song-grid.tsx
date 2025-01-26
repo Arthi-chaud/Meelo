@@ -20,7 +20,6 @@ import { Grid } from "@mui/material";
 import SongContextualMenu from "./contextual-menu/song-contextual-menu";
 import Illustration from "./illustration";
 import type { SongWithRelations } from "../models/song";
-import { useQueryClient } from "../api/use-query";
 import ListItem from "./list-item/item";
 import formatArtists from "../utils/formatArtists";
 import { usePlayerContext } from "../contexts/player";
@@ -34,7 +33,6 @@ type SongGridProps = {
 };
 
 const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
-	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
 
 	return (
@@ -58,7 +56,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 						secondTitle={
 							song
 								? parentArtistName === song.artist.name &&
-									song.featuring.length == 0
+									song.featuring.length === 0
 									? null
 									: formatArtists(song.artist, song.featuring)
 								: undefined

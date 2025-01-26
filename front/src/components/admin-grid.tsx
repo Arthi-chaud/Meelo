@@ -56,7 +56,7 @@ const AdminGrid = <DataType extends Resource>({
 	}, [hasNextPage]);
 	return (
 		<DataGrid
-			loading={data?.pages[currentPage] == undefined}
+			loading={data?.pages.at(currentPage) === undefined}
 			rows={data?.pages[currentPage]?.items ?? []}
 			rowCount={itemsCount}
 			pageSize={API.defaultPageSize}
@@ -68,9 +68,9 @@ const AdminGrid = <DataType extends Resource>({
 			paginationMode="server"
 			autoHeight
 			onPageChange={(page) => {
-				if (page == currentPage + 1 && hasNextPage) {
+				if (page === currentPage + 1 && hasNextPage) {
 					fetchNextPage();
-				} else if (page == currentPage - 1 && hasPreviousPage) {
+				} else if (page === currentPage - 1 && hasPreviousPage) {
 					fetchPreviousPage();
 				}
 				setCurrentPage(page);

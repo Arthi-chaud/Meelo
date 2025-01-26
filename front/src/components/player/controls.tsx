@@ -356,7 +356,9 @@ const ExpandedPlayerControls = (
 						justifyContent: "center",
 					}}
 				>
-					{props.track?.type == "Video" ? (
+					{props.track?.type === "Video" ? (
+						// biome-ignore lint/a11y/useMediaCaption: No caption available
+						// biome-ignore lint/a11y/useKeyWithClickEvents: TODO?
 						<video
 							playsInline
 							id="videoPlayer"
@@ -404,7 +406,7 @@ const ExpandedPlayerControls = (
 									justifyContent: "end",
 								}}
 							>
-								{props.track?.type == "Video" && (
+								{props.track?.type === "Video" && (
 									<IconButton onClick={requestFullscreen}>
 										<FullscreenIcon size={18} />
 									</IconButton>
@@ -547,7 +549,7 @@ const ExpandedPlayerControls = (
 					</Stack>
 				</Grid>
 			</Grid>
-			{selectedTab == "lyrics" && (
+			{selectedTab === "lyrics" && (
 				<Box
 					sx={{
 						height: "100%",
@@ -570,7 +572,7 @@ const ExpandedPlayerControls = (
 					)}
 				</Box>
 			)}
-			{selectedTab == "playlist" && (
+			{selectedTab === "playlist" && (
 				<Box
 					sx={{
 						height: "100%",
@@ -661,7 +663,10 @@ const ExpandedPlayerControls = (
 														</div>
 													)}
 												</Draggable>
-												<Divider variant="middle" />
+												<Divider
+													key={`divider-${index}`}
+													variant="middle"
+												/>
 											</>
 										))}
 									{provided.placeholder}
@@ -687,7 +692,7 @@ const ExpandedPlayerControls = (
 					<IconButton
 						key={index}
 						disabled={
-							tabName == "lyrics" && !parentSong.data?.lyrics
+							tabName === "lyrics" && !parentSong.data?.lyrics
 						}
 						style={{
 							transition: "color 0.2s ease",

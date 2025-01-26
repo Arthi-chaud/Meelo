@@ -54,7 +54,7 @@ const InfiniteList = <T extends IllustratedResource>(
 							{items.map((item, index) => (
 								<Fragment key={`item-${index}`}>
 									{props.render(item, index)}
-									{index == items.length - 1 || (
+									{index === items.length - 1 || (
 										<Divider variant="middle" />
 									)}
 								</Fragment>

@@ -21,7 +21,7 @@ import Resource from "./resource";
 import * as yup from "yup";
 import Song, { type SongInclude, SongWithRelations } from "./song";
 
-const PlaylistEntry = Song.concat(
+export const PlaylistEntry = Song.concat(
 	yup.object({
 		/**
 		 * The identifier of the entry
@@ -32,16 +32,17 @@ const PlaylistEntry = Song.concat(
 
 export type PlaylistEntry = yup.InferType<typeof PlaylistEntry>;
 
-const PlaylistEntryWithRelations = <
+export const PlaylistEntryWithRelations = <
 	Selection extends SongInclude | never = never,
 >(
 	relation: Selection[],
 ) => PlaylistEntry.concat(SongWithRelations(relation));
 
-type PlaylistEntryWithRelations<Selection extends SongInclude | never = never> =
-	yup.InferType<ReturnType<typeof PlaylistEntryWithRelations<Selection>>>;
+export type PlaylistEntryWithRelations<
+	Selection extends SongInclude | never = never,
+> = yup.InferType<ReturnType<typeof PlaylistEntryWithRelations<Selection>>>;
 
-const Playlist = Resource.concat(
+export const Playlist = Resource.concat(
 	yup.object({
 		/**
 		 * The name of the playlist
@@ -59,11 +60,11 @@ const Playlist = Resource.concat(
 	}),
 );
 
-type Playlist = yup.InferType<typeof Playlist>;
+export type Playlist = yup.InferType<typeof Playlist>;
 
 export type PlaylistInclude = "illustration";
 
-const PlaylistWithRelations = <
+export const PlaylistWithRelations = <
 	Selection extends PlaylistInclude | never = never,
 >(
 	relation: Selection[],
@@ -76,8 +77,9 @@ const PlaylistWithRelations = <
 			.pick(relation),
 	);
 
-type PlaylistWithRelations<Selection extends PlaylistInclude | never = never> =
-	yup.InferType<ReturnType<typeof PlaylistWithRelations<Selection>>>;
+export type PlaylistWithRelations<
+	Selection extends PlaylistInclude | never = never,
+> = yup.InferType<ReturnType<typeof PlaylistWithRelations<Selection>>>;
 
 export default Playlist;
 
@@ -86,5 +88,3 @@ export const PlaylistSortingKeys = [
 	"entryCount",
 	"creationDate",
 ] as const;
-
-export type { PlaylistEntryWithRelations, PlaylistWithRelations };

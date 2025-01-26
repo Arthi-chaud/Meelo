@@ -65,7 +65,7 @@ export const DefaultMeeloQueryOptions = {
 	cacheTime: 10 * (60 * 1000),
 	refetchOnMount: true,
 	// We want this in dev, not in prod to avoid useless refecthes.
-	refetchOnWindowFocus: process.env.NODE_ENV != "production",
+	refetchOnWindowFocus: process.env.NODE_ENV !== "production",
 	refetchOnReconnect: true,
 };
 

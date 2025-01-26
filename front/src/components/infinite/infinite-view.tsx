@@ -91,7 +91,7 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 	return (
 		<>
 			<ScrollToTopButton />
-			{props.view.toLowerCase() == "list" ? (
+			{props.view.toLowerCase() === "list" ? (
 				<InfiniteList
 					loader={() => <WideLoadingComponent />}
 					query={props.query}

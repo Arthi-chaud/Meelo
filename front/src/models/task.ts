@@ -18,20 +18,18 @@
 
 import * as yup from "yup";
 
-const Task = yup.object({
+export const Task = yup.object({
 	name: yup.string().required(),
 	description: yup.string().required(),
 });
 
-type Task = yup.InferType<typeof Task>;
+export type Task = yup.InferType<typeof Task>;
 
-const TaskResponse = yup.object({
+export const TaskResponse = yup.object({
 	/**
 	 * Status of the task
 	 */
 	message: yup.string().required(),
 });
 
-type TaskResponse = yup.InferType<typeof TaskResponse>;
-
-export { Task, TaskResponse };
+export type TaskResponse = yup.InferType<typeof TaskResponse>;

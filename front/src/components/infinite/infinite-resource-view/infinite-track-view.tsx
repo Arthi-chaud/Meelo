@@ -44,7 +44,7 @@ const InfiniteTrackView = (
 				sortingKeys={TrackSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				disableLayoutToggle
 				defaultLayout={"list"}
 			/>
@@ -64,7 +64,7 @@ const InfiniteTrackView = (
 						onClick={() => item && props.onItemClick?.(item)}
 					/>
 				)}
-				renderGridItem={(item) => <></>}
+				renderGridItem={() => <></>}
 			/>
 		</>
 	);

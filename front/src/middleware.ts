@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
 		// From https://github.com/vercel/next.js/discussions/30682#discussioncomment-3348330
 		const url = request.nextUrl.clone();
 
-		url.pathname = `/404`;
+		url.pathname = "/404";
 		return NextResponse.rewrite(url);
 	}
 	return NextResponse.rewrite(`${origin}/releases/${master.slug}`);

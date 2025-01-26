@@ -172,7 +172,7 @@ const Drawer = ({
 							{primaryItems.map((item) => {
 								const path = `/${item}`;
 								const isSelected =
-									path == router.asPath.split("?")[0];
+									path === router.asPath.split("?")[0];
 								const Icon = (props: IconProps) =>
 									getPrimaryTypeIcon(item, props);
 
@@ -222,7 +222,7 @@ const Drawer = ({
 								let item = (
 									<ListItemButton
 										onClick={() => {
-											action.onClick && action.onClick();
+											action.onClick?.();
 											onClose();
 										}}
 									>
@@ -241,7 +241,7 @@ const Drawer = ({
 													{t(action.label)}
 												</Typography>
 											}
-										></ListItemText>
+										/>
 									</ListItemButton>
 								);
 
@@ -294,7 +294,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 		>
 			{primaryItems.slice(0, 3).map((item) => {
 				const path = `/${item}`;
-				const isSelected = path == router.asPath.split("?")[0];
+				const isSelected = path === router.asPath.split("?")[0];
 				const Icon = (pr: IconProps) => getPrimaryTypeIcon(item, pr);
 
 				return (

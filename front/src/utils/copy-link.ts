@@ -25,7 +25,7 @@ import type { Translator } from "../i18n/i18n";
  */
 export default function copyLinkToClipboard(route: string, t: Translator) {
 	navigator.clipboard.writeText(
-		location.protocol + "//" + location.host + route,
+		`${location.protocol}//${location.host}${route}`,
 	);
 	toast.success(t("linkCopied"));
 }

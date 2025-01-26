@@ -38,7 +38,9 @@ type Artist = yup.InferType<typeof Artist>;
 
 export type ArtistInclude = "illustration";
 
-const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
+export const ArtistWithRelations = <
+	Selection extends ArtistInclude | never = never,
+>(
 	relation: Selection[],
 ) =>
 	Artist.concat(
@@ -49,8 +51,9 @@ const ArtistWithRelations = <Selection extends ArtistInclude | never = never>(
 			.pick(relation),
 	);
 
-type ArtistWithRelations<Selection extends ArtistInclude | never = never> =
-	yup.InferType<ReturnType<typeof ArtistWithRelations<Selection>>>;
+export type ArtistWithRelations<
+	Selection extends ArtistInclude | never = never,
+> = yup.InferType<ReturnType<typeof ArtistWithRelations<Selection>>>;
 
 export default Artist;
 
@@ -60,5 +63,3 @@ export const ArtistSortingKeys = [
 	"songCount",
 	"addDate",
 ] as const;
-
-export type { ArtistWithRelations };

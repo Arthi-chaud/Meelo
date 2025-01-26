@@ -180,7 +180,7 @@ type RelatedContentSectionProps = {
 
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
-		<Fade in={props.display == true}>
+		<Fade in={props.display === true}>
 			<Box
 				sx={{ margin: 2, display: props.display ? undefined : "none" }}
 			>
@@ -292,12 +292,12 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				.map((video) => {
 					const videoIndex = tracks.findIndex(
 						(track) =>
-							(track.song ?? track.video)!.groupId ==
+							(track.song ?? track.video)!.groupId ===
 							video.groupId,
 					);
 					return [
 						video,
-						videoIndex == -1 ? tracks.length : videoIndex,
+						videoIndex === -1 ? tracks.length : videoIndex,
 					] as const;
 				})
 
@@ -310,11 +310,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						return [video, tracklistIndex] as const;
 					}
 					const firstVideoOfSameGroup = videosWithIndexes.find(
-						([__, i]) => i == tracklistIndex,
+						([__, i]) => i === tracklistIndex,
 					)!;
 					return [
 						video,
-						firstVideoOfSameGroup[0].id == video.id
+						firstVideoOfSameGroup[0].id === video.id
 							? tracklistIndex
 							: 10000 + tracklistIndex,
 					] as const;
@@ -329,7 +329,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								liveVideos: prev.liveVideos,
 								videoExtras: prev.videoExtras.concat(current),
 							};
-						} else if (current.type === "Live") {
+						}
+						if (current.type === "Live") {
 							return {
 								videos: prev.videos,
 								liveVideos: prev.liveVideos.concat(current),
@@ -550,7 +551,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													track: track,
 													artist: artists.data.find(
 														(artist) =>
-															artist.id ==
+															artist.id ===
 															(track.song ??
 																track.video)!
 																.artistId,
@@ -559,7 +560,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												}),
 											);
 
-											if (index == 1) {
+											if (index === 1) {
 												playlist = shuffle(playlist);
 											}
 											playTracks({
@@ -670,33 +671,31 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						{release.data?.album.type === "Compilation" &&
 							/* It does not make sense to show the button if the album is from 'Various Artists' */
 							albumArtist !== null && (
-								<>
-									<ListItemButton
-										sx={{
-											textAlign: "center",
-											justifyContent: "center",
-											width: "100%",
-											fontWeight: "bolder",
-										}}
-										onClick={() => {
-											setShowOnlyExclusive((v) => !v);
-											document
-												.getElementById(
-													parentScrollableDivId,
-												)
-												?.scrollTo({
-													top: 0,
-													behavior: "smooth",
-												});
-										}}
-									>
-										{t(
-											showOnlyExclusive
-												? "showAllTrack"
-												: "showOnlyExclusiveTracks",
-										)}
-									</ListItemButton>
-								</>
+								<ListItemButton
+									sx={{
+										textAlign: "center",
+										justifyContent: "center",
+										width: "100%",
+										fontWeight: "bolder",
+									}}
+									onClick={() => {
+										setShowOnlyExclusive((v) => !v);
+										document
+											.getElementById(
+												parentScrollableDivId,
+											)
+											?.scrollTo({
+												top: 0,
+												behavior: "smooth",
+											});
+									}}
+								>
+									{t(
+										showOnlyExclusive
+											? "showAllTrack"
+											: "showOnlyExclusiveTracks",
+									)}
+								</ListItemButton>
 							)}
 					</Grid>
 				</Grid>
@@ -722,7 +721,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								.at(0)
 								?.items?.filter(
 									(relatedRelease) =>
-										relatedRelease.id != release.data!.id,
+										relatedRelease.id !== release.data!.id,
 								)
 								.map((otherRelease, otherReleaseIndex) => (
 									<ReleaseTile
@@ -747,7 +746,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<RelatedContentSection
 						key={`videos-${sectionLabel}`}
 						display={
-							videoList !== undefined && videoList.length != 0
+							videoList !== undefined && videoList.length !== 0
 						}
 						title={t(sectionLabel)}
 					>
@@ -816,7 +815,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={(featurings?.length ?? 0) != 0}
+					display={
+						featurings !== undefined && featurings.length !== 0
+					}
 					title={t("onThisAlbum")}
 				>
 					<TileRow
@@ -828,7 +829,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={(playlists?.length ?? 0) != 0}
+					display={playlists !== undefined && playlists.length !== 0}
 					title={t("featuredOnPlaylists")}
 				>
 					<TileRow

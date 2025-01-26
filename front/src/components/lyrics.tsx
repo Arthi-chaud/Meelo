@@ -40,7 +40,7 @@ const LyricsBox = (props: LyricsProps) => {
 			<Box flexDirection="column">
 				{props.lyrics !== undefined
 					? props.lyrics.map((lyric, index) => {
-							if (lyric.length == 0) {
+							if (lyric.length === 0) {
 								return <br key={index} />;
 							}
 							const hasTitle =
@@ -70,7 +70,7 @@ const LyricsBox = (props: LyricsProps) => {
 							);
 						})
 					: generateArray(20).map((_, index) =>
-							index % 5 == 0 ? (
+							index % 5 === 0 ? (
 								<br key={index} />
 							) : (
 								<Skeleton

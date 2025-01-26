@@ -76,7 +76,7 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
-	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+	const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
 
 	return (

@@ -66,8 +66,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 										if (!action.dialog) {
 											handleClose();
 										}
-										props.onSelect &&
-											props.onSelect(action);
+										props.onSelect?.(action);
 									}}
 								>
 									<ContextualMenuItem

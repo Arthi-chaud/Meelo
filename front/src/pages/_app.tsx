@@ -113,7 +113,8 @@ function MyApp({
 											<ErrorBoundary
 												FallbackComponent={() => {
 													if (
-														errorType == "not-found"
+														errorType ===
+														"not-found"
 													) {
 														return <PageNotFound />;
 													}

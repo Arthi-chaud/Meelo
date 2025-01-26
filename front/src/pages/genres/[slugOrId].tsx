@@ -101,7 +101,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 			</Tabs>
 			<Box sx={{ paddingBottom: 2 }} />
-			{selectedTab == "artist" && (
+			{selectedTab === "artist" && (
 				<InfiniteArtistView
 					query={({ library, sortBy, order }) =>
 						API.getArtists(
@@ -115,7 +115,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{selectedTab == "album" && (
+			{selectedTab === "album" && (
 				<InfiniteAlbumView
 					defaultAlbumType={null}
 					query={({ library, type, sortBy, order }) =>
@@ -131,7 +131,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{selectedTab == "song" && (
+			{selectedTab === "song" && (
 				<InfiniteSongView
 					query={({ library, type, random, sortBy, order }) =>
 						API.getSongs(

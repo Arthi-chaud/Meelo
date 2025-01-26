@@ -63,7 +63,7 @@ const playSongsAction = (
 			const songs = res.pages.flatMap(({ items }) => items);
 			let i = 0;
 			for (const song of songs) {
-				if (i == 0) {
+				if (i === 0) {
 					playTrack({
 						track: {
 							...song.master,
@@ -115,7 +115,7 @@ const InfiniteSongView = <
 	const query = {
 		type:
 			// @ts-ignore
-			options?.type == "All" ? undefined : (options?.type as SongType),
+			options?.type === "All" ? undefined : (options?.type as SongType),
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
@@ -162,7 +162,7 @@ const InfiniteSongView = <
 						name: "type",
 						values: [
 							"All",
-							...SongType.filter((type) => type != "Unknown"),
+							...SongType.filter((type) => type !== "Unknown"),
 						],
 						currentValue: options?.type,
 					},
@@ -192,7 +192,7 @@ const InfiniteSongView = <
 				}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				disableLayoutToggle
 				defaultLayout={"list"}
 			/>

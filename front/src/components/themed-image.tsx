@@ -27,7 +27,7 @@ import { useThemedSxValue } from "../utils/themed-sx-value";
 type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
 	Omit<ComponentProps<typeof Image>, "src">;
 const ThemedImage = ({ light, dark, ...props }: ThemedImageProps) => {
-	const theme = useTheme();
+	const _theme = useTheme();
 	const sxLightThemeImage = useThemedSxValue("display", "block", "none");
 	const sxDarkThemeImage = useThemedSxValue("display", "none", "block");
 	return (

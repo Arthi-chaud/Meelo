@@ -132,10 +132,10 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			musicVideos:
 				firstPage?.filter(
 					(video) =>
-						!VideoTypeIsExtra(video.type) && video.type != "Live",
+						!VideoTypeIsExtra(video.type) && video.type !== "Live",
 				) ?? [],
 			liveVideos:
-				firstPage?.filter((video) => video.type == "Live") ?? [],
+				firstPage?.filter((video) => video.type === "Live") ?? [],
 			extras:
 				firstPage?.filter((video) => VideoTypeIsExtra(video.type)) ??
 				[],
@@ -201,7 +201,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					{ label: "extras", items: extras } as const,
 				].map(
 					({ label, items }) =>
-						items.length != 0 && (
+						items.length !== 0 && (
 							<Fragment key={`videos-${label}`}>
 								<VideoListPageSection
 									title={label}

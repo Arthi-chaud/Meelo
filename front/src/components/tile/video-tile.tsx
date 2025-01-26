@@ -49,11 +49,11 @@ const VideoTile = ({
 		? { subtitle: undefined, secondaryHref: undefined }
 		: {
 				subtitle:
-					subtitleType == "artist"
+					subtitleType === "artist"
 						? video.artist.name
 						: formatDuration(video.master.duration),
 				secondaryHref:
-					subtitleType == "artist"
+					subtitleType === "artist"
 						? `/artists/${video.artist.slug}`
 						: undefined,
 			};

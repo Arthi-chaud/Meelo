@@ -18,7 +18,6 @@
 
 import Illustration from "../illustration";
 import ListItem from "./item";
-import { useQueryClient } from "../../api/use-query";
 import { useEffect, useState } from "react";
 import { VideoIcon } from "../icons";
 import formatArtists from "../../utils/formatArtists";
@@ -48,7 +47,6 @@ const VideoItem = <T extends VideoType>({
 }: VideoItemProps<T>) => {
 	const artist = video?.artist;
 	const { playTrack } = usePlayerContext();
-	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)

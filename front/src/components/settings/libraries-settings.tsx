@@ -238,7 +238,7 @@ const LibrariesSettings = () => {
 					</Button>
 				</Grid>
 				{[cleanAllLibaries, scanAllLibaries].map((action, index) => (
-					<Grid item key={"Library-action-" + index}>
+					<Grid item key={`Library-action-${index}`}>
 						<Button
 							variant={index % 2 ? "contained" : "outlined"}
 							startIcon={action.icon}
@@ -250,7 +250,7 @@ const LibrariesSettings = () => {
 				))}
 			</Grid>
 			<Dialog
-				open={libraryEdit != undefined}
+				open={libraryEdit !== undefined}
 				onClose={closeEditModal}
 				fullWidth
 			>
@@ -272,8 +272,8 @@ const LibrariesSettings = () => {
 				infiniteQuery={API.getLibraries}
 				columns={columns.map((column) => ({
 					...column,
-					headerAlign: column.field == "name" ? "left" : "center",
-					align: column.field == "name" ? "left" : "center",
+					headerAlign: column.field === "name" ? "left" : "center",
+					align: column.field === "name" ? "left" : "center",
 				}))}
 			/>
 			<Box sx={{ paddingY: 2 }} />
@@ -313,7 +313,7 @@ const LibrariesSettings = () => {
 					/>
 				</ListItem>
 				{tasks.data?.pending_tasks.map((task, index) => (
-					<ListItem key={"task-" + index}>
+					<ListItem key={`task-${index}`}>
 						<ListItemText inset primary={task} />
 					</ListItem>
 				))}

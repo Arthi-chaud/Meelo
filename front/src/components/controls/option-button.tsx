@@ -65,7 +65,7 @@ const OptionButton = <
 							<MenuItem
 								key={value}
 								sx={{ borderRadius: "0" }}
-								selected={option.currentValue == value}
+								selected={option.currentValue === value}
 								onClick={() => {
 									if (props.onSelect) {
 										props.onSelect({
@@ -77,7 +77,7 @@ const OptionButton = <
 								}}
 							>
 								<ListItemIcon>
-									{option.currentValue == value && (
+									{option.currentValue === value && (
 										<CheckIcon />
 									)}
 								</ListItemIcon>
@@ -86,7 +86,7 @@ const OptionButton = <
 							</MenuItem>
 						))
 						.concat(
-							index + 1 != array.length
+							index + 1 !== array.length
 								? [<Divider key={index} />]
 								: [],
 						),

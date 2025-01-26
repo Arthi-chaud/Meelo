@@ -50,7 +50,7 @@ const InfinitePlaylistView = (
 				sortingKeys={PlaylistSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView

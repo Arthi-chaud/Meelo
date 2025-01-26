@@ -22,12 +22,12 @@ const formatArtists = (
 	artist: Pick<Artist, "name">,
 	featuring?: Pick<Artist, "name">[],
 ): string => {
-	if (!featuring || featuring.length == 0) {
+	if (!featuring || featuring.length === 0) {
 		return artist.name;
 	}
 	const [firstFeat, ...otherFeats] = featuring;
 
-	if (otherFeats.length == 0) {
+	if (otherFeats.length === 0) {
 		return `${artist.name} & ${firstFeat.name}`;
 	}
 	return `${artist.name}, ${featuring

@@ -87,7 +87,7 @@ const HomePageSection = <T,>(props: {
 	const items = props.queryData.data?.pages?.at(0)?.items;
 
 	// Remove the section if its content is empty
-	if (items !== undefined && items.length == 0) {
+	if (items !== undefined && items.length === 0) {
 		return <></>;
 	}
 	return (

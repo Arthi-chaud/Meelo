@@ -64,11 +64,13 @@ export const VideoRelations = yup.object({
 	illustration: Illustration.required().nullable(),
 });
 
-const VideoWithRelations = <Selection extends VideoInclude | never = never>(
+export const VideoWithRelations = <
+	Selection extends VideoInclude | never = never,
+>(
 	relation: Selection[],
 ) => Video.concat(VideoRelations.pick(relation));
 
-type VideoWithRelations<Selection extends VideoInclude | never = never> =
+export type VideoWithRelations<Selection extends VideoInclude | never = never> =
 	yup.InferType<ReturnType<typeof VideoWithRelations<Selection>>>;
 
 export default Video;
@@ -81,4 +83,3 @@ export const videoTypeIsExtra = (type: VideoType) =>
 		"Documentary",
 	].includes(type);
 export const VideoSortingKeys = ["name", "artistName", "addDate"] as const;
-export { VideoWithRelations };

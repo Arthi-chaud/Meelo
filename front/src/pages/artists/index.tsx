@@ -2,7 +2,6 @@ import API from "../../api/api";
 import { ArtistSortingKeys } from "../../models/artist";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { useRouter } from "next/router";
 import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
 import { getLayoutParams } from "../../utils/layout";
 import type { NextPageContext } from "next";
@@ -26,7 +25,6 @@ const prepareSSR = (context: NextPageContext) => {
 };
 
 const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const router = useRouter();
 	const { t } = useTranslation();
 
 	return (

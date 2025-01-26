@@ -52,7 +52,7 @@ const secondaryTextStyle = {
 };
 
 const ListItem = (props: ListItemProps) => {
-	const theme = useTheme();
+	const _theme = useTheme();
 
 	return (
 		<MUIListItem disablePadding secondaryAction={props.trailing}>

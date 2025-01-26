@@ -40,7 +40,7 @@ type ReleaseContextualMenuProps = {
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const userIsAdmin = useSelector(
-		(state: RootState) => state.user.user?.admin == true,
+		(state: RootState) => state.user.user?.admin === true,
 	);
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
@@ -92,7 +92,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 					{
 						label: "setAsMaster",
 						disabled:
-							props.release.id == props.release.album.masterId ||
+							props.release.id === props.release.album.masterId ||
 							!userIsAdmin,
 						icon: <MasterIcon />,
 						onClick: () => masterMutation.mutate(),

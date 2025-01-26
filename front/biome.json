@@ -8,6 +8,20 @@
 	},
 	"linter": {
 		"rules": {
+			"style": {
+				"noNonNullAssertion": "off"
+			},
+			"suspicious": {
+				"noExtraNonNullAssertion": "warn",
+				"noArrayIndexKey": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "off",
+				"noUnusedVariables": "warn"
+			},
+			"complexity": {
+				"noForEach": "off"
+			},
 			"nursery": {
 				"noRestrictedImports": {
 					"options": {

@@ -18,7 +18,7 @@
 
 import { Box, Skeleton, Typography } from "@mui/material";
 
-type SectionHeaderProps<T> = {
+type SectionHeaderProps = {
 	heading: string | JSX.Element | undefined;
 	trailing?: JSX.Element;
 };
@@ -26,7 +26,7 @@ type SectionHeaderProps<T> = {
 /**
  * A scrollable row (possibly of tiles) with a header with a 'more' button
  */
-const SectionHeader = <T,>(props: SectionHeaderProps<T>) => {
+const SectionHeader = (props: SectionHeaderProps) => {
 	return (
 		<Box
 			sx={{

@@ -134,7 +134,7 @@ export const AlbumListPageSection = (
 							: undefined
 					}
 					formatSubtitle={
-						props.subtitleIs == "artistName"
+						props.subtitleIs === "artistName"
 							? undefined
 							: (albumItem) =>
 									getYear(
@@ -177,7 +177,7 @@ const PageSection = <T,>(props: PageSectionProps<T>) => {
 	const firstPage = props.query?.data?.pages.at(0)?.items ?? props.items;
 	return (
 		<>
-			{firstPage?.length != 0 && (
+			{firstPage?.length !== 0 && (
 				<>
 					<SectionHeader
 						heading={

@@ -41,7 +41,7 @@ type TrackItemProps = {
 const TrackItem = ({ track, onClick }: TrackItemProps) => {
 	const release = track?.release;
 	const { playTrack } = usePlayerContext();
-	const isMaster = track ? track.song?.masterId == track.id : false;
+	const isMaster = track ? track.song?.masterId === track.id : false;
 	const queryClient = useQueryClient();
 
 	return (

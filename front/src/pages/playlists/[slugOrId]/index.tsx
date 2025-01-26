@@ -263,7 +263,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		return entriesQuery.data.map((entry) => ({
 			...entry,
 			release: releases.find(
-				(release) => release!.id == entry.master.releaseId,
+				(release) => release!.id === entry.master.releaseId,
 			)!,
 		}));
 	}, [entriesQuery.data, masterTracksReleaseQueries]);
@@ -396,7 +396,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 											newEntryId !== oldEntryId,
 									);
 
-									if (changes.length != 0) {
+									if (changes.length !== 0) {
 										reorderMutation
 											.mutateAsync(
 												tempPlaylistEdit.map(

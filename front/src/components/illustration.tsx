@@ -80,7 +80,7 @@ const Illustration = (props: IllustrationProps) => {
 
 	return (
 		<Box
-			key={"illustration-" + url}
+			key={`illustration-${url}`}
 			sx={{
 				width: "100%",
 				height: "100%",
@@ -124,7 +124,7 @@ const Illustration = (props: IllustrationProps) => {
 							overflow: "hidden",
 							aspectRatio: aspectRatio.toString(),
 							...props.imgProps,
-							...(props.imgProps?.objectFit == "cover"
+							...(props.imgProps?.objectFit === "cover"
 								? { width: "100%", height: "100%" }
 								: dimensionsFromAspectRatio),
 						}}
@@ -141,12 +141,12 @@ const Illustration = (props: IllustrationProps) => {
 					style={{
 						position: "relative",
 						aspectRatio:
-							props.imgProps?.objectFit == "cover"
+							props.imgProps?.objectFit === "cover"
 								? undefined
 								: aspectRatio.toString(),
 						overflow: "hidden",
 						display: "block",
-						...(props.imgProps?.objectFit == "cover"
+						...(props.imgProps?.objectFit === "cover"
 							? { width: "100%", height: "100%" }
 							: dimensionsFromAspectRatio),
 					}}
@@ -196,17 +196,17 @@ const Illustration = (props: IllustrationProps) => {
 							unoptimized
 							style={{
 								borderRadius:
-									props.quality == "low"
+									props.quality === "low"
 										? 6
 										: theme.shape.borderRadius,
 								objectFit: "contain",
-								opacity: loadingState == "loading" ? 0 : 1,
+								opacity: loadingState === "loading" ? 0 : 1,
 								transition: `opacity ${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn}`,
 								...props.imgProps,
 							}}
 							src={
 								API.getIllustrationURL(url) +
-								(props.quality == "original"
+								(props.quality === "original"
 									? ""
 									: `${
 											url.includes("?") ? "&" : "?"

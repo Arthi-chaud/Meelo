@@ -126,6 +126,7 @@ type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	customValidator: (value: unknown) => Promise<ReturnType>;
 }>;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: OK
 export default class API {
 	/**
 	 * Formats an array of include keys for Query keys
@@ -136,7 +137,7 @@ export default class API {
 		includes
 			? Object.entries(includes)
 					.filter(
-						([key, value]) =>
+						([_, value]) =>
 							value !== null &&
 							value !== undefined &&
 							value !== "view",
@@ -195,7 +196,7 @@ export default class API {
 			key: ["tasks"],
 			exec: () =>
 				API.fetch({
-					route: `/tasks`,
+					route: "/tasks",
 					errorMessage: "Tasks could not be loaded",
 					parameters: {},
 					service: Service.Scanner,
@@ -218,7 +219,7 @@ export default class API {
 			key: ["libraries"],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/libraries`,
+					route: "/libraries",
 					errorMessage: "Libraries could not be loaded",
 					parameters: { pagination: pagination, include: [] },
 					validator: PaginatedResponse(Library),
@@ -244,7 +245,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/playlists`,
+					route: "/playlists",
 					errorMessage: "Playlists could not be loaded",
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: filter,
@@ -349,7 +350,7 @@ export default class API {
 	 */
 	static async cleanLibraries(): Promise<TaskResponse> {
 		return API.fetch({
-			route: `/clean`,
+			route: "/clean",
 			errorMessage: "Library clean failed",
 			parameters: {},
 			service: Service.Scanner,
@@ -398,7 +399,7 @@ export default class API {
 	 */
 	static scanLibraries(): Promise<TaskResponse> {
 		return API.fetch<TaskResponse, []>({
-			route: `/scan`,
+			route: "/scan",
 			parameters: {},
 			service: Service.Scanner,
 			method: "POST",
@@ -416,7 +417,7 @@ export default class API {
 	): Promise<void> {
 		return API.fetch({
 			method: "POST",
-			route: `/refresh`,
+			route: "/refresh",
 			errorMessage: "Metadata Refresh request failed",
 			otherParameters: { [parentResourceType]: resourceSlugOrId },
 			parameters: {},
@@ -535,7 +536,7 @@ export default class API {
 		resourceType: "artist" | "release" | "track" | "playlist",
 	): Promise<unknown> {
 		return API.fetch({
-			route: `/illustrations/url`,
+			route: "/illustrations/url",
 			errorMessage: "Update Illustration Failed",
 			method: "POST",
 			parameters: {},
@@ -615,7 +616,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/artists`,
+					route: "/artists",
 					errorMessage: "Artists could not be loaded",
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: {
@@ -656,7 +657,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/albums`,
+					route: "/albums",
 					errorMessage: "Albums could not be loaded",
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: { ...filter },
@@ -685,7 +686,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/releases`,
+					route: "/releases",
 					errorMessage: "Releases could not be loaded",
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: filter,
@@ -724,7 +725,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/songs`,
+					route: "/songs",
 					errorMessage: "Songs could not be loaded",
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: { ...filter },
@@ -755,7 +756,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/song-groups`,
+					route: "/song-groups",
 					errorMessage: "Songs could not be loaded",
 					parameters: { pagination: pagination, include, sort },
 					otherParameters: { ...filter },
@@ -792,7 +793,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/videos`,
+					route: "/videos",
 					errorMessage: "Videos could not be loaded",
 					parameters: {
 						pagination: pagination,
@@ -937,7 +938,7 @@ export default class API {
 			key: ["search", query],
 			exec: () =>
 				API.fetch({
-					route: `/search`,
+					route: "/search",
 					errorMessage: "Search failed",
 					parameters: {},
 					otherParameters: { query },
@@ -951,7 +952,7 @@ export default class API {
 			key: ["search-history-items"],
 			exec: () =>
 				API.fetch({
-					route: `/search/history`,
+					route: "/search/history",
 					errorMessage: "Getting Search History failed",
 					parameters: {},
 					customValidator: SearchResultTransformer,
@@ -965,7 +966,7 @@ export default class API {
 	static saveSearchHistoryEntry(resource: SaveSearchItem): Promise<void> {
 		return API.fetch({
 			method: "POST",
-			route: `/search/history`,
+			route: "/search/history",
 			errorMessage: "Saving Search History failed",
 			parameters: {},
 			data: resource,
@@ -984,7 +985,7 @@ export default class API {
 			key: ["user", accessToken ?? ""],
 			exec: () =>
 				API.fetch({
-					route: `/users/me`,
+					route: "/users/me",
 					parameters: {},
 					validator: User,
 				}),
@@ -1002,7 +1003,7 @@ export default class API {
 			key: ["users", ...API.formatObject(sort)],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/users`,
+					route: "/users",
 					errorMessage: "Users could not be loaded",
 					parameters: { pagination: pagination, include: [], sort },
 					validator: PaginatedResponse(User),
@@ -1090,7 +1091,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/tracks`,
+					route: "/tracks",
 					otherParameters: filter,
 					parameters: { pagination: pagination, include, sort },
 					validator: PaginatedResponse(
@@ -1207,7 +1208,7 @@ export default class API {
 			],
 			exec: (pagination) =>
 				API.fetch({
-					route: `/genres`,
+					route: "/genres",
 					errorMessage: "Genres could not be loaded",
 					parameters: { pagination: pagination, include: [], sort },
 					otherParameters: filter,
@@ -1298,7 +1299,7 @@ export default class API {
 		};
 
 		const response = await fetch(
-			this.buildURL(route, parameters, otherParameters, service),
+			API.buildURL(route, parameters, otherParameters, service),
 			{
 				method: method ?? "GET",
 				body: data ? JSON.stringify(data) : undefined,
@@ -1347,11 +1348,10 @@ export default class API {
 
 			return validator.cast(validated);
 		} catch (err) {
-			// eslint-disable-next-line no-console
+			// biome-ignore lint/suspicious/noConsole: OK for debugging
 			console.error(jsonResponse, err);
 			throw new Error("Error: Invalid Response Type");
 		}
-		return jsonResponse;
 	}
 
 	/**
@@ -1360,20 +1360,20 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getIllustrationURL(imageURL: string): string {
-		if (this.isDev()) {
+		if (API.isDev()) {
 			return `${"/api"}${imageURL}`;
 		}
 		return `${process.env.PUBLIC_SERVER_URL ?? "/api"}${imageURL}`;
 	}
 
 	static getDirectStreamURL(fileId: number): string {
-		return this.buildURL(`/stream/${fileId}/direct`, {});
+		return API.buildURL(`/stream/${fileId}/direct`, {});
 	}
 	static getTranscodeStreamURL(fileId: number, type: TrackType): string {
-		if (type == "Video") {
-			return this.buildURL(`/stream/${fileId}/master.m3u8`, {});
+		if (type === "Video") {
+			return API.buildURL(`/stream/${fileId}/master.m3u8`, {});
 		}
-		return this.buildURL(`/stream/${fileId}/audio/0/index.m3u8`, {});
+		return API.buildURL(`/stream/${fileId}/audio/0/index.m3u8`, {});
 	}
 
 	/**
@@ -1382,7 +1382,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	static getReleaseArchiveURL(releaseId: number | string): string {
-		return this.buildURL(`/releases/${releaseId}/archive`, {});
+		return API.buildURL(`/releases/${releaseId}/archive`, {});
 	}
 
 	/**
@@ -1457,12 +1457,12 @@ export default class API {
 		otherParameters?: any,
 		service: Service = Service.API,
 	): string {
-		const apiHost = isSSR() ? this.SSR_API_URL : "/api";
-		const scannerHost = isSSR() ? this.SSR_SCANNER_URL : "/scanner";
+		const apiHost = isSSR() ? API.SSR_API_URL : "/api";
+		const scannerHost = isSSR() ? API.SSR_SCANNER_URL : "/scanner";
 
 		return `${
-			service == Service.API ? apiHost : scannerHost
-		}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
+			service === Service.API ? apiHost : scannerHost
+		}${route}${API.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
 	private static formatQueryParameters<Keys extends string[]>(
@@ -1478,11 +1478,11 @@ export default class API {
 			);
 		}
 		if ((parameters.include?.length ?? 0) !== 0) {
-			formattedQueryParams.push(this.formatInclude(parameters.include!)!);
+			formattedQueryParams.push(API.formatInclude(parameters.include!)!);
 		}
 		if (parameters.pagination) {
 			formattedQueryParams.push(
-				this.formatPagination(parameters.pagination),
+				API.formatPagination(parameters.pagination),
 			);
 		}
 		for (const otherParams in otherParameters) {
@@ -1501,7 +1501,7 @@ export default class API {
 	}
 
 	private static formatInclude(include: string[]): string | null {
-		if (include.length == 0) {
+		if (include.length === 0) {
 			return null;
 		}
 		return `with=${include.join(",")}`;
@@ -1509,7 +1509,7 @@ export default class API {
 
 	private static formatPagination(pagination: PaginationParameters): string {
 		const formattedParameters: string[] = [];
-		const pageSize = pagination.pageSize ?? this.defaultPageSize;
+		const pageSize = pagination.pageSize ?? API.defaultPageSize;
 		const afterId = pagination.afterId;
 
 		if (afterId !== undefined) {

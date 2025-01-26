@@ -97,7 +97,7 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			</Tabs>
 			{AvailablePanels.map(
 				(panelName) =>
-					panelName == panel && (
+					panelName === panel && (
 						<Box
 							key={panelName}
 							sx={{ paddingX: 1, paddingY: 2, width: "100%" }}

@@ -126,7 +126,7 @@ const ReleaseTrackList = ({
 											: currentTrack
 												? (currentTrack.song ??
 														currentTrack.video)!
-														.artistId !=
+														.artistId !==
 													mainArtist?.id
 												: false
 									}
@@ -172,7 +172,7 @@ const ReleaseTrackList = ({
 													),
 													cursor: flatTracklist.findIndex(
 														(flatTrack) =>
-															flatTrack.id ==
+															flatTrack.id ===
 															currentTrack.id,
 													),
 												}))
@@ -254,7 +254,7 @@ const ReleaseTrackList = ({
 												{t("remastered")}
 											</Typography>
 										)}
-										{currentTrack?.type == "Video" && (
+										{currentTrack?.type === "Video" && (
 											<Icon
 												sx={{
 													marginLeft: 2,

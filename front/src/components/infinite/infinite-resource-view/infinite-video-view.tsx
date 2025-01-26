@@ -61,7 +61,7 @@ const playVideosAction = (
 				}));
 			let i = 0;
 			for (const video of videos) {
-				if (i == 0) {
+				if (i === 0) {
 					playTrack(video);
 				} else {
 					playAfter(video);
@@ -93,7 +93,7 @@ const InfiniteVideoView = <
 	const query = {
 		type:
 			// @ts-ignore
-			options?.type == "All" ? undefined : (options?.type as VideoType),
+			options?.type === "All" ? undefined : (options?.type as VideoType),
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
@@ -145,7 +145,7 @@ const InfiniteVideoView = <
 				sortingKeys={VideoSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={"grid"}
 				actions={[playAction, shuffleAction]}
 			/>

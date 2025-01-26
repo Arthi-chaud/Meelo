@@ -58,7 +58,8 @@ export const SearchResultTransformer = (
 						"master",
 					] as const).validate(result),
 				};
-			} else if ("masterId" in result) {
+			}
+			if ("masterId" in result) {
 				return {
 					album: await AlbumWithRelations([
 						"artist",

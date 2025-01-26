@@ -24,7 +24,6 @@ import {
 	prepareMeeloQuery,
 	useInfiniteQuery,
 	useQuery,
-	useQueryClient,
 } from "../../../api/use-query";
 import {
 	Box,
@@ -109,7 +108,6 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	);
 	const { t } = useTranslation();
 	const router = useRouter();
-	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
 	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
@@ -172,7 +170,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 			</Tabs>
 			<Box sx={{ paddingY: 2 }}>
-				{selectedTab == "more" && (
+				{selectedTab === "more" && (
 					<>
 						<Head
 							title={
@@ -181,7 +179,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 						/>
 						{(!genres.data ||
-							(genres.data.pages.at(0)?.items.length ?? 0) !=
+							(genres.data.pages.at(0)?.items.length ?? 0) !==
 								0) && (
 							<Stack
 								direction="row"
@@ -237,7 +235,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Typography>
 					</>
 				)}
-				{selectedTab == "lyrics" && (
+				{selectedTab === "lyrics" && (
 					<>
 						<Head
 							title={
@@ -256,7 +254,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					</>
 				)}
-				{selectedTab == "versions" && (
+				{selectedTab === "versions" && (
 					<>
 						<Head
 							title={
@@ -286,7 +284,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					</>
 				)}
 
-				{selectedTab == "videos" && (
+				{selectedTab === "videos" && (
 					<>
 						<Head
 							title={
@@ -310,7 +308,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					</>
 				)}
-				{selectedTab == "tracks" && (
+				{selectedTab === "tracks" && (
 					<>
 						<Head
 							title={

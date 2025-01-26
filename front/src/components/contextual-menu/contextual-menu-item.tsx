@@ -29,7 +29,7 @@ const ContextualMenuItem = (props: Action & { onDialogClose: () => void }) => {
 		if (props.disabled === true) {
 			return;
 		}
-		props.onClick && props.onClick();
+		props.onClick?.();
 		if (props.dialog) {
 			setModalOpen(true);
 		}
