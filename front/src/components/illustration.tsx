@@ -67,8 +67,8 @@ const Illustration = (props: IllustrationProps) => {
 	const url =
 		props.url === null
 			? null
-			: props.url ??
-				(props.illustration === null ? null : props.illustration?.url);
+			: (props.url ??
+				(props.illustration === null ? null : props.illustration?.url));
 	const blurhash = props.illustration?.blurhash;
 	const aspectRatio =
 		props.aspectRatio ?? props.illustration?.aspectRatio ?? 1;

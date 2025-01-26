@@ -461,7 +461,7 @@ const ExpandedPlayerControls = (
 											track={{
 												...props.track,
 												song: props.track.songId
-													? parentSong.data ?? null
+													? (parentSong.data ?? null)
 													: null,
 											}}
 											onSelect={() =>

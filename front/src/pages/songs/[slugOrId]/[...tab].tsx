@@ -249,8 +249,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							songName={song.data?.name}
 							lyrics={
 								song.data
-									? song.data.lyrics?.content.split("\n") ??
-										null
+									? (song.data.lyrics?.content.split("\n") ??
+										null)
 									: undefined
 							}
 						/>

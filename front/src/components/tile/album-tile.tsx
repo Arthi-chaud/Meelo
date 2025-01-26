@@ -38,9 +38,9 @@ const AlbumTile = (props: {
 			subtitle={
 				props.album === undefined
 					? undefined
-					: props.formatSubtitle?.call(this, props.album) ??
+					: (props.formatSubtitle?.call(this, props.album) ??
 						props.album?.artist?.name ??
-						t("compilation")
+						t("compilation"))
 			}
 			onClick={props.onClick}
 			href={props.album ? `/albums/${props.album.slug}` : undefined}

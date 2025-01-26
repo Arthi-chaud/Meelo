@@ -39,8 +39,9 @@ const ScrollToTopButton = () => {
 	const { t } = useTranslation();
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
-		const position = document.getElementById(parentScrollableDivId)
-			?.scrollTop;
+		const position = document.getElementById(
+			parentScrollableDivId,
+		)?.scrollTop;
 
 		setBackToTopVisible((position ?? 0) > window.innerHeight);
 	};

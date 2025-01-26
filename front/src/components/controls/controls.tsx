@@ -125,7 +125,7 @@ const Controls = <
 					"asc",
 				library: props.disableLibrarySelector
 					? null
-					: libraryQuery ?? null,
+					: (libraryQuery ?? null),
 			};
 
 			props.options?.forEach((option) => {
@@ -306,9 +306,10 @@ const Controls = <
 								onClick={() => {
 									updateOptionState({
 										name: toggle.name,
-										value: !optionsState[
-											toggle.name as keyof OptionState<SortingKeys>
-										],
+										value:
+											!optionsState[
+												toggle.name as keyof OptionState<SortingKeys>
+											],
 									});
 								}}
 							>

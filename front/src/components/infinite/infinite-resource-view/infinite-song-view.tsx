@@ -119,7 +119,7 @@ const InfiniteSongView = <
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
-		groups: disableGroupingVersions ? false : options?.groups ?? false,
+		groups: disableGroupingVersions ? false : (options?.groups ?? false),
 		library: options?.library ?? null,
 	} as const;
 	const shuffleAction = {

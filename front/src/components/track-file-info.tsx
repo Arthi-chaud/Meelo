@@ -51,10 +51,10 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		bitRate: track.data ? `${track.data.bitrate} kbps` : undefined,
 		type: track.data?.type,
 		extension: sourceFile.data
-			? sourceFile.data.path
+			? (sourceFile.data.path
 					.split(".")
 					.reverse()[0]
-					.toLocaleUpperCase() ?? "Unknown"
+					.toLocaleUpperCase() ?? "Unknown")
 			: undefined,
 		path: sourceFile.data?.path,
 		registrationDate: sourceFile.data
