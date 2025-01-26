@@ -1,0 +1,23 @@
+{
+	"extends": ["../biome.json"],
+	"formatter": {
+		"lineWidth": 80
+	},
+	"files": {
+		"ignore": ["**/.next/**"]
+	},
+	"linter": {
+		"rules": {
+			"nursery": {
+				"noRestrictedImports": {
+					"options": {
+						"paths": {
+							"format-duration": "Use wrapper from 'theme/provider'",
+							"@mui/icons-material": "Use icons in 'src/components/icons'"
+						}
+					}
+				}
+			}
+		}
+	}
+}
