@@ -18,10 +18,10 @@
 
 import { Chip, Grid, Skeleton, Typography, useTheme } from "@mui/material";
 import Link from "next/link";
-import type IllustrationModel from "../../models/illustration";
-import Illustration from "../illustration";
 import { useMemo } from "react";
+import type IllustrationModel from "../../models/illustration";
 import { useAccentColor } from "../../utils/accent-color";
+import Illustration from "../illustration";
 
 type HighlightCardProps = {
 	title: string | undefined;

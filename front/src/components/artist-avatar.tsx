@@ -17,9 +17,9 @@
  */
 
 import { Avatar } from "@mui/material";
-import Illustration from "./illustration";
-import type IllustrationModel from "../models/illustration";
 import type { ComponentProps } from "react";
+import type IllustrationModel from "../models/illustration";
+import Illustration from "./illustration";
 
 const ArtistAvatar = (props: {
 	illustration: IllustrationModel | undefined | null;

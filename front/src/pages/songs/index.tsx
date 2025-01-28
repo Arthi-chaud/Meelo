@@ -1,11 +1,11 @@
-import { SongSortingKeys } from "../../models/song";
-import API from "../../api/api";
-import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import type { NextPageContext } from "next";
-import { Head } from "../../components/head";
 import { useTranslation } from "react-i18next";
+import API from "../../api/api";
+import { Head } from "../../components/head";
+import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import { SongSortingKeys } from "../../models/song";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";

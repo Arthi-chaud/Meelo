@@ -19,23 +19,23 @@
 import { useRouter } from "next/router";
 import { type ComponentProps, useState } from "react";
 import {
-	VideoSortingKeys,
-	VideoType,
-	type VideoWithRelations,
-} from "../../../models/video";
-import Controls, { type OptionState } from "../../controls/controls";
-import InfiniteView from "../infinite-view";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import VideoTile from "../../tile/video-tile";
-import { PlayIcon, ShuffleIcon } from "../../icons";
-import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
-import {
 	type InfiniteQuery,
 	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
+import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
+import {
+	VideoSortingKeys,
+	VideoType,
+	type VideoWithRelations,
+} from "../../../models/video";
+import Controls, { type OptionState } from "../../controls/controls";
+import { PlayIcon, ShuffleIcon } from "../../icons";
 import VideoItem from "../../list-item/video-item";
+import VideoTile from "../../tile/video-tile";
+import InfiniteView from "../infinite-view";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const playVideosAction = (
 	emptyPlaylist: PlayerActions["emptyPlaylist"],

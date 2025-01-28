@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import Controls, { type OptionState } from "../../controls/controls";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import {
 	TrackSortingKeys,
 	type TrackWithRelations,
 } from "../../../models/track";
+import Controls, { type OptionState } from "../../controls/controls";
 import TrackItem from "../../list-item/track-item";
 import InfiniteView from "../infinite-view";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteTrackView = (
 	props: InfiniteResourceViewProps<

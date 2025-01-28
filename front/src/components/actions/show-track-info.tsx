@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InfoIcon } from "../icons";
-import type Action from "./action";
 import type { useConfirm } from "material-ui-confirm";
 import API from "../../api/api";
-import { openTrackFileInfoModal } from "../track-file-info";
 import type { QueryClient } from "../../api/use-query";
+import { InfoIcon } from "../icons";
+import { openTrackFileInfoModal } from "../track-file-info";
+import type Action from "./action";
 
 export const ShowTrackFileInfoAction = (
 	confirm: ReturnType<typeof useConfirm>,

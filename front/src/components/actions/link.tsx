@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { NextRouter } from "next/router";
+import toast from "react-hot-toast";
 import {
 	AlbumIcon,
 	ArtistIcon,
@@ -25,9 +27,7 @@ import {
 	SettingsIcon,
 	SongIcon,
 } from "../icons";
-import type { NextRouter } from "next/router";
 import type Action from "./action";
-import toast from "react-hot-toast";
 
 export const GoToSongLyricsAction = (
 	songIdentifier: string | number,

@@ -17,6 +17,35 @@
  */
 
 import {
+	Box,
+	Button,
+	ButtonBase,
+	Container,
+	Divider,
+	Grid,
+	IconButton,
+	Skeleton,
+	Stack,
+	Typography,
+	useTheme,
+} from "@mui/material";
+import Link from "next/link";
+import {
+	type ComponentProps,
+	type LegacyRef,
+	useCallback,
+	useState,
+} from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import API from "../../api/api";
+import { useQuery } from "../../api/use-query";
+import { usePlayerContext } from "../../contexts/player";
+import type Artist from "../../models/artist";
+import type { TrackWithRelations } from "../../models/track";
+import formatArtists from "../../utils/formatArtists";
+import formatDuration from "../../utils/formatDuration";
+import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
+import {
 	CloseIcon,
 	ContextualMenuIcon,
 	DragHandleIcon,
@@ -30,39 +59,10 @@ import {
 	RewindIcon,
 	TrackIcon,
 } from "../icons";
-import {
-	Box,
-	Button,
-	ButtonBase,
-	Container,
-	Divider,
-	Grid,
-	IconButton,
-	Skeleton,
-	Stack,
-	Typography,
-	useTheme,
-} from "@mui/material";
 import Illustration from "../illustration";
-import {
-	type ComponentProps,
-	type LegacyRef,
-	useCallback,
-	useState,
-} from "react";
-import PlayerSlider from "./controls/slider";
-import API from "../../api/api";
-import { useQuery } from "../../api/use-query";
-import LyricsBox from "../lyrics";
-import type { TrackWithRelations } from "../../models/track";
-import type Artist from "../../models/artist";
-import Link from "next/link";
-import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import ListItem from "../list-item/item";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import formatDuration from "../../utils/formatDuration";
-import formatArtists from "../../utils/formatArtists";
-import { usePlayerContext } from "../../contexts/player";
+import LyricsBox from "../lyrics";
+import PlayerSlider from "./controls/slider";
 
 const parentSongQuery = (id: number) =>
 	API.getSong(id, ["artist", "lyrics", "featuring"]);

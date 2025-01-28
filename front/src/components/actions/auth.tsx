@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LogoutIcon } from "../icons";
 import store from "../../state/store";
 import { unsetAccessToken } from "../../state/userSlice";
+import { LogoutIcon } from "../icons";
 import type Action from "./action";
 
 export const LogoutAction: Action = {

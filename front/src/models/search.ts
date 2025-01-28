@@ -17,9 +17,9 @@
  */
 
 import type { RequireExactlyOne } from "type-fest";
-import { SongWithRelations } from "./song";
-import { ArtistWithRelations } from "./artist";
 import { AlbumWithRelations } from "./album";
+import { ArtistWithRelations } from "./artist";
+import { SongWithRelations } from "./song";
 import { VideoWithRelations } from "./video";
 
 export type SearchResult = RequireExactlyOne<{

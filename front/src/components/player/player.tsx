@@ -24,19 +24,19 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
-import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import API from "../../api/api";
-import type { RootState } from "../../state/store";
-import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
-import { toast } from "react-hot-toast";
-import { DrawerBreakpoint } from "../scaffold/scaffold";
-import { useTranslation } from "react-i18next";
-import { useReadLocalStorage } from "usehooks-ts";
-import { usePlayerContext } from "../../contexts/player";
 import Hls from "hls.js";
+import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
+import API from "../../api/api";
 import { useKeyboardBinding } from "../../contexts/keybindings";
+import { usePlayerContext } from "../../contexts/player";
+import type { RootState } from "../../state/store";
+import { DrawerBreakpoint } from "../scaffold/scaffold";
+import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 
 const Player = () => {
 	const { t } = useTranslation();

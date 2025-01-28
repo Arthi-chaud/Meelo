@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PlaylistIcon } from "../icons";
 import type { PlaylistWithRelations } from "../../models/playlist";
+import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
+import { PlaylistIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";
-import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 
 type PlaylistItemProps = {
 	playlist: PlaylistWithRelations<"illustration"> | undefined;

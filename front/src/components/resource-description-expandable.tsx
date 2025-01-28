@@ -17,9 +17,9 @@
  */
 
 import { Box, Link, Skeleton } from "@mui/material";
-import type { CommonExternalMetadata } from "../models/external-metadata";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { CommonExternalMetadata } from "../models/external-metadata";
 import { generateArray } from "../utils/gen-list";
 
 type Props = {

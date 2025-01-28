@@ -18,10 +18,10 @@
 
 // eslint-disable-next-line no-restricted-imports
 import type { NextPageContext } from "next";
+import type { ComponentType } from "react";
 // eslint-disable-next-line no-restricted-imports
 import type { QueryClient } from "react-query";
 import type { InfiniteQuery, Query } from "./api/use-query";
-import type { ComponentType } from "react";
 
 type PromiseOr<T> = T | Promise<T>;
 

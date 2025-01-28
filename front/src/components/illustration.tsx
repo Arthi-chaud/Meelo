@@ -19,15 +19,15 @@
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
-import API from "../api/api";
-import whiteIllustrationFallback from "../../public/icon.png";
-import blackIllustrationFallback from "../../public/icon-black.png";
 import type { RequireExactlyOne } from "type-fest";
+import blackIllustrationFallback from "../../public/icon-black.png";
+import whiteIllustrationFallback from "../../public/icon.png";
+import API from "../api/api";
 import type IllustrationModel from "../models/illustration";
+import { isSSR } from "../utils/is-ssr";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
 import ThemedImage from "./themed-image";
-import { isSSR } from "../utils/is-ssr";
 
 type ImageQuality = "low" | "medium" | "high" | "original";
 

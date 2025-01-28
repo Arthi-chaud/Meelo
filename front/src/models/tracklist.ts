@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as yup from "yup";
 import Song, { type SongInclude, SongRelations } from "./song";
 import { TrackWithRelations } from "./track";
-import * as yup from "yup";
 import Video, { VideoRelations } from "./video";
 
 export const TracklistItem = TrackWithRelations(["illustration"])

@@ -21,14 +21,14 @@ import {
 	CssBaseline,
 	GlobalStyles,
 } from "@mui/material";
-import Styles from "./style";
-import { DarkTheme, GlobalTheme, LightTheme } from "./theme";
-import font from "./font";
 import {
 	Experimental_CssVarsProvider as CssVarsProvider,
 	experimental_extendTheme as extendTheme,
 	responsiveFontSizes,
 } from "@mui/material/styles";
+import font from "./font";
+import Styles from "./style";
+import { DarkTheme, GlobalTheme, LightTheme } from "./theme";
 
 /**
  * Provides the Theme

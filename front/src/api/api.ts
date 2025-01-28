@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { RequireExactlyOne } from "type-fest";
+import * as yup from "yup";
+import { ResourceNotFound } from "../exceptions";
 import {
 	type AlbumInclude,
 	type AlbumSortingKeys,
@@ -27,16 +30,33 @@ import {
 	type ArtistSortingKeys,
 	ArtistWithRelations,
 } from "../models/artist";
+import {
+	AlbumExternalMetadata,
+	ArtistExternalMetadata,
+	SongExternalMetadata,
+} from "../models/external-metadata";
+import File from "../models/file";
 import Genre from "../models/genre";
 import Library from "../models/library";
 import PaginatedResponse, {
 	type PaginationParameters,
 } from "../models/pagination";
+import Playlist, {
+	PlaylistEntryWithRelations,
+	type PlaylistInclude,
+	type PlaylistSortingKeys,
+	PlaylistWithRelations,
+} from "../models/playlist";
 import {
 	type ReleaseInclude,
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
 } from "../models/release";
+import {
+	type SaveSearchItem,
+	type SearchResult,
+	SearchResultTransformer,
+} from "../models/search";
 import {
 	type SongInclude,
 	type SongSortingKeys,
@@ -44,11 +64,10 @@ import {
 	SongWithRelations,
 } from "../models/song";
 import {
-	type VideoInclude,
-	type VideoSortingKeys,
-	type VideoType,
-	VideoWithRelations,
-} from "../models/video";
+	type SongGroupSortingKeys,
+	SongGroupWithRelations,
+} from "../models/song-group";
+import { TaskResponse } from "../models/task";
 import {
 	type TrackInclude,
 	type TrackSortingKeys,
@@ -56,36 +75,17 @@ import {
 	TrackWithRelations,
 } from "../models/track";
 import { TracklistItemWithRelations } from "../models/tracklist";
-import type { SortingParameters } from "../utils/sorting";
-import { ResourceNotFound } from "../exceptions";
 import User, { type UserSortingKeys } from "../models/user";
+import {
+	type VideoInclude,
+	type VideoSortingKeys,
+	type VideoType,
+	VideoWithRelations,
+} from "../models/video";
 import store from "../state/store";
-import File from "../models/file";
-import type { InfiniteQuery, Query } from "./use-query";
-import * as yup from "yup";
-import type { RequireExactlyOne } from "type-fest";
-import Playlist, {
-	PlaylistEntryWithRelations,
-	type PlaylistInclude,
-	type PlaylistSortingKeys,
-	PlaylistWithRelations,
-} from "../models/playlist";
 import { isSSR } from "../utils/is-ssr";
-import { TaskResponse } from "../models/task";
-import {
-	AlbumExternalMetadata,
-	ArtistExternalMetadata,
-	SongExternalMetadata,
-} from "../models/external-metadata";
-import {
-	type SaveSearchItem,
-	type SearchResult,
-	SearchResultTransformer,
-} from "../models/search";
-import {
-	type SongGroupSortingKeys,
-	SongGroupWithRelations,
-} from "../models/song-group";
+import type { SortingParameters } from "../utils/sorting";
+import type { InfiniteQuery, Query } from "./use-query";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),

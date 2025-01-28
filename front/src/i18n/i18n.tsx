@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import ALParser from "accept-language-parser";
+import { getCookie, setCookie } from "cookies-next";
 import i18next, {
 	type InitOptions,
 	type KeysBuilderWithoutReturnObjects,
 } from "i18next";
+import type { AppContext, AppInitialProps, AppProps } from "next/app";
+import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
+import { LanguageCookieKey } from "../utils/cookieKeys";
+import { isSSR } from "../utils/is-ssr";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
-import { getCookie, setCookie } from "cookies-next";
-import { LanguageCookieKey } from "../utils/cookieKeys";
-import { type ComponentType, useMemo } from "react";
-import type { AppContext, AppInitialProps, AppProps } from "next/app";
-import ALParser from "accept-language-parser";
-import { isSSR } from "../utils/is-ssr";
 
 const Languages = ["en", "fr"] as const;
 const Resources = { en, fr };

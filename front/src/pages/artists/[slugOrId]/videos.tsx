@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import API from "../../../api/api";
-import getSlugOrId from "../../../utils/getSlugOrId";
-import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import type { GetPropsTypesFrom, Page } from "../../../ssr";
-import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
-import { VideoSortingKeys } from "../../../models/video";
-import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
-import { useQuery } from "../../../api/use-query";
 import type { NextPageContext } from "next";
-import { useGradientBackground } from "../../../utils/gradient-background";
-import { Head } from "../../../components/head";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
+import API from "../../../api/api";
+import { useQuery } from "../../../api/use-query";
+import { Head } from "../../../components/head";
+import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
+import { VideoSortingKeys } from "../../../models/video";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
+import getSlugOrId from "../../../utils/getSlugOrId";
+import { useGradientBackground } from "../../../utils/gradient-background";
+import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);

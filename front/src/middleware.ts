@@ -17,13 +17,13 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
+// eslint-disable-next-line no-restricted-imports
+import { QueryClient } from "react-query";
 import API from "./api/api";
+import { prepareMeeloQuery } from "./api/use-query";
 import store from "./state/store";
 import { setAccessToken } from "./state/userSlice";
 import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
-// eslint-disable-next-line no-restricted-imports
-import { QueryClient } from "react-query";
-import { prepareMeeloQuery } from "./api/use-query";
 
 export async function middleware(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;

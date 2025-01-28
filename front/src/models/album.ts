@@ -18,9 +18,9 @@
 
 import * as yup from "yup";
 import Artist from "./artist";
+import Genre from "./genre";
 import Illustration from "./illustration";
 import Resource from "./resource";
-import Genre from "./genre";
 
 export const AlbumType = [
 	"StudioRecording",

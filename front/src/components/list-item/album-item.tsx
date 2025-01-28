@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useTranslation } from "react-i18next";
+import type { AlbumWithRelations } from "../../models/album";
+import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import Illustration from "../illustration";
 import ListItem from "./item";
-import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
-import type { AlbumWithRelations } from "../../models/album";
-import { useTranslation } from "react-i18next";
 
 type AlbumItemProps = {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;

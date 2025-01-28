@@ -17,14 +17,14 @@
  */
 
 import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
-import SectionHeader from "../section-header";
 import { useColorScheme } from "@mui/material/styles";
-import { type Language, Languages, persistLanguage } from "../../i18n/i18n";
+import { Book1, Star, Warning2 } from "iconsax-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
-import Link from "next/link";
-import { Book1, Star, Warning2 } from "iconsax-react";
+import { type Language, Languages, persistLanguage } from "../../i18n/i18n";
+import SectionHeader from "../section-header";
 
 const SettingGroupStyle = {
 	paddingTop: 1,

@@ -17,18 +17,18 @@
  */
 
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
-import API from "../../api/api";
-import type User from "../../models/user";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../state/store";
-import { useMutation } from "react-query";
-import { useQueryClient } from "../../api/use-query";
-import { toast } from "react-hot-toast";
-import { useConfirm } from "material-ui-confirm";
 import type { GridColDef } from "@mui/x-data-grid";
+import { useConfirm } from "material-ui-confirm";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import { useSelector } from "react-redux";
+import API from "../../api/api";
+import { useQueryClient } from "../../api/use-query";
+import type User from "../../models/user";
+import type { RootState } from "../../state/store";
 import AdminGrid from "../admin-grid";
 import { DeleteIcon } from "../icons";
-import { useTranslation } from "react-i18next";
 
 const DeleteButton = ({
 	userId,

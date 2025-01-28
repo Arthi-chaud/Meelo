@@ -23,9 +23,9 @@ import {
 	DialogTitle,
 	Grid,
 } from "@mui/material";
-import type Library from "../models/library";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useTranslation } from "react-i18next";
+import type Library from "../models/library";
 
 type LibraryFormFields = Pick<Library, "name" | "path">;
 

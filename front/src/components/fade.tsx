@@ -18,8 +18,8 @@
 
 // eslint-disable-next-line no-restricted-imports
 import { Fade as MUIFade } from "@mui/material";
-import { isClientSideRendering } from "../utils/is-ssr";
 import type { ComponentProps } from "react";
+import { isClientSideRendering } from "../utils/is-ssr";
 /**
  * Wrapper around MUI's Fade.
  * Fade is the main animation used in the app.

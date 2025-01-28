@@ -17,8 +17,8 @@
  */
 
 import type Action from "../actions/action";
-import { GoToSearchAction, GoToSettingsAction } from "../actions/link";
 import { LogoutAction } from "../actions/auth";
+import { GoToSearchAction, GoToSettingsAction } from "../actions/link";
 
 /**
  * Collections of actions that are accessible from appbar and drawer

@@ -17,9 +17,9 @@
  */
 
 import { Box, Button, Skeleton } from "@mui/material";
-import Illustration from "./illustration";
 import Link from "next/link";
 import type { ExternalMetadataSource } from "../models/external-metadata";
+import Illustration from "./illustration";
 
 type ExternalMetadataBadgeProps = {
 	source: ExternalMetadataSource | undefined;

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Box, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";
-import { Box, useTheme } from "@mui/material";
 import Fade from "../fade";
 
 /**

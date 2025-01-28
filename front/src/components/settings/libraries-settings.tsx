@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AddIcon, DeleteIcon, EditIcon } from "../icons";
 import {
 	Box,
 	Button,
@@ -32,25 +31,26 @@ import {
 	useTheme,
 } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
+import { useConfirm } from "material-ui-confirm";
+import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import { useQuery, useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
+import { useQuery, useQueryClient } from "../../api/use-query";
 import type Library from "../../models/library";
-import AdminGrid from "../admin-grid";
+import type Action from "../actions/action";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,
 	ScanAllLibrariesAction,
 	ScanLibraryAction,
 } from "../actions/library-task";
-import { useConfirm } from "material-ui-confirm";
-import type Action from "../actions/action";
-import { type ComponentProps, useMemo, useState } from "react";
-import LibraryForm from "../library-form";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
+import AdminGrid from "../admin-grid";
+import { AddIcon, DeleteIcon, EditIcon } from "../icons";
+import LibraryForm from "../library-form";
 import SectionHeader from "../section-header";
-import { useTranslation } from "react-i18next";
 
 const actionButtonStyle = {
 	overflow: "hidden",

@@ -17,6 +17,7 @@
  */
 
 import { Box, Button, Grid } from "@mui/material";
+import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseInfiniteQueryResult, UseQueryResult } from "react-query";
@@ -27,14 +28,13 @@ import type { SongWithRelations } from "../models/song";
 import type { VideoWithRelations } from "../models/video";
 import { generateArray } from "../utils/gen-list";
 import getYear from "../utils/getYear";
+import Fade from "./fade";
 import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";
 import SongGrid from "./song-grid";
 import TileRow from "./tile-row";
 import AlbumTile from "./tile/album-tile";
 import VideoTile from "./tile/video-tile";
-import Fade from "./fade";
-import Link from "next/link";
 
 export const SectionPadding = 4;
 

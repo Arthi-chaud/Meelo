@@ -1,11 +1,11 @@
-import { VideoSortingKeys } from "../../models/video";
-import API from "../../api/api";
-import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
-import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
+import API from "../../api/api";
 import { Head } from "../../components/head";
+import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import { VideoSortingKeys } from "../../models/video";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";

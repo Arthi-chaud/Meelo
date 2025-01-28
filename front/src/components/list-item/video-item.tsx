@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Illustration from "../illustration";
-import ListItem from "./item";
 import { useEffect, useState } from "react";
-import { VideoIcon } from "../icons";
-import formatArtists from "../../utils/formatArtists";
 import { usePlayerContext } from "../../contexts/player";
 import type { VideoWithRelations } from "../../models/video";
+import formatArtists from "../../utils/formatArtists";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
+import { VideoIcon } from "../icons";
+import Illustration from "../illustration";
+import ListItem from "./item";
 
 type VideoType = VideoWithRelations<"artist" | "master" | "illustration">;
 

@@ -17,10 +17,10 @@
  */
 
 import type { PlaylistWithRelations } from "../../models/playlist";
-import Tile from "./tile";
-import Illustration from "../illustration";
 import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
 import { PlaylistIcon } from "../icons";
+import Illustration from "../illustration";
+import Tile from "./tile";
 
 const PlaylistTile = ({
 	playlist,

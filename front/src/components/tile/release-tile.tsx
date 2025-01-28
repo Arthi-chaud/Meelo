@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Tile from "./tile";
-import Illustration from "../illustration";
 import type { ReleaseWithRelations } from "../../models/release";
 import getYear from "../../utils/getYear";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
+import Illustration from "../illustration";
+import Tile from "./tile";
 
 const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"album" | "illustration"> | undefined;

@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type * as React from "react";
+import createEmotionServer from "@emotion/server/create-instance";
+import { getInitColorSchemeScript } from "@mui/material/styles";
+import type { AppType } from "next/app";
 import Document, {
 	type DocumentContext,
 	type DocumentProps,
@@ -25,13 +27,11 @@ import Document, {
 	Main,
 	NextScript,
 } from "next/document";
-import createEmotionServer from "@emotion/server/create-instance";
-import type { AppType } from "next/app";
+import type * as React from "react";
+import font from "../theme/font";
 import { LightTheme } from "../theme/theme";
 import createEmotionCache from "../utils/createEmotionCache";
 import type { MyAppProps } from "./_app";
-import font from "../theme/font";
-import { getInitColorSchemeScript } from "@mui/material/styles";
 
 interface MyDocumentProps extends DocumentProps {
 	emotionStyleTags: JSX.Element[];

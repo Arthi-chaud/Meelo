@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
+import { type ComponentProps, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	AlbumSortingKeys,
 	AlbumType,
 	type AlbumWithRelations,
 } from "../../../models/album";
+import Controls, { type OptionState } from "../../controls/controls";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
-import Controls, { type OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
-import { useRouter } from "next/router";
-import { type ComponentProps, useState } from "react";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { useTranslation } from "react-i18next";
 
 type AdditionalProps = { type?: AlbumType };
 

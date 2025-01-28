@@ -16,23 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MasterIcon, UpgradeIcon } from "../icons";
-import { toast } from "react-hot-toast";
-import { useMutation } from "react-query";
-import { useQueryClient } from "../../api/use-query";
-import API from "../../api/api";
-import ContextualMenu from "./contextual-menu";
-import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../state/store";
-import { ShareReleaseAction } from "../actions/share";
-import { DownloadReleaseAction } from "../actions/download";
 import { useConfirm } from "material-ui-confirm";
-import type { ReleaseWithRelations } from "../../models/release";
-import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
-import { ChangeAlbumType } from "../actions/resource-type";
-import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import { useSelector } from "react-redux";
+import API from "../../api/api";
+import { useQueryClient } from "../../api/use-query";
+import type { ReleaseWithRelations } from "../../models/release";
+import type { RootState } from "../../state/store";
+import { DownloadReleaseAction } from "../actions/download";
+import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
+import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
+import { ChangeAlbumType } from "../actions/resource-type";
+import { ShareReleaseAction } from "../actions/share";
+import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
+import { MasterIcon, UpgradeIcon } from "../icons";
+import ContextualMenu from "./contextual-menu";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<"album">;

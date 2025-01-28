@@ -18,8 +18,8 @@
 
 import * as yup from "yup";
 import Album from "./album";
-import Resource from "./resource";
 import Illustration from "./illustration";
+import Resource from "./resource";
 
 /**
  * A version of an album

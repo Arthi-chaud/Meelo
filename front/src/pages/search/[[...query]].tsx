@@ -16,34 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SearchIcon } from "../../components/icons";
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
-import API from "../../api/api";
 import type { NextPageContext } from "next";
-import { Head } from "../../components/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useTabRouter } from "../../components/tab-router";
-import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
-import InfiniteView from "../../components/infinite/infinite-view";
+import { useMutation } from "react-query";
+import API from "../../api/api";
 import {
 	type Query,
 	toInfiniteQuery,
 	transformPage,
 	useQueryClient,
 } from "../../api/use-query";
-import AlbumItem from "../../components/list-item/album-item";
-import SongItem from "../../components/list-item/song-item";
-import ArtistItem from "../../components/list-item/artist-item";
-import { useMutation } from "react-query";
-import type { SaveSearchItem, SearchResult } from "../../models/search";
-import formatArtists from "../../utils/formatArtists";
+import { Head } from "../../components/head";
+import { SearchIcon } from "../../components/icons";
+import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
+import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
+import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import InfiniteView from "../../components/infinite/infinite-view";
+import AlbumItem from "../../components/list-item/album-item";
+import ArtistItem from "../../components/list-item/artist-item";
+import SongItem from "../../components/list-item/song-item";
 import VideoItem from "../../components/list-item/video-item";
+import { useTabRouter } from "../../components/tab-router";
+import type { SaveSearchItem, SearchResult } from "../../models/search";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import formatArtists from "../../utils/formatArtists";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;

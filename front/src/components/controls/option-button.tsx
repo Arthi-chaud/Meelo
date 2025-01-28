@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CheckIcon } from "../icons";
 import { Button, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TranslationKey } from "../../i18n/i18n";
+import { CheckIcon } from "../icons";
 import type Option from "./option";
 import type { OptionGroup } from "./option";
-import { useState } from "react";
-import type { TranslationKey } from "../../i18n/i18n";
-import { useTranslation } from "react-i18next";
 
 type OptionButtonProps<
 	Options extends Option<OptionsKeys[number]>[],

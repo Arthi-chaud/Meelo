@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as yup from "yup";
 import Illustration from "./illustration";
 import Resource from "./resource";
-import * as yup from "yup";
 
 const Artist = Resource.concat(
 	yup.object({

@@ -19,8 +19,8 @@
 import toast from "react-hot-toast";
 import API from "../../api/api";
 import type { TaskResponse } from "../../models/task";
-import type Action from "./action";
 import { CleanIcon, ScanIcon } from "../icons";
+import type Action from "./action";
 
 /**
  * Using the resolved value of the task porimise, triggers an appropriate toast

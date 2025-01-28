@@ -17,25 +17,25 @@
  */
 
 import { Box } from "@mui/material";
+import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
 import API from "../../../api/api";
-import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
-import getSlugOrId from "../../../utils/getSlugOrId";
-import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import {
 	prepareMeeloInfiniteQuery,
 	useQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { SongSortingKeys } from "../../../models/song";
-import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
-import type Track from "../../../models/track";
-import type { NextPageContext } from "next";
-import type { QueryClient } from "react-query";
-import { useGradientBackground } from "../../../utils/gradient-background";
 import { Head } from "../../../components/head";
-import { useTranslation } from "react-i18next";
+import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
+import { SongSortingKeys } from "../../../models/song";
+import type Track from "../../../models/track";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
+import getSlugOrId from "../../../utils/getSlugOrId";
+import { useGradientBackground } from "../../../utils/gradient-background";
+import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);

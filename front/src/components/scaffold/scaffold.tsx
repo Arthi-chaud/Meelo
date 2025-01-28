@@ -31,7 +31,14 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
+import type {} from "@mui/material/themeCssVarsAugmentation";
 import { deepmerge } from "@mui/utils";
+import type { IconProps } from "iconsax-react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { RootGradientBackground } from "../../utils/gradient-background";
 import {
 	AlbumIcon,
 	ArtistIcon,
@@ -40,17 +47,10 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "../icons";
-import Link from "next/link";
-import Player from "../player/player";
-import { useRouter } from "next/router";
-import type { IconProps } from "iconsax-react";
-import { useEffect, useState } from "react";
-import scaffoldActions from "./actions";
-import type {} from "@mui/material/themeCssVarsAugmentation";
-import ThemedImage from "../themed-image";
-import { useTranslation } from "react-i18next";
-import { RootGradientBackground } from "../../utils/gradient-background";
 import { parentScrollableDivId } from "../infinite/infinite-scroll";
+import Player from "../player/player";
+import ThemedImage from "../themed-image";
+import scaffoldActions from "./actions";
 
 /**
  * Array of possible item types

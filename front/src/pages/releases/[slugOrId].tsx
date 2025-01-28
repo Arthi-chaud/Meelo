@@ -30,50 +30,50 @@ import {
 	useTheme,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useRouter } from "next/router";
-import API from "../../api/api";
-import Illustration from "../../components/illustration";
-import formatDuration from "../../utils/formatDuration";
-import { useEffect, useMemo, useState } from "react";
+import { shuffle } from "d3-array";
+import { Star1 } from "iconsax-react";
+import type { NextPageContext } from "next";
 import Link from "next/link";
-import { PlayIcon, ShuffleIcon } from "../../components/icons";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
+import API from "../../api/api";
 import {
 	prepareMeeloQuery,
 	useInfiniteQuery,
 	useQuery,
 } from "../../api/use-query";
-import { shuffle } from "d3-array";
-import getSlugOrId from "../../utils/getSlugOrId";
-import ReleaseTrackList from "../../components/release-tracklist";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
+import ExternalMetadataBadge from "../../components/external-metadata-badge";
+import Fade from "../../components/fade";
+import GenreButton from "../../components/genre-button";
+import { Head } from "../../components/head";
+import { PlayIcon, ShuffleIcon } from "../../components/icons";
+import Illustration from "../../components/illustration";
+import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
+import ReleaseTrackList from "../../components/release-tracklist";
+import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
+import SongGrid from "../../components/song-grid";
 import TileRow from "../../components/tile-row";
-import VideoTile from "../../components/tile/video-tile";
+import AlbumTile from "../../components/tile/album-tile";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
-import SongGrid from "../../components/song-grid";
-import AlbumTile from "../../components/tile/album-tile";
-import getYear from "../../utils/getYear";
-import Fade from "../../components/fade";
-import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
-import { Star1 } from "iconsax-react";
-import GenreButton from "../../components/genre-button";
-import type { SongWithRelations } from "../../models/song";
-import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
-import { useAccentColor } from "../../utils/accent-color";
-import { useTranslation } from "react-i18next";
-import { generateArray } from "../../utils/gen-list";
+import VideoTile from "../../components/tile/video-tile";
 import { usePlayerContext } from "../../contexts/player";
-import type { NextPageContext } from "next";
-import type { QueryClient } from "react-query";
-import { useGradientBackground } from "../../utils/gradient-background";
+import type { SongWithRelations } from "../../models/song";
 import type Tracklist from "../../models/tracklist";
 import type { TracklistItemWithRelations } from "../../models/tracklist";
-import { Head } from "../../components/head";
+import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import { useAccentColor } from "../../utils/accent-color";
+import formatDuration from "../../utils/formatDuration";
+import { generateArray } from "../../utils/gen-list";
+import getSlugOrId from "../../utils/getSlugOrId";
+import getYear from "../../utils/getYear";
+import { useGradientBackground } from "../../utils/gradient-background";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
-import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
-import ExternalMetadataBadge from "../../components/external-metadata-badge";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "illustration"]);

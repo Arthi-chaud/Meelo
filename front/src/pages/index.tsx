@@ -17,30 +17,30 @@
  */
 
 import { Box, Grid, Stack } from "@mui/material";
+import type { NextPageContext } from "next";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
 import API from "../api/api";
-import type { GetPropsTypesFrom, Page } from "../ssr";
 import {
 	prepareMeeloInfiniteQuery,
 	useInfiniteQuery,
 	useQueries,
 	type useQuery,
 } from "../api/use-query";
+import Fade from "../components/fade";
+import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 import SectionHeader from "../components/section-header";
+import SongGrid from "../components/song-grid";
 import TileRow from "../components/tile-row";
 import AlbumTile from "../components/tile/album-tile";
 import ArtistTile from "../components/tile/artist-tile";
-import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
-import Fade from "../components/fade";
-import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { generateArray } from "../utils/gen-list";
-import { getRandomNumber } from "../utils/random";
-import { useGradientBackground } from "../utils/gradient-background";
-import type { QueryClient } from "react-query";
-import type { NextPageContext } from "next";
 import type { AlbumExternalMetadata } from "../models/external-metadata";
+import type { GetPropsTypesFrom, Page } from "../ssr";
+import { generateArray } from "../utils/gen-list";
+import { useGradientBackground } from "../utils/gradient-background";
+import { getRandomNumber } from "../utils/random";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},

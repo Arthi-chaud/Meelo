@@ -20,8 +20,7 @@ import {
 	type StateFromReducersMapObject,
 	configureStore,
 } from "@reduxjs/toolkit";
-import userSlice from "./userSlice";
-import storage from "redux-persist/lib/storage";
+import type { CurriedGetDefaultMiddleware } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import {
 	FLUSH,
 	PAUSE,
@@ -32,9 +31,10 @@ import {
 	persistCombineReducers,
 	persistStore,
 } from "redux-persist";
-import type { CurriedGetDefaultMiddleware } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import type { PersistPartial } from "redux-persist/es/persistReducer";
+import storage from "redux-persist/lib/storage";
 import { isSSR } from "../utils/is-ssr";
+import userSlice from "./userSlice";
 
 const createNoopStorage = () => {
 	return {

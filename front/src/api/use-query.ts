@@ -25,12 +25,12 @@ import {
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "react-query";
-import API from "./api";
 import type {
 	InfiniteFetchFn,
 	Page,
 } from "../components/infinite/infinite-scroll";
 import type Resource from "../models/resource";
+import API from "./api";
 
 type Key = string | number;
 

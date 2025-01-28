@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
 import {
 	type DependencyList,
 	createContext,
@@ -23,10 +24,9 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import type { TranslationKey } from "../i18n/i18n";
 import { useKey as _useKey } from "react-use";
 import type { Handler } from "react-use/lib/useKey";
-import { useRouter } from "next/router";
+import type { TranslationKey } from "../i18n/i18n";
 
 type BindingKey = "esc" | "?" | "/" | "s" | "p" | "space";
 

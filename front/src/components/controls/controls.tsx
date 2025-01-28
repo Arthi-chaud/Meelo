@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
 import {
 	Button,
 	ButtonGroup,
@@ -27,21 +26,22 @@ import {
 } from "@mui/material";
 import type { NextRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import type Option from "./option";
-import OptionButton from "./option-button";
-import { type LayoutOption, getLayoutParams } from "../../utils/layout";
-import { type Order, getOrderParams } from "../../utils/sorting";
-import parseQueryParam from "../../utils/parse-query-param";
-import type Action from "../actions/action";
-import type { TranslationKey } from "../../i18n/i18n";
 import toast from "react-hot-toast";
-import API from "../../api/api";
-import { prepareMeeloInfiniteQuery } from "../../api/use-query";
+import { useTranslation } from "react-i18next";
 // eslint-disable-next-line no-restricted-imports
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import Fade from "../fade";
+import API from "../../api/api";
+import { prepareMeeloInfiniteQuery } from "../../api/use-query";
+import type { TranslationKey } from "../../i18n/i18n";
 import globalLibrary from "../../utils/global-library";
-import { useTranslation } from "react-i18next";
+import { type LayoutOption, getLayoutParams } from "../../utils/layout";
+import parseQueryParam from "../../utils/parse-query-param";
+import { type Order, getOrderParams } from "../../utils/sorting";
+import type Action from "../actions/action";
+import Fade from "../fade";
+import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
+import type Option from "./option";
+import OptionButton from "./option-button";
 
 export type Toggle = {
 	name: string;
