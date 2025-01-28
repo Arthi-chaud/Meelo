@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Grid } from "@mui/material";
 import API from "../../api/api";
-import { TrackWithRelations } from "../../models/track";
+import { useQueryClient } from "../../api/use-query";
+import { usePlayerContext } from "../../contexts/player";
+import type { TrackWithRelations } from "../../models/track";
+import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
+import { MasterIcon, TrackIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";
-import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
-import { Grid } from "@mui/material";
-import { useQueryClient } from "../../api/use-query";
-import { MasterIcon, TrackIcon } from "../icons";
-import { usePlayerContext } from "../../contexts/player";
 
 type TrackItemProps = {
 	track:
@@ -41,7 +41,7 @@ type TrackItemProps = {
 const TrackItem = ({ track, onClick }: TrackItemProps) => {
 	const release = track?.release;
 	const { playTrack } = usePlayerContext();
-	const isMaster = track ? track.song?.masterId == track.id : false;
+	const isMaster = track ? track.song?.masterId === track.id : false;
 	const queryClient = useQueryClient();
 
 	return (

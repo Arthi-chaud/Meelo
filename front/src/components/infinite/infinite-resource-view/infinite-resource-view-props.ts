@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MeeloInfiniteQueryFn } from "../../../api/use-query";
-import Resource from "../../../models/resource";
-import { LayoutOption } from "../../../utils/layout";
-import { Order } from "../../../utils/sorting";
-import { OptionState } from "../../controls/controls";
+import type { MeeloInfiniteQueryFn } from "../../../api/use-query";
+import type Resource from "../../../models/resource";
+import type { LayoutOption } from "../../../utils/layout";
+import type { Order } from "../../../utils/sorting";
+import type { OptionState } from "../../controls/controls";
 
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,

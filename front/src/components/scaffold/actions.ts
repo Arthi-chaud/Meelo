@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Action from "../actions/action";
-import { GoToSearchAction, GoToSettingsAction } from "../actions/link";
+import type Action from "../actions/action";
 import { LogoutAction } from "../actions/auth";
+import { GoToSearchAction, GoToSettingsAction } from "../actions/link";
 
 /**
  * Collections of actions that are accessible from appbar and drawer

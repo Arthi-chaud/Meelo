@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MetadataRefreshIcon } from "../icons";
-import API from "../../api/api";
-import Action from "./action";
 import toast from "react-hot-toast";
-import { Translator } from "../../i18n/i18n";
+import API from "../../api/api";
+import type { Translator } from "../../i18n/i18n";
+import { MetadataRefreshIcon } from "../icons";
+import type Action from "./action";
 
 const RefreshMetadataAction = (
 	t: Translator,

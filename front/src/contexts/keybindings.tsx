@@ -16,17 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
 import {
-	DependencyList,
+	type DependencyList,
 	createContext,
 	useContext,
 	useEffect,
 	useState,
 } from "react";
-import { TranslationKey } from "../i18n/i18n";
 import { useKey as _useKey } from "react-use";
-import { Handler } from "react-use/lib/useKey";
-import { useRouter } from "next/router";
+import type { Handler } from "react-use/lib/useKey";
+import type { TranslationKey } from "../i18n/i18n";
 
 type BindingKey = "esc" | "?" | "/" | "s" | "p" | "space";
 
@@ -68,7 +68,7 @@ const useKey = (...p: Parameters<typeof _useKey>) => {
 		p[0],
 		(e) => {
 			const tagName = document.activeElement?.tagName.toLowerCase();
-			if (tagName == "input" || tagName == "textarea") {
+			if (tagName === "input" || tagName === "textarea") {
 				return;
 			}
 			p[1]?.(e);
@@ -99,7 +99,7 @@ export const KeyboardBindingsProvider = (props: {
 					setBindings((state) => {
 						const bindingsCopy = Array.of(...state.bindings);
 						const oldBinding = bindingsCopy.find(
-							(b) => b.key == newBindingKey,
+							(b) => b.key === newBindingKey,
 						);
 						if (!oldBinding) {
 							bindingsCopy.push({
@@ -108,10 +108,11 @@ export const KeyboardBindingsProvider = (props: {
 							});
 							return { bindings: bindingsCopy };
 						}
-						if (oldBinding.description == description) {
+						if (oldBinding.description === description) {
 							return state;
 						}
-						// eslint-disable-next-line no-console
+
+						// biome-ignore lint/suspicious/noConsole: OK
 						console.error(
 							"Keyboard binding is probably getting duplicated.",
 							{ newBindingKey, description },

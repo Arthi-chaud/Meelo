@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
+import type { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
 
 import { useTheme } from "@mui/material";
 

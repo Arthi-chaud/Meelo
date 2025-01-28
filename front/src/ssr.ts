@@ -16,12 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports
-import { NextPageContext } from "next";
-// eslint-disable-next-line no-restricted-imports
-import { QueryClient } from "react-query";
-import { InfiniteQuery, Query } from "./api/use-query";
-import { ComponentType } from "react";
+import type { NextPageContext } from "next";
+import type { ComponentType } from "react";
+
+import type { QueryClient } from "react-query";
+import type { InfiniteQuery, Query } from "./api/use-query";
 
 type PromiseOr<T> = T | Promise<T>;
 

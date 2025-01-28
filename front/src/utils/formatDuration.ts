@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports
+// biome-ignore lint/nursery/noRestrictedImports: Internal use
 import formatMilliSecondsDuration from "format-duration";
 
 const formatDuration = (seconds?: number | null) =>

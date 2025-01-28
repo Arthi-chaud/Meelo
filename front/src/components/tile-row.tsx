@@ -17,7 +17,7 @@
  */
 
 import { Box, Stack } from "@mui/material";
-import Tile from "./tile/tile";
+import type Tile from "./tile/tile";
 
 type TileRowProps = {
 	tiles: ReturnType<typeof Tile>[];
@@ -33,7 +33,7 @@ const TileRow = (props: TileRowProps) => {
 		xl: props.windowSize?.xl ?? 7,
 	};
 	const width = Object.entries(windowSize).reduce(
-		(prev, [key, size]) => ({ ...prev, [key]: 100 / size + "%" }),
+		(prev, [key, size]) => ({ ...prev, [key]: `${100 / size}%` }),
 		{},
 	);
 

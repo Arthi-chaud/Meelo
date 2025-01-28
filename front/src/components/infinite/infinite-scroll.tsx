@@ -17,11 +17,13 @@
  */
 
 import * as IScroll from "react-infinite-scroller";
-import Resource from "../../models/resource";
-import PaginatedResponse, {
-	PaginationParameters,
-} from "../../models/pagination";
-import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../../api/use-query";
+import {
+	type MeeloInfiniteQueryFn,
+	useInfiniteQuery,
+} from "../../api/use-query";
+import type PaginatedResponse from "../../models/pagination";
+import type { PaginationParameters } from "../../models/pagination";
+import type Resource from "../../models/resource";
 import { generateArray } from "../../utils/gen-list";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
@@ -74,7 +76,7 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
-	const { isFetching, data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+	const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
 
 	return (
@@ -97,7 +99,7 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 					data === undefined
 						? generateArray(3)
 						: [
-								...data.pages.map((page) => page.items).flat(),
+								...data.pages.flatMap((page) => page.items),
 								...(isFetchingNextPage ? generateArray(3) : []),
 							],
 				)}

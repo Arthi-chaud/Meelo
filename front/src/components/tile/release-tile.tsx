@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Tile from "./tile";
-import Illustration from "../illustration";
-import { ReleaseWithRelations } from "../../models/release";
+import type { ReleaseWithRelations } from "../../models/release";
 import getYear from "../../utils/getYear";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
+import Illustration from "../illustration";
+import Tile from "./tile";
 
 const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"album" | "illustration"> | undefined;
@@ -28,7 +28,7 @@ const ReleaseTile = (props: {
 	onClick?: () => void;
 }) => {
 	const yearFormat = props.release
-		? getYear(props.release.releaseDate)?.toString() ?? ""
+		? (getYear(props.release.releaseDate)?.toString() ?? "")
 		: "";
 	return (
 		<Tile
@@ -41,8 +41,8 @@ const ReleaseTile = (props: {
 			title={props.release?.name}
 			subtitle={
 				props.release
-					? props.formatSubtitle?.call(this, props.release) ??
-						props.release.extensions.at(0)
+					? (props.formatSubtitle?.call(this, props.release) ??
+						props.release.extensions.at(0))
 						? `${props.release.extensions.at(0)} - ${yearFormat}`
 						: yearFormat
 					: undefined

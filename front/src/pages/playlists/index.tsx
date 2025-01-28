@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import InfinitePlaylistView from "../../components/infinite/infinite-resource-view/infinite-playlist-view";
-import API from "../../api/api";
-import { PlaylistSortingKeys } from "../../models/playlist";
-import { GetPropsTypesFrom, Page } from "../../ssr";
-import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
-import { getLayoutParams } from "../../utils/layout";
-import { NextPageContext } from "next";
+import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
+import API from "../../api/api";
 import { Head } from "../../components/head";
+import InfinitePlaylistView from "../../components/infinite/infinite-resource-view/infinite-playlist-view";
+import { PlaylistSortingKeys } from "../../models/playlist";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import { getLayoutParams } from "../../utils/layout";
+import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 
 const prepareSSR = (context: NextPageContext) => {
 	const defaultLayout = getLayoutParams(context.query.view) ?? "list";

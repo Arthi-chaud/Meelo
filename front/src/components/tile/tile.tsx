@@ -28,8 +28,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
-import { ComponentProps } from "react";
-import { RequireAllOrNone } from "type-fest";
+import type { ComponentProps } from "react";
+import type { RequireAllOrNone } from "type-fest";
 
 const PREFIX = "Tile";
 
@@ -96,7 +96,7 @@ type TileProps = {
 }>;
 
 const Tile = (props: TileProps) => {
-	const theme = useTheme();
+	const _theme = useTheme();
 	const contextualMenu = props.contextualMenu;
 	// If the title is not loaded, we remove the hovering effect on the title
 	const CardComponent = props.title === undefined ? Card : StyledCard;
@@ -198,7 +198,7 @@ const Tile = (props: TileProps) => {
 									{props.subtitle ?? <Skeleton width="70%" />}
 								</MUILink>
 							) : (
-								props.subtitle ?? <Skeleton width="70%" />
+								(props.subtitle ?? <Skeleton width="70%" />)
 							)}
 						</Typography>
 					)}

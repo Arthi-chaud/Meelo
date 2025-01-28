@@ -17,24 +17,24 @@
  */
 
 import { Box, Button, Grid } from "@mui/material";
-import { ComponentProps, Fragment } from "react";
+import Link from "next/link";
+import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { UseInfiniteQueryResult, UseQueryResult } from "react-query";
-import { TranslationKey } from "../i18n/i18n";
-import { AlbumWithRelations } from "../models/album";
-import Artist from "../models/artist";
-import { SongWithRelations } from "../models/song";
-import { VideoWithRelations } from "../models/video";
+import type { UseInfiniteQueryResult, UseQueryResult } from "react-query";
+import type { TranslationKey } from "../i18n/i18n";
+import type { AlbumWithRelations } from "../models/album";
+import type Artist from "../models/artist";
+import type { SongWithRelations } from "../models/song";
+import type { VideoWithRelations } from "../models/video";
 import { generateArray } from "../utils/gen-list";
 import getYear from "../utils/getYear";
+import Fade from "./fade";
 import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";
 import SongGrid from "./song-grid";
 import TileRow from "./tile-row";
 import AlbumTile from "./tile/album-tile";
 import VideoTile from "./tile/video-tile";
-import Fade from "./fade";
-import Link from "next/link";
 
 export const SectionPadding = 4;
 
@@ -134,7 +134,7 @@ export const AlbumListPageSection = (
 							: undefined
 					}
 					formatSubtitle={
-						props.subtitleIs == "artistName"
+						props.subtitleIs === "artistName"
 							? undefined
 							: (albumItem) =>
 									getYear(
@@ -177,7 +177,7 @@ const PageSection = <T,>(props: PageSectionProps<T>) => {
 	const firstPage = props.query?.data?.pages.at(0)?.items ?? props.items;
 	return (
 		<>
-			{firstPage?.length != 0 && (
+			{firstPage?.length !== 0 && (
 				<>
 					<SectionHeader
 						heading={

@@ -17,9 +17,9 @@
  */
 
 import { Box } from "@mui/material";
-import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
+import { type ComponentProps, useEffect, useMemo, useState } from "react";
 import { Blurhash as RBlurhash } from "react-blurhash";
-import { ComponentProps, useEffect, useMemo, useState } from "react";
+import { blurHashToDataURL } from "../utils/blurhashToDataUrl";
 
 type BlurhashProps = ComponentProps<typeof Box> & {
 	blurhash?: string;

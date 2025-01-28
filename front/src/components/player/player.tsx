@@ -24,19 +24,19 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
-import { LegacyRef, useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import API from "../../api/api";
-import { RootState } from "../../state/store";
-import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
-import { toast } from "react-hot-toast";
-import { DrawerBreakpoint } from "../scaffold/scaffold";
-import { useTranslation } from "react-i18next";
-import { useReadLocalStorage } from "usehooks-ts";
-import { usePlayerContext } from "../../contexts/player";
 import Hls from "hls.js";
+import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
+import API from "../../api/api";
 import { useKeyboardBinding } from "../../contexts/keybindings";
+import { usePlayerContext } from "../../contexts/player";
+import type { RootState } from "../../state/store";
+import { DrawerBreakpoint } from "../scaffold/scaffold";
+import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -75,11 +75,11 @@ const Player = () => {
 		useReadLocalStorage("allow_notifs");
 	const play = () => {
 		// Do nothing if empty playlist
-		if (playlist.length == 0) {
+		if (playlist.length === 0) {
 			return;
 		}
 		// If playlist but cursor to -1
-		if (currentTrack == undefined) {
+		if (currentTrack === undefined) {
 			skipTrack();
 		}
 		player.current?.play();
@@ -101,7 +101,7 @@ const Player = () => {
 			return;
 		}
 		// If first track, disable player
-		if (cursor == 0) {
+		if (cursor === 0) {
 			pause();
 		}
 		playPreviousTrack();
@@ -128,7 +128,7 @@ const Player = () => {
 					skipTrack();
 				};
 				player.current!.onpause = () => {
-					if (player.current!.ended == false) {
+					if (player.current!.ended === false) {
 						setPlaying(false);
 					}
 				};
@@ -144,7 +144,7 @@ const Player = () => {
 				// Sometimes, an error can be caused by a track change while the `play` promise is being resolved
 				// But this does not seem to cause any malfunction
 				// That's why we do that filtering
-				const errcode = err["code"];
+				const errcode = err.code;
 
 				if (!errcode) {
 					return;
@@ -159,7 +159,7 @@ const Player = () => {
 						} else {
 							setUseTranscoding(true);
 						}
-						// eslint-disable-next-line no-console
+						// biome-ignore lint/suspicious/noConsole: For debug
 						console.error(err);
 						break;
 					case 19: // Network error
@@ -210,10 +210,10 @@ const Player = () => {
 			hls.current!.loadSource(streamURL);
 			hls.current!.attachMedia(player.current);
 			hls.current!.on(Hls.Events.ERROR, (err, data) => {
-				// eslint-disable-next-line no-console
+				// biome-ignore lint/suspicious/noConsole: For debug
 				console.error(err, data);
 			});
-			hls.current!.on(Hls.Events.MEDIA_ATTACHED, function () {
+			hls.current!.on(Hls.Events.MEDIA_ATTACHED, () => {
 				startPlayback(true);
 			});
 		}
@@ -223,7 +223,6 @@ const Player = () => {
 			pause();
 			playTracks({ tracks: [] });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userIsAuthentified]);
 	useKeyboardBinding(
 		{
@@ -282,7 +281,7 @@ const Player = () => {
 			setDuration(currentTrack.track.duration ?? undefined);
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
-			if (currentTrack.track.type == "Audio") {
+			if (currentTrack.track.type === "Audio") {
 				player.current = audioPlayer.current ?? undefined;
 			} else {
 				player.current = videoPlayer.current;
@@ -309,7 +308,7 @@ const Player = () => {
 			if (
 				typeof Notification !== "undefined" &&
 				!windowFocused &&
-				Notification.permission == "granted" &&
+				Notification.permission === "granted" &&
 				allowNotifications
 			) {
 				try {
@@ -321,7 +320,6 @@ const Player = () => {
 							body: currentTrack.artist.name,
 						}),
 					);
-					// eslint-disable-next-line no-empty
 				} catch {}
 			}
 		} else {
@@ -332,7 +330,6 @@ const Player = () => {
 			setDuration(undefined);
 			setPlaying(false);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentTrack]);
 	const playerBgColor = useMemo(() => {
 		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
@@ -369,7 +366,7 @@ const Player = () => {
 	return (
 		<>
 			<Grow
-				in={playlist.length != 0 || player.current != undefined}
+				in={playlist.length !== 0 || player.current !== undefined}
 				unmountOnExit
 			>
 				<Box sx={{ height: 58 }} />
@@ -383,7 +380,7 @@ const Player = () => {
 				direction="up"
 				mountOnEnter
 				unmountOnExit
-				in={playlist.length != 0 || player.current != undefined}
+				in={playlist.length !== 0 || player.current !== undefined}
 			>
 				<Box sx={{ padding: 1, zIndex: "modal", width: "100%" }}>
 					<Paper

@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AddIcon, DeleteIcon, EditIcon } from "../icons";
 import {
 	Box,
 	Button,
@@ -31,26 +30,27 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
+import { useConfirm } from "material-ui-confirm";
+import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import { useQuery, useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
-import Library from "../../models/library";
-import AdminGrid from "../admin-grid";
+import { useQuery, useQueryClient } from "../../api/use-query";
+import type Library from "../../models/library";
+import type Action from "../actions/action";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,
 	ScanAllLibrariesAction,
 	ScanLibraryAction,
 } from "../actions/library-task";
-import { useConfirm } from "material-ui-confirm";
-import Action from "../actions/action";
-import { ComponentProps, useMemo, useState } from "react";
-import LibraryForm from "../library-form";
 import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
+import AdminGrid from "../admin-grid";
+import { AddIcon, DeleteIcon, EditIcon } from "../icons";
+import LibraryForm from "../library-form";
 import SectionHeader from "../section-header";
-import { useTranslation } from "react-i18next";
 
 const actionButtonStyle = {
 	overflow: "hidden",
@@ -238,7 +238,7 @@ const LibrariesSettings = () => {
 					</Button>
 				</Grid>
 				{[cleanAllLibaries, scanAllLibaries].map((action, index) => (
-					<Grid item key={"Library-action-" + index}>
+					<Grid item key={`Library-action-${index}`}>
 						<Button
 							variant={index % 2 ? "contained" : "outlined"}
 							startIcon={action.icon}
@@ -250,7 +250,7 @@ const LibrariesSettings = () => {
 				))}
 			</Grid>
 			<Dialog
-				open={libraryEdit != undefined}
+				open={libraryEdit !== undefined}
 				onClose={closeEditModal}
 				fullWidth
 			>
@@ -272,8 +272,8 @@ const LibrariesSettings = () => {
 				infiniteQuery={API.getLibraries}
 				columns={columns.map((column) => ({
 					...column,
-					headerAlign: column.field == "name" ? "left" : "center",
-					align: column.field == "name" ? "left" : "center",
+					headerAlign: column.field === "name" ? "left" : "center",
+					align: column.field === "name" ? "left" : "center",
 				}))}
 			/>
 			<Box sx={{ paddingY: 2 }} />
@@ -313,7 +313,7 @@ const LibrariesSettings = () => {
 					/>
 				</ListItem>
 				{tasks.data?.pending_tasks.map((task, index) => (
-					<ListItem key={"task-" + index}>
+					<ListItem key={`task-${index}`}>
 						<ListItemText inset primary={task} />
 					</ListItem>
 				))}

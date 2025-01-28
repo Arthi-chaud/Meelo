@@ -30,49 +30,50 @@ import {
 	useTheme,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useRouter } from "next/router";
-import API from "../../api/api";
-import Illustration from "../../components/illustration";
-import formatDuration from "../../utils/formatDuration";
-import { useEffect, useMemo, useState } from "react";
+import { shuffle } from "d3-array";
+import { Star1 } from "iconsax-react";
+import type { NextPageContext } from "next";
 import Link from "next/link";
-import { PlayIcon, ShuffleIcon } from "../../components/icons";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
+import API from "../../api/api";
 import {
 	prepareMeeloQuery,
 	useInfiniteQuery,
 	useQuery,
 } from "../../api/use-query";
-import { shuffle } from "d3-array";
-import getSlugOrId from "../../utils/getSlugOrId";
-import ReleaseTrackList from "../../components/release-tracklist";
-import { GetPropsTypesFrom, Page } from "../../ssr";
 import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
+import ExternalMetadataBadge from "../../components/external-metadata-badge";
+import Fade from "../../components/fade";
+import GenreButton from "../../components/genre-button";
+import { Head } from "../../components/head";
+import { PlayIcon, ShuffleIcon } from "../../components/icons";
+import Illustration from "../../components/illustration";
+import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
+import ReleaseTrackList from "../../components/release-tracklist";
+import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
+import SongGrid from "../../components/song-grid";
 import TileRow from "../../components/tile-row";
-import VideoTile from "../../components/tile/video-tile";
+import AlbumTile from "../../components/tile/album-tile";
 import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
-import SongGrid from "../../components/song-grid";
-import AlbumTile from "../../components/tile/album-tile";
-import getYear from "../../utils/getYear";
-import Fade from "../../components/fade";
-import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
-import { Star1 } from "iconsax-react";
-import GenreButton from "../../components/genre-button";
-import { SongWithRelations } from "../../models/song";
-import { VideoTypeIsExtra, VideoWithRelations } from "../../models/video";
-import { useAccentColor } from "../../utils/accent-color";
-import { useTranslation } from "react-i18next";
-import { generateArray } from "../../utils/gen-list";
+import VideoTile from "../../components/tile/video-tile";
 import { usePlayerContext } from "../../contexts/player";
-import { NextPageContext } from "next";
-import { QueryClient } from "react-query";
+import type { SongWithRelations } from "../../models/song";
+import type Tracklist from "../../models/tracklist";
+import type { TracklistItemWithRelations } from "../../models/tracklist";
+import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import { useAccentColor } from "../../utils/accent-color";
+import formatDuration from "../../utils/formatDuration";
+import { generateArray } from "../../utils/gen-list";
+import getSlugOrId from "../../utils/getSlugOrId";
+import getYear from "../../utils/getYear";
 import { useGradientBackground } from "../../utils/gradient-background";
-import Tracklist, { TracklistItemWithRelations } from "../../models/tracklist";
-import { Head } from "../../components/head";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
-import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
-import ExternalMetadataBadge from "../../components/external-metadata-badge";
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "illustration"]);
@@ -179,7 +180,7 @@ type RelatedContentSectionProps = {
 
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
 	return (
-		<Fade in={props.display == true}>
+		<Fade in={props.display === true}>
 			<Box
 				sx={{ margin: 2, display: props.display ? undefined : "none" }}
 			>
@@ -291,12 +292,12 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				.map((video) => {
 					const videoIndex = tracks.findIndex(
 						(track) =>
-							(track.song ?? track.video)!.groupId ==
+							(track.song ?? track.video)!.groupId ===
 							video.groupId,
 					);
 					return [
 						video,
-						videoIndex == -1 ? tracks.length : videoIndex,
+						videoIndex === -1 ? tracks.length : videoIndex,
 					] as const;
 				})
 
@@ -309,11 +310,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						return [video, tracklistIndex] as const;
 					}
 					const firstVideoOfSameGroup = videosWithIndexes.find(
-						([__, i]) => i == tracklistIndex,
+						([__, i]) => i === tracklistIndex,
 					)!;
 					return [
 						video,
-						firstVideoOfSameGroup[0].id == video.id
+						firstVideoOfSameGroup[0].id === video.id
 							? tracklistIndex
 							: 10000 + tracklistIndex,
 					] as const;
@@ -328,7 +329,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								liveVideos: prev.liveVideos,
 								videoExtras: prev.videoExtras.concat(current),
 							};
-						} else if (current.type === "Live") {
+						}
+						if (current.type === "Live") {
 							return {
 								videos: prev.videos,
 								liveVideos: prev.liveVideos.concat(current),
@@ -549,7 +551,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													track: track,
 													artist: artists.data.find(
 														(artist) =>
-															artist.id ==
+															artist.id ===
 															(track.song ??
 																track.video)!
 																.artistId,
@@ -558,7 +560,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												}),
 											);
 
-											if (index == 1) {
+											if (index === 1) {
 												playlist = shuffle(playlist);
 											}
 											playTracks({
@@ -669,33 +671,31 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						{release.data?.album.type === "Compilation" &&
 							/* It does not make sense to show the button if the album is from 'Various Artists' */
 							albumArtist !== null && (
-								<>
-									<ListItemButton
-										sx={{
-											textAlign: "center",
-											justifyContent: "center",
-											width: "100%",
-											fontWeight: "bolder",
-										}}
-										onClick={() => {
-											setShowOnlyExclusive((v) => !v);
-											document
-												.getElementById(
-													parentScrollableDivId,
-												)
-												?.scrollTo({
-													top: 0,
-													behavior: "smooth",
-												});
-										}}
-									>
-										{t(
-											showOnlyExclusive
-												? "showAllTrack"
-												: "showOnlyExclusiveTracks",
-										)}
-									</ListItemButton>
-								</>
+								<ListItemButton
+									sx={{
+										textAlign: "center",
+										justifyContent: "center",
+										width: "100%",
+										fontWeight: "bolder",
+									}}
+									onClick={() => {
+										setShowOnlyExclusive((v) => !v);
+										document
+											.getElementById(
+												parentScrollableDivId,
+											)
+											?.scrollTo({
+												top: 0,
+												behavior: "smooth",
+											});
+									}}
+								>
+									{t(
+										showOnlyExclusive
+											? "showAllTrack"
+											: "showOnlyExclusiveTracks",
+									)}
+								</ListItemButton>
 							)}
 					</Grid>
 				</Grid>
@@ -721,7 +721,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								.at(0)
 								?.items?.filter(
 									(relatedRelease) =>
-										relatedRelease.id != release.data!.id,
+										relatedRelease.id !== release.data!.id,
 								)
 								.map((otherRelease, otherReleaseIndex) => (
 									<ReleaseTile
@@ -746,7 +746,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<RelatedContentSection
 						key={`videos-${sectionLabel}`}
 						display={
-							videoList !== undefined && videoList.length != 0
+							videoList !== undefined && videoList.length !== 0
 						}
 						title={t(sectionLabel)}
 					>
@@ -815,7 +815,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={(featurings?.length ?? 0) != 0}
+					display={
+						featurings !== undefined && featurings.length !== 0
+					}
 					title={t("onThisAlbum")}
 				>
 					<TileRow
@@ -827,7 +829,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={(playlists?.length ?? 0) != 0}
+					display={playlists !== undefined && playlists.length !== 0}
 					title={t("featuredOnPlaylists")}
 				>
 					<TileRow

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ArtistWithRelations } from "../../models/artist";
-import Tile from "./tile";
-import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
-import ArtistAvatar from "../artist-avatar";
 import { Box } from "@mui/material";
+import type { ArtistWithRelations } from "../../models/artist";
+import ArtistAvatar from "../artist-avatar";
+import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
+import Tile from "./tile";
 
 const ArtistTile = (props: {
 	artist: ArtistWithRelations<"illustration"> | undefined;

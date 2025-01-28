@@ -18,7 +18,7 @@
 
 import * as yup from "yup";
 
-const ExternalMetadataSource = yup.object({
+export const ExternalMetadataSource = yup.object({
 	url: yup.string().required(),
 	providerName: yup.string().required(),
 	providerId: yup.number().required(),
@@ -30,41 +30,41 @@ const CommonExternalMetadata = yup.object({
 	sources: yup.array(ExternalMetadataSource.required()).required(),
 });
 
-const ArtistExternalMetadata = CommonExternalMetadata.concat(
+export const ArtistExternalMetadata = CommonExternalMetadata.concat(
 	yup.object({
 		artistId: yup.number().required(),
 	}),
 );
-const SongExternalMetadata = CommonExternalMetadata.concat(
+export const SongExternalMetadata = CommonExternalMetadata.concat(
 	yup.object({
 		songId: yup.number().required(),
 	}),
 );
-const ReleaseExternalMetadata = CommonExternalMetadata.concat(
+
+export const ReleaseExternalMetadata = CommonExternalMetadata.concat(
 	yup.object({
 		releaseId: yup.number().required(),
 	}),
 );
 
-const AlbumExternalMetadata = CommonExternalMetadata.concat(
+export const AlbumExternalMetadata = CommonExternalMetadata.concat(
 	yup.object({
 		albumId: yup.number().required(),
 		rating: yup.number().nullable(),
 	}),
 );
 
-type CommonExternalMetadata = yup.InferType<typeof CommonExternalMetadata>;
-type ArtistExternalMetadata = yup.InferType<typeof ArtistExternalMetadata>;
-type AlbumExternalMetadata = yup.InferType<typeof AlbumExternalMetadata>;
-type SongExternalMetadata = yup.InferType<typeof SongExternalMetadata>;
-type ReleaseExternalMetadata = yup.InferType<typeof CommonExternalMetadata>;
-type ExternalMetadataSource = yup.InferType<typeof ExternalMetadataSource>;
-
-export {
-	CommonExternalMetadata,
-	ArtistExternalMetadata,
-	AlbumExternalMetadata,
-	SongExternalMetadata,
-	ReleaseExternalMetadata,
-	ExternalMetadataSource,
-};
+export type CommonExternalMetadata = yup.InferType<
+	typeof CommonExternalMetadata
+>;
+export type ArtistExternalMetadata = yup.InferType<
+	typeof ArtistExternalMetadata
+>;
+export type AlbumExternalMetadata = yup.InferType<typeof AlbumExternalMetadata>;
+export type SongExternalMetadata = yup.InferType<typeof SongExternalMetadata>;
+export type ReleaseExternalMetadata = yup.InferType<
+	typeof CommonExternalMetadata
+>;
+export type ExternalMetadataSource = yup.InferType<
+	typeof ExternalMetadataSource
+>;

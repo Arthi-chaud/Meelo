@@ -1,0 +1,37 @@
+{
+	"extends": ["../biome.json"],
+	"formatter": {
+		"lineWidth": 80
+	},
+	"files": {
+		"ignore": ["**/.next/**"]
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"noNonNullAssertion": "off"
+			},
+			"suspicious": {
+				"noExtraNonNullAssertion": "warn",
+				"noArrayIndexKey": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "off",
+				"noUnusedVariables": "warn"
+			},
+			"complexity": {
+				"noForEach": "off"
+			},
+			"nursery": {
+				"noRestrictedImports": {
+					"options": {
+						"paths": {
+							"format-duration": "Use wrapper from 'theme/provider'",
+							"@mui/icons-material": "Use icons in 'src/components/icons'"
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -17,15 +17,15 @@
  */
 
 import { Box, Button, Slide, Tooltip } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { MeeloInfiniteQueryFn } from "../../api/use-query";
+import type { IllustratedResource } from "../../models/illustration";
+import Fade from "../fade";
 import { GoBackTopIcon } from "../icons";
-import { MeeloInfiniteQueryFn } from "../../api/use-query";
 import { WideLoadingComponent } from "../loading/loading";
 import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
-import { useEffect, useState } from "react";
-import Fade from "../fade";
-import { useTranslation } from "react-i18next";
-import { IllustratedResource } from "../../models/illustration";
 import { parentScrollableDivId } from "./infinite-scroll";
 
 export type InfiniteViewProps<ItemType> = {
@@ -39,8 +39,9 @@ const ScrollToTopButton = () => {
 	const { t } = useTranslation();
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
-		const position = document.getElementById(parentScrollableDivId)
-			?.scrollTop;
+		const position = document.getElementById(
+			parentScrollableDivId,
+		)?.scrollTop;
 
 		setBackToTopVisible((position ?? 0) > window.innerHeight);
 	};
@@ -90,7 +91,7 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 	return (
 		<>
 			<ScrollToTopButton />
-			{props.view.toLowerCase() == "list" ? (
+			{props.view.toLowerCase() === "list" ? (
 				<InfiniteList
 					loader={() => <WideLoadingComponent />}
 					query={props.query}

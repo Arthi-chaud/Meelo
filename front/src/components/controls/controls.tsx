@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
 import {
 	Button,
 	ButtonGroup,
@@ -25,23 +24,24 @@ import {
 	Tooltip,
 	useTheme,
 } from "@mui/material";
-import { NextRouter } from "next/router";
+import type { NextRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
-import Option from "./option";
-import OptionButton from "./option-button";
-import { LayoutOption, getLayoutParams } from "../../utils/layout";
-import { Order, getOrderParams } from "../../utils/sorting";
-import parseQueryParam from "../../utils/parse-query-param";
-import Action from "../actions/action";
-import { TranslationKey } from "../../i18n/i18n";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+
+import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";
-// eslint-disable-next-line no-restricted-imports
-import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import Fade from "../fade";
+import type { TranslationKey } from "../../i18n/i18n";
 import globalLibrary from "../../utils/global-library";
-import { useTranslation } from "react-i18next";
+import { type LayoutOption, getLayoutParams } from "../../utils/layout";
+import parseQueryParam from "../../utils/parse-query-param";
+import { type Order, getOrderParams } from "../../utils/sorting";
+import type Action from "../actions/action";
+import Fade from "../fade";
+import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
+import type Option from "./option";
+import OptionButton from "./option-button";
 
 export type Toggle = {
 	name: string;
@@ -88,7 +88,7 @@ const Controls = <
 >(
 	props: ControllerProps<SortingKeys, Options, Values>,
 ) => {
-	const theme = useTheme();
+	const _theme = useTheme();
 	const { t } = useTranslation();
 	const librariesQuery = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(API.getLibraries),
@@ -125,27 +125,25 @@ const Controls = <
 					"asc",
 				library: props.disableLibrarySelector
 					? null
-					: libraryQuery ?? null,
+					: (libraryQuery ?? null),
 			};
 
-			props.options?.forEach((option) => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			for (const option of props.options ?? []) {
 				// @ts-ignore
 				baseOptions[option.name] =
 					parseQueryParam(
 						props.router?.query[option.name],
 						option.values,
 					) ?? option.values[0];
-			});
-			props.toggles?.forEach((option) => {
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			}
+			for (const option of props.toggles ?? []) {
 				// @ts-ignore
 				baseOptions[option.name] =
 					(parseQueryParam(props.router?.query[option.name], [
 						"false",
 						"true",
 					]) ?? "false") === "true";
-			});
+			}
 			return baseOptions;
 		},
 	);
@@ -226,14 +224,14 @@ const Controls = <
 													...libraries,
 												].find(
 													({ slug }) =>
-														slug ==
+														slug ===
 														optionsState.library,
 												)?.name ?? globalLibrary.name,
 										},
 									],
 								}}
 								onSelect={({ name, value }) => {
-									if (value == globalLibrary.name) {
+									if (value === globalLibrary.name) {
 										updateOptionState({
 											name,
 											value: null,
@@ -243,7 +241,7 @@ const Controls = <
 											name,
 											value:
 												libraries.find(
-													(lib) => lib.name == value,
+													(lib) => lib.name === value,
 												)?.slug ?? null,
 										});
 									}
@@ -257,7 +255,7 @@ const Controls = <
 										optionsState.sortBy as TranslationKey,
 									)}`,
 									icon:
-										optionsState.order == "desc" ? (
+										optionsState.order === "desc" ? (
 											<DescIcon />
 										) : (
 											<AscIcon />
@@ -288,7 +286,7 @@ const Controls = <
 										options: [
 											{
 												...option,
-												// eslint-disable-next-line max-len
+
 												currentValue:
 													optionsState[
 														option.name as keyof typeof optionsState
@@ -306,9 +304,10 @@ const Controls = <
 								onClick={() => {
 									updateOptionState({
 										name: toggle.name,
-										value: !optionsState[
-											toggle.name as keyof OptionState<SortingKeys>
-										],
+										value:
+											!optionsState[
+												toggle.name as keyof OptionState<SortingKeys>
+											],
 									});
 								}}
 							>
@@ -322,13 +321,13 @@ const Controls = <
 										updateOptionState({
 											name: "view",
 											value:
-												optionsState.view == "grid"
+												optionsState.view === "grid"
 													? "list"
 													: "grid",
 										})
 									}
 								>
-									{optionsState.view == "grid" ? (
+									{optionsState.view === "grid" ? (
 										<ListIcon />
 									) : (
 										<GridIcon />
@@ -340,16 +339,16 @@ const Controls = <
 				</Grid>
 				<Grid item>
 					<ButtonGroup variant="contained">
-						{props.actions?.map((action, index) => (
+						{props.actions?.map((action) => (
 							<Button
-								key={"action-" + action.label}
+								key={`action-${action.label}`}
 								startIcon={action.icon}
 								variant="contained"
 								onClickCapture={() => {
 									if (action.disabled === true) {
 										return;
 									}
-									action.onClick && action.onClick();
+									action.onClick?.();
 									action.dialog &&
 										setOpenActionModal(action.label);
 								}}

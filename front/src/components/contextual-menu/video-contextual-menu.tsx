@@ -16,10 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "../../api/use-query";
-import API from "../../api/api";
-import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
+import API from "../../api/api";
+import { useQueryClient } from "../../api/use-query";
+import { usePlayerContext } from "../../contexts/player";
+import type { VideoWithRelations } from "../../models/video";
+import type Action from "../actions/action";
 import { DownloadAction } from "../actions/download";
 import {
 	GoToArtistAction,
@@ -31,14 +34,11 @@ import {
 	PlayAfterAction,
 	PlayNextAction,
 } from "../actions/playlist";
+import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
+import { ChangeVideoType } from "../actions/resource-type";
 import { ShowTrackFileInfoAction } from "../actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
-import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
-import { useTranslation } from "react-i18next";
-import { usePlayerContext } from "../../contexts/player";
-import Action from "../actions/action";
-import { VideoWithRelations } from "../../models/video";
-import { ChangeVideoType } from "../actions/resource-type";
+import ContextualMenu from "./contextual-menu";
 
 type VideoContextualMenuProps = {
 	video: VideoWithRelations<"master" | "illustration">;

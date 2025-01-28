@@ -16,16 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SongWithRelations } from "../../models/song";
+import { useEffect, useState } from "react";
+import { usePlayerContext } from "../../contexts/player";
+import type { SongWithRelations } from "../../models/song";
+import type { SongGroupWithRelations } from "../../models/song-group";
+import formatArtists from "../../utils/formatArtists";
+import SongContextualMenu from "../contextual-menu/song-contextual-menu";
+import { SongIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";
-import SongContextualMenu from "../contextual-menu/song-contextual-menu";
-import { useQueryClient } from "../../api/use-query";
-import { useEffect, useState } from "react";
-import { SongIcon } from "../icons";
-import formatArtists from "../../utils/formatArtists";
-import { usePlayerContext } from "../../contexts/player";
-import { SongGroupWithRelations } from "../../models/song-group";
 
 type SongItemProps<
 	T extends SongWithRelations<
@@ -91,7 +90,6 @@ const SongItem = <
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
 	const { playTrack } = usePlayerContext();
-	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)

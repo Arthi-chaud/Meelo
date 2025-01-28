@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RequireExactlyOne } from "type-fest";
-import { TranslationKey } from "../../i18n/i18n";
+import type { RequireExactlyOne } from "type-fest";
+import type { TranslationKey } from "../../i18n/i18n";
 
 /**
  * Props for a generic component to run an action/go to page

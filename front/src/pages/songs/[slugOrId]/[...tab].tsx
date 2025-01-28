@@ -16,16 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import API from "../../../api/api";
-import { GetPropsTypesFrom, Page } from "../../../ssr";
-import getSlugOrId from "../../../utils/getSlugOrId";
-import {
-	prepareMeeloQuery,
-	useInfiniteQuery,
-	useQuery,
-	useQueryClient,
-} from "../../../api/use-query";
 import {
 	Box,
 	Button,
@@ -35,24 +25,33 @@ import {
 	Tabs,
 	Typography,
 } from "@mui/material";
-import LyricsBox from "../../../components/lyrics";
-import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
+import API from "../../../api/api";
+import {
+	prepareMeeloQuery,
+	useInfiniteQuery,
+	useQuery,
+} from "../../../api/use-query";
+import ExternalMetadataBadge from "../../../components/external-metadata-badge";
+import GenreButton from "../../../components/genre-button";
+import { Head } from "../../../components/head";
+import { PlayIcon } from "../../../components/icons";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
-import { PlayIcon } from "../../../components/icons";
-import GenreButton from "../../../components/genre-button";
-import { useTranslation } from "react-i18next";
-import { generateArray } from "../../../utils/gen-list";
-import { usePlayerContext } from "../../../contexts/player";
-import { NextPageContext } from "next";
-import { useGradientBackground } from "../../../utils/gradient-background";
-import { Head } from "../../../components/head";
-import { useThemedSxValue } from "../../../utils/themed-sx-value";
-import { useAccentColor } from "../../../utils/accent-color";
-import { useTabRouter } from "../../../components/tab-router";
-import ExternalMetadataBadge from "../../../components/external-metadata-badge";
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
-import { QueryClient } from "react-query";
+import LyricsBox from "../../../components/lyrics";
+import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
+import { useTabRouter } from "../../../components/tab-router";
+import { usePlayerContext } from "../../../contexts/player";
+import type { GetPropsTypesFrom, Page } from "../../../ssr";
+import { useAccentColor } from "../../../utils/accent-color";
+import { generateArray } from "../../../utils/gen-list";
+import getSlugOrId from "../../../utils/getSlugOrId";
+import { useGradientBackground } from "../../../utils/gradient-background";
+import { useThemedSxValue } from "../../../utils/themed-sx-value";
 
 const externalMetadataQuery = (songIdentifier: string | number) =>
 	API.getSongExternalMetadata(songIdentifier);
@@ -109,7 +108,6 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	);
 	const { t } = useTranslation();
 	const router = useRouter();
-	const queryClient = useQueryClient();
 	const { playTrack } = usePlayerContext();
 	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
@@ -172,7 +170,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 			</Tabs>
 			<Box sx={{ paddingY: 2 }}>
-				{selectedTab == "more" && (
+				{selectedTab === "more" && (
 					<>
 						<Head
 							title={
@@ -181,7 +179,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 						/>
 						{(!genres.data ||
-							(genres.data.pages.at(0)?.items.length ?? 0) !=
+							(genres.data.pages.at(0)?.items.length ?? 0) !==
 								0) && (
 							<Stack
 								direction="row"
@@ -237,7 +235,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Typography>
 					</>
 				)}
-				{selectedTab == "lyrics" && (
+				{selectedTab === "lyrics" && (
 					<>
 						<Head
 							title={
@@ -249,14 +247,14 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							songName={song.data?.name}
 							lyrics={
 								song.data
-									? song.data.lyrics?.content.split("\n") ??
-										null
+									? (song.data.lyrics?.content.split("\n") ??
+										null)
 									: undefined
 							}
 						/>
 					</>
 				)}
-				{selectedTab == "versions" && (
+				{selectedTab === "versions" && (
 					<>
 						<Head
 							title={
@@ -286,7 +284,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					</>
 				)}
 
-				{selectedTab == "videos" && (
+				{selectedTab === "videos" && (
 					<>
 						<Head
 							title={
@@ -310,7 +308,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					</>
 				)}
-				{selectedTab == "tracks" && (
+				{selectedTab === "tracks" && (
 					<>
 						<Head
 							title={

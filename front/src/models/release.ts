@@ -18,8 +18,8 @@
 
 import * as yup from "yup";
 import Album from "./album";
-import Resource from "./resource";
 import Illustration from "./illustration";
+import Resource from "./resource";
 
 /**
  * A version of an album
@@ -59,7 +59,9 @@ export default Release;
 
 export type ReleaseInclude = "album" | "illustration";
 
-const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
+export const ReleaseWithRelations = <
+	Selection extends ReleaseInclude | never = never,
+>(
 	relation: Selection[],
 ) =>
 	Release.concat(
@@ -71,10 +73,9 @@ const ReleaseWithRelations = <Selection extends ReleaseInclude | never = never>(
 			.pick(relation),
 	);
 
-type ReleaseWithRelations<Selection extends ReleaseInclude | never = never> =
-	yup.InferType<ReturnType<typeof ReleaseWithRelations<Selection>>>;
-
-export { ReleaseWithRelations };
+export type ReleaseWithRelations<
+	Selection extends ReleaseInclude | never = never,
+> = yup.InferType<ReturnType<typeof ReleaseWithRelations<Selection>>>;
 
 export const ReleaseSortingKeys = [
 	"name",

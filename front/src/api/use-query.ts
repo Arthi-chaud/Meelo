@@ -19,15 +19,18 @@
 /* eslint-disable no-restricted-imports */
 
 import {
-	QueryFunctionContext,
+	type QueryFunctionContext,
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "react-query";
+import type {
+	InfiniteFetchFn,
+	Page,
+} from "../components/infinite/infinite-scroll";
+import type Resource from "../models/resource";
 import API from "./api";
-import { InfiniteFetchFn, Page } from "../components/infinite/infinite-scroll";
-import Resource from "../models/resource";
 
 type Key = string | number;
 
@@ -62,7 +65,7 @@ export const DefaultMeeloQueryOptions = {
 	cacheTime: 10 * (60 * 1000),
 	refetchOnMount: true,
 	// We want this in dev, not in prod to avoid useless refecthes.
-	refetchOnWindowFocus: process.env.NODE_ENV != "production",
+	refetchOnWindowFocus: process.env.NODE_ENV !== "production",
 	refetchOnReconnect: true,
 };
 

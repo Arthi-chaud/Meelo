@@ -16,10 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import API from "../../api/api";
-import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import API from "../../api/api";
+import { useQueryClient } from "../../api/use-query";
+import { usePlayerContext } from "../../contexts/player";
+import type { SongWithRelations } from "../../models/song";
 import { DownloadAsyncAction } from "../actions/download";
 import {
 	GoToArtistAction,
@@ -33,16 +37,12 @@ import {
 	PlayAfterAction,
 	PlayNextAction,
 } from "../actions/playlist";
+import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
+import { ChangeSongType } from "../actions/resource-type";
 import { ShareSongAction } from "../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../actions/show-track-info";
-import { SongWithRelations } from "../../models/song";
-import { useQueryClient } from "../../api/use-query";
-import { toast } from "react-hot-toast";
-import { ChangeSongType } from "../actions/resource-type";
-import { RefreshSongMetadataAction } from "../actions/refresh-metadata";
 import { DeleteIcon } from "../icons";
-import { useTranslation } from "react-i18next";
-import { usePlayerContext } from "../../contexts/player";
+import ContextualMenu from "./contextual-menu";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<"artist">;

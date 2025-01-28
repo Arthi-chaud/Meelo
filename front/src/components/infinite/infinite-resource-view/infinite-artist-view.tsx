@@ -18,12 +18,15 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { ArtistSortingKeys, ArtistWithRelations } from "../../../models/artist";
-import Controls, { OptionState } from "../../controls/controls";
+import {
+	ArtistSortingKeys,
+	type ArtistWithRelations,
+} from "../../../models/artist";
+import Controls, { type OptionState } from "../../controls/controls";
 import ArtistItem from "../../list-item/artist-item";
 import ArtistTile from "../../tile/artist-tile";
 import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfiniteArtistView = (
 	props: InfiniteResourceViewProps<
@@ -43,7 +46,7 @@ const InfiniteArtistView = (
 				disableSorting={props.disableSorting}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView

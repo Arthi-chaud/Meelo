@@ -18,8 +18,12 @@
 
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
+import NextApp, { type AppContext, type AppProps } from "next/app";
+import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import NextApp, { AppContext, AppProps } from "next/app";
+import { ErrorBoundary } from "react-error-boundary";
+import toast from "react-hot-toast";
 import {
 	Hydrate,
 	QueryClient,
@@ -27,39 +31,35 @@ import {
 	dehydrate,
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { ErrorBoundary } from "react-error-boundary";
-import toast from "react-hot-toast";
-import Toaster from "../components/toaster";
-import Head from "next/head";
 import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
-import { DefaultWindowTitle } from "../utils/constants";
+import Toaster from "../components/toaster";
 import { ResourceNotFound } from "../exceptions";
+import { DefaultWindowTitle } from "../utils/constants";
 import PageNotFound from "./404";
 import InternalError from "./500";
-import { useRouter } from "next/router";
 import "core-js/actual";
 import "../theme/styles.css";
-import ThemeProvider from "../theme/provider";
+import { CacheProvider, type EmotionCache } from "@emotion/react";
+import { deepmerge } from "@mui/utils";
 import { PersistGate } from "redux-persist/integration/react";
-import store, { persistor } from "../state/store";
+import API from "../api/api";
 import {
 	DefaultMeeloQueryOptions,
 	prepareMeeloInfiniteQuery,
 	prepareMeeloQuery,
 } from "../api/use-query";
-import createEmotionCache from "../utils/createEmotionCache";
-import { CacheProvider, EmotionCache } from "@emotion/react";
-import Scaffold from "../components/scaffold/scaffold";
-import { withTranslations } from "../i18n/i18n";
-import { PlayerContextProvider } from "../contexts/player";
-import { Page } from "../ssr";
-import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
-import { setAccessToken } from "../state/userSlice";
-import API from "../api/api";
-import { deepmerge } from "@mui/utils";
-import { KeyboardBindingsProvider } from "../contexts/keybindings";
 import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
+import Scaffold from "../components/scaffold/scaffold";
+import { KeyboardBindingsProvider } from "../contexts/keybindings";
+import { PlayerContextProvider } from "../contexts/player";
+import { withTranslations } from "../i18n/i18n";
+import type { Page } from "../ssr";
+import store, { persistor } from "../state/store";
+import { setAccessToken } from "../state/userSlice";
+import ThemeProvider from "../theme/provider";
+import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
+import createEmotionCache from "../utils/createEmotionCache";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -113,7 +113,8 @@ function MyApp({
 											<ErrorBoundary
 												FallbackComponent={() => {
 													if (
-														errorType == "not-found"
+														errorType ===
+														"not-found"
 													) {
 														return <PageNotFound />;
 													}

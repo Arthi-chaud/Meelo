@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Tile from "./tile";
-import { AlbumWithRelations } from "../../models/album";
-import Illustration from "../illustration";
-import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
 import { useTranslation } from "react-i18next";
+import type { AlbumWithRelations } from "../../models/album";
+import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
+import Illustration from "../illustration";
+import Tile from "./tile";
 
 const AlbumTile = (props: {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
@@ -38,9 +38,9 @@ const AlbumTile = (props: {
 			subtitle={
 				props.album === undefined
 					? undefined
-					: props.formatSubtitle?.call(this, props.album) ??
+					: (props.formatSubtitle?.call(this, props.album) ??
 						props.album?.artist?.name ??
-						t("compilation")
+						t("compilation"))
 			}
 			onClick={props.onClick}
 			href={props.album ? `/albums/${props.album.slug}` : undefined}

@@ -16,15 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useEffect, useState } from "react";
+import { usePlayerContext } from "../../contexts/player";
+import type { VideoWithRelations } from "../../models/video";
+import formatArtists from "../../utils/formatArtists";
+import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
+import { VideoIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";
-import { useQueryClient } from "../../api/use-query";
-import { useEffect, useState } from "react";
-import { VideoIcon } from "../icons";
-import formatArtists from "../../utils/formatArtists";
-import { usePlayerContext } from "../../contexts/player";
-import { VideoWithRelations } from "../../models/video";
-import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 
 type VideoType = VideoWithRelations<"artist" | "master" | "illustration">;
 
@@ -48,7 +47,6 @@ const VideoItem = <T extends VideoType>({
 }: VideoItemProps<T>) => {
 	const artist = video?.artist;
 	const { playTrack } = usePlayerContext();
-	const queryClient = useQueryClient();
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)

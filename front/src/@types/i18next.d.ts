@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import en from "../i18n/translations/en.json";
-import fr from "../i18n/translations/fr.json";
+import type en from "../i18n/translations/en.json";
+import type fr from "../i18n/translations/fr.json";
 import "i18next";
 
 declare module "i18next" {

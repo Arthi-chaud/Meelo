@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
+import { type ComponentProps, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	AlbumSortingKeys,
 	AlbumType,
-	AlbumWithRelations,
+	type AlbumWithRelations,
 } from "../../../models/album";
+import Controls, { type OptionState } from "../../controls/controls";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
-import Controls, { OptionState } from "../../controls/controls";
 import InfiniteView from "../infinite-view";
-import { useRouter } from "next/router";
-import { ComponentProps, useState } from "react";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { useTranslation } from "react-i18next";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 type AdditionalProps = { type?: AlbumType };
 
@@ -70,7 +70,7 @@ const InfiniteAlbumView = (
 				disableSorting={props.disableSorting}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={props.defaultLayout ?? "grid"}
 			/>
 			<InfiniteView
@@ -79,10 +79,10 @@ const InfiniteAlbumView = (
 					props.query({
 						library: options?.library,
 						view: options?.view ?? props.defaultLayout ?? "grid",
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
 						type:
 							// @ts-ignore
-							options?.type == "All" ? undefined : options?.type,
+							options?.type === "All" ? undefined : options?.type,
 						sortBy:
 							options?.sortBy ??
 							props.initialSortingField ??

@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Action from "./action";
-import { useConfirm } from "material-ui-confirm";
+import type { useConfirm } from "material-ui-confirm";
 import API from "../../api/api";
+import type { Translator } from "../../i18n/i18n";
 import confirmDownloadAction from "../confirm-download-action";
 import { ArchiveIcon, DownloadIcon } from "../icons";
-import { Translator } from "../../i18n/i18n";
+import type Action from "./action";
 
 export const DownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,

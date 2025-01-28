@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContextualMenuIcon } from "../icons";
 import { Box, Divider, IconButton, Menu } from "@mui/material";
 import { useState } from "react";
-import Action from "../actions/action";
+import type Action from "../actions/action";
+import { ContextualMenuIcon } from "../icons";
 import ContextualMenuItem from "./contextual-menu-item";
 
 type ContextualMenuProps = {
@@ -66,8 +66,7 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 										if (!action.dialog) {
 											handleClose();
 										}
-										props.onSelect &&
-											props.onSelect(action);
+										props.onSelect?.(action);
 									}}
 								>
 									<ContextualMenuItem

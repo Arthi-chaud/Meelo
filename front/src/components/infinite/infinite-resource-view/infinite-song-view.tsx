@@ -17,28 +17,28 @@
  */
 
 import { useRouter } from "next/router";
-import { ComponentProps, useState } from "react";
+import { type ComponentProps, useState } from "react";
 import {
-	SongSortingKeys,
-	SongType,
-	SongWithRelations,
-} from "../../../models/song";
-import Controls, { OptionState } from "../../controls/controls";
-import SongItem, { SongGroupItem } from "../../list-item/song-item";
-import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { PlayIcon, ShuffleIcon } from "../../icons";
-import {
-	InfiniteQuery,
-	QueryClient,
+	type InfiniteQuery,
+	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { PlayerActions, usePlayerContext } from "../../../contexts/player";
+import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
+import {
+	SongSortingKeys,
+	SongType,
+	type SongWithRelations,
+} from "../../../models/song";
 import {
 	SongGroupSortingKeys,
-	SongGroupWithRelations,
+	type SongGroupWithRelations,
 } from "../../../models/song-group";
+import Controls, { type OptionState } from "../../controls/controls";
+import { PlayIcon, ShuffleIcon } from "../../icons";
+import SongItem, { SongGroupItem } from "../../list-item/song-item";
+import InfiniteView from "../infinite-view";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 type AdditionalProps = {
 	type?: SongType;
@@ -63,7 +63,7 @@ const playSongsAction = (
 			const songs = res.pages.flatMap(({ items }) => items);
 			let i = 0;
 			for (const song of songs) {
-				if (i == 0) {
+				if (i === 0) {
 					playTrack({
 						track: {
 							...song.master,
@@ -115,11 +115,11 @@ const InfiniteSongView = <
 	const query = {
 		type:
 			// @ts-ignore
-			options?.type == "All" ? undefined : (options?.type as SongType),
+			options?.type === "All" ? undefined : (options?.type as SongType),
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
-		groups: disableGroupingVersions ? false : options?.groups ?? false,
+		groups: disableGroupingVersions ? false : (options?.groups ?? false),
 		library: options?.library ?? null,
 	} as const;
 	const shuffleAction = {
@@ -162,7 +162,7 @@ const InfiniteSongView = <
 						name: "type",
 						values: [
 							"All",
-							...SongType.filter((type) => type != "Unknown"),
+							...SongType.filter((type) => type !== "Unknown"),
 						],
 						currentValue: options?.type,
 					},
@@ -192,7 +192,7 @@ const InfiniteSongView = <
 				}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				disableLayoutToggle
 				defaultLayout={"list"}
 			/>

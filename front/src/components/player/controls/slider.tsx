@@ -17,8 +17,8 @@
  */
 
 import { Grid, Slider } from "@mui/material";
+import { type MutableRefObject, useEffect, useState } from "react";
 import DurationComponent from "./duration";
-import { MutableRefObject, useEffect, useState } from "react";
 
 type PlayerSliderProps = {
 	onSlide: (newProgress: number) => void;
@@ -72,7 +72,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					value={
 						props.duration && progress !== null
 							? (progress * 100) /
-								(props.duration == 0
+								(props.duration === 0
 									? progress
 									: props.duration)
 							: 0

@@ -16,22 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from "react";
+import createEmotionServer from "@emotion/server/create-instance";
+import { getInitColorSchemeScript } from "@mui/material/styles";
+import type { AppType } from "next/app";
 import Document, {
-	DocumentContext,
-	DocumentProps,
+	type DocumentContext,
+	type DocumentProps,
 	Head,
 	Html,
 	Main,
 	NextScript,
 } from "next/document";
-import createEmotionServer from "@emotion/server/create-instance";
-import { AppType } from "next/app";
+import type * as React from "react";
+import font from "../theme/font";
 import { LightTheme } from "../theme/theme";
 import createEmotionCache from "../utils/createEmotionCache";
-import { MyAppProps } from "./_app";
-import font from "../theme/font";
-import { getInitColorSchemeScript } from "@mui/material/styles";
+import type { MyAppProps } from "./_app";
 
 interface MyDocumentProps extends DocumentProps {
 	emotionStyleTags: JSX.Element[];
@@ -126,7 +126,7 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
 		<style
 			data-emotion={`${style.key} ${style.ids.join(" ")}`}
 			key={style.key}
-			// eslint-disable-next-line react/no-danger
+			// biome-ignore lint/security/noDangerouslySetInnerHtml: Safe
 			dangerouslySetInnerHTML={{ __html: style.css }}
 		/>
 	));

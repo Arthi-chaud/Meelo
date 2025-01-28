@@ -18,17 +18,17 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useQueryClient } from "../../../api/use-query";
 import {
 	PlaylistSortingKeys,
-	PlaylistWithRelations,
+	type PlaylistWithRelations,
 } from "../../../models/playlist";
-import Controls, { OptionState } from "../../controls/controls";
+import { CreatePlaylistAction } from "../../actions/playlist";
+import Controls, { type OptionState } from "../../controls/controls";
 import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
 import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { CreatePlaylistAction } from "../../actions/playlist";
-import { useQueryClient } from "../../../api/use-query";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const InfinitePlaylistView = (
 	props: InfiniteResourceViewProps<
@@ -50,7 +50,7 @@ const InfinitePlaylistView = (
 				sortingKeys={PlaylistSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView

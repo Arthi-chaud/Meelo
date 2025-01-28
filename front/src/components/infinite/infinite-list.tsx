@@ -17,11 +17,11 @@
  */
 
 import { Divider, List } from "@mui/material";
-import Resource from "../../models/resource";
-import InfiniteScroll from "./infinite-scroll";
 import { Fragment } from "react";
-import { IllustratedResource } from "../../models/illustration";
+import type { IllustratedResource } from "../../models/illustration";
+import type Resource from "../../models/resource";
 import { useGradientBackground } from "../../utils/gradient-background";
+import InfiniteScroll from "./infinite-scroll";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteListProps<T extends Resource> = Omit<
@@ -41,7 +41,6 @@ const InfiniteList = <T extends IllustratedResource>(
 		<InfiniteScroll
 			{...props}
 			render={(items: (T | undefined)[]) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
 				const { GradientBackground } = useGradientBackground(
 					items.find((item) => item?.illustration !== undefined)
 						?.illustration?.colors,
@@ -54,7 +53,7 @@ const InfiniteList = <T extends IllustratedResource>(
 							{items.map((item, index) => (
 								<Fragment key={`item-${index}`}>
 									{props.render(item, index)}
-									{index == items.length - 1 || (
+									{index === items.length - 1 || (
 										<Divider variant="middle" />
 									)}
 								</Fragment>

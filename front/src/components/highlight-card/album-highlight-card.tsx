@@ -17,10 +17,10 @@
  */
 
 import { useTranslation } from "react-i18next";
-import { AlbumWithRelations } from "../../models/album";
+import type { AlbumWithRelations } from "../../models/album";
+import type { AlbumExternalMetadata } from "../../models/external-metadata";
 import getYear from "../../utils/getYear";
 import HighlightCard from "./highlight-card";
-import { AlbumExternalMetadata } from "../../models/external-metadata";
 
 type AlbumHighlightCardProps = {
 	album: AlbumWithRelations<"artist" | "genres" | "illustration"> | undefined;
@@ -38,7 +38,9 @@ const AlbumHighlightCard = ({
 			body={
 				externalMetadata?.description ||
 				[
-					album ? album.artist?.name ?? t("compilation") : undefined,
+					album
+						? (album.artist?.name ?? t("compilation"))
+						: undefined,
 					album ? getYear(album.releaseDate) : undefined,
 				]
 					.filter((elem) => elem != null)

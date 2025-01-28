@@ -17,30 +17,30 @@
  */
 
 import { Box, Grid, Stack } from "@mui/material";
+import type { NextPageContext } from "next";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
 import API from "../api/api";
-import { GetPropsTypesFrom, Page } from "../ssr";
 import {
 	prepareMeeloInfiniteQuery,
 	useInfiniteQuery,
 	useQueries,
-	useQuery,
+	type useQuery,
 } from "../api/use-query";
+import Fade from "../components/fade";
+import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
 import SectionHeader from "../components/section-header";
+import SongGrid from "../components/song-grid";
 import TileRow from "../components/tile-row";
 import AlbumTile from "../components/tile/album-tile";
 import ArtistTile from "../components/tile/artist-tile";
-import SongGrid from "../components/song-grid";
 import ReleaseTile from "../components/tile/release-tile";
-import Fade from "../components/fade";
-import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import type { AlbumExternalMetadata } from "../models/external-metadata";
+import type { GetPropsTypesFrom, Page } from "../ssr";
 import { generateArray } from "../utils/gen-list";
-import { getRandomNumber } from "../utils/random";
 import { useGradientBackground } from "../utils/gradient-background";
-import { QueryClient } from "react-query";
-import { NextPageContext } from "next";
-import { AlbumExternalMetadata } from "../models/external-metadata";
+import { getRandomNumber } from "../utils/random";
 
 const newlyAddedAlbumsQuery = API.getAlbums(
 	{},
@@ -87,7 +87,7 @@ const HomePageSection = <T,>(props: {
 	const items = props.queryData.data?.pages?.at(0)?.items;
 
 	// Remove the section if its content is empty
-	if (items !== undefined && items.length == 0) {
+	if (items !== undefined && items.length === 0) {
 		return <></>;
 	}
 	return (
@@ -169,8 +169,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		newlyAddedReleases,
 	];
 	const illustrations = queries
-		.map((query) => query.data?.pages.at(0)?.items ?? [])
-		.flat()
+		.flatMap((query) => query.data?.pages.at(0)?.items ?? [])
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
 	const selectedIllustrationColor = useMemo(() => {

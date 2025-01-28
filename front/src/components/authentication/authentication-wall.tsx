@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { prepareMeeloQuery } from "../../api/use-query";
-import ModalPage from "../modal-page";
-import AuthenticationForm from "./authentication-form";
 import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
-import API from "../../api/api";
-import { RootState } from "../../state/store";
-import { useDispatch, useSelector } from "react-redux";
-import { setUserProfile } from "../../state/userSlice";
-// eslint-disable-next-line no-restricted-imports
+
 import { useQuery as useReactQuery } from "react-query";
+import { useDispatch, useSelector } from "react-redux";
+import API from "../../api/api";
+import { prepareMeeloQuery } from "../../api/use-query";
+import type { RootState } from "../../state/store";
+import { setUserProfile } from "../../state/userSlice";
+import ModalPage from "../modal-page";
 import ThemedImage from "../themed-image";
+import AuthenticationForm from "./authentication-form";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const accessToken = useSelector(
@@ -49,7 +49,7 @@ const AuthenticationWall = (props: { children: any }) => {
 		if (accessToken && status.data?.id && !status.error) {
 			setAuthenticationStatus(true);
 		}
-		if (status.error || accessToken?.valueOf() == undefined) {
+		if (status.error || accessToken?.valueOf() === undefined) {
 			setAuthenticationStatus(false);
 		}
 	}, [accessToken, status, authentified]);

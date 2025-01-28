@@ -16,34 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SearchIcon } from "../../components/icons";
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
-import { GetPropsTypesFrom, Page } from "../../ssr";
-import API from "../../api/api";
-import { NextPageContext } from "next";
-import { Head } from "../../components/head";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useTabRouter } from "../../components/tab-router";
-import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
-import InfiniteView from "../../components/infinite/infinite-view";
+import { useMutation } from "react-query";
+import API from "../../api/api";
 import {
-	Query,
+	type Query,
 	toInfiniteQuery,
 	transformPage,
 	useQueryClient,
 } from "../../api/use-query";
-import AlbumItem from "../../components/list-item/album-item";
-import SongItem from "../../components/list-item/song-item";
-import ArtistItem from "../../components/list-item/artist-item";
-import { useMutation } from "react-query";
-import { SaveSearchItem, SearchResult } from "../../models/search";
-import formatArtists from "../../utils/formatArtists";
+import { Head } from "../../components/head";
+import { SearchIcon } from "../../components/icons";
+import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
+import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
+import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import InfiniteView from "../../components/infinite/infinite-view";
+import AlbumItem from "../../components/list-item/album-item";
+import ArtistItem from "../../components/list-item/artist-item";
+import SongItem from "../../components/list-item/song-item";
 import VideoItem from "../../components/list-item/video-item";
+import { useTabRouter } from "../../components/tab-router";
+import type { SaveSearchItem, SearchResult } from "../../models/search";
+import type { GetPropsTypesFrom, Page } from "../../ssr";
+import formatArtists from "../../utils/formatArtists";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -96,7 +96,7 @@ const buildSearchUrl = (
 	query: string | undefined,
 	type: string | undefined,
 ) => {
-	return "/search/" + (query ?? "") + (type ? `?t=${type}` : "");
+	return `/search/${query ?? ""}${type ? `?t=${type}` : ""}`;
 };
 
 const tabs = ["all", "artist", "album", "song", "video"] as const;
@@ -118,20 +118,18 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const [inputValue, setInputValue] = useState(query);
 	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
 	const saveSearch = useMutation((dto: SaveSearchItem) => {
-		return (
-			API.saveSearchHistoryEntry(dto)
-				.then(() => {
-					// Sometimes, it refreshes to fast, and shifts the history
-					// before openning a page (for artists) is done
-					setTimeout(() => {
-						queryClient.client.invalidateQueries(
-							API.getSearchHistory().key,
-						);
-					}, 500);
-				})
-				// eslint-disable-next-line no-console
-				.catch((error: Error) => console.error(error))
-		);
+		return API.saveSearchHistoryEntry(dto)
+			.then(() => {
+				// Sometimes, it refreshes to fast, and shifts the history
+				// before openning a page (for artists) is done
+				setTimeout(() => {
+					queryClient.client.invalidateQueries(
+						API.getSearchHistory().key,
+					);
+				}, 500);
+			})
+
+			.catch((error: Error) => console.error(error));
 	});
 	useEffect(() => {
 		if (debounceId) {
@@ -150,7 +148,6 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				setDebounceId(undefined);
 			}, 400),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputValue]);
 	useEffect(() => {
 		return () => {
@@ -176,7 +173,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					variant="outlined"
 					autoFocus
 					onKeyDown={(e) => {
-						if (e.key == "Escape") {
+						if (e.key === "Escape") {
 							(document.activeElement as any)?.blur();
 						}
 					}}
@@ -207,12 +204,12 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value == "all" ? "All" : `${value}s`)}
+						label={t(value === "all" ? "All" : `${value}s`)}
 					/>
 				))}
 			</Tabs>
 			<Box sx={{ paddingBottom: 2 }} />
-			{selectedTab == "all" && (
+			{selectedTab === "all" && (
 				<InfiniteView
 					view="list"
 					query={() =>
@@ -222,7 +219,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								: API.getSearchHistory(),
 						)
 					}
-					renderGridItem={(item) => <></>}
+					renderGridItem={() => <></>}
 					renderListItem={(item) =>
 						!item || item.album ? (
 							<AlbumItem
@@ -281,7 +278,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{query && selectedTab == "artist" && (
+			{query && selectedTab === "artist" && (
 				<InfiniteArtistView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ artistId: item.id })
@@ -298,7 +295,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{query && selectedTab == "album" && (
+			{query && selectedTab === "album" && (
 				<InfiniteAlbumView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ albumId: item.id })
@@ -317,7 +314,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					}
 				/>
 			)}
-			{query && selectedTab == "song" && (
+			{query && selectedTab === "song" && (
 				<InfiniteSongView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ songId: item.id })
@@ -336,7 +333,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				/>
 			)}
 
-			{query && selectedTab == "video" && (
+			{query && selectedTab === "video" && (
 				<InfiniteVideoView
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ videoId: item.id })

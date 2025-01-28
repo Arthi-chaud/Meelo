@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Tile from "./tile";
-import Illustration from "../illustration";
-import { useQueryClient } from "../../api/use-query";
 import API from "../../api/api";
-import formatDuration from "../../utils/formatDuration";
+import { useQueryClient } from "../../api/use-query";
 import { usePlayerContext } from "../../contexts/player";
-import { VideoWithRelations } from "../../models/video";
+import type { VideoWithRelations } from "../../models/video";
+import formatDuration from "../../utils/formatDuration";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
+import Illustration from "../illustration";
+import Tile from "./tile";
 
 type VideoTileProps = (
 	| {
@@ -49,11 +49,11 @@ const VideoTile = ({
 		? { subtitle: undefined, secondaryHref: undefined }
 		: {
 				subtitle:
-					subtitleType == "artist"
+					subtitleType === "artist"
 						? video.artist.name
 						: formatDuration(video.master.duration),
 				secondaryHref:
-					subtitleType == "artist"
+					subtitleType === "artist"
 						? `/artists/${video.artist.slug}`
 						: undefined,
 			};

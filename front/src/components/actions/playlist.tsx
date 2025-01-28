@@ -16,7 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Action from "./action";
+import {
+	Button,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+} from "@mui/material";
+import { Add, Edit } from "iconsax-react";
+import type { useConfirm } from "material-ui-confirm";
+import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import API from "../../api/api";
+import type { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
+import type { PlayerActions, TrackState } from "../../contexts/player";
+import type Playlist from "../../models/playlist";
+import type { PlaylistWithRelations } from "../../models/playlist";
 import {
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
@@ -24,26 +40,11 @@ import {
 	PlayAfterIcon,
 	PlayNextIcon,
 } from "../icons";
-import toast from "react-hot-toast";
-import {
-	Button,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-} from "@mui/material";
-import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
-import { useMutation } from "react-query";
-import API from "../../api/api";
-import Playlist, { PlaylistWithRelations } from "../../models/playlist";
-import InfiniteList from "../infinite/infinite-list";
-import { WideLoadingComponent } from "../loading/loading";
-import ListItem from "../list-item/item";
 import Illustration from "../illustration";
-import { useConfirm } from "material-ui-confirm";
-import { Add, Edit } from "iconsax-react";
-import { useTranslation } from "react-i18next";
-import { PlayerActions, TrackState } from "../../contexts/player";
+import InfiniteList from "../infinite/infinite-list";
+import ListItem from "../list-item/item";
+import { WideLoadingComponent } from "../loading/loading";
+import type Action from "./action";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,
@@ -129,7 +130,6 @@ export const CreatePlaylistAction = (queryClient: QueryClient): Action => ({
 	label: "new",
 	icon: <Add />,
 	dialog: ({ close }) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistName: string) => {
 			return API.createPlaylist(playlistName)
 				.then(() => {
@@ -155,7 +155,6 @@ export const UpdatePlaylistAction = (
 	label: "update",
 	icon: <Edit />,
 	dialog: ({ close }) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistName: string) => {
 			return API.updatePlaylist(playlistName, playlist.slug)
 				.then(() => {
@@ -261,7 +260,6 @@ export const AddToPlaylistAction = (
 	icon: <AddToPlaylistIcon />,
 	label: "addToPlaylist",
 	dialog: ({ close }) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistId: number) => {
 			return API.addSongToPlaylist(songId, playlistId)
 				.then(() => {

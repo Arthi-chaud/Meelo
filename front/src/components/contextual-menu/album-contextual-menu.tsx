@@ -17,16 +17,16 @@
  */
 
 import { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
 import API from "../../api/api";
+import { useQueryClient } from "../../api/use-query";
+import type { AlbumWithRelations } from "../../models/album";
 import { DownloadReleaseAsyncAction } from "../actions/download";
 import { GoToArtistAction } from "../actions/link";
+import { RefreshAlbumMetadataAction } from "../actions/refresh-metadata";
+import { ChangeAlbumType } from "../actions/resource-type";
 import { ShareAlbumAction } from "../actions/share";
 import ContextualMenu from "./contextual-menu";
-import { AlbumWithRelations } from "../../models/album";
-import { useQueryClient } from "../../api/use-query";
-import { ChangeAlbumType } from "../actions/resource-type";
-import { RefreshAlbumMetadataAction } from "../actions/refresh-metadata";
-import { useTranslation } from "react-i18next";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<"artist">;

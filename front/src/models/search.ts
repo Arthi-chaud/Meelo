@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RequireExactlyOne } from "type-fest";
-import { SongWithRelations } from "./song";
-import { ArtistWithRelations } from "./artist";
+import type { RequireExactlyOne } from "type-fest";
 import { AlbumWithRelations } from "./album";
+import { ArtistWithRelations } from "./artist";
+import { SongWithRelations } from "./song";
 import { VideoWithRelations } from "./video";
 
 export type SearchResult = RequireExactlyOne<{
@@ -58,7 +58,8 @@ export const SearchResultTransformer = (
 						"master",
 					] as const).validate(result),
 				};
-			} else if ("masterId" in result) {
+			}
+			if ("masterId" in result) {
 				return {
 					album: await AlbumWithRelations([
 						"artist",

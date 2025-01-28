@@ -31,22 +31,22 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import Release from "../models/release";
-import { TrackWithRelations } from "../models/track";
-import Tracklist from "../models/tracklist";
-import Artist from "../models/artist";
-import formatDuration from "../utils/formatDuration";
-import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
-import { SongWithRelations } from "../models/song";
-import { ContextualMenuIcon, VideoIcon } from "./icons";
-import formatArtists from "../utils/formatArtists";
-import { useTranslation } from "react-i18next";
 import { Fragment, useMemo } from "react";
-import { generateArray } from "../utils/gen-list";
-import { TrackState, usePlayerContext } from "../contexts/player";
+import { useTranslation } from "react-i18next";
 import { Audio } from "react-loader-spinner";
-import { VideoWithRelations } from "../models/video";
-import { RequireAtLeastOne } from "type-fest";
+import type { RequireAtLeastOne } from "type-fest";
+import { type TrackState, usePlayerContext } from "../contexts/player";
+import type Artist from "../models/artist";
+import type Release from "../models/release";
+import type { SongWithRelations } from "../models/song";
+import type { TrackWithRelations } from "../models/track";
+import type Tracklist from "../models/tracklist";
+import type { VideoWithRelations } from "../models/video";
+import formatArtists from "../utils/formatArtists";
+import formatDuration from "../utils/formatDuration";
+import { generateArray } from "../utils/gen-list";
+import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
+import { ContextualMenuIcon, VideoIcon } from "./icons";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -126,7 +126,7 @@ const ReleaseTrackList = ({
 											: currentTrack
 												? (currentTrack.song ??
 														currentTrack.video)!
-														.artistId !=
+														.artistId !==
 													mainArtist?.id
 												: false
 									}
@@ -172,7 +172,7 @@ const ReleaseTrackList = ({
 													),
 													cursor: flatTracklist.findIndex(
 														(flatTrack) =>
-															flatTrack.id ==
+															flatTrack.id ===
 															currentTrack.id,
 													),
 												}))
@@ -254,7 +254,7 @@ const ReleaseTrackList = ({
 												{t("remastered")}
 											</Typography>
 										)}
-										{currentTrack?.type == "Video" && (
+										{currentTrack?.type === "Video" && (
 											<Icon
 												sx={{
 													marginLeft: 2,

@@ -30,7 +30,7 @@ const Toaster = () => {
 	useEffect(() => {
 		toasts
 			.filter((toast) => toast.visible)
-			.filter((item, index) => index >= TOAST_LIMIT)
+			.filter((_, index) => index >= TOAST_LIMIT)
 			.forEach((toast) => Toasts.toast.dismiss(toast.id));
 	}, [toasts]);
 	return (

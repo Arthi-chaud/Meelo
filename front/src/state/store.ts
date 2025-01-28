@@ -16,9 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { StateFromReducersMapObject, configureStore } from "@reduxjs/toolkit";
-import userSlice from "./userSlice";
-import storage from "redux-persist/lib/storage";
+import {
+	type StateFromReducersMapObject,
+	configureStore,
+} from "@reduxjs/toolkit";
+import type { CurriedGetDefaultMiddleware } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import {
 	FLUSH,
 	PAUSE,
@@ -29,9 +31,10 @@ import {
 	persistCombineReducers,
 	persistStore,
 } from "redux-persist";
-import { CurriedGetDefaultMiddleware } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
-import { PersistPartial } from "redux-persist/es/persistReducer";
+import type { PersistPartial } from "redux-persist/es/persistReducer";
+import storage from "redux-persist/lib/storage";
 import { isSSR } from "../utils/is-ssr";
+import userSlice from "./userSlice";
 
 const createNoopStorage = () => {
 	return {

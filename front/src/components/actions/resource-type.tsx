@@ -16,20 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { QueryClient } from "../../api/use-query";
-import Action from "./action";
-import { useConfirm } from "material-ui-confirm";
-import store from "../../state/store";
 import { Chip, Grid } from "@mui/material";
+import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { EditIcon } from "../icons";
 import { useTranslation } from "react-i18next";
-import { TranslationKey } from "../../i18n/i18n";
-import Song, { SongType } from "../../models/song";
 import API from "../../api/api";
-import Album, { AlbumType } from "../../models/album";
-import Video, { VideoType } from "../../models/video";
+import type { QueryClient } from "../../api/use-query";
+import type { TranslationKey } from "../../i18n/i18n";
+import type Album from "../../models/album";
+import { AlbumType } from "../../models/album";
+import type Song from "../../models/song";
+import { SongType } from "../../models/song";
+import type Video from "../../models/video";
+import { VideoType } from "../../models/video";
+import store from "../../state/store";
+import { EditIcon } from "../icons";
+import type Action from "./action";
 
 const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 	defaultValue?: Enum;
@@ -47,7 +50,7 @@ const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 						<Chip
 							label={t(type) as string}
 							variant={
-								type == currentType ? "filled" : "outlined"
+								type === currentType ? "filled" : "outlined"
 							}
 							onClick={() => {
 								setType(type);
@@ -123,7 +126,7 @@ const ChangeSongType = (
 ) =>
 	ChangeResourceType(
 		s,
-		SongType.filter((t) => t != "Unknown"),
+		SongType.filter((t) => t !== "Unknown"),
 		"changeSongType",
 		client,
 		(newType: SongType) =>

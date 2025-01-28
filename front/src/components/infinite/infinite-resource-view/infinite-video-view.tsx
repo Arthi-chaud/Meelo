@@ -17,25 +17,25 @@
  */
 
 import { useRouter } from "next/router";
-import { ComponentProps, useState } from "react";
+import { type ComponentProps, useState } from "react";
 import {
-	VideoSortingKeys,
-	VideoType,
-	VideoWithRelations,
-} from "../../../models/video";
-import Controls, { OptionState } from "../../controls/controls";
-import InfiniteView from "../infinite-view";
-import InfiniteResourceViewProps from "./infinite-resource-view-props";
-import VideoTile from "../../tile/video-tile";
-import { PlayIcon, ShuffleIcon } from "../../icons";
-import { PlayerActions, usePlayerContext } from "../../../contexts/player";
-import {
-	InfiniteQuery,
-	QueryClient,
+	type InfiniteQuery,
+	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
+import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
+import {
+	VideoSortingKeys,
+	VideoType,
+	type VideoWithRelations,
+} from "../../../models/video";
+import Controls, { type OptionState } from "../../controls/controls";
+import { PlayIcon, ShuffleIcon } from "../../icons";
 import VideoItem from "../../list-item/video-item";
+import VideoTile from "../../tile/video-tile";
+import InfiniteView from "../infinite-view";
+import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const playVideosAction = (
 	emptyPlaylist: PlayerActions["emptyPlaylist"],
@@ -61,7 +61,7 @@ const playVideosAction = (
 				}));
 			let i = 0;
 			for (const video of videos) {
-				if (i == 0) {
+				if (i === 0) {
 					playTrack(video);
 				} else {
 					playAfter(video);
@@ -93,7 +93,7 @@ const InfiniteVideoView = <
 	const query = {
 		type:
 			// @ts-ignore
-			options?.type == "All" ? undefined : (options?.type as VideoType),
+			options?.type === "All" ? undefined : (options?.type as VideoType),
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
@@ -145,7 +145,7 @@ const InfiniteVideoView = <
 				sortingKeys={VideoSortingKeys}
 				defaultSortingOrder={props.initialSortingOrder}
 				defaultSortingKey={props.initialSortingField}
-				router={props.light == true ? undefined : router}
+				router={props.light === true ? undefined : router}
 				defaultLayout={"grid"}
 				actions={[playAction, shuffleAction]}
 			/>

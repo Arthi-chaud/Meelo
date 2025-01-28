@@ -16,9 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Artist from "../../models/artist";
-import ContextualMenu from "./contextual-menu";
 import { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "../../api/use-query";
+import { usePlayerContext } from "../../contexts/player";
+import type Artist from "../../models/artist";
+import type { TrackWithRelations } from "../../models/track";
 import { DownloadAction } from "../actions/download";
 import {
 	GoToArtistAction,
@@ -31,15 +34,12 @@ import {
 	PlayAfterAction,
 	PlayNextAction,
 } from "../actions/playlist";
-import { ShareSongAction } from "../actions/share";
-import { ShowTrackFileInfoAction } from "../actions/show-track-info";
-import { TrackWithRelations } from "../../models/track";
-import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
-import { useQueryClient } from "../../api/use-query";
 import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
 import { ChangeSongType } from "../actions/resource-type";
-import { useTranslation } from "react-i18next";
-import { usePlayerContext } from "../../contexts/player";
+import { ShareSongAction } from "../actions/share";
+import { ShowTrackFileInfoAction } from "../actions/show-track-info";
+import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
+import ContextualMenu from "./contextual-menu";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song" | "illustration">;

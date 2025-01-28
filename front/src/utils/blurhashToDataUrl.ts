@@ -46,7 +46,7 @@ function parsePixels(pixels: Uint8ClampedArray, width: number, height: number) {
 			? Buffer.from(getPngArray(pngString)).toString("base64")
 			: btoa(pngString);
 
-	return "data:image/png;base64," + dataURL;
+	return `data:image/png;base64,${dataURL}`;
 }
 
 function getPngArray(pngString: string) {
@@ -64,9 +64,9 @@ function generatePng(width: number, height: number, rgbaString: string) {
 	const SIGNATURE = String.fromCharCode(137, 80, 78, 71, 13, 10, 26, 10);
 	const NO_FILTER = String.fromCharCode(0);
 
-	let n;
-	let c;
-	let k;
+	let n = 0;
+	let c = 0;
+	let k = 0;
 
 	// make crc table
 	for (n = 0; n < 256; n++) {
@@ -85,8 +85,8 @@ function generatePng(width: number, height: number, rgbaString: string) {
 	function inflateStore(data: string) {
 		const MAX_STORE_LENGTH = 65535;
 		let storeBuffer = "";
-		let remaining;
-		let blockType;
+		let remaining = 0;
+		let blockType = "";
 
 		for (let i = 0; i < data.length; i += MAX_STORE_LENGTH) {
 			remaining = data.length - i;

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PaletteOptions, ThemeOptions } from "@mui/material";
+import type { PaletteOptions, ThemeOptions } from "@mui/material";
 
 const LightTheme: Omit<PaletteOptions, "mode"> = {
 	primary: {

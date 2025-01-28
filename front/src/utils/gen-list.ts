@@ -17,4 +17,4 @@
  */
 
 export const generateArray = <T = undefined>(count: number, filler?: T): T[] =>
-	Array(count).fill(undefined);
+	Array(count).fill(filler);

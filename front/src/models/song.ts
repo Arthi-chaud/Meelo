@@ -42,7 +42,7 @@ export type SongType = (typeof SongType)[number];
 /**
  * Abstract data model, instanciated by tracks
  */
-const Song = Resource.concat(
+export const Song = Resource.concat(
 	yup.object({
 		/**
 		 * title of the song
@@ -68,16 +68,16 @@ const Song = Resource.concat(
 	}),
 );
 
-type Song = yup.InferType<typeof Song>;
+export type Song = yup.InferType<typeof Song>;
 
-type SongInclude =
+export type SongInclude =
 	| "artist"
 	| "lyrics"
 	| "featuring"
 	| "master"
 	| "illustration";
 
-const SongRelations = yup.object({
+export const SongRelations = yup.object({
 	artist: Artist.required(),
 	master: yup.lazy(() => Track.required()),
 	featuring: yup.array(Artist.required()).required(),
@@ -85,11 +85,13 @@ const SongRelations = yup.object({
 	illustration: Illustration.required().nullable(),
 });
 
-const SongWithRelations = <Selection extends SongInclude | never = never>(
+export const SongWithRelations = <
+	Selection extends SongInclude | never = never,
+>(
 	relation: Selection[],
 ) => Song.concat(SongRelations.pick(relation));
 
-type SongWithRelations<Selection extends SongInclude | never = never> =
+export type SongWithRelations<Selection extends SongInclude | never = never> =
 	yup.InferType<ReturnType<typeof SongWithRelations<Selection>>>;
 
 export default Song;
@@ -101,4 +103,3 @@ export const SongSortingKeys = [
 	"userPlayCount",
 	"totalPlayCount",
 ] as const;
-export { type SongInclude, SongWithRelations, SongRelations };

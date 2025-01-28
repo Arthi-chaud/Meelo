@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Artist from "../../models/artist";
-import ContextualMenu from "./contextual-menu";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "../../api/use-query";
+import type Artist from "../../models/artist";
 import {
 	GoToArtistAction,
 	GoToArtistAlbumsAction,
@@ -25,8 +26,7 @@ import {
 } from "../actions/link";
 import { ShareArtistAction } from "../actions/share";
 import { UpdateArtistIllustrationAction } from "../actions/update-illustration";
-import { useQueryClient } from "../../api/use-query";
-import { useTranslation } from "react-i18next";
+import ContextualMenu from "./contextual-menu";
 
 type ArtistContextualMenuProps = {
 	artist: Artist;

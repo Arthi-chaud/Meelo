@@ -18,9 +18,9 @@
 
 import { Dialog, ListItemIcon, ListItemText, MenuItem } from "@mui/material";
 import Link from "next/link";
-import Action from "../actions/action";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type Action from "../actions/action";
 
 const ContextualMenuItem = (props: Action & { onDialogClose: () => void }) => {
 	const { t } = useTranslation();
@@ -29,7 +29,7 @@ const ContextualMenuItem = (props: Action & { onDialogClose: () => void }) => {
 		if (props.disabled === true) {
 			return;
 		}
-		props.onClick && props.onClick();
+		props.onClick?.();
 		if (props.dialog) {
 			setModalOpen(true);
 		}

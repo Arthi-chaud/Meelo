@@ -17,14 +17,14 @@
  */
 
 import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
-import SectionHeader from "../section-header";
 import { useColorScheme } from "@mui/material/styles";
-import { Language, Languages, persistLanguage } from "../../i18n/i18n";
+import { Book1, Star, Warning2 } from "iconsax-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
-import Link from "next/link";
-import { Book1, Star, Warning2 } from "iconsax-react";
+import { type Language, Languages, persistLanguage } from "../../i18n/i18n";
+import SectionHeader from "../section-header";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -49,7 +49,8 @@ const UserSettings = () => {
 	);
 	const notificationsAPIAvailable = typeof Notification !== "undefined";
 	const [notificationsEnabled, setNotificationsEnabled] = useState(
-		() => notificationsAPIAvailable && Notification.permission == "granted",
+		() =>
+			notificationsAPIAvailable && Notification.permission === "granted",
 	);
 	return (
 		<NoSsr>
@@ -60,14 +61,14 @@ const UserSettings = () => {
 				</Grid>
 				<Grid item xs={1} sx={InputContainerStyle}>
 					<Checkbox
-						onChange={(event, isChecked) =>
+						onChange={(_, isChecked) =>
 							colorScheme.setMode(
 								isChecked
 									? "system"
-									: colorScheme.systemMode ?? "light",
+									: (colorScheme.systemMode ?? "light"),
 							)
 						}
-						checked={colorScheme.mode == "system"}
+						checked={colorScheme.mode === "system"}
 					/>
 				</Grid>
 				<Grid item xs={11}>
@@ -75,7 +76,7 @@ const UserSettings = () => {
 				</Grid>
 				<Grid item xs={1} sx={InputContainerStyle}>
 					<Checkbox
-						onChange={(event, isChecked) =>
+						onChange={(_, isChecked) =>
 							colorScheme.setMode(isChecked ? "dark" : "light")
 						}
 						disabled={colorScheme.mode === "system"}
@@ -154,7 +155,7 @@ const UserSettings = () => {
 						onChange={(_, isChecked) => {
 							setPrefersNotif(isChecked);
 						}}
-						checked={prefersNotifs == true}
+						checked={prefersNotifs === true}
 					/>
 				</Grid>
 			</Grid>

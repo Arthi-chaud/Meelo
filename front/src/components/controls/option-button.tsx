@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CheckIcon } from "../icons";
 import { Button, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import Option, { OptionGroup } from "./option";
 import { useState } from "react";
-import { TranslationKey } from "../../i18n/i18n";
 import { useTranslation } from "react-i18next";
+import type { TranslationKey } from "../../i18n/i18n";
+import { CheckIcon } from "../icons";
+import type Option from "./option";
+import type { OptionGroup } from "./option";
 
 type OptionButtonProps<
 	Options extends Option<OptionsKeys[number]>[],
@@ -64,7 +65,7 @@ const OptionButton = <
 							<MenuItem
 								key={value}
 								sx={{ borderRadius: "0" }}
-								selected={option.currentValue == value}
+								selected={option.currentValue === value}
 								onClick={() => {
 									if (props.onSelect) {
 										props.onSelect({
@@ -76,7 +77,7 @@ const OptionButton = <
 								}}
 							>
 								<ListItemIcon>
-									{option.currentValue == value && (
+									{option.currentValue === value && (
 										<CheckIcon />
 									)}
 								</ListItemIcon>
@@ -85,7 +86,7 @@ const OptionButton = <
 							</MenuItem>
 						))
 						.concat(
-							index + 1 != array.length
+							index + 1 !== array.length
 								? [<Divider key={index} />]
 								: [],
 						),

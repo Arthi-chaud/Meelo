@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import API from "../api/api";
-import { MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
-import Resource from "../models/resource";
+import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "../api/use-query";
+import type Resource from "../models/resource";
 
 type AdminGridProps<DataType extends Resource> = {
 	infiniteQuery: MeeloInfiniteQueryFn<DataType>;
@@ -52,11 +52,10 @@ const AdminGrid = <DataType extends Resource>({
 
 	useEffect(() => {
 		hasNextPage && fetchNextPage();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [hasNextPage]);
 	return (
 		<DataGrid
-			loading={data?.pages[currentPage] == undefined}
+			loading={data?.pages.at(currentPage) === undefined}
 			rows={data?.pages[currentPage]?.items ?? []}
 			rowCount={itemsCount}
 			pageSize={API.defaultPageSize}
@@ -68,9 +67,9 @@ const AdminGrid = <DataType extends Resource>({
 			paginationMode="server"
 			autoHeight
 			onPageChange={(page) => {
-				if (page == currentPage + 1 && hasNextPage) {
+				if (page === currentPage + 1 && hasNextPage) {
 					fetchNextPage();
-				} else if (page == currentPage - 1 && hasPreviousPage) {
+				} else if (page === currentPage - 1 && hasPreviousPage) {
 					fetchPreviousPage();
 				}
 				setCurrentPage(page);

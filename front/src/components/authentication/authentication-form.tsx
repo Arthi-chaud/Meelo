@@ -20,10 +20,10 @@ import { Button, Divider, Grid } from "@mui/material";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import API from "../../api/api";
 import { setAccessToken } from "../../state/userSlice";
-import { useTranslation } from "react-i18next";
 
 /**
  * Authentication form
@@ -41,7 +41,7 @@ const AuthenticationForm = () => {
 
 	const onSubmit = async (values: typeof defaultValues) => {
 		try {
-			if (formType == "signup") {
+			if (formType === "signup") {
 				const createdUser = await API.register(values);
 
 				if (!createdUser.enabled) {
@@ -110,7 +110,7 @@ const AuthenticationForm = () => {
 						},
 					}}
 				/>
-				{formType == "signup" && (
+				{formType === "signup" && (
 					<HookTextField
 						{...registerState("confirm")}
 						textFieldProps={{
@@ -137,7 +137,7 @@ const AuthenticationForm = () => {
 						variant="contained"
 						onClick={() => {}}
 					>
-						{formType == "login" ? "Login" : "Signup"}
+						{formType === "login" ? "Login" : "Signup"}
 					</Button>
 				</Grid>
 				<Divider sx={{ width: "100%", paddingY: 1 }} variant="middle" />
@@ -146,12 +146,12 @@ const AuthenticationForm = () => {
 						variant="outlined"
 						onClick={() =>
 							setFormType(
-								formType == "login" ? "signup" : "login",
+								formType === "login" ? "signup" : "login",
 							)
 						}
 					>
 						{t(
-							formType == "login"
+							formType === "login"
 								? "signupButton"
 								: "signinButton",
 						)}

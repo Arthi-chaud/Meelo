@@ -17,18 +17,18 @@
  */
 
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
-import API from "../../api/api";
-import User from "../../models/user";
-import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
-import { useMutation } from "react-query";
-import { useQueryClient } from "../../api/use-query";
-import { toast } from "react-hot-toast";
+import type { GridColDef } from "@mui/x-data-grid";
 import { useConfirm } from "material-ui-confirm";
-import { GridColDef } from "@mui/x-data-grid";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import { useSelector } from "react-redux";
+import API from "../../api/api";
+import { useQueryClient } from "../../api/use-query";
+import type User from "../../models/user";
+import type { RootState } from "../../state/store";
 import AdminGrid from "../admin-grid";
 import { DeleteIcon } from "../icons";
-import { useTranslation } from "react-i18next";
 
 const DeleteButton = ({
 	userId,
@@ -73,7 +73,7 @@ const DeleteButton = ({
 
 const UsersSettings = () => {
 	const queryClient = useQueryClient();
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const currentUser = useSelector((state: RootState) => state.user.user!);
 	const userMutation = useMutation(
 		({
@@ -88,12 +88,12 @@ const UsersSettings = () => {
 				.then(() => {
 					const toastMessages: string[] = [];
 
-					if (status.enabled == true) {
+					if (status.enabled === true) {
 						toastMessages.push(t("userNowEnabled"));
 					} else if (status.enabled === false) {
 						toastMessages.push(t("userNowDisabled"));
 					}
-					if (status.admin == true) {
+					if (status.admin === true) {
 						toastMessages.push(t("userNowAdmin"));
 					} else if (status.admin === false) {
 						toastMessages.push(t("userNowDisabled"));
@@ -111,7 +111,7 @@ const UsersSettings = () => {
 				return (
 					<Typography display="inline-flex">
 						{user.name}
-						{user.id == currentUser?.id && (
+						{user.id === currentUser?.id && (
 							<Typography color="grey" paddingX={1}>
 								{t("you")}
 							</Typography>
@@ -128,7 +128,7 @@ const UsersSettings = () => {
 				return (
 					<Checkbox
 						checked={user.enabled}
-						disabled={user.id == currentUser?.id}
+						disabled={user.id === currentUser?.id}
 						onChange={(event) =>
 							userMutation.mutate({
 								user,
@@ -147,7 +147,7 @@ const UsersSettings = () => {
 				return (
 					<Checkbox
 						checked={user.admin}
-						disabled={user.id == currentUser?.id}
+						disabled={user.id === currentUser?.id}
 						onChange={(event) =>
 							userMutation.mutate({
 								user,
@@ -166,7 +166,7 @@ const UsersSettings = () => {
 				return (
 					<DeleteButton
 						userId={user.id}
-						disabled={user.id == currentUser?.id}
+						disabled={user.id === currentUser?.id}
 					/>
 				);
 			},
@@ -179,8 +179,8 @@ const UsersSettings = () => {
 				infiniteQuery={API.getUsers}
 				columns={columns.map((column) => ({
 					...column,
-					headerAlign: column.field == "name" ? "left" : "center",
-					align: column.field == "name" ? "left" : "center",
+					headerAlign: column.field === "name" ? "left" : "center",
+					align: column.field === "name" ? "left" : "center",
 				}))}
 			/>
 		</Box>

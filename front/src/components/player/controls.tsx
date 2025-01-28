@@ -17,6 +17,35 @@
  */
 
 import {
+	Box,
+	Button,
+	ButtonBase,
+	Container,
+	Divider,
+	Grid,
+	IconButton,
+	Skeleton,
+	Stack,
+	Typography,
+	useTheme,
+} from "@mui/material";
+import Link from "next/link";
+import {
+	type ComponentProps,
+	type LegacyRef,
+	useCallback,
+	useState,
+} from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import API from "../../api/api";
+import { useQuery } from "../../api/use-query";
+import { usePlayerContext } from "../../contexts/player";
+import type Artist from "../../models/artist";
+import type { TrackWithRelations } from "../../models/track";
+import formatArtists from "../../utils/formatArtists";
+import formatDuration from "../../utils/formatDuration";
+import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
+import {
 	CloseIcon,
 	ContextualMenuIcon,
 	DragHandleIcon,
@@ -30,34 +59,10 @@ import {
 	RewindIcon,
 	TrackIcon,
 } from "../icons";
-import {
-	Box,
-	Button,
-	ButtonBase,
-	Container,
-	Divider,
-	Grid,
-	IconButton,
-	Skeleton,
-	Stack,
-	Typography,
-	useTheme,
-} from "@mui/material";
 import Illustration from "../illustration";
-import { ComponentProps, LegacyRef, useCallback, useState } from "react";
-import PlayerSlider from "./controls/slider";
-import API from "../../api/api";
-import { useQuery } from "../../api/use-query";
-import LyricsBox from "../lyrics";
-import { TrackWithRelations } from "../../models/track";
-import Artist from "../../models/artist";
-import Link from "next/link";
-import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import ListItem from "../list-item/item";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import formatDuration from "../../utils/formatDuration";
-import formatArtists from "../../utils/formatArtists";
-import { usePlayerContext } from "../../contexts/player";
+import LyricsBox from "../lyrics";
+import PlayerSlider from "./controls/slider";
 
 const parentSongQuery = (id: number) =>
 	API.getSong(id, ["artist", "lyrics", "featuring"]);
@@ -351,7 +356,9 @@ const ExpandedPlayerControls = (
 						justifyContent: "center",
 					}}
 				>
-					{props.track?.type == "Video" ? (
+					{props.track?.type === "Video" ? (
+						// biome-ignore lint/a11y/useMediaCaption: No caption available
+						// biome-ignore lint/a11y/useKeyWithClickEvents: TODO?
 						<video
 							playsInline
 							id="videoPlayer"
@@ -399,7 +406,7 @@ const ExpandedPlayerControls = (
 									justifyContent: "end",
 								}}
 							>
-								{props.track?.type == "Video" && (
+								{props.track?.type === "Video" && (
 									<IconButton onClick={requestFullscreen}>
 										<FullscreenIcon size={18} />
 									</IconButton>
@@ -461,7 +468,7 @@ const ExpandedPlayerControls = (
 											track={{
 												...props.track,
 												song: props.track.songId
-													? parentSong.data ?? null
+													? (parentSong.data ?? null)
 													: null,
 											}}
 											onSelect={() =>
@@ -542,7 +549,7 @@ const ExpandedPlayerControls = (
 					</Stack>
 				</Grid>
 			</Grid>
-			{selectedTab == "lyrics" && (
+			{selectedTab === "lyrics" && (
 				<Box
 					sx={{
 						height: "100%",
@@ -565,7 +572,7 @@ const ExpandedPlayerControls = (
 					)}
 				</Box>
 			)}
-			{selectedTab == "playlist" && (
+			{selectedTab === "playlist" && (
 				<Box
 					sx={{
 						height: "100%",
@@ -656,7 +663,10 @@ const ExpandedPlayerControls = (
 														</div>
 													)}
 												</Draggable>
-												<Divider variant="middle" />
+												<Divider
+													key={`divider-${index}`}
+													variant="middle"
+												/>
 											</>
 										))}
 									{provided.placeholder}
@@ -682,7 +692,7 @@ const ExpandedPlayerControls = (
 					<IconButton
 						key={index}
 						disabled={
-							tabName == "lyrics" && !parentSong.data?.lyrics
+							tabName === "lyrics" && !parentSong.data?.lyrics
 						}
 						style={{
 							transition: "color 0.2s ease",

@@ -17,10 +17,10 @@
  */
 
 import { Grid } from "@mui/material";
-import Resource from "../../models/resource";
-import InfiniteScroll from "./infinite-scroll";
-import { IllustratedResource } from "../../models/illustration";
+import type { IllustratedResource } from "../../models/illustration";
+import type Resource from "../../models/resource";
 import { useGradientBackground } from "../../utils/gradient-background";
+import InfiniteScroll from "./infinite-scroll";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
@@ -40,7 +40,6 @@ const InfiniteGrid = <T extends IllustratedResource>(
 		<InfiniteScroll
 			{...props}
 			render={(items) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
 				const { GradientBackground } = useGradientBackground(
 					items.find((item) => item?.illustration !== undefined)
 						?.illustration?.colors,

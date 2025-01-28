@@ -16,21 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { QueryClient } from "../../api/use-query";
 import {
 	Button,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
 } from "@mui/material";
-import Action from "./action";
-import store from "../../state/store";
-import { toast } from "react-hot-toast";
-import API from "../../api/api";
-import { useMutation } from "react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import { UpdateIllustrationIcon } from "../icons";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import API from "../../api/api";
+import type { QueryClient } from "../../api/use-query";
+import store from "../../state/store";
+import { UpdateIllustrationIcon } from "../icons";
+import type Action from "./action";
 
 type IllustrationUpdateFormType = {
 	onSubmit: (newUrl: string) => void;
@@ -86,14 +86,13 @@ const UpdateIllustrationAction = (
 	resourceId: number,
 	resourceType: "artist" | "track" | "release" | "playlist",
 ): Action => {
-	const textFieldId = `update-illustration-${resourceType}-${resourceId}`;
 	const mutation = useMutation(async (newUrl: string) => {
 		const updator =
-			resourceType == "artist"
+			resourceType === "artist"
 				? API.updateArtistIllustration
-				: resourceType == "release"
+				: resourceType === "release"
 					? API.updateReleaseIllustration
-					: resourceType == "playlist"
+					: resourceType === "playlist"
 						? API.updatePlaylistIllustration
 						: API.updateTrackIllustration;
 
@@ -101,7 +100,7 @@ const UpdateIllustrationAction = (
 			.then(() => {
 				toast.success("Illustration updated!");
 				queryClient.client.invalidateQueries(resourceType);
-				queryClient.client.invalidateQueries(resourceType + "s");
+				queryClient.client.invalidateQueries(`${resourceType}s`);
 			})
 			.catch(() => toast.error("Illustration update failed"));
 	});

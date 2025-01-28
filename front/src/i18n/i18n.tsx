@@ -16,16 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import i18next, { InitOptions, KeysBuilderWithoutReturnObjects } from "i18next";
+import ALParser from "accept-language-parser";
+import { getCookie, setCookie } from "cookies-next";
+import i18next, {
+	type InitOptions,
+	type KeysBuilderWithoutReturnObjects,
+} from "i18next";
+import type { AppContext, AppInitialProps, AppProps } from "next/app";
+import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
+import { LanguageCookieKey } from "../utils/cookieKeys";
+import { isSSR } from "../utils/is-ssr";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
-import { getCookie, setCookie } from "cookies-next";
-import { LanguageCookieKey } from "../utils/cookieKeys";
-import { ComponentType, useMemo } from "react";
-import { AppContext, AppInitialProps, AppProps } from "next/app";
-import ALParser from "accept-language-parser";
-import { isSSR } from "../utils/is-ssr";
 
 const Languages = ["en", "fr"] as const;
 const Resources = { en, fr };
@@ -60,6 +63,7 @@ export const withTranslations = (
 							...commonOptions,
 							lng: props.pageProps.__lang,
 							resources: props.pageProps.__resources,
+							// biome-ignore lint/style/noCommaOperator: OK
 						}),
 						i18next),
 			[props.pageProps.__lang, props.pageProps.__resources],

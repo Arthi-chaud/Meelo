@@ -24,12 +24,12 @@ import {
 	TableRow,
 	Typography,
 } from "@mui/material";
-import { useConfirm } from "material-ui-confirm";
+import type { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
 import API from "../api/api";
 import { useQuery } from "../api/use-query";
+import type { TranslationKey } from "../i18n/i18n";
 import formatDuration from "../utils/formatDuration";
-import { TranslationKey } from "../i18n/i18n";
-import { useTranslation } from "react-i18next";
 
 /**
  * Table component, listing info of track and its source file
@@ -51,10 +51,10 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		bitRate: track.data ? `${track.data.bitrate} kbps` : undefined,
 		type: track.data?.type,
 		extension: sourceFile.data
-			? sourceFile.data.path
+			? (sourceFile.data.path
 					.split(".")
 					.reverse()[0]
-					.toLocaleUpperCase() ?? "Unknown"
+					.toLocaleUpperCase() ?? "Unknown")
 			: undefined,
 		path: sourceFile.data?.path,
 		registrationDate: sourceFile.data

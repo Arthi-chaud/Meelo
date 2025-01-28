@@ -18,9 +18,9 @@
 
 import * as yup from "yup";
 import Artist from "./artist";
+import Genre from "./genre";
 import Illustration from "./illustration";
 import Resource from "./resource";
-import Genre from "./genre";
 
 export const AlbumType = [
 	"StudioRecording",
@@ -72,7 +72,9 @@ export default Album;
 
 export type AlbumInclude = "artist" | "genres" | "illustration";
 
-const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
+export const AlbumWithRelations = <
+	Selection extends AlbumInclude | never = never,
+>(
 	relation: Selection[],
 ) =>
 	Album.concat(
@@ -85,7 +87,7 @@ const AlbumWithRelations = <Selection extends AlbumInclude | never = never>(
 			.pick(relation),
 	);
 
-type AlbumWithRelations<Selection extends AlbumInclude | never = never> =
+export type AlbumWithRelations<Selection extends AlbumInclude | never = never> =
 	yup.InferType<ReturnType<typeof AlbumWithRelations<Selection>>>;
 
 export const AlbumSortingKeys = [
@@ -94,4 +96,3 @@ export const AlbumSortingKeys = [
 	"releaseDate",
 	"addDate",
 ] as const;
-export { AlbumWithRelations };
