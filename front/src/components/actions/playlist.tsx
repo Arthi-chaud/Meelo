@@ -130,7 +130,6 @@ export const CreatePlaylistAction = (queryClient: QueryClient): Action => ({
 	label: "new",
 	icon: <Add />,
 	dialog: ({ close }) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistName: string) => {
 			return API.createPlaylist(playlistName)
 				.then(() => {
@@ -156,7 +155,6 @@ export const UpdatePlaylistAction = (
 	label: "update",
 	icon: <Edit />,
 	dialog: ({ close }) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistName: string) => {
 			return API.updatePlaylist(playlistName, playlist.slug)
 				.then(() => {
@@ -262,7 +260,6 @@ export const AddToPlaylistAction = (
 	icon: <AddToPlaylistIcon />,
 	label: "addToPlaylist",
 	dialog: ({ close }) => {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
 		const mutation = useMutation((playlistId: number) => {
 			return API.addSongToPlaylist(songId, playlistId)
 				.then(() => {

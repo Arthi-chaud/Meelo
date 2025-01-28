@@ -79,7 +79,7 @@ const InfiniteAlbumView = (
 					props.query({
 						library: options?.library,
 						view: options?.view ?? props.defaultLayout ?? "grid",
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+
 						type:
 							// @ts-ignore
 							options?.type === "All" ? undefined : options?.type,

@@ -106,7 +106,6 @@ type AuthenticationInput = {
 	password: string;
 };
 
-// eslint-disable-next-line no-shadow
 enum Service {
 	API = 0,
 	Scanner = 1,

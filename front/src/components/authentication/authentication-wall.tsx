@@ -18,7 +18,7 @@
 
 import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
-// eslint-disable-next-line no-restricted-imports
+
 import { useQuery as useReactQuery } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../api/api";

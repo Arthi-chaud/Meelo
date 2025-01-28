@@ -223,7 +223,6 @@ const Player = () => {
 			pause();
 			playTracks({ tracks: [] });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userIsAuthentified]);
 	useKeyboardBinding(
 		{
@@ -321,7 +320,6 @@ const Player = () => {
 							body: currentTrack.artist.name,
 						}),
 					);
-					// eslint-disable-next-line no-empty
 				} catch {}
 			}
 		} else {
@@ -332,7 +330,6 @@ const Player = () => {
 			setDuration(undefined);
 			setPlaying(false);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [currentTrack]);
 	const playerBgColor = useMemo(() => {
 		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;

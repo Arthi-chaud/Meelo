@@ -118,7 +118,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const artist = useQuery(artistQuery, artistIdentifier);
 	const albums = latestAlbumsQuery.map(({ type, query }) => ({
 		type: type,
-		// eslint-disable-next-line react-hooks/rules-of-hooks
+
 		query: useInfiniteQuery(query, artistIdentifier),
 	}));
 	const videos = useInfiniteQuery(videosQuery, artistIdentifier);

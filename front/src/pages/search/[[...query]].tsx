@@ -118,20 +118,18 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const [inputValue, setInputValue] = useState(query);
 	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
 	const saveSearch = useMutation((dto: SaveSearchItem) => {
-		return (
-			API.saveSearchHistoryEntry(dto)
-				.then(() => {
-					// Sometimes, it refreshes to fast, and shifts the history
-					// before openning a page (for artists) is done
-					setTimeout(() => {
-						queryClient.client.invalidateQueries(
-							API.getSearchHistory().key,
-						);
-					}, 500);
-				})
-				// eslint-disable-next-line no-console
-				.catch((error: Error) => console.error(error))
-		);
+		return API.saveSearchHistoryEntry(dto)
+			.then(() => {
+				// Sometimes, it refreshes to fast, and shifts the history
+				// before openning a page (for artists) is done
+				setTimeout(() => {
+					queryClient.client.invalidateQueries(
+						API.getSearchHistory().key,
+					);
+				}, 500);
+			})
+
+			.catch((error: Error) => console.error(error));
 	});
 	useEffect(() => {
 		if (debounceId) {
@@ -150,7 +148,6 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				setDebounceId(undefined);
 			}, 400),
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [inputValue]);
 	useEffect(() => {
 		return () => {

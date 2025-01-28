@@ -17,7 +17,7 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
-// eslint-disable-next-line no-restricted-imports
+
 import { QueryClient } from "react-query";
 import API from "./api/api";
 import { prepareMeeloQuery } from "./api/use-query";
@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
 		// Disable SSR if user is not authentified
 		return NextResponse.redirect(`${origin}/`);
 	}
-	// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain, no-useless-escape
+
 	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
 	const master = await queryClient
 		.fetchQuery(prepareMeeloQuery(API.getMasterRelease, albumId))

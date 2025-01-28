@@ -28,7 +28,7 @@ import type { NextRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-// eslint-disable-next-line no-restricted-imports
+
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";
@@ -286,7 +286,7 @@ const Controls = <
 										options: [
 											{
 												...option,
-												// eslint-disable-next-line max-len
+
 												currentValue:
 													optionsState[
 														option.name as keyof typeof optionsState

@@ -52,7 +52,6 @@ const AdminGrid = <DataType extends Resource>({
 
 	useEffect(() => {
 		hasNextPage && fetchNextPage();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [hasNextPage]);
 	return (
 		<DataGrid

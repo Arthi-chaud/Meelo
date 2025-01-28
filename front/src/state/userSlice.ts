@@ -17,7 +17,7 @@
  */
 
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-// eslint-disable-next-line no-restricted-imports
+
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import type User from "../models/user";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";

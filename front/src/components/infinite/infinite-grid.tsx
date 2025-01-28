@@ -40,7 +40,6 @@ const InfiniteGrid = <T extends IllustratedResource>(
 		<InfiniteScroll
 			{...props}
 			render={(items) => {
-				// eslint-disable-next-line react-hooks/rules-of-hooks
 				const { GradientBackground } = useGradientBackground(
 					items.find((item) => item?.illustration !== undefined)
 						?.illustration?.colors,

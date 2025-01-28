@@ -16,11 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	// eslint-disable-next-line no-restricted-imports
-	CssBaseline,
-	GlobalStyles,
-} from "@mui/material";
+import { CssBaseline, GlobalStyles } from "@mui/material";
 import {
 	Experimental_CssVarsProvider as CssVarsProvider,
 	experimental_extendTheme as extendTheme,

@@ -74,7 +74,6 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		if (userQuery.data?.admin === true) {
 			router.push(`/settings/${panel}`, undefined, { shallow: true });
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [panel]);
 
 	if (!userQuery.data) {
