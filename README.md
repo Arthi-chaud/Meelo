@@ -57,6 +57,10 @@ We are actively working on a public demo, so that you can try out Meelo. Stay tu
 <details>
   <summary>Unfold to see what the web application looks like!</summary>
 
+https://github.com/user-attachments/assets/48141241-25ec-4570-a4f1-696c0cdfcaaa
+
+---
+
 ![Album View](./assets/examples/album-page.png)
 ![Artist Page](./assets/examples/artist-page.png)
 ![Player Page](./assets/examples/player.png)
