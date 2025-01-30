@@ -21,6 +21,24 @@ func GetValue(t ffprobe.Tags, tag string) (string, error) {
 	return t.GetString(strings.ToUpper(tag))
 }
 
+type parseTagFn func(string)
+
+// Tries to get each tag by key one after the other. If it success, calls function and returns
+func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
+	for _, key := range keys {
+		value, err := GetValue(t, key)
+		if err == nil && len(value) > 0 {
+			fun(value)
+			return
+		}
+	}
+}
+
+// sources for keys:
+// https://github.com/Arthi-chaud/Meelo/issues/851
+// https://github.com/FFmpeg/FFmpeg/blob/c5287178b4dc373e763f7cd49703a6e3192aab3a/libavformat/id3v2.c#L105
+// https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.4.0-frames.html
+
 func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error) {
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
@@ -40,32 +58,34 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 	metadata.Type = getType(*probeData)
 
 	tags := probeData.Format.TagList
-	if value, err := GetValue(tags, "artist"); err == nil {
+	ParseTag(tags, []string{"artist", "tope"}, func(value string) {
 		metadata.Artist = value
-	}
-	if value, err := GetValue(tags, "album"); err == nil {
+	})
+	ParseTag(tags, []string{"album"}, func(value string) {
 		metadata.Album = value
-	}
-	if value, err := GetValue(tags, "album_artist"); err == nil {
+	})
+	ParseTag(tags, []string{"album_artist"}, func(value string) {
 		metadata.AlbumArtist = value
-	}
-	if value, err := GetValue(tags, "title"); err == nil {
+	})
+	ParseTag(tags, []string{"title"}, func(value string) {
 		metadata.Name = value
-	}
-	if value, err := GetValue(tags, "genre"); err == nil {
+	})
+	ParseTag(tags, []string{"genre", "tcon"}, func(value string) {
 		metadata.Genres = []string{value}
-	}
-	if value, err := GetValue(tags, "track"); err == nil {
+	})
+	ParseTag(tags, []string{"track", "trck"}, func(value string) {
 		rawTrackValue, _, _ := strings.Cut(value, "/")
 		trackValue, _ := strconv.Atoi(rawTrackValue)
 		metadata.Index = int64(trackValue)
-	}
-	if value, err := GetValue(tags, "disc"); err == nil {
+	})
+
+	ParseTag(tags, []string{"disc", "tpos"}, func(value string) {
 		rawDiscValue, _, _ := strings.Cut(value, "/")
 		discValue, _ := strconv.Atoi(rawDiscValue)
 		metadata.DiscIndex = int64(discValue)
-	}
-	if value, err := GetValue(tags, "date"); err == nil {
+	})
+
+	ParseTag(tags, []string{"date", "tory", "tyer"}, func(value string) {
 		// iTunes purchases use an ISO format
 		for _, format := range []string{"2006", time.DateOnly, time.DateTime, time.RFC3339} {
 			date, err := time.Parse(format, value)
@@ -73,15 +93,15 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 				metadata.ReleaseDate = &date
 			}
 		}
-	}
+	})
 	if metadata.ReleaseDate == nil {
-		if value, err := GetValue(tags, "year"); err == nil {
+		ParseTag(tags, []string{"year"}, func(value string) {
 			// MP3s only store year(?)
 			date, err := time.Parse("2006", value)
 			if err == nil {
 				metadata.ReleaseDate = &date
 			}
-		}
+		})
 	}
 	if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
 		metadata.IllustrationLocation = internal.Embedded
