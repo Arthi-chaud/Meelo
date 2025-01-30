@@ -69,7 +69,7 @@ jobs:
         run: go test ./... -coverprofile=coverage.out
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report-scanner
           path: ./scanner/coverage.out
@@ -79,9 +79,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage-report-scanner
           path: ./scanner
@@ -101,7 +101,7 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
