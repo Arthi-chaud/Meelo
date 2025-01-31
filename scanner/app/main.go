@@ -8,8 +8,9 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
-	"github.com/kpango/glg"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/swaggo/echo-swagger"
 )
 
@@ -31,13 +32,7 @@ func main() {
 }
 
 func setupLogger() {
-	glg.Get().
-		SetMode(glg.STD).
-		// We will be watching the logs through docker-compose
-		// It already provides timestamps
-		DisableTimestamp().
-		// No need to specify lines
-		SetLineTraceMode(glg.TraceLineNone)
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 }
 
 // Sets up echo endpoints
@@ -69,13 +64,13 @@ func setupEcho(c config.Config) *echo.Echo {
 func waitForApi(c config.Config) {
 	for i := 0; i < ApiHealthckechAttemptCount; i++ {
 		if err := api.HealthCheck(c); err != nil {
-			glg.Fail("Failed connecting to API")
+			log.Error().Msg("Failed connecting to API")
 			time.Sleep(7 * time.Second)
 		} else {
-			glg.Success("Connected to API 🥳")
+			log.Info().Msg("Connected to API 🥳")
 			return
 		}
 	}
-	glg.Fatal("Could not connect to the API. Exiting...")
+	log.Fatal().Msg("Could not connect to the API. Exiting...")
 	os.Exit(1)
 }

@@ -8,11 +8,11 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/filesystem"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 func NewLibraryCleanTask(library api.Library, c config.Config) Task {
-	name := fmt.Sprintf("Clean library '%s'.", library.Slug)
+	name := fmt.Sprintf("Clean library '%s'", library.Slug)
 	return createTask(name, func(w *Worker) error { return execClean(library, c, w) })
 }
 
@@ -33,7 +33,9 @@ func execClean(library api.Library, c config.Config, w *Worker) error {
 		}
 	}
 	successfulClean := DeleteFilesInApi(filesToClean, c, w)
-	glg.Logf("Cleaned %d files for Library '%s'.", successfulClean, library.Slug)
+	log.Info().
+		Str("library", library.Slug).
+		Msgf("Cleaned %d files.", successfulClean)
 	return nil
 }
 
@@ -42,8 +44,8 @@ func DeleteFilesInApi(filesToClean []api.File, c config.Config, w *Worker) int {
 		return f.Id
 	}))
 	if err != nil {
-		glg.Fail("Cleaning files failed.")
-		glg.Trace(err.Error())
+		log.Error().Msg("Cleaning files failed.")
+		log.Trace().Msg(err.Error())
 		return 0
 	}
 	return len(filesToClean)

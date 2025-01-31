@@ -9,7 +9,7 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/parser"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, c config.Config) Task {
@@ -30,35 +30,39 @@ func execRefresh(refreshSelector api.FileSelectorDto, c config.Config, w *Worker
 	for _, selectedFile := range selectedFiles {
 		selectedFilePath, err := buildFullFileEntryPath(selectedFile, libraries, c)
 		if err != nil {
-			glg.Fail(err)
+			log.Error().Msg(err.Error())
 			continue
 		}
 		newChecksum, err := internal.ComputeChecksum(selectedFilePath)
 		if err != nil {
-			glg.Fail(err)
+			log.Error().Msg(err.Error())
 			continue
 		}
 		if newChecksum == selectedFile.Checksum {
 			continue
 		}
-		glg.Log("Refreshing metadata for %s.", path.Base(selectedFile.Path))
+		log.Info().
+			Str("file", path.Base(selectedFile.Path)).
+			Msgf("Refreshing metadata")
 		// Note unlike for scan, we dont use a chan here.
 		m, errs := parser.ParseMetadata(c.UserSettings, selectedFilePath)
 		if len(errs) > 0 {
-			glg.Errorf("Parsing '%s' failed:", path.Base(selectedFilePath))
+			log.Error().
+				Str("file", path.Base(selectedFile.Path)).
+				Msgf("Parsing failed")
 			for _, err := range errs {
-				glg.Trace(err.Error())
+				log.Trace().Msg(err.Error())
 			}
 			continue
 		}
 		err = pushMetadata(selectedFilePath, m, c, w, api.Update)
 		if err != nil {
-			glg.Fail(err.Error())
+			log.Error().Msg(err.Error())
 		} else {
 			successfulUpdates = successfulUpdates + 1
 		}
 	}
-	glg.Logf("Updated metadata for %d files", successfulUpdates)
+	log.Info().Msgf("Updated metadata for %d files", successfulUpdates)
 	return nil
 }
 
@@ -72,7 +76,7 @@ func generateTaskName(refreshSelector api.FileSelectorDto) string {
 			formattedSelector = fmt.Sprintf("%s=%s", typeOfS.Field(i).Name, v.Field(i).String())
 		}
 	}
-	return fmt.Sprintf("Refresh metadata '%s'", formattedSelector)
+	return fmt.Sprintf("Refresh metadata %s", formattedSelector)
 }
 
 func buildFullFileEntryPath(file api.File, libraries []api.Library, c config.Config) (string, error) {

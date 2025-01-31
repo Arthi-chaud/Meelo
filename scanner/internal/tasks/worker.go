@@ -5,7 +5,7 @@ import (
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 type Worker struct {
@@ -33,8 +33,8 @@ func (w *Worker) StartWorker(c config.Config) {
 	go func() {
 		for task := range w.thumbnailQueue {
 			if err := SaveThumbnail(task, c); err != nil {
-				glg.Fail("Extracting thumbnail failed:")
-				glg.Trace(err.Error())
+				log.Error().Msg("Extracting thumbnail failed:")
+				log.Trace().Msg(err.Error())
 			}
 		}
 	}()
@@ -48,13 +48,13 @@ func (w *Worker) process(task Task) {
 	w.currentTask = task
 	w.mu.Unlock()
 
-	glg.Logf("Processing task: %s", task.Name)
+	log.Info().Str("task", task.Name).Msgf("Processing task")
 	err := task.Exec(w)
 	if err != nil {
-		glg.Failf("Task returned an error: %s", task.Name)
-		glg.Trace(err.Error())
+		log.Error().Str("task", task.Name).Msgf("Task returned an error")
+		log.Trace().Msg(err.Error())
 	} else {
-		glg.Logf("Task finished successfully: %s", task.Name)
+		log.Info().Str("task", task.Name).Msgf("Task finished successfully")
 	}
 	w.mu.Lock()
 	w.currentTask = Task{}

@@ -3,9 +3,10 @@ package illustration
 import (
 	"bytes"
 	"fmt"
-	"github.com/kpango/glg"
-	"github.com/u2takey/ffmpeg-go"
 	"strings"
+
+	"github.com/rs/zerolog/log"
+	"github.com/u2takey/ffmpeg-go"
 )
 
 type CropDimensions struct {
@@ -97,7 +98,7 @@ func GetCropDimensions(thumbnail *bytes.Buffer) (*CropDimensions, error) {
 		_, err = fmt.Sscanf(line[cropPos+len(token):], "%d:%d:%d:%d",
 			&dims.width, &dims.height, &dims.x, &dims.y)
 		if err != nil {
-			glg.Debug(err)
+			log.Debug().Msg(err.Error())
 			continue
 		}
 		if dims.width < 0 || dims.height < 0 {

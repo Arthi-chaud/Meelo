@@ -7,7 +7,7 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 // Push parsed metadata and saves related illustration/thumbnail
@@ -27,8 +27,10 @@ func pushMetadata(fileFullPath string, m internal.Metadata, c config.Config, w *
 		if err != nil {
 			// Illustration POST failure is not fatal
 			// So we do not return an error to the caller
-			glg.Errorf("Saving illustration for %s failed.", path.Base(fileFullPath))
-			glg.Trace(err.Error())
+			log.Error().
+				Str("path", path.Base(fileFullPath)).
+				Msgf("Saving illustration failed")
+			log.Trace().Msg(err.Error())
 		}
 	}
 	if m.Type == internal.Video {

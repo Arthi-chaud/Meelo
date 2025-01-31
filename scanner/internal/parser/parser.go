@@ -7,7 +7,7 @@ import (
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	c "github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, []error) {
@@ -51,9 +51,9 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 	if metadata.Type == internal.Audio || metadata.Duration < 1200 { // 20 minutes
 		fingerprint, err := internal.GetFileAcousticFingerprint(filePath)
 		if err != nil {
-			// Fingerprinting failuer is not fatal
-			glg.Failf("failed to compute Fingerprint for '%s'\n", path.Base(filePath))
-			glg.Trace(err.Error())
+			// Fingerprinting failure is not fatal
+			log.Error().Str("file", path.Base(filePath)).Msg("failed to compute fingerprint")
+			log.Trace().Msg(err.Error())
 		} else {
 			metadata.Fingerprint = &fingerprint
 		}
