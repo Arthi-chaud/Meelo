@@ -34,7 +34,7 @@ func (w *Worker) StartWorker(c config.Config) {
 		for task := range w.thumbnailQueue {
 			if err := SaveThumbnail(task, c); err != nil {
 				glg.Fail("Extracting thumbnail failed:")
-				glg.Fail(err)
+				glg.Trace(err.Error())
 			}
 		}
 	}()
@@ -52,7 +52,7 @@ func (w *Worker) process(task Task) {
 	err := task.Exec(w)
 	if err != nil {
 		glg.Failf("Task returned an error: %s", task.Name)
-		glg.Failf(err.Error())
+		glg.Trace(err.Error())
 	} else {
 		glg.Logf("Task finished successfully: %s", task.Name)
 	}

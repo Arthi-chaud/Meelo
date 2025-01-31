@@ -19,7 +19,7 @@ func TestVMergeMetadataCorrectOverride(t *testing.T) {
 		AlbumArtist: "B",
 		ReleaseDate: &m2Date,
 	}
-	m3 := Merge(m1, m2)
+	m3, _ := Merge(m1, m2)
 
 	assert.Equal(t, "A", m3.Artist)
 	assert.Equal(t, "B", m3.AlbumArtist)

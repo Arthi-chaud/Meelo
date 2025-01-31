@@ -7,7 +7,6 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/go-playground/validator/v10"
-	"github.com/kpango/glg"
 )
 
 type Metadata struct {
@@ -92,16 +91,17 @@ func SanitizeAndValidateMetadata(m *Metadata) []error {
 }
 
 // Will override m1's values m2's if m1's is empty
-func Merge(m1 Metadata, m2 Metadata) Metadata {
+func Merge(m1 Metadata, m2 Metadata) (Metadata, error) {
 	if err := mergo.Merge(&m1, m2, mergo.WithOverrideEmptySlice); err != nil {
-		glg.Warn("merging Metadata structs may have failed")
-		glg.Warn(err.Error())
-		glg.Warnf("destination: %+v", m1)
-		glg.Warnf("source: %+v", m2)
+		return Metadata{}, e.Join(
+			e.New("merging Metadata struct may have failed: "),
+			err,
+			fmt.Errorf("destination: %+v", m1),
+			fmt.Errorf("source: %+v", m2))
 	}
 	// dates do not seem to be overwritten correctly
 	if m1.ReleaseDate != nil && (*m1.ReleaseDate).Year() == 1 {
 		m1.ReleaseDate = m2.ReleaseDate
 	}
-	return m1
+	return m1, nil
 }

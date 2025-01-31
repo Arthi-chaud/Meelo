@@ -25,7 +25,10 @@ func pushMetadata(fileFullPath string, m internal.Metadata, c config.Config, w *
 			IllustrationStreamIndex: m.IllustrationStreamIndex,
 		}, c)
 		if err != nil {
-			glg.Failf("Saving illustration for %s failed.", path.Base(fileFullPath))
+			// Illustration POST failure is not fatal
+			// So we do not return an error to the caller
+			glg.Errorf("Saving illustration for %s failed.", path.Base(fileFullPath))
+			glg.Trace(err.Error())
 		}
 	}
 	if m.Type == internal.Video {

@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -15,7 +16,6 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/go-playground/validator/v10"
-	"github.com/kpango/glg"
 )
 
 const JsonContentType = "application/json"
@@ -151,7 +151,6 @@ func PostIllustration(config config.Config, trackId int, imageType IllustrationT
 	mp.WriteField("trackId", strconv.FormatInt(int64(trackId), 10))
 	part, err := mp.CreateFormFile("file", "cover.jpg")
 	if err != nil {
-		glg.Fail(err)
 		return err
 	}
 	part.Write(imageBytes)
@@ -174,17 +173,17 @@ func request(method string, url string, body io.Reader, config config.Config, co
 	resp, err := client.Do(req)
 
 	if err != nil {
-		glg.Fail(err)
-		return "", err
+		return "", errors.Join(errors.New("Request to API failed: "), err)
 	}
 	defer resp.Body.Close()
 	b, err := io.ReadAll(resp.Body)
 	if resp.StatusCode >= 400 {
-		glg.Fail(string(b))
-		return "", fmt.Errorf("request failed")
+		return "", errors.Join(
+			errors.New("Request to API failed: "),
+			fmt.Errorf("Unexpected Status Code: %d", resp.StatusCode),
+			errors.New(string(b)))
 	}
 	if err != nil {
-		glg.Fail(err)
 		return "", err
 	}
 	return string(b), nil

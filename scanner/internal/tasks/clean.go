@@ -43,6 +43,7 @@ func DeleteFilesInApi(filesToClean []api.File, c config.Config, w *Worker) int {
 	}))
 	if err != nil {
 		glg.Fail("Cleaning files failed.")
+		glg.Trace(err.Error())
 		return 0
 	}
 	return len(filesToClean)
