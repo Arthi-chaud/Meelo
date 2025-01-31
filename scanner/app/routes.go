@@ -20,7 +20,11 @@ type ScannerTaskStatus struct {
 	PendingTasks []string `json:"pending_tasks"`
 }
 
-const TaskAddedtoQueueMessage = "Task added to queue."
+const TaskAddedtoQueueMessage = "Task added to queue"
+
+func logTaskAdded(task t.Task) {
+	log.Info().Str("name", task.Name).Msg(TaskAddedtoQueueMessage)
+}
 
 // @Summary		Get Status of Scanner
 // @Produce		json
@@ -64,9 +68,7 @@ func (s *ScannerContext) ScanAll(c echo.Context) error {
 	}
 	for _, lib := range libraries {
 		task := s.worker.AddTask(t.NewLibraryScanTask(lib, *s.config))
-		log.Info().
-			Str("name", task.Name).
-			Msgf("Task added to queue")
+		logTaskAdded(task)
 	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
@@ -87,9 +89,7 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	task := s.worker.AddTask(t.NewLibraryScanTask(library, *s.config))
-	log.Info().
-		Str("name", task.Name).
-		Msgf("Task added to queue")
+	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -108,10 +108,7 @@ func (s *ScannerContext) Clean(c echo.Context) error {
 	}
 	for _, lib := range libraries {
 		task := s.worker.AddTask(t.NewLibraryCleanTask(lib, *s.config))
-		log.Info().
-			Str("name", task.Name).
-			Msgf("Task added to queue")
-
+		logTaskAdded(task)
 	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
@@ -132,9 +129,7 @@ func (s *ScannerContext) CleanLibrary(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	task := s.worker.AddTask(t.NewLibraryCleanTask(library, *s.config))
-	log.Info().
-		Str("name", task.Name).
-		Msgf("Task added to queue")
+	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -171,9 +166,7 @@ func (s *ScannerContext) Refresh(c echo.Context) error {
 		Song:    song,
 		Track:   track,
 	}, *s.config))
-	log.Info().
-		Str("name", task.Name).
-		Msgf("Task added to queue")
+	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
