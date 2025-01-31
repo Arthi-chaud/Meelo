@@ -7,8 +7,8 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	t "github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
-	"github.com/kpango/glg"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 type ScannerStatus struct {
@@ -20,7 +20,11 @@ type ScannerTaskStatus struct {
 	PendingTasks []string `json:"pending_tasks"`
 }
 
-const TaskAddedtoQueueMessage = "Task added to queue."
+const TaskAddedtoQueueMessage = "Task added to queue"
+
+func logTaskAdded(task t.Task) {
+	log.Info().Str("name", task.Name).Msg(TaskAddedtoQueueMessage)
+}
 
 // @Summary		Get Status of Scanner
 // @Produce		json
@@ -64,7 +68,7 @@ func (s *ScannerContext) ScanAll(c echo.Context) error {
 	}
 	for _, lib := range libraries {
 		task := s.worker.AddTask(t.NewLibraryScanTask(lib, *s.config))
-		glg.Logf("Task added to queue: %s", task.Name)
+		logTaskAdded(task)
 	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
@@ -85,7 +89,7 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	task := s.worker.AddTask(t.NewLibraryScanTask(library, *s.config))
-	glg.Logf("Task added to queue: %s", task.Name)
+	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -104,7 +108,7 @@ func (s *ScannerContext) Clean(c echo.Context) error {
 	}
 	for _, lib := range libraries {
 		task := s.worker.AddTask(t.NewLibraryCleanTask(lib, *s.config))
-		glg.Logf("Task added to queue: %s", task.Name)
+		logTaskAdded(task)
 	}
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
@@ -125,7 +129,7 @@ func (s *ScannerContext) CleanLibrary(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 	task := s.worker.AddTask(t.NewLibraryCleanTask(library, *s.config))
-	glg.Logf("Task added to queue: %s", task.Name)
+	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -162,7 +166,7 @@ func (s *ScannerContext) Refresh(c echo.Context) error {
 		Song:    song,
 		Track:   track,
 	}, *s.config))
-	glg.Logf("Task added to queue: %s", task.Name)
+	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
@@ -174,7 +178,7 @@ func (s *ScannerContext) userIsAdmin(c echo.Context) bool {
 	}
 	user, err := api.GetUserFromAccessToken(*s.config, userToken)
 	if err != nil {
-		glg.Fail(err)
+		log.Error().Msg(err.Error())
 		return false
 	}
 	return user.Admin

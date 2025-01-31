@@ -3,9 +3,10 @@ package illustration
 import (
 	"bytes"
 	"fmt"
-	"github.com/kpango/glg"
-	"github.com/u2takey/ffmpeg-go"
 	"strings"
+
+	"github.com/rs/zerolog/log"
+	"github.com/u2takey/ffmpeg-go"
 )
 
 type CropDimensions struct {
@@ -33,11 +34,10 @@ func GetFrame(filepath string, timestamp int64) ([]byte, error) {
 		WithOutput(thumbnail)
 	err := cmd.Run()
 	if err != nil {
-		glg.Error(err)
 		return nil, err
 	}
 	thumbnailBytes := thumbnail.Bytes()
-	croppedThumbnail, _ := RemoveBlackBars(&thumbnailBytes)
+	croppedThumbnail, err := RemoveBlackBars(&thumbnailBytes)
 	if croppedThumbnail != nil {
 		return croppedThumbnail.Bytes(), nil
 	}
@@ -48,9 +48,6 @@ func RemoveBlackBars(frame *[]byte) (*bytes.Buffer, error) {
 
 	crops, err := GetCropDimensions(bytes.NewBuffer(*frame))
 	if err != nil || crops == nil {
-		if err != nil {
-			glg.Error(err)
-		}
 		return nil, err
 	}
 	newFrame := bytes.NewBuffer(nil)
@@ -63,7 +60,6 @@ func RemoveBlackBars(frame *[]byte) (*bytes.Buffer, error) {
 		WithInput(bytes.NewBuffer(*frame)).
 		WithOutput(newFrame).Run()
 	if err != nil {
-		glg.Error(err)
 		return nil, err
 	}
 	return newFrame, err
@@ -83,7 +79,6 @@ func GetCropDimensions(thumbnail *bytes.Buffer) (*CropDimensions, error) {
 		WithInput(thumbnail).
 		WithOutput(rawout).Run()
 	if err != nil {
-		glg.Error(err)
 		return nil, err
 	}
 	strout := string((*rawout).Bytes())
@@ -103,7 +98,7 @@ func GetCropDimensions(thumbnail *bytes.Buffer) (*CropDimensions, error) {
 		_, err = fmt.Sscanf(line[cropPos+len(token):], "%d:%d:%d:%d",
 			&dims.width, &dims.height, &dims.x, &dims.y)
 		if err != nil {
-			glg.Error(err)
+			log.Debug().Msg(err.Error())
 			continue
 		}
 		if dims.width < 0 || dims.height < 0 {

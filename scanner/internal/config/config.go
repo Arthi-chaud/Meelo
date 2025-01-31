@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
@@ -37,17 +37,18 @@ func GetConfig() Config {
 
 	errors = append(errors, userSettingsErrors...)
 	if len(errors) != 0 {
+		log.Error().Msg("Errors occured while parsing configuration. Exiting...")
 		for _, errorMsg := range errors {
-			glg.Fail(errorMsg)
+			log.Error().Msg(errorMsg.Error())
 		}
-		glg.Fatalf("Errors occured while parsing configuration. Exiting...")
+		os.Exit(1)
 	}
 	config.ApiUrl = apiUrl
 	config.ApiKey = apiKey
 	config.ConfigDirectory = configDir
 	config.DataDirectory = dataDir
 	config.UserSettings = userSettings
-	glg.Success("Configuration parsed successfully")
+	log.Info().Msg("Configuration parsed successfully")
 	return config
 }
 

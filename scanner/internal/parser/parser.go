@@ -7,7 +7,7 @@ import (
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	c "github.com/Arthi-chaud/Meelo/scanner/internal/config"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, []error) {
@@ -23,10 +23,14 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		embeddedMetadata, embeddedErrors := parseMetadataFromEmbeddedTags(filePath)
 		pathMetadata, pathErrors := parseMetadataFromPath(config, filePath)
 		errors = append(pathErrors, embeddedErrors...)
+		var err error
 		if config.Metadata.Source == c.Path {
-			metadata = internal.Merge(pathMetadata, embeddedMetadata)
+			metadata, err = internal.Merge(pathMetadata, embeddedMetadata)
 		} else {
-			metadata = internal.Merge(embeddedMetadata, pathMetadata)
+			metadata, err = internal.Merge(embeddedMetadata, pathMetadata)
+		}
+		if err != nil {
+			errors = append(errors, err)
 		}
 	}
 	compilationArtistNames := internal.Fmap(
@@ -47,8 +51,9 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 	if metadata.Type == internal.Audio || metadata.Duration < 1200 { // 20 minutes
 		fingerprint, err := internal.GetFileAcousticFingerprint(filePath)
 		if err != nil {
-			glg.Failf("failed to compute Fingerprint for '%s'", path.Base(filePath))
-			glg.Fail(err.Error())
+			// Fingerprinting failure is not fatal
+			log.Error().Str("file", path.Base(filePath)).Msg("failed to compute fingerprint")
+			log.Trace().Msg(err.Error())
 		} else {
 			metadata.Fingerprint = &fingerprint
 		}

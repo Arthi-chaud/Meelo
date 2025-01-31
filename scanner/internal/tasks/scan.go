@@ -12,11 +12,11 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/filesystem"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/parser"
-	"github.com/kpango/glg"
+	"github.com/rs/zerolog/log"
 )
 
 func NewLibraryScanTask(library api.Library, c config.Config) Task {
-	name := fmt.Sprintf("Scan library '%s'.", library.Slug)
+	name := fmt.Sprintf("Scan library '%s'", library.Slug)
 	return createTask(name, func(w *Worker) error { return execScan(library, c, w) })
 }
 
@@ -28,7 +28,6 @@ func execScan(library api.Library, c config.Config, w *Worker) error {
 	registeredPaths := internal.Fmap(registeredFiles, func(f api.File, _ int) string {
 		return path.Join(c.DataDirectory, library.Path, f.Path)
 	})
-	glg.Debugf("Library has %d files", len(registeredFiles))
 	filesInDir, err := filesystem.GetAllFilesInDirectory(path.Join(c.DataDirectory, library.Path))
 	if err != nil {
 		return err
@@ -43,12 +42,18 @@ func execScan(library api.Library, c config.Config, w *Worker) error {
 		if strings.HasPrefix(stringMime, "video/") || strings.HasPrefix(stringMime, "audio/") {
 			pathsNotRegistered = append(pathsNotRegistered, fileInDir)
 		} else if !strings.HasPrefix(stringMime, "image/") {
-			glg.Warnf("File '%s' does not seem to be an audio or video file. Ignored.", path.Base(fileInDir))
+			log.Warn().
+				Str("file", path.Base(fileInDir)).
+				Msg("File does not seem to be an audio or video file. Ignored.")
 		}
 	}
-	glg.Debugf("Library '%s' has %d new files", library.Slug, len(pathsNotRegistered))
+	log.Debug().
+		Str("library", library.Slug).
+		Msgf("Library has %d new files", len(pathsNotRegistered))
 	successfulRegistrations := scanAndPostFiles(pathsNotRegistered, c, w)
-	glg.Logf("Library '%s' has registered %d new files", library.Slug, successfulRegistrations)
+	log.Info().
+		Str("library", library.Slug).
+		Msgf("Library has registered %d new files", successfulRegistrations)
 	return nil
 }
 
@@ -65,17 +70,19 @@ func scanAndPostFiles(filePaths []string, c config.Config, w *Worker) int {
 		}
 		for range len(filesChunk) {
 			res := <-scanResChan
-			if len(res.errors) != 0 {
-				glg.Errorf("Parsing '%s' failed:", res.filePath)
+			errCount := len(res.errors)
+			baseFile := path.Base(res.filePath)
+			if errCount != 0 {
+				log.Error().Str("file", baseFile).Msg("Parsing failed")
 				for _, err := range res.errors {
-					glg.Trace(err.Error())
+					log.Trace().Msg(err.Error())
 				}
 				continue
 			}
-			glg.Logf("Parsing metadata for '%s' successful.", path.Base(res.filePath))
+			log.Info().Str("file", baseFile).Msg("Parsing successful")
 			err := pushMetadata(res.filePath, res.metadata, c, w, api.Create)
 			if err != nil {
-				glg.Fail(err.Error())
+				log.Error().Msg(err.Error())
 			} else {
 				successfulRegistrations = successfulRegistrations + 1
 			}

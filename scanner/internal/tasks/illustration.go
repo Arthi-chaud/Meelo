@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
-	"github.com/kpango/glg"
 )
 
 func SaveThumbnail(t ThumbnailTask, c config.Config) error {
@@ -32,14 +32,12 @@ func SaveIllustration(t IllustrationTask, c config.Config) error {
 	case internal.Embedded:
 		bytes, err = illustration.ExtractEmbeddedIllustration(t.TrackPath, t.IllustrationStreamIndex)
 		if err != nil {
-			glg.Fail(err.Error())
-			return fmt.Errorf("an error occured while extracting embedded illustration")
+			return errors.Join(fmt.Errorf("an error occured while extracting embedded illustration"), err)
 		}
 	case internal.Inline:
 		bytes, err = os.ReadFile(t.IllustrationPath)
 		if err != nil {
-			glg.Fail(err.Error())
-			return fmt.Errorf("an error occured while extracting embedded illustration")
+			return errors.Join(fmt.Errorf("an error occured while extracting embedded illustration"), err)
 		}
 	default:
 		return fmt.Errorf("invalid illustration source: %s", string(t.IllustrationLocation))
