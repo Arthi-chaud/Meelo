@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"strconv"
 	"sync"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -13,6 +14,7 @@ type Worker struct {
 	thumbnailQueue chan ThumbnailTask
 	currentTask    Task
 	queuedTasks    []Task
+	progress       int // A number between 0 and 100
 	mu             sync.Mutex
 	wg             sync.WaitGroup
 }
@@ -40,12 +42,34 @@ func (w *Worker) StartWorker(c config.Config) {
 	}()
 }
 
+func (w *Worker) GetProgress() int {
+	res := 0
+	w.mu.Lock()
+	res = w.progress
+	w.mu.Unlock()
+	return res
+}
+
+// Argument is a number between 0 and 100
+func (w *Worker) SetProgress(newProgress int) {
+	if newProgress < 0 || newProgress > 100 {
+		log.Warn().
+			Str("input", strconv.Itoa(newProgress)).
+			Msg("Attempt to set a progress value out of bound")
+		return
+	}
+	w.mu.Lock()
+	w.progress = newProgress
+	w.mu.Unlock()
+}
+
 func (w *Worker) process(task Task) {
 	defer w.wg.Done() // Decrement the WaitGroup counter when the task is done
 
 	w.mu.Lock()
 	w.queuedTasks = removeTask(w.queuedTasks, task.Id)
 	w.currentTask = task
+	w.progress = 0
 	w.mu.Unlock()
 
 	log.Info().Str("task", task.Name).Msgf("Processing task")
