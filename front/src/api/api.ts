@@ -413,12 +413,13 @@ export default class API {
 	static async refreshMetadata(
 		parentResourceType: "library" | "album" | "song" | "release" | "track",
 		resourceSlugOrId: number | string,
+		force: boolean,
 	): Promise<void> {
 		return API.fetch({
 			method: "POST",
 			route: "/refresh",
 			errorMessage: "Metadata Refresh request failed",
-			otherParameters: { [parentResourceType]: resourceSlugOrId },
+			otherParameters: { [parentResourceType]: resourceSlugOrId, force },
 			parameters: {},
 			service: Service.Scanner,
 			emptyResponse: true,
