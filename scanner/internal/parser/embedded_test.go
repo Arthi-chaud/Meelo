@@ -1,21 +1,31 @@
 package parser
 
 import (
-	"github.com/Arthi-chaud/Meelo/scanner/internal"
-	"github.com/stretchr/testify/assert"
 	p "path"
 	"testing"
 	"time"
+
+	"github.com/Arthi-chaud/Meelo/scanner/internal"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/stretchr/testify/assert"
 )
+
+func getTestConfig() config.UserSettings {
+	return config.UserSettings{
+		Compilations: config.CompilationSettings{
+			UseID3CompTag: true,
+		},
+	}
+}
 
 func TestEmbedded(t *testing.T) {
 	path := p.Join("../..", "testdata", "dreams.m4a")
-	m, err := parseMetadataFromEmbeddedTags(path)
+	m, err := parseMetadataFromEmbeddedTags(path, getTestConfig())
 
 	assert.Len(t, err, 0)
 	assert.Equal(t, "My Album Artist", m.AlbumArtist)
 	assert.Equal(t, "My Artist", m.Artist)
-	assert.Equal(t, false, m.IsCompilation)
+	assert.Equal(t, true, m.IsCompilation)
 	assert.Equal(t, "My Album", m.Album)
 	assert.Equal(t, internal.Audio, m.Type)
 	assert.Equal(t, int64(134), m.Bitrate)
@@ -31,7 +41,7 @@ func TestEmbedded(t *testing.T) {
 
 func TestEmbeddedFlac(t *testing.T) {
 	path := p.Join("../..", "testdata", "test.flac")
-	m, err := parseMetadataFromEmbeddedTags(path)
+	m, err := parseMetadataFromEmbeddedTags(path, getTestConfig())
 
 	assert.Len(t, err, 0)
 	assert.Equal(t, "Album Artist", m.AlbumArtist)

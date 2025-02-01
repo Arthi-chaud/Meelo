@@ -95,6 +95,33 @@ func TestParserEmbedded(t *testing.T) {
 	assert.Equal(t, "../../testdata/cover.jpg", m.IllustrationPath)
 }
 
+func TestParserEmbeddedIsCompilation(t *testing.T) {
+	path := path.Join("../..", "testdata", "dreams.m4a")
+	c := getParserTestConfig()
+	c.TrackRegex = []string{"^.*$"}
+	c.Metadata.Order = config.Preferred
+	c.Metadata.Source = config.Path
+	c.Compilations.UseID3CompTag = true
+	m, err := ParseMetadata(c, path)
+
+	assert.Len(t, err, 0)
+	assert.Equal(t, "", m.AlbumArtist)
+	assert.Equal(t, "My Artist", m.Artist)
+	assert.Equal(t, true, m.IsCompilation)
+	assert.Equal(t, "My Album", m.Album)
+	assert.Equal(t, internal.Audio, m.Type)
+	assert.Equal(t, int64(134), m.Bitrate)
+	assert.Equal(t, int64(210), m.Duration)
+	assert.Equal(t, "My Album", m.Release)
+	assert.Equal(t, time.Date(2007, 1, 1, 1, 1, 1, 1, time.UTC).Year(), m.ReleaseDate.Year())
+	assert.Equal(t, int64(2), m.DiscIndex)
+	assert.Equal(t, int64(3), m.Index)
+	assert.Equal(t, []string{"Pop"}, m.Genres)
+	assert.Equal(t, "Dreams", m.Name)
+	assert.Equal(t, internal.Inline, m.IllustrationLocation)
+	assert.Equal(t, "../../testdata/cover.jpg", m.IllustrationPath)
+}
+
 func TestParserStandaloneTrack(t *testing.T) {
 	path := "/data/Lady Gaga/Unknown Album/Bad Romance.m4v"
 	m, err := ParseMetadata(getParserTestConfig(), path)

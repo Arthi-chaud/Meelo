@@ -17,10 +17,10 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		if config.Metadata.Source == c.Path {
 			metadata, errors = parseMetadataFromPath(config, filePath)
 		} else {
-			metadata, errors = parseMetadataFromEmbeddedTags(filePath)
+			metadata, errors = parseMetadataFromEmbeddedTags(filePath, config)
 		}
 	} else {
-		embeddedMetadata, embeddedErrors := parseMetadataFromEmbeddedTags(filePath)
+		embeddedMetadata, embeddedErrors := parseMetadataFromEmbeddedTags(filePath, config)
 		pathMetadata, pathErrors := parseMetadataFromPath(config, filePath)
 		errors = append(pathErrors, embeddedErrors...)
 		var err error
@@ -38,7 +38,8 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		func(a string, _ int) string {
 			return strings.ToLower(a)
 		})
-	metadata.IsCompilation = internal.Contains(compilationArtistNames, strings.ToLower(metadata.AlbumArtist)) ||
+	metadata.IsCompilation = metadata.IsCompilation ||
+		internal.Contains(compilationArtistNames, strings.ToLower(metadata.AlbumArtist)) ||
 		internal.Contains(compilationArtistNames, strings.ToLower(metadata.Artist))
 	metadata.Path = filePath
 	metadata.RegistrationDate = time.Now()
