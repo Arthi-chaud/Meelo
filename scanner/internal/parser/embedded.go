@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
@@ -39,7 +40,7 @@ func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
 // https://github.com/FFmpeg/FFmpeg/blob/c5287178b4dc373e763f7cd49703a6e3192aab3a/libavformat/id3v2.c#L105
 // https://mutagen-specs.readthedocs.io/en/latest/id3/id3v2.4.0-frames.html
 
-func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error) {
+func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (internal.Metadata, []error) {
 	ctx, cancelFn := context.WithCancel(context.Background())
 	defer cancelFn()
 	var errors []error
@@ -73,6 +74,19 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 	ParseTag(tags, []string{"genre", "tcon"}, func(value string) {
 		metadata.Genres = []string{value}
 	})
+	if c.Compilations.UseID3CompTag {
+		ParseTag(tags, []string{"compilation", "compilations", "itunescompilation"}, func(value string) {
+			isCompilation, err := strconv.ParseBool(value)
+			if err != nil {
+				flag, _ := strconv.ParseInt(value, 10, 64)
+				if err == nil {
+					metadata.IsCompilation = flag == 1
+				}
+			} else {
+				metadata.IsCompilation = isCompilation
+			}
+		})
+	}
 	ParseTag(tags, []string{"track", "trck"}, func(value string) {
 		rawTrackValue, _, _ := strings.Cut(value, "/")
 		trackValue, _ := strconv.Atoi(rawTrackValue)
