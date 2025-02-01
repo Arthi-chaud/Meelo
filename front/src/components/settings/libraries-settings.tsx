@@ -64,25 +64,40 @@ const LibrariesSettings = () => {
 		icon,
 		label,
 		onClick,
+		dialog,
 		variant,
 	}: Action & Pick<ComponentProps<typeof Button>, "variant">) => {
 		const theme = useTheme();
 		const viewPortIsSmall = useMediaQuery(theme.breakpoints.up("sm"));
+		const [modalIsOpen, openModal] = useState(false);
 
 		return (
-			<Button
-				variant={variant}
-				size="small"
-				startIcon={viewPortIsSmall && icon}
-				onClick={() => {
-					tasks.refetch();
-					onClick?.();
-				}}
-				sx={actionButtonStyle}
-			>
-				<Hidden smUp>{icon}</Hidden>
-				<Hidden smDown>{t(label)}</Hidden>
-			</Button>
+			<>
+				<Button
+					variant={variant}
+					size="small"
+					startIcon={viewPortIsSmall && icon}
+					onClick={() => {
+						onClick?.();
+						dialog && openModal(true);
+						tasks.refetch();
+					}}
+					sx={actionButtonStyle}
+				>
+					<Hidden smUp>{icon}</Hidden>
+					<Hidden smDown>{t(label)}</Hidden>
+				</Button>
+
+				{dialog && (
+					<Dialog
+						open={modalIsOpen}
+						onClose={() => openModal(false)}
+						fullWidth
+					>
+						{dialog({ close: () => openModal(false) })}
+					</Dialog>
+				)}
+			</>
 		);
 	};
 	const queryClient = useQueryClient();
