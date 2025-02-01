@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -144,6 +145,7 @@ func (s *ScannerContext) CleanLibrary(c echo.Context) error {
 // @Param			release	query		string		false	"refresh files from release"
 // @Param			song	query		string		false	"refresh files from song"
 // @Param			track	query		string		false	"refresh file from track"
+// @Param			force	query		boolean		false	"force metadata refresh, even if files have not changed (default: false)"
 func (s *ScannerContext) Refresh(c echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
@@ -153,6 +155,11 @@ func (s *ScannerContext) Refresh(c echo.Context) error {
 	release := c.QueryParam("release")
 	song := c.QueryParam("song")
 	track := c.QueryParam("track")
+	rawForce := c.QueryParam("force")
+	force, err := strconv.ParseBool(rawForce)
+	if err != nil {
+		force = false
+	}
 	params := internal.Filter([]string{library, album, release, song, track}, func(p string) bool {
 		return len(p) > 0
 	})
@@ -165,7 +172,8 @@ func (s *ScannerContext) Refresh(c echo.Context) error {
 		Release: release,
 		Song:    song,
 		Track:   track,
-	}, *s.config))
+	}, force, *s.config))
+
 	logTaskAdded(task)
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }

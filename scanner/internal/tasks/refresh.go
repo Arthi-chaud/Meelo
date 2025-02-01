@@ -12,12 +12,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, c config.Config) Task {
+func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, force bool, c config.Config) Task {
 	name := generateTaskName(refreshSelector)
-	return createTask(name, func(w *Worker) error { return execRefresh(refreshSelector, c, w) })
+	return createTask(name, func(w *Worker) error {
+		return execRefresh(refreshSelector, force, c, w)
+	})
 }
 
-func execRefresh(refreshSelector api.FileSelectorDto, c config.Config, w *Worker) error {
+func execRefresh(refreshSelector api.FileSelectorDto, force bool, c config.Config, w *Worker) error {
 	successfulUpdates := 0
 	libraries, err := api.GetAllLibraries(c)
 	if err != nil {
@@ -33,13 +35,18 @@ func execRefresh(refreshSelector api.FileSelectorDto, c config.Config, w *Worker
 			log.Error().Msg(err.Error())
 			continue
 		}
-		newChecksum, err := internal.ComputeChecksum(selectedFilePath)
-		if err != nil {
-			log.Error().Msg(err.Error())
-			continue
-		}
-		if newChecksum == selectedFile.Checksum {
-			continue
+		// If force is false, compute checksum,
+		// And then choose if when skip the file or not
+		// If force is true, avoid computing checksum
+		if force == false {
+			newChecksum, err := internal.ComputeChecksum(selectedFilePath)
+			if err != nil {
+				log.Error().Msg(err.Error())
+				continue
+			}
+			if newChecksum == selectedFile.Checksum {
+				continue
+			}
 		}
 		log.Info().
 			Str("file", path.Base(selectedFile.Path)).
