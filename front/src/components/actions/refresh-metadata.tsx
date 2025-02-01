@@ -53,7 +53,7 @@ const RefreshMetadataActionContent = ({
 					checked={force}
 					onChange={(_, isChecked) => setForce(isChecked)}
 				/>
-				Force refresh if files have not changed
+				{t("refreshMetadataForceLabel")}
 			</Grid>
 			<Grid item xs={12}>
 				<Button

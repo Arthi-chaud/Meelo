@@ -80,6 +80,7 @@
 	"refresh": "Refresh",
 	"scan": "Scan",
 	"refreshMetadata": "Refresh Metadata",
+	"refreshMetadataForceLabel": "Force refresh if files have not changed",
 	"createLibrary": "Create Library",
 	"deletingLibrary": "Deleting library...",
 	"deleteLibrary": "Delete Library",
