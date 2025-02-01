@@ -29,7 +29,6 @@ import {
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import type { RequireAllOrNone } from "type-fest";
 
 const PREFIX = "Tile";
 
