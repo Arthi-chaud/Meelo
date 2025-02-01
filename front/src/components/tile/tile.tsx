@@ -87,13 +87,16 @@ type TileProps = {
 	onClick?: () => void;
 	/* Additional props to customize card */
 	cardProps?: ComponentProps<typeof Card>;
-} & RequireAllOrNone<{
-	subtitle: string | undefined | null;
-	/**
-	 * URL to push on secondary tile tap
-	 */
-	secondaryHref?: string;
-}>;
+} & (
+	| {
+			subtitle: string | undefined | null;
+			/**
+			 * URL to push on secondary tile tap
+			 */
+			secondaryHref?: string;
+	  }
+	| Record<"subtitle" | "secondaryHref", never>
+);
 
 const Tile = (props: TileProps) => {
 	const _theme = useTheme();
