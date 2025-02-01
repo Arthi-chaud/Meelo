@@ -76,6 +76,25 @@ func DeleteFiles(config config.Config, fileIds []int) error {
 	return err
 }
 
+func HasLyrics(config config.Config, songId int) (bool, error) {
+	_, err := request("GET", fmt.Sprintf("/songs/%d/lyrics", songId), nil, config, "")
+	return err == nil, err
+}
+
+type LyricsDto struct {
+	Lyrics string `json:"lyrics"`
+}
+
+func PostLyrics(config config.Config, songId int, lyrics []string) error {
+	dto := LyricsDto{Lyrics: strings.Join(lyrics, "\n")}
+	serialized, err := json.Marshal(dto)
+	if err != nil {
+		return err
+	}
+	_, err = request("POST", fmt.Sprintf("/songs/%d/lyrics", songId), bytes.NewBuffer(serialized), config, JsonContentType)
+	return err
+}
+
 type SaveMetadataMethod string
 
 const (

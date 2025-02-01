@@ -64,7 +64,7 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 	ParseTag(tags, []string{"album"}, func(value string) {
 		metadata.Album = value
 	})
-	ParseTag(tags, []string{"album_artist"}, func(value string) {
+	ParseTag(tags, []string{"album_artist", "albumartist"}, func(value string) {
 		metadata.AlbumArtist = value
 	})
 	ParseTag(tags, []string{"title"}, func(value string) {
@@ -78,7 +78,16 @@ func parseMetadataFromEmbeddedTags(filePath string) (internal.Metadata, []error)
 		trackValue, _ := strconv.Atoi(rawTrackValue)
 		metadata.Index = int64(trackValue)
 	})
-
+	ParseTag(tags, []string{"lyrics", "uslt"}, func(value string) {
+		metadata.Lyrics = strings.Split(
+			strings.ReplaceAll(
+				strings.ReplaceAll(value, "\r", "\n"),
+				"\r\n",
+				"\n",
+			),
+			"\n",
+		)
+	})
 	ParseTag(tags, []string{"disc", "tpos"}, func(value string) {
 		rawDiscValue, _, _ := strings.Cut(value, "/")
 		discValue, _ := strconv.Atoi(rawDiscValue)

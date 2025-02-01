@@ -30,6 +30,7 @@ type File struct {
 
 type MetadataCreated struct {
 	TrackId int `json:"trackId" validate:"required"`
+	SongId  int `json:"songId"`
 }
 
 // Do not change names of fields, they are mapped 1:1 with the query parameters of the requests
