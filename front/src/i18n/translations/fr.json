@@ -70,6 +70,7 @@
 	"refresh": "Rafraichir",
 	"scan": "Scanner",
 	"refreshMetadata": "Rafraichir les métadonnées",
+	"refreshMetadataForceLabel": "Force le scan si les fichiers n'ont pas changés",
 	"createLibrary": "Créer une Bibliothèque",
 	"deleteLibrary": "Supprimer la Bibliothèque",
 	"deleteLibraryAction": "Supprimer une Bibliothèque",
