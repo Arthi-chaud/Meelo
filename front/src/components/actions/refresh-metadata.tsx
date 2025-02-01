@@ -16,22 +16,76 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import toast from "react-hot-toast";
+import { Grid, Button, Checkbox } from "@mui/material";
 import API from "../../api/api";
 import type { Translator } from "../../i18n/i18n";
 import { MetadataRefreshIcon } from "../icons";
 import type Action from "./action";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import type { ArraySlice } from "type-fest";
+
+type APIMethodParams = ArraySlice<
+	Parameters<typeof API.refreshMetadata>,
+	0,
+	-1
+>;
+
+const RefreshMetadataActionContent = ({
+	t,
+	params,
+	close,
+}: { t: Translator; params: APIMethodParams; close: () => void }) => {
+	const [force, setForce] = useState(false);
+
+	return (
+		<Grid container spacing={2} sx={{ padding: 2 }}>
+			<Grid
+				item
+				xs={12}
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Checkbox
+					checked={force}
+					onChange={(_, isChecked) => setForce(isChecked)}
+				/>
+				Force refresh if files have not changed
+			</Grid>
+			<Grid item xs={12}>
+				<Button
+					fullWidth
+					variant="contained"
+					onClick={() => {
+						API.refreshMetadata(...[...params, force])
+							.then(() =>
+								toast.success(t("refreshMetadataStarted")),
+							)
+							.catch(() =>
+								toast.error(t("refreshMetadataFailed")),
+							);
+						close();
+					}}
+				>
+					{t("refreshMetadata")}
+				</Button>
+			</Grid>
+		</Grid>
+	);
+};
 
 const RefreshMetadataAction = (
 	t: Translator,
-	...params: Parameters<typeof API.refreshMetadata>
+	...params: APIMethodParams
 ): Action => ({
 	label: "refreshMetadata",
 	icon: <MetadataRefreshIcon />,
-	onClick: () =>
-		API.refreshMetadata(...params)
-			.then(() => toast.success(t("refreshMetadataStarted")))
-			.catch(() => toast.error(t("refreshMetadataFailed"))),
+	dialog: ({ close }) => (
+		<RefreshMetadataActionContent t={t} params={params} close={close} />
+	),
 });
 
 export const RefreshLibraryMetadataAction = (
