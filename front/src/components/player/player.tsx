@@ -37,7 +37,11 @@ import { usePlayerContext } from "../../contexts/player";
 import type { RootState } from "../../state/store";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
-// import { Gapless5 } from "@regosen/gapless-5";
+import { isSSR } from "../../utils/is-ssr";
+
+const { Gapless5 } = isSSR()
+	? { Gapless5: undefined }
+	: require("@regosen/gapless-5");
 
 // Times in seconds
 type PlaybackInterface = {
@@ -55,8 +59,42 @@ type PlaybackInterface = {
 	hasEnded: () => boolean;
 	getHTMLElement: () => HTMLAudioElement | HTMLVideoElement;
 };
-
-// const fromGapless = (gapless: Gapless5): PlaybackInterface => {};
+//@ts-ignore
+const fromGapless = (gapless: Gapless5): PlaybackInterface => {
+	return {
+		play: async () => gapless.play(),
+		pause: () => gapless.pause(),
+		setSrc: (url) => {
+			gapless.removeAllTracks();
+			if (url) {
+				gapless.addTrack(url);
+			}
+		},
+		getCurrentTime: () => gapless.getPosition() / 1000,
+		setCurrentTime: (t) => {
+			gapless.setPosition(t * 1000);
+		},
+		onPlay: (f) => {
+			gapless.onplay = () => f?.();
+		},
+		onPause: (f) => {
+			gapless.onpause = () => f?.();
+		},
+		onPlaying: (_f) => {},
+		onEnded: (f) => {
+			// TODO
+			gapless.onfinishedtrack = () => f;
+		},
+		getDuration: () => gapless.currentSource().getLength() / 1000,
+		onTimeUpdate: (f) => {
+			gapless.ontimeupdate = () => {
+				f(gapless.getPosition() / 1000);
+			};
+		},
+		hasEnded: () => gapless.getTrack() === "",
+		getHTMLElement: () => gapless,
+	};
+};
 
 const fromHTMLElement = (
 	elem: HTMLAudioElement | HTMLVideoElement,
@@ -108,7 +146,9 @@ const Player = () => {
 	);
 	const player = useRef<PlaybackInterface>();
 	const audioPlayer = useRef<PlaybackInterface>(
-		typeof Audio !== "undefined" ? fromHTMLElement(new Audio()) : null,
+		typeof Audio !== "undefined" && !isSSR()
+			? fromGapless(new Gapless5({ loadLimit: 2 }))
+			: null,
 	);
 	const [useTranscoding, setUseTranscoding] = useState(false);
 	const hls = useRef(
