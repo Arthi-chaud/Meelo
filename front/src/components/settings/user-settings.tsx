@@ -190,7 +190,7 @@ const UserSettings = () => {
 				<Book1 style={LinkIconStyle} />
 				<Link
 					style={{ textDecoration: "underline" }}
-					href="https://arthi-chaud.github.io/Meelo"
+					href="https://github.com/Arthi-chaud/Meelo/wiki"
 				>
 					{t("readTheDoc")}
 				</Link>
