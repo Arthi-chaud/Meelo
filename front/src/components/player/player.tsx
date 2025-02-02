@@ -37,6 +37,62 @@ import { usePlayerContext } from "../../contexts/player";
 import type { RootState } from "../../state/store";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
+// import { Gapless5 } from "@regosen/gapless-5";
+
+// Times in seconds
+type PlaybackInterface = {
+	play: () => Promise<void>;
+	setSrc: (url: string | null) => void;
+	getCurrentTime: () => number;
+	setCurrentTime: (p: number) => void;
+	pause: () => void;
+	onPlay: (f: (() => void) | null) => void;
+	getDuration: () => number;
+	onEnded: (f: (() => void) | null) => void;
+	onPlaying: (f: (() => void) | null) => void;
+	onTimeUpdate: (f: (t: number) => void) => void;
+	onPause: (f: (() => void) | null) => void;
+	hasEnded: () => boolean;
+	getHTMLElement: () => HTMLAudioElement | HTMLVideoElement;
+};
+
+// const fromGapless = (gapless: Gapless5): PlaybackInterface => {};
+
+const fromHTMLElement = (
+	elem: HTMLAudioElement | HTMLVideoElement,
+): PlaybackInterface => {
+	return {
+		play: () => elem.play(),
+		pause: () => elem.pause(),
+		setSrc: (url) => {
+			elem.src = url ?? "";
+		},
+		getCurrentTime: () => elem.currentTime,
+		setCurrentTime: (t) => {
+			elem.currentTime = t;
+		},
+		onPlay: (f) => {
+			elem.onplay = f;
+		},
+		onPause: (f) => {
+			elem.onpause = f;
+		},
+		onPlaying: (f) => {
+			elem.onplaying = f;
+		},
+		onEnded: (f) => {
+			elem.onended = f;
+		},
+		getDuration: () => elem.duration,
+		onTimeUpdate: (f) => {
+			elem.ontimeupdate = () => {
+				f(elem.currentTime);
+			};
+		},
+		hasEnded: () => elem.ended,
+		getHTMLElement: () => elem,
+	};
+};
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -46,10 +102,13 @@ const Player = () => {
 	);
 	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
 		usePlayerContext();
-	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
-	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
-	const audioPlayer = useRef<HTMLAudioElement>(
-		typeof Audio !== "undefined" ? new Audio() : null,
+	const currentTrack = useMemo(
+		() => (cursor === -1 ? undefined : playlist.at(cursor)),
+		[cursor, playlist],
+	);
+	const player = useRef<PlaybackInterface>();
+	const audioPlayer = useRef<PlaybackInterface>(
+		typeof Audio !== "undefined" ? fromHTMLElement(new Audio()) : null,
 	);
 	const [useTranscoding, setUseTranscoding] = useState(false);
 	const hls = useRef(
@@ -60,7 +119,8 @@ const Player = () => {
 			},
 		}),
 	);
-	const videoPlayer = useRef<HTMLVideoElement>();
+	const videoPlayer = useRef<PlaybackInterface>();
+
 	const progress = useRef<number | null>(null);
 	const [duration, setDuration] = useState<number | undefined>(undefined);
 	const [playing, setPlaying] = useState<boolean>();
@@ -96,8 +156,8 @@ const Player = () => {
 		skipTrack();
 	};
 	const onRewind = () => {
-		if (player.current && player.current.currentTime > 5) {
-			player.current.currentTime = 0;
+		if (player.current && player.current.getCurrentTime() > 5) {
+			player.current.setCurrentTime(0);
 			return;
 		}
 		// If first track, disable player
@@ -114,28 +174,29 @@ const Player = () => {
 				setPlaying(true);
 				setDuration(
 					currentTrack?.track.duration ??
-						player.current?.duration ??
+						player.current?.getDuration() ??
 						hls.current?.media?.duration,
 				);
-				player.current!.ontimeupdate = () => {
-					progress.current = player.current!.currentTime;
-				};
-				player.current!.onended = () => {
-					if (currentTrack.track.songId) {
+				player.current!.onTimeUpdate((p) => {
+					progress.current = p;
+				});
+				player.current!.onEnded(() => {
+					if (currentTrack?.track.songId) {
 						API.setSongAsPlayed(currentTrack.track.songId);
 					}
 					progress.current = null;
+					//TODO for gapless
 					skipTrack();
-				};
-				player.current!.onpause = () => {
-					if (player.current!.ended === false) {
+				});
+				player.current!.onPause(() => {
+					if (player.current!.hasEnded() === false) {
 						setPlaying(false);
 					}
-				};
-				player.current!.onplay = () => {
+				});
+				player.current!.onPlay(() => {
 					setPlaying(true);
-				};
-				player.current!.onplaying = () => {
+				});
+				player.current!.onPlaying = () => {
 					setPlaying(true);
 				};
 			})
@@ -208,7 +269,7 @@ const Player = () => {
 				currentTrack.track.type,
 			);
 			hls.current!.loadSource(streamURL);
-			hls.current!.attachMedia(player.current);
+			hls.current!.attachMedia(player.current.getHTMLElement());
 			hls.current!.on(Hls.Events.ERROR, (err, data) => {
 				// biome-ignore lint/suspicious/noConsole: For debug
 				console.error(err, data);
@@ -259,7 +320,7 @@ const Player = () => {
 	);
 	useEffect(() => {
 		if (player.current) {
-			player.current.onpause = null;
+			player.current.onPause(null);
 		}
 		if (hls.current) {
 			hls.current.detachMedia();
@@ -286,8 +347,8 @@ const Player = () => {
 			} else {
 				player.current = videoPlayer.current;
 			}
-			player.current!.src = API.getDirectStreamURL(
-				currentTrack.track.sourceFileId,
+			player.current!.setSrc(
+				API.getDirectStreamURL(currentTrack.track.sourceFileId),
 			);
 			startPlayback(false);
 			if (typeof navigator.mediaSession !== "undefined") {
@@ -325,7 +386,7 @@ const Player = () => {
 		} else {
 			if (player.current) {
 				hls.current?.detachMedia();
-				player.current.src = "";
+				player.current.setSrc(null);
 			}
 			setDuration(undefined);
 			setPlaying(false);
@@ -358,7 +419,7 @@ const Player = () => {
 		videoRef: videoPlayer as unknown as LegacyRef<HTMLVideoElement>,
 		onSlide: (newProgress: number) => {
 			if (player.current !== undefined) {
-				player.current.currentTime = newProgress;
+				player.current.setCurrentTime(newProgress);
 			}
 		},
 	};
