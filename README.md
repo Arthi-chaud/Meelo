@@ -46,7 +46,7 @@ Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/
 To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
 
 Meelo is shipped though Docker images. You might need to know a bit about Regexes.
-Look over [here](https://arthi-chaud.github.io/Meelo/) for setup instructions.
+Look over [here](https://github.com/Arthi-chaud/Meelo/wiki) for setup instructions.
 
 ## :desktop_computer: Live Demo
 
