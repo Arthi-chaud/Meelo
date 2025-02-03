@@ -47,11 +47,9 @@ func (s *ScannerContext) Status(c echo.Context) error {
 func (s *ScannerContext) Tasks(c echo.Context) error {
 	currentTask, progressValue, pendingTasks := s.worker.GetCurrentTasks()
 	formattedCurentTask := &currentTask.Name
+	progressPtr := &progressValue
 	if currentTask.Name == "" {
 		formattedCurentTask = nil
-	}
-	progressPtr := &progressValue
-	if progressValue == 0 {
 		progressPtr = nil
 	}
 	formattedPendingTasks := internal.Fmap(pendingTasks, func(t t.TaskInfo, _ int) string {
