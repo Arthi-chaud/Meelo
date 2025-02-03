@@ -19,6 +19,7 @@
 import {
 	Box,
 	Button,
+	CircularProgress,
 	Dialog,
 	Grid,
 	Hidden,
@@ -27,6 +28,7 @@ import {
 	ListItem,
 	ListItemText,
 	Skeleton,
+	Typography,
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
@@ -36,8 +38,13 @@ import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
+import { useQuery as useTanStackQuery } from "react-query";
 import API from "../../api/api";
-import { useQuery, useQueryClient } from "../../api/use-query";
+import {
+	prepareMeeloQuery,
+	useQuery,
+	useQueryClient,
+} from "../../api/use-query";
 import type Library from "../../models/library";
 import type Action from "../actions/action";
 import {
@@ -56,63 +63,102 @@ const actionButtonStyle = {
 	overflow: "hidden",
 	textOverflow: "ellipsis",
 };
+// Stolen from https://mui.com/material-ui/react-progress/?srsltid=AfmBOoo0dWRio9xMoE_zsN01tte0uKv3clCU6ALkzOVxnB-Ogg5u6guf#circular-with-label
+const CircularProgressWithLabel = (
+	props: Parameters<typeof CircularProgress>[0] & { value: number },
+) => {
+	return (
+		<Box sx={{ position: "relative", display: "inline-flex" }}>
+			<CircularProgress variant="determinate" {...props} />
+			<Box
+				sx={{
+					top: 0,
+					left: 0,
+					bottom: 0,
+					right: 0,
+					position: "absolute",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Typography
+					variant="caption"
+					component="div"
+					sx={{ color: "text.secondary", lineHeight: 1 }}
+				>{`${props.value}%`}</Typography>
+			</Box>
+		</Box>
+	);
+};
+
+const RunTaskButton = ({
+	icon,
+	label,
+	onClick,
+	dialog,
+	variant,
+}: Action & Pick<ComponentProps<typeof Button>, "variant">) => {
+	const theme = useTheme();
+	const tasks = useQuery(API.getTasks);
+	const { t } = useTranslation();
+	const viewPortIsSmall = useMediaQuery(theme.breakpoints.up("sm"));
+	const [modalIsOpen, openModal] = useState(false);
+
+	return (
+		<>
+			<Button
+				variant={variant}
+				size="small"
+				startIcon={viewPortIsSmall && icon}
+				onClick={() => {
+					onClick?.();
+					dialog && openModal(true);
+					tasks.refetch();
+				}}
+				sx={actionButtonStyle}
+			>
+				<Hidden smUp>{icon}</Hidden>
+				<Hidden smDown>{t(label)}</Hidden>
+			</Button>
+
+			{dialog && (
+				<Dialog
+					open={modalIsOpen}
+					onClose={() => openModal(false)}
+					fullWidth
+				>
+					{dialog({
+						close: () => {
+							openModal(false);
+							tasks.refetch();
+						},
+					})}
+				</Dialog>
+			)}
+		</>
+	);
+};
 
 const LibrariesSettings = () => {
-	const tasks = useQuery(API.getTasks);
+	const tasks = useTanStackQuery({
+		...prepareMeeloQuery(() => API.getTasks()),
+		refetchInterval: 1000,
+	});
 	const { t, i18n } = useTranslation();
-	const RunTaskButton = ({
-		icon,
-		label,
-		onClick,
-		dialog,
-		variant,
-	}: Action & Pick<ComponentProps<typeof Button>, "variant">) => {
-		const theme = useTheme();
-		const viewPortIsSmall = useMediaQuery(theme.breakpoints.up("sm"));
-		const [modalIsOpen, openModal] = useState(false);
-
-		return (
-			<>
-				<Button
-					variant={variant}
-					size="small"
-					startIcon={viewPortIsSmall && icon}
-					onClick={() => {
-						onClick?.();
-						dialog && openModal(true);
-						tasks.refetch();
-					}}
-					sx={actionButtonStyle}
-				>
-					<Hidden smUp>{icon}</Hidden>
-					<Hidden smDown>{t(label)}</Hidden>
-				</Button>
-
-				{dialog && (
-					<Dialog
-						open={modalIsOpen}
-						onClose={() => openModal(false)}
-						fullWidth
-					>
-						{dialog({ close: () => openModal(false) })}
-					</Dialog>
-				)}
-			</>
-		);
-	};
 	const queryClient = useQueryClient();
 	const scanAllLibaries = {
 		...ScanAllLibrariesAction,
 		onClick: () => {
-			tasks.refetch();
 			ScanAllLibrariesAction.onClick?.();
+			tasks.refetch();
 		},
 	};
 	const cleanAllLibaries = {
 		...CleanAllLibrariesAction,
 		onClick: () => {
-			tasks.refetch();
 			CleanAllLibrariesAction.onClick?.();
+			tasks.refetch();
 		},
 	};
 	const confirm = useConfirm();
@@ -301,7 +347,17 @@ const LibrariesSettings = () => {
 				}
 			/>
 			<List>
-				<ListItem>
+				<ListItem
+					secondaryAction={
+						tasks.data &&
+						tasks.data.progress !== null && (
+							<CircularProgressWithLabel
+								size="35px"
+								value={tasks.data.progress}
+							/>
+						)
+					}
+				>
 					<ListItemText
 						primary={
 							tasks.data ? (
@@ -309,7 +365,7 @@ const LibrariesSettings = () => {
 									tasks.data.current_task ?? t("none")
 								}`
 							) : (
-								<Skeleton />
+								<Skeleton width={"100px"} />
 							)
 						}
 					/>
@@ -322,7 +378,7 @@ const LibrariesSettings = () => {
 									tasks.data.pending_tasks.length || t("none")
 								}`
 							) : (
-								<Skeleton />
+								<Skeleton width={"100px"} />
 							)
 						}
 					/>

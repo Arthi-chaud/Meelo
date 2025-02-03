@@ -201,6 +201,7 @@ export default class API {
 					service: Service.Scanner,
 					validator: yup.object({
 						current_task: yup.string().required().nullable(),
+						progress: yup.number().required().nullable(),
 						pending_tasks: yup
 							.array(yup.string().required())
 							.required(),
