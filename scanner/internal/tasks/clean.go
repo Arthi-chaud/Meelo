@@ -3,6 +3,7 @@ package tasks
 import (
 	"fmt"
 	"path"
+	"strconv"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
@@ -21,10 +22,13 @@ func execClean(library api.Library, c config.Config, w *Worker) error {
 	if err != nil {
 		return err
 	}
+	w.SetProgress(25, 100)
 	filesInDir, err := filesystem.GetAllFilesInDirectory(path.Join(c.DataDirectory, library.Path))
 	if err != nil {
 		return err
 	}
+
+	w.SetProgress(50, 100)
 	filesToClean := []api.File{}
 	for _, registeredFile := range registeredFiles {
 		fullRegisteredPath := path.Join(c.DataDirectory, library.Path, registeredFile.Path)
@@ -32,10 +36,13 @@ func execClean(library api.Library, c config.Config, w *Worker) error {
 			filesToClean = append(filesToClean, registeredFile)
 		}
 	}
+	w.SetProgress(75, 100)
 	successfulClean := DeleteFilesInApi(filesToClean, c, w)
+	w.SetProgress(100, 100)
 	log.Info().
+		Str("cleaned", strconv.Itoa(successfulClean)).
 		Str("library", library.Slug).
-		Msgf("Cleaned %d files.", successfulClean)
+		Msg("Finished cleaning files")
 	return nil
 }
 

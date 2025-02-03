@@ -60,6 +60,7 @@ func execScan(library api.Library, c config.Config, w *Worker) error {
 func scanAndPostFiles(filePaths []string, c config.Config, w *Worker) int {
 	const chunkSize = 5
 	successfulRegistrations := 0
+	failedRegistration := 0
 	scanResChan := make(chan ScanRes, chunkSize)
 	defer close(scanResChan)
 	fileCount := len(filePaths)
@@ -70,23 +71,26 @@ func scanAndPostFiles(filePaths []string, c config.Config, w *Worker) int {
 		}
 		for range len(filesChunk) {
 			res := <-scanResChan
-			errCount := len(res.errors)
 			baseFile := path.Base(res.filePath)
-			if errCount != 0 {
+			if len(res.errors) != 0 {
 				log.Error().Str("file", baseFile).Msg("Parsing failed")
 				for _, err := range res.errors {
 					log.Trace().Msg(err.Error())
 				}
-				continue
-			}
-			log.Info().Str("file", baseFile).Msg("Parsing successful")
-			err := pushMetadata(res.filePath, res.metadata, c, w, api.Create)
-			if err != nil {
-				log.Error().Msg(err.Error())
+				failedRegistration = failedRegistration + 1
 			} else {
-				successfulRegistrations = successfulRegistrations + 1
+				log.Info().Str("file", baseFile).Msg("Parsing successful")
+				err := pushMetadata(res.filePath, res.metadata, c, w, api.Create)
+				if err != nil {
+					log.Error().Str("file", baseFile).Msg("Could not POST metadata")
+					log.Trace().Msg(err.Error())
+					failedRegistration = failedRegistration + 1
+				} else {
+					successfulRegistrations = successfulRegistrations + 1
+				}
 			}
 		}
+		w.SetProgress(successfulRegistrations+failedRegistration, fileCount)
 	}
 	return successfulRegistrations
 }

@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"strconv"
 	"sync"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -13,6 +14,7 @@ type Worker struct {
 	thumbnailQueue chan ThumbnailTask
 	currentTask    Task
 	queuedTasks    []Task
+	progress       int // A number between 0 and 100
 	mu             sync.Mutex
 	wg             sync.WaitGroup
 }
@@ -40,12 +42,29 @@ func (w *Worker) StartWorker(c config.Config) {
 	}()
 }
 
+func (w *Worker) SetProgress(stepsFinished int, stepsCount int) {
+	if stepsCount == 0 {
+		log.Error().Msg("Could not set progress for task. Step count is zero.")
+	}
+	newProgress := int(float64(100*stepsFinished) / float64(stepsCount))
+	if newProgress < 0 || newProgress > 100 {
+		log.Warn().
+			Str("input", strconv.Itoa(newProgress)).
+			Msg("Attempt to set a progress value out of bound")
+		return
+	}
+	w.mu.Lock()
+	w.progress = newProgress
+	w.mu.Unlock()
+}
+
 func (w *Worker) process(task Task) {
 	defer w.wg.Done() // Decrement the WaitGroup counter when the task is done
 
 	w.mu.Lock()
 	w.queuedTasks = removeTask(w.queuedTasks, task.Id)
 	w.currentTask = task
+	w.progress = 0
 	w.mu.Unlock()
 
 	log.Info().Str("task", task.Name).Msgf("Processing task")
@@ -58,6 +77,7 @@ func (w *Worker) process(task Task) {
 	}
 	w.mu.Lock()
 	w.currentTask = Task{}
+	w.progress = 0
 	w.mu.Unlock()
 }
 
@@ -84,11 +104,11 @@ func removeTask(tasks []Task, id string) []Task {
 	return tasks
 }
 
-func (w *Worker) GetCurrentTasks() (TaskInfo, []TaskInfo) {
+func (w *Worker) GetCurrentTasks() (TaskInfo, int, []TaskInfo) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	return w.currentTask.GetInfo(), internal.Fmap(w.queuedTasks, func(task Task, i int) TaskInfo {
+	return w.currentTask.GetInfo(), w.progress, internal.Fmap(w.queuedTasks, func(task Task, i int) TaskInfo {
 		return task.GetInfo()
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"reflect"
+	"strconv"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
@@ -21,6 +22,8 @@ func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, force bool, c c
 
 func execRefresh(refreshSelector api.FileSelectorDto, force bool, c config.Config, w *Worker) error {
 	successfulUpdates := 0
+	skippedUpdates := 0
+	failedUpdates := 0
 	libraries, err := api.GetAllLibraries(c)
 	if err != nil {
 		return err
@@ -29,10 +32,13 @@ func execRefresh(refreshSelector api.FileSelectorDto, force bool, c config.Confi
 	if err != nil {
 		return err
 	}
+	selectedFilesCount := len(selectedFiles)
 	for _, selectedFile := range selectedFiles {
+		w.SetProgress(skippedUpdates+failedUpdates+successfulUpdates, selectedFilesCount)
 		selectedFilePath, err := buildFullFileEntryPath(selectedFile, libraries, c)
 		if err != nil {
 			log.Error().Msg(err.Error())
+			failedUpdates++
 			continue
 		}
 		// If force is false, compute checksum,
@@ -42,9 +48,11 @@ func execRefresh(refreshSelector api.FileSelectorDto, force bool, c config.Confi
 			newChecksum, err := internal.ComputeChecksum(selectedFilePath)
 			if err != nil {
 				log.Error().Msg(err.Error())
+				failedUpdates++
 				continue
 			}
 			if newChecksum == selectedFile.Checksum {
+				skippedUpdates++
 				continue
 			}
 		}
@@ -60,16 +68,21 @@ func execRefresh(refreshSelector api.FileSelectorDto, force bool, c config.Confi
 			for _, err := range errs {
 				log.Trace().Msg(err.Error())
 			}
+			failedUpdates++
 			continue
 		}
 		err = pushMetadata(selectedFilePath, m, c, w, api.Update)
 		if err != nil {
 			log.Error().Msg(err.Error())
+			failedUpdates++
 		} else {
-			successfulUpdates = successfulUpdates + 1
+			successfulUpdates++
 		}
 	}
-	log.Info().Msgf("Updated metadata for %d files", successfulUpdates)
+	log.Info().
+		Str("sucess", strconv.Itoa(successfulUpdates)).
+		Str("failed", strconv.Itoa(failedUpdates)).
+		Msg("Finished updating metadata")
 	return nil
 }
 

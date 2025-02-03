@@ -17,7 +17,10 @@ type ScannerStatus struct {
 }
 
 type ScannerTaskStatus struct {
-	CurrentTask  *string  `json:"current_task"`
+	// Name of the currently running task
+	CurrentTask *string `json:"current_task"`
+	// Progress (0-100) of the running task. Can be null
+	Progress     *int     `json:"progress"`
 	PendingTasks []string `json:"pending_tasks"`
 }
 
@@ -27,6 +30,7 @@ func logTaskAdded(task t.Task) {
 	log.Info().Str("name", task.Name).Msg(TaskAddedtoQueueMessage)
 }
 
+// @Tags        Tasks
 // @Summary		Get Status of Scanner
 // @Produce		json
 // @Success		200	{object}	ScannerStatus
@@ -35,25 +39,30 @@ func (s *ScannerContext) Status(c echo.Context) error {
 	return c.JSON(http.StatusOK, ScannerStatus{Message: "Scanner is alive."})
 }
 
+// @Tags        Tasks
 // @Summary		Get Current + Pending Tasks
 // @Produce		json
 // @Success		200 {object} ScannerTaskStatus
 // @Router	    /tasks [get]
 func (s *ScannerContext) Tasks(c echo.Context) error {
-	currentTask, pendingTasks := s.worker.GetCurrentTasks()
+	currentTask, progressValue, pendingTasks := s.worker.GetCurrentTasks()
 	formattedCurentTask := &currentTask.Name
+	progressPtr := &progressValue
 	if currentTask.Name == "" {
 		formattedCurentTask = nil
+		progressPtr = nil
 	}
 	formattedPendingTasks := internal.Fmap(pendingTasks, func(t t.TaskInfo, _ int) string {
 		return t.Name
 	})
 	return c.JSON(http.StatusOK, ScannerTaskStatus{
 		CurrentTask:  formattedCurentTask,
+		Progress:     progressPtr,
 		PendingTasks: formattedPendingTasks,
 	})
 }
 
+// @Tags        Tasks
 // @Summary		Request a Scan for all libraries
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
@@ -74,6 +83,7 @@ func (s *ScannerContext) ScanAll(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
+// @Tags        Tasks
 // @Summary		Request a Scan for a single library
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
@@ -94,6 +104,7 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
+// @Tags        Tasks
 // @Summary		Request a Clean
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
@@ -114,6 +125,7 @@ func (s *ScannerContext) Clean(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
+// @Tags        Tasks
 // @Summary		Request a Clean for a single library
 // @Produce		json
 // @Success		202	{object}	ScannerStatus
@@ -134,6 +146,7 @@ func (s *ScannerContext) CleanLibrary(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, ScannerStatus{Message: TaskAddedtoQueueMessage})
 }
 
+// @Tags        Tasks
 // @Summary		Refresh Metadata of selected files
 // @Description	Exactly one query parameter must be given
 // @Produce		json
