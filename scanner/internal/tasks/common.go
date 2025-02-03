@@ -1,7 +1,6 @@
 package tasks
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
@@ -14,7 +13,7 @@ import (
 func pushMetadata(fileFullPath string, m internal.Metadata, c config.Config, w *Worker, updateMethod api.SaveMetadataMethod) error {
 	created, err := api.SaveMetadata(c, m, updateMethod)
 	if err != nil {
-		return fmt.Errorf("saving metadata failed, this might be a bug")
+		return err
 	}
 	if len(m.IllustrationLocation) > 0 {
 		err := SaveIllustration(IllustrationTask{

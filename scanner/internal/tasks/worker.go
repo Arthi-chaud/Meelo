@@ -42,16 +42,11 @@ func (w *Worker) StartWorker(c config.Config) {
 	}()
 }
 
-func (w *Worker) GetProgress() int {
-	res := 0
-	w.mu.Lock()
-	res = w.progress
-	w.mu.Unlock()
-	return res
-}
-
-// Argument is a number between 0 and 100
-func (w *Worker) SetProgress(newProgress int) {
+func (w *Worker) SetProgress(stepsFinished int, stepsCount int) {
+	if stepsCount == 0 {
+		log.Error().Msg("Could not set progress for task. Step count is zero.")
+	}
+	newProgress := int(float64(100*stepsFinished) / float64(stepsCount))
 	if newProgress < 0 || newProgress > 100 {
 		log.Warn().
 			Str("input", strconv.Itoa(newProgress)).
@@ -82,6 +77,7 @@ func (w *Worker) process(task Task) {
 	}
 	w.mu.Lock()
 	w.currentTask = Task{}
+	w.progress = 0
 	w.mu.Unlock()
 }
 
@@ -108,11 +104,11 @@ func removeTask(tasks []Task, id string) []Task {
 	return tasks
 }
 
-func (w *Worker) GetCurrentTasks() (TaskInfo, []TaskInfo) {
+func (w *Worker) GetCurrentTasks() (TaskInfo, int, []TaskInfo) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	return w.currentTask.GetInfo(), internal.Fmap(w.queuedTasks, func(task Task, i int) TaskInfo {
+	return w.currentTask.GetInfo(), w.progress, internal.Fmap(w.queuedTasks, func(task Task, i int) TaskInfo {
 		return task.GetInfo()
 	})
 }
