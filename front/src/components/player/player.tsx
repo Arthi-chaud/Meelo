@@ -37,6 +37,7 @@ import { usePlayerContext } from "../../contexts/player";
 import type { RootState } from "../../state/store";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
+import { current } from "@reduxjs/toolkit";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -46,9 +47,19 @@ const Player = () => {
 	);
 	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
 		usePlayerContext();
-	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
+	const currentTrack = useMemo(
+		() => (cursor === -1 ? undefined : playlist[cursor]),
+		[cursor, playlist],
+	);
+	const nextTrack = useMemo(
+		() => playlist.at(cursor + 1),
+		[cursor, playlist],
+	);
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
-	const audioPlayer = useRef<HTMLAudioElement>(
+	const audioPlayer = useRef<HTMLAudioElement | null>(
+		typeof Audio !== "undefined" ? new Audio() : null,
+	);
+	const nextTrackPlayer = useRef<HTMLAudioElement | null>(
 		typeof Audio !== "undefined" ? new Audio() : null,
 	);
 	const [useTranscoding, setUseTranscoding] = useState(false);
@@ -118,10 +129,21 @@ const Player = () => {
 						hls.current?.media?.duration,
 				);
 				player.current!.ontimeupdate = () => {
+					if (
+						!Number.isNaN(player.current!.duration) &&
+						Math.abs(
+							player.current!.currentTime -
+								player.current!.duration,
+						) <= 0.1 &&
+						nextTrackPlayer.current?.src &&
+						nextTrackPlayer.current?.paused
+					) {
+						nextTrackPlayer.current!.play();
+					}
 					progress.current = player.current!.currentTime;
 				};
 				player.current!.onended = () => {
-					if (currentTrack.track.songId) {
+					if (currentTrack?.track.songId) {
 						API.setSongAsPlayed(currentTrack.track.songId);
 					}
 					progress.current = null;
@@ -282,13 +304,27 @@ const Player = () => {
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
 			if (currentTrack.track.type === "Audio") {
+				if (!nextTrackPlayer.current!.paused) {
+					const tmp = audioPlayer.current;
+					audioPlayer.current = nextTrackPlayer.current;
+					nextTrackPlayer.current = tmp;
+					nextTrackPlayer.current?.pause();
+				}
+
 				player.current = audioPlayer.current ?? undefined;
 			} else {
 				player.current = videoPlayer.current;
 			}
+
 			player.current!.src = API.getDirectStreamURL(
 				currentTrack.track.sourceFileId,
 			);
+			if (nextTrack?.track.type === "Audio") {
+				nextTrackPlayer.current!.src = API.getDirectStreamURL(
+					nextTrack.track.sourceFileId,
+				);
+				nextTrackPlayer.current?.load();
+			}
 			startPlayback(false);
 			if (typeof navigator.mediaSession !== "undefined") {
 				navigator.mediaSession.metadata = new MediaMetadata({
