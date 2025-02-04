@@ -16,9 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Link, Skeleton } from "@mui/material";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Box, Skeleton } from "@mui/material";
 import type { CommonExternalMetadata } from "../models/external-metadata";
 import { generateArray } from "../utils/gen-list";
 
@@ -26,37 +24,16 @@ type Props = {
 	externalMetadata: CommonExternalMetadata | undefined;
 };
 
-const ResourceDescriptionExpandable = ({ externalMetadata }: Props) => {
-	const [isExpanded, setIsExpanded] = useState(false);
-	const maxLine = 5;
-	const smallBoxStyle = {
-		overflow: "hidden",
-		display: "-webkit-box",
-		WebkitLineClamp: maxLine,
-		lineClamp: maxLine,
-		WebkitBoxOrient: "vertical",
-	} as const;
-	const bigBoxStyle = {};
-	const { t } = useTranslation();
-
+const ResourceDescription = ({ externalMetadata }: Props) => {
 	return (
-		<Box id="description" sx={isExpanded ? bigBoxStyle : smallBoxStyle}>
+		<Box id="description">
 			{externalMetadata?.description ||
 				(externalMetadata?.description === undefined &&
 					generateArray(5).map((_, index) => (
 						<Skeleton key={index} />
 					)))}
-
-			{externalMetadata?.description && (
-				<Link
-					href="#description"
-					onClick={() => setIsExpanded(!isExpanded)}
-				>
-					{t(isExpanded ? "showLess" : "showMore")}
-				</Link>
-			)}
 		</Box>
 	);
 };
 
-export default ResourceDescriptionExpandable;
+export default ResourceDescription;

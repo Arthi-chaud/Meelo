@@ -53,7 +53,7 @@ import { PlayIcon, ShuffleIcon } from "../../components/icons";
 import Illustration from "../../components/illustration";
 import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
 import ReleaseTrackList from "../../components/release-tracklist";
-import ResourceDescriptionExpandable from "../../components/resource-description-expandable";
+import ResourceDescription from "../../components/resource-description";
 import SongGrid from "../../components/song-grid";
 import TileRow from "../../components/tile-row";
 import AlbumTile from "../../components/tile/album-tile";
@@ -846,7 +846,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				{externalMetadata.data?.description && (
 					<RelatedContentSection display title={t("about")}>
 						<Box sx={{ paddingBottom: 2 }}>
-							<ResourceDescriptionExpandable
+							<ResourceDescription
 								externalMetadata={externalMetadata.data}
 							/>
 						</Box>
