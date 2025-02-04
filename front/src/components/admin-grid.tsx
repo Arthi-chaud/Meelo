@@ -36,19 +36,14 @@ const AdminGrid = <DataType extends Resource>({
 }: AdminGridProps<DataType>) => {
 	const {
 		data,
+		items,
 		hasNextPage,
 		hasPreviousPage,
 		fetchNextPage,
 		fetchPreviousPage,
 	} = useInfiniteQuery(infiniteQuery);
 	const [currentPage, setCurrentPage] = useState(0);
-	const itemsCount = useMemo(
-		() =>
-			data?.pages
-				.map((page) => page.items.length)
-				.reduce((pageSize, sum) => pageSize + sum, 0) ?? 0,
-		[data?.pages],
-	);
+	const itemsCount = useMemo(() => items?.length, [items]);
 
 	useEffect(() => {
 		hasNextPage && fetchNextPage();

@@ -20,10 +20,12 @@ import { Box, Button, Grid } from "@mui/material";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import type { UseInfiniteQueryResult, UseQueryResult } from "react-query";
+import type { UseQueryResult } from "react-query";
+import type { useInfiniteQuery } from "../api/use-query";
 import type { TranslationKey } from "../i18n/i18n";
 import type { AlbumWithRelations } from "../models/album";
 import type Artist from "../models/artist";
+import type Resource from "../models/resource";
 import type { SongWithRelations } from "../models/song";
 import type { VideoWithRelations } from "../models/video";
 import { generateArray } from "../utils/gen-list";
@@ -38,13 +40,16 @@ import VideoTile from "./tile/video-tile";
 
 export const SectionPadding = 4;
 
-export type PageSectionProps<T> = {
+export type PageSectionProps<
+	T extends Resource,
+	QT extends typeof useInfiniteQuery<T, []> = typeof useInfiniteQuery<T, []>,
+> = {
 	title: TranslationKey;
 	artist: UseQueryResult<Artist>;
 	seeMoreHref?: string;
 	maxItemCount: number;
 	child: (items: T[] | undefined) => JSX.Element;
-	query?: UseInfiniteQueryResult<{ items: T[] }>;
+	query?: ReturnType<QT>;
 	items?: T[] | undefined;
 	minimizePadding?: true;
 };
@@ -84,7 +89,7 @@ export const SongGridPageSection = (
 	);
 };
 
-export const ListPageSection = <T,>(
+export const ListPageSection = <T extends Resource>(
 	props: Omit<PageSectionProps<T>, "child"> & {
 		builder: (item: T | undefined, index: number) => JSX.Element;
 	},
@@ -171,13 +176,12 @@ export const VideoListPageSection = (
 	);
 };
 
-const PageSection = <T,>(props: PageSectionProps<T>) => {
+const PageSection = <T extends Resource>(props: PageSectionProps<T>) => {
 	const { t } = useTranslation();
-	const data = props.query?.data || props.items;
-	const firstPage = props.query?.data?.pages.at(0)?.items ?? props.items;
+	const data = props.query?.items || props.items;
 	return (
 		<>
-			{firstPage?.length !== 0 && (
+			{data?.length !== 0 && (
 				<>
 					<SectionHeader
 						heading={
@@ -187,8 +191,7 @@ const PageSection = <T,>(props: PageSectionProps<T>) => {
 							props.seeMoreHref ? (
 								<Fade
 									in={
-										(firstPage?.length ?? 0) >
-										props.maxItemCount
+										(data?.length ?? 0) > props.maxItemCount
 									}
 								>
 									<Link href={props.seeMoreHref}>
@@ -208,7 +211,7 @@ const PageSection = <T,>(props: PageSectionProps<T>) => {
 							) : undefined
 						}
 					/>
-					{props.child(firstPage)}
+					{props.child(data)}
 					<Box
 						sx={{
 							paddingBottom: props.minimizePadding

@@ -217,7 +217,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		albumGenreQuery,
 		release.data?.albumId,
 	);
-	const hasGenres = (albumGenres.data?.pages.at(0)?.items.length ?? 1) > 0;
+	const hasGenres = (albumGenres.items?.length ?? 1) > 0;
 	const artists = useQuery(artistsOnAlbumQuery, release.data?.albumId);
 	const albumVideos = useInfiniteQuery(
 		albumVideosQuery,
@@ -242,12 +242,12 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		[artistId, artists],
 	);
 	const playlists = useMemo(
-		() => relatedPlaylists.data?.pages.at(0)?.items,
-		[relatedPlaylists.data],
+		() => relatedPlaylists.items,
+		[relatedPlaylists.items],
 	);
 	const { bSides, extras } = useMemo(
 		() =>
-			(bSidesQuery.data?.pages.at(0)?.items ?? []).reduce(
+			(bSidesQuery.items ?? []).reduce(
 				(prev, current) => {
 					if (["NonMusic", "Medley"].includes(current.type)) {
 						return {
@@ -267,7 +267,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					>[]
 				>,
 			),
-		[bSidesQuery.data],
+		[bSidesQuery.items],
 	);
 	const [tracks, totalDuration, trackList] = useMemo(() => {
 		if (tracklistQuery.data) {
@@ -288,7 +288,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	}, [tracklistQuery.data]);
 	const { videos, liveVideos, videoExtras } = useMemo(
 		() =>
-			(albumVideos.data?.pages.at(0)?.items ?? [])
+			(albumVideos.items ?? [])
 				.map((video) => {
 					const videoIndex = tracks.findIndex(
 						(track) =>
@@ -352,7 +352,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						VideoWithRelations<"master" | "illustration">[]
 					>,
 				),
-		[albumVideos.data, tracks],
+		[albumVideos.items, tracks],
 	);
 	const illustration = useMemo(
 		() => release.data?.illustration,
@@ -606,8 +606,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											</ListSubheader>
 										</Grid>
 										{(
-											albumGenres.data?.pages.at(0)
-												?.items ?? generateArray(3)
+											albumGenres?.items ??
+											generateArray(3)
 										)
 											.sort(
 												(a, b) =>
@@ -709,19 +709,15 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={
-						(relatedReleases.data?.pages.at(0)?.items?.length ??
-							0) > 1
-					}
+					display={(relatedReleases.items?.length ?? 0) > 1}
 					title={t("otherAlbumReleases")}
 				>
 					<TileRow
 						tiles={
-							relatedReleases.data?.pages
-								.at(0)
-								?.items?.filter(
+							relatedReleases.items
+								?.filter(
 									(relatedRelease) =>
-										relatedRelease.id !== release.data!.id,
+										relatedRelease.id !== release.data?.id,
 								)
 								.map((otherRelease, otherReleaseIndex) => (
 									<ReleaseTile
@@ -790,17 +786,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					)}
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={
-						(relatedAlbums.data?.pages.at(0)?.items?.length ?? 0) >
-						0
-					}
+					display={(relatedAlbums.items?.length ?? 0) > 0}
 					title={t("relatedAlbums")}
 				>
 					<TileRow
 						tiles={
-							relatedAlbums.data?.pages
-								.at(0)
-								?.items?.map((otherAlbum, otherAlbumIndex) => (
+							relatedAlbums.items?.map(
+								(otherAlbum, otherAlbumIndex) => (
 									<AlbumTile
 										key={otherAlbumIndex}
 										album={otherAlbum}
@@ -810,7 +802,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											)?.toString() ?? ""
 										}
 									/>
-								)) ?? []
+								),
+							) ?? []
 						}
 					/>
 				</RelatedContentSection>

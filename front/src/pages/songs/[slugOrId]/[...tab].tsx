@@ -178,9 +178,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								`${song.data?.name} (${t("moreInfo")})`
 							}
 						/>
-						{(!genres.data ||
-							(genres.data.pages.at(0)?.items.length ?? 0) !==
-								0) && (
+						{(genres.items === undefined ||
+							genres.items.length !== 0) && (
 							<Stack
 								direction="row"
 								sx={{
@@ -192,16 +191,15 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								<Typography sx={{ overflow: "unset" }}>
 									{`${t("genres")}: `}
 								</Typography>
-								{(
-									genres.data?.pages.at(0)?.items ??
-									generateArray(2)
-								).map((genre, index) => (
-									<GenreButton
-										sx={genreButtonOutline}
-										key={index}
-										genre={genre}
-									/>
-								))}
+								{(genres.items ?? generateArray(2)).map(
+									(genre, index) => (
+										<GenreButton
+											sx={genreButtonOutline}
+											key={index}
+											genre={genre}
+										/>
+									),
+								)}
 							</Stack>
 						)}
 						{(song.data === undefined ||
