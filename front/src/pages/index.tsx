@@ -81,10 +81,10 @@ const albumRecommendations = (seed: number) =>
 
 const HomePageSection = <T,>(props: {
 	heading: string | JSX.Element;
-	queryData: { data?: { pages?: { items?: T[] }[] } };
+	queryData: { items?: T[] };
 	render: (items: (T | undefined)[]) => JSX.Element;
 }) => {
-	const items = props.queryData.data?.pages?.at(0)?.items;
+	const items = props.queryData.items;
 
 	// Remove the section if its content is empty
 	if (items !== undefined && items.length === 0) {
@@ -134,18 +134,16 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		props?.recommendationSeed ?? seed,
 	);
 	const featuredAlbumsExternalMetadata = useQueries(
-		...(featuredAlbums.data?.pages
-			.at(0)
-			?.items.map(
-				(
-					album,
-				): Parameters<
-					typeof useQuery<
-						AlbumExternalMetadata | null,
-						Parameters<typeof API.getAlbumExternalMetadata>
-					>
-				> => [API.getAlbumExternalMetadata, album.id],
-			) ?? []),
+		...(featuredAlbums.items?.map(
+			(
+				album,
+			): Parameters<
+				typeof useQuery<
+					AlbumExternalMetadata | null,
+					Parameters<typeof API.getAlbumExternalMetadata>
+				>
+			> => [API.getAlbumExternalMetadata, album.id],
+		) ?? []),
 	);
 
 	const newlyAddedAlbums = useInfiniteQuery(() => newlyAddedAlbumsQuery);
@@ -169,7 +167,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		newlyAddedReleases,
 	];
 	const illustrations = queries
-		.flatMap((query) => query.data?.pages.at(0)?.items ?? [])
+		.flatMap((query) => query.items ?? [])
 		.map(({ illustration }) => illustration)
 		.filter((illustration) => illustration !== null);
 	const selectedIllustrationColor = useMemo(() => {

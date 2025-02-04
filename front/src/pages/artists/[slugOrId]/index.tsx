@@ -127,17 +127,16 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const appearances = useInfiniteQuery(appearanceQuery, artistIdentifier);
 	const externalMetadata = useQuery(externalMetadataQuery, artistIdentifier);
 	const { musicVideos, liveVideos, extras } = useMemo(() => {
-		const firstPage = videos.data?.pages.at(0)?.items;
 		return {
 			musicVideos:
-				firstPage?.filter(
+				videos.items?.filter(
 					(video) =>
 						!VideoTypeIsExtra(video.type) && video.type !== "Live",
 				) ?? [],
 			liveVideos:
-				firstPage?.filter((video) => video.type === "Live") ?? [],
+				videos.items?.filter((video) => video.type === "Live") ?? [],
 			extras:
-				firstPage?.filter((video) => VideoTypeIsExtra(video.type)) ??
+				videos.items?.filter((video) => VideoTypeIsExtra(video.type)) ??
 				[],
 		};
 	}, [videos]);
@@ -170,7 +169,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					.map(({ type, query }) => ({
 						type,
 						query,
-						queryData: query.data?.pages.at(0)?.items,
+						queryData: query.items,
 					}))
 					.filter(
 						({ queryData }) =>

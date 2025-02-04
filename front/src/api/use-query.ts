@@ -18,6 +18,7 @@
 
 /* eslint-disable no-restricted-imports */
 
+import { useEffect, useState } from "react";
 import {
 	type QueryFunctionContext,
 	useInfiniteQuery as useReactInfiniteQuery,
@@ -172,8 +173,7 @@ const useInfiniteQuery = <ReturnType extends Resource, Params extends any[]>(
 	...queryParams: Partial<Params>
 ) => {
 	const pageSize = API.defaultPageSize;
-
-	return useReactInfiniteQuery({
+	const { data, ...res } = useReactInfiniteQuery({
 		...prepareMeeloInfiniteQuery(query, ...queryParams),
 		getNextPageParam: (
 			lastPage: Page<ReturnType>,
@@ -184,6 +184,12 @@ const useInfiniteQuery = <ReturnType extends Resource, Params extends any[]>(
 			return lastPage;
 		},
 	});
+	const [items, setItems] = useState(data?.pages.at(0)?.items);
+	useEffect(() => {
+		setItems(data?.pages.flatMap((p) => p.items));
+	}, [data?.pages]);
+
+	return { ...res, data, items };
 };
 
 /**

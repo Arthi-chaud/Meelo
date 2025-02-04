@@ -76,7 +76,7 @@ export type Page<T> = {
  * @returns a dynamic list component
  */
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
-	const { data, hasNextPage, fetchNextPage, isFetchingNextPage } =
+	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
 
 	return (
@@ -96,10 +96,10 @@ const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 				threshold={500}
 			>
 				{props.render(
-					data === undefined
+					items === undefined
 						? generateArray(3)
 						: [
-								...data.pages.flatMap((page) => page.items),
+								...items,
 								...(isFetchingNextPage ? generateArray(3) : []),
 							],
 				)}
