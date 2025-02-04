@@ -32,7 +32,7 @@ import {
 	VideoListPageSection,
 } from "../../../components/page-section";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
-import ResourceDescriptionExpandable from "../../../components/resource-description-expandable";
+import ResourceDescription from "../../../components/resource-description";
 import SectionHeader from "../../../components/section-header";
 import { AlbumType } from "../../../models/album";
 import { VideoTypeIsExtra } from "../../../models/video";
@@ -229,7 +229,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							maxWidth={false}
 							sx={{ paddingBottom: 4, paddingTop: 3 }}
 						>
-							<ResourceDescriptionExpandable
+							<ResourceDescription
 								externalMetadata={externalMetadata.data}
 							/>
 						</Container>
