@@ -22,7 +22,7 @@ class WikidataProvider:
         try:
             return WikidataRelations(
                 requests.get(
-                    f"https://wikidata.org/w/rest.php/wikibase/v0/entities/items/{wikidata_id}"
+                    f"https://wikidata.org/w/rest.php/wikibase/v1/entities/items/{wikidata_id}"
                 ).json()
             )
         except Exception:
