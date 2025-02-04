@@ -234,9 +234,10 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             pass
 
     def _get_song_lyrics(self, song: Any) -> str | None:
-        html = song
+        html: BeautifulSoup = song
         divs = html.find_all(
-            "div", class_=re.compile(r"^Lyrics-\w{2}.\w+.[1]|Lyrics__Container")
+            "div",
+            attrs={"data-lyrics-container": "true"},
         )
         return self._clean_html(divs)
 
