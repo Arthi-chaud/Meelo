@@ -361,6 +361,9 @@ export default class ParserService {
 		) {
 			return SongType.NonMusic;
 		}
+		if (titleContainsWord("epk")) {
+			return SongType.NonMusic;
+		}
 		if (
 			titleContainsWord("television special") ||
 			titleContainsWord("mtv special")
@@ -561,6 +564,9 @@ export default class ParserService {
 
 		if (containsExtension("lyrics") || containsExtension("lyric")) {
 			return VideoType.LyricsVideo;
+		}
+		if (containsWord("epk")) {
+			return VideoType.Interview;
 		}
 		if (containsWord("interview")) {
 			return VideoType.Interview;
