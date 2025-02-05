@@ -19,6 +19,7 @@
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "../../models/album";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
+import { AlbumIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";
 
@@ -43,6 +44,7 @@ const AlbumItem = ({ album, formatSubtitle, onClick }: AlbumItemProps) => {
 				<Illustration
 					illustration={album?.illustration}
 					quality="low"
+					fallback={<AlbumIcon />}
 				/>
 			}
 			onClick={onClick}

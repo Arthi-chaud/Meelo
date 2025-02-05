@@ -19,6 +19,7 @@
 import { Avatar } from "@mui/material";
 import type { ComponentProps } from "react";
 import type IllustrationModel from "../models/illustration";
+import { ArtistIcon } from "./icons";
 import Illustration from "./illustration";
 
 const ArtistAvatar = (props: {
@@ -39,6 +40,7 @@ const ArtistAvatar = (props: {
 				imgProps={{ objectFit: "cover" }}
 				illustration={props.illustration}
 				quality={props.quality}
+				fallback={<ArtistIcon />}
 			/>
 		</Avatar>
 	);

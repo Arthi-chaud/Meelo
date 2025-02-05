@@ -21,6 +21,7 @@ import { Star } from "iconsax-react";
 import type { ReleaseWithRelations } from "../../models/release";
 import getYear from "../../utils/getYear";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
+import { AlbumIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";
 
@@ -39,6 +40,7 @@ const ReleaseItem = ({ release, onClick }: ReleaseItemProps) => {
 				<Illustration
 					illustration={release.illustration}
 					quality="low"
+					fallback={<AlbumIcon />}
 				/>
 			}
 			href={`/releases/${release.slug}`}

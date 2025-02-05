@@ -21,6 +21,7 @@ import { usePlayerContext } from "../contexts/player";
 import type { SongWithRelations } from "../models/song";
 import formatArtists from "../utils/formatArtists";
 import SongContextualMenu from "./contextual-menu/song-contextual-menu";
+import { SongIcon } from "./icons";
 import Illustration from "./illustration";
 import ListItem from "./list-item/item";
 
@@ -50,6 +51,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 							<Illustration
 								illustration={song?.illustration}
 								quality="low"
+								fallback={<SongIcon />}
 							/>
 						}
 						title={song?.name}
