@@ -1,4 +1,5 @@
 import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { Head } from "../../components/head";
@@ -8,6 +9,9 @@ import type { GetPropsTypesFrom, Page } from "../../ssr";
 import { getAlbumTypeParam } from "../../utils/album-type";
 import { getLayoutParams } from "../../utils/layout";
 import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
+
+const isCompilationPage = ({ asPath }: { asPath?: string }) =>
+	asPath?.includes("/compilations") ?? false;
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderParams(context.query.order) ?? "asc";
@@ -21,10 +25,16 @@ const prepareSSR = (context: NextPageContext) => {
 	return {
 		additionalProps: { sortBy, order, defaultLayout, type: type ?? null },
 		infiniteQueries: [
-			API.getAlbums({ type: type ?? undefined }, { sortBy, order }, [
-				"artist",
-				"illustration",
-			]),
+			API.getAlbums(
+				{
+					type: type ?? undefined,
+					artist: isCompilationPage(context)
+						? "compilations"
+						: undefined,
+				},
+				{ sortBy, order },
+				["artist", "illustration"],
+			),
 		],
 	};
 };
@@ -34,6 +44,7 @@ const LibraryAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 }) => {
 	const defaultType = props?.type ?? null;
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	return (
 		<>
@@ -45,7 +56,13 @@ const LibraryAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				defaultLayout={props?.defaultLayout}
 				query={({ sortBy, order, type, library }) =>
 					API.getAlbums(
-						{ type, library: library ?? undefined },
+						{
+							type,
+							library: library ?? undefined,
+							artist: isCompilationPage(router)
+								? "compilations"
+								: undefined,
+						},
 						{ sortBy, order },
 						["artist", "illustration"],
 					)
