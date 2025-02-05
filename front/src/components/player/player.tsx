@@ -37,7 +37,6 @@ import { usePlayerContext } from "../../contexts/player";
 import type { RootState } from "../../state/store";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
-import { current } from "@reduxjs/toolkit";
 
 const Player = () => {
 	const { t } = useTranslation();
@@ -118,50 +117,12 @@ const Player = () => {
 		playPreviousTrack();
 	};
 
-	const startPlayback = (isTrancoding: boolean) => {
-		player
-			.current!.play()
-			.then(() => {
-				setPlaying(true);
-				setDuration(
-					currentTrack?.track.duration ??
-						player.current?.duration ??
-						hls.current?.media?.duration,
-				);
-				player.current!.ontimeupdate = () => {
-					if (
-						!Number.isNaN(player.current!.duration) &&
-						Math.abs(
-							player.current!.currentTime -
-								player.current!.duration,
-						) <= 0.1 &&
-						nextTrackPlayer.current?.src &&
-						nextTrackPlayer.current?.paused
-					) {
-						nextTrackPlayer.current!.play();
-					}
-					progress.current = player.current!.currentTime;
-				};
-				player.current!.onended = () => {
-					if (currentTrack?.track.songId) {
-						API.setSongAsPlayed(currentTrack.track.songId);
-					}
-					progress.current = null;
-					skipTrack();
-				};
-				player.current!.onpause = () => {
-					if (player.current!.ended === false) {
-						setPlaying(false);
-					}
-				};
-				player.current!.onplay = () => {
-					setPlaying(true);
-				};
-				player.current!.onplaying = () => {
-					setPlaying(true);
-				};
-			})
-			.catch((err) => {
+	const startPlayback = async (isTrancoding: boolean) => {
+		console.log(player.current?.paused);
+		if (player.current?.paused) {
+			try {
+				await player.current!.play();
+			} catch (err: any) {
 				// Source: https://webidl.spec.whatwg.org/#notsupportederror
 				// Sometimes, an error can be caused by a track change while the `play` promise is being resolved
 				// But this does not seem to cause any malfunction
@@ -193,7 +154,47 @@ const Player = () => {
 					default:
 						break;
 				}
-			});
+				return;
+			}
+		}
+		setPlaying(true);
+		setDuration(
+			currentTrack?.track.duration ??
+				player.current?.duration ??
+				hls.current?.media?.duration,
+		);
+		player.current!.ontimeupdate = () => {
+			if (
+				!Number.isNaN(player.current!.duration) &&
+				Math.abs(
+					player.current!.currentTime - player.current!.duration,
+				) <= 5 &&
+				nextTrackPlayer.current?.src &&
+				nextTrackPlayer.current?.paused
+			) {
+				console.log("swapping");
+				nextTrackPlayer.current!.play();
+			}
+			progress.current = player.current!.currentTime;
+		};
+		player.current!.onended = () => {
+			if (currentTrack?.track.songId) {
+				API.setSongAsPlayed(currentTrack.track.songId);
+			}
+			progress.current = null;
+			skipTrack();
+		};
+		player.current!.onpause = () => {
+			if (player.current!.ended === false) {
+				setPlaying(false);
+			}
+		};
+		player.current!.onplay = () => {
+			setPlaying(true);
+		};
+		player.current!.onplaying = () => {
+			setPlaying(true);
+		};
 	};
 
 	useEffect(() => {
@@ -310,12 +311,10 @@ const Player = () => {
 					nextTrackPlayer.current = tmp;
 					nextTrackPlayer.current?.pause();
 				}
-
 				player.current = audioPlayer.current ?? undefined;
 			} else {
 				player.current = videoPlayer.current;
 			}
-
 			player.current!.src = API.getDirectStreamURL(
 				currentTrack.track.sourceFileId,
 			);
