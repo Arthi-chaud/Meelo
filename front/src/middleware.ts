@@ -38,6 +38,9 @@ export async function middleware(request: NextRequest) {
 	}
 
 	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
+	if (albumId === "compilations") {
+		return;
+	}
 	const master = await queryClient
 		.fetchQuery(prepareMeeloQuery(API.getMasterRelease, albumId))
 		.catch(() => null);

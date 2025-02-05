@@ -43,6 +43,7 @@ import {
 	AlbumIcon,
 	ArtistIcon,
 	BurgerIcon,
+	CompilationIcon,
 	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
@@ -61,11 +62,12 @@ const primaryItems = [
 	"songs",
 	"videos",
 	"playlists",
+	"albums/compilations",
 ] as const;
 const getPrimaryTypeIcon = (
 	type: (typeof primaryItems)[number],
 	props?: IconProps,
-) => {
+): JSX.Element => {
 	switch (type) {
 		case "albums":
 			return <AlbumIcon {...props} />;
@@ -77,6 +79,8 @@ const getPrimaryTypeIcon = (
 			return <VideoIcon {...props} />;
 		case "playlists":
 			return <PlaylistIcon {...props} />;
+		case "albums/compilations":
+			return <CompilationIcon {...props} />;
 	}
 };
 
@@ -201,7 +205,12 @@ const Drawer = ({
 																	: "normal",
 														}}
 													>
-														{t(item)}
+														{t(
+															item ===
+																"albums/compilations"
+																? "compilations"
+																: item,
+														)}
 													</Typography>
 												</ListItemText>
 											</ListItemButton>
@@ -308,7 +317,11 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 						icon={
 							<Icon variant={isSelected ? "Bold" : "Outline"} />
 						}
-						label={t(item)}
+						label={t(
+							item === "albums/compilations"
+								? "compilations"
+								: item,
+						)}
 					/>
 				);
 			})}
