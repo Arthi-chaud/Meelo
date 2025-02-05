@@ -36,6 +36,7 @@ export const CloseIcon = Iconsax.CloseCircle;
 export const EditIcon = Iconsax.Edit2;
 export const LogoutIcon = Iconsax.Logout;
 export const DarkMode = Iconsax.Sun1;
+export const ProviderIcon = Iconsax.Global;
 export const LightMode = (props: IconProps) => (
 	<Iconsax.Sun1 variant="Bold" {...props} />
 );

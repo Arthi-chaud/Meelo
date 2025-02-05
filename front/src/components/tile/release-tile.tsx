@@ -19,6 +19,7 @@
 import type { ReleaseWithRelations } from "../../models/release";
 import getYear from "../../utils/getYear";
 import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
+import { AlbumIcon } from "../icons";
 import Illustration from "../illustration";
 import Tile from "./tile";
 
@@ -52,6 +53,7 @@ const ReleaseTile = (props: {
 				<Illustration
 					illustration={props.release?.illustration}
 					quality="medium"
+					fallback={<AlbumIcon />}
 				/>
 			}
 		/>

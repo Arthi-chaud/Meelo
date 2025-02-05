@@ -19,6 +19,7 @@
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "../../models/album";
 import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
+import { AlbumIcon } from "../icons";
 import Illustration from "../illustration";
 import Tile from "./tile";
 
@@ -57,6 +58,7 @@ const AlbumTile = (props: {
 				<Illustration
 					illustration={props.album?.illustration}
 					quality="medium"
+					fallback={<AlbumIcon />}
 				/>
 			}
 		/>

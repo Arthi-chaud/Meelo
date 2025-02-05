@@ -20,14 +20,11 @@ import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import type { RequireExactlyOne } from "type-fest";
-import blackIllustrationFallback from "../../public/icon-black.png";
-import whiteIllustrationFallback from "../../public/icon.png";
 import API from "../api/api";
 import type IllustrationModel from "../models/illustration";
 import { isSSR } from "../utils/is-ssr";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
-import ThemedImage from "./themed-image";
 
 type ImageQuality = "low" | "medium" | "high" | "original";
 
@@ -152,36 +149,49 @@ const Illustration = (props: IllustrationProps) => {
 					}}
 				>
 					{loadingState === "errored" || url === null ? (
-						props.fallback ? (
-							<Box
+						<Box
+							sx={{
+								width: "100%",
+								height: "100%",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<Skeleton
+								variant="rounded"
+								animation={false}
 								sx={{
 									width: "100%",
 									height: "100%",
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<IconButton
-									disabled
-									sx={{ fontSize: "large" }}
-									component="div"
-								>
-									{props.fallback}
-								</IconButton>
-							</Box>
-						) : (
-							<ThemedImage
-								dark={whiteIllustrationFallback}
-								light={blackIllustrationFallback}
-								fill
-								alt="missing-illustration"
-								loading="eager"
-								style={{
-									padding: "15%",
+									aspectRatio:
+										props.aspectRatio?.toString() ?? "1",
 								}}
 							/>
-						)
+
+							{props.fallback && (
+								<Box
+									sx={{
+										top: 0,
+										left: 0,
+										bottom: 0,
+										right: 0,
+										position: "absolute",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<IconButton
+										disabled
+										sx={{ fontSize: "large" }}
+										component="div"
+									>
+										{props.fallback}
+									</IconButton>
+								</Box>
+							)}
+						</Box>
 					) : (
 						<Image
 							onError={() => setLoadingState("errored")}

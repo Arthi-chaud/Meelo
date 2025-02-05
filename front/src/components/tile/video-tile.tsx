@@ -22,6 +22,7 @@ import { usePlayerContext } from "../../contexts/player";
 import type { VideoWithRelations } from "../../models/video";
 import formatDuration from "../../utils/formatDuration";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
+import { VideoIcon } from "../icons";
 import Illustration from "../illustration";
 import Tile from "./tile";
 
@@ -88,6 +89,7 @@ const VideoTile = ({
 					aspectRatio={16 / 9}
 					illustration={video?.illustration}
 					imgProps={{ objectFit: "cover" }}
+					fallback={<VideoIcon />}
 				/>
 			}
 		/>
