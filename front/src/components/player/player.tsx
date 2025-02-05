@@ -287,7 +287,7 @@ const Player = () => {
 		if (hls.current) {
 			hls.current.detachMedia();
 		}
-		player.current?.pause();
+		// player.current?.pause();
 		progress.current = null;
 		if (typeof navigator.mediaSession !== "undefined") {
 			navigator.mediaSession.metadata = null;
