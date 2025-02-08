@@ -74,7 +74,7 @@ More screenshots [here](./assets/examples/)
 
 :thinking: Is there a feature you would like to have? [Open an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose), and we will be happy to discuss it!
 
-:wrench: Need help with the setup process? Open a discussion [here](https://github.com/Arthi-chaud/Meelo/discussions/categories/q-a)
+:wrench: Need help with the setup process? Open a discussion [here](https://github.com/Arthi-chaud/Meelo/discussions/categories/need-help-with-setting-up).
 
 :bug: Have you encountered a bug? Ugh we don't like 'em here! Report it by [opening an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose).
 
