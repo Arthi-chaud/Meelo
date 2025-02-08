@@ -72,11 +72,13 @@ More screenshots [here](./assets/examples/)
 
 ## :handshake: Contributing and Bugs reporting
 
-:hammer: Would you like to contribute to Meelo? Feel free to [open a pull request](https://github.com/Arthi-chaud/Meelo/compare).
-
 :thinking: Is there a feature you would like to have? [Open an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose), and we will be happy to discuss it!
 
+:wrench: Need help with the setup process? Open a discussion [here](https://github.com/Arthi-chaud/Meelo/discussions/categories/q-a)
+
 :bug: Have you encountered a bug? Ugh we don't like 'em here! Report it by [opening an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose).
+
+:hammer: Would you like to contribute to Meelo? Feel free to [open a pull request](https://github.com/Arthi-chaud/Meelo/compare).
 
 ---
 
