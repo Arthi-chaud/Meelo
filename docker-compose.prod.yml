@@ -1,7 +1,7 @@
 # This compose allows to setup the whole project in the production environment 
 services:
   server:
-    image: ghcr.io/arthi-chaud/meelo-server:latest
+    image: arthichaud/meelo-server:${TAG:-latest}
     expose:
       - 4000
     restart: on-failure
@@ -28,7 +28,7 @@ services:
       timeout: 5s
       retries: 5
   scanner:
-    image: ghcr.io/arthi-chaud/meelo-scanner:latest
+    image: arthichaud/meelo-scanner:${TAG:-latest}
     expose:
       - 8133
     depends_on:
@@ -48,7 +48,7 @@ services:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   front:
-    image: ghcr.io/arthi-chaud/meelo-front:latest
+    image: arthichaud/meelo-front:${TAG:-latest}
     expose:
       - 3000
     depends_on:
@@ -62,7 +62,7 @@ services:
       - PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
       - SSR_SCANNER_URL=http://scanner:8133
   matcher:
-    image: ghcr.io/arthi-chaud/meelo-matcher:latest
+    image: arthichaud/meelo-matcher:${TAG:-latest}
     restart: on-failure
     depends_on:
       server:
