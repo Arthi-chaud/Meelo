@@ -289,26 +289,40 @@ export default class TrackService {
 
 	formatSortingInput(
 		sortingParameter: TrackQueryParameters.SortingParameter,
-	): Prisma.TrackOrderByWithRelationInput {
+	): Prisma.TrackOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "releaseName":
-				return { release: { name: sortingParameter.order } };
+				return [
+					{ release: { name: sortingParameter.order } },
+					{ discIndex: { sort: "asc", nulls: "last" } },
+					{ trackIndex: { sort: "asc", nulls: "last" } },
+					{ id: "asc" },
+				];
 			case "releaseDate":
-				return {
-					release: {
-						releaseDate: {
-							sort: sortingParameter.order,
-							nulls: "last",
+				return [
+					{
+						release: {
+							releaseDate: {
+								sort: sortingParameter.order,
+								nulls: "last",
+							},
 						},
 					},
-				};
+					{ id: "asc" },
+				];
 			case "addDate":
-				return { sourceFile: { registerDate: sortingParameter.order } };
+				return [
+					{ sourceFile: { registerDate: sortingParameter.order } },
+					{ id: sortingParameter.order },
+				];
 			default:
-				return {
-					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 

@@ -386,26 +386,34 @@ export default class SongService extends SearchableRepositoryService {
 		const sort: Prisma.SongOrderByWithRelationInput[] = [];
 		switch (sortingParameter.sortBy) {
 			case "name":
-				sort.push({ nameSlug: sortingParameter.order });
+				sort.push(
+					{ nameSlug: sortingParameter.order },
+					{ artist: { slug: "asc" } },
+				);
 				break;
 			case "addDate":
-				sort.push({ registeredAt: sortingParameter.order });
+				sort.push(
+					{ registeredAt: sortingParameter.order },
+					{ id: sortingParameter.order },
+				);
 				break;
 			case "artistName":
-				sort.push({
-					artist: this.artistService.formatSortingInput({
-						sortBy: "name",
-						order: sortingParameter.order,
-					}),
-				});
+				sort.push(
+					{ artist: { slug: sortingParameter.order } },
+					{ nameSlug: "asc" },
+				);
 				break;
 			case "userPlayCount":
 			case "totalPlayCount":
-				sort.push({
-					playHistory: {
-						_count: sortingParameter.order,
+				sort.push(
+					{
+						playHistory: {
+							_count: sortingParameter.order,
+						},
 					},
-				});
+					{ nameSlug: "asc" },
+					{ artist: { slug: "asc" } },
+				);
 				break;
 			case "releaseDate":
 				sort.push(
@@ -426,11 +434,11 @@ export default class SongService extends SearchableRepositoryService {
 						},
 					},
 					{
-						name: "asc",
+						nameSlug: "asc",
 					},
 					{
 						artist: {
-							name: "asc",
+							slug: "asc",
 						},
 					},
 				);
@@ -440,9 +448,12 @@ export default class SongService extends SearchableRepositoryService {
 					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
 				});
 		}
-		sort.push({
-			featuring: { _count: "asc" as const },
-		});
+		sort.push(
+			{
+				featuring: { _count: "asc" },
+			},
+			{ id: "asc" },
+		);
 		return sort;
 	}
 

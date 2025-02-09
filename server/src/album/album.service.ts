@@ -402,31 +402,46 @@ export default class AlbumService extends SearchableRepositoryService {
 
 	formatSortingInput(
 		sortingParameter: AlbumQueryParameters.SortingParameter,
-	): Prisma.AlbumOrderByWithRelationInput {
+	): Prisma.AlbumOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { nameSlug: sortingParameter.order };
+				return [
+					{ nameSlug: sortingParameter.order },
+					{ artist: { slug: "asc" } },
+					{ id: "asc" },
+				];
 			case "artistName":
-				return {
-					artist: this.artistServce.formatSortingInput({
-						sortBy: "name",
-						order: sortingParameter.order,
-					}),
-				};
+				return [
+					{ artist: { slug: sortingParameter.order } },
+					{ nameSlug: "asc" },
+					{ releaseDate: { sort: "asc", nulls: "last" } },
+					{ id: "asc" },
+				];
 			case "addDate":
-				return { registeredAt: sortingParameter.order };
+				return [
+					{ registeredAt: sortingParameter.order },
+					{ id: sortingParameter.order },
+				];
 			case "releaseDate":
-				return {
-					releaseDate: {
-						sort: sortingParameter.order,
-						nulls: "last",
+				return [
+					{
+						releaseDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
 					},
-				};
+					{ artist: { slug: "asc" } },
+					{ nameSlug: "asc" },
+					{ id: "asc" },
+				];
 			default:
-				return {
-					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 
