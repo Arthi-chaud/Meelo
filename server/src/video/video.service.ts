@@ -534,18 +534,24 @@ export default class VideoService extends SearchableRepositoryService {
 		const sort: Prisma.VideoOrderByWithRelationInput[] = [];
 		switch (sortingParameter.sortBy) {
 			case "name":
-				sort.push({ nameSlug: sortingParameter.order });
+				sort.push(
+					{ nameSlug: sortingParameter.order },
+					{ artist: { slug: "asc" } },
+					{ id: "asc" },
+				);
 				break;
 			case "addDate":
-				sort.push({ registeredAt: sortingParameter.order });
+				sort.push(
+					{ registeredAt: sortingParameter.order },
+					{ id: sortingParameter.order },
+				);
 				break;
 			case "artistName":
-				sort.push({
-					artist: this.artistService.formatSortingInput({
-						sortBy: "name",
-						order: sortingParameter.order,
-					}),
-				});
+				sort.push(
+					{ artist: { slug: sortingParameter.order } },
+					{ nameSlug: "asc" },
+					{ id: "asc" },
+				);
 				break;
 			default:
 				sort.push({

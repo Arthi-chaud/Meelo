@@ -292,21 +292,33 @@ export default class ArtistService extends SearchableRepositoryService {
 
 	formatSortingInput(
 		sortingParameter: ArtistQueryParameters.SortingParameter,
-	): Prisma.ArtistOrderByWithRelationInput {
+	): Prisma.ArtistOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return [{ slug: sortingParameter.order }, { id: "asc" }];
 			case "albumCount":
-				return { albums: { _count: sortingParameter.order } };
+				return [
+					{ albums: { _count: sortingParameter.order } },
+					{ slug: "asc" },
+				];
 			case "songCount":
-				return { songs: { _count: sortingParameter.order } };
+				return [
+					{ songs: { _count: sortingParameter.order } },
+					{ slug: "asc" },
+				];
 			case "addDate":
-				return { registeredAt: sortingParameter.order };
+				return [
+					{ registeredAt: sortingParameter.order },
+					{ id: sortingParameter.order },
+				];
 			default:
-				return {
-					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 

@@ -125,17 +125,23 @@ export default class GenreService {
 
 	formatSortingInput(
 		sortingParameter: GenreQueryParameters.SortingParameter,
-	) {
+	): Prisma.GenreOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return [{ slug: sortingParameter.order }];
 			case "songCount":
-				return { songs: { _count: sortingParameter.order } };
-			case undefined:
-				return { id: sortingParameter.order };
+				return [
+					{ songs: { _count: sortingParameter.order } },
+					{ slug: "asc" },
+				];
 			default:
-				return { [sortingParameter.sortBy]: sortingParameter.order };
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 

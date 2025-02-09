@@ -199,19 +199,29 @@ export default class PlaylistService {
 
 	formatSortingInput(
 		sortingParameter: PlaylistQueryParameters.SortingParameter,
-	) {
+	): Prisma.PlaylistOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return [{ slug: sortingParameter.order }];
 			case "creationDate":
-				return { createdAt: sortingParameter.order };
+				return [
+					{ createdAt: sortingParameter.order },
+					{ id: sortingParameter.order },
+				];
 			case "entryCount":
-				return { entries: { _count: sortingParameter.order } };
+				return [
+					{ entries: { _count: sortingParameter.order } },
+					{ slug: "asc" },
+					{ id: "asc" },
+				];
 			default:
-				return {
-					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 

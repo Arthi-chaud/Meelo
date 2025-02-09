@@ -210,26 +210,54 @@ export default class ReleaseService {
 
 	formatSortingInput(
 		sortingParameter: ReleaseQueryParameters.SortingParameter,
-	): Prisma.ReleaseOrderByWithRelationInput {
+	): Prisma.ReleaseOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { nameSlug: sortingParameter.order };
+				return [
+					{ nameSlug: sortingParameter.order },
+					{ album: { artist: { slug: "asc" } } },
+					{ releaseDate: { sort: "asc", nulls: "last" } },
+					{ tracks: { _count: "asc" } },
+					{ id: "asc" },
+				];
 			case "trackCount":
-				return { tracks: { _count: sortingParameter.order } };
+				return [
+					{ tracks: { _count: sortingParameter.order } },
+					{ nameSlug: "asc" },
+					{ album: { artist: { slug: "asc" } } },
+					{ releaseDate: { sort: "asc", nulls: "last" } },
+					{ id: "asc" },
+				];
 			case "addDate":
-				return { registeredAt: sortingParameter.order };
+				return [
+					{ registeredAt: sortingParameter.order },
+					{ nameSlug: "asc" },
+					{ album: { artist: { slug: "asc" } } },
+					{ releaseDate: { sort: "asc", nulls: "last" } },
+					{ tracks: { _count: "asc" } },
+					{ id: "asc" },
+				];
 			case "releaseDate":
-				return {
-					releaseDate: {
-						sort: sortingParameter.order,
-						nulls: "last",
+				return [
+					{
+						releaseDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
 					},
-				};
+					{ nameSlug: "asc" },
+					{ album: { artist: { slug: "asc" } } },
+					{ tracks: { _count: "asc" } },
+					{ id: "asc" },
+				];
 			default:
-				return {
-					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 

@@ -116,21 +116,25 @@ export default class LibraryService {
 
 	formatSortingInput(
 		sortingParameter: LibraryQueryParameters.SortingParameter,
-	): Prisma.LibraryOrderByWithRelationInput {
+	): Prisma.LibraryOrderByWithRelationInput[] {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return { slug: sortingParameter.order };
+				return [{ slug: sortingParameter.order }];
 			case "fileCount":
-				return { files: { _count: sortingParameter.order } };
+				return [
+					{ files: { _count: sortingParameter.order } },
+					{ slug: "asc" },
+				];
 			case "addDate":
-				return { id: sortingParameter.order };
-			case undefined:
-				return { id: sortingParameter.order };
+				return [{ id: sortingParameter.order }];
 			default:
-				return {
-					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
-				};
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
 		}
 	}
 
