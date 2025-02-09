@@ -66,14 +66,16 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	ParseTag(tags, []string{"title"}, func(value string) {
 		metadata.Name = value
 	})
-	ParseTag(tags, []string{"genre", "tcon"}, func(value string) {
-		metadata.Genres = []string{value}
+	ParseTag(tags, []string{"genres", "genre", "tcon"}, func(value string) {
+		metadata.Genres = strings.FieldsFunc(value, func(r rune) bool {
+			return r == ';' || r == '\\' || r == ','
+		})
 	})
 	if c.Compilations.UseID3CompTag {
 		ParseTag(tags, []string{"compilation", "compilations", "itunescompilation"}, func(value string) {
 			isCompilation, err := strconv.ParseBool(value)
 			if err != nil {
-				flag, _ := strconv.ParseInt(value, 10, 64)
+				flag, err := strconv.ParseInt(value, 10, 64)
 				if err == nil {
 					metadata.IsCompilation = flag == 1
 				}
