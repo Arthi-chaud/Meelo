@@ -14,20 +14,12 @@ import (
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
-func GetValue(t ffprobe.Tags, tag string) (string, error) {
-	res, err := t.GetString(tag)
-	if len(res) > 0 && err == nil {
-		return res, err
-	}
-	return t.GetString(strings.ToUpper(tag))
-}
-
 type parseTagFn func(string)
 
 // Tries to get each tag by key one after the other. If it success, calls function and returns
 func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
 	for _, key := range keys {
-		value, err := GetValue(t, key)
+		value, err := t.GetString(strings.ToLower(key))
 		if err == nil && len(value) > 0 {
 			fun(value)
 			return
@@ -58,7 +50,10 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	metadata.Duration = int64(probeData.Format.DurationSeconds)
 	metadata.Type = getType(*probeData)
 
-	tags := probeData.Format.TagList
+	var tags ffprobe.Tags = make(ffprobe.Tags)
+	for k, v := range probeData.Format.TagList {
+		tags[strings.ToLower(k)] = v
+	}
 	ParseTag(tags, []string{"artist", "tope"}, func(value string) {
 		metadata.Artist = value
 	})
