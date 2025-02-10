@@ -28,7 +28,8 @@ type InfiniteResourceViewProps<
 	AdditionalQueryParams extends object = object,
 > = {
 	query: (
-		options: OptionState<SortingKeys> & AdditionalQueryParams,
+		options: Omit<OptionState<SortingKeys>, "layout" | "itemSize"> &
+			AdditionalQueryParams,
 	) => ReturnType<MeeloInfiniteQueryFn<ResourceType>>;
 	light?: boolean;
 	onItemClick?: (item: ResourceType) => void;

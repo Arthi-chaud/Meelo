@@ -27,9 +27,11 @@ import { WideLoadingComponent } from "../loading/loading";
 import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { parentScrollableDivId } from "./infinite-scroll";
+import type { ItemSize } from "../../utils/layout";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
+	itemSize: ItemSize;
 	query: MeeloInfiniteQueryFn<ItemType>;
 	renderListItem: (item: ItemType | undefined) => JSX.Element;
 	renderGridItem: (item: ItemType | undefined) => JSX.Element;
@@ -106,6 +108,7 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 			) : (
 				<InfiniteGrid
 					query={props.query}
+					itemSize={props.itemSize}
 					loader={() => <WideLoadingComponent />}
 					render={(item) => (
 						<Fade in>
