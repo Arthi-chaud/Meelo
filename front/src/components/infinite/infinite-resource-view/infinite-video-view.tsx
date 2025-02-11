@@ -30,13 +30,13 @@ import {
 	VideoType,
 	type VideoWithRelations,
 } from "../../../models/video";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import VideoItem from "../../list-item/video-item";
 import VideoTile from "../../tile/video-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { DefaultItemSize } from "../../../utils/layout";
 
 const playVideosAction = (
 	emptyPlaylist: PlayerActions["emptyPlaylist"],

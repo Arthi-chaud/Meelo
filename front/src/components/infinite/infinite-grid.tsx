@@ -32,7 +32,6 @@ type InfiniteGridProps<T extends Resource> = Omit<
 const GridPresets: Record<ItemSize, Partial<Record<Breakpoint, number>>> = {
 	// Note: values of sm == values of md,
 	// because of navbar reducing the actual sufrace of md
-	// TODO XL
 	xs: { xs: 12 / 5, sm: 2, md: 12 / 8, lg: 12 / 10, xl: 1 },
 	s: { xs: 3, sm: 12 / 5, md: 12 / 5, lg: 12 / 8, xl: 12 / 10 },
 	m: { xs: 4, sm: 3, md: 3, lg: 2, xl: 12 / 8 },

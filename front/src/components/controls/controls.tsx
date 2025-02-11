@@ -28,24 +28,29 @@ import type { NextRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-
-import { Add, Minus } from "iconsax-react";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";
 import type { TranslationKey } from "../../i18n/i18n";
 import globalLibrary from "../../utils/global-library";
 import {
+	DefaultItemSize,
 	ItemSize,
 	type LayoutOption,
 	getLayoutParams,
-	DefaultItemSize,
 } from "../../utils/layout";
 import parseQueryParam from "../../utils/parse-query-param";
 import { type Order, getOrderParams } from "../../utils/sorting";
 import type Action from "../actions/action";
 import Fade from "../fade";
-import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
+import {
+	AscIcon,
+	DescIcon,
+	GridIcon,
+	ListIcon,
+	MinusIcon,
+	PlusIcon,
+} from "../icons";
 import type Option from "./option";
 import OptionButton from "./option-button";
 
@@ -336,12 +341,12 @@ const Controls = <
 								[
 									"xs",
 									(currentIndex: number) => currentIndex - 1,
-									Minus,
+									MinusIcon,
 								] as const,
 								[
 									"xl",
 									(currentIndex: number) => currentIndex + 1,
-									Add,
+									PlusIcon,
 								] as const,
 							].map(([size, f, Icon]) => (
 								<Button

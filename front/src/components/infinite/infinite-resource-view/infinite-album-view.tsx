@@ -24,12 +24,12 @@ import {
 	AlbumType,
 	type AlbumWithRelations,
 } from "../../../models/album";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { DefaultItemSize } from "../../../utils/layout";
 
 type AdditionalProps = { type?: AlbumType };
 

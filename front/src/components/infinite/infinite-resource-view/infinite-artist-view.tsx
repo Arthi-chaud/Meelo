@@ -22,12 +22,12 @@ import {
 	ArtistSortingKeys,
 	type ArtistWithRelations,
 } from "../../../models/artist";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import ArtistItem from "../../list-item/artist-item";
 import ArtistTile from "../../tile/artist-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { DefaultItemSize } from "../../../utils/layout";
 
 const InfiniteArtistView = (
 	props: InfiniteResourceViewProps<
