@@ -27,20 +27,20 @@ import {
 import { Add, Edit } from "iconsax-react";
 import type { useConfirm } from "material-ui-confirm";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import API from "../../api/api";
 import {
-	useQueryClient,
 	type MeeloInfiniteQueryFn,
 	type QueryClient,
+	useQueryClient,
 } from "../../api/use-query";
 import type { PlayerActions, TrackState } from "../../contexts/player";
 import type Playlist from "../../models/playlist";
 import type { PlaylistWithRelations } from "../../models/playlist";
 import {
-	AddIcon,
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
 	DeleteIcon,
@@ -52,7 +52,6 @@ import InfiniteList from "../infinite/infinite-list";
 import ListItem from "../list-item/item";
 import { WideLoadingComponent } from "../loading/loading";
 import type Action from "./action";
-import { useState } from "react";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,
