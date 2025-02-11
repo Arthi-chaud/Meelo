@@ -29,6 +29,7 @@ import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { DefaultItemSize } from "../../../utils/layout";
 
 type AdditionalProps = { type?: AlbumType };
 
@@ -52,7 +53,7 @@ const InfiniteAlbumView = (
 		order: props.initialSortingOrder ?? "asc",
 		sortBy: props.initialSortingField ?? "name",
 		view: props.defaultLayout ?? "grid",
-		itemSize: "m",
+		itemSize: DefaultItemSize,
 	});
 
 	return (

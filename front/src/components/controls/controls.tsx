@@ -39,6 +39,7 @@ import {
 	ItemSize,
 	type LayoutOption,
 	getLayoutParams,
+	DefaultItemSize,
 } from "../../utils/layout";
 import parseQueryParam from "../../utils/parse-query-param";
 import { type Order, getOrderParams } from "../../utils/sorting";
@@ -113,7 +114,7 @@ const Controls = <
 				? props.router?.query.library?.at(0)
 				: props.router?.query.library;
 			const baseOptions: OptionState<SortingKeys> = {
-				itemSize: "m",
+				itemSize: DefaultItemSize,
 				view:
 					((props.disableLayoutToggle !== true &&
 						getLayoutParams(props.router?.query.view)) ||
@@ -175,7 +176,7 @@ const Controls = <
 			...optionsState,
 			[name]: value,
 			// Reset itemsize when changing layout
-			itemSize: name === "view" ? "m" : optionsState.itemSize,
+			itemSize: name === "view" ? DefaultItemSize : optionsState.itemSize,
 		});
 		value = value?.toString() ?? null;
 		if (props.router) {

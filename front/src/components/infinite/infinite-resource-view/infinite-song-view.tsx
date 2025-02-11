@@ -221,7 +221,7 @@ const InfiniteSongView = <
 				/>
 			) : (
 				<InfiniteView
-					itemSize={options?.itemSize ?? "m"}
+					itemSize={options?.itemSize ?? DefaultItemSize}
 					view={"list"}
 					query={() => {
 						return props.query({

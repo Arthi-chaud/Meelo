@@ -27,6 +27,7 @@ import ArtistItem from "../../list-item/artist-item";
 import ArtistTile from "../../tile/artist-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { DefaultItemSize } from "../../../utils/layout";
 
 const InfiniteArtistView = (
 	props: InfiniteResourceViewProps<
@@ -50,7 +51,7 @@ const InfiniteArtistView = (
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView
-				itemSize={options?.itemSize ?? "m"}
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? props.defaultLayout ?? "list"}
 				query={() =>
 					props.query({

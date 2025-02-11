@@ -36,6 +36,7 @@ import VideoItem from "../../list-item/video-item";
 import VideoTile from "../../tile/video-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { DefaultItemSize } from "../../../utils/layout";
 
 const playVideosAction = (
 	emptyPlaylist: PlayerActions["emptyPlaylist"],
@@ -97,7 +98,7 @@ const InfiniteVideoView = <
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
-		itemSize: "m",
+		itemSize: DefaultItemSize,
 		library: options?.library ?? null,
 	} as const;
 	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
@@ -151,7 +152,7 @@ const InfiniteVideoView = <
 				actions={[playAction, shuffleAction]}
 			/>
 			<InfiniteView
-				itemSize={options?.itemSize ?? "m"}
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? "grid"}
 				query={() => {
 					return props.query({
