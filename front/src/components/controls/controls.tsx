@@ -28,18 +28,29 @@ import type { NextRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";
 import type { TranslationKey } from "../../i18n/i18n";
 import globalLibrary from "../../utils/global-library";
-import { type LayoutOption, getLayoutParams } from "../../utils/layout";
+import {
+	DefaultItemSize,
+	ItemSize,
+	type LayoutOption,
+	getLayoutParams,
+} from "../../utils/layout";
 import parseQueryParam from "../../utils/parse-query-param";
 import { type Order, getOrderParams } from "../../utils/sorting";
 import type Action from "../actions/action";
 import Fade from "../fade";
-import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
+import {
+	AscIcon,
+	DescIcon,
+	GridIcon,
+	ListIcon,
+	MinusIcon,
+	PlusIcon,
+} from "../icons";
 import type Option from "./option";
 import OptionButton from "./option-button";
 
@@ -54,6 +65,7 @@ export type OptionState<
 	AdditionalProps extends object = object,
 > = {
 	view: LayoutOption;
+	itemSize: ItemSize;
 	order: Order;
 	sortBy: SortingKeys[number];
 	library: string | null;
@@ -107,6 +119,7 @@ const Controls = <
 				? props.router?.query.library?.at(0)
 				: props.router?.query.library;
 			const baseOptions: OptionState<SortingKeys> = {
+				itemSize: DefaultItemSize,
 				view:
 					((props.disableLayoutToggle !== true &&
 						getLayoutParams(props.router?.query.view)) ||
@@ -164,7 +177,12 @@ const Controls = <
 		name: string;
 		value: boolean | string | null;
 	}) => {
-		setOptionState({ ...optionsState, [name]: value });
+		setOptionState({
+			...optionsState,
+			[name]: value,
+			// Reset itemsize when changing layout
+			itemSize: name === "view" ? DefaultItemSize : optionsState.itemSize,
+		});
 		value = value?.toString() ?? null;
 		if (props.router) {
 			const path = props.router.asPath.split("?")[0];
@@ -314,6 +332,45 @@ const Controls = <
 								{t(toggle.label)}
 							</Button>
 						))}
+					</ButtonGroup>
+				</Grid>
+				<Grid item>
+					<ButtonGroup variant="contained">
+						{optionsState.view === "grid" &&
+							[
+								[
+									"xs",
+									(currentIndex: number) => currentIndex - 1,
+									MinusIcon,
+								] as const,
+								[
+									"xl",
+									(currentIndex: number) => currentIndex + 1,
+									PlusIcon,
+								] as const,
+							].map(([size, f, Icon]) => (
+								<Button
+									key={`size-button-${size}`}
+									disabled={optionsState.itemSize === size}
+									onClick={() =>
+										setOptionState(
+											({ itemSize, ...rest }) => ({
+												...rest,
+												itemSize:
+													ItemSize[
+														f(
+															ItemSize.indexOf(
+																itemSize,
+															),
+														)
+													],
+											}),
+										)
+									}
+								>
+									<Icon />
+								</Button>
+							))}
 						{props.disableLayoutToggle !== true && (
 							<Tooltip title={t("changeLayout")}>
 								<Button

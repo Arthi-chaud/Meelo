@@ -23,6 +23,7 @@ import {
 	PlaylistSortingKeys,
 	type PlaylistWithRelations,
 } from "../../../models/playlist";
+import { DefaultItemSize } from "../../../utils/layout";
 import { CreatePlaylistAction } from "../../actions/playlist";
 import Controls, { type OptionState } from "../../controls/controls";
 import PlaylistItem from "../../list-item/playlist-item";
@@ -54,6 +55,7 @@ const InfinitePlaylistView = (
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? props.defaultLayout ?? "list"}
 				query={() =>
 					props.query({

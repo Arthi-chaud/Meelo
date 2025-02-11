@@ -22,6 +22,7 @@ import {
 	ArtistSortingKeys,
 	type ArtistWithRelations,
 } from "../../../models/artist";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import ArtistItem from "../../list-item/artist-item";
 import ArtistTile from "../../tile/artist-tile";
@@ -50,6 +51,7 @@ const InfiniteArtistView = (
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? props.defaultLayout ?? "list"}
 				query={() =>
 					props.query({

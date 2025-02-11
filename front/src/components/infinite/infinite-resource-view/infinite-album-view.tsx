@@ -24,6 +24,7 @@ import {
 	AlbumType,
 	type AlbumWithRelations,
 } from "../../../models/album";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
@@ -52,6 +53,7 @@ const InfiniteAlbumView = (
 		order: props.initialSortingOrder ?? "asc",
 		sortBy: props.initialSortingField ?? "name",
 		view: props.defaultLayout ?? "grid",
+		itemSize: DefaultItemSize,
 	});
 
 	return (
@@ -74,12 +76,12 @@ const InfiniteAlbumView = (
 				defaultLayout={props.defaultLayout ?? "grid"}
 			/>
 			<InfiniteView
+				itemSize={options.itemSize}
 				view={options?.view ?? props.defaultLayout ?? "grid"}
 				query={() =>
 					props.query({
 						library: options?.library,
 						view: options?.view ?? props.defaultLayout ?? "grid",
-
 						type:
 							// @ts-ignore
 							options?.type === "All" ? undefined : options?.type,

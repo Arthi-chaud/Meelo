@@ -16,17 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid } from "@mui/material";
+import { type Breakpoint, Grid } from "@mui/material";
 import type { IllustratedResource } from "../../models/illustration";
 import type Resource from "../../models/resource";
 import { useGradientBackground } from "../../utils/gradient-background";
+import type { ItemSize } from "../../utils/layout";
 import InfiniteScroll from "./infinite-scroll";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
 	"render"
-> & { render: (item: T | undefined) => JSX.Element };
+> & { render: (item: T | undefined) => JSX.Element; itemSize: ItemSize };
+
+const GridPresets: Record<ItemSize, Partial<Record<Breakpoint, number>>> = {
+	// Note: values of sm == values of md,
+	// because of navbar reducing the actual sufrace of md
+	xs: { xs: 12 / 5, sm: 2, md: 12 / 8, lg: 12 / 10, xl: 1 },
+	s: { xs: 3, sm: 12 / 5, md: 12 / 5, lg: 12 / 8, xl: 12 / 10 },
+	m: { xs: 4, sm: 3, md: 3, lg: 2, xl: 12 / 8 },
+	l: { xs: 6, sm: 4, md: 4, lg: 12 / 5, xl: 12 / 6 },
+	xl: { xs: 12, sm: 6, md: 6, lg: 12 / 4, xl: 12 / 5 },
+};
 
 /**
  * Infinite Scrolling List
@@ -49,18 +60,16 @@ const InfiniteGrid = <T extends IllustratedResource>(
 					<>
 						<GradientBackground />
 						<Grid
-							columnSpacing={2}
+							columnSpacing={
+								["xs", "s"].includes(props.itemSize) ? 1.5 : 2
+							}
 							container
 							sx={{ alignItems: "stretch", display: "flex" }}
 						>
 							{items.map((item, index) => (
 								<Grid
 									item
-									xs={6}
-									sm={3}
-									// No MD because we get more space when sidebar disappears
-									lg={2}
-									xl={12 / 8}
+									{...GridPresets[props.itemSize]}
 									key={`item-${index}`}
 								>
 									{props.render(item)}

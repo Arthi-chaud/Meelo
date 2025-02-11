@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MeeloInfiniteQueryFn } from "../../api/use-query";
 import type { IllustratedResource } from "../../models/illustration";
+import type { ItemSize } from "../../utils/layout";
 import Fade from "../fade";
 import { GoBackTopIcon } from "../icons";
 import { WideLoadingComponent } from "../loading/loading";
@@ -30,6 +31,7 @@ import { parentScrollableDivId } from "./infinite-scroll";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
+	itemSize: ItemSize;
 	query: MeeloInfiniteQueryFn<ItemType>;
 	renderListItem: (item: ItemType | undefined) => JSX.Element;
 	renderGridItem: (item: ItemType | undefined) => JSX.Element;
@@ -106,6 +108,7 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 			) : (
 				<InfiniteGrid
 					query={props.query}
+					itemSize={props.itemSize}
 					loader={() => <WideLoadingComponent />}
 					render={(item) => (
 						<Fade in>

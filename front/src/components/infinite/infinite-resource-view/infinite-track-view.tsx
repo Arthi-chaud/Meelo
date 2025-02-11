@@ -22,6 +22,7 @@ import {
 	TrackSortingKeys,
 	type TrackWithRelations,
 } from "../../../models/track";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import TrackItem from "../../list-item/track-item";
 import InfiniteView from "../infinite-view";
@@ -49,6 +50,7 @@ const InfiniteTrackView = (
 				defaultLayout={"list"}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? "list"}
 				query={() =>
 					props.query({

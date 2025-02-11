@@ -83,5 +83,7 @@ export const PauseIcon = Iconsax.Pause;
 export const RewindIcon = Iconsax.Previous;
 export const ForwardIcon = Iconsax.Next;
 export const FullscreenIcon = Iconsax.Maximize4;
+export const PlusIcon = Iconsax.Add;
+export const MinusIcon = Iconsax.Minus;
 
 export const DoneIcon = Iconsax.TickSquare;

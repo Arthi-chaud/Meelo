@@ -30,6 +30,7 @@ import {
 	VideoType,
 	type VideoWithRelations,
 } from "../../../models/video";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import VideoItem from "../../list-item/video-item";
@@ -97,6 +98,7 @@ const InfiniteVideoView = <
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
+		itemSize: DefaultItemSize,
 		library: options?.library ?? null,
 	} as const;
 	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
@@ -150,6 +152,7 @@ const InfiniteVideoView = <
 				actions={[playAction, shuffleAction]}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? "grid"}
 				query={() => {
 					return props.query({
