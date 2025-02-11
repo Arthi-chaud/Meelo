@@ -121,7 +121,7 @@ jobs:
           name: coverage-report-server
           path: ./server/coverage
       - name: Run SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@master
         with:
           projectBaseDir: ./server
         env:

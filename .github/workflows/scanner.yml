@@ -86,7 +86,7 @@ jobs:
           name: coverage-report-scanner
           path: ./scanner
       - name: Run SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@master
         with:
           projectBaseDir: ./scanner
         env:
