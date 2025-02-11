@@ -47,6 +47,7 @@ export type PlayerActions = {
 	playPreviousTrack: () => void;
 	reorder: (reordering: Record<"from" | "to", number>) => void;
 	emptyPlaylist: () => void;
+	removeTrack: (trackIndex: number) => void;
 };
 
 const PlayerContext = createContext<PlayerState & PlayerActions>({
@@ -60,6 +61,7 @@ const PlayerContext = createContext<PlayerState & PlayerActions>({
 	playPreviousTrack: () => {},
 	reorder: () => {},
 	emptyPlaylist: () => {},
+	removeTrack: () => {},
 });
 
 const PlayerContextProvider = (props: { children: JSX.Element }) => {
@@ -115,6 +117,14 @@ const PlayerContextProvider = (props: { children: JSX.Element }) => {
 							playlist: state.playlist,
 						};
 					});
+				},
+				removeTrack: (trackIndex) => {
+					setPlayerState((state) => ({
+						cursor: state.cursor,
+						playlist: state.playlist.filter(
+							(_, i) => i !== trackIndex,
+						),
+					}));
 				},
 				playPreviousTrack: () => {
 					setPlayerState((state) => {
