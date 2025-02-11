@@ -18,9 +18,11 @@
 
 import {
 	Button,
+	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
+	Divider,
 } from "@mui/material";
 import { Add, Edit } from "iconsax-react";
 import type { useConfirm } from "material-ui-confirm";
@@ -29,11 +31,16 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import API from "../../api/api";
-import type { MeeloInfiniteQueryFn, QueryClient } from "../../api/use-query";
+import {
+	useQueryClient,
+	type MeeloInfiniteQueryFn,
+	type QueryClient,
+} from "../../api/use-query";
 import type { PlayerActions, TrackState } from "../../contexts/player";
 import type Playlist from "../../models/playlist";
 import type { PlaylistWithRelations } from "../../models/playlist";
 import {
+	AddIcon,
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
 	DeleteIcon,
@@ -45,6 +52,7 @@ import InfiniteList from "../infinite/infinite-list";
 import ListItem from "../list-item/item";
 import { WideLoadingComponent } from "../loading/loading";
 import type Action from "./action";
+import { useState } from "react";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,
@@ -213,11 +221,36 @@ type SelectPlaylistFormProps = {
 
 const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const createPlaylistAction = CreatePlaylistAction(queryClient);
+	const [openModal, setOpenModal] = useState(false);
+	const closeModal = () => setOpenModal(false);
 
 	return (
 		<>
+			<Dialog
+				open={openModal}
+				onClose={closeModal}
+				fullWidth
+				sx={{ zIndex: 999999 }}
+			>
+				{createPlaylistAction.dialog?.({ close: closeModal })}
+			</Dialog>
 			<DialogTitle>Select a playlist</DialogTitle>
 			<DialogContent>
+				<ListItem
+					title={t(createPlaylistAction.label!)}
+					icon={
+						<Illustration
+							illustration={null}
+							fallback={createPlaylistAction.icon}
+							quality="low"
+						/>
+					}
+					onClick={() => setOpenModal(true)}
+					secondTitle={null}
+				/>
+				<Divider sx={{ paddingTop: 1 }} />
 				<InfiniteList
 					loader={() => <WideLoadingComponent />}
 					query={props.playlistQuery}
