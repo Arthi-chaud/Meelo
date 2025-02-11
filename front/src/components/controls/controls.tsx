@@ -29,15 +29,16 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
+import { Add, Minus } from "iconsax-react";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import API from "../../api/api";
 import { prepareMeeloInfiniteQuery } from "../../api/use-query";
 import type { TranslationKey } from "../../i18n/i18n";
 import globalLibrary from "../../utils/global-library";
 import {
+	ItemSize,
 	type LayoutOption,
 	getLayoutParams,
-	ItemSize,
 } from "../../utils/layout";
 import parseQueryParam from "../../utils/parse-query-param";
 import { type Order, getOrderParams } from "../../utils/sorting";
@@ -46,7 +47,6 @@ import Fade from "../fade";
 import { AscIcon, DescIcon, GridIcon, ListIcon } from "../icons";
 import type Option from "./option";
 import OptionButton from "./option-button";
-import { Add, Minus } from "iconsax-react";
 
 export type Toggle = {
 	name: string;

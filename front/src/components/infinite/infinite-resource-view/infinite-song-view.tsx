@@ -34,12 +34,12 @@ import {
 	SongGroupSortingKeys,
 	type SongGroupWithRelations,
 } from "../../../models/song-group";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import SongItem, { SongGroupItem } from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { DefaultItemSize } from "../../../utils/layout";
 
 type AdditionalProps = {
 	type?: SongType;

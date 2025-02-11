@@ -22,11 +22,11 @@ import {
 	TrackSortingKeys,
 	type TrackWithRelations,
 } from "../../../models/track";
+import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import TrackItem from "../../list-item/track-item";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
-import { DefaultItemSize } from "../../../utils/layout";
 
 const InfiniteTrackView = (
 	props: InfiniteResourceViewProps<

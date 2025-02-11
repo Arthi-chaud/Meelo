@@ -21,13 +21,13 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MeeloInfiniteQueryFn } from "../../api/use-query";
 import type { IllustratedResource } from "../../models/illustration";
+import type { ItemSize } from "../../utils/layout";
 import Fade from "../fade";
 import { GoBackTopIcon } from "../icons";
 import { WideLoadingComponent } from "../loading/loading";
 import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { parentScrollableDivId } from "./infinite-scroll";
-import type { ItemSize } from "../../utils/layout";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
