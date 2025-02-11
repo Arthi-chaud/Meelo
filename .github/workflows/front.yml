@@ -92,7 +92,7 @@ jobs:
           name: coverage-report-front
           path: ./front/coverage
       - name: Run SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@master
         with:
           projectBaseDir: ./front
         env:
