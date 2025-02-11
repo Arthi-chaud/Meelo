@@ -39,6 +39,7 @@ import { PlayIcon, ShuffleIcon } from "../../icons";
 import SongItem, { SongGroupItem } from "../../list-item/song-item";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { DefaultItemSize } from "../../../utils/layout";
 
 type AdditionalProps = {
 	type?: SongType;
@@ -98,7 +99,11 @@ const InfiniteSongView = <
 		Pick<ComponentProps<typeof SongItem<T>>, "subtitles"> & {
 			disableShuffle?: boolean;
 			groupsQuery?: (
-				p: OptionState<typeof SongGroupSortingKeys> & AdditionalProps,
+				p: Omit<
+					OptionState<typeof SongGroupSortingKeys>,
+					"layout" | "itemSize"
+				> &
+					AdditionalProps,
 			) => InfiniteQuery<
 				SongGroupWithRelations<
 					"artist" | "featuring" | "master" | "illustration"
@@ -198,6 +203,7 @@ const InfiniteSongView = <
 			/>
 			{options?.groups ? (
 				<InfiniteView
+					itemSize={options?.itemSize ?? DefaultItemSize}
 					view={"list"}
 					query={() => {
 						return props.groupsQuery!({
@@ -215,6 +221,7 @@ const InfiniteSongView = <
 				/>
 			) : (
 				<InfiniteView
+					itemSize={options?.itemSize ?? "m"}
 					view={"list"}
 					query={() => {
 						return props.query({

@@ -35,3 +35,5 @@ export const getLayoutParams = (input: any) => {
 export const ItemSize = ["xs", "s", "m", "l", "xl"] as const;
 
 export type ItemSize = (typeof ItemSize)[number];
+
+export const DefaultItemSize = "m" satisfies ItemSize;

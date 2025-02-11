@@ -44,6 +44,7 @@ import { useTabRouter } from "../../components/tab-router";
 import type { SaveSearchItem, SearchResult } from "../../models/search";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 import formatArtists from "../../utils/formatArtists";
+import { DefaultItemSize } from "../../utils/layout";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -211,6 +212,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Box sx={{ paddingBottom: 2 }} />
 			{selectedTab === "all" && (
 				<InfiniteView
+					itemSize={DefaultItemSize}
 					view="list"
 					query={() =>
 						searchResultQueryToInfinite(

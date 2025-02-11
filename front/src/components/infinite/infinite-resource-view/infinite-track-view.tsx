@@ -26,6 +26,7 @@ import Controls, { type OptionState } from "../../controls/controls";
 import TrackItem from "../../list-item/track-item";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { DefaultItemSize } from "../../../utils/layout";
 
 const InfiniteTrackView = (
 	props: InfiniteResourceViewProps<
@@ -49,6 +50,7 @@ const InfiniteTrackView = (
 				defaultLayout={"list"}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? "list"}
 				query={() =>
 					props.query({

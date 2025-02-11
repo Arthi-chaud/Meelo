@@ -50,6 +50,7 @@ const InfiniteArtistView = (
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? "m"}
 				view={options?.view ?? props.defaultLayout ?? "list"}
 				query={() =>
 					props.query({

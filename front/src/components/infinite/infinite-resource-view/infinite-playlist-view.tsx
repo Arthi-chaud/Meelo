@@ -29,6 +29,7 @@ import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+import { DefaultItemSize } from "../../../utils/layout";
 
 const InfinitePlaylistView = (
 	props: InfiniteResourceViewProps<
@@ -54,6 +55,7 @@ const InfinitePlaylistView = (
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? props.defaultLayout ?? "list"}
 				query={() =>
 					props.query({

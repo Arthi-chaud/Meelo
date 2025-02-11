@@ -97,6 +97,7 @@ const InfiniteVideoView = <
 		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
 		order: options?.order ?? props.initialSortingOrder ?? "asc",
 		view: "grid",
+		itemSize: "m",
 		library: options?.library ?? null,
 	} as const;
 	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
@@ -150,6 +151,7 @@ const InfiniteVideoView = <
 				actions={[playAction, shuffleAction]}
 			/>
 			<InfiniteView
+				itemSize={options?.itemSize ?? "m"}
 				view={options?.view ?? "grid"}
 				query={() => {
 					return props.query({
