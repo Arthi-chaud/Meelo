@@ -48,6 +48,7 @@ import ReleaseTrackContextualMenu from "../contextual-menu/release-track-context
 import {
 	CloseIcon,
 	ContextualMenuIcon,
+	DeleteIcon,
 	DragHandleIcon,
 	ForwardIcon,
 	FullscreenIcon,
@@ -244,7 +245,8 @@ const ExpandedPlayerControls = (
 		parentSongQuery,
 		props.track?.songId ?? undefined,
 	);
-	const { playlist, cursor, reorder, skipTrack } = usePlayerContext();
+	const { playlist, cursor, reorder, skipTrack, removeTrack } =
+		usePlayerContext();
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
 		"player",
 	);
@@ -638,13 +640,49 @@ const ExpandedPlayerControls = (
 																	</Box>
 																}
 																trailing={
-																	<Typography color="text.disabled">
-																		{formatDuration(
-																			playlistItem
-																				.track
-																				.duration,
-																		)}
-																	</Typography>
+																	<Grid
+																		container
+																		wrap="nowrap"
+																		columnSpacing={
+																			1
+																		}
+																	>
+																		<Grid
+																			item
+																			sx={{
+																				display:
+																					"flex",
+																				alignItems:
+																					"center",
+																			}}
+																		>
+																			<Typography color="text.disabled">
+																				{formatDuration(
+																					playlistItem
+																						.track
+																						.duration,
+																				)}
+																			</Typography>
+																		</Grid>
+																		<Grid
+																			item
+																		>
+																			<IconButton
+																				size={
+																					"small"
+																				}
+																				onClick={() =>
+																					removeTrack(
+																						cursor +
+																							1 +
+																							index,
+																					)
+																				}
+																			>
+																				<DeleteIcon />
+																			</IconButton>
+																		</Grid>
+																	</Grid>
 																}
 																onClick={() => {
 																	let toSkip =
