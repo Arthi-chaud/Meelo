@@ -37,7 +37,7 @@ const GridPresets: Record<ItemSize, Partial<Record<Breakpoint, number>>> = {
 	s: { xs: 3, sm: 12 / 5, md: 12 / 5, lg: 12 / 8, xl: 12 / 10 },
 	m: { xs: 4, sm: 3, md: 3, lg: 2, xl: 12 / 8 },
 	l: { xs: 6, sm: 4, md: 4, lg: 12 / 5, xl: 12 / 6 },
-	xl: { xs: 12, sm: 6, md: 4, lg: 12 / 4, xl: 12 / 5 },
+	xl: { xs: 12, sm: 6, md: 6, lg: 12 / 4, xl: 12 / 5 },
 };
 
 /**
@@ -71,7 +71,7 @@ const InfiniteGrid = <T extends IllustratedResource>(
 								<Grid
 									item
 									{...GridPresets[props.itemSize]}
-									key={`item-${index}-${props.itemSize}`}
+									key={`item-${index}`}
 								>
 									{props.render(item)}
 								</Grid>
