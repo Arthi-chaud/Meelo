@@ -44,6 +44,7 @@ import {
 	DragHandleIcon,
 	EditIcon,
 	PlayIcon,
+	PlaylistIcon,
 	ShuffleIcon,
 	SongIcon,
 } from "../../../components/icons";
@@ -305,6 +306,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 					<Illustration
 						illustration={playlist.data?.illustration}
 						quality="original"
+						fallback={<PlaylistIcon />}
 					/>
 				}
 				title={playlist.data?.name}
