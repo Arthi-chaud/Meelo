@@ -117,8 +117,12 @@ const Player = () => {
 		playPreviousTrack();
 	};
 
-	const startPlayback = async (isTrancoding: boolean) => {
-		console.log(player.current?.paused);
+	const startPlayback = async (player: any, isTrancoding: boolean) => {
+		console.log(
+			player.current?.paused,
+			player.current?.src,
+			player.current!.currentTime,
+		);
 		if (player.current?.paused) {
 			try {
 				await player.current!.play();
@@ -171,8 +175,9 @@ const Player = () => {
 				) <= 5 &&
 				nextTrackPlayer.current?.src &&
 				nextTrackPlayer.current?.paused
+				//TODO Check is audio
 			) {
-				console.log("swapping");
+				console.log("starting second playback");
 				nextTrackPlayer.current!.play();
 			}
 			progress.current = player.current!.currentTime;
@@ -237,7 +242,7 @@ const Player = () => {
 				console.error(err, data);
 			});
 			hls.current!.on(Hls.Events.MEDIA_ATTACHED, () => {
-				startPlayback(true);
+				startPlayback(player, true);
 			});
 		}
 	}, [useTranscoding]);
@@ -306,10 +311,20 @@ const Player = () => {
 
 			if (currentTrack.track.type === "Audio") {
 				if (!nextTrackPlayer.current!.paused) {
-					const tmp = audioPlayer.current;
-					audioPlayer.current = nextTrackPlayer.current;
-					nextTrackPlayer.current = tmp;
+					console.log("next is already playing");
+					console.log(
+						audioPlayer.current?.paused,
+						nextTrackPlayer.current?.paused,
+					);
+					[audioPlayer.current, nextTrackPlayer.current] = [
+						nextTrackPlayer.current,
+						audioPlayer.current,
+					];
 					nextTrackPlayer.current?.pause();
+					console.log(
+						audioPlayer.current?.paused,
+						nextTrackPlayer.current?.paused,
+					);
 				}
 				player.current = audioPlayer.current ?? undefined;
 			} else {
@@ -324,7 +339,7 @@ const Player = () => {
 				);
 				nextTrackPlayer.current?.load();
 			}
-			startPlayback(false);
+			startPlayback(player, false);
 			if (typeof navigator.mediaSession !== "undefined") {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
