@@ -2,7 +2,7 @@
 	"extends": ["../biome.json"],
 	"formatter": {
 		"lineWidth": 80,
-		"ignore": ["src/prisma/models/**"]
+		"ignore": ["src/prisma/models/**", "scripts/"]
 	},
 	"linter": {
 		"rules": {
