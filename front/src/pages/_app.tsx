@@ -31,7 +31,6 @@ import {
 	dehydrate,
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
 import Toaster from "../components/toaster";
 import { ResourceNotFound } from "../exceptions";
@@ -42,7 +41,6 @@ import "core-js/actual";
 import "../theme/styles.css";
 import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
-import { PersistGate } from "redux-persist/integration/react";
 import API from "../api/api";
 import {
 	DefaultMeeloQueryOptions,
@@ -55,11 +53,11 @@ import { KeyboardBindingsProvider } from "../contexts/keybindings";
 import { PlayerContextProvider } from "../contexts/player";
 import { withTranslations } from "../i18n/i18n";
 import type { Page } from "../ssr";
-import store, { persistor } from "../state/store";
 import { setAccessToken } from "../state/userSlice";
 import ThemeProvider from "../theme/provider";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import createEmotionCache from "../utils/createEmotionCache";
+import { UserContextProvider } from "../contexts/user";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -88,75 +86,64 @@ function MyApp({
 	}, [router]);
 	return (
 		<CacheProvider value={emotionCache}>
-			<Provider store={store}>
-				<ThemeProvider>
-					<Head>
-						{/* It is recommended to leave this here. The rest has been moved to `_document` */}
-						<title>{DefaultWindowTitle}</title>
-						<meta
-							name="viewport"
-							content="initial-scale=1.0, width=device-width"
-						/>
-					</Head>
-					<QueryClientProvider client={queryClient}>
-						<PersistGate loading={null} persistor={persistor}>
-							{() => (
-								<ConfirmProvider
-									defaultOptions={{
-										cancellationButtonProps: {
-											sx: { marginX: 2 },
-										},
-									}}
-								>
-									<Hydrate state={pageProps.dehydratedState}>
-										<AuthenticationWall>
-											<ErrorBoundary
-												FallbackComponent={() => {
-													if (
-														errorType ===
-														"not-found"
-													) {
-														return <PageNotFound />;
-													}
-													return <InternalError />;
-												}}
-												onError={(error: Error) => {
-													if (errorType) {
-														toast.error(
-															error.message,
-														);
-													}
-													if (
-														error instanceof
-														ResourceNotFound
-													) {
-														setError("not-found");
-													} else {
-														setError("error");
-													}
-												}}
-											>
-												<KeyboardBindingsProvider>
-													<KeyboardBindingModal />
-													<PlayerContextProvider>
-														<Scaffold>
-															<Component
-																{...pageProps}
-															/>
-														</Scaffold>
-													</PlayerContextProvider>
-												</KeyboardBindingsProvider>
-											</ErrorBoundary>
-										</AuthenticationWall>
-									</Hydrate>
-								</ConfirmProvider>
-							)}
-						</PersistGate>
-						<Toaster />
-						<ReactQueryDevtools initialIsOpen={false} />
-					</QueryClientProvider>
-				</ThemeProvider>
-			</Provider>
+			<ThemeProvider>
+				<Head>
+					{/* It is recommended to leave this here. The rest has been moved to `_document` */}
+					<title>{DefaultWindowTitle}</title>
+					<meta
+						name="viewport"
+						content="initial-scale=1.0, width=device-width"
+					/>
+				</Head>
+				<QueryClientProvider client={queryClient}>
+					<UserContextProvider>
+						<ConfirmProvider
+							defaultOptions={{
+								cancellationButtonProps: {
+									sx: { marginX: 2 },
+								},
+							}}
+						>
+							<Hydrate state={pageProps.dehydratedState}>
+								<AuthenticationWall>
+									<ErrorBoundary
+										FallbackComponent={() => {
+											if (errorType === "not-found") {
+												return <PageNotFound />;
+											}
+											return <InternalError />;
+										}}
+										onError={(error: Error) => {
+											if (errorType) {
+												toast.error(error.message);
+											}
+											if (
+												error instanceof
+												ResourceNotFound
+											) {
+												setError("not-found");
+											} else {
+												setError("error");
+											}
+										}}
+									>
+										<KeyboardBindingsProvider>
+											<KeyboardBindingModal />
+											<PlayerContextProvider>
+												<Scaffold>
+													<Component {...pageProps} />
+												</Scaffold>
+											</PlayerContextProvider>
+										</KeyboardBindingsProvider>
+									</ErrorBoundary>
+								</AuthenticationWall>
+							</Hydrate>
+						</ConfirmProvider>
+					</UserContextProvider>
+					<Toaster />
+					<ReactQueryDevtools initialIsOpen={false} />
+				</QueryClientProvider>
+			</ThemeProvider>
 		</CacheProvider>
 	);
 }
@@ -174,7 +161,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 		?.cookies[UserAccessTokenCookieKey];
 
 	if (accessToken) {
-		store.dispatch(setAccessToken(accessToken));
+		//TODO: dispatch access Token
 	} else {
 		// Disable SSR if user is not authentified
 		return { pageProps: {} };
