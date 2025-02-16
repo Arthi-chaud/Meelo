@@ -19,25 +19,22 @@
 import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 
+import { useAtom } from "jotai";
 import { useQuery as useReactQuery } from "react-query";
-import { useDispatch, useSelector } from "react-redux";
 import API from "../../api/api";
 import { prepareMeeloQuery } from "../../api/use-query";
-import type { RootState } from "../../state/store";
-import { setUserProfile } from "../../state/userSlice";
+import { accessTokenAtom, userAtom } from "../../contexts/user";
 import ModalPage from "../modal-page";
 import ThemedImage from "../themed-image";
 import AuthenticationForm from "./authentication-form";
 
 const AuthenticationWall = (props: { children: any }) => {
-	const accessToken = useSelector(
-		(store: RootState) => store.user.accessToken,
-	);
+	const [accessToken] = useAtom(accessTokenAtom);
+	const [_, setUser] = useAtom(userAtom);
 	const status = useReactQuery({
 		...prepareMeeloQuery(API.getCurrentUserStatus),
 		useErrorBoundary: false,
 	});
-	const dispatch = useDispatch();
 	const [authentified, setAuthenticationStatus] = useState(
 		status.data?.id !== undefined,
 	);
@@ -49,15 +46,15 @@ const AuthenticationWall = (props: { children: any }) => {
 		if (accessToken && status.data?.id && !status.error) {
 			setAuthenticationStatus(true);
 		}
-		if (status.error || accessToken?.valueOf() === undefined) {
+		if (status.error || accessToken === undefined) {
 			setAuthenticationStatus(false);
 		}
 	}, [accessToken, status, authentified]);
 	useEffect(() => {
 		if (accessToken && status.data && !status.error) {
-			dispatch(setUserProfile(status.data));
+			setUser(status.data);
 		}
-	}, [accessToken, status, dispatch]);
+	}, [accessToken, status]);
 	if (!authentified || !status.data?.id) {
 		return (
 			<ModalPage open>

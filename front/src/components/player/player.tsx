@@ -25,25 +25,23 @@ import {
 	useTheme,
 } from "@mui/material";
 import Hls from "hls.js";
+import { useAtom } from "jotai";
 import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import API from "../../api/api";
 import { useKeyboardBinding } from "../../contexts/keybindings";
 import { usePlayerContext } from "../../contexts/player";
-import type { RootState } from "../../state/store";
+import { userAtom } from "../../contexts/user";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 
 const Player = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const userIsAuthentified = useSelector(
-		(state: RootState) => state.user.user !== undefined,
-	);
+	const [user] = useAtom(userAtom);
 	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
 		usePlayerContext();
 	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
@@ -219,11 +217,11 @@ const Player = () => {
 		}
 	}, [useTranscoding]);
 	useEffect(() => {
-		if (!userIsAuthentified) {
+		if (!user) {
 			pause();
 			playTracks({ tracks: [] });
 		}
-	}, [userIsAuthentified]);
+	}, [user]);
 	useKeyboardBinding(
 		{
 			key: "p",

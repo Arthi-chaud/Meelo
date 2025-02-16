@@ -18,11 +18,11 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 
+import { getDefaultStore } from "jotai";
 import { QueryClient } from "react-query";
 import API from "./api/api";
 import { prepareMeeloQuery } from "./api/use-query";
-import store from "./state/store";
-import { setAccessToken } from "./state/userSlice";
+import { accessTokenAtom } from "./contexts/user";
 import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
 
 export async function middleware(request: NextRequest) {
@@ -31,7 +31,7 @@ export async function middleware(request: NextRequest) {
 	const queryClient = new QueryClient();
 
 	if (accessToken) {
-		store.dispatch(setAccessToken(accessToken));
+		getDefaultStore().set(accessTokenAtom, accessToken);
 	} else {
 		// Disable SSR if user is not authentified
 		return NextResponse.redirect(`${origin}/`);

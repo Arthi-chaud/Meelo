@@ -1,21 +1,3 @@
-/*
- * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
- * Copyright (C) 2023
- *
- * Meelo is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Meelo is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
 import NextApp, { type AppContext, type AppProps } from "next/app";
@@ -41,6 +23,7 @@ import "core-js/actual";
 import "../theme/styles.css";
 import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
+import { Provider, getDefaultStore } from "jotai";
 import API from "../api/api";
 import {
 	DefaultMeeloQueryOptions,
@@ -51,13 +34,12 @@ import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
 import Scaffold from "../components/scaffold/scaffold";
 import { KeyboardBindingsProvider } from "../contexts/keybindings";
 import { PlayerContextProvider } from "../contexts/player";
+import { accessTokenAtom } from "../contexts/user";
 import { withTranslations } from "../i18n/i18n";
 import type { Page } from "../ssr";
-import { setAccessToken } from "../state/userSlice";
 import ThemeProvider from "../theme/provider";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import createEmotionCache from "../utils/createEmotionCache";
-import { UserContextProvider } from "../contexts/user";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -96,7 +78,11 @@ function MyApp({
 					/>
 				</Head>
 				<QueryClientProvider client={queryClient}>
-					<UserContextProvider>
+					{/* 
+						Recommended for SSR
+						https://jotai.org/docs/guides/nextjs#provider
+					*/}
+					<Provider>
 						<ConfirmProvider
 							defaultOptions={{
 								cancellationButtonProps: {
@@ -139,7 +125,7 @@ function MyApp({
 								</AuthenticationWall>
 							</Hydrate>
 						</ConfirmProvider>
-					</UserContextProvider>
+					</Provider>
 					<Toaster />
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
@@ -160,12 +146,11 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	const accessToken: string | undefined = (appContext.ctx.req as any)
 		?.cookies[UserAccessTokenCookieKey];
 
-	if (accessToken) {
-		//TODO: dispatch access Token
-	} else {
+	if (!accessToken) {
 		// Disable SSR if user is not authentified
 		return { pageProps: {} };
 	}
+	getDefaultStore().set(accessTokenAtom, accessToken);
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
 

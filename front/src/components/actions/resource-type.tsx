@@ -17,12 +17,14 @@
  */
 
 import { Chip, Grid } from "@mui/material";
+import { getDefaultStore } from "jotai";
 import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import type { QueryClient } from "../../api/use-query";
+import { userAtom } from "../../contexts/user";
 import type { TranslationKey } from "../../i18n/i18n";
 import type Album from "../../models/album";
 import { AlbumType } from "../../models/album";
@@ -30,7 +32,6 @@ import type Song from "../../models/song";
 import { SongType } from "../../models/song";
 import type Video from "../../models/video";
 import { VideoType } from "../../models/video";
-import store from "../../state/store";
 import { EditIcon } from "../icons";
 import type Action from "./action";
 
@@ -78,7 +79,7 @@ const ChangeResourceType = <
 	return {
 		label: label,
 		icon: <EditIcon />,
-		disabled: store.getState().user.user?.admin !== true,
+		disabled: getDefaultStore().get(userAtom)?.admin !== true,
 		onClick: () =>
 			confirm({
 				title: <br />,
