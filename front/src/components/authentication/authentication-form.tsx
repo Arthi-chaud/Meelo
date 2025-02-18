@@ -17,23 +17,23 @@
  */
 
 import { Button, Divider, Grid } from "@mui/material";
+import { useAtom } from "jotai";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import API from "../../api/api";
-import { setAccessToken } from "../../state/userSlice";
+import { accessTokenAtom } from "../../contexts/user";
 
 /**
  * Authentication form
  * On successful authentication, update store with access token
  */
 const AuthenticationForm = () => {
-	const dispatch = useDispatch();
 	const [formType, setFormType] = useState<"login" | "signup">("login");
 	const defaultValues = { username: "", password: "", confirm: "" };
 	const [password, setPassword] = useState(defaultValues.password);
+	const [_, setAccessToken] = useAtom(accessTokenAtom);
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
@@ -50,7 +50,7 @@ const AuthenticationForm = () => {
 					return;
 				}
 			}
-			dispatch(setAccessToken((await API.login(values)).access_token));
+			setAccessToken((await API.login(values)).access_token);
 		} catch (error: any) {
 			toast.error(error.message);
 		}

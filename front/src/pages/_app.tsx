@@ -1,21 +1,3 @@
-/*
- * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
- * Copyright (C) 2023
- *
- * Meelo is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Meelo is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
 import NextApp, { type AppContext, type AppProps } from "next/app";
@@ -31,7 +13,6 @@ import {
 	dehydrate,
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { Provider } from "react-redux";
 import AuthenticationWall from "../components/authentication/authentication-wall";
 import Toaster from "../components/toaster";
 import { ResourceNotFound } from "../exceptions";
@@ -42,7 +23,7 @@ import "core-js/actual";
 import "../theme/styles.css";
 import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
-import { PersistGate } from "redux-persist/integration/react";
+import { Provider, getDefaultStore } from "jotai";
 import API from "../api/api";
 import {
 	DefaultMeeloQueryOptions,
@@ -53,10 +34,9 @@ import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
 import Scaffold from "../components/scaffold/scaffold";
 import { KeyboardBindingsProvider } from "../contexts/keybindings";
 import { PlayerContextProvider } from "../contexts/player";
+import { accessTokenAtom } from "../contexts/user";
 import { withTranslations } from "../i18n/i18n";
 import type { Page } from "../ssr";
-import store, { persistor } from "../state/store";
-import { setAccessToken } from "../state/userSlice";
 import ThemeProvider from "../theme/provider";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import createEmotionCache from "../utils/createEmotionCache";
@@ -88,75 +68,68 @@ function MyApp({
 	}, [router]);
 	return (
 		<CacheProvider value={emotionCache}>
-			<Provider store={store}>
-				<ThemeProvider>
-					<Head>
-						{/* It is recommended to leave this here. The rest has been moved to `_document` */}
-						<title>{DefaultWindowTitle}</title>
-						<meta
-							name="viewport"
-							content="initial-scale=1.0, width=device-width"
-						/>
-					</Head>
-					<QueryClientProvider client={queryClient}>
-						<PersistGate loading={null} persistor={persistor}>
-							{() => (
-								<ConfirmProvider
-									defaultOptions={{
-										cancellationButtonProps: {
-											sx: { marginX: 2 },
-										},
-									}}
-								>
-									<Hydrate state={pageProps.dehydratedState}>
-										<AuthenticationWall>
-											<ErrorBoundary
-												FallbackComponent={() => {
-													if (
-														errorType ===
-														"not-found"
-													) {
-														return <PageNotFound />;
-													}
-													return <InternalError />;
-												}}
-												onError={(error: Error) => {
-													if (errorType) {
-														toast.error(
-															error.message,
-														);
-													}
-													if (
-														error instanceof
-														ResourceNotFound
-													) {
-														setError("not-found");
-													} else {
-														setError("error");
-													}
-												}}
-											>
-												<KeyboardBindingsProvider>
-													<KeyboardBindingModal />
-													<PlayerContextProvider>
-														<Scaffold>
-															<Component
-																{...pageProps}
-															/>
-														</Scaffold>
-													</PlayerContextProvider>
-												</KeyboardBindingsProvider>
-											</ErrorBoundary>
-										</AuthenticationWall>
-									</Hydrate>
-								</ConfirmProvider>
-							)}
-						</PersistGate>
-						<Toaster />
-						<ReactQueryDevtools initialIsOpen={false} />
-					</QueryClientProvider>
-				</ThemeProvider>
-			</Provider>
+			<ThemeProvider>
+				<Head>
+					{/* It is recommended to leave this here. The rest has been moved to `_document` */}
+					<title>{DefaultWindowTitle}</title>
+					<meta
+						name="viewport"
+						content="initial-scale=1.0, width=device-width"
+					/>
+				</Head>
+				<QueryClientProvider client={queryClient}>
+					{/* 
+						Recommended for SSR
+						https://jotai.org/docs/guides/nextjs#provider
+					*/}
+					<Provider>
+						<ConfirmProvider
+							defaultOptions={{
+								cancellationButtonProps: {
+									sx: { marginX: 2 },
+								},
+							}}
+						>
+							<Hydrate state={pageProps.dehydratedState}>
+								<AuthenticationWall>
+									<ErrorBoundary
+										FallbackComponent={() => {
+											if (errorType === "not-found") {
+												return <PageNotFound />;
+											}
+											return <InternalError />;
+										}}
+										onError={(error: Error) => {
+											if (errorType) {
+												toast.error(error.message);
+											}
+											if (
+												error instanceof
+												ResourceNotFound
+											) {
+												setError("not-found");
+											} else {
+												setError("error");
+											}
+										}}
+									>
+										<KeyboardBindingsProvider>
+											<KeyboardBindingModal />
+											<PlayerContextProvider>
+												<Scaffold>
+													<Component {...pageProps} />
+												</Scaffold>
+											</PlayerContextProvider>
+										</KeyboardBindingsProvider>
+									</ErrorBoundary>
+								</AuthenticationWall>
+							</Hydrate>
+						</ConfirmProvider>
+					</Provider>
+					<Toaster />
+					<ReactQueryDevtools initialIsOpen={false} />
+				</QueryClientProvider>
+			</ThemeProvider>
 		</CacheProvider>
 	);
 }
@@ -173,12 +146,11 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	const accessToken: string | undefined = (appContext.ctx.req as any)
 		?.cookies[UserAccessTokenCookieKey];
 
-	if (accessToken) {
-		store.dispatch(setAccessToken(accessToken));
-	} else {
+	if (!accessToken) {
 		// Disable SSR if user is not authentified
 		return { pageProps: {} };
 	}
+	getDefaultStore().set(accessTokenAtom, accessToken);
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
 

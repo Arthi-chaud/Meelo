@@ -16,47 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { atom } from "jotai";
 import type User from "../models/user";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 
-type UserState = Partial<{
-	user: User;
-	accessToken: string;
-}>;
+export const userAtom = atom<User | undefined>();
 
-export const userSlice = createSlice({
-	name: "context",
-	initialState: <UserState>{
-		user: undefined,
-		accessToken: getCookie(UserAccessTokenCookieKey),
-	},
-	reducers: {
-		setUserProfile: (state, action: PayloadAction<User>) => {
-			state.user = action.payload;
-		},
-		setAccessToken: (state, action: PayloadAction<string>) => {
+export const accessTokenAtom = atom<
+	string | undefined,
+	[string | undefined],
+	void
+>(
+	(get) => get(_accessToken),
+	(_, set, update) => {
+		if (update !== undefined) {
 			const expires = new Date();
 
-			state.accessToken = action.payload;
 			expires.setMonth(expires.getMonth() + 1);
 			setCookie(
 				UserAccessTokenCookieKey,
-				state.accessToken,
+				update,
 				// Sets cookie for a month
 				{ expires },
 			);
-		},
-		unsetAccessToken: (state) => {
-			state.accessToken = undefined;
+		} else {
 			deleteCookie(UserAccessTokenCookieKey);
-		},
+		}
+		set(_accessToken, update);
 	},
-});
-
-export const { setAccessToken, setUserProfile, unsetAccessToken } =
-	userSlice.actions;
-
-export default userSlice.reducer;
+);
+const _accessToken = atom<string | undefined>(
+	getCookie(UserAccessTokenCookieKey)?.valueOf().toString(),
+);

@@ -20,11 +20,9 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import { useSelector } from "react-redux";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
 import type { ReleaseWithRelations } from "../../models/release";
-import type { RootState } from "../../state/store";
 import { DownloadReleaseAction } from "../actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
 import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
@@ -34,14 +32,16 @@ import { UpdateReleaseIllustrationAction } from "../actions/update-illustration"
 import { MasterIcon, UpgradeIcon } from "../icons";
 import ContextualMenu from "./contextual-menu";
 
+import { useAtom } from "jotai";
+import { userAtom } from "../../contexts/user";
+
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<"album">;
 };
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
-	const userIsAdmin = useSelector(
-		(state: RootState) => state.user.user?.admin === true,
-	);
+	const [user] = useAtom(userAtom);
+	const userIsAdmin = user?.admin === true;
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const { t } = useTranslation();

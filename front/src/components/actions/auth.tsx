@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import store from "../../state/store";
-import { unsetAccessToken } from "../../state/userSlice";
+import { getDefaultStore } from "jotai";
+import { accessTokenAtom } from "../../contexts/user";
 import { LogoutIcon } from "../icons";
 import type Action from "./action";
 
@@ -25,5 +25,5 @@ export const LogoutAction: Action = {
 	label: "logout",
 	icon: <LogoutIcon />,
 	href: "/",
-	onClick: () => store.dispatch(unsetAccessToken()),
+	onClick: () => getDefaultStore().set(accessTokenAtom, undefined),
 };

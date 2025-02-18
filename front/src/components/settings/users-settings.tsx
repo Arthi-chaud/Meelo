@@ -18,15 +18,15 @@
 
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
+import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import { useSelector } from "react-redux";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
+import { userAtom } from "../../contexts/user";
 import type User from "../../models/user";
-import type { RootState } from "../../state/store";
 import AdminGrid from "../admin-grid";
 import { DeleteIcon } from "../icons";
 
@@ -74,7 +74,7 @@ const DeleteButton = ({
 const UsersSettings = () => {
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
-	const currentUser = useSelector((state: RootState) => state.user.user!);
+	const [currentUser] = useAtom(userAtom);
 	const userMutation = useMutation(
 		({
 			user,

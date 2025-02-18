@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import { useSelector } from "react-redux";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
 import { usePlayerContext } from "../../contexts/player";
+import { userAtom } from "../../contexts/user";
 import type { TrackWithRelations } from "../../models/track";
-import type { RootState } from "../../state/store";
 import type Action from "../actions/action";
 import { DownloadAction } from "../actions/download";
 import { GoToReleaseAction, GoToSongLyricsAction } from "../actions/link";
@@ -47,9 +47,8 @@ type TrackContextualMenuProps = {
 };
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
-	const userIsAdmin = useSelector(
-		(state: RootState) => state.user.user?.admin === true,
-	);
+	const [user] = useAtom(userAtom);
+	const userIsAdmin = user?.admin === true;
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const isMaster = props.track.song?.masterId === props.track.id;
