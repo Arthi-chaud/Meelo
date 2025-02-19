@@ -23,7 +23,6 @@ import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import { userAtom } from "../../contexts/user";
 import type { TrackWithRelations } from "../../models/track";
 import type Action from "../actions/action";
@@ -67,7 +66,6 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			release,
 		}));
 	const { t } = useTranslation();
-	const { playNext, playAfter } = usePlayerContext();
 	const masterMutation = useMutation(async () => {
 		return API.updateSong(props.track.songId!, {
 			masterTrackId: props.track.id,
@@ -92,8 +90,8 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					? [GoToSongLyricsAction(props.track.song.slug)]
 					: [],
 				[
-					PlayNextAction(getPlayNextProps, playNext),
-					PlayAfterAction(getPlayNextProps, playAfter),
+					PlayNextAction(getPlayNextProps),
+					PlayAfterAction(getPlayNextProps),
 				],
 				props.track.songId
 					? [AddToPlaylistAction(props.track.songId, queryClient)]

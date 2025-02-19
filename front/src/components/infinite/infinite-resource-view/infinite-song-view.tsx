@@ -24,7 +24,6 @@ import {
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
 import {
 	SongSortingKeys,
 	SongType,
@@ -34,6 +33,12 @@ import {
 	SongGroupSortingKeys,
 	type SongGroupWithRelations,
 } from "../../../models/song-group";
+import {
+	emptyPlaylistAtom,
+	playAfterAtom,
+	playTrackAtom,
+} from "../../../state/player";
+import { store } from "../../../state/store";
 import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import { PlayIcon, ShuffleIcon } from "../../icons";
@@ -49,15 +54,12 @@ type AdditionalProps = {
 };
 
 const playSongsAction = (
-	emptyPlaylist: PlayerActions["emptyPlaylist"],
-	playTrack: PlayerActions["playTrack"],
-	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
 	query: () => InfiniteQuery<
 		SongWithRelations<"artist" | "featuring" | "master" | "illustration">
 	>,
 ) => {
-	emptyPlaylist();
+	store.set(emptyPlaylistAtom);
 	queryClient.client
 		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
 		.then(async (res) => {
@@ -65,7 +67,7 @@ const playSongsAction = (
 			let i = 0;
 			for (const song of songs) {
 				if (i === 0) {
-					playTrack({
+					store.set(playTrackAtom, {
 						track: {
 							...song.master,
 							illustration: song.illustration,
@@ -73,7 +75,7 @@ const playSongsAction = (
 						artist: song.artist,
 					});
 				} else {
-					playAfter({
+					store.set(playAfterAtom, {
 						track: {
 							...song.master,
 							illustration: song.illustration,
@@ -116,7 +118,6 @@ const InfiniteSongView = <
 	const [options, setOptions] =
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const queryClient = useQueryClient();
-	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
 	const query = {
 		type:
 			// @ts-ignore
@@ -131,16 +132,11 @@ const InfiniteSongView = <
 		label: "shuffle",
 		icon: <ShuffleIcon />,
 		onClick: () => {
-			playSongsAction(
-				emptyPlaylist,
-				playTrack,
-				playAfter,
-				queryClient,
-				() =>
-					props.query({
-						...query,
-						random: Math.floor(Math.random() * 10000),
-					}),
+			playSongsAction(queryClient, () =>
+				props.query({
+					...query,
+					random: Math.floor(Math.random() * 10000),
+				}),
 			);
 		},
 	} as const;
@@ -148,13 +144,7 @@ const InfiniteSongView = <
 		label: "playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
-			playSongsAction(
-				emptyPlaylist,
-				playTrack,
-				playAfter,
-				queryClient,
-				() => props.query(query),
-			);
+			playSongsAction(queryClient, () => props.query(query));
 		},
 	} as const;
 

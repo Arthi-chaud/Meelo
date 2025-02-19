@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useSetAtom } from "jotai";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import type { VideoWithRelations } from "../../models/video";
+import { playTrackAtom } from "../../state/player";
 import formatDuration from "../../utils/formatDuration";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 import { VideoIcon } from "../icons";
@@ -45,7 +46,7 @@ const VideoTile = ({
 	onClick,
 }: VideoTileProps) => {
 	const queryClient = useQueryClient();
-	const { playTrack } = usePlayerContext();
+	const playTrack = useSetAtom(playTrackAtom);
 	const { subtitle, secondaryHref } = !video
 		? { subtitle: undefined, secondaryHref: undefined }
 		: {

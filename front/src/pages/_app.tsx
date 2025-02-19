@@ -23,7 +23,7 @@ import "core-js/actual";
 import "../theme/styles.css";
 import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
-import { Provider, getDefaultStore } from "jotai";
+import { Provider } from "jotai";
 import API from "../api/api";
 import {
 	DefaultMeeloQueryOptions,
@@ -33,10 +33,10 @@ import {
 import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
 import Scaffold from "../components/scaffold/scaffold";
 import { KeyboardBindingsProvider } from "../contexts/keybindings";
-import { PlayerContextProvider } from "../contexts/player";
 import { accessTokenAtom } from "../contexts/user";
 import { withTranslations } from "../i18n/i18n";
 import type { Page } from "../ssr";
+import { store } from "../state/store";
 import ThemeProvider from "../theme/provider";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import createEmotionCache from "../utils/createEmotionCache";
@@ -82,7 +82,7 @@ function MyApp({
 						Recommended for SSR
 						https://jotai.org/docs/guides/nextjs#provider
 					*/}
-					<Provider>
+					<Provider store={store}>
 						<ConfirmProvider
 							defaultOptions={{
 								cancellationButtonProps: {
@@ -115,11 +115,9 @@ function MyApp({
 									>
 										<KeyboardBindingsProvider>
 											<KeyboardBindingModal />
-											<PlayerContextProvider>
-												<Scaffold>
-													<Component {...pageProps} />
-												</Scaffold>
-											</PlayerContextProvider>
+											<Scaffold>
+												<Component {...pageProps} />
+											</Scaffold>
 										</KeyboardBindingsProvider>
 									</ErrorBoundary>
 								</AuthenticationWall>
@@ -150,7 +148,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 		// Disable SSR if user is not authentified
 		return { pageProps: {} };
 	}
-	getDefaultStore().set(accessTokenAtom, accessToken);
+	store.set(accessTokenAtom, accessToken);
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
 

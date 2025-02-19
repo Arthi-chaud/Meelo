@@ -25,7 +25,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Hls from "hls.js";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -33,8 +33,14 @@ import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import API from "../../api/api";
 import { useKeyboardBinding } from "../../contexts/keybindings";
-import { usePlayerContext } from "../../contexts/player";
 import { userAtom } from "../../contexts/user";
+import {
+	cursorAtom,
+	playPreviousTrackAtom,
+	playTracksAtom,
+	playlistAtom,
+	skipTrackAtom,
+} from "../../state/player";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 
@@ -42,8 +48,11 @@ const Player = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const [user] = useAtom(userAtom);
-	const { playPreviousTrack, playTracks, skipTrack, cursor, playlist } =
-		usePlayerContext();
+	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
+	const playTracks = useSetAtom(playTracksAtom);
+	const skipTrack = useSetAtom(skipTrackAtom);
+	const [cursor] = useAtom(cursorAtom);
+	const [playlist] = useAtom(playlistAtom);
 	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
 	const audioPlayer = useRef<HTMLAudioElement>(

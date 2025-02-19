@@ -17,10 +17,11 @@
  */
 
 import { Grid } from "@mui/material";
+import { useSetAtom } from "jotai";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import type { TrackWithRelations } from "../../models/track";
+import { playTrackAtom } from "../../state/player";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { MasterIcon, TrackIcon } from "../icons";
 import Illustration from "../illustration";
@@ -40,9 +41,9 @@ type TrackItemProps = {
  */
 const TrackItem = ({ track, onClick }: TrackItemProps) => {
 	const release = track?.release;
-	const { playTrack } = usePlayerContext();
 	const isMaster = track ? track.song?.masterId === track.id : false;
 	const queryClient = useQueryClient();
+	const playTrack = useSetAtom(playTrackAtom);
 
 	return (
 		<ListItem

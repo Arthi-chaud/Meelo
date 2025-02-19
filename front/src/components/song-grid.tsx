@@ -17,8 +17,9 @@
  */
 
 import { Grid } from "@mui/material";
-import { usePlayerContext } from "../contexts/player";
+import { useSetAtom } from "jotai";
 import type { SongWithRelations } from "../models/song";
+import { playTrackAtom } from "../state/player";
 import formatArtists from "../utils/formatArtists";
 import SongContextualMenu from "./contextual-menu/song-contextual-menu";
 import { SongIcon } from "./icons";
@@ -34,8 +35,7 @@ type SongGridProps = {
 };
 
 const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
-	const { playTrack } = usePlayerContext();
-
+	const playTrack = useSetAtom(playTrackAtom);
 	return (
 		<Grid container spacing={2} sx={{ display: "flex", flexGrow: 1 }}>
 			{songs.map((song, index) => (

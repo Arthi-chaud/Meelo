@@ -20,7 +20,6 @@ import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import type { VideoWithRelations } from "../../models/video";
 import type Action from "../actions/action";
 import { DownloadAction } from "../actions/download";
@@ -64,7 +63,6 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 			release,
 		}));
 	const { t } = useTranslation();
-	const { playNext, playAfter } = usePlayerContext();
 
 	return (
 		<ContextualMenu
@@ -80,8 +78,8 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 					? [GoToSongLyricsAction(props.video.songId)]
 					: [],
 				[
-					PlayNextAction(getPlayNextProps, playNext),
-					PlayAfterAction(getPlayNextProps, playAfter),
+					PlayNextAction(getPlayNextProps),
+					PlayAfterAction(getPlayNextProps),
 				],
 				props.video.songId
 					? [AddToPlaylistAction(props.video.songId, queryClient)]

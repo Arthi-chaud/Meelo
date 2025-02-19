@@ -22,7 +22,6 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "@mui/material";
-import { getDefaultStore } from "jotai";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -30,6 +29,7 @@ import { useMutation } from "react-query";
 import API from "../../api/api";
 import type { QueryClient } from "../../api/use-query";
 import { userAtom } from "../../contexts/user";
+import { store } from "../../state/store";
 import { UpdateIllustrationIcon } from "../icons";
 import type Action from "./action";
 
@@ -108,7 +108,7 @@ const UpdateIllustrationAction = (
 
 	return {
 		label: "changeIllutration",
-		disabled: getDefaultStore().get(userAtom)?.admin !== true,
+		disabled: store.get(userAtom)?.admin !== true,
 		icon: <UpdateIllustrationIcon />,
 		dialog: (controls) => (
 			<IllustrationUpdateForm

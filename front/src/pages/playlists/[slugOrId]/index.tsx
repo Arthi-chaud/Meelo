@@ -18,6 +18,7 @@
 
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
 import { shuffle } from "d3-array";
+import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
@@ -51,7 +52,6 @@ import {
 import Illustration from "../../../components/illustration";
 import ListItem from "../../../components/list-item/item";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
-import { usePlayerContext } from "../../../contexts/player";
 import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,
@@ -59,6 +59,7 @@ import type {
 import type Release from "../../../models/release";
 import type { SongWithRelations } from "../../../models/song";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
+import { playTracksAtom } from "../../../state/player";
 import { generateArray } from "../../../utils/gen-list";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { useGradientBackground } from "../../../utils/gradient-background";
@@ -212,7 +213,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { playTracks } = usePlayerContext();
+	const playTracks = useSetAtom(playTracksAtom);
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const [editState, setEditState] = useState(false);

@@ -22,7 +22,6 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import type { SongWithRelations } from "../../models/song";
 import { DownloadAsyncAction } from "../actions/download";
 import {
@@ -55,7 +54,6 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = props.song.slug;
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
-	const { playNext, playAfter } = usePlayerContext();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(
 			API.getSongMasterTrack(songSlug, ["release", "illustration"]),
@@ -82,8 +80,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[GoToSongLyricsAction(songSlug)],
 				[
-					PlayNextAction(getPlayNextProps, playNext),
-					PlayAfterAction(getPlayNextProps, playAfter),
+					PlayNextAction(getPlayNextProps),
+					PlayAfterAction(getPlayNextProps),
 				],
 				[AddToPlaylistAction(props.song.id, queryClient)],
 				[

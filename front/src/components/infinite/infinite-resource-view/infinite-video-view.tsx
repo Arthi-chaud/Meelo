@@ -24,12 +24,17 @@ import {
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
 } from "../../../api/use-query";
-import { type PlayerActions, usePlayerContext } from "../../../contexts/player";
 import {
 	VideoSortingKeys,
 	VideoType,
 	type VideoWithRelations,
 } from "../../../models/video";
+import {
+	emptyPlaylistAtom,
+	playAfterAtom,
+	playTrackAtom,
+} from "../../../state/player";
+import { store } from "../../../state/store";
 import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";
 import { PlayIcon, ShuffleIcon } from "../../icons";
@@ -39,15 +44,12 @@ import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
 const playVideosAction = (
-	emptyPlaylist: PlayerActions["emptyPlaylist"],
-	playTrack: PlayerActions["playTrack"],
-	playAfter: PlayerActions["playAfter"],
 	queryClient: QueryClient,
 	query: () => InfiniteQuery<
 		VideoWithRelations<"artist" | "master" | "illustration">
 	>,
 ) => {
-	emptyPlaylist();
+	store.set(emptyPlaylistAtom);
 	queryClient.client
 		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
 		.then(async (res) => {
@@ -63,9 +65,9 @@ const playVideosAction = (
 			let i = 0;
 			for (const video of videos) {
 				if (i === 0) {
-					playTrack(video);
+					store.set(playTrackAtom, video);
 				} else {
-					playAfter(video);
+					store.set(playAfterAtom, video);
 				}
 				i++;
 			}
@@ -101,34 +103,22 @@ const InfiniteVideoView = <
 		itemSize: DefaultItemSize,
 		library: options?.library ?? null,
 	} as const;
-	const { emptyPlaylist, playAfter, playTrack } = usePlayerContext();
 	const playAction = {
 		label: "playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
-			playVideosAction(
-				emptyPlaylist,
-				playTrack,
-				playAfter,
-				queryClient,
-				() => props.query(query),
-			);
+			playVideosAction(queryClient, () => props.query(query));
 		},
 	} as const;
 	const shuffleAction = {
 		label: "shuffle",
 		icon: <ShuffleIcon />,
 		onClick: () => {
-			playVideosAction(
-				emptyPlaylist,
-				playTrack,
-				playAfter,
-				queryClient,
-				() =>
-					props.query({
-						...query,
-						random: Math.floor(Math.random() * 10000),
-					}),
+			playVideosAction(queryClient, () =>
+				props.query({
+					...query,
+					random: Math.floor(Math.random() * 10000),
+				}),
 			);
 		},
 	} as const;

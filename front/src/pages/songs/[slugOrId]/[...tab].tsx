@@ -25,6 +25,7 @@ import {
 	Tabs,
 	Typography,
 } from "@mui/material";
+import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
@@ -45,8 +46,8 @@ import InfiniteVideoView from "../../../components/infinite/infinite-resource-vi
 import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import { useTabRouter } from "../../../components/tab-router";
-import { usePlayerContext } from "../../../contexts/player";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
+import { playTrackAtom } from "../../../state/player";
 import { useAccentColor } from "../../../utils/accent-color";
 import { generateArray } from "../../../utils/gen-list";
 import getSlugOrId from "../../../utils/getSlugOrId";
@@ -108,7 +109,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	);
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { playTrack } = usePlayerContext();
+	const playTrack = useSetAtom(playTrackAtom);
 	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
 		API.getSong(songIdentifier, [

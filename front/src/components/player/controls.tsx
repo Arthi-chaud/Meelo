@@ -29,6 +29,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
+import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import {
 	type ComponentProps,
@@ -39,9 +40,15 @@ import {
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import type Artist from "../../models/artist";
 import type { TrackWithRelations } from "../../models/track";
+import {
+	cursorAtom,
+	playlistAtom,
+	removeTrackAtom,
+	reorderAtom,
+	skipTrackAtom,
+} from "../../state/player";
 import formatArtists from "../../utils/formatArtists";
 import formatDuration from "../../utils/formatDuration";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
@@ -245,8 +252,12 @@ const ExpandedPlayerControls = (
 		parentSongQuery,
 		props.track?.songId ?? undefined,
 	);
-	const { playlist, cursor, reorder, skipTrack, removeTrack } =
-		usePlayerContext();
+
+	const [playlist] = useAtom(playlistAtom);
+	const [cursor] = useAtom(cursorAtom);
+	const skipTrack = useSetAtom(skipTrackAtom);
+	const removeTrack = useSetAtom(removeTrackAtom);
+	const reorder = useSetAtom(reorderAtom);
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
 		"player",
 	);
@@ -310,13 +321,16 @@ const ExpandedPlayerControls = (
 									variant="h6"
 									sx={{ textAlign: "center" }}
 								>
-									{props.track.name ?? <Skeleton />}
+									{props.track.name}
 								</Typography>
 								<Typography
 									variant="body1"
 									sx={{ textAlign: "center" }}
 								>
-									{props.artist.name ?? <Skeleton />}
+									{formatArtists(
+										props.artist,
+										parentSong.data?.featuring,
+									)}
 								</Typography>
 							</Box>
 						</>

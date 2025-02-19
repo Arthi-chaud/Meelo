@@ -32,6 +32,7 @@ import {
 import { Box } from "@mui/system";
 import { shuffle } from "d3-array";
 import { Star1 } from "iconsax-react";
+import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -61,12 +62,12 @@ import ArtistTile from "../../components/tile/artist-tile";
 import PlaylistTile from "../../components/tile/playlist-tile";
 import ReleaseTile from "../../components/tile/release-tile";
 import VideoTile from "../../components/tile/video-tile";
-import { usePlayerContext } from "../../contexts/player";
 import type { SongWithRelations } from "../../models/song";
 import type Tracklist from "../../models/tracklist";
 import type { TracklistItemWithRelations } from "../../models/tracklist";
 import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
+import { playTracksAtom } from "../../state/player";
 import { useAccentColor } from "../../utils/accent-color";
 import formatDuration from "../../utils/formatDuration";
 import { generateArray } from "../../utils/gen-list";
@@ -201,7 +202,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const releaseIdentifier =
 		props?.releaseIdentifier ?? getSlugOrId(router.query);
 	const theme = useTheme();
-	const { playTracks } = usePlayerContext();
+	const playTracks = useSetAtom(playTracksAtom);
 	const release = useQuery(releaseQuery, releaseIdentifier);
 	const externalMetadata = useQuery(
 		externalMetadataQuery,
