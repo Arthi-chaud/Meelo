@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { usePlayerContext } from "../../contexts/player";
 import type { VideoWithRelations } from "../../models/video";
+import { playTrackAtom } from "../../state/player";
 import formatArtists from "../../utils/formatArtists";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 import { VideoIcon } from "../icons";
@@ -46,7 +47,7 @@ const VideoItem = <T extends VideoType>({
 	onClick,
 }: VideoItemProps<T>) => {
 	const artist = video?.artist;
-	const { playTrack } = usePlayerContext();
+	const playTrack = useSetAtom(playTrackAtom);
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)

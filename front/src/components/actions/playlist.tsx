@@ -37,9 +37,14 @@ import {
 	type QueryClient,
 	useQueryClient,
 } from "../../api/use-query";
-import type { PlayerActions, TrackState } from "../../contexts/player";
 import type Playlist from "../../models/playlist";
 import type { PlaylistWithRelations } from "../../models/playlist";
+import {
+	type TrackState,
+	playAfterAtom,
+	playNextAtom,
+} from "../../state/player";
+import { store } from "../../state/store";
 import {
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
@@ -55,11 +60,10 @@ import type Action from "./action";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,
-	playNext: PlayerActions["playNext"],
 ): Action => ({
 	onClick: () =>
 		getTrack().then((track) => {
-			playNext(track);
+			store.set(playNextAtom, track);
 			toast.success(`'${track.track.name}' will play next!`);
 		}),
 	label: "playNext",
@@ -68,11 +72,10 @@ export const PlayNextAction = (
 
 export const PlayAfterAction = (
 	getTrack: () => PromiseLike<TrackState>,
-	playAfter: PlayerActions["playAfter"],
 ): Action => ({
 	onClick: () =>
 		getTrack().then((track) => {
-			playAfter(track);
+			store.set(playAfterAtom, track);
 			toast.success(`'${track.track.name}' will play after!`);
 		}),
 	label: "playAfter",

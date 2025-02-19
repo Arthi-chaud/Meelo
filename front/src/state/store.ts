@@ -1,3 +1,5 @@
+import { createStore } from "jotai";
+
 /*
  * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
  * Copyright (C) 2023
@@ -15,15 +17,4 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { accessTokenAtom } from "../../contexts/user";
-import { store } from "../../state/store";
-import { LogoutIcon } from "../icons";
-import type Action from "./action";
-
-export const LogoutAction: Action = {
-	label: "logout",
-	icon: <LogoutIcon />,
-	href: "/",
-	onClick: () => store.set(accessTokenAtom, undefined),
-};
+export const store = createStore();

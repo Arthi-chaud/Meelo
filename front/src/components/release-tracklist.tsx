@@ -31,17 +31,23 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
+import { useAtom, useSetAtom } from "jotai";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Audio } from "react-loader-spinner";
 import type { RequireAtLeastOne } from "type-fest";
-import { type TrackState, usePlayerContext } from "../contexts/player";
 import type Artist from "../models/artist";
 import type Release from "../models/release";
 import type { SongWithRelations } from "../models/song";
 import type { TrackWithRelations } from "../models/track";
 import type Tracklist from "../models/tracklist";
 import type { VideoWithRelations } from "../models/video";
+import {
+	type TrackState,
+	cursorAtom,
+	playTracksAtom,
+	playlistAtom,
+} from "../state/player";
 import formatArtists from "../utils/formatArtists";
 import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
@@ -77,7 +83,9 @@ const ReleaseTrackList = ({
 			ariaLabel="bars-loading"
 		/>
 	);
-	const { playTracks, playlist, cursor } = usePlayerContext();
+	const [playlist] = useAtom(playlistAtom);
+	const [cursor] = useAtom(cursorAtom);
+	const playTracks = useSetAtom(playTracksAtom);
 	const currentlyPlayingTrack = useMemo(
 		() => playlist[cursor] as TrackState | undefined,
 		[playlist, cursor],

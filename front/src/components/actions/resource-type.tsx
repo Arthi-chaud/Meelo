@@ -17,7 +17,6 @@
  */
 
 import { Chip, Grid } from "@mui/material";
-import { getDefaultStore } from "jotai";
 import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -32,6 +31,7 @@ import type Song from "../../models/song";
 import { SongType } from "../../models/song";
 import type Video from "../../models/video";
 import { VideoType } from "../../models/video";
+import { store } from "../../state/store";
 import { EditIcon } from "../icons";
 import type Action from "./action";
 
@@ -79,7 +79,7 @@ const ChangeResourceType = <
 	return {
 		label: label,
 		icon: <EditIcon />,
-		disabled: getDefaultStore().get(userAtom)?.admin !== true,
+		disabled: store.get(userAtom)?.admin !== true,
 		onClick: () =>
 			confirm({
 				title: <br />,

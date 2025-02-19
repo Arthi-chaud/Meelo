@@ -19,7 +19,6 @@
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "../../api/use-query";
-import { usePlayerContext } from "../../contexts/player";
 import type Artist from "../../models/artist";
 import type { TrackWithRelations } from "../../models/track";
 import { DownloadAction } from "../actions/download";
@@ -52,7 +51,6 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
-	const { playNext, playAfter } = usePlayerContext();
 
 	return (
 		<ContextualMenu
@@ -61,8 +59,8 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				[GoToArtistAction(props.artist.slug)],
 				songSlug ? [GoToSongLyricsAction(songSlug)] : [],
 				[
-					PlayNextAction(async () => props, playNext),
-					PlayAfterAction(async () => props, playAfter),
+					PlayNextAction(async () => props),
+					PlayAfterAction(async () => props),
 				],
 				props.track.songId
 					? [AddToPlaylistAction(props.track.songId, queryClient)]

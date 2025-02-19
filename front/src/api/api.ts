@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDefaultStore } from "jotai";
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
 import { accessTokenAtom } from "../contexts/user";
@@ -84,6 +83,7 @@ import {
 	type VideoType,
 	VideoWithRelations,
 } from "../models/video";
+import { store } from "../state/store";
 import { isSSR } from "../utils/is-ssr";
 import type { SortingParameters } from "../utils/sorting";
 import type { InfiniteQuery, Query } from "./use-query";
@@ -981,7 +981,6 @@ export default class API {
 	 * @returns A query to a User object
 	 */
 	static getCurrentUserStatus(): Query<User> {
-		const store = getDefaultStore();
 		const accessToken = store.get(accessTokenAtom);
 
 		return {
@@ -1296,7 +1295,6 @@ export default class API {
 		emptyResponse,
 		service,
 	}: FetchParameters<Keys, ReturnType>): Promise<ReturnType> {
-		const store = getDefaultStore();
 		const accessToken = store.get(accessTokenAtom);
 		const header = {
 			"Content-Type": "application/json",
