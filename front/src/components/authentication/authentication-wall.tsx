@@ -23,7 +23,7 @@ import { useAtom } from "jotai";
 import { useQuery as useReactQuery } from "react-query";
 import API from "../../api/api";
 import { prepareMeeloQuery } from "../../api/use-query";
-import { accessTokenAtom, userAtom } from "../../contexts/user";
+import { accessTokenAtom, userAtom } from "../../state/user";
 import ModalPage from "../modal-page";
 import ThemedImage from "../themed-image";
 import AuthenticationForm from "./authentication-form";

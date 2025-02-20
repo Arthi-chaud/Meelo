@@ -33,7 +33,7 @@ import { MasterIcon, UpgradeIcon } from "../icons";
 import ContextualMenu from "./contextual-menu";
 
 import { useAtom } from "jotai";
-import { userAtom } from "../../contexts/user";
+import { userAtom } from "../../state/user";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<"album">;

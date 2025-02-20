@@ -18,7 +18,6 @@
 
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
-import { accessTokenAtom } from "../contexts/user";
 import { ResourceNotFound } from "../exceptions";
 import {
 	type AlbumInclude,
@@ -84,6 +83,7 @@ import {
 	VideoWithRelations,
 } from "../models/video";
 import { store } from "../state/store";
+import { accessTokenAtom } from "../state/user";
 import { isSSR } from "../utils/is-ssr";
 import type { SortingParameters } from "../utils/sorting";
 import type { InfiniteQuery, Query } from "./use-query";

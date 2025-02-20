@@ -25,8 +25,8 @@ import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
-import { userAtom } from "../../contexts/user";
 import type User from "../../models/user";
+import { userAtom } from "../../state/user";
 import AdminGrid from "../admin-grid";
 import { DeleteIcon } from "../icons";
 
