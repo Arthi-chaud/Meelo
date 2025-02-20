@@ -21,8 +21,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { QueryClient } from "react-query";
 import API from "./api/api";
 import { prepareMeeloQuery } from "./api/use-query";
-import { accessTokenAtom } from "./contexts/user";
 import { store } from "./state/store";
+import { accessTokenAtom } from "./state/user";
 import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
 
 export async function middleware(request: NextRequest) {

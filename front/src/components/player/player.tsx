@@ -33,7 +33,6 @@ import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import API from "../../api/api";
 import { useKeyboardBinding } from "../../contexts/keybindings";
-import { userAtom } from "../../contexts/user";
 import {
 	cursorAtom,
 	playPreviousTrackAtom,
@@ -41,6 +40,7 @@ import {
 	playlistAtom,
 	skipTrackAtom,
 } from "../../state/player";
+import { userAtom } from "../../state/user";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 

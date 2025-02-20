@@ -33,10 +33,10 @@ import {
 import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
 import Scaffold from "../components/scaffold/scaffold";
 import { KeyboardBindingsProvider } from "../contexts/keybindings";
-import { accessTokenAtom } from "../contexts/user";
 import { withTranslations } from "../i18n/i18n";
 import type { Page } from "../ssr";
 import { store } from "../state/store";
+import { accessTokenAtom } from "../state/user";
 import ThemeProvider from "../theme/provider";
 import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
 import createEmotionCache from "../utils/createEmotionCache";

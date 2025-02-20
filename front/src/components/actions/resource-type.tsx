@@ -23,7 +23,6 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import type { QueryClient } from "../../api/use-query";
-import { userAtom } from "../../contexts/user";
 import type { TranslationKey } from "../../i18n/i18n";
 import type Album from "../../models/album";
 import { AlbumType } from "../../models/album";
@@ -32,6 +31,7 @@ import { SongType } from "../../models/song";
 import type Video from "../../models/video";
 import { VideoType } from "../../models/video";
 import { store } from "../../state/store";
+import { userAtom } from "../../state/user";
 import { EditIcon } from "../icons";
 import type Action from "./action";
 
