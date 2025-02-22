@@ -21,6 +21,7 @@ import {
 	Button,
 	ButtonBase,
 	Container,
+	Dialog,
 	Divider,
 	Grid,
 	IconButton,
@@ -31,6 +32,7 @@ import {
 } from "@mui/material";
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
 	type ComponentProps,
 	type LegacyRef,
@@ -38,8 +40,10 @@ import {
 	useState,
 } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import API from "../../api/api";
-import { useQuery } from "../../api/use-query";
+import { useQuery, useQueryClient } from "../../api/use-query";
 import type Artist from "../../models/artist";
 import type { TrackWithRelations } from "../../models/track";
 import {
@@ -51,6 +55,7 @@ import {
 } from "../../state/player";
 import formatArtists from "../../utils/formatArtists";
 import formatDuration from "../../utils/formatDuration";
+import { CreatePlaylistAction } from "../actions/playlist";
 import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
 import {
 	CloseIcon,
@@ -252,14 +257,33 @@ const ExpandedPlayerControls = (
 		parentSongQuery,
 		props.track?.songId ?? undefined,
 	);
-
+	const queryClient = useQueryClient();
 	const [playlist] = useAtom(playlistAtom);
 	const [cursor] = useAtom(cursorAtom);
+	const [playlistModalIsOpen, openPlaylistModal] = useState(false);
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const removeTrack = useSetAtom(removeTrackAtom);
 	const reorder = useSetAtom(reorderAtom);
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
 		"player",
+	);
+	const { t } = useTranslation();
+	const router = useRouter();
+
+	const saveAsPlaylistAction = CreatePlaylistAction(
+		queryClient,
+		async (playlistId) => {
+			try {
+				for (const s of playlist) {
+					if (s.track.songId) {
+						await API.addSongToPlaylist(s.track.songId, playlistId);
+					}
+				}
+				router.push(`/playlists/${playlistId}`);
+			} catch {
+				toast.error(t("errorOccured"));
+			}
+		},
 	);
 	const requestFullscreen = useCallback(() => {
 		const el: any = document.getElementById("videoPlayer");
@@ -589,145 +613,178 @@ const ExpandedPlayerControls = (
 				</Box>
 			)}
 			{selectedTab === "playlist" && (
-				<Box
-					sx={{
-						height: "100%",
-						width: "100%",
-						overflowY: "scroll",
-						alignSelf: "center",
-						maxWidth: theme.breakpoints.values.md,
-					}}
-				>
-					<DragDropContext
-						onDragEnd={(result) => {
-							if (result.destination) {
-								reorder({
-									from: result.source.index + cursor + 1,
-									to: result.destination.index + cursor + 1,
-								});
-							}
+				<>
+					<Box
+						sx={{
+							height: "100%",
+							width: "100%",
+							overflowY: "scroll",
+							alignSelf: "center",
+							maxWidth: theme.breakpoints.values.md,
 						}}
 					>
-						<Droppable droppableId="droppable">
-							{(provided) => (
-								<div
-									{...provided.droppableProps}
-									ref={provided.innerRef}
-								>
-									{playlist
-										.slice(cursor + 1)
-										.map((playlistItem, index) => (
-											<>
-												<Draggable
-													draggableId={index.toString()}
-													key={index}
-													index={index}
-												>
-													{(providedChild) => (
-														<div
-															ref={
-																providedChild.innerRef
-															}
-															{...providedChild.draggableProps}
-															style={
-																providedChild
-																	.draggableProps
-																	.style
-															}
-														>
-															<ListItem
-																title={
-																	playlistItem
-																		.track
-																		.name
+						<DragDropContext
+							onDragEnd={(result) => {
+								if (result.destination) {
+									reorder({
+										from: result.source.index + cursor + 1,
+										to:
+											result.destination.index +
+											cursor +
+											1,
+									});
+								}
+							}}
+						>
+							<Droppable droppableId="droppable">
+								{(provided) => (
+									<div
+										{...provided.droppableProps}
+										ref={provided.innerRef}
+									>
+										{playlist
+											.slice(cursor + 1)
+											.map((playlistItem, index) => (
+												<>
+													<Draggable
+														draggableId={index.toString()}
+														key={index}
+														index={index}
+													>
+														{(providedChild) => (
+															<div
+																ref={
+																	providedChild.innerRef
 																}
-																secondTitle={
-																	playlistItem
-																		.artist
-																		.name
+																{...providedChild.draggableProps}
+																style={
+																	providedChild
+																		.draggableProps
+																		.style
 																}
-																icon={
-																	<Box
-																		{...providedChild.dragHandleProps}
-																	>
-																		<DragHandleIcon />
-																	</Box>
-																}
-																trailing={
-																	<Grid
-																		container
-																		wrap="nowrap"
-																		columnSpacing={
-																			1
-																		}
-																	>
-																		<Grid
-																			item
-																			sx={{
-																				display:
-																					"flex",
-																				alignItems:
-																					"center",
-																			}}
-																		>
-																			<Typography color="text.disabled">
-																				{formatDuration(
-																					playlistItem
-																						.track
-																						.duration,
-																				)}
-																			</Typography>
-																		</Grid>
-																		<Grid
-																			item
-																		>
-																			<IconButton
-																				size={
-																					"small"
-																				}
-																				onClick={() =>
-																					removeTrack(
-																						cursor +
-																							1 +
-																							index,
-																					)
-																				}
-																			>
-																				<DeleteIcon />
-																			</IconButton>
-																		</Grid>
-																	</Grid>
-																}
-																onClick={() => {
-																	let toSkip =
-																		index +
-																		1;
-
-																	while (
-																		toSkip >
-																		0
-																	) {
-																		skipTrack();
-																		toSkip--;
+															>
+																<ListItem
+																	title={
+																		playlistItem
+																			.track
+																			.name
 																	}
-																}}
-															/>
-														</div>
-													)}
-												</Draggable>
-												<Divider
-													key={`divider-${index}`}
-													variant="middle"
-												/>
-											</>
-										))}
-									{provided.placeholder}
-								</div>
-							)}
-						</Droppable>
-					</DragDropContext>
-				</Box>
+																	secondTitle={
+																		playlistItem
+																			.artist
+																			.name
+																	}
+																	icon={
+																		<Box
+																			{...providedChild.dragHandleProps}
+																		>
+																			<DragHandleIcon />
+																		</Box>
+																	}
+																	trailing={
+																		<Grid
+																			container
+																			wrap="nowrap"
+																			columnSpacing={
+																				1
+																			}
+																		>
+																			<Grid
+																				item
+																				sx={{
+																					display:
+																						"flex",
+																					alignItems:
+																						"center",
+																				}}
+																			>
+																				<Typography color="text.disabled">
+																					{formatDuration(
+																						playlistItem
+																							.track
+																							.duration,
+																					)}
+																				</Typography>
+																			</Grid>
+																			<Grid
+																				item
+																			>
+																				<IconButton
+																					size={
+																						"small"
+																					}
+																					onClick={() =>
+																						removeTrack(
+																							cursor +
+																								1 +
+																								index,
+																						)
+																					}
+																				>
+																					<DeleteIcon />
+																				</IconButton>
+																			</Grid>
+																		</Grid>
+																	}
+																	onClick={() => {
+																		let toSkip =
+																			index +
+																			1;
+
+																		while (
+																			toSkip >
+																			0
+																		) {
+																			skipTrack();
+																			toSkip--;
+																		}
+																	}}
+																/>
+															</div>
+														)}
+													</Draggable>
+													<Divider
+														key={`divider-${index}`}
+														variant="middle"
+													/>
+												</>
+											))}
+										{provided.placeholder}
+									</div>
+								)}
+							</Droppable>
+						</DragDropContext>
+					</Box>
+
+					{playlist.length > 0 && (
+						<Button
+							sx={{
+								width: "100%",
+								alignSelf: "center",
+								marginTop: 1,
+								maxWidth: theme.breakpoints.values.md,
+							}}
+							variant="outlined"
+							onClick={() => {
+								props.onExpand(false);
+								openPlaylistModal(true);
+							}}
+						>
+							Save queue as playlist
+						</Button>
+					)}
+				</>
 			)}
+
+			<Dialog
+				open={playlistModalIsOpen}
+				onClose={() => openPlaylistModal(false)}
+				fullWidth
+			>
+				{saveAsPlaylistAction.dialog!({
+					close: () => openPlaylistModal(false),
+				})}
+			</Dialog>
 			<Divider variant="middle" sx={{ margin: 1, marginBottom: 2 }} />
 			<Grid
 				container
