@@ -83,7 +83,7 @@ export const PlayAfterAction = (
 });
 
 type CreateOrUpdatePlaylistFormProps = {
-	onSubmit: (newUrl: string) => void;
+	onSubmit: (playlistName: string) => void;
 	onClose: () => void;
 	defaultValue?: string;
 };
@@ -136,15 +136,19 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 	);
 };
 
-export const CreatePlaylistAction = (queryClient: QueryClient): Action => ({
+export const CreatePlaylistAction = (
+	queryClient: QueryClient,
+	onCreated?: (playlistId: number) => void,
+): Action => ({
 	label: "new",
 	icon: <Add />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((playlistName: string) => {
 			return API.createPlaylist(playlistName)
-				.then(() => {
+				.then((playlist) => {
 					toast.success("Playlist created!");
 					queryClient.client.invalidateQueries("playlists");
+					onCreated?.(playlist.id);
 				})
 				.catch((error: Error) => toast.error(error.message));
 		});
