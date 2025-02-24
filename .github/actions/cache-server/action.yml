@@ -12,5 +12,5 @@ runs:
           path: |
             ./server/node_modules
             ./server/dist
-          key: server
-          restore-keys: server
+          key: server-${{ hashFiles('server/yarn.lock') }}
+          restore-keys: server-
