@@ -3,7 +3,18 @@ description: 'Cache for Matcher'
 runs:
   using: "composite"
   steps:
-    - run: apk add --update --no-progress lsb-release python3 py3-pip
+    - run: apk add --update --no-progress lsb-release python3 py3-pip tar
       shell: sh
+    - run: mkdir ./pip-cache
+      shell: sh
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+          path: |
+            ./pip-cache
+          key: matcher-${{ hashFiles('matcher/requirements.txt') }}
+          restore-keys: matcher-
     - run: pip3 install -r matcher/requirements.txt
       shell: sh
+      env:
+        PIP_CACHE_DIR: ./pip-cache

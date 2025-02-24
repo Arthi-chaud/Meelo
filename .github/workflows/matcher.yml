@@ -28,6 +28,7 @@ jobs:
             matcher:
               - 'matcher/**'
               - '.github/workflows/matcher.yml'
+              - '.github/actions/cache-matcher/**'
   Typecheck:
     needs: changes
     if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
