@@ -28,6 +28,7 @@ jobs:
             front:
               - 'front/**'
               - '.github/workflows/front.yml'
+              - '.github/actions/cache-front/**'
   Build:
     needs: changes
     if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}

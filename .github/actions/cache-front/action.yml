@@ -12,5 +12,5 @@ runs:
           path: |
             ./front/node_modules
             ./front/.next
-          key: front
-          restore-keys: front
+          key: front-${{ hashFiles('front/yarn.lock') }}
+          restore-keys: front-
