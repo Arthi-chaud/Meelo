@@ -70,7 +70,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@golevelup/ts-jest": "^0.5.5",
-		"@nestjs/cli": "^10.4.9",
+		"@nestjs/cli": "^11.0.1",
 		"@nestjs/schematics": "^11.0.0",
 		"@nestjs/testing": "^11.0.1",
 		"@types/amqplib": "^0",
