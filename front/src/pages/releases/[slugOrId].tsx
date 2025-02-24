@@ -76,6 +76,19 @@ import getYear from "../../utils/getYear";
 import { useGradientBackground } from "../../utils/gradient-background";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
 
+const formatReleaseDate = (date: Date, lang: string) => {
+	if (date.getDate() === 1 && date.getMonth() === 0) {
+		return date.getFullYear();
+	}
+	const res = Intl.DateTimeFormat(lang, {
+		month: "short",
+		year: "numeric",
+		localeMatcher: "best fit",
+	}).format(date);
+
+	return res[0].toUpperCase() + res.slice(1);
+};
+
 const releaseQuery = (releaseIdentifier: string | number) =>
 	API.getRelease(releaseIdentifier, ["album", "illustration"]);
 const releaseTracklistQuery = (
@@ -197,7 +210,7 @@ const RelatedContentSection = (props: RelatedContentSectionProps) => {
 
 const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const [showOnlyExclusive, setShowOnlyExclusive] = useState(false);
 	const releaseIdentifier =
 		props?.releaseIdentifier ?? getSlugOrId(router.query);
@@ -355,6 +368,26 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				),
 		[albumVideos.items, tracks],
 	);
+	const releaseDate = useMemo(() => {
+		if (!album.data || !release.data) {
+			return undefined;
+		}
+		const mkDate = (str: any) => (str ? new Date(str) : null);
+		const albumDate = mkDate(album.data?.releaseDate);
+		const releaseReleaseDate = mkDate(release.data?.releaseDate);
+		if (releaseReleaseDate) {
+			if (
+				releaseReleaseDate.getMonth() === 0 &&
+				releaseReleaseDate.getDate() === 1 &&
+				albumDate &&
+				releaseReleaseDate.getFullYear() === albumDate.getFullYear()
+			) {
+				return albumDate;
+			}
+			return releaseReleaseDate;
+		}
+		return albumDate;
+	}, [release.data, album.data]);
 	const illustration = useMemo(
 		() => release.data?.illustration,
 		[release.data],
@@ -485,12 +518,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								sx={{ color: "text.disabled" }}
 								component={"span"}
 							>
-								{(release.data?.releaseDate ||
-									release.data?.album.releaseDate) &&
-									`${new Date(
-										release.data.releaseDate ??
-											release.data.album.releaseDate!,
-									).getFullYear()} - `}
+								{releaseDate &&
+									`${formatReleaseDate(releaseDate, i18n.language)} - `}
 								{totalDuration !== undefined ? (
 									formatDuration(totalDuration)
 								) : (
