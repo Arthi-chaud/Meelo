@@ -79,7 +79,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      - uses: ./.github/actions/dockerise
+      - uses: ./.github/actions/dockerize
         with: 
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
