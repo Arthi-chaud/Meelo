@@ -31,7 +31,17 @@ const Illustration = yup
 		 * Aspect Ratio of The Image
 		 */
 		aspectRatio: yup.number().required(),
-		colors: yup.array(yup.string().required()).required(),
+		colors: yup
+			.array(
+				yup
+					.string()
+					.required()
+					.transform((color: string) => {
+						const afterHash = color.slice(1);
+						return `#${afterHash.padStart(6, "0")}`;
+					}),
+			)
+			.required(),
 	})
 	.required();
 
