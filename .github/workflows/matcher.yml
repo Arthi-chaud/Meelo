@@ -99,6 +99,8 @@ jobs:
         with:
           context: ./matcher
           platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           push: false
   Publish:
     needs: changes
@@ -138,5 +140,7 @@ jobs:
           context: ./matcher
           platforms: linux/amd64,linux/arm64
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || 'arthichaud/meelo-matcher:edge' }}
           labels: ${{ steps.meta.outputs.labels }}
