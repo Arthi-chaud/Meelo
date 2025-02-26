@@ -73,13 +73,13 @@ namespace TrackQueryParameters {
 			{
 				type: TrackType;
 				tracks: TrackQueryParameters.WhereInput[];
-				song: SongQueryParameters.WhereInput;
-				video: VideoQueryParameters.WhereInput;
+				song: Filter<SongQueryParameters.WhereInput>;
+				video: Filter<VideoQueryParameters.WhereInput>;
 				library: Filter<LibraryQueryParameters.WhereInput>;
 			} & RequireExactlyOne<{
-				artist: ArtistQueryParameters.WhereInput;
-				album: AlbumQueryParameters.WhereInput;
-				release: ReleaseQueryParameters.WhereInput;
+				artist: Filter<ArtistQueryParameters.WhereInput>;
+				album: Filter<AlbumQueryParameters.WhereInput>;
+				release: Filter<ReleaseQueryParameters.WhereInput>;
 				exclusiveOn: ReleaseQueryParameters.WhereInput;
 			}>
 		>

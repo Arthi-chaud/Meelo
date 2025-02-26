@@ -194,12 +194,15 @@ export default class TrackService {
 		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
-				song: SongService.formatWhereInput(where.song),
+				song: filterToPrisma(where.song, SongService.formatWhereInput),
 			});
 		}
 		if (where.video) {
 			queryParameters = deepmerge(queryParameters, {
-				video: VideoService.formatWhereInput(where.video),
+				video: filterToPrisma(
+					where.video,
+					VideoService.formatWhereInput,
+				),
 			});
 		}
 		if (where.library) {
@@ -215,7 +218,10 @@ export default class TrackService {
 
 		if (where.release) {
 			queryParameters = deepmerge(queryParameters, {
-				release: ReleaseService.formatWhereInput(where.release),
+				release: filterToPrisma(
+					where.release,
+					ReleaseService.formatWhereInput,
+				),
 			});
 		}
 		if (where.exclusiveOn) {
@@ -260,8 +266,9 @@ export default class TrackService {
 					tracks: {
 						some: {
 							release: {
-								album: AlbumService.formatWhereInput(
+								album: filterToPrisma(
 									where.album,
+									AlbumService.formatWhereInput,
 								),
 							},
 						},
@@ -438,7 +445,9 @@ export default class TrackService {
 	) {
 		const tracks = await this.prismaService.track.findMany({
 			where: TrackService.formatManyWhereInput(
-				exclusiveOnly ? { exclusiveOn: where } : { release: where },
+				exclusiveOnly
+					? { exclusiveOn: where }
+					: { release: { is: where } },
 			),
 			orderBy: [
 				{ trackIndex: "asc" },
