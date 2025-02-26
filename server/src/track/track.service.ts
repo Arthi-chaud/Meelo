@@ -25,6 +25,7 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { FileNotFoundException } from "src/file/file.exceptions";
 import FileService from "src/file/file.service";
+import { filterToPrisma } from "src/filter/filter";
 import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import LibraryService from "src/library/library.service";
@@ -204,7 +205,10 @@ export default class TrackService {
 		if (where.library) {
 			queryParameters = deepmerge(queryParameters, {
 				sourceFile: {
-					library: LibraryService.formatWhereInput(where.library),
+					library: filterToPrisma(
+						where.library,
+						LibraryService.formatWhereInput,
+					),
 				},
 			});
 		}

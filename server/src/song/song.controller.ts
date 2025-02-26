@@ -37,6 +37,7 @@ import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
+import TransformFilter, { Filter } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
@@ -83,11 +84,8 @@ export class Selector {
 	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
-	@ApiPropertyOptional({
-		description: "Filter songs by library",
-	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	@TransformFilter(LibraryService, { description: "Filter songs by library" })
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({

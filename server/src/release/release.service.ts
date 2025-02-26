@@ -190,7 +190,7 @@ export default class ReleaseService {
 			query = deepmerge(query, {
 				tracks: {
 					some: TrackService.formatManyWhereInput({
-						library: where.library,
+						library: { is: where.library },
 					}),
 				},
 			});

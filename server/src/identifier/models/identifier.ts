@@ -18,4 +18,11 @@
 
 type Identifier = number | string;
 
+export const castIdentifier = (s: string): Identifier => {
+	if (Number.isNaN(+s)) {
+		return s;
+	}
+	return Number.parseInt(s);
+};
+
 export default Identifier;

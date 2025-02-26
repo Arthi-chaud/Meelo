@@ -20,6 +20,7 @@ import type { TrackType } from "@prisma/client";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
+import { Filter } from "src/filter/filter";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { Track } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -74,7 +75,7 @@ namespace TrackQueryParameters {
 				tracks: TrackQueryParameters.WhereInput[];
 				song: SongQueryParameters.WhereInput;
 				video: VideoQueryParameters.WhereInput;
-				library: LibraryQueryParameters.WhereInput;
+				library: Filter<LibraryQueryParameters.WhereInput>;
 			} & RequireExactlyOne<{
 				artist: ArtistQueryParameters.WhereInput;
 				album: AlbumQueryParameters.WhereInput;

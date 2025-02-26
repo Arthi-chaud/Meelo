@@ -24,6 +24,7 @@ import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
@@ -43,11 +44,10 @@ import TrackService from "./track.service";
 
 class Selector {
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(LibraryService, {
 		description: "Filter tracks by library",
 	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({

@@ -23,6 +23,7 @@ import {
 } from "@nestjs/common";
 import { ApiParam } from "@nestjs/swagger";
 import type Identifier from "./models/identifier";
+import { castIdentifier } from "./models/identifier";
 
 type ParsingService<WhereInput> = {
 	formatIdentifierToWhereInput: (identifier: Identifier) => WhereInput;
@@ -54,10 +55,7 @@ export default function IdentifierParam<
 	 */
 	class IdentifierPipe implements PipeTransform {
 		transform(value: string, _metadata: ArgumentMetadata) {
-			if (Number.isNaN(+value)) {
-				return service.formatIdentifierToWhereInput(value);
-			}
-			return service.formatIdentifierToWhereInput(Number.parseInt(value));
+			return service.formatIdentifierToWhereInput(castIdentifier(value));
 		}
 	}
 

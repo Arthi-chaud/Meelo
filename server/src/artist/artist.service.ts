@@ -213,7 +213,7 @@ export default class ArtistService extends SearchableRepositoryService {
 								song: {
 									tracks: {
 										some: TrackService.formatManyWhereInput(
-											{ library: where.library },
+											{ library: { is: where.library } },
 										),
 									},
 								},

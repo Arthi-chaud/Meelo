@@ -19,6 +19,7 @@
 import type { SongType } from "@prisma/client";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { Song } from "src/prisma/models";
@@ -77,7 +78,7 @@ namespace SongQueryParameters {
 			name: SearchStringInput;
 			album: AlbumQueryParameters.WhereInput;
 			artist?: ArtistQueryParameters.WhereInput;
-			library: LibraryQueryParameters.WhereInput;
+			library: Filter<LibraryQueryParameters.WhereInput>;
 			genre: GenreQueryParameters.WhereInput;
 			group: SongGroupQueryParameters.WhereInput;
 			versionsOf: SongQueryParameters.WhereInput;
