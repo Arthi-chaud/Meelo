@@ -201,7 +201,7 @@ export default class ArtistService extends SearchableRepositoryService {
 					some: {
 						releases: {
 							some: ReleaseService.formatManyWhereInput({
-								library: where.library,
+								library: { is: where.library },
 							}),
 						},
 					},

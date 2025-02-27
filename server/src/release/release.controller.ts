@@ -26,18 +26,13 @@ import {
 	Res,
 	forwardRef,
 } from "@nestjs/common";
-import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiPropertyOptional,
-	ApiTags,
-} from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import type { Response as ExpressResponse } from "express";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -52,18 +47,16 @@ import ReleaseService from "./release.service";
 
 class Selector {
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(AlbumService, {
 		description: "Filter releases by albums",
 	})
-	@TransformIdentifier(AlbumService)
-	album?: AlbumQueryParameters.WhereInput;
+	album?: Filter<AlbumQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(LibraryService, {
 		description: "Filter releases by library",
 	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 }
 
 @ApiTags("Releases")

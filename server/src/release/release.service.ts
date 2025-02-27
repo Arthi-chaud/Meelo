@@ -49,6 +49,7 @@ import {
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
 } from "./release.exceptions";
+import { filterToPrisma } from "src/filter/filter";
 
 @Injectable()
 export default class ReleaseService {
@@ -190,17 +191,17 @@ export default class ReleaseService {
 			query = deepmerge(query, {
 				tracks: {
 					some: TrackService.formatManyWhereInput({
-						library: { is: where.library },
+						library: where.library,
 					}),
 				},
 			});
 		}
 		if (where.album) {
 			query = deepmerge(query, {
-				album: {
-					id: where.album.id,
-					slug: where.album.slug?.toString(),
-				},
+				album: filterToPrisma(
+					where.album,
+					AlbumService.formatWhereInput,
+				),
 			});
 		}
 		return query;

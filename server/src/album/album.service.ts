@@ -324,7 +324,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			query = deepmerge(query, {
 				releases: {
 					some: ReleaseService.formatManyWhereInput({
-						library: where.library,
+						library: { is: where.library },
 					}),
 				},
 			});
