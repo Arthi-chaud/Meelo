@@ -21,10 +21,10 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import TransformFilter, { Filter } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
-import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -49,25 +49,22 @@ class Selector {
 	albumArtistOnly?: boolean;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(GenreService, {
 		description: "Filter artists by genre",
 	})
-	@TransformIdentifier(GenreService)
-	genre?: GenreQueryParameters.WhereInput;
+	genre?: Filter<GenreQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(LibraryService, {
 		description: "Filter artists by library",
 	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(AlbumService, {
 		description: "Filter artists by albums they appear on",
 	})
-	@TransformIdentifier(AlbumService)
-	album?: AlbumQueryParameters.WhereInput;
+	album?: Filter<AlbumQueryParameters.WhereInput>;
 }
 
 @ApiTags("Artists")
