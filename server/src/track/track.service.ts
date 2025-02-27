@@ -281,7 +281,7 @@ export default class TrackService {
 				release: {
 					album: filterToPrisma(where.artist, (a) =>
 						AlbumService.formatManyWhereInput({
-							artist: a,
+							artist: { is: a },
 						}),
 					),
 				},

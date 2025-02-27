@@ -37,8 +37,10 @@ export const filterToPrisma = <T, R>(
 	f: Filter<T>,
 	tToPrisma: (t: T) => R,
 ): R | Partial<{ NOT: R; AND: R[]; OR: R[] }> => {
+	if (f.is) {
+		return tToPrisma(f.is);
+	}
 	return {
-		...(f.is ? tToPrisma(f.is) : {}),
 		NOT: f.not ? tToPrisma(f.not) : undefined,
 		OR: f.or ? f.or.map(tToPrisma) : undefined,
 		AND: f.and ? f.and.map(tToPrisma) : undefined,

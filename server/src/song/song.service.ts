@@ -342,22 +342,18 @@ export default class SongService extends SearchableRepositoryService {
 					},
 				});
 			} else if (where.artist.and) {
-				const subqueries: Prisma.SongWhereInput[] = [];
-				where.artist.and.forEach((artist, index) => {
-					const primaryArtist = artist;
-					const featuringArtists = where.artist!.and!.filter(
-						(_, i) => i !== index,
-					);
-					subqueries.push({
-						artist: ArtistService.formatWhereInput(primaryArtist),
-						AND: featuringArtists.map((f) => ({
-							featuring: {
-								some: ArtistService.formatWhereInput(f),
+				query = deepmerge(query, {
+					AND: where.artist.and.map((a) => ({
+						OR: [
+							{ artist: ArtistService.formatWhereInput(a) },
+							{
+								featuring: {
+									some: ArtistService.formatWhereInput(a),
+								},
 							},
-						})),
-					});
+						],
+					})),
 				});
-				query = deepmerge(query, { OR: subqueries });
 			} else {
 				query = deepmerge(query, {
 					OR: [

@@ -31,6 +31,7 @@ import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import FileService from "src/file/file.service";
+import { filterToPrisma } from "src/filter/filter";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -49,7 +50,6 @@ import {
 	ReleaseNotEmptyException,
 	ReleaseNotFoundException,
 } from "./release.exceptions";
-import { filterToPrisma } from "src/filter/filter";
 
 @Injectable()
 export default class ReleaseService {

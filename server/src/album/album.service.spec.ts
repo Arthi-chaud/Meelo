@@ -189,7 +189,7 @@ describe("Album Service", () => {
 
 		it("should find only live albums", async () => {
 			const albums = await albumService.getMany({
-				type: AlbumType.LiveRecording,
+				type: { is: AlbumType.LiveRecording },
 			});
 			expect(albums.length).toBe(1);
 			expect(albums[0]).toStrictEqual(newAlbum);
@@ -197,7 +197,7 @@ describe("Album Service", () => {
 
 		it("should find only compilations albums", async () => {
 			const albums = await albumService.getMany({
-				type: AlbumType.Compilation,
+				type: { is: AlbumType.Compilation },
 			});
 			expect(albums.length).toBe(1);
 			expect(albums[0]).toStrictEqual(dummyRepository.compilationAlbumA);
