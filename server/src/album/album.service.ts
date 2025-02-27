@@ -446,25 +446,29 @@ export default class AlbumService extends SearchableRepositoryService {
 			});
 		} else if (where.appearance) {
 			query = deepmerge(query, {
-				releases: {
-					some: {
-						tracks: {
+				AND: [
+					{
+						releases: {
 							some: {
-								song: SongService.formatManyWhereInput({
-									artist: where.appearance,
-								}),
+								tracks: {
+									some: {
+										song: SongService.formatManyWhereInput({
+											artist: where.appearance,
+										}),
+									},
+								},
 							},
 						},
+						artist: {
+							isNot: where.appearance.not
+								? undefined
+								: filterToPrisma(
+										where.appearance,
+										ArtistService.formatWhereInput,
+									),
+						},
 					},
-				},
-				artist: {
-					isNot: where.appearance.not
-						? undefined
-						: filterToPrisma(
-								where.appearance,
-								ArtistService.formatWhereInput,
-							),
-				},
+				],
 			});
 		}
 		if (

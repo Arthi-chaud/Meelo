@@ -19,6 +19,7 @@
 import type { VideoType } from "@prisma/client";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { EnumFilter, Filter } from "src/filter/filter";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type Slug from "src/slug/slug";
@@ -54,12 +55,12 @@ namespace VideoQueryParameters {
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
 			name: SearchStringInput;
-			album: AlbumQueryParameters.WhereInput;
-			artist?: ArtistQueryParameters.WhereInput;
-			library: AlbumQueryParameters.WhereInput;
+			album: Filter<AlbumQueryParameters.WhereInput>;
+			artist?: Filter<ArtistQueryParameters.WhereInput>;
+			library: Filter<AlbumQueryParameters.WhereInput>;
 			group: SongGroupQueryParameters.WhereInput;
-			song: SongQueryParameters.WhereInput;
-			type?: VideoType;
+			song: Filter<SongQueryParameters.WhereInput>;
+			type?: EnumFilter<VideoType>;
 			videos: VideoQueryParameters.WhereInput[];
 		}>
 	>;
