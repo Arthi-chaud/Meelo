@@ -17,8 +17,9 @@
  */
 
 import { applyDecorators } from "@nestjs/common";
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional, ApiPropertyOptions } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { ParsingService } from "src/identifier/identifier.transform";
 import Identifier, { castIdentifier } from "src/identifier/models/identifier";
 import { RequireExactlyOne } from "type-fest";
@@ -29,6 +30,7 @@ export type Filter<T> = RequireExactlyOne<{
 	and: T[];
 	or: T[];
 }>;
+
 // We'll support recursion later
 
 export const filterToPrisma = <T, R>(
@@ -70,19 +72,78 @@ const parseFilter = <T>(
 export default function TransformFilter<
 	WhereInput,
 	Service extends ParsingService<WhereInput>,
->(service: Service, { description }: { description: string }) {
+>(service: Service, opts?: ApiPropertyOptions) {
 	return applyDecorators(
 		ApiPropertyOptional({
 			type: String,
-			description: description,
 			example:
 				'Slug/Id or "and:slug1,slug2" or "or:slug1,slug2" or "not:slug1".',
+			...opts,
 		}),
 		Transform(({ value }) => {
 			if (!value.length) {
 				return undefined;
 			}
 			return parseFilter(value, service.formatIdentifierToWhereInput);
+		}),
+	);
+}
+
+/// Special Case for Enum
+
+export type EnumFilter<T> = RequireExactlyOne<{
+	is: T;
+	not: T;
+	and: T[];
+	or: T[];
+}>;
+
+export const enumFilterToPrisma = <T, R>(
+	f: EnumFilter<T>,
+	tToPrisma: (t: T) => R,
+): Partial<{ equals: R; not: R; in: R[] }> => {
+	return {
+		equals: f.is ? tToPrisma(f.is) : undefined,
+		not: f.not ? tToPrisma(f.not) : undefined,
+		in: f.or ? f.or.map(tToPrisma) : undefined,
+	};
+};
+
+const parseEnumForFilter = <T extends Record<string, string>, E extends string>(
+	enumRecord: T,
+	input: string,
+): E => {
+	const validValues = Object.values(enumRecord);
+	if (validValues.includes(input)) {
+		return input as E;
+	}
+	throw new InvalidRequestException(
+		`Expected one of the following values: ${validValues.toString()}. Got '${input}'`,
+	);
+};
+
+export function TransformEnumFilter<
+	T extends Record<string, E>,
+	E extends string,
+>(e: T, opts?: ApiPropertyOptions) {
+	return applyDecorators(
+		ApiPropertyOptional({
+			enum: e,
+			example: 'Enum or "or:slug1,slug2" or "not:slug1".',
+			...opts,
+		}),
+		Transform(({ value }) => {
+			if (!value.length) {
+				return undefined;
+			}
+			if (value.startsWith("and:")) {
+				throw new InvalidRequestException(
+					"Invalid filter for enum: 'and'.",
+				);
+			}
+			return parseFilter(value, (v) =>
+				parseEnumForFilter(e, v as string),
+			);
 		}),
 	);
 }

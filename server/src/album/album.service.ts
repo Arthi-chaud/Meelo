@@ -338,7 +338,8 @@ export default class AlbumService extends SearchableRepositoryService {
 								tracks: {
 									some: {
 										song: SongService.formatManyWhereInput({
-											genre: where.genre,
+											//TODO Use Filter function
+											genre: { is: where.genre },
 										}),
 									},
 								},

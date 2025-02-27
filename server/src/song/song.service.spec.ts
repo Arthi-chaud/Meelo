@@ -229,7 +229,7 @@ describe("Song Service", () => {
 
 		it("should get the songs from the artist (1 expected)", async () => {
 			const songs = await songService.getMany({
-				artist: { id: dummyRepository.artistB.id },
+				artist: { is: { id: dummyRepository.artistB.id } },
 			});
 
 			expect(songs.length).toBe(1);
@@ -238,7 +238,7 @@ describe("Song Service", () => {
 
 		it("should get the songs from the artist (2 expected)", async () => {
 			const songs = await songService.getMany({
-				artist: { id: dummyRepository.artistA.id },
+				artist: { is: { id: dummyRepository.artistA.id } },
 			});
 
 			expect(songs.length).toBe(3);
@@ -250,7 +250,7 @@ describe("Song Service", () => {
 		it("should get the two songs, sorted by name (desc)", async () => {
 			const songs = await songService.getMany(
 				{
-					artist: { id: dummyRepository.artistA.id },
+					artist: { is: { id: dummyRepository.artistA.id } },
 				},
 				{ sortBy: "name", order: "desc" },
 				{},
@@ -265,7 +265,7 @@ describe("Song Service", () => {
 
 		it("should get none, as the artist does not exist", async () => {
 			const songs = await songService.getMany({
-				artist: { id: -1 },
+				artist: { is: { id: -1 } },
 			});
 
 			expect(songs.length).toBe(0);
@@ -370,7 +370,7 @@ describe("Song Service", () => {
 				},
 			});
 			const versions = await songService.getMany({
-				versionsOf: { id: dummyRepository.songA2.id },
+				versionsOf: { is: { id: dummyRepository.songA2.id } },
 			});
 			expect(versions).toStrictEqual([dummyRepository.songA2, version]);
 			await songService.delete([{ id: version.id }]);

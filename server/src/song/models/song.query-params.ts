@@ -76,13 +76,13 @@ namespace SongQueryParameters {
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
 			name: SearchStringInput;
-			album: AlbumQueryParameters.WhereInput;
-			artist?: ArtistQueryParameters.WhereInput;
+			album: Filter<AlbumQueryParameters.WhereInput>;
+			artist?: Filter<ArtistQueryParameters.WhereInput>;
 			library: Filter<LibraryQueryParameters.WhereInput>;
-			genre: GenreQueryParameters.WhereInput;
+			genre: Filter<GenreQueryParameters.WhereInput>;
 			group: SongGroupQueryParameters.WhereInput;
-			versionsOf: SongQueryParameters.WhereInput;
-			type?: SongType;
+			versionsOf: Filter<SongQueryParameters.WhereInput>;
+			type?: Filter<SongType>;
 			songs: SongQueryParameters.WhereInput[];
 		}>
 	>;

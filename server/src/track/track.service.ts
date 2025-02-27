@@ -279,9 +279,11 @@ export default class TrackService {
 		if (where.artist) {
 			queryParameters = deepmerge(queryParameters, {
 				release: {
-					album: AlbumService.formatManyWhereInput({
-						artist: where.artist,
-					}),
+					album: filterToPrisma(where.artist, (a) =>
+						AlbumService.formatManyWhereInput({
+							artist: a,
+						}),
+					),
 				},
 			});
 		}
