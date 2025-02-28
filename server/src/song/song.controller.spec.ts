@@ -63,6 +63,24 @@ describe("Song Controller", () => {
 					);
 				});
 		});
+
+		it("should songs from artist A or B", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/songs?artist=or:${dummyRepository.artistC.id},${dummyRepository.artistB.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const songs: Song[] = res.body.items;
+					expect(songs.length).toBe(2);
+					expect(songs[0]).toStrictEqual(
+						expectedSongResponse(dummyRepository.songB1),
+					);
+					expect(songs[1]).toStrictEqual(
+						expectedSongResponse(dummyRepository.songC1),
+					);
+				});
+		});
 		it("should return all songs, sorted by name, desc", () => {
 			return request(app.getHttpServer())
 				.get("/songs?sortBy=name&order=desc")
@@ -337,14 +355,9 @@ describe("Song Controller", () => {
 				.expect(200)
 				.expect((res) => {
 					const songs: Song[] = res.body.items;
-					expect(songs.length).toBe(3);
+					expect(songs.length).toBe(2);
 					expect(songs).toContainEqual({
 						...expectedSongResponse(dummyRepository.songA1),
-						artist: expectedArtistResponse(dummyRepository.artistA),
-						featuring: [],
-					});
-					expect(songs).toContainEqual({
-						...expectedSongResponse(dummyRepository.songA2),
 						artist: expectedArtistResponse(dummyRepository.artistA),
 						featuring: [],
 					});

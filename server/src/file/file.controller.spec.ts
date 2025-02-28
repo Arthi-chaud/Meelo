@@ -61,8 +61,12 @@ describe("File Controller", () => {
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;
-						expect(files.length).toBe(1);
+						expect(files.length).toBe(2);
+
 						expect(files[0]).toStrictEqual(
+							expectedFileResponse(dummyRepository.fileA2_1),
+						);
+						expect(files[1]).toStrictEqual(
 							expectedFileResponse(dummyRepository.fileB1_1),
 						);
 					});
@@ -73,15 +77,12 @@ describe("File Controller", () => {
 					.expect(200)
 					.expect((res) => {
 						const files: File[] = res.body.items;
-						expect(files.length).toBe(4);
+						expect(files.length).toBe(3);
 						expect(files).toContainEqual(
 							expectedFileResponse(dummyRepository.fileA1_1),
 						);
 						expect(files).toContainEqual(
 							expectedFileResponse(dummyRepository.fileA1_2Video),
-						);
-						expect(files).toContainEqual(
-							expectedFileResponse(dummyRepository.fileA2_1),
 						);
 						expect(files).toContainEqual(
 							expectedFileResponse(dummyRepository.fileC1_1),

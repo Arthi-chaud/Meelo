@@ -27,7 +27,7 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import {
@@ -36,6 +36,11 @@ import {
 } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
+import TransformFilter, {
+	EnumFilter,
+	Filter,
+	TransformEnumFilter,
+} from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
@@ -51,41 +56,31 @@ import { AlbumResponseBuilder } from "./models/album.response";
 import UpdateAlbumDTO from "./models/update-album.dto";
 
 class Selector {
-	@IsEnum(AlbumType, {
-		message: () =>
-			`Album Type: Invalid value. Expected one of theses: ${Object.keys(
-				AlbumType,
-			)}`,
-	})
 	@IsOptional()
-	@ApiPropertyOptional({
-		enum: AlbumType,
+	@TransformEnumFilter(AlbumType, {
 		description: "Filter the albums by type",
 	})
-	type?: AlbumType;
+	type?: EnumFilter<AlbumType>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(ArtistService, {
 		description: `Filter albums by album artist, using their identifier.<br/>
 		For compilation albums, use '${compilationAlbumArtistKeyword}'`,
 	})
-	@TransformIdentifier(ArtistService)
-	artist?: ArtistQueryParameters.WhereInput;
+	artist?: Filter<ArtistQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(ArtistService, {
 		description:
 			"Get albums where an artist appear (i.e. is not their main artist), using their identifier.",
 	})
-	@TransformIdentifier(ArtistService)
-	appearance?: ArtistQueryParameters.WhereInput;
+	appearance?: Filter<ArtistQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(GenreService, {
 		description: "Filter albums by genre",
 	})
-	@TransformIdentifier(GenreService)
-	genre?: GenreQueryParameters.WhereInput;
+	genre?: Filter<GenreQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -94,11 +89,10 @@ class Selector {
 	query?: string;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(LibraryService, {
 		description: "Filter albums by library",
 	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({

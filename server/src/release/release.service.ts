@@ -31,6 +31,7 @@ import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import FileService from "src/file/file.service";
+import { filterToPrisma } from "src/filter/filter";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -197,10 +198,10 @@ export default class ReleaseService {
 		}
 		if (where.album) {
 			query = deepmerge(query, {
-				album: {
-					id: where.album.id,
-					slug: where.album.slug?.toString(),
-				},
+				album: filterToPrisma(
+					where.album,
+					AlbumService.formatWhereInput,
+				),
 			});
 		}
 		return query;

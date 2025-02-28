@@ -19,13 +19,18 @@
 import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { VideoType } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
+import TransformFilter, {
+	EnumFilter,
+	Filter,
+	TransformEnumFilter,
+} from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
@@ -44,41 +49,35 @@ import { VideoResponseBuilder } from "./models/video.response";
 import VideoService from "./video.service";
 
 export class Selector {
-	@IsEnum(VideoType)
 	@IsOptional()
-	@ApiPropertyOptional({
-		enum: VideoType,
+	@TransformEnumFilter(VideoType, {
 		description: "Filter videos by type",
 	})
-	type?: VideoType;
+	type?: EnumFilter<VideoType>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(ArtistService, {
 		description: "Filter videos by artist",
 	})
-	@TransformIdentifier(ArtistService)
-	artist?: ArtistQueryParameters.WhereInput;
+	artist?: Filter<ArtistQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(AlbumService, {
 		description: "Filter videos by album",
 	})
-	@TransformIdentifier(AlbumService)
-	album?: AlbumQueryParameters.WhereInput;
+	album?: Filter<AlbumQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(LibraryService, {
 		description: "Filter videos by library",
 	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(SongService, {
 		description: "Filter videos by song",
 	})
-	@TransformIdentifier(SongService)
-	song?: SongQueryParameters.WhereInput;
+	song?: Filter<SongQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({

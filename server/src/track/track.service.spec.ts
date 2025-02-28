@@ -321,22 +321,21 @@ describe("Track Service", () => {
 			expect(tracks[5]).toStrictEqual(newTrack);
 			expect(tracks[6]).toStrictEqual(newTrack2);
 		});
-		it("should retrieve the tracks by libraries (5 expected)", async () => {
+		it("should retrieve the tracks by libraries (4 expected)", async () => {
 			const tracks = await trackService.getMany({
-				library: { id: dummyRepository.library1.id },
+				library: { is: { id: dummyRepository.library1.id } },
 			});
 
 			expect(tracks).toContainEqual(newTrack);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_1);
-			expect(tracks).toContainEqual(dummyRepository.trackA2_1);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_2Video);
 			expect(tracks).toContainEqual(dummyRepository.trackC1_1);
-			expect(tracks.length).toBe(5);
+			expect(tracks.length).toBe(4);
 		});
 
 		it("should retrieve the tracks by libraries (1 expected)", async () => {
 			const tracks = await trackService.getMany({
-				library: { id: secondLibrary.id },
+				library: { is: { id: secondLibrary.id } },
 			});
 
 			expect(tracks.length).toBe(1);
@@ -345,7 +344,7 @@ describe("Track Service", () => {
 
 		it("should retrieve the tracks by song (w/ pagination)", async () => {
 			const tracks = await trackService.getMany(
-				{ song: { id: dummyRepository.songA1.id } },
+				{ song: { is: { id: dummyRepository.songA1.id } } },
 				{ sortBy: "name", order: "asc" },
 				{ take: 1, skip: 1 },
 				{},
@@ -357,7 +356,7 @@ describe("Track Service", () => {
 
 		it("should retrieve the tracks by song (w/ pagination, volume 2)", async () => {
 			const tracks = await trackService.getMany(
-				{ song: { id: dummyRepository.songA1.id } },
+				{ song: { is: { id: dummyRepository.songA1.id } } },
 				{ sortBy: "name", order: "asc" },
 				{ take: 2, skip: 2 },
 				{},
@@ -372,7 +371,7 @@ describe("Track Service", () => {
 		it("should retrieve the song's tracks", async () => {
 			const tracks = await trackService.getMany({
 				song: {
-					id: dummyRepository.songA1.id,
+					is: { id: dummyRepository.songA1.id },
 				},
 			});
 

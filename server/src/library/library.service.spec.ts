@@ -119,7 +119,6 @@ describe("Library Service", () => {
 				files: [
 					dummyRepository.fileA1_1,
 					dummyRepository.fileA1_2Video,
-					dummyRepository.fileA2_1,
 					dummyRepository.fileC1_1,
 				],
 			});

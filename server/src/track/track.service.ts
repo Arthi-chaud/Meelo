@@ -25,6 +25,7 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { FileNotFoundException } from "src/file/file.exceptions";
 import FileService from "src/file/file.service";
+import { filterToPrisma } from "src/filter/filter";
 import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import LibraryService from "src/library/library.service";
@@ -193,25 +194,34 @@ export default class TrackService {
 		}
 		if (where.song) {
 			queryParameters = deepmerge(queryParameters, {
-				song: SongService.formatWhereInput(where.song),
+				song: filterToPrisma(where.song, SongService.formatWhereInput),
 			});
 		}
 		if (where.video) {
 			queryParameters = deepmerge(queryParameters, {
-				video: VideoService.formatWhereInput(where.video),
+				video: filterToPrisma(
+					where.video,
+					VideoService.formatWhereInput,
+				),
 			});
 		}
 		if (where.library) {
 			queryParameters = deepmerge(queryParameters, {
 				sourceFile: {
-					library: LibraryService.formatWhereInput(where.library),
+					library: filterToPrisma(
+						where.library,
+						LibraryService.formatWhereInput,
+					),
 				},
 			});
 		}
 
 		if (where.release) {
 			queryParameters = deepmerge(queryParameters, {
-				release: ReleaseService.formatWhereInput(where.release),
+				release: filterToPrisma(
+					where.release,
+					ReleaseService.formatWhereInput,
+				),
 			});
 		}
 		if (where.exclusiveOn) {
@@ -256,8 +266,9 @@ export default class TrackService {
 					tracks: {
 						some: {
 							release: {
-								album: AlbumService.formatWhereInput(
+								album: filterToPrisma(
 									where.album,
+									AlbumService.formatWhereInput,
 								),
 							},
 						},
@@ -268,9 +279,11 @@ export default class TrackService {
 		if (where.artist) {
 			queryParameters = deepmerge(queryParameters, {
 				release: {
-					album: AlbumService.formatManyWhereInput({
-						artist: where.artist,
-					}),
+					album: filterToPrisma(where.artist, (a) =>
+						AlbumService.formatManyWhereInput({
+							artist: { is: a },
+						}),
+					),
 				},
 			});
 		}
@@ -434,7 +447,9 @@ export default class TrackService {
 	) {
 		const tracks = await this.prismaService.track.findMany({
 			where: TrackService.formatManyWhereInput(
-				exclusiveOnly ? { exclusiveOn: where } : { release: where },
+				exclusiveOnly
+					? { exclusiveOn: where }
+					: { release: { is: where } },
 			),
 			orderBy: [
 				{ trackIndex: "asc" },

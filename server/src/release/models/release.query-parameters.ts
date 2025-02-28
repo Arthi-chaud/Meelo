@@ -17,6 +17,7 @@
  */
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { Filter } from "src/filter/filter";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { Release } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -61,8 +62,8 @@ namespace ReleaseQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<{
 		name: SearchStringInput;
-		album: AlbumQueryParameters.WhereInput;
-		library: LibraryQueryParameters.WhereInput;
+		album: Filter<AlbumQueryParameters.WhereInput>;
+		library: Filter<LibraryQueryParameters.WhereInput>;
 		releases: ReleaseQueryParameters.WhereInput[];
 	}>;
 

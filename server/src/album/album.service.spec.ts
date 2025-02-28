@@ -161,6 +161,21 @@ describe("Album Service", () => {
 			expect(albums).toContainEqual(newAlbum);
 			expect(albums).toContainEqual(newCompilationAlbum);
 		});
+
+		it("should return albums from artist A or B", async () => {
+			const albums = await albumService.getMany({
+				artist: {
+					or: [
+						{ id: dummyRepository.artistA.id },
+						{ id: dummyRepository.artistB.id },
+					],
+				},
+			});
+			expect(albums.length).toBe(3);
+			expect(albums).toContainEqual(dummyRepository.albumA1);
+			expect(albums).toContainEqual(dummyRepository.albumB1);
+			expect(albums).toContainEqual(newAlbum);
+		});
 		it("should shuffle albums", async () => {
 			const sort1 = await albumService.getMany({}, 123, { take: 10 }, {});
 			const sort2 = await albumService.getMany(
@@ -189,7 +204,7 @@ describe("Album Service", () => {
 
 		it("should find only live albums", async () => {
 			const albums = await albumService.getMany({
-				type: AlbumType.LiveRecording,
+				type: { is: AlbumType.LiveRecording },
 			});
 			expect(albums.length).toBe(1);
 			expect(albums[0]).toStrictEqual(newAlbum);
@@ -197,7 +212,7 @@ describe("Album Service", () => {
 
 		it("should find only compilations albums", async () => {
 			const albums = await albumService.getMany({
-				type: AlbumType.Compilation,
+				type: { is: AlbumType.Compilation },
 			});
 			expect(albums.length).toBe(1);
 			expect(albums[0]).toStrictEqual(dummyRepository.compilationAlbumA);

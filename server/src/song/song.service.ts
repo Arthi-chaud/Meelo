@@ -32,6 +32,7 @@ import {
 } from "src/events/events.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { enumFilterToPrisma, filterToPrisma } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import Logger from "src/logger/logger";
@@ -303,13 +304,17 @@ export default class SongService extends SearchableRepositoryService {
 	}
 
 	static formatManyWhereInput(where: SongQueryParameters.ManyWhereInput) {
-		if (where.artist?.compilationArtist) {
+		if (
+			where.artist?.is?.compilationArtist ||
+			where.artist?.and?.find((f) => f.compilationArtist)
+		) {
 			throw new CompilationArtistException("Song");
 		}
 		let query: Prisma.SongWhereInput = {
-			artistId: where.artist?.id,
 			name: buildStringSearchParameters(where.name),
-			type: where.type,
+			type: where.type
+				? enumFilterToPrisma(where.type, (t) => t!)
+				: undefined,
 		};
 
 		if (where.songs) {
@@ -322,25 +327,53 @@ export default class SongService extends SearchableRepositoryService {
 		if (where.genre) {
 			query = deepmerge(query, {
 				genres: {
-					some: GenreService.formatWhereInput(where.genre),
+					some: filterToPrisma(
+						where.genre,
+						GenreService.formatWhereInput,
+					),
 				},
 			});
 		}
-		if (where.artist?.slug) {
-			query = deepmerge(query, {
-				OR: [
-					{
-						artist: {
-							slug: where.artist.slug.toString(),
-						},
+		if (where.artist) {
+			if (where.artist.not) {
+				query = deepmerge(query, {
+					artist: {
+						NOT: ArtistService.formatWhereInput(where.artist.not),
 					},
-					{
-						featuring: {
-							some: { slug: where.artist.slug.toString() },
+				});
+			} else if (where.artist.and) {
+				query = deepmerge(query, {
+					AND: where.artist.and.map((a) => ({
+						OR: [
+							{ artist: ArtistService.formatWhereInput(a) },
+							{
+								featuring: {
+									some: ArtistService.formatWhereInput(a),
+								},
+							},
+						],
+					})),
+				});
+			} else {
+				query = deepmerge(query, {
+					OR: [
+						{
+							artist: filterToPrisma(
+								where.artist,
+								ArtistService.formatWhereInput,
+							),
 						},
-					},
-				],
-			});
+						{
+							featuring: {
+								some: filterToPrisma(
+									where.artist,
+									ArtistService.formatWhereInput,
+								),
+							},
+						},
+					],
+				});
+			}
 		}
 		if (where.library) {
 			query = deepmerge(query, {
@@ -369,7 +402,10 @@ export default class SongService extends SearchableRepositoryService {
 			query = deepmerge(query, {
 				group: {
 					versions: {
-						some: SongService.formatWhereInput(where.versionsOf),
+						some: filterToPrisma(
+							where.versionsOf,
+							SongService.formatWhereInput,
+						),
 					},
 				},
 			} satisfies Prisma.SongWhereInput);
@@ -700,7 +736,7 @@ export default class SongService extends SearchableRepositoryService {
 			return [];
 		}
 		const albumSongs = await this.getMany(
-			{ album: { id: album.id } },
+			{ album: { is: { id: album.id } } },
 			undefined,
 			undefined,
 			{ tracks: true },

@@ -199,7 +199,7 @@ describe("Video Service", () => {
 			expect(updated.songId).toBe(null);
 			expect(updated.groupId).toBe(dummyRepository.songA1.groupId);
 			const videoTracks = await trackService.getMany({
-				video: { id: dummyRepository.videoA1.id },
+				video: { is: { id: dummyRepository.videoA1.id } },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
 			// biome-ignore lint/complexity/noForEach: Test
@@ -216,7 +216,7 @@ describe("Video Service", () => {
 			expect(updated.groupId).toBe(dummyRepository.songA1.groupId);
 
 			const videoTracks = await trackService.getMany({
-				video: { id: dummyRepository.videoA1.id },
+				video: { is: { id: dummyRepository.videoA1.id } },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
 			// biome-ignore lint/complexity/noForEach: Test

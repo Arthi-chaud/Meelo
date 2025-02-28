@@ -17,6 +17,7 @@
  */
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { Artist } from "src/prisma/models";
@@ -51,12 +52,12 @@ namespace ArtistQueryParameters {
 	 */
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
-			library: LibraryQueryParameters.WhereInput;
+			library: Filter<LibraryQueryParameters.WhereInput>;
 			name: SearchStringInput;
 			artists: ArtistQueryParameters.WhereInput[];
-			genre: GenreQueryParameters.WhereInput;
+			genre: Filter<GenreQueryParameters.WhereInput>;
 			albumArtistOnly: boolean;
-			album: AlbumQueryParameters.WhereInput;
+			album: Filter<AlbumQueryParameters.WhereInput>;
 		}>
 	>;
 

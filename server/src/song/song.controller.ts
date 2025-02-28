@@ -30,13 +30,18 @@ import {
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { SongType, type User } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional, IsPositive } from "class-validator";
+import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
+import TransformFilter, {
+	EnumFilter,
+	Filter,
+	TransformEnumFilter,
+} from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
@@ -60,41 +65,33 @@ import UpdateSongDTO from "./models/update-song.dto";
 import SongService from "./song.service";
 
 export class Selector {
-	@IsEnum(SongType)
 	@IsOptional()
-	@ApiPropertyOptional({
-		enum: SongType,
+	@TransformEnumFilter(SongType, {
 		description: "Filter the songs by type",
 	})
-	type?: SongType;
+	type?: EnumFilter<SongType>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(ArtistService, {
 		description: "Filter songs by artist",
 	})
-	@TransformIdentifier(ArtistService)
-	artist?: ArtistQueryParameters.WhereInput;
+	artist?: Filter<ArtistQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(AlbumService, {
 		description: "Filter songs by album",
 	})
-	@TransformIdentifier(AlbumService)
-	album?: AlbumQueryParameters.WhereInput;
+	album?: Filter<AlbumQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
-		description: "Filter songs by library",
-	})
-	@TransformIdentifier(LibraryService)
-	library?: LibraryQueryParameters.WhereInput;
+	@TransformFilter(LibraryService, { description: "Filter songs by library" })
+	library?: Filter<LibraryQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(SongService, {
 		description: "Get other versions of the song",
 	})
-	@TransformIdentifier(SongService)
-	versionsOf?: SongQueryParameters.WhereInput;
+	versionsOf?: Filter<SongQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -111,11 +108,10 @@ export class Selector {
 	group?: SongGroupQueryParameters.WhereInput;
 
 	@IsOptional()
-	@ApiPropertyOptional({
+	@TransformFilter(GenreService, {
 		description: "Filter songs by genre",
 	})
-	@TransformIdentifier(GenreService)
-	genre?: GenreQueryParameters.WhereInput;
+	genre?: Filter<GenreQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -133,9 +129,10 @@ export class Selector {
 
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: "Filter songs that would be considered to be 'rare'",
+		description:
+			"Filter songs that would be considered to be 'rare' by artist",
 	})
-	@TransformIdentifier(ReleaseService)
+	@TransformIdentifier(ArtistService)
 	rare: ArtistQueryParameters.WhereInput;
 
 	@IsOptional()

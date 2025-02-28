@@ -29,6 +29,7 @@ import {
 	ResourceEventPriority,
 } from "src/events/events.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { filterToPrisma } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
@@ -195,7 +196,44 @@ export default class ArtistService extends SearchableRepositoryService {
 				),
 			});
 		}
-		if (where.library) {
+		if (where.library?.and) {
+			query = deepmerge(query, {
+				AND: where.library.and.map((l) => ({
+					OR: [
+						{
+							albums: {
+								some: {
+									releases: {
+										some: ReleaseService.formatManyWhereInput(
+											{
+												library: { is: l },
+											},
+										),
+									},
+								},
+							},
+						},
+						{
+							songs: {
+								some: {
+									tracks: {
+										some: {
+											song: {
+												tracks: {
+													some: TrackService.formatManyWhereInput(
+														{ library: { is: l } },
+													),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					],
+				})),
+			});
+		} else if (where.library) {
 			query = deepmerge(query, {
 				albums: {
 					some: {
@@ -228,13 +266,53 @@ export default class ArtistService extends SearchableRepositoryService {
 				songs: {
 					some: {
 						genres: {
-							some: GenreService.formatWhereInput(where.genre),
+							some: filterToPrisma(
+								where.genre,
+								GenreService.formatWhereInput,
+							),
 						},
 					},
 				},
 			});
 		}
-		if (where.album) {
+		if (where.album?.and) {
+			query = deepmerge(query, {
+				AND: where.album.and.map((a) => ({
+					OR: [
+						{
+							songs: {
+								some: {
+									tracks: {
+										some: {
+											release: {
+												album: AlbumService.formatWhereInput(
+													a,
+												),
+											},
+										},
+									},
+								},
+							},
+						},
+						{
+							featuredOn: {
+								some: {
+									tracks: {
+										some: {
+											release: {
+												album: AlbumService.formatWhereInput(
+													a,
+												),
+											},
+										},
+									},
+								},
+							},
+						},
+					],
+				})),
+			});
+		} else if (where.album) {
 			query = deepmerge(query, {
 				OR: [
 					{
@@ -243,8 +321,9 @@ export default class ArtistService extends SearchableRepositoryService {
 								tracks: {
 									some: {
 										release: {
-											album: AlbumService.formatWhereInput(
+											album: filterToPrisma(
 												where.album,
+												AlbumService.formatWhereInput,
 											),
 										},
 									},
@@ -258,8 +337,9 @@ export default class ArtistService extends SearchableRepositoryService {
 								tracks: {
 									some: {
 										release: {
-											album: AlbumService.formatWhereInput(
+											album: filterToPrisma(
 												where.album,
+												AlbumService.formatWhereInput,
 											),
 										},
 									},

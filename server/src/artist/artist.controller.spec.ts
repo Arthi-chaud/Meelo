@@ -191,13 +191,31 @@ describe("Artist Controller", () => {
 		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/artists?albumArtistOnly=true&library=${dummyRepository.library2.id}`,
+					`/artists?library=and:${dummyRepository.library1.id},${dummyRepository.library2.id}`,
 				)
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
 					expect(artists.length).toBe(1);
 					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+				});
+		});
+
+		it("should return every artists (1 expected)", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/artists?albumArtistOnly=true&library=${dummyRepository.library2.id}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(2);
+					expect(artists[0]).toStrictEqual(
+						expectedArtistResponse(dummyRepository.artistA),
+					);
+					expect(artists[1]).toStrictEqual(
 						expectedArtistResponse(dummyRepository.artistB),
 					);
 				});
