@@ -80,6 +80,24 @@ describe("Album Controller", () => {
 					);
 				});
 		});
+
+		it("Should all albums from A and B", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/albums?artist=or:${dummyRepository.artistA.id},${dummyRepository.artistB.id}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0]).toStrictEqual(
+						expectedAlbumResponse(dummyRepository.albumA1),
+					);
+					expect(albums[1]).toStrictEqual(
+						expectedAlbumResponse(dummyRepository.albumB1),
+					);
+				});
+		});
 		it("Should return best-of albums only", () => {
 			return request(app.getHttpServer())
 				.get("/albums?type=Compilation")

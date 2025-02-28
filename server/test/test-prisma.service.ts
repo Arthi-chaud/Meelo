@@ -318,7 +318,7 @@ export default class TestPrismaService extends PrismaService {
 					path: "Artist A/Album B/My Other Song.m4a",
 					checksum: "",
 					registerDate: new Date(),
-					libraryId: this.library1.id,
+					libraryId: this.library2.id,
 				},
 				{
 					path: "Artist B/Album B/My Second Song.m4a",

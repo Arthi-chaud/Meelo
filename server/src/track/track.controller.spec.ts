@@ -182,7 +182,7 @@ describe("Track Controller", () => {
 				.expect(200)
 				.expect((res) => {
 					const tracks: Track[] = res.body.items;
-					expect(tracks.length).toBe(4);
+					expect(tracks.length).toBe(3);
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackA1_1),
 						release: expectedReleaseResponse(
@@ -198,13 +198,6 @@ describe("Track Controller", () => {
 							dummyRepository.releaseA1_2,
 						),
 						song: expectedSongResponse(dummyRepository.songA1),
-					});
-					expect(tracks).toContainEqual({
-						...expectedTrackResponse(dummyRepository.trackA2_1),
-						release: expectedReleaseResponse(
-							dummyRepository.releaseA1_2,
-						),
-						song: expectedSongResponse(dummyRepository.songA2),
 					});
 					expect(tracks).toContainEqual({
 						...expectedTrackResponse(dummyRepository.trackC1_1),

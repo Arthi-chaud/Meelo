@@ -196,7 +196,44 @@ export default class ArtistService extends SearchableRepositoryService {
 				),
 			});
 		}
-		if (where.library) {
+		if (where.library?.and) {
+			query = deepmerge(query, {
+				AND: where.library.and.map((l) => ({
+					OR: [
+						{
+							albums: {
+								some: {
+									releases: {
+										some: ReleaseService.formatManyWhereInput(
+											{
+												library: { is: l },
+											},
+										),
+									},
+								},
+							},
+						},
+						{
+							songs: {
+								some: {
+									tracks: {
+										some: {
+											song: {
+												tracks: {
+													some: TrackService.formatManyWhereInput(
+														{ library: { is: l } },
+													),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					],
+				})),
+			});
+		} else if (where.library) {
 			query = deepmerge(query, {
 				albums: {
 					some: {

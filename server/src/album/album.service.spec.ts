@@ -161,6 +161,21 @@ describe("Album Service", () => {
 			expect(albums).toContainEqual(newAlbum);
 			expect(albums).toContainEqual(newCompilationAlbum);
 		});
+
+		it("should return albums from artist A or B", async () => {
+			const albums = await albumService.getMany({
+				artist: {
+					or: [
+						{ id: dummyRepository.artistA.id },
+						{ id: dummyRepository.artistB.id },
+					],
+				},
+			});
+			expect(albums.length).toBe(3);
+			expect(albums).toContainEqual(dummyRepository.albumA1);
+			expect(albums).toContainEqual(dummyRepository.albumB1);
+			expect(albums).toContainEqual(newAlbum);
+		});
 		it("should shuffle albums", async () => {
 			const sort1 = await albumService.getMany({}, 123, { take: 10 }, {});
 			const sort2 = await albumService.getMany(

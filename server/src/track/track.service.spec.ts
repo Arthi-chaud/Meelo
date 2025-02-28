@@ -321,17 +321,16 @@ describe("Track Service", () => {
 			expect(tracks[5]).toStrictEqual(newTrack);
 			expect(tracks[6]).toStrictEqual(newTrack2);
 		});
-		it("should retrieve the tracks by libraries (5 expected)", async () => {
+		it("should retrieve the tracks by libraries (4 expected)", async () => {
 			const tracks = await trackService.getMany({
 				library: { is: { id: dummyRepository.library1.id } },
 			});
 
 			expect(tracks).toContainEqual(newTrack);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_1);
-			expect(tracks).toContainEqual(dummyRepository.trackA2_1);
 			expect(tracks).toContainEqual(dummyRepository.trackA1_2Video);
 			expect(tracks).toContainEqual(dummyRepository.trackC1_1);
-			expect(tracks.length).toBe(5);
+			expect(tracks.length).toBe(4);
 		});
 
 		it("should retrieve the tracks by libraries (1 expected)", async () => {
