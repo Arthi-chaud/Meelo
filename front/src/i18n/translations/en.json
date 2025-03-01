@@ -250,5 +250,10 @@
 	"goToSettingsPage": "Go to Settings",
 	"openClosePlayer": "Open / Close Player",
 	"closePlayer": "Close Player",
-	"playPauseWhenExpanded": "Play / Pause (When player is open)"
+	"playPauseWhenExpanded": "Play / Pause (When player is open)",
+	"emptyStateDefault": "Nothing to be found here...",
+	"emptyStateLyrics": "No lyrics to sing along to :(",
+	"emptyStatePlaylists": "There are no playlists... yet!",
+	"emptyStatePlaylist": "There are no songs in this playlist... yet!",
+	"emptyStateHome": "Oh wow, it's quiet in here..."
 }

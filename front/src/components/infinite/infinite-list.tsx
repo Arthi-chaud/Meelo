@@ -27,7 +27,9 @@ type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteListProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
 	"render"
-> & { render: (item: T | undefined, index: number) => JSX.Element };
+> & { render: (item: T | undefined, index: number) => JSX.Element } & Partial<
+		Pick<Parameters<typeof InfiniteScroll>[0], "emptyState">
+	>;
 
 /**
  * Similar to InfiniteGrid, but rendered as a list

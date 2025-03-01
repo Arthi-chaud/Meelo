@@ -55,6 +55,7 @@ const InfinitePlaylistView = (
 				defaultLayout={props.defaultLayout ?? "list"}
 			/>
 			<InfiniteView
+				emptyState={props.emptyState}
 				itemSize={options?.itemSize ?? DefaultItemSize}
 				view={options?.view ?? props.defaultLayout ?? "list"}
 				query={() =>

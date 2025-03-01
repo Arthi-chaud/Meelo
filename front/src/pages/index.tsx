@@ -28,8 +28,11 @@ import {
 	useQueries,
 	type useQuery,
 } from "../api/use-query";
+import { GoToSettingsAction } from "../components/actions/link";
+import { EmptyState } from "../components/empty-state";
 import Fade from "../components/fade";
 import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
+import { EmptyStateIcon } from "../components/icons";
 import SectionHeader from "../components/section-header";
 import SongGrid from "../components/song-grid";
 import TileRow from "../components/tile-row";
@@ -166,6 +169,18 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		mostListenedSongs,
 		newlyAddedReleases,
 	];
+
+	const allIsEmpty = useMemo(() => {
+		for (const q of [...queries, featuredAlbums]) {
+			if (q.items === undefined) {
+				return false;
+			}
+			if (q.items.length !== 0) {
+				return false;
+			}
+		}
+		return true;
+	}, [queries, featuredAlbums]);
 	const illustrations = queries
 		.flatMap((query) => query.items ?? [])
 		.map(({ illustration }) => illustration)
@@ -182,6 +197,22 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	return (
 		<>
 			<GradientBackground />
+
+			{allIsEmpty && (
+				<Box
+					sx={{
+						height: "100%",
+						display: "flex",
+						alignItems: "center",
+					}}
+				>
+					<EmptyState
+						icon={<EmptyStateIcon />}
+						text="emptyStateHome"
+						actions={[GoToSettingsAction]}
+					/>
+				</Box>
+			)}
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection

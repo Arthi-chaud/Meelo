@@ -25,6 +25,8 @@ import type PaginatedResponse from "../../models/pagination";
 import type { PaginationParameters } from "../../models/pagination";
 import type Resource from "../../models/resource";
 import { generateArray } from "../../utils/gen-list";
+import { EmptyState, type EmptyStateProps } from "../empty-state";
+import { EmptyStateIcon } from "../icons";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
@@ -45,6 +47,8 @@ type InfiniteScrollProps<T extends Resource> = {
 	 * Component to display on page fetching (except first)
 	 */
 	loader: () => JSX.Element;
+
+	emptyState?: EmptyStateProps;
 };
 
 /**
@@ -78,9 +82,15 @@ export type Page<T> = {
 const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
 	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
-
 	return (
 		<>
+			{items?.length === 0 && (
+				<EmptyState
+					icon={props.emptyState?.icon ?? <EmptyStateIcon />}
+					text={props.emptyState?.text ?? "emptyStateDefault"}
+					actions={props.emptyState?.actions ?? []}
+				/>
+			)}
 			<IScroll.default
 				pageStart={0}
 				loadMore={() => {
