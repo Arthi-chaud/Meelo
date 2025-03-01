@@ -87,3 +87,5 @@ export const PlusIcon = Iconsax.Add;
 export const MinusIcon = Iconsax.Minus;
 
 export const DoneIcon = Iconsax.TickSquare;
+
+export const EmptyStateIcon = Iconsax.SearchStatus1;

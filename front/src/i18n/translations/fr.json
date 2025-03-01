@@ -250,5 +250,10 @@
 	"goToSettingsPage": "Accéder aux réglages",
 	"openClosePlayer": "Ouvrir / Fermer le lecteur",
 	"closePlayer": "Fermer le lecteur",
-	"playPauseWhenExpanded": "Pauser / Jouer (Quand le lecteur est ouvert)"
+	"playPauseWhenExpanded": "Pauser / Jouer (Quand le lecteur est ouvert)",
+	"emptyStateDefault": "Rien d'interessant ici...",
+	"emptyStateLyrics": "Pas de paroles pour chanter à tue-tête :(",
+	"emptyStatePlaylists": "Il n'y a aucune playlist... pour l'instant!",
+	"emptyStatePlaylist": "Il n'y a aucun morceau dans cette playlist... pour l'instant!",
+	"emptyStateHome": "Oh wow, c'est silencieux par ici.."
 }

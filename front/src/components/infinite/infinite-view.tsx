@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import type { MeeloInfiniteQueryFn } from "../../api/use-query";
 import type { IllustratedResource } from "../../models/illustration";
 import type { ItemSize } from "../../utils/layout";
+import type { EmptyStateProps } from "../empty-state";
 import Fade from "../fade";
 import { GoBackTopIcon } from "../icons";
 import { WideLoadingComponent } from "../loading/loading";
@@ -35,6 +36,7 @@ export type InfiniteViewProps<ItemType> = {
 	query: MeeloInfiniteQueryFn<ItemType>;
 	renderListItem: (item: ItemType | undefined) => JSX.Element;
 	renderGridItem: (item: ItemType | undefined) => JSX.Element;
+	emptyState?: Partial<EmptyStateProps>;
 };
 
 const ScrollToTopButton = () => {

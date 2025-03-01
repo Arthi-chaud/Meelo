@@ -50,6 +50,9 @@ const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		<>
 			<Head title={t("playlists")} />
 			<InfinitePlaylistView
+				emptyState={{
+					text: "emptyStatePlaylists",
+				}}
 				initialSortingField={props?.sortBy}
 				initialSortingOrder={props?.order}
 				defaultLayout={props?.defaultLayout}

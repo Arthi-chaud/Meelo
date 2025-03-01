@@ -17,22 +17,23 @@
  */
 
 import { Box, Skeleton, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
 import { generateArray } from "../utils/gen-list";
+import { EmptyState } from "./empty-state";
 import Fade from "./fade";
+import { LyricsIcon } from "./icons";
 
 type LyricsProps = {
 	lyrics: string[] | null | undefined;
 	songName: string | undefined;
 };
 const LyricsBox = (props: LyricsProps) => {
-	const { t } = useTranslation();
-
 	if (props.lyrics === null) {
 		return (
-			<Typography sx={{ fontStyle: "italic" }}>
-				{t("noLyricsFound")}
-			</Typography>
+			<EmptyState
+				actions={[]}
+				text={"emptyStateLyrics"}
+				icon={<LyricsIcon />}
+			/>
 		);
 	}
 	return (

@@ -21,6 +21,7 @@ import type Resource from "../../../models/resource";
 import type { LayoutOption } from "../../../utils/layout";
 import type { Order } from "../../../utils/sorting";
 import type { OptionState } from "../../controls/controls";
+import type { EmptyStateProps } from "../../empty-state";
 
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,
@@ -37,6 +38,7 @@ type InfiniteResourceViewProps<
 	defaultLayout?: LayoutOption;
 	initialSortingOrder?: Order;
 	initialSortingField?: SortingKeys[number];
+	emptyState?: Partial<EmptyStateProps>;
 };
 
 export default InfiniteResourceViewProps;

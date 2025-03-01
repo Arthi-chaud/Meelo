@@ -38,12 +38,14 @@ import {
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
 import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
 import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
+import { EmptyState } from "../../../components/empty-state";
 import { Head } from "../../../components/head";
 import {
 	ContextualMenuIcon,
 	DoneIcon,
 	DragHandleIcon,
 	EditIcon,
+	EmptyStateIcon,
 	PlayIcon,
 	PlaylistIcon,
 	ShuffleIcon,
@@ -355,6 +357,12 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				<DragAndDropPlaylist
 					entries={tempPlaylistEdit}
 					onDropped={setTempEdit}
+				/>
+			) : entries?.length === 0 ? (
+				<EmptyState
+					actions={[]}
+					text="emptyStatePlaylist"
+					icon={<EmptyStateIcon />}
 				/>
 			) : (
 				<Stack spacing={1}>
