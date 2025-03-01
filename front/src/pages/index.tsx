@@ -209,7 +209,12 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<EmptyState
 						icon={<EmptyStateIcon />}
 						text="emptyStateHome"
-						actions={[GoToSettingsAction]}
+						actions={[
+							{
+								...GoToSettingsAction,
+								label: "goToSettingsPage",
+							},
+						]}
 					/>
 				</Box>
 			)}
