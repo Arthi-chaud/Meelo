@@ -53,14 +53,15 @@ export const EmptyState = (props: EmptyStateProps) => {
 				sx={{ display: "flex", justifyContent: "center" }}
 			>
 				{props.actions?.map((a, i) => (
-					<Button
-						variant="outlined"
-						key={i}
-						href={a.href}
-						onClick={a.onClick}
-					>
-						{t(a.label)}
-					</Button>
+					<Grid item key={i}>
+						<Button
+							variant="outlined"
+							href={a.href}
+							onClick={a.onClick}
+						>
+							{t(a.label)}
+						</Button>
+					</Grid>
 				))}
 			</Grid>
 		</Grid>
