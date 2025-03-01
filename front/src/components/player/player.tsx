@@ -337,6 +337,10 @@ const Player = () => {
 			setDuration(undefined);
 			setPlaying(false);
 		}
+		return () => {
+			player?.current?.pause();
+			navigator.mediaSession.metadata = null;
+		};
 	}, [currentTrack]);
 	const playerBgColor = useMemo(() => {
 		const themePaperColor = `rgba(${theme.vars.palette.background.defaultChannel} / 0.75)`;
