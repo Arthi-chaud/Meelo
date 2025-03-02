@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { yupdate } from "../utils/yup";
 import Artist from "./artist";
 import Illustration from "./illustration";
 import Resource from "./resource";
@@ -49,7 +50,7 @@ const Video = Resource.concat(
 		artistId: yup.number().required(),
 		songId: yup.number().required().nullable(),
 		groupId: yup.number().required().nullable(),
-		registeredAt: yup.date().required(),
+		registeredAt: yupdate.required(),
 		type: yup.mixed<VideoType>().oneOf(VideoType).required(),
 	}),
 );

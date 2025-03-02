@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { yupdate } from "../utils/yup";
 import Artist from "./artist";
 import Genre from "./genre";
 import Illustration from "./illustration";
@@ -46,9 +47,9 @@ const Album = Resource.concat(
 		slug: yup.string().required(),
 		/**
 		 * The date of the first release of the album
-		 * If unknown, the field is set to undefined
+		 * If unknown, the field is set to null
 		 */
-		releaseDate: yup.date().required().nullable(),
+		releaseDate: yupdate.required().nullable(),
 		/**
 		 * Type of the album
 		 */
