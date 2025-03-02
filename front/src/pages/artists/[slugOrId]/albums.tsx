@@ -27,8 +27,8 @@ import InfiniteAlbumView from "../../../components/infinite/infinite-resource-vi
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import { getAlbumTypeParam } from "../../../utils/album-type";
+import { getYear } from "../../../utils/date";
 import getSlugOrId from "../../../utils/getSlugOrId";
-import getYear from "../../../utils/getYear";
 import { useGradientBackground } from "../../../utils/gradient-background";
 import { getLayoutParams } from "../../../utils/layout";
 

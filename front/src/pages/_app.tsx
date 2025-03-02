@@ -184,7 +184,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	return {
 		pageProps: {
 			props: deepmerge(pageProps, additionalProps),
-			dehydratedState: JSON.parse(JSON.stringify(dehydratedQueryClient)),
+			dehydratedState: dehydratedQueryClient,
 		},
 	};
 };

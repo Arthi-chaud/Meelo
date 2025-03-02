@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const getYear = (date: Date | string | null) =>
-	date ? new Date(date).getFullYear() : null;
+export const getDate = (date: Date | string | null) => {
+	if (date === null) {
+		return null;
+	}
+	if (typeof date === "string") {
+		return new Date(date);
+	}
+	return date;
+};
 
-export default getYear;
+export const getYear = (date: Date | string | null) =>
+	getDate(date)?.getFullYear() ?? null;

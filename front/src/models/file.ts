@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { yupdate } from "../utils/yup";
 import Resource from "./resource";
 
 const File = Resource.concat(
@@ -28,7 +29,7 @@ const File = Resource.concat(
 		/**
 		 * Date of the file registration
 		 */
-		registerDate: yup.date().required(),
+		registerDate: yupdate.required(),
 		/**
 		 * ID of the library
 		 */

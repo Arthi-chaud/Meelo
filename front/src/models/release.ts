@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { yupdate } from "../utils/yup";
 import Album from "./album";
 import Illustration from "./illustration";
 import Resource from "./resource";
@@ -49,7 +50,7 @@ const Release = Resource.concat(
 		/**
 		 * Date the release was *released*
 		 */
-		releaseDate: yup.date().required().nullable(),
+		releaseDate: yupdate.required().nullable(),
 	}),
 );
 

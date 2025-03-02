@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { yupdate } from "../utils/yup";
 import Illustration from "./illustration";
 import Resource from "./resource";
 import Song, { type SongInclude, SongWithRelations } from "./song";
@@ -56,7 +57,7 @@ export const Playlist = Resource.concat(
 		/**
 		 * the date the playlist was created
 		 */
-		createdAt: yup.date().required(),
+		createdAt: yupdate.required(),
 	}),
 );
 

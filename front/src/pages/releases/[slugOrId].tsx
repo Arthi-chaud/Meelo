@@ -69,10 +69,10 @@ import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 import { playTracksAtom } from "../../state/player";
 import { useAccentColor } from "../../utils/accent-color";
+import { getDate, getYear } from "../../utils/date";
 import formatDuration from "../../utils/formatDuration";
 import { generateArray } from "../../utils/gen-list";
 import getSlugOrId from "../../utils/getSlugOrId";
-import getYear from "../../utils/getYear";
 import { useGradientBackground } from "../../utils/gradient-background";
 import { useThemedSxValue } from "../../utils/themed-sx-value";
 
@@ -372,9 +372,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		if (!album.data || !release.data) {
 			return undefined;
 		}
-		const mkDate = (str: any) => (str ? new Date(str) : null);
-		const albumDate = mkDate(album.data?.releaseDate);
-		const releaseReleaseDate = mkDate(release.data?.releaseDate);
+		const albumDate = getDate(album.data.releaseDate);
+		const releaseReleaseDate = getDate(release.data.releaseDate);
 		if (releaseReleaseDate) {
 			if (
 				releaseReleaseDate.getMonth() === 0 &&
