@@ -20,6 +20,7 @@ func GetFrame(filepath string, timestamp int64) ([]byte, error) {
 	formattedDuration := fmt.Sprintf("%.2d:%.2d:%.2d", int(timestamp/3600), (timestamp/60)%60, timestamp%60)
 	thumbnail := bytes.NewBuffer(nil)
 	filters := []string{
+		"yadif",
 		"scale='max(iw,iw*sar)':'max(ih,ih/sar)'",
 		"select=gte(n\\,1)",
 	}
