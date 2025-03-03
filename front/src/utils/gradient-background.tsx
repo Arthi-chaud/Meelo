@@ -21,6 +21,8 @@ import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 import { generateArray } from "./gen-list";
 import { isSSR } from "./is-ssr";
+import { atom, useAtom } from "jotai";
+import { useEffect } from "react";
 
 const _colors = atom<string[] | null>(null);
 const colorsAtom = atom(
@@ -102,6 +104,7 @@ const GradientBackgroundComponent = ({
 				},
 			}}
 			style={{
+				transition: "opacity .4s ease-in",
 				background: gradient,
 			}}
 		/>
