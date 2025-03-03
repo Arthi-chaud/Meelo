@@ -17,47 +17,68 @@
  */
 
 import { Box, useTheme } from "@mui/material";
+import { atom, useAtom } from "jotai";
+import { useEffect } from "react";
 import { generateArray } from "./gen-list";
 import { isSSR } from "./is-ssr";
 
-export const useGradientBackground = (colors?: string[], index = 0) => {
-	const [color1, color2, color3, color4, color5] = Array.of(
-		...(colors ?? generateArray(5)),
-	).sort();
-	const gradientCSS = `
+const _colors = atom<string[] | null>(null);
+const colorsAtom = atom(
+	(get) => get(_colors),
+	(_, set, newColors: string[] | null) => set(_colors, newColors),
+);
+
+const gradientCSS = atom((get) => {
+	return computeGradient(get(colorsAtom) ?? generateArray(5));
+});
+
+const computeGradient = (colors: string[]) => {
+	const [color1, color2, color3, color4, color5] = Array.of(...colors).sort();
+	return `
 		radial-gradient(ellipse at 10% 90%, ${color1} 0%, transparent 55%),
 		radial-gradient(ellipse at 90% 90%, ${color2} 0%, transparent 55%),
 		radial-gradient(ellipse at 90% 10%, ${color3} 0%, transparent 55%),
 		radial-gradient(ellipse at 10% 10%, ${color4} 0%, transparent 55%),
 		radial-gradient(ellipse at 0% 100%, ${color5} 0%, transparent 55%)`;
+};
+
+export const useGradientBackground = (colors?: string[], index = 0) => {
+	const [_, setColors] = useAtom(colorsAtom);
+
+	useEffect(() => {
+		if (colors && colors.length >= 5) {
+			setColors(colors ?? null);
+		}
+	}, [colors]);
 	if (isSSR()) {
-		// If SSR, we cannot manipulate dom. So we leave the RootGB as it is, and add a new one to the dom
+		// If SSR, we cannot set atoms.
 		return {
 			GradientBackground: () => (
 				<GradientBackgroundComponent
-					gradient={gradientCSS}
+					gradient={computeGradient(colors ?? generateArray(5))}
 					index={index}
 				/>
 			),
 		};
 	}
-	// If CSR, we replace the style of the root component
-	if (colors && colors.length >= 5) {
-		document.getElementById(GradientBackgroundId)!.style.background =
-			gradientCSS;
-	}
 	// We still return a component to avoid SSR errors/warning
 	return {
-		GradientBackground: () => <GradientBackgroundComponent />,
+		GradientBackground: () => <Box suppressHydrationWarning />,
 	};
 };
+
+export const RootGradientBackground = () => {
+	const [gradient] = useAtom(gradientCSS);
+
+	return <GradientBackgroundComponent gradient={gradient} />;
+};
+
+// Core Component
 
 type GradientBackgroundProps = {
 	gradient?: string;
 	index?: number;
 };
-
-const GradientBackgroundId = "gradient-background";
 
 const GradientBackgroundComponent = ({
 	gradient,
@@ -68,7 +89,6 @@ const GradientBackgroundComponent = ({
 	return (
 		<Box
 			suppressHydrationWarning
-			id={GradientBackgroundId}
 			sx={{
 				position: "fixed",
 				top: 0,
@@ -87,5 +107,3 @@ const GradientBackgroundComponent = ({
 		/>
 	);
 };
-
-export const RootGradientBackground = GradientBackgroundComponent;
