@@ -40,10 +40,10 @@ import {
 import type Playlist from "../../models/playlist";
 import type { PlaylistWithRelations } from "../../models/playlist";
 import {
-	type TrackState,
+	type QueueTrack,
 	playAfterAtom,
 	playNextAtom,
-} from "../../state/player";
+} from "../../state/queue";
 import { store } from "../../state/store";
 import {
 	AddItemToPlaylistIcon,
@@ -59,7 +59,7 @@ import { WideLoadingComponent } from "../loading/loading";
 import type Action from "./action";
 
 export const PlayNextAction = (
-	getTrack: () => PromiseLike<TrackState>,
+	getTrack: () => PromiseLike<QueueTrack>,
 ): Action => ({
 	onClick: () =>
 		getTrack().then((track) => {
@@ -71,7 +71,7 @@ export const PlayNextAction = (
 });
 
 export const PlayAfterAction = (
-	getTrack: () => PromiseLike<TrackState>,
+	getTrack: () => PromiseLike<QueueTrack>,
 ): Action => ({
 	onClick: () =>
 		getTrack().then((track) => {

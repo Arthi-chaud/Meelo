@@ -21,7 +21,7 @@ import { useSetAtom } from "jotai";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
 import type { TrackWithRelations } from "../../models/track";
-import { playTrackAtom } from "../../state/player";
+import { playTrackAtom } from "../../state/queue";
 import TrackContextualMenu from "../contextual-menu/track-contextual-menu";
 import { MasterIcon, TrackIcon } from "../icons";
 import Illustration from "../illustration";

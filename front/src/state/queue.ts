@@ -20,16 +20,16 @@ import { atom } from "jotai";
 import type Artist from "../models/artist";
 import type { TrackWithRelations } from "../models/track";
 
-export type TrackState = {
+export type QueueTrack = {
 	track: TrackWithRelations<"illustration">;
 	artist: Artist;
 };
 
-export type PlayerState = {
+export type QueueState = {
 	/**
 	 * The collection of track in the playlist
 	 */
-	playlist: TrackState[];
+	playlist: QueueTrack[];
 	/**
 	 * The position of the current track in the playlist
 	 * Acts like a cursor
@@ -38,65 +38,65 @@ export type PlayerState = {
 	cursor: number;
 };
 
-export const cursorAtom = atom((get) => get(_playerState).cursor);
-export const playlistAtom = atom((get) => get(_playerState).playlist);
-export const playTrackAtom = atom(null, (_, set, track: TrackState) => {
-	set(_playerState, { playlist: [track], cursor: 0 });
+export const cursorAtom = atom((get) => get(_queueState).cursor);
+export const playlistAtom = atom((get) => get(_queueState).playlist);
+export const playTrackAtom = atom(null, (_, set, track: QueueTrack) => {
+	set(_queueState, { playlist: [track], cursor: 0 });
 });
 export const playTracksAtom = atom(
 	null,
-	(_, set, { tracks, cursor }: { tracks: TrackState[]; cursor?: number }) => {
-		set(_playerState, { playlist: tracks, cursor: cursor ?? 0 });
+	(_, set, { tracks, cursor }: { tracks: QueueTrack[]; cursor?: number }) => {
+		set(_queueState, { playlist: tracks, cursor: cursor ?? 0 });
 	},
 );
 export const skipTrackAtom = atom(null, (get, set) => {
-	const state = get(_playerState);
+	const state = get(_queueState);
 
 	let newCursor = state.cursor + 1;
 	if (newCursor >= state.playlist.length) {
 		newCursor = -1;
 	}
-	set(_playerState, {
+	set(_queueState, {
 		cursor: newCursor,
 		playlist: state.playlist,
 	});
 });
 
 export const playPreviousTrackAtom = atom(null, (get, set) => {
-	const state = get(_playerState);
+	const state = get(_queueState);
 	let newCursor = state.cursor;
 	if (newCursor >= 0) {
 		newCursor--;
 	}
-	set(_playerState, {
+	set(_queueState, {
 		cursor: newCursor,
 		playlist: state.playlist,
 	});
 });
 export const emptyPlaylistAtom = atom(null, (_, set) =>
-	set(_playerState, { playlist: [], cursor: -1 }),
+	set(_queueState, { playlist: [], cursor: -1 }),
 );
 
 export const removeTrackAtom = atom(null, (get, set, trackIndex: number) => {
-	const state = get(_playerState);
-	set(_playerState, {
+	const state = get(_queueState);
+	set(_queueState, {
 		cursor: state.cursor,
 		playlist: state.playlist.filter((_, i) => i !== trackIndex),
 	});
 });
-export const playNextAtom = atom(null, (get, set, track: TrackState) => {
-	const state = get(_playerState);
+export const playNextAtom = atom(null, (get, set, track: QueueTrack) => {
+	const state = get(_queueState);
 	state.playlist.splice(state.cursor + 1, 0, track);
 	const newState = {
 		cursor: state.cursor,
 		playlist: state.playlist,
 	};
-	set(_playerState, newState);
+	set(_queueState, newState);
 });
 
-export const playAfterAtom = atom(null, (get, set, track: TrackState) => {
-	const state = get(_playerState);
-	set(_playerState, {
+export const playAfterAtom = atom(null, (get, set, track: QueueTrack) => {
+	const state = get(_queueState);
+	set(_queueState, {
 		playlist: [...state.playlist, track],
 		cursor: state.cursor,
 	});
@@ -105,13 +105,13 @@ export const playAfterAtom = atom(null, (get, set, track: TrackState) => {
 export const reorderAtom = atom(
 	null,
 	(get, set, action: Record<"from" | "to", number>) => {
-		const state = get(_playerState);
+		const state = get(_queueState);
 		const [removed] = state.playlist.splice(action.from, 1);
 		state.playlist.splice(action.to, 0, removed);
-		set(_playerState, {
+		set(_queueState, {
 			...state,
 			playlist: state.playlist,
 		});
 	},
 );
-const _playerState = atom<PlayerState>({ playlist: [], cursor: -1 });
+const _queueState = atom<QueueState>({ playlist: [], cursor: -1 });

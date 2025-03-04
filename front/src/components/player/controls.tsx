@@ -52,7 +52,7 @@ import {
 	removeTrackAtom,
 	reorderAtom,
 	skipTrackAtom,
-} from "../../state/player";
+} from "../../state/queue";
 import formatArtists from "../../utils/formatArtists";
 import formatDuration from "../../utils/formatDuration";
 import { CreatePlaylistAction } from "../actions/playlist";

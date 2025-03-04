@@ -33,7 +33,7 @@ import {
 	emptyPlaylistAtom,
 	playAfterAtom,
 	playTrackAtom,
-} from "../../../state/player";
+} from "../../../state/queue";
 import { store } from "../../../state/store";
 import { DefaultItemSize } from "../../../utils/layout";
 import Controls, { type OptionState } from "../../controls/controls";

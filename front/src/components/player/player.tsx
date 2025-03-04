@@ -39,7 +39,7 @@ import {
 	playTracksAtom,
 	playlistAtom,
 	skipTrackAtom,
-} from "../../state/player";
+} from "../../state/queue";
 import { userAtom } from "../../state/user";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";

@@ -20,7 +20,7 @@ import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import type { SongWithRelations } from "../../models/song";
 import type { SongGroupWithRelations } from "../../models/song-group";
-import { playTrackAtom } from "../../state/player";
+import { playTrackAtom } from "../../state/queue";
 import formatArtists from "../../utils/formatArtists";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import { SongIcon } from "../icons";

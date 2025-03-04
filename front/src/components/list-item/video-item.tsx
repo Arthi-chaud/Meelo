@@ -19,7 +19,7 @@
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import type { VideoWithRelations } from "../../models/video";
-import { playTrackAtom } from "../../state/player";
+import { playTrackAtom } from "../../state/queue";
 import formatArtists from "../../utils/formatArtists";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 import { VideoIcon } from "../icons";

@@ -61,7 +61,7 @@ import type {
 import type Release from "../../../models/release";
 import type { SongWithRelations } from "../../../models/song";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
-import { playTracksAtom } from "../../../state/player";
+import { playTracksAtom } from "../../../state/queue";
 import { generateArray } from "../../../utils/gen-list";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { useGradientBackground } from "../../../utils/gradient-background";

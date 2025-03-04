@@ -67,7 +67,7 @@ import type Tracklist from "../../models/tracklist";
 import type { TracklistItemWithRelations } from "../../models/tracklist";
 import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { playTracksAtom } from "../../state/player";
+import { playTracksAtom } from "../../state/queue";
 import { useAccentColor } from "../../utils/accent-color";
 import { getDate, getYear } from "../../utils/date";
 import formatDuration from "../../utils/formatDuration";

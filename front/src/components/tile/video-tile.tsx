@@ -20,7 +20,7 @@ import { useSetAtom } from "jotai";
 import API from "../../api/api";
 import { useQueryClient } from "../../api/use-query";
 import type { VideoWithRelations } from "../../models/video";
-import { playTrackAtom } from "../../state/player";
+import { playTrackAtom } from "../../state/queue";
 import formatDuration from "../../utils/formatDuration";
 import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
 import { VideoIcon } from "../icons";

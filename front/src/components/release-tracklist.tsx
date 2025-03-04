@@ -43,11 +43,11 @@ import type { TrackWithRelations } from "../models/track";
 import type Tracklist from "../models/tracklist";
 import type { VideoWithRelations } from "../models/video";
 import {
-	type TrackState,
+	type QueueTrack,
 	cursorAtom,
 	playTracksAtom,
 	playlistAtom,
-} from "../state/player";
+} from "../state/queue";
 import formatArtists from "../utils/formatArtists";
 import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
@@ -87,7 +87,7 @@ const ReleaseTrackList = ({
 	const [cursor] = useAtom(cursorAtom);
 	const playTracks = useSetAtom(playTracksAtom);
 	const currentlyPlayingTrack = useMemo(
-		() => playlist[cursor] as TrackState | undefined,
+		() => playlist[cursor] as QueueTrack | undefined,
 		[playlist, cursor],
 	);
 	const flatTracklist = tracklist

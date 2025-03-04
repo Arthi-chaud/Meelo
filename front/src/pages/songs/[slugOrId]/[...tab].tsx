@@ -47,7 +47,7 @@ import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import { useTabRouter } from "../../../components/tab-router";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
-import { playTrackAtom } from "../../../state/player";
+import { playTrackAtom } from "../../../state/queue";
 import { useAccentColor } from "../../../utils/accent-color";
 import { generateArray } from "../../../utils/gen-list";
 import getSlugOrId from "../../../utils/getSlugOrId";
