@@ -18,7 +18,7 @@
 
 import { Box, useTheme } from "@mui/material";
 import { atom, useAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { generateArray } from "./gen-list";
 import { isSSR } from "./is-ssr";
 
@@ -28,26 +28,15 @@ const colorsAtom = atom(
 	(_, set, newColors: string[] | null) => set(_colors, newColors),
 );
 
-const gradientCSS = atom((get) => {
-	return computeGradient(get(colorsAtom) ?? generateArray(5));
-});
-
-const computeGradient = (colors: string[]) => {
-	const [color1, color2, color3, color4, color5] = Array.of(...colors).sort();
-	return `
-		radial-gradient(ellipse at 10% 90%, ${color1} 0%, transparent 55%),
-		radial-gradient(ellipse at 90% 90%, ${color2} 0%, transparent 55%),
-		radial-gradient(ellipse at 90% 10%, ${color3} 0%, transparent 55%),
-		radial-gradient(ellipse at 10% 10%, ${color4} 0%, transparent 55%),
-		radial-gradient(ellipse at 0% 100%, ${color5} 0%, transparent 55%)`;
-};
-
-export const useGradientBackground = (colors?: string[], index = 0) => {
+export const useGradientBackground = (
+	colors: string[] | null | undefined,
+	index = 0,
+) => {
 	const [_, setColors] = useAtom(colorsAtom);
 
 	useEffect(() => {
 		if (colors && colors.length >= 5) {
-			setColors(colors ?? null);
+			setColors(colors?.sort() ?? null);
 		}
 	}, [colors]);
 	if (isSSR()) {
@@ -55,7 +44,7 @@ export const useGradientBackground = (colors?: string[], index = 0) => {
 		return {
 			GradientBackground: () => (
 				<GradientBackgroundComponent
-					gradient={computeGradient(colors ?? generateArray(5))}
+					colors={colors?.sort() ?? null}
 					index={index}
 				/>
 			),
@@ -68,24 +57,65 @@ export const useGradientBackground = (colors?: string[], index = 0) => {
 };
 
 export const RootGradientBackground = () => {
-	const [gradient] = useAtom(gradientCSS);
+	// When Client-Side Rendering, we set CSS variables to the atom state
+	// That way, we can setup a smooth transition
+	const [colors] = useAtom(colorsAtom);
+	const colorVars = useMemo(() => {
+		return colors?.map((_, i) => `var(--gradientColor${i + 1})`) ?? null;
+	}, [colors]);
+	const style = useMemo(() => {
+		return colors?.reduce((res, c, i) => {
+			return {
+				[`--gradientColor${i + 1}`]: c,
+				...res,
+			};
+		}, {});
+	}, [colors]);
 
-	return <GradientBackgroundComponent gradient={gradient} />;
+	return (
+		<Box sx={style}>
+			<GradientBackgroundComponent colors={colorVars} />
+		</Box>
+	);
 };
 
 // Core Component
 
 type GradientBackgroundProps = {
-	gradient?: string;
+	colors: string[] | null;
 	index?: number;
 };
 
+const computeGradient = (colors: string[]) => {
+	const [color1, color2, color3, color4, color5] = colors;
+	return `
+		radial-gradient(ellipse at 10% 90%, ${color1} 0%, transparent 55%),
+		radial-gradient(ellipse at 90% 90%, ${color2} 0%, transparent 55%),
+		radial-gradient(ellipse at 90% 10%, ${color3} 0%, transparent 55%),
+		radial-gradient(ellipse at 10% 10%, ${color4} 0%, transparent 55%),
+		radial-gradient(ellipse at 0% 100%, ${color5} 0%, transparent 55%)`;
+};
+
 const GradientBackgroundComponent = ({
-	gradient,
+	colors,
 	index,
 }: GradientBackgroundProps) => {
 	const theme = useTheme();
+	const [transition, setTransition] = useState("");
 
+	useEffect(() => {
+		// Ok so we cant have the transition set at all times because at hydration, the atom/colors will be null,
+		// leading to a flash from SSR gradient, to no background, to CSR/atom gradient
+		// We set transition 'after' the colors have been passed to the CSS
+		// to avoid that flash
+		if (colors && !transition) {
+			setTransition(
+				[1, 2, 3, 4, 5]
+					.map((i) => `--gradientColor${i} .3s`)
+					.join(", "),
+			);
+		}
+	}, [colors]);
 	return (
 		<Box
 			suppressHydrationWarning
@@ -102,7 +132,8 @@ const GradientBackgroundComponent = ({
 				},
 			}}
 			style={{
-				background: gradient,
+				transition,
+				background: computeGradient(colors ?? generateArray(5)),
 			}}
 		/>
 	);
