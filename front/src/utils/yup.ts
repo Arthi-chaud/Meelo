@@ -67,4 +67,4 @@ export function union<TCast extends yup.Maybe<unknown>, C, O>(
 }
 
 // We need this as re-hydrared dates are still strings
-export const yupdate = union(yup.string(), yup.date());
+export const yupdate = union(yup.string().nullable(), yup.date().nullable());
