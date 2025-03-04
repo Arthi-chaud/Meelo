@@ -62,10 +62,11 @@ export class Selector {
 	artist?: Filter<ArtistQueryParameters.WhereInput>;
 
 	@IsOptional()
-	@TransformFilter(AlbumService, {
-		description: "Filter videos by album",
+	@ApiPropertyOptional({
+		description: "Get videos by album",
 	})
-	album?: Filter<AlbumQueryParameters.WhereInput>;
+	@TransformIdentifier(AlbumService)
+	album?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@TransformFilter(LibraryService, {

@@ -55,7 +55,7 @@ namespace VideoQueryParameters {
 	export type ManyWhereInput = Partial<
 		RequireAtLeastOne<{
 			name: SearchStringInput;
-			album: Filter<AlbumQueryParameters.WhereInput>;
+			album: AlbumQueryParameters.WhereInput;
 			artist?: Filter<ArtistQueryParameters.WhereInput>;
 			library: Filter<AlbumQueryParameters.WhereInput>;
 			group: SongGroupQueryParameters.WhereInput;
