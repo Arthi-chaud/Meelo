@@ -36,20 +36,16 @@ import { useKeyboardBinding } from "../../contexts/keybindings";
 import {
 	cursorAtom,
 	playPreviousTrackAtom,
-	playTracksAtom,
 	playlistAtom,
 	skipTrackAtom,
 } from "../../state/queue";
-import { userAtom } from "../../state/user";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
 import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
 
 const Player = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const [user] = useAtom(userAtom);
 	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
-	const playTracks = useSetAtom(playTracksAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const [cursor] = useAtom(cursorAtom);
 	const [playlist] = useAtom(playlistAtom);
@@ -225,12 +221,6 @@ const Player = () => {
 			});
 		}
 	}, [useTranscoding]);
-	useEffect(() => {
-		if (!user) {
-			pause();
-			playTracks({ tracks: [] });
-		}
-	}, [user]);
 	useKeyboardBinding(
 		{
 			key: "p",
