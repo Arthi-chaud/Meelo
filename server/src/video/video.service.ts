@@ -17,11 +17,12 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { Prisma, VideoType } from "@prisma/client";
+import { AlbumType, Prisma, VideoType } from "@prisma/client";
 import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -312,106 +313,106 @@ export default class VideoService extends SearchableRepositoryService {
 				name: buildStringSearchParameters(where.name),
 			});
 		}
-		// if (where.album) {
-		// 	query = deepmerge(query, {
-		// 		OR: [
-		// 			{
-		// 				// Video tracks from singles that are extras
-		// 				// applicable only if album is studio recording
-		// 				tracks: {
-		// 					some: {
-		// 						release: {
-		// 							album: { type: AlbumType.Single },
-		// 							tracks: {
-		// 								some: {
-		// 									song: {
-		// 										tracks: {
-		// 											some: {
-		// 												release: {
-		// 													album: {
-		// 														...AlbumService.formatWhereInput(
-		// 															where.album,
-		// 														),
-		// 														type: AlbumType.StudioRecording,
-		// 													},
-		// 												},
-		// 											},
-		// 										},
-		// 									},
-		// 								},
-		// 							},
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 			{
-		// 				song: {
-		// 					tracks: {
-		// 						some: {
-		// 							release: {
-		// 								album: AlbumService.formatWhereInput(
-		// 									where.album,
-		// 								),
-		// 							},
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		//
-		// 			{
-		// 				group: {
-		// 					versions: {
-		// 						some: {
-		// 							tracks: {
-		// 								some: {
-		// 									release: {
-		// 										album: AlbumService.formatWhereInput(
-		// 											where.album,
-		// 										),
-		// 									},
-		// 								},
-		// 							},
-		// 						},
-		// 					},
-		// 				},
-		// 			},
-		// 			{
-		// 				tracks: {
-		// 					some: {
-		// 						OR: [
-		// 							{
-		// 								video: {
-		// 									tracks: {
-		// 										some: {
-		// 											release: {
-		// 												album: AlbumService.formatWhereInput(
-		// 													where.album,
-		// 												),
-		// 											},
-		// 										},
-		// 									},
-		// 								},
-		// 							},
-		// 							{
-		// 								song: {
-		// 									tracks: {
-		// 										some: {
-		// 											release: {
-		// 												album: AlbumService.formatWhereInput(
-		// 													where.album,
-		// 												),
-		// 											},
-		// 										},
-		// 									},
-		// 								},
-		// 							},
-		// 						],
-		// 					},
-		// 				},
-		// 			},
-		// 		],
-		// 	});
-		// }
+		if (where.album) {
+			query = deepmerge(query, {
+				OR: [
+					{
+						// Video tracks from singles that are extras
+						// applicable only if album is studio recording
+						tracks: {
+							some: {
+								release: {
+									album: { type: AlbumType.Single },
+									tracks: {
+										some: {
+											song: {
+												tracks: {
+													some: {
+														release: {
+															album: {
+																...AlbumService.formatWhereInput(
+																	where.album,
+																),
+																type: AlbumType.StudioRecording,
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						song: {
+							tracks: {
+								some: {
+									release: {
+										album: AlbumService.formatWhereInput(
+											where.album,
+										),
+									},
+								},
+							},
+						},
+					},
+
+					{
+						group: {
+							versions: {
+								some: {
+									tracks: {
+										some: {
+											release: {
+												album: AlbumService.formatWhereInput(
+													where.album,
+												),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						tracks: {
+							some: {
+								OR: [
+									{
+										video: {
+											tracks: {
+												some: {
+													release: {
+														album: AlbumService.formatWhereInput(
+															where.album,
+														),
+													},
+												},
+											},
+										},
+									},
+									{
+										song: {
+											tracks: {
+												some: {
+													release: {
+														album: AlbumService.formatWhereInput(
+															where.album,
+														),
+													},
+												},
+											},
+										},
+									},
+								],
+							},
+						},
+					},
+				],
+			});
+		}
 
 		if (where.library) {
 			query = deepmerge(query, {
