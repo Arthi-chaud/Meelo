@@ -27,7 +27,11 @@ import type { TrackWithRelations } from "../../models/track";
 import { userAtom } from "../../state/user";
 import type Action from "../actions/action";
 import { DownloadAction } from "../actions/download";
-import { GoToReleaseAction, GoToSongLyricsAction } from "../actions/link";
+import {
+	GoToReleaseAction,
+	GoToSongInfoAction,
+	GoToSongLyricsAction,
+} from "../actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
@@ -87,7 +91,10 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 						: undefined,
 				].filter((a): a is Action => a !== undefined),
 				props.track.song
-					? [GoToSongLyricsAction(props.track.song.slug)]
+					? [
+							GoToSongLyricsAction(props.track.song.slug),
+							GoToSongInfoAction(props.track.song.slug),
+						]
 					: [],
 				[
 					PlayNextAction(getPlayNextProps),

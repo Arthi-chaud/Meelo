@@ -28,6 +28,7 @@ import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
 	GoToReleaseAsyncAction,
+	GoToSongInfoAction,
 	GoToSongLyricsAction,
 	GoToSongVersionAction,
 } from "../actions/link";
@@ -78,7 +79,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 							(await getMasterTrack()).release?.slug ?? null,
 					),
 				],
-				[GoToSongLyricsAction(songSlug)],
+				[GoToSongLyricsAction(songSlug), GoToSongInfoAction(songSlug)],
 				[
 					PlayNextAction(getPlayNextProps),
 					PlayAfterAction(getPlayNextProps),
