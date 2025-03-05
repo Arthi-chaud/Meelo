@@ -17,12 +17,31 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import {
+	IsNotEmpty,
+	IsString,
+	Validate,
+	ValidationArguments,
+	ValidatorConstraint,
+	ValidatorConstraintInterface,
+} from "class-validator";
+import * as path from "node:path";
+
+@ValidatorConstraint({ name: "customText", async: false })
+export class IsRelative implements ValidatorConstraintInterface {
+	validate(text: string, args: ValidationArguments) {
+		return !path.isAbsolute(text);
+	}
+	defaultMessage(args: ValidationArguments) {
+		return "Path should be relative";
+	}
+}
 
 export default class CreateLibraryDto {
 	@ApiProperty({
 		description: "The local path to the library to create",
 	})
+	@Validate(IsRelative)
 	@IsString()
 	@IsNotEmpty()
 	path: string;
