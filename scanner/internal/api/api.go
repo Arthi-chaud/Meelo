@@ -132,7 +132,9 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	if m.Duration > 0 {
 		mp.WriteField("duration", strconv.FormatInt(m.Duration, 10))
 	}
-	// TODO BPM
+	if m.Bpm > 0 {
+		mp.WriteField("bpm", fmt.Sprintf("%.2f", m.Bpm))
+	}
 
 	mp.WriteField("type", string(m.Type))
 	for i, genre := range m.Genres {
