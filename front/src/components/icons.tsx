@@ -50,7 +50,9 @@ export const BurgerIcon = Iconsax.HambergerMenu;
 export const AddIcon = Iconsax.AddCircle;
 export const DeleteIcon = Iconsax.Trash;
 export const ShuffleIcon = Iconsax.Shuffle;
-export const InfoIcon = Iconsax.InfoCircle;
+export const InfoIcon = (props: IconProps) => (
+	<Iconsax.InfoCircle style={{ rotate: "180deg" }} {...props} />
+);
 export const AddToPlaylistIcon = Iconsax.MusicSquareAdd;
 export const AddItemToPlaylistIcon = Iconsax.MusicSquareAdd;
 export const PlayNextIcon = Iconsax.MusicSquareAdd;
