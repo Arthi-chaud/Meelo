@@ -52,6 +52,7 @@ namespace SongQueryParameters {
 		| "type"
 		| "featuring"
 		| "groupId"
+		| "bpm"
 	> & {
 		artist: ArtistQueryParameters.WhereInput;
 		group: SongGroupQueryParameters.GetOrCreateInput;
@@ -59,6 +60,7 @@ namespace SongQueryParameters {
 			Pick<ArtistQueryParameters.WhereInput, "slug">
 		>[];
 		registeredAt?: Date;
+		bpm?: number | null;
 		genres: GenreQueryParameters.WhereInput[];
 	};
 

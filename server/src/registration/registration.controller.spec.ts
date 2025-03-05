@@ -37,6 +37,7 @@ const validMetadata: MetadataDto = {
 	name: "...Baby One More Time (feat. B)",
 	type: "Audio",
 	genres: ["My Genre"],
+	bpm: 120,
 	fingerprint: "AcoustId",
 };
 
@@ -184,6 +185,7 @@ describe("Registration Controller", () => {
 			);
 			expect(song.name).toBe("...Baby One More Time");
 			expect(song.artist.name).toBe(validMetadata.artist);
+			expect(song.bpm).toBe(120);
 			expect(song.featuring.length).toBe(2);
 			expect(song.featuring[0].name).toBe("B");
 			expect(song.featuring[1].name).toBe(validMetadata.featuring![0]);

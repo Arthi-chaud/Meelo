@@ -142,6 +142,7 @@ export default class MetadataService {
 							featuring: featuringArtists.map(({ slug }) => ({
 								slug: new Slug(slug),
 							})),
+							bpm: metadata.bpm,
 							genres: genres.map((genre) => ({ id: genre.id })),
 							registeredAt: file.registerDate,
 						},

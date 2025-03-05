@@ -116,6 +116,7 @@ export default class SongService extends SearchableRepositoryService {
 						GenreService.formatWhereInput(genre),
 					),
 				},
+				bpm: song.bpm,
 				group: {
 					connectOrCreate: {
 						create: SongService.formatSongGroupCreateInput(

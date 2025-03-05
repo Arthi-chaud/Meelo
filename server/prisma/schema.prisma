@@ -295,6 +295,8 @@ model Song {
     searchHistory    SearchHistory[]
     illustration     SongIllustration?
     videos           Video[]
+    /// @description Beats per minute
+    bpm              Float?
 
     @@unique([slug, artistId])
     @@map("songs")
