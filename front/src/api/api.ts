@@ -435,7 +435,6 @@ export default class API {
 		return API.fetch({
 			route: "/libraries",
 			data: { name: libraryName, path: libraryPath },
-			errorMessage: "Library Creation Failed",
 			parameters: {},
 			method: "POST",
 			validator: Library,
