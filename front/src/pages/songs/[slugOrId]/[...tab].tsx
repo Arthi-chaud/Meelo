@@ -20,6 +20,7 @@ import {
 	Box,
 	Button,
 	Divider,
+	Skeleton,
 	Stack,
 	Tab,
 	Tabs,
@@ -99,7 +100,7 @@ const prepareSSR = async (
 	};
 };
 
-const tabs = ["lyrics", "versions", "videos", "tracks", "more"] as const;
+const tabs = ["lyrics", "versions", "videos", "tracks", "info"] as const;
 
 const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { selectedTab, selectTab } = useTabRouter(
@@ -171,14 +172,22 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 			</Tabs>
 			<Box sx={{ paddingY: 2 }}>
-				{selectedTab === "more" && (
+				{selectedTab === "info" && (
 					<>
 						<Head
 							title={
-								song.data &&
-								`${song.data?.name} (${t("moreInfo")})`
+								song.data && `${song.data?.name} (${t("info")})`
 							}
 						/>
+						{song.data ? (
+							song.data.bpm ? (
+								<Typography
+									sx={{ paddingTop: 1, paddingBottom: 4 }}
+								>{`BPM: ${song.data.bpm}`}</Typography>
+							) : null
+						) : (
+							<Skeleton width={"50px"} />
+						)}
 						{(genres.items === undefined ||
 							genres.items.length !== 0) && (
 							<Stack

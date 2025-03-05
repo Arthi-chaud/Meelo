@@ -65,6 +65,7 @@ export const Song = Resource.concat(
 		 * Type of song
 		 */
 		type: yup.mixed<SongType>().oneOf(SongType).required(),
+		bpm: yup.number().required().nullable(),
 	}),
 );
 
@@ -97,6 +98,7 @@ export type SongWithRelations<Selection extends SongInclude | never = never> =
 export default Song;
 export const SongSortingKeys = [
 	"name",
+	"bpm",
 	"artistName",
 	"releaseDate",
 	"addDate",
