@@ -133,6 +133,7 @@ namespace SongQueryParameters {
 		"artistName",
 		"addDate",
 		"releaseDate",
+		"bpm",
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}

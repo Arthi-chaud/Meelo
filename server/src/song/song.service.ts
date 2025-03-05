@@ -428,6 +428,14 @@ export default class SongService extends SearchableRepositoryService {
 					{ artist: { slug: "asc" } },
 				);
 				break;
+			case "bpm":
+				sort.push(
+					{
+						bpm: { sort: sortingParameter.order, nulls: "last" },
+					},
+					{ nameSlug: "asc" },
+				);
+				break;
 			case "addDate":
 				sort.push(
 					{ registeredAt: sortingParameter.order },
