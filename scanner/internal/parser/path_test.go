@@ -16,6 +16,8 @@ func getPathTestConfig() config.UserSettings {
 	return config.UserSettings{
 		TrackRegex: []string{
 			"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\s+\\((?P<Artist>.*)\\)\\..*$",
+			"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\s\\[(?P<BPM>\\d+)\\sBPM\\]\\..*$",
+
 			"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$",
 		},
 	}
@@ -69,4 +71,12 @@ func TestPathCompilation(t *testing.T) {
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "My Track", m.Name)
 	assert.Equal(t, internal.IllustrationLocation(""), m.IllustrationLocation)
+}
+
+func TestPathBPM(t *testing.T) {
+	path := "/data/Compilations/My Album (2006)/1-02 My Track [140 BPM].m4v"
+	m, _ := parseMetadataFromPath(getPathTestConfig(), path)
+
+	assert.Equal(t, "My Track", m.Name)
+	assert.Equal(t, float64(140), m.Bpm)
 }

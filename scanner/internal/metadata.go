@@ -32,6 +32,7 @@ type Metadata struct {
 	DiscIndex int64
 	// Bitrate of the file, in kbps
 	Bitrate int64 `validate:"gte=0"`
+	Bpm     float64
 	// Duration, in seconds
 	Duration int64 `validate:"gte=0"`
 	// Type of the track
