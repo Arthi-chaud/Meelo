@@ -22,7 +22,6 @@ import {
 	DialogContent,
 	DialogTitle,
 	Grid,
-	Typography,
 } from "@mui/material";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useTranslation } from "react-i18next";
@@ -79,7 +78,7 @@ const LibraryForm = (props: LibraryFormProps) => {
 								fullWidth: true,
 								label: t("pathOfLibrary"),
 								helperText:
-									"Path should be relative to the DATA_DIR variable",
+									"Path should be relative to the 'DATA_DIR' variable. Use './' if the library path is 'DATA_DIR' ",
 							}}
 							gridProps={{}}
 							rules={{
