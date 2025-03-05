@@ -103,7 +103,7 @@ export default class TestPrismaService extends PrismaService {
 			{
 				data: [
 					{ name: "Library", path: "Music", slug: "library" },
-					{ name: "Library 2", path: "Music 2/", slug: "library-2" },
+					{ name: "Library 2", path: "Music 2", slug: "library-2" },
 				],
 			},
 		);

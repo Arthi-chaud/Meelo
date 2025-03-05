@@ -263,9 +263,17 @@ export class RegistrationService {
 			filePath = filePath.slice(1);
 		}
 		const allLibraries = await this.libraryService.getMany({});
+
 		const matchingLibrary = allLibraries.find((l) =>
+			// Does not work if library path == '.'
 			filePath.startsWith(path.normalize(`${l.path}/`)),
 		);
+		// If we can't find a matching a library,
+		// Handle edge case where library path == DATA_DIR,
+		// thus path == '.'
+		if (matchingLibrary == null) {
+			return allLibraries.find((l) => l.path === ".") ?? null;
+		}
 		return matchingLibrary ?? null;
 	}
 	private toRelativePath(fullFilePath: string, parentLibrary: Library) {

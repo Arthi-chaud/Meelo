@@ -144,7 +144,7 @@ describe("Registration Controller", () => {
 						.expect(({ body }) => {
 							expect(
 								body.message.includes(
-									"Libraty could not be found using path",
+									"Library could not be found using path",
 								),
 							).toBeTruthy();
 						});
