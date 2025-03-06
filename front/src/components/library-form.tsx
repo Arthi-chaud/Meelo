@@ -77,6 +77,8 @@ const LibraryForm = (props: LibraryFormProps) => {
 							textFieldProps={{
 								fullWidth: true,
 								label: t("pathOfLibrary"),
+								helperText:
+									"Path should be relative to the 'DATA_DIR' variable. Use './' if the library path is 'DATA_DIR' ",
 							}}
 							gridProps={{}}
 							rules={{

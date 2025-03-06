@@ -16,12 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as path from "node:path";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import {
+	IsNotEmpty,
+	IsString,
+	Validate,
+	ValidationArguments,
+	ValidatorConstraint,
+	ValidatorConstraintInterface,
+} from "class-validator";
+
+@ValidatorConstraint({ name: "customText", async: false })
+export class IsRelative implements ValidatorConstraintInterface {
+	validate(text: string, args: ValidationArguments) {
+		return !path.isAbsolute(text);
+	}
+	defaultMessage(args: ValidationArguments) {
+		return "Path should be relative";
+	}
+}
 
 export default class CreateLibraryDto {
 	@ApiProperty({
 		description: "The local path to the library to create",
+	})
+	@Validate(IsRelative)
+	@Transform(({ value }) => {
+		const s = (value as string).replace("//", "/");
+
+		if (s.startsWith("./") && s !== "./") {
+			return s.slice(2);
+		}
+		return s;
 	})
 	@IsString()
 	@IsNotEmpty()

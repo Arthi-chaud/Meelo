@@ -87,18 +87,46 @@ describe("Library Controller", () => {
 			return request(app.getHttpServer())
 				.post("/libraries")
 				.send({
-					path: "/Path",
+					path: "Path",
 				})
 				.expect(400);
 		});
-		it("should fail, as it already exists", async () => {
+
+		it("should fail, as the path is absolute", async () => {
 			return request(app.getHttpServer())
 				.post("/libraries")
 				.send({
 					path: "/Path",
-					name: "Library",
+					name: "Library 3",
+				})
+				.expect(400);
+		});
+		it("should fail, as path is already taken", async () => {
+			return request(app.getHttpServer())
+				.post("/libraries")
+				.send({
+					path: "Music 2/",
+					name: "Library 3",
 				})
 				.expect(409);
+		});
+
+		it("should create a library at DATA_DIR", async () => {
+			await request(app.getHttpServer())
+				.post("/libraries")
+				.send({
+					path: "./",
+					name: "My New Library 2",
+				})
+				.expect(201)
+				.expect((res) => {
+					const library = res.body;
+					expect(library.id).toBeDefined();
+					expect(library.path).toBe(".");
+				});
+			await dummyRepository.library.delete({
+				where: { slug: "my-new-library-2" },
+			});
 		});
 	});
 
@@ -199,14 +227,14 @@ describe("Library Controller", () => {
 			return request(app.getHttpServer())
 				.put(`/libraries/${dummyRepository.library1.slug}`)
 				.send({
-					path: "/hello-world",
+					path: "./hello-world",
 				})
 				.expect(200)
 				.expect((res) => {
 					const updatedLibrary: Library = res.body;
 					expect(updatedLibrary).toStrictEqual({
 						...dummyRepository.library1,
-						path: "/hello-world",
+						path: "hello-world",
 					});
 				});
 		});
