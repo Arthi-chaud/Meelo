@@ -116,6 +116,7 @@ export default class SongService extends SearchableRepositoryService {
 						GenreService.formatWhereInput(genre),
 					),
 				},
+				bpm: song.bpm,
 				group: {
 					connectOrCreate: {
 						create: SongService.formatSongGroupCreateInput(
@@ -425,6 +426,14 @@ export default class SongService extends SearchableRepositoryService {
 				sort.push(
 					{ nameSlug: sortingParameter.order },
 					{ artist: { slug: "asc" } },
+				);
+				break;
+			case "bpm":
+				sort.push(
+					{
+						bpm: { sort: sortingParameter.order, nulls: "last" },
+					},
+					{ nameSlug: "asc" },
 				);
 				break;
 			case "addDate":

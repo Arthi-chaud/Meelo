@@ -97,6 +97,12 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 	if index := regex.SubexpIndex("DiscogsId"); index != -1 {
 		metadata.DiscogsId = matches[index]
 	}
+	if index := regex.SubexpIndex("BPM"); index != -1 {
+		bpm, err := strconv.ParseFloat(matches[index], 64)
+		if err == nil {
+			metadata.Bpm = bpm
+		}
+	}
 	return metadata, errors
 }
 

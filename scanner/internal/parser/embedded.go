@@ -99,6 +99,12 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 			"\n",
 		)
 	})
+	ParseTag(tags, []string{"bpm", "tbp"}, func(value string) {
+		bpm, err := strconv.ParseFloat(value, 64)
+		if err == nil {
+			metadata.Bpm = bpm
+		}
+	})
 	ParseTag(tags, []string{"disc", "tpos"}, func(value string) {
 		rawDiscValue, _, _ := strings.Cut(value, "/")
 		discValue, _ := strconv.Atoi(rawDiscValue)

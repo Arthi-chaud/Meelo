@@ -25,6 +25,7 @@ import { DownloadAction } from "../actions/download";
 import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
+	GoToSongInfoAction,
 	GoToSongLyricsAction,
 	GoToSongVersionAction,
 } from "../actions/link";
@@ -57,7 +58,12 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 			onSelect={props.onSelect}
 			actions={[
 				[GoToArtistAction(props.artist.slug)],
-				songSlug ? [GoToSongLyricsAction(songSlug)] : [],
+				songSlug
+					? [
+							GoToSongLyricsAction(songSlug),
+							GoToSongInfoAction(songSlug),
+						]
+					: [],
 				[
 					PlayNextAction(async () => props),
 					PlayAfterAction(async () => props),

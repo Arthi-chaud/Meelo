@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 import {
 	AlbumIcon,
 	ArtistIcon,
+	InfoIcon,
 	LyricsIcon,
 	RelatedTracksIcon,
 	SearchIcon,
@@ -35,6 +36,14 @@ export const GoToSongLyricsAction = (
 	href: `/songs/${songIdentifier}/lyrics`,
 	label: "seeLyrics",
 	icon: <LyricsIcon />,
+});
+
+export const GoToSongInfoAction = (
+	songIdentifier: string | number,
+): Action => ({
+	href: `/songs/${songIdentifier}/info`,
+	label: "songInfo",
+	icon: <InfoIcon />,
 });
 
 export const GoToArtistAction = (

@@ -180,4 +180,9 @@ export default class Metadata {
 	@IsOptional()
 	@MinLength(1)
 	fingerprint?: string;
+
+	@IsNumber()
+	@IsOptional()
+	@ApiProperty()
+	bpm?: number;
 }

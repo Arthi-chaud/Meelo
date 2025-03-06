@@ -47,8 +47,17 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		remastered: track.data
 			? t(track.data.isRemastered ? "yes" : "no")
 			: undefined,
+		bpm: track.data?.song
+			? (track.data.song.bpm ?? t("Unknown"))
+			: track.data?.song === undefined
+				? undefined
+				: "N/A",
 		duration: track.data ? formatDuration(track.data.duration) : undefined,
-		bitRate: track.data ? `${track.data.bitrate} kbps` : undefined,
+		bitRate: track.data
+			? track.data.bitrate
+				? `${track.data.bitrate} kbps`
+				: t("Unknown")
+			: undefined,
 		type: track.data?.type,
 		extension: sourceFile.data
 			? (sourceFile.data.path

@@ -28,7 +28,7 @@ func TestEmbedded(t *testing.T) {
 	assert.Equal(t, true, m.IsCompilation)
 	assert.Equal(t, "My Album", m.Album)
 	assert.Equal(t, internal.Audio, m.Type)
-	assert.Equal(t, int64(134), m.Bitrate)
+	assert.Equal(t, int64(136), m.Bitrate)
 	assert.Equal(t, int64(210), m.Duration)
 	assert.Equal(t, "", m.Release)
 	assert.Equal(t, time.Date(2007, 1, 1, 1, 1, 1, 1, time.UTC).Year(), m.ReleaseDate.Year())

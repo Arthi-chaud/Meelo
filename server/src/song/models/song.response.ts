@@ -84,6 +84,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			nameSlug: song.nameSlug,
 			artistId: song.artistId,
 			masterId: song.masterId,
+			bpm: song.bpm,
 			type: song.type,
 			registeredAt: song.registeredAt,
 			groupId: song.groupId,

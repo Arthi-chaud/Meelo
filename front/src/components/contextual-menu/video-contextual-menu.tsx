@@ -26,6 +26,7 @@ import { DownloadAction } from "../actions/download";
 import {
 	GoToArtistAction,
 	GoToReleaseAction,
+	GoToSongInfoAction,
 	GoToSongLyricsAction,
 } from "../actions/link";
 import {
@@ -75,7 +76,10 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 						: undefined,
 				].filter((a): a is Action => a !== undefined),
 				props.video.songId
-					? [GoToSongLyricsAction(props.video.songId)]
+					? [
+							GoToSongLyricsAction(props.video.songId),
+							GoToSongInfoAction(props.video.songId),
+						]
 					: [],
 				[
 					PlayNextAction(getPlayNextProps),
