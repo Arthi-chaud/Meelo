@@ -132,7 +132,7 @@ class TestGenius(unittest.TestCase):
                 expected=expected,
             ):
                 search_res: SongSearchResult = provider.search_song(
-                    song_name, artist_name, feat
+                    song_name, artist_name, feat, None
                 )  # pyright: ignore
                 if expected:
                     self.assertIsNotNone(search_res)

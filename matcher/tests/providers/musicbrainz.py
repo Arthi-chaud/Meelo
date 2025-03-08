@@ -203,7 +203,7 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [song_name, artist_name, featuring, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name, featuring=featuring):
-                song = provider.search_song(song_name, artist_name, featuring)
+                song = provider.search_song(song_name, artist_name, featuring, None)
                 self.assertIsNotNone(song)
                 self.assertIn(song.id, expected)  # pyright: ignore
 

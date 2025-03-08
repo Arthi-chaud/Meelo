@@ -129,10 +129,14 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     # Song
 
     def search_song(
-        self, song_name: str, artist_name: str, featuring_artists: List[str]
+        self,
+        song_name: str,
+        artist_name: str,
+        featuring_artists: List[str],
+        duration: int | None,
     ) -> SongSearchResult | None:
         f = self.get_feature(SearchSongFeature)
-        return f.run(song_name, artist_name, featuring_artists) if f else None
+        return f.run(song_name, artist_name, featuring_artists, duration) if f else None
 
     def search_song_with_acoustid(
         self, song_acoustid: str, duration: int, song_name: str
