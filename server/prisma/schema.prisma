@@ -423,15 +423,15 @@ enum RipSource {
 model Lyrics {
     /// @description Unique numeric Lyrics identifier
     /// @example 123
-    id      Int    @id @default(autoincrement())
+    id     Int    @id @default(autoincrement())
     /// @description The lyrics of the song
     /// @example Hello\\nWorld
-    content String
+    plain  String
     /// @description The parent song
-    song    Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+    song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
     /// @description Unique numeric identifier of the related song
     /// @example 123
-    songId  Int    @unique
+    songId Int    @unique
 
     @@map("lyrics")
 }

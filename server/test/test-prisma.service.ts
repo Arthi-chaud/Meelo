@@ -289,7 +289,7 @@ export default class TestPrismaService extends PrismaService {
 			data: [
 				{
 					songId: this.songA1.id,
-					content: "1234",
+					plain: "1234",
 				},
 			],
 		});

@@ -59,7 +59,7 @@ describe("Lyrics Service", () => {
 				plain: "AZE",
 				songId: dummyRepository.songB1.id,
 			});
-			expect(lyricsB1.content).toBe("AZE");
+			expect(lyricsB1.plain).toBe("AZE");
 			expect(lyricsB1.songId).toBe(dummyRepository.songB1.id);
 		});
 
