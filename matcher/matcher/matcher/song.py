@@ -133,7 +133,7 @@ def match_song(
         if not plain_lyrics:
             plain_lyrics = provider.get_plain_song_lyrics(song)
         if not plain_lyrics and synced_lyrics:
-            plain_lyrics = "\n".join(list(synced_lyrics.values()))
+            plain_lyrics = "\n".join("\n".join([line for (_, line) in synced_lyrics]))
         genres = genres + (
             [g for g in provider.get_song_genres(song) or [] if g not in genres]
             if need_genres
@@ -142,7 +142,7 @@ def match_song(
         if description and plain_lyrics and genres:
             break
     if not plain_lyrics and synced_lyrics:
-        plain_lyrics = "\n".join(list(synced_lyrics.values()))
+        plain_lyrics = "\n".join("\n".join([line for (_, line) in synced_lyrics]))
     return SongMatchResult(
         ExternalMetadataDto(
             description,

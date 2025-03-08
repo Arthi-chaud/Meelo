@@ -6,6 +6,7 @@ from .matcher.album import *
 from .matcher.song import *
 from .providers.metacritic import *
 from .providers.allmusic import *
+from .providers.lrclib import *
 from .providers.wikipedia import *
 from .providers.musicbrainz import *
 from .providers.genius import *

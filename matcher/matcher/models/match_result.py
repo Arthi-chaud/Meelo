@@ -1,16 +1,16 @@
-from typing import List, Dict
+from typing import List, Tuple
 from matcher.models.api.dto import ExternalMetadataDto
 from datetime import date
 from dataclasses import dataclass
 
 from matcher.providers.domain import AlbumType
 
-type SyncedLyrics = Dict[float, str]
+type SyncedLyrics = List[Tuple[float, str]]
 
 
 @dataclass
 class LyricsMatchResult:
-    plain: str | None
+    plain: str
     synced: SyncedLyrics | None
 
 

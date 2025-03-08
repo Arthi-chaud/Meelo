@@ -22,11 +22,20 @@ class TestMatchSong(unittest.TestCase):
         if not MatcherTestUtils.is_ci():
             self.assertIsNotNone(res.lyrics)
             self.assertIsNotNone(res.lyrics.plain)
+            self.assertIsNotNone(res.lyrics.synced)
 
-            self.assertIn("[Verse 1: Britney Spears]", res.lyrics.plain)
+            self.assertIn("I've been thinking\n", res.lyrics.plain)
             self.assertIn(
-                "baby, you my right now\nIf there was a scale",
+                "baby, you're my right now\n\nIf there was a scale",
                 res.lyrics.plain,
+            )
+            self.assertEqual(
+                15.22,
+                res.lyrics.synced[0][0],
+            )
+            self.assertEqual(
+                "I've been thinking",
+                res.lyrics.synced[0][1],
             )
 
         # Matches
