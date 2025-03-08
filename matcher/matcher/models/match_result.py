@@ -5,17 +5,19 @@ from dataclasses import dataclass
 
 from matcher.providers.domain import AlbumType
 
+type SyncedLyrics = Dict[float, str]
+
 
 @dataclass
 class LyricsMatchResult:
     plain: str | None
-    synced: Dict[float, str] | None
+    synced: SyncedLyrics | None
 
 
 @dataclass
 class SongMatchResult:
     metadata: ExternalMetadataDto | None
-    lyrics: str | None
+    lyrics: LyricsMatchResult | None
     genres: List[str]
 
 
