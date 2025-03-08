@@ -379,7 +379,7 @@ describe("Song Controller", () => {
 				.expect((res) => {
 					const lyrics: LyricsResponse = res.body;
 					expect(lyrics.plain).toStrictEqual(
-						dummyRepository.lyricsA1.content,
+						dummyRepository.lyricsA1.plain,
 					);
 				});
 		});
@@ -409,7 +409,7 @@ describe("Song Controller", () => {
 						{ id: dummyRepository.songA2.id },
 						{ lyrics: true },
 					);
-					expect(song.lyrics!.content).toBe("123456");
+					expect(song.lyrics!.plain).toBe("123456");
 				});
 		});
 
@@ -424,7 +424,7 @@ describe("Song Controller", () => {
 						{ id: dummyRepository.songA1.id },
 						{ lyrics: true },
 					);
-					expect(song.lyrics!.content).toBe("BLABLABLA");
+					expect(song.lyrics!.plain).toBe("BLABLABLA");
 				});
 		});
 

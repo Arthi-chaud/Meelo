@@ -89,7 +89,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			type: song.type,
 			registeredAt: song.registeredAt,
 			groupId: song.groupId,
-			lyrics: song.lyrics ? { plain: song.lyrics?.content } : song.lyrics,
+			lyrics: song.lyrics,
 			featuring: song.featuring
 				? await Promise.all(
 						song.featuring.map((artist) =>
