@@ -87,6 +87,7 @@ import { accessTokenAtom } from "../state/user";
 import { isSSR } from "../utils/is-ssr";
 import type { SortingParameters } from "../utils/sorting";
 import type { InfiniteQuery, Query } from "./use-query";
+import { Lyrics } from "../models/lyrics";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),
@@ -1158,7 +1159,7 @@ export default class API {
 	 * @param slugOrId the id of the song
 	 * @returns A query for an array of strings
 	 */
-	static getSongLyrics(slugOrId: string | number): Query<string[] | null> {
+	static getSongLyrics(slugOrId: string | number): Query<Lyrics | null> {
 		return {
 			key: ["song", slugOrId, "lyrics"],
 			exec: () =>
@@ -1166,8 +1167,7 @@ export default class API {
 					route: `/songs/${slugOrId}/lyrics`,
 					errorMessage: "Lyrics loading failed",
 					parameters: {},
-					customValidator: async (value) =>
-						(value as { lyrics: string }).lyrics.split("\n"),
+					validator: Lyrics,
 				}).catch(() => null),
 		};
 	}
