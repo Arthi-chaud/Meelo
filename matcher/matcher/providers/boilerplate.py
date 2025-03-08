@@ -1,3 +1,4 @@
+from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseProvider
 from datetime import date
 from .features import (
@@ -32,7 +33,7 @@ from .features import (
     SearchSongWithAcoustIdFeature,
 )
 from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult, SongSearchResult
-from typing import Any, List, Dict
+from typing import Any, List
 
 
 class BaseProviderBoilerplate[S](BaseProvider[S]):
@@ -156,7 +157,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetPlainSongLyricsFeature)
         return f.run(song) if f else None
 
-    def get_synced_song_lyrics(self, song: Any) -> Dict[float, str] | None:
+    def get_synced_song_lyrics(self, song: Any) -> SyncedLyrics | None:
         f = self.get_feature(GetSyncedSongLyricsFeature)
         return f.run(song) if f else None
 

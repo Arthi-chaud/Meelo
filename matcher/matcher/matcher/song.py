@@ -2,11 +2,12 @@ import logging
 
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
-from matcher.models.match_result import SongMatchResult
+from matcher.models.match_result import LyricsMatchResult, SongMatchResult, SyncedLyrics
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetSongDescriptionFeature,
     GetPlainSongLyricsFeature,
+    GetSyncedSongLyricsFeature,
 )
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
@@ -34,9 +35,10 @@ def match_and_post_song(song_id: int, song_name: str):
             )
             context.client.post_external_metadata(res.metadata)
 
-        if res.lyrics:
+        # TODO POST Synced Lyrics
+        if res.lyrics and res.lyrics.plain:
             logging.info(f"Found lyrics for song {song.name}")
-            context.client.post_song_lyrics(song_id, res.lyrics)
+            context.client.post_song_lyrics(song_id, res.lyrics.plain)
         if res.genres:
             logging.info(f"Found {len(res.genres)} genres for song {song.name}")
             context.client.post_song_genres(song_id, res.genres)
@@ -55,7 +57,8 @@ def match_song(
     need_genres = Context.get().settings.push_genres
     context = Context.get()
     genres: List[str] = []
-    lyrics: str | None = None
+    plain_lyrics: str | None = None
+    synced_lyrics: SyncedLyrics | None = None
     description: str | None = None
     external_sources: List[ExternalMetadataSourceDto] = []
     # We could skip using crossreference using wikidata,
@@ -99,7 +102,16 @@ def match_song(
         provider = common.get_provider_from_external_source(source)
         is_useful = (
             (not description and provider.has_feature(GetSongDescriptionFeature))
-            or (not lyrics and provider.has_feature(GetPlainSongLyricsFeature))
+            or (
+                not plain_lyrics
+                and (
+                    provider.has_feature(GetPlainSongLyricsFeature)
+                    or (provider.has_feature(GetSyncedSongLyricsFeature))
+                )
+            )
+            or (
+                not synced_lyrics and (provider.has_feature(GetSyncedSongLyricsFeature))
+            )
             or (
                 need_genres
                 and len(genres) == 0
@@ -116,15 +128,21 @@ def match_song(
             continue
         if not description:
             description = provider.get_song_description(song)
-        if not lyrics:
-            lyrics = provider.get_plain_song_lyrics(song)
+        if not synced_lyrics:
+            synced_lyrics = provider.get_synced_song_lyrics(song)
+        if not plain_lyrics:
+            plain_lyrics = provider.get_plain_song_lyrics(song)
+        if not plain_lyrics and synced_lyrics:
+            plain_lyrics = "\n".join(list(synced_lyrics.values()))
         genres = genres + (
             [g for g in provider.get_song_genres(song) or [] if g not in genres]
             if need_genres
             else []
         )
-        if description and lyrics and genres:
+        if description and plain_lyrics and genres:
             break
+    if not plain_lyrics and synced_lyrics:
+        plain_lyrics = "\n".join(list(synced_lyrics.values()))
     return SongMatchResult(
         ExternalMetadataDto(
             description,
@@ -136,6 +154,6 @@ def match_song(
         )
         if len(external_sources) > 0 or description
         else None,
-        lyrics,
+        LyricsMatchResult(plain_lyrics, synced_lyrics) if plain_lyrics else None,
         genres,
     )
