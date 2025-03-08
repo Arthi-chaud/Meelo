@@ -50,6 +50,11 @@ class MetacriticSettings(BaseProviderSettings):
 
 
 @dataclass
+class LrcLibSettings(BaseProviderSettings):
+    name = "LrcLib"
+
+
+@dataclass
 class Settings:
     push_genres: bool
     provider_settings: list[BaseProviderSettings]
@@ -75,6 +80,7 @@ class Settings:
                     "allmusic": AllMusicSettings,
                     "wikipedia": WikipediaSettings,
                     "metacritic": MetacriticSettings,
+                    "lrclib": LrcLibSettings,
                 }
                 if key not in provider_dict:
                     logging.warning(
