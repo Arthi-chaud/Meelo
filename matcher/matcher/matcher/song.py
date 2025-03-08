@@ -1,6 +1,6 @@
 import logging
 
-from typing import List, Tuple
+from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.providers.features import (
     GetAlbumGenresFeature,
@@ -16,15 +16,16 @@ def match_and_post_song(song_id: int, song_name: str):
     try:
         context = Context.get()
         song = context.client.get_song(song_id)
-        source_file = context.client.get_file(song.master.source_file_id)
+        source_file = (
+            context.client.get_file(song.master.source_file_id) if song.master else None
+        )
         (dto, lyrics, genres) = match_song(
             song_id,
             song.name,
             song.artist.name,
             [f.name for f in song.featuring],
-            (source_file.fingerprint, song.master.duration)
-            if source_file.fingerprint and song.master.duration
-            else None,
+            song.master.duration if song.master else None,
+            source_file.fingerprint if source_file else None,
         )
         if dto:
             logging.info(
@@ -47,7 +48,8 @@ def match_song(
     song_name: str,
     artist_name: str,
     featuring: List[str],
-    acoustid_and_duration: Tuple[str, int] | None,
+    duration: int | None,
+    acoustid: str | None,
 ) -> tuple[ExternalMetadataDto | None, str | None, List[str]]:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
@@ -60,13 +62,11 @@ def match_song(
     # + Searching using Genius seems efficient enough
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: (
-            mb.search_song_with_acoustid(
-                acoustid_and_duration[0], acoustid_and_duration[1], song_name
-            )
-            or mb.search_song(song_name, artist_name, featuring)
+            mb.search_song_with_acoustid(acoustid, duration, song_name)
+            or mb.search_song(song_name, artist_name, featuring, duration)
         )
-        if acoustid_and_duration
-        else mb.search_song(song_name, artist_name, featuring),
+        if acoustid is not None and duration is not None
+        else mb.search_song(song_name, artist_name, featuring, duration),
         lambda mb, mbid: mb.get_song(mbid),
         lambda mb, mbid: mb.get_song_url_from_id(mbid),
     )
@@ -84,7 +84,7 @@ def match_song(
     # Resolve by searching
     sources_ids = [source.provider_id for source in external_sources]
     for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
-        search_res = provider.search_song(song_name, artist_name, featuring)
+        search_res = provider.search_song(song_name, artist_name, featuring, duration)
         if not search_res:
             continue
         song_url = provider.get_song_url_from_id(str(search_res.id))

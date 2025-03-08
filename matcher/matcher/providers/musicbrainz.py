@@ -81,7 +81,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 lambda album: self._get_album_release_date(album)
             ),
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
-            SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
+            SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
             SearchSongWithAcoustIdFeature(
                 lambda acoustid, dur, name: self._search_song_with_acoustid(
                     acoustid, dur, name

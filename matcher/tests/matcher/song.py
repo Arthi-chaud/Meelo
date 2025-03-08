@@ -11,7 +11,7 @@ class TestMatchSong(unittest.TestCase):
 
     def test_get_song_with_featuring_artist(self):
         [matches, lyrics, genres] = match_song(
-            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None
+            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None, None
         )
         # Genres
         self.assertIn("Pop", genres)
@@ -56,7 +56,7 @@ class TestMatchSong(unittest.TestCase):
         context = Context.get()
         context.settings.push_genres = False
         [matches, lyrics, genres] = match_song(
-            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None
+            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None, None
         )
         # Teardown
         context.settings.push_genres = True

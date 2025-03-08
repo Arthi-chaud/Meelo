@@ -114,7 +114,13 @@ class GetWikidataAlbumRelationKeyFeature(GetWikidataRelationKeyFeature):
 
 
 class SearchSongFeature(
-    BaseFeature[ResourceName, ResourceName, List[ResourceName], SongSearchResult | None]
+    BaseFeature[
+        ResourceName,
+        ResourceName,
+        List[ResourceName],
+        int | None,
+        SongSearchResult | None,
+    ]
 ):
     pass
 
