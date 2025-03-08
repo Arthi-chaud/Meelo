@@ -9,6 +9,7 @@ from matcher.providers.base import BaseProvider
 from matcher.providers.factory import ProviderFactory
 from matcher.settings import (
     GeniusSettings,
+    LrcLibSettings,
     Settings,
     WikipediaSettings,
     AllMusicSettings,
@@ -49,6 +50,7 @@ class MatcherTestUtils:
             MetacriticSettings(name=MetacriticSettings.name),
             WikipediaSettings(name=WikipediaSettings.name),
             AllMusicSettings(name=AllMusicSettings.name),
+            LrcLibSettings(name=LrcLibSettings.name),
             GeniusSettings(
                 api_key=os.environ[geniusTokenKey], name=GeniusSettings.name
             ),
