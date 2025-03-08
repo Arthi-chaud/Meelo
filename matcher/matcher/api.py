@@ -120,7 +120,7 @@ class API:
         self._put(f"/albums/{album_id}", json=dto.to_dict())
 
     def post_song_lyrics(self, song_id: int, lyrics: str):
-        self._post(f"/songs/{song_id}/lyrics", json={"lyrics": lyrics})
+        self._post(f"/songs/{song_id}/lyrics", json={"plain": lyrics})
 
     def post_song_genres(self, song_id: int, genres: List[str]):
         self._put(f"/songs/{song_id}", json={"genres": genres})
