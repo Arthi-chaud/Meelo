@@ -1,5 +1,6 @@
 from datetime import date
-from typing import Any, List
+from typing import Any, Dict, List
+from matcher.models.match_result import LyricsMatchResult
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
     AlbumSearchResult,
@@ -143,7 +144,11 @@ class GetSongGenresFeature(BaseFeature[Any, List[str] | None]):
     pass
 
 
-class GetSongLyricsFeature(BaseFeature[Any, str | None]):
+class GetPlainSongLyricsFeature(BaseFeature[Any, str | None]):
+    pass
+
+
+class GetSyncedSongLyricsFeature(BaseFeature[Any, Dict[float, str] | None]):
     pass
 
 

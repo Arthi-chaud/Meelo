@@ -6,7 +6,7 @@ from matcher.models.match_result import SongMatchResult
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetSongDescriptionFeature,
-    GetSongLyricsFeature,
+    GetPlainSongLyricsFeature,
 )
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
@@ -99,7 +99,7 @@ def match_song(
         provider = common.get_provider_from_external_source(source)
         is_useful = (
             (not description and provider.has_feature(GetSongDescriptionFeature))
-            or (not lyrics and provider.has_feature(GetSongLyricsFeature))
+            or (not lyrics and provider.has_feature(GetPlainSongLyricsFeature))
             or (
                 need_genres
                 and len(genres) == 0
@@ -117,7 +117,7 @@ def match_song(
         if not description:
             description = provider.get_song_description(song)
         if not lyrics:
-            lyrics = provider.get_song_lyrics(song)
+            lyrics = provider.get_plain_song_lyrics(song)
         genres = genres + (
             [g for g in provider.get_song_genres(song) or [] if g not in genres]
             if need_genres

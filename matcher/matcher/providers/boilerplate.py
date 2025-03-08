@@ -19,7 +19,8 @@ from .features import (
     GetSongFeature,
     GetSongGenresFeature,
     GetSongIdFromUrlFeature,
-    GetSongLyricsFeature,
+    GetSyncedSongLyricsFeature,
+    GetPlainSongLyricsFeature,
     GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
@@ -31,12 +32,7 @@ from .features import (
     SearchSongWithAcoustIdFeature,
 )
 from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult, SongSearchResult
-from typing import Any, List
-
-
-# A = ParamSpec("A")
-# R = TypeVar("R")
-# F = TypeVar("F", bound=BaseFeature, covariant=True)
+from typing import Any, List, Dict
 
 
 class BaseProviderBoilerplate[S](BaseProvider[S]):
@@ -156,8 +152,12 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetSongGenresFeature)
         return f.run(song) if f else None
 
-    def get_song_lyrics(self, song: Any) -> str | None:
-        f = self.get_feature(GetSongLyricsFeature)
+    def get_plain_song_lyrics(self, song: Any) -> str | None:
+        f = self.get_feature(GetPlainSongLyricsFeature)
+        return f.run(song) if f else None
+
+    def get_synced_song_lyrics(self, song: Any) -> Dict[float, str] | None:
+        f = self.get_feature(GetSyncedSongLyricsFeature)
         return f.run(song) if f else None
 
     def get_wikidata_song_relation_key(self) -> str | None:

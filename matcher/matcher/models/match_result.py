@@ -1,9 +1,15 @@
-from typing import List
+from typing import List, Dict
 from matcher.models.api.dto import ExternalMetadataDto
 from datetime import date
 from dataclasses import dataclass
 
 from matcher.providers.domain import AlbumType
+
+
+@dataclass
+class LyricsMatchResult:
+    plain: str | None
+    synced: Dict[float, str] | None
 
 
 @dataclass
