@@ -482,7 +482,7 @@ describe("Song Service", () => {
 				},
 			});
 			const tmpLyrics = await lyricsService.createOrUpdate({
-				content: "1234",
+				plain: "1234",
 				songId: tmpSong.id,
 			});
 			await songService.delete([{ id: tmpSong.id }]);

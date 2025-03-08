@@ -46,10 +46,10 @@ export class LyricsService {
 		return this.prismaService.lyrics
 			.upsert({
 				update: {
-					content: input.content,
+					content: input.plain,
 				},
 				create: {
-					content: input.content,
+					content: input.plain,
 					songId: input.songId,
 				},
 				where: {

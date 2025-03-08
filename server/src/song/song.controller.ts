@@ -277,7 +277,7 @@ export class SongController {
 		const song = await this.songService.get(where);
 		return this.lyricsService
 			.get({ songId: song.id })
-			.then(({ content }) => ({ lyrics: content }));
+			.then(({ content, ...res }) => ({ plain: content, ...res }));
 	}
 
 	@ApiOperation({
@@ -294,10 +294,10 @@ export class SongController {
 
 		return this.lyricsService
 			.createOrUpdate({
-				content: updateLyricsDto.lyrics,
+				plain: updateLyricsDto.plain,
 				songId: song.id,
 			})
-			.then(({ content }) => ({ lyrics: content }));
+			.then(({ content, ...res }) => ({ plain: content, ...res }));
 	}
 
 	@ApiOperation({
