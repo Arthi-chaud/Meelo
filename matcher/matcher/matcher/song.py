@@ -2,6 +2,7 @@ import logging
 
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
+from matcher.models.match_result import SongMatchResult
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetSongDescriptionFeature,
@@ -19,7 +20,7 @@ def match_and_post_song(song_id: int, song_name: str):
         source_file = (
             context.client.get_file(song.master.source_file_id) if song.master else None
         )
-        (dto, lyrics, genres) = match_song(
+        res = match_song(
             song_id,
             song.name,
             song.artist.name,
@@ -27,18 +28,18 @@ def match_and_post_song(song_id: int, song_name: str):
             song.master.duration if song.master else None,
             source_file.fingerprint if source_file else None,
         )
-        if dto:
+        if res.metadata:
             logging.info(
-                f"Matched with {len(dto.sources)} providers for song {song_name}"
+                f"Matched with {len(res.metadata.sources)} providers for song {song_name}"
             )
-            context.client.post_external_metadata(dto)
+            context.client.post_external_metadata(res.metadata)
 
-        if lyrics:
+        if res.lyrics:
             logging.info(f"Found lyrics for song {song.name}")
-            context.client.post_song_lyrics(song_id, lyrics)
-        if genres:
-            logging.info(f"Found {len(genres)} genres for song {song.name}")
-            context.client.post_song_genres(song_id, genres)
+            context.client.post_song_lyrics(song_id, res.lyrics)
+        if res.genres:
+            logging.info(f"Found {len(res.genres)} genres for song {song.name}")
+            context.client.post_song_genres(song_id, res.genres)
     except Exception as e:
         logging.error(e)
 
@@ -50,7 +51,7 @@ def match_song(
     featuring: List[str],
     duration: int | None,
     acoustid: str | None,
-) -> tuple[ExternalMetadataDto | None, str | None, List[str]]:
+) -> SongMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
     genres: List[str] = []
@@ -124,7 +125,7 @@ def match_song(
         )
         if description and lyrics and genres:
             break
-    return (
+    return SongMatchResult(
         ExternalMetadataDto(
             description,
             artist_id=None,
