@@ -21,7 +21,7 @@ namespace LyricsQueryParameters {
 	 * Parameters required to create a Lyric entry
 	 */
 	export type CreateInput = {
-		content: string;
+		plain: string;
 		songId: number;
 	};
 	/**

@@ -27,7 +27,8 @@ import {
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
 import Logger from "src/logger/logger";
-import { type Lyrics, Song, type SongWithRelations } from "src/prisma/models";
+import { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import { Song, type SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
 	type TrackResponse,
@@ -39,7 +40,7 @@ export class SongResponse extends IntersectionType(
 	Song,
 	IllustratedResponse,
 	class {
-		lyrics?: Lyrics | null;
+		lyrics?: LyricsResponse | null;
 		artist?: ArtistResponse;
 		master?: TrackResponse;
 		featuring?: ArtistResponse[];
@@ -88,7 +89,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			type: song.type,
 			registeredAt: song.registeredAt,
 			groupId: song.groupId,
-			lyrics: song.lyrics,
+			lyrics: song.lyrics ? { plain: song.lyrics?.content } : song.lyrics,
 			featuring: song.featuring
 				? await Promise.all(
 						song.featuring.map((artist) =>

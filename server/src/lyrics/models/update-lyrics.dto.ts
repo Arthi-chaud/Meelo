@@ -25,5 +25,5 @@ export default class LyricsDto {
 	})
 	@IsString()
 	@IsNotEmpty()
-	lyrics: string;
+	plain: string;
 }

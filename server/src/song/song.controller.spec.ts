@@ -1,7 +1,8 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { IllustrationType, SongType } from "@prisma/client";
-import type { Lyrics, Song } from "src/prisma/models";
+import { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import type { Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import SongModule from "src/song/song.module";
@@ -376,10 +377,10 @@ describe("Song Controller", () => {
 				.get(`/songs/${dummyRepository.songA1.slug}/lyrics`)
 				.expect(200)
 				.expect((res) => {
-					const lyrics: Lyrics = res.body;
-					expect(lyrics).toStrictEqual({
-						lyrics: dummyRepository.lyricsA1.content,
-					});
+					const lyrics: LyricsResponse = res.body;
+					expect(lyrics.plain).toStrictEqual(
+						dummyRepository.lyricsA1.content,
+					);
 				});
 		});
 
@@ -401,7 +402,7 @@ describe("Song Controller", () => {
 			return request(app.getHttpServer())
 				.post(`/songs/${dummyRepository.songA2.id}/lyrics`)
 				.send({
-					lyrics: "123456",
+					plain: "123456",
 				})
 				.expect(async () => {
 					const song = await songService.get(
@@ -416,7 +417,7 @@ describe("Song Controller", () => {
 			return request(app.getHttpServer())
 				.post(`/songs/${dummyRepository.songA1.id}/lyrics`)
 				.send({
-					lyrics: "BLABLABLA",
+					plain: "BLABLABLA",
 				})
 				.expect(async () => {
 					const song = await songService.get(
@@ -431,7 +432,7 @@ describe("Song Controller", () => {
 			return request(app.getHttpServer())
 				.post(`/songs/${-1}/lyrics`)
 				.send({
-					lyrics: "BLABLABLA",
+					plain: "BLABLABLA",
 				})
 				.expect(404);
 		});

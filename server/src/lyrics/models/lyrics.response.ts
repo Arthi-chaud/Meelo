@@ -21,7 +21,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class LyricsResponse {
 	@ApiProperty({
 		description:
-			"A new-line-separated string, representing the lyrics of a song",
+			"A new-line-separated string, representing the plain lyrics of a song",
 	})
-	lyrics: string;
+	plain: string;
 }
