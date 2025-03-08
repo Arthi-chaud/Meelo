@@ -604,7 +604,7 @@ const ExpandedPlayerControls = (
 					{parentSong.data && (
 						<LyricsBox
 							lyrics={
-								parentSong.data.lyrics?.content.split("\n") ??
+								parentSong.data.lyrics?.plain.split("\n") ??
 								null
 							}
 							songName={props.track?.name}

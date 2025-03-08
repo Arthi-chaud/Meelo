@@ -19,7 +19,7 @@
 import * as yup from "yup";
 import Artist from "./artist";
 import Illustration from "./illustration";
-import Lyrics from "./lyrics";
+import { Lyrics } from "./lyrics";
 import Resource from "./resource";
 import Track from "./track";
 
