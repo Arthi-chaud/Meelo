@@ -47,10 +47,12 @@ export class LyricsService {
 			.upsert({
 				update: {
 					plain: input.plain,
+					synced: input.synced,
 				},
 				create: {
 					plain: input.plain,
 					songId: input.songId,
+					synced: input.synced,
 				},
 				where: {
 					songId: input.songId,

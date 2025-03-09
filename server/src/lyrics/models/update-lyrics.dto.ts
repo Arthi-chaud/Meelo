@@ -17,13 +17,32 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import {
+	IsDefined,
+	IsNotEmpty,
+	IsOptional,
+	IsString,
+	ValidateNested,
+} from "class-validator";
+import { SyncedLyric } from "./lyrics.response";
 
 export default class LyricsDto {
 	@ApiProperty({
 		description: "The new lyrics",
 	})
 	@IsString()
+	@IsDefined()
 	@IsNotEmpty()
 	plain: string;
+
+	@ApiProperty({
+		description: "The new synced lyrics",
+		type: SyncedLyric,
+		isArray: true,
+	})
+	@IsOptional()
+	@Type(() => SyncedLyric)
+	@ValidateNested({ each: true })
+	synced?: SyncedLyric[];
 }

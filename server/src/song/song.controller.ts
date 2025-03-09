@@ -292,6 +292,7 @@ export class SongController {
 
 		return this.lyricsService.createOrUpdate({
 			plain: updateLyricsDto.plain,
+			synced: updateLyricsDto.synced,
 			songId: song.id,
 		});
 	}

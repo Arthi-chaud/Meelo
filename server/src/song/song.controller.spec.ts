@@ -1,7 +1,7 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { IllustrationType, SongType } from "@prisma/client";
-import { LyricsResponse } from "src/lyrics/models/lyrics.response";
+import { LyricsResponse, SyncedLyric } from "src/lyrics/models/lyrics.response";
 import type { Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
@@ -403,6 +403,9 @@ describe("Song Controller", () => {
 				.post(`/songs/${dummyRepository.songA2.id}/lyrics`)
 				.send({
 					plain: "123456",
+					synced: [
+						{ content: "123456", timestamp: 0 },
+					] satisfies SyncedLyric[],
 				})
 				.expect(async () => {
 					const song = await songService.get(
@@ -410,6 +413,12 @@ describe("Song Controller", () => {
 						{ lyrics: true },
 					);
 					expect(song.lyrics!.plain).toBe("123456");
+					expect(song.lyrics?.synced).toStrictEqual([
+						{
+							content: "123456",
+							timestamp: 0,
+						},
+					]);
 				});
 		});
 
@@ -418,6 +427,9 @@ describe("Song Controller", () => {
 				.post(`/songs/${dummyRepository.songA1.id}/lyrics`)
 				.send({
 					plain: "BLABLABLA",
+					synced: [
+						{ content: "BLABLABLA", timestamp: 1 },
+					] satisfies SyncedLyric[],
 				})
 				.expect(async () => {
 					const song = await songService.get(
@@ -425,9 +437,23 @@ describe("Song Controller", () => {
 						{ lyrics: true },
 					);
 					expect(song.lyrics!.plain).toBe("BLABLABLA");
+					expect(song.lyrics!.synced).toStrictEqual([
+						{
+							content: "BLABLABLA",
+							timestamp: 1,
+						},
+					]);
 				});
 		});
-
+		it("should return an error, as the synced lyrics are badly typed", () => {
+			return request(app.getHttpServer())
+				.post(`/songs/${dummyRepository.lyricsA1.id}/lyrics`)
+				.send({
+					plain: "BLABLABLA",
+					synced: [{ a: "1" }],
+				})
+				.expect(400);
+		});
 		it("should return an error, as the song does not exist", () => {
 			return request(app.getHttpServer())
 				.post(`/songs/${-1}/lyrics`)
