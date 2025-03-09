@@ -38,6 +38,7 @@ import {
 import File from "../models/file";
 import Genre from "../models/genre";
 import Library from "../models/library";
+import { Lyrics } from "../models/lyrics";
 import PaginatedResponse, {
 	type PaginationParameters,
 } from "../models/pagination";
@@ -87,7 +88,6 @@ import { accessTokenAtom } from "../state/user";
 import { isSSR } from "../utils/is-ssr";
 import type { SortingParameters } from "../utils/sorting";
 import type { InfiniteQuery, Query } from "./use-query";
-import { Lyrics } from "../models/lyrics";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),

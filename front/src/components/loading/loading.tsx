@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// TODO Delete?
+
 import { Box, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Bars } from "react-loader-spinner";

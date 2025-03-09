@@ -42,7 +42,8 @@ import {
 } from "../../state/player";
 import { userAtom } from "../../state/user";
 import { DrawerBreakpoint } from "../scaffold/scaffold";
-import { ExpandedPlayerControls, MinimizedPlayerControls } from "./controls";
+import { ExpandedPlayerControls } from "./controls/expanded";
+import { MinimizedPlayerControls } from "./controls/minimized";
 
 const Player = () => {
 	const { t } = useTranslation();
