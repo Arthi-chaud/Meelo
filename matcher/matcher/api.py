@@ -13,6 +13,7 @@ from matcher.models.api.dto import (
 )
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
+from matcher.models.match_result import SyncedLyrics
 from matcher.providers.domain import AlbumType
 
 T = TypeVar("T", bound=DataClassJsonMixin)
@@ -119,8 +120,16 @@ class API:
         )
         self._put(f"/albums/{album_id}", json=dto.to_dict())
 
-    def post_song_lyrics(self, song_id: int, lyrics: str):
-        self._post(f"/songs/{song_id}/lyrics", json={"plain": lyrics})
+    def post_song_lyrics(
+        self, song_id: int, plain_lyrics: str, synced_lyrics: SyncedLyrics | None
+    ):
+        dto = {"plain": plain_lyrics}
+        if synced_lyrics:
+            formatted = [
+                {"timestamp": t, "content": line} for (t, line) in synced_lyrics
+            ]
+            dto = {**dto, "synced": formatted}
+        self._post(f"/songs/{song_id}/lyrics", json=dto)
 
     def post_song_genres(self, song_id: int, genres: List[str]):
         self._put(f"/songs/{song_id}", json={"genres": genres})

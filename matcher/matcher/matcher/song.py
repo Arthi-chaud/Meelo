@@ -35,10 +35,13 @@ def match_and_post_song(song_id: int, song_name: str):
             )
             context.client.post_external_metadata(res.metadata)
 
-        # TODO POST Synced Lyrics
-        if res.lyrics and res.lyrics.plain:
-            logging.info(f"Found lyrics for song {song.name}")
-            context.client.post_song_lyrics(song_id, res.lyrics.plain)
+        if res.lyrics:
+            logging.info(
+                f"Found {'synced lyrics' if res.lyrics.synced else 'lyrics'} for song {song.name}"
+            )
+            context.client.post_song_lyrics(
+                song_id, res.lyrics.plain, res.lyrics.synced
+            )
         if res.genres:
             logging.info(f"Found {len(res.genres)} genres for song {song.name}")
             context.client.post_song_genres(song_id, res.genres)
@@ -139,7 +142,7 @@ def match_song(
             if need_genres
             else []
         )
-        if description and plain_lyrics and genres:
+        if description and plain_lyrics and synced_lyrics and genres:
             break
     if not plain_lyrics and synced_lyrics:
         plain_lyrics = "\n".join("\n".join([line for (_, line) in synced_lyrics]))
