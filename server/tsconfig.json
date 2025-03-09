@@ -26,7 +26,12 @@
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
 		"allowJs": true,
-		"plugins": [{ "name": "typescript-plugin-css-modules" }]
+		"plugins": [
+			{
+				"name": "typescript-plugin-css-modules"
+			}
+		]
 	},
+	"include": ["./src/**/*.ts", "./prisma/types.d.ts"],
 	"lib": ["dom"]
 }

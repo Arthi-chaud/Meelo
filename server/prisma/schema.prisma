@@ -10,6 +10,10 @@ generator client {
     previewFeatures = ["fullTextSearchPostgres", "views"]
 }
 
+generator json {
+    provider = "prisma-json-types-generator"
+}
+
 generator classes {
     provider                        = "prisma-types-generator"
     output                          = "../src/prisma/models"
@@ -427,6 +431,8 @@ model Lyrics {
     /// @description The lyrics of the song
     /// @example Hello\\nWorld
     plain  String
+    /// ![SyncedLyrics[]]
+    synced Json?
     /// @description The parent song
     song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
     /// @description Unique numeric identifier of the related song
