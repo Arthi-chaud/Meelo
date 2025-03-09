@@ -82,7 +82,7 @@ func HasLyrics(config config.Config, songId int) (bool, error) {
 }
 
 type LyricsDto struct {
-	Lyrics string `json:"lyrics"`
+	Lyrics string `json:"plain"`
 }
 
 func PostLyrics(config config.Config, songId int, lyrics []string) error {
