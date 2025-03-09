@@ -17,6 +17,7 @@
  */
 
 import { Box, Tooltip } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { type SongType } from "../models/song";
 import {
     SongIcon,
@@ -33,6 +34,8 @@ import {
 } from "./icons";
 
 const SongTypeIcon = ({ type, size = 20 }: { type: SongType; size?: number }) => {
+    const { t } = useTranslation();
+
     const getIcon = () => {
         switch (type) {
             // We don't show an icon for original songs, since that's the most common type
@@ -55,7 +58,7 @@ const SongTypeIcon = ({ type, size = 20 }: { type: SongType; size?: number }) =>
     if (!icon) return null;
 
     return (
-        <Tooltip title={type} arrow>
+        <Tooltip title={t(type) as string} arrow>
             <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', marginRight: 1, opacity: 0.8 }}>
                 {icon}
             </Box>
