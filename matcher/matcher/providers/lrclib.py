@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import re
-from typing import List
+from typing import Any, List
 import requests
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -49,17 +49,33 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
         featuring: List[str],
         duration: int | None,
     ):
-        try:
+        def _candidate_is_valid(item: Any):
+            if item.get("id") is None:
+                return False
+            item_duration = item.get("duration")
+            if duration and item_duration:
+                if abs(duration - item_duration) > 2:
+                    return False
+            return True
+
+        def _search_with_get():
             res = self._fetch(
                 f"/get?artist_name={','.join([artist_name, *featuring])}&track_name={song_name}{f'&duration={duration}' if duration else ''}"
             )
-            if not res.get("id"):  # Fail
-                return
-            res_duration = res.get("duration")
-            if duration and res_duration:
-                if abs(duration - res_duration) > 2:
-                    return
-            return SongSearchResult(str(res["id"]))
+            return (
+                SongSearchResult(str(res["id"])) if _candidate_is_valid(res) else None
+            )
+
+        def _search_with_query():
+            res = self._fetch(
+                f"/search?q={', '.join([artist_name, *featuring])} - {song_name}"
+            )
+            for item in res:
+                if _candidate_is_valid(item):
+                    return SongSearchResult(str(item["id"]))
+
+        try:
+            return _search_with_get() or _search_with_query()
         except Exception:
             pass
 

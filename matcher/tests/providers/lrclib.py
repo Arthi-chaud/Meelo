@@ -31,6 +31,20 @@ class TestLrcLib(unittest.TestCase):
                 254,
                 [16406807, 385738, 10327002],
             ),
+            (
+                "Who's That Chick? (Single Version)",
+                "David Guetta",
+                ["Rihanna"],
+                167,
+                [3145103],
+            ),
+            (
+                "Morenito",
+                "Stephane Pompougnac",
+                ["Clementine"],
+                334,
+                [7379532],
+            ),
         ]
         provider: LrcLibProvider = Context().get().get_provider(LrcLibProvider)  # pyright: ignore
 
