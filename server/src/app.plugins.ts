@@ -23,6 +23,7 @@ import {
 	type INestApplication,
 	type MiddlewareConsumer,
 	RequestMethod,
+	ValidationError,
 	ValidationPipe,
 } from "@nestjs/common";
 import { APP_GUARD, HttpAdapterHost, Reflector } from "@nestjs/core";
@@ -61,11 +62,29 @@ const buildExceptionFilters = (app: INestApplication) => [
 const buildPipes = (_app: INestApplication) => [
 	new ValidationPipe({
 		transform: true,
-		exceptionFactory: (error) => {
-			const failedConstraint = Object.keys(error[0].constraints!)[0];
+		exceptionFactory: (errors) => {
+			const extractErrorMessages = (
+				errors: ValidationError[],
+			): string[] => {
+				const messages: string[] = [];
+
+				for (const error of errors) {
+					if (error.constraints) {
+						const constraintKeys = Object.keys(error.constraints);
+						for (const key of constraintKeys) {
+							messages.push(error.constraints[key]);
+						}
+					}
+					if (error.children && error.children.length > 0) {
+						messages.push(...extractErrorMessages(error.children));
+					}
+				}
+
+				return messages;
+			};
 
 			return new InvalidRequestException(
-				error[0].constraints![failedConstraint],
+				extractErrorMessages(errors).join(". "),
 			);
 		},
 		whitelist: true,
