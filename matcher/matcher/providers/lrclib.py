@@ -25,7 +25,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
                     song, artist, feat, duration
                 )
             ),
-            GetSongFeature(lambda song: self._get_song(int(song))),
+            GetSongFeature(lambda song_id: self._get_song(song_id)),
             GetPlainSongLyricsFeature(lambda song: song.get("plainLyrics")),
             GetSyncedSongLyricsFeature(
                 lambda song: self._parse_synced_lyrics(song.get("syncedLyrics"))
@@ -51,7 +51,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
     ):
         try:
             res = self._fetch(
-                f"/get?artist_name={','.join([artist_name, *featuring])}&track_name={song_name}{'&duration={duration}' if duration else ''}"
+                f"/get?artist_name={','.join([artist_name, *featuring])}&track_name={song_name}{f'&duration={duration}' if duration else ''}"
             )
             if not res.get("id"):  # Fail
                 return
@@ -65,7 +65,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
 
     def _get_song(
         self,
-        song_id: int,
+        song_id: str,
     ):
         try:
             res = self._fetch(f"/get/{song_id}")
