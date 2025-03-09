@@ -57,3 +57,22 @@ func TestEmbeddedFlac(t *testing.T) {
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "Title", m.Name)
 }
+
+func TestEmbeddedOpus(t *testing.T) {
+	path := p.Join("../..", "testdata", "test.opus")
+	m, err := parseMetadataFromEmbeddedTags(path, getTestConfig())
+
+	assert.Len(t, err, 0)
+	assert.Equal(t, "Album Artist", m.AlbumArtist)
+	assert.Equal(t, "Artist", m.Artist)
+	assert.Equal(t, false, m.IsCompilation)
+	assert.Equal(t, "Album", m.Album)
+	assert.Equal(t, internal.Audio, m.Type)
+	assert.Equal(t, int64(217), m.Duration)
+	assert.Equal(t, "", m.Release)
+	assert.Equal(t, time.Date(1999, 1, 1, 1, 1, 1, 1, time.UTC).Year(), m.ReleaseDate.Year())
+	assert.Equal(t, int64(2), m.DiscIndex)
+	assert.Equal(t, int64(1), m.Index)
+	assert.Empty(t, m.Genres)
+	assert.Equal(t, "Title", m.Name)
+}

@@ -19,12 +19,32 @@ type parseTagFn func(string)
 // Tries to get each tag by key one after the other. If it success, calls function and returns
 func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
 	for _, key := range keys {
-		value, err := t.GetString(strings.ToLower(key))
-		if err == nil && len(value) > 0 {
-			fun(value)
+		value, found := t[key]
+		if !found {
+			continue
+		}
+		var s string = value.(string)
+		if len(s) > 0 {
+			fun(s)
 			return
 		}
 	}
+}
+
+func CollectTags(probeData *ffprobe.ProbeData) ffprobe.Tags {
+	var tags ffprobe.Tags = make(ffprobe.Tags)
+	// In some format (e.g. opus)
+	// Tags are attached to the audio stream,
+	// Not the 'Format'
+	for _, s := range probeData.Streams {
+		for k, v := range s.TagList {
+			tags[strings.ToLower(k)] = v
+		}
+	}
+	for k, v := range probeData.Format.TagList {
+		tags[strings.ToLower(k)] = v
+	}
+	return tags
 }
 
 // sources for keys:
@@ -49,11 +69,8 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	}
 	metadata.Duration = int64(probeData.Format.DurationSeconds)
 	metadata.Type = getType(*probeData)
+	tags := CollectTags(probeData)
 
-	var tags ffprobe.Tags = make(ffprobe.Tags)
-	for k, v := range probeData.Format.TagList {
-		tags[strings.ToLower(k)] = v
-	}
 	ParseTag(tags, []string{"artist", "tope"}, func(value string) {
 		metadata.Artist = value
 	})
