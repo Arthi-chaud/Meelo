@@ -62,7 +62,6 @@ import {
 } from "../../icons";
 import Illustration from "../../illustration";
 import ListItem from "../../list-item/item";
-import LyricsBox from "../../lyrics";
 import {
 	PlayButton,
 	type PlayerControlsProps,
@@ -71,6 +70,7 @@ import {
 	parentSongQuery,
 	playerTextStyle,
 } from "./common";
+import { LyricsComponent } from "./lyrics";
 import PlayerSlider from "./slider";
 
 export const ExpandedPlayerControls = (
@@ -425,15 +425,11 @@ export const ExpandedPlayerControls = (
 						maxWidth: theme.breakpoints.values.md,
 					}}
 				>
-					{parentSong.data && (
-						<LyricsBox
-							lyrics={
-								parentSong.data.lyrics?.plain.split("\n") ??
-								null
-							}
-							songName={props.track?.name}
-						/>
-					)}
+					<LyricsComponent
+						lyrics={parentSong.data?.lyrics}
+						songName={props.track?.name}
+						progress={props.progress}
+					/>
 				</Box>
 			)}
 			{selectedTab === "playlist" && (
