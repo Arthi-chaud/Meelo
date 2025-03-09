@@ -17,7 +17,7 @@
  */
 
 import { Box, Stack, Typography } from "@mui/material";
-import { type MutableRefObject, useCallback, useEffect, useState } from "react";
+import { type MutableRefObject, useEffect, useState } from "react";
 import type { Lyrics, SyncedLyric } from "../../../models/lyrics";
 import LyricsBox from "../../lyrics";
 
@@ -25,16 +25,19 @@ export const LyricsComponent = ({
 	lyrics,
 	songName,
 	progress,
+	setProgress,
 }: {
 	lyrics: Lyrics | null | undefined;
 	songName?: string;
 	progress?: MutableRefObject<number | null>;
+	setProgress: (newProgress: number) => void;
 }) => {
 	if (lyrics?.synced && progress) {
 		return (
 			<SyncedLyricsComponent
 				syncedLyrics={lyrics.synced}
 				progress={progress}
+				setProgress={setProgress}
 			/>
 		);
 	}
@@ -62,9 +65,11 @@ type SyncedLyricWithNext = SyncedLyric & { next: number | null };
 const SyncedLyricsComponent = ({
 	syncedLyrics,
 	progress,
+	setProgress,
 }: {
 	syncedLyrics: NonNullable<Lyrics["synced"]>;
 	progress: MutableRefObject<number | null>;
+	setProgress: (newProgress: number) => void;
 }) => {
 	const [syncedLyricsWithNext, setLyricsWithNext] =
 		useState<SyncedLyricWithNext[]>();
@@ -118,25 +123,31 @@ const SyncedLyricsComponent = ({
 		return () => clearInterval(interval);
 	}, [syncedLyricsWithNext]);
 	return (
-		<Stack spacing={4}>
-			{syncedLyricsWithNext?.map((entry, i) => (
-				<Typography
-					id={`lyric-${i}`}
-					key={`lyric-${i}`}
-					variant={i === currentLyricIndex ? "h4" : "h6"}
-					component={"div"}
-					sx={{
-						transition:
-							"font-size .2s ease-in; font-weight .2s ease-in",
-						filter:
-							i === currentLyricIndex ? undefined : "blur(1px)",
-						fontWeight:
-							i === currentLyricIndex ? "bold" : undefined,
-					}}
-				>
-					{entry.content}{" "}
-				</Typography>
-			))}
-		</Stack>
+		<Box sx={{ height: "100%", width: "100%", overflow: "hidden" }}>
+			<Stack spacing={4}>
+				{syncedLyricsWithNext?.map((entry, i) => (
+					<Typography
+						id={`lyric-${i}`}
+						key={`lyric-${i}`}
+						variant={i === currentLyricIndex ? "h4" : "h6"}
+						component={"div"}
+						sx={{
+							cursor: "pointer",
+							transition:
+								"font-size .2s ease-in; font-weight .2s ease-in",
+							filter:
+								i === currentLyricIndex
+									? undefined
+									: "blur(1px)",
+							fontWeight:
+								i === currentLyricIndex ? "bold" : undefined,
+						}}
+						onClick={() => setProgress(entry.timestamp)}
+					>
+						{entry.content || <br />}
+					</Typography>
+				))}
+			</Stack>
+		</Box>
 	);
 };

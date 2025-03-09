@@ -429,6 +429,7 @@ export const ExpandedPlayerControls = (
 						lyrics={parentSong.data?.lyrics}
 						songName={props.track?.name}
 						progress={props.progress}
+						setProgress={props.onSlide}
 					/>
 				</Box>
 			)}
