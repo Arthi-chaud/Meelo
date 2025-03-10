@@ -191,7 +191,7 @@ export const ExpandedPlayerControls = (
 				</IconButton>
 			</Box>
 			{selectedTab !== "player" && (
-				<Divider sx={{ margin: 1 }} variant="middle" />
+				<Divider sx={{ margin: 1, marginBottom: 0 }} variant="middle" />
 			)}
 
 			<Grid
@@ -430,6 +430,7 @@ export const ExpandedPlayerControls = (
 						songName={props.track?.name}
 						progress={props.progress}
 						setProgress={props.onSlide}
+						playerIsExpanded={props.expanded}
 					/>
 				</Box>
 			)}
@@ -606,7 +607,14 @@ export const ExpandedPlayerControls = (
 					close: () => openPlaylistModal(false),
 				})}
 			</Dialog>
-			<Divider variant="middle" sx={{ margin: 1, marginBottom: 2 }} />
+			<Divider
+				variant="middle"
+				sx={{
+					margin: 1,
+					marginBottom: 2,
+					marginTop: selectedTab === "lyrics" ? 0 : undefined,
+				}}
+			/>
 			<Grid
 				container
 				sx={{
