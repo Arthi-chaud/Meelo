@@ -1,6 +1,7 @@
 import logging
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
+from matcher.models.match_result import ArtistMatchResult
 from matcher.providers.features import (
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
@@ -11,23 +12,21 @@ from . import common
 
 def match_and_post_artist(artist_id: int, artist_name: str):
     try:
-        (dto, illustration_url) = match_artist(artist_id, artist_name)
+        res = match_artist(artist_id, artist_name)
         context = Context.get()
-        if dto:
+        if res.metadata:
             logging.info(
-                f"Matched with {len(dto.sources)} providers for artist {artist_name}"
+                f"Matched with {len(res.metadata.sources)} providers for artist {artist_name}"
             )
-            context.client.post_external_metadata(dto)
-        if illustration_url:
+            context.client.post_external_metadata(res.metadata)
+        if res.illustration_url:
             logging.info(f"Found image for artist {artist_name}")
-            context.client.post_artist_illustration(artist_id, illustration_url)
+            context.client.post_artist_illustration(artist_id, res.illustration_url)
     except Exception as e:
         logging.error(e)
 
 
-def match_artist(
-    artist_id: int, artist_name: str
-) -> tuple[ExternalMetadataDto | None, str | None]:
+def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
     context = Context.get()
     artist_illustration_url: str | None = None
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
@@ -82,7 +81,7 @@ def match_artist(
             artist_illustration_url = provider.get_artist_illustration_url(artist)
         if description and artist_illustration_url:
             break
-    return (
+    return ArtistMatchResult(
         ExternalMetadataDto(
             description,
             artist_id=artist_id,

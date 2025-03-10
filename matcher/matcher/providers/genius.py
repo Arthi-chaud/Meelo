@@ -16,7 +16,7 @@ from matcher.providers.features import (
     GetSongDescriptionFeature,
     GetSongFeature,
     GetSongIdFromUrlFeature,
-    GetSongLyricsFeature,
+    GetPlainSongLyricsFeature,
     GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
@@ -87,9 +87,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                 )
             ),
             GetSongFeature(lambda id: self._get_song(id)),
-            GetSongLyricsFeature(lambda s: self._get_song_lyrics(s)),
+            GetPlainSongLyricsFeature(lambda s: self._get_song_lyrics(s)),
             GetSongDescriptionFeature(lambda s: self._get_song_description(s)),
-            SearchSongFeature(lambda s, a, f: self._search_song(s, a, f)),
+            SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
         ]
 
     def _fetch(self, url: str, params={}, host="https://genius.com/api"):

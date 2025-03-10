@@ -10,6 +10,10 @@ generator client {
     previewFeatures = ["fullTextSearchPostgres", "views"]
 }
 
+generator json {
+    provider = "prisma-json-types-generator"
+}
+
 generator classes {
     provider                        = "prisma-types-generator"
     output                          = "../src/prisma/models"
@@ -423,15 +427,17 @@ enum RipSource {
 model Lyrics {
     /// @description Unique numeric Lyrics identifier
     /// @example 123
-    id      Int    @id @default(autoincrement())
+    id     Int    @id @default(autoincrement())
     /// @description The lyrics of the song
     /// @example Hello\\nWorld
-    content String
+    plain  String
+    /// ![SyncedLyrics[]]
+    synced Json?
     /// @description The parent song
-    song    Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+    song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
     /// @description Unique numeric identifier of the related song
     /// @example 123
-    songId  Int    @unique
+    songId Int    @unique
 
     @@map("lyrics")
 }

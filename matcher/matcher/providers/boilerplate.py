@@ -1,3 +1,4 @@
+from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseProvider
 from datetime import date
 from .features import (
@@ -19,7 +20,8 @@ from .features import (
     GetSongFeature,
     GetSongGenresFeature,
     GetSongIdFromUrlFeature,
-    GetSongLyricsFeature,
+    GetSyncedSongLyricsFeature,
+    GetPlainSongLyricsFeature,
     GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
@@ -32,11 +34,6 @@ from .features import (
 )
 from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult, SongSearchResult
 from typing import Any, List
-
-
-# A = ParamSpec("A")
-# R = TypeVar("R")
-# F = TypeVar("F", bound=BaseFeature, covariant=True)
 
 
 class BaseProviderBoilerplate[S](BaseProvider[S]):
@@ -129,10 +126,14 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     # Song
 
     def search_song(
-        self, song_name: str, artist_name: str, featuring_artists: List[str]
+        self,
+        song_name: str,
+        artist_name: str,
+        featuring_artists: List[str],
+        duration: int | None,
     ) -> SongSearchResult | None:
         f = self.get_feature(SearchSongFeature)
-        return f.run(song_name, artist_name, featuring_artists) if f else None
+        return f.run(song_name, artist_name, featuring_artists, duration) if f else None
 
     def search_song_with_acoustid(
         self, song_acoustid: str, duration: int, song_name: str
@@ -152,8 +153,12 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetSongGenresFeature)
         return f.run(song) if f else None
 
-    def get_song_lyrics(self, song: Any) -> str | None:
-        f = self.get_feature(GetSongLyricsFeature)
+    def get_plain_song_lyrics(self, song: Any) -> str | None:
+        f = self.get_feature(GetPlainSongLyricsFeature)
+        return f.run(song) if f else None
+
+    def get_synced_song_lyrics(self, song: Any) -> SyncedLyrics | None:
+        f = self.get_feature(GetSyncedSongLyricsFeature)
         return f.run(song) if f else None
 
     def get_wikidata_song_relation_key(self) -> str | None:

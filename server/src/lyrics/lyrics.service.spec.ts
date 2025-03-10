@@ -56,16 +56,16 @@ describe("Lyrics Service", () => {
 	describe("Create lyrics", () => {
 		it("should create new lyrics", async () => {
 			lyricsB1 = await lyricsService.createOrUpdate({
-				content: "AZE",
+				plain: "AZE",
 				songId: dummyRepository.songB1.id,
 			});
-			expect(lyricsB1.content).toBe("AZE");
+			expect(lyricsB1.plain).toBe("AZE");
 			expect(lyricsB1.songId).toBe(dummyRepository.songB1.id);
 		});
 
 		it("should throw, as the parent song does not exist", async () => {
 			const test = () =>
-				lyricsService.createOrUpdate({ content: "", songId: -1 });
+				lyricsService.createOrUpdate({ plain: "", songId: -1 });
 			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 	});

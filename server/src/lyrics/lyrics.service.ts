@@ -46,11 +46,13 @@ export class LyricsService {
 		return this.prismaService.lyrics
 			.upsert({
 				update: {
-					content: input.content,
+					plain: input.plain,
+					synced: input.synced,
 				},
 				create: {
-					content: input.content,
+					plain: input.plain,
 					songId: input.songId,
+					synced: input.synced,
 				},
 				where: {
 					songId: input.songId,
@@ -60,7 +62,7 @@ export class LyricsService {
 				this.meiliSearch
 					.index(this.songService.getTableName())
 					.updateDocuments(
-						[{ id: lyrics.songId, lyrics: lyrics.content }],
+						[{ id: lyrics.songId, lyrics: lyrics.plain }],
 						{
 							primaryKey: "id",
 						},

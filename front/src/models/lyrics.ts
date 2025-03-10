@@ -18,11 +18,16 @@
 
 import * as yup from "yup";
 
-const Lyrics = yup.object({
-	id: yup.number().required(),
-	content: yup.string().required(),
+export const SyncedLyric = yup.object({
+	timestamp: yup.number().required(),
+	content: yup.string().nonNullable(),
+});
+
+export type SyncedLyric = yup.InferType<typeof SyncedLyric>;
+
+export const Lyrics = yup.object({
+	plain: yup.string().required(),
+	synced: yup.array(SyncedLyric.required()).required().nullable(),
 });
 
 export type Lyrics = yup.InferType<typeof Lyrics>;
-
-export default Lyrics;

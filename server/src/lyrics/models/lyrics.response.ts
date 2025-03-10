@@ -17,11 +17,33 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
+import { IsDefined, IsNumber, IsString } from "class-validator";
+
+export class SyncedLyric {
+	@ApiProperty({ description: "The line at that timestamp" })
+	@IsString()
+	@IsDefined()
+	content: string;
+
+	@ApiProperty({
+		description: "The timestamp or the lyrics line. Time is in seconds",
+	})
+	@IsNumber()
+	@IsDefined()
+	timestamp: number;
+}
 
 export class LyricsResponse {
 	@ApiProperty({
 		description:
-			"A new-line-separated string, representing the lyrics of a song",
+			"A new-line-separated string, representing the plain lyrics of a song",
 	})
-	lyrics: string;
+	plain: string;
+
+	@ApiProperty({
+		type: SyncedLyric,
+		isArray: true,
+		nullable: true,
+	})
+	synced: SyncedLyric[] | null;
 }

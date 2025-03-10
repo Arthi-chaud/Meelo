@@ -3,6 +3,7 @@ import logging
 from datetime import date, datetime
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
+from matcher.models.match_result import AlbumMatchResult
 from matcher.providers.domain import AlbumType
 from matcher.providers.features import (
     GetAlbumDescriptionFeature,
@@ -20,7 +21,7 @@ def match_and_post_album(album_id: int, album_name: str):
     try:
         context = Context.get()
         album = context.client.get_album(album_id)
-        (dto, release_date, album_type, genres) = match_album(
+        res = match_album(
             album_id,
             album_name,
             album.artist.name if album.artist else None,
@@ -28,46 +29,50 @@ def match_and_post_album(album_id: int, album_name: str):
         )
         # We only care about the new album type if the previous type is Studio
         album_type = (
-            album_type if album.type == AlbumType.STUDIO and album_type else album.type
+            res.album_type
+            if album.type == AlbumType.STUDIO and res.album_type
+            else album.type
         )
         old_release_date = (
             datetime.fromisoformat(album.release_date).date()
             if album.release_date
             else None
         )
-        if dto:
+        if res.metadata:
             logging.info(
-                f"Matched with {len(dto.sources)} providers for album {album_name}"
+                f"Matched with {len(res.metadata.sources)} providers for album {album_name}"
             )
-            context.client.post_external_metadata(dto)
+            context.client.post_external_metadata(res.metadata)
 
-        if old_release_date and release_date:
-            if abs(release_date.year - old_release_date.year) > 2:
+        if old_release_date and res.release_date:
+            if abs(res.release_date.year - old_release_date.year) > 2:
                 logging.info(
-                    f"Release date found ({release_date.year}) is too far from the one from the API ({old_release_date.year})."
+                    f"Release date found ({res.release_date.year}) is too far from the one from the API ({old_release_date.year})."
                 )
                 logging.info("Probably a mismatch. Ignoring...")
-                release_date = None
-        if release_date:
+                res.release_date = None
+        if res.release_date:
             logging.info(f"Updating release date for album {album_name}")
-        if genres:
-            logging.info(f"Found {len(genres)} genres for album {album_name}")
+        if res.genres:
+            logging.info(f"Found {len(res.genres)} genres for album {album_name}")
         if album_type != album.type and album_type != AlbumType.OTHER:
             logging.info(f"Found type for album {album_name}: {album_type.value}")
         if (
-            release_date
-            or genres
+            res.release_date
+            or res.genres
             or (album_type != album.type)
             and album_type != AlbumType.OTHER
         ):
-            context.client.post_album_update(album_id, release_date, genres, album_type)
+            context.client.post_album_update(
+                album_id, res.release_date, res.genres, album_type
+            )
     except Exception as e:
         logging.error(e)
 
 
 def match_album(
     album_id: int, album_name: str, artist_name: str | None, type: AlbumType
-) -> tuple[ExternalMetadataDto | None, date | None, AlbumType | None, List[str]]:
+) -> AlbumMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
     release_date: date | None = None
@@ -143,7 +148,7 @@ def match_album(
         )
         if description and release_date and rating and genres:
             break
-    return (
+    return AlbumMatchResult(
         ExternalMetadataDto(
             description,
             artist_id=None,

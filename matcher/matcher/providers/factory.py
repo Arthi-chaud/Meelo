@@ -3,6 +3,7 @@ from matcher.providers.allmusic import AllMusicProvider
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.discogs import DiscogsProvider
 from matcher.providers.genius import GeniusProvider
+from matcher.providers.lrclib import LrcLibProvider
 from matcher.providers.metacritic import MetacriticProvider
 from matcher.providers.musicbrainz import MusicBrainzProvider
 from matcher.settings import (
@@ -10,6 +11,7 @@ from matcher.settings import (
     BaseProviderSettings,
     DiscogsSettings,
     GeniusSettings,
+    LrcLibSettings,
     MetacriticSettings,
     MusicBrainzSettings,
     WikipediaSettings,
@@ -40,4 +42,6 @@ class ProviderFactory:
                 )
             case "Wikipedia":
                 return WikipediaProvider(api_model, cast(WikipediaSettings, settings))
+            case "LrcLib":
+                return LrcLibProvider(api_model, cast(LrcLibSettings, settings))
         raise Exception(f"Unknown provider name: {settings.name}")

@@ -38,6 +38,7 @@ import {
 import File from "../models/file";
 import Genre from "../models/genre";
 import Library from "../models/library";
+import { Lyrics } from "../models/lyrics";
 import PaginatedResponse, {
 	type PaginationParameters,
 } from "../models/pagination";
@@ -1158,7 +1159,7 @@ export default class API {
 	 * @param slugOrId the id of the song
 	 * @returns A query for an array of strings
 	 */
-	static getSongLyrics(slugOrId: string | number): Query<string[] | null> {
+	static getSongLyrics(slugOrId: string | number): Query<Lyrics | null> {
 		return {
 			key: ["song", slugOrId, "lyrics"],
 			exec: () =>
@@ -1166,8 +1167,7 @@ export default class API {
 					route: `/songs/${slugOrId}/lyrics`,
 					errorMessage: "Lyrics loading failed",
 					parameters: {},
-					customValidator: async (value) =>
-						(value as { lyrics: string }).lyrics.split("\n"),
+					validator: Lyrics,
 				}).catch(() => null),
 		};
 	}

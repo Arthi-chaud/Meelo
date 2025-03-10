@@ -275,9 +275,7 @@ export class SongController {
 		where: SongQueryParameters.WhereInput,
 	): Promise<LyricsResponse> {
 		const song = await this.songService.get(where);
-		return this.lyricsService
-			.get({ songId: song.id })
-			.then(({ content }) => ({ lyrics: content }));
+		return this.lyricsService.get({ songId: song.id });
 	}
 
 	@ApiOperation({
@@ -292,12 +290,11 @@ export class SongController {
 	): Promise<LyricsResponse> {
 		const song = await this.songService.get(where);
 
-		return this.lyricsService
-			.createOrUpdate({
-				content: updateLyricsDto.lyrics,
-				songId: song.id,
-			})
-			.then(({ content }) => ({ lyrics: content }));
+		return this.lyricsService.createOrUpdate({
+			plain: updateLyricsDto.plain,
+			synced: updateLyricsDto.synced,
+			songId: song.id,
+		});
 	}
 
 	@ApiOperation({

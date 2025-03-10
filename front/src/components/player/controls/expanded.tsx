@@ -19,7 +19,6 @@
 import {
 	Box,
 	Button,
-	ButtonBase,
 	Container,
 	Dialog,
 	Divider,
@@ -33,223 +32,48 @@ import {
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-	type ComponentProps,
-	type LegacyRef,
-	useCallback,
-	useState,
-} from "react";
+import { type LegacyRef, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "../../api/api";
-import { useQuery, useQueryClient } from "../../api/use-query";
-import type Artist from "../../models/artist";
-import type { TrackWithRelations } from "../../models/track";
+import API from "../../../api/api";
+import { useQuery, useQueryClient } from "../../../api/use-query";
 import {
 	cursorAtom,
 	playlistAtom,
 	removeTrackAtom,
 	reorderAtom,
 	skipTrackAtom,
-} from "../../state/player";
-import formatArtists from "../../utils/formatArtists";
-import formatDuration from "../../utils/formatDuration";
-import { CreatePlaylistAction } from "../actions/playlist";
-import ReleaseTrackContextualMenu from "../contextual-menu/release-track-contextual-menu";
+} from "../../../state/player";
+import formatArtists from "../../../utils/formatArtists";
+import formatDuration from "../../../utils/formatDuration";
+import { CreatePlaylistAction } from "../../actions/playlist";
+import ReleaseTrackContextualMenu from "../../contextual-menu/release-track-contextual-menu";
 import {
 	CloseIcon,
 	ContextualMenuIcon,
 	DeleteIcon,
 	DragHandleIcon,
-	ForwardIcon,
 	FullscreenIcon,
 	LyricsIcon,
-	PauseIcon,
-	PlayIcon,
 	PlayerIcon,
 	PlaylistIcon,
-	RewindIcon,
 	TrackIcon,
-} from "../icons";
-import Illustration from "../illustration";
-import ListItem from "../list-item/item";
-import LyricsBox from "../lyrics";
-import PlayerSlider from "./controls/slider";
+} from "../../icons";
+import Illustration from "../../illustration";
+import ListItem from "../../list-item/item";
+import {
+	PlayButton,
+	type PlayerControlsProps,
+	PreviousButton,
+	SkipButton,
+	parentSongQuery,
+	playerTextStyle,
+} from "./common";
+import { LyricsComponent } from "./lyrics";
+import PlayerSlider from "./slider";
 
-const parentSongQuery = (id: number) =>
-	API.getSong(id, ["artist", "lyrics", "featuring"]);
-
-type PlayerButtonControlsProps = {
-	playing: boolean;
-	onPause: () => void;
-	onPlay: () => void;
-	onSkipTrack: () => void;
-	onRewind: () => void;
-};
-
-type PlayerControlsProps = ComponentProps<typeof PlayerSlider> &
-	PlayerButtonControlsProps & {
-		isTranscoding: boolean;
-		expanded: boolean;
-		onExpand: (expand: boolean) => void;
-		artist?: Artist;
-		track?: TrackWithRelations<"illustration">;
-	};
-
-const playerTextStyle = {
-	whiteSpace: "nowrap",
-};
-
-type ControlButtonProps = {
-	icon: JSX.Element;
-	onClick: () => void;
-};
-
-const ControlButton = (props: ControlButtonProps) => (
-	<IconButton onClick={props.onClick} color="inherit">
-		{props.icon}
-	</IconButton>
-);
-
-const PlayButton = (props: {
-	isPlaying: boolean;
-	onPause: () => void;
-	onPlay: () => void;
-}) => (
-	<ControlButton
-		icon={props.isPlaying ? <PauseIcon /> : <PlayIcon />}
-		onClick={props.isPlaying ? props.onPause : props.onPlay}
-	/>
-);
-const SkipButton = (props: Omit<ControlButtonProps, "icon">) => (
-	<ControlButton {...props} icon={<ForwardIcon />} />
-);
-const PreviousButton = (props: Omit<ControlButtonProps, "icon">) => (
-	<ControlButton {...props} icon={<RewindIcon />} />
-);
-const MinimizedPlayerControls = (props: PlayerControlsProps) => {
-	const parentSong = useQuery(
-		parentSongQuery,
-		props.track?.songId ?? undefined,
-	);
-
-	return (
-		<ButtonBase
-			onClick={() => props.onExpand(true)}
-			disableTouchRipple
-			sx={{ width: "100%", height: "100%", padding: 0, margin: 0 }}
-		>
-			<Grid
-				container
-				spacing={1}
-				sx={{
-					alignItems: "center",
-					display: "flex",
-					justifyContent: "center",
-				}}
-			>
-				<Grid item sx={{ minWidth: "60px" }}>
-					{props.track ? (
-						<Illustration
-							illustration={props.track?.illustration ?? null}
-							quality="low"
-							fallback={<TrackIcon />}
-							imgProps={{ borderRadius: 4 }}
-						/>
-					) : (
-						<Box
-							sx={{
-								height: "100%",
-								display: "flex",
-								marginX: 2,
-								alignItems: "center",
-							}}
-						>
-							<TrackIcon />
-						</Box>
-					)}
-				</Grid>
-				<Grid
-					item
-					container
-					xs
-					spacing={0.5}
-					sx={{
-						overflow: "hidden",
-						display: "flex",
-						alignItems: "space-evenly",
-						marginLeft: { xs: 0, sm: 1 },
-					}}
-				>
-					<Grid
-						item
-						sx={{
-							width: "100%",
-							display: "flex",
-							...playerTextStyle,
-							justifyContent: "left",
-						}}
-					>
-						<Typography
-							sx={{ fontWeight: "bold", ...playerTextStyle }}
-						>
-							{props.track?.name ?? <br />}
-						</Typography>
-					</Grid>
-					<Grid
-						item
-						sx={{
-							display: "flex",
-							width: "100%",
-							...playerTextStyle,
-							justifyContent: "left",
-						}}
-					>
-						<Typography
-							sx={{
-								color: "text.disabled",
-								...playerTextStyle,
-								fontSize: "medium",
-							}}
-						>
-							{props.artist ? (
-								formatArtists(
-									props.artist,
-									parentSong.data?.featuring,
-								)
-							) : (
-								<br />
-							)}
-						</Typography>
-					</Grid>
-				</Grid>
-				<Grid
-					item
-					container
-					xs={4}
-					sm={3}
-					md={2}
-					flexWrap="nowrap"
-					onClick={(event) => event.stopPropagation()}
-				>
-					<Grid item xs>
-						<PlayButton
-							onPause={props.onPause}
-							onPlay={props.onPlay}
-							isPlaying={props.playing}
-						/>
-					</Grid>
-					<Grid item xs>
-						<SkipButton onClick={props.onSkipTrack} />
-					</Grid>
-				</Grid>
-			</Grid>
-		</ButtonBase>
-	);
-};
-
-const ExpandedPlayerControls = (
+export const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> },
 ) => {
 	const theme = useTheme();
@@ -367,7 +191,7 @@ const ExpandedPlayerControls = (
 				</IconButton>
 			</Box>
 			{selectedTab !== "player" && (
-				<Divider sx={{ margin: 1 }} variant="middle" />
+				<Divider sx={{ margin: 1, marginBottom: 0 }} variant="middle" />
 			)}
 
 			<Grid
@@ -601,15 +425,13 @@ const ExpandedPlayerControls = (
 						maxWidth: theme.breakpoints.values.md,
 					}}
 				>
-					{parentSong.data && (
-						<LyricsBox
-							lyrics={
-								parentSong.data.lyrics?.content.split("\n") ??
-								null
-							}
-							songName={props.track?.name}
-						/>
-					)}
+					<LyricsComponent
+						lyrics={parentSong.data?.lyrics}
+						songName={props.track?.name}
+						progress={props.progress}
+						setProgress={props.onSlide}
+						playerIsExpanded={props.expanded}
+					/>
 				</Box>
 			)}
 			{selectedTab === "playlist" && (
@@ -785,7 +607,14 @@ const ExpandedPlayerControls = (
 					close: () => openPlaylistModal(false),
 				})}
 			</Dialog>
-			<Divider variant="middle" sx={{ margin: 1, marginBottom: 2 }} />
+			<Divider
+				variant="middle"
+				sx={{
+					margin: 1,
+					marginBottom: 2,
+					marginTop: selectedTab === "lyrics" ? 0 : undefined,
+				}}
+			/>
 			<Grid
 				container
 				sx={{
@@ -823,5 +652,3 @@ const ExpandedPlayerControls = (
 		</Stack>
 	);
 };
-
-export { MinimizedPlayerControls, ExpandedPlayerControls };

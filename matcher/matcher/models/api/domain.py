@@ -36,8 +36,8 @@ class Track(DataClassJsonMixin):
 class Song(DataClassJsonMixin):
     name: str
     artist: Artist
-    master: Track
     featuring: List[Artist]
+    master: Optional[Track] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore

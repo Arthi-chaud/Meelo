@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Any, List
+from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
     AlbumSearchResult,
@@ -114,7 +115,13 @@ class GetWikidataAlbumRelationKeyFeature(GetWikidataRelationKeyFeature):
 
 
 class SearchSongFeature(
-    BaseFeature[ResourceName, ResourceName, List[ResourceName], SongSearchResult | None]
+    BaseFeature[
+        ResourceName,
+        ResourceName,
+        List[ResourceName],
+        int | None,
+        SongSearchResult | None,
+    ]
 ):
     pass
 
@@ -137,7 +144,11 @@ class GetSongGenresFeature(BaseFeature[Any, List[str] | None]):
     pass
 
 
-class GetSongLyricsFeature(BaseFeature[Any, str | None]):
+class GetPlainSongLyricsFeature(BaseFeature[Any, str | None]):
+    pass
+
+
+class GetSyncedSongLyricsFeature(BaseFeature[Any, SyncedLyrics | None]):
     pass
 
 
