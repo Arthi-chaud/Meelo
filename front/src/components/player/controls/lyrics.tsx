@@ -17,7 +17,7 @@
  */
 
 import { Box, Stack, Typography } from "@mui/material";
-import { type MutableRefObject, useEffect, useState } from "react";
+import { type MutableRefObject, useEffect, useRef, useState } from "react";
 import type { Lyrics, SyncedLyric } from "../../../models/lyrics";
 import LyricsBox from "../../lyrics";
 
@@ -26,11 +26,13 @@ export const LyricsComponent = ({
 	songName,
 	progress,
 	setProgress,
+	playerIsExpanded,
 }: {
 	lyrics: Lyrics | null | undefined;
 	songName?: string;
 	progress?: MutableRefObject<number | null>;
 	setProgress: (newProgress: number) => void;
+	playerIsExpanded: boolean;
 }) => {
 	if (lyrics?.synced && progress) {
 		return (
@@ -38,6 +40,7 @@ export const LyricsComponent = ({
 				syncedLyrics={lyrics.synced}
 				progress={progress}
 				setProgress={setProgress}
+				playerIsExpanded={playerIsExpanded}
 			/>
 		);
 	}
@@ -66,14 +69,17 @@ const SyncedLyricsComponent = ({
 	syncedLyrics,
 	progress,
 	setProgress,
+	playerIsExpanded,
 }: {
 	syncedLyrics: NonNullable<Lyrics["synced"]>;
 	progress: MutableRefObject<number | null>;
 	setProgress: (newProgress: number) => void;
+	playerIsExpanded: boolean;
 }) => {
 	const [syncedLyricsWithNext, setLyricsWithNext] =
 		useState<SyncedLyricWithNext[]>();
 	const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(-1);
+	const intervalRef = useRef<NodeJS.Timer>();
 
 	// Do this async-ly, to avoid lag
 	useEffect(() => {
@@ -90,7 +96,17 @@ const SyncedLyricsComponent = ({
 		);
 	}, []);
 	useEffect(() => {
-		const interval = setInterval(() => {
+		if (!playerIsExpanded) {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = undefined;
+			}
+			return;
+		}
+		if (intervalRef.current) {
+			return;
+		}
+		intervalRef.current = setInterval(() => {
 			const progressValue = progress.current;
 			if (progressValue === null || syncedLyricsWithNext === undefined) {
 				return;
@@ -120,8 +136,13 @@ const SyncedLyricsComponent = ({
 			});
 			setCurrentLyricIndex(nextLyricIndex);
 		}, 100);
-		return () => clearInterval(interval);
-	}, [syncedLyricsWithNext]);
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = undefined;
+			}
+		};
+	}, [playerIsExpanded, syncedLyricsWithNext]);
 	return (
 		<Box sx={{ height: "100%", width: "100%", overflow: "hidden" }}>
 			<Stack spacing={4}>
