@@ -28,6 +28,7 @@ import {
 	ListItemText,
 	ListSubheader,
 	Skeleton,
+	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -53,6 +54,7 @@ import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 import { ContextualMenuIcon, VideoIcon } from "./icons";
+import SongTypeIcon from "./song-type-icon";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -214,12 +216,18 @@ const ReleaseTrackList = ({
 										</ListItemIcon>
 										<ListItemText
 											primary={
-												currentTrack?.name ?? (
+												currentTrack ? (
+													<Stack direction="row" spacing={0.5} alignItems="center">
+														{currentTrack.song && <SongTypeIcon type={currentTrack.song.type} />}
+														{currentTrack.name}
+													</Stack>
+												) : (
 													<Skeleton width="120px" />
 												)
 											}
 											primaryTypographyProps={{
 												fontSize: "medium",
+												component: "div"
 											}}
 											secondary={
 												mainArtist === undefined
