@@ -93,6 +93,7 @@ export const DoneIcon = Iconsax.TickSquare;
 export const EmptyStateIcon = Iconsax.SearchStatus1;
 
 // Icons for song type
+export const SongTypeOriginalIcon = Iconsax.Music;
 export const SongTypeRemixIcon = Iconsax.Repeat;
 export const SongTypeLiveIcon = Iconsax.Microphone2;
 export const SongTypeAcousticIcon = Iconsax.VoiceSquare;

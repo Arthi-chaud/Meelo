@@ -30,6 +30,7 @@ import {
     SongTypeLiveIcon,
     SongTypeMedleyIcon,
     SongTypeNonMusicIcon,
+    SongTypeOriginalIcon,
     SongTypeRemixIcon
 } from "./icons";
 
@@ -38,8 +39,7 @@ const SongTypeIcon = ({ type, size = 20 }: { type: SongType; size?: number }) =>
 
     const getIcon = () => {
         switch (type) {
-            // We don't show an icon for original songs, since that's the most common type
-            case 'Original': return null;
+            case 'Original': return <SongTypeOriginalIcon size={size} />;
             case 'Remix': return <SongTypeRemixIcon size={size} />;
             case 'Live': return <SongTypeLiveIcon size={size} />;
             case 'Acoustic': return <SongTypeAcousticIcon size={size} />;

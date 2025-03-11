@@ -54,7 +54,6 @@ import {
 import Illustration from "../../../components/illustration";
 import ListItem from "../../../components/list-item/item";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
-import SongTypeIcon from "../../../components/song-type-icon";
 import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,
@@ -203,7 +202,7 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 			/>
 		}
 		title={entry?.name}
-		titleIcon={entry ? <SongTypeIcon type={entry.type} /> : undefined}
+		titleIcon={undefined}
 		onClick={onClick}
 		trailing={
 			entry && <SongContextualMenu song={entry} entryId={entry.entryId} />

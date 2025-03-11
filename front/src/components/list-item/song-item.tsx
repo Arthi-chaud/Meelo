@@ -25,7 +25,6 @@ import formatArtists from "../../utils/formatArtists";
 import SongContextualMenu from "../contextual-menu/song-contextual-menu";
 import { SongIcon } from "../icons";
 import Illustration from "../illustration";
-import SongTypeIcon from "../song-type-icon";
 import ListItem from "./item";
 
 type SongItemProps<
@@ -126,7 +125,7 @@ const SongItem = <
 				/>
 			}
 			title={song?.name}
-			titleIcon={song ? <SongTypeIcon type={song.type} /> : undefined}
+			titleIcon={undefined}
 			onClick={
 				song &&
 				artist &&

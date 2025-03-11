@@ -25,7 +25,6 @@ import SongContextualMenu from "./contextual-menu/song-contextual-menu";
 import { SongIcon } from "./icons";
 import Illustration from "./illustration";
 import ListItem from "./list-item/item";
-import SongTypeIcon from "./song-type-icon";
 
 type SongGridProps = {
 	songs: (
@@ -56,7 +55,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 							/>
 						}
 						title={song?.name}
-						titleIcon={song ? <SongTypeIcon type={song.type} /> : undefined}
+						titleIcon={undefined}
 						secondTitle={
 							song
 								? parentArtistName === song.artist.name &&

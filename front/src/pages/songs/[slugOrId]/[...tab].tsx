@@ -46,6 +46,7 @@ import InfiniteTrackView from "../../../components/infinite/infinite-resource-vi
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
 import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
+import SongTypeIcon from "../../../components/song-type-icon";
 import { useTabRouter } from "../../../components/tab-router";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import { playTrackAtom } from "../../../state/player";
@@ -179,6 +180,25 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								song.data && `${song.data?.name} (${t("info")})`
 							}
 						/>
+						{song.data?.type && (
+							<Stack
+								direction="row"
+								sx={{
+									overflowX: "scroll",
+									alignItems: "center",
+									paddingBottom: 2
+								}}
+								spacing={2}
+							>
+								<Typography sx={{ overflow: "unset" }}>
+									{`${t("songType")}: `}
+								</Typography>
+								<Stack direction="row" spacing={1} alignItems="center">
+									<SongTypeIcon type={song.data.type} size={24} />
+									{t(song.data.type)}
+								</Stack>
+							</Stack>
+						)}
 						{song.data ? (
 							song.data.bpm ? (
 								<Typography

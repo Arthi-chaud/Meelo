@@ -54,7 +54,6 @@ import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
 import { ContextualMenuIcon, VideoIcon } from "./icons";
-import SongTypeIcon from "./song-type-icon";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -218,7 +217,6 @@ const ReleaseTrackList = ({
 											primary={
 												currentTrack ? (
 													<Stack direction="row" spacing={0.5} alignItems="center">
-														{currentTrack.song && <SongTypeIcon type={currentTrack.song.type} />}
 														{currentTrack.name}
 													</Stack>
 												) : (

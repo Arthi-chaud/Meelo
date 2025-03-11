@@ -18,6 +18,7 @@
 
 import {
 	Skeleton,
+	Stack,
 	Table,
 	TableBody,
 	TableCell,
@@ -29,7 +30,9 @@ import { useTranslation } from "react-i18next";
 import API from "../api/api";
 import { useQuery } from "../api/use-query";
 import type { TranslationKey } from "../i18n/i18n";
+import type { SongType } from "../models/song";
 import formatDuration from "../utils/formatDuration";
+import SongTypeIcon from "./song-type-icon";
 
 /**
  * Table component, listing info of track and its source file
@@ -39,11 +42,19 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const { t } = useTranslation();
 	const track = useQuery((id) => API.getTrack(id, ["song"]), trackId);
 	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
+	const songType = track.data?.song?.type;
 
 	const tableContent: Partial<
-		Record<TranslationKey, string | number | undefined>
+		Record<TranslationKey, string | number | undefined | JSX.Element>
 	> = {
 		name: track.data?.name,
+		type: track.data?.type,
+		songType: songType && (
+			<Stack direction="row" spacing={1} alignItems="center">
+				<SongTypeIcon type={songType as SongType} size={24} />
+				{t(songType as TranslationKey)}
+			</Stack>
+		),
 		remastered: track.data
 			? t(track.data.isRemastered ? "yes" : "no")
 			: undefined,
@@ -58,7 +69,6 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 				? `${track.data.bitrate} kbps`
 				: t("Unknown")
 			: undefined,
-		type: track.data?.type,
 		extension: sourceFile.data
 			? (sourceFile.data.path
 					.split(".")
