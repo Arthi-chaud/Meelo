@@ -50,12 +50,16 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	> = {
 		name: track.data?.name,
 		type: track.data?.type,
-		songType: songType && (
-			<Stack direction="row" spacing={1} alignItems="center">
-				<SongTypeIcon type={songType} size={theme.typography.body1.fontSize as number} />
-				{t(songType)}
-			</Stack>
-		),
+		songType: track.data?.song
+			? songType && (
+				<Stack direction="row" spacing={1} alignItems="center">
+					<SongTypeIcon type={songType} size={theme.typography.body1.fontSize as number} />
+					{t(songType)}
+				</Stack>
+			)
+			: track.data?.song === undefined
+				? undefined
+				: "N/A",
 		remastered: track.data
 			? t(track.data.isRemastered ? "yes" : "no")
 			: undefined,
