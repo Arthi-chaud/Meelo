@@ -202,7 +202,6 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 			/>
 		}
 		title={entry?.name}
-		titleIcon={undefined}
 		onClick={onClick}
 		trailing={
 			entry && <SongContextualMenu song={entry} entryId={entry.entryId} />

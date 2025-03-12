@@ -125,7 +125,6 @@ const SongItem = <
 				/>
 			}
 			title={song?.name}
-			titleIcon={undefined}
 			onClick={
 				song &&
 				artist &&

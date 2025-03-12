@@ -24,7 +24,6 @@ import {
 	ListItemText,
 	ListItem as MUIListItem,
 	Skeleton,
-	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -33,7 +32,6 @@ import Link from "next/link";
 type ListItemProps = {
 	icon?: JSX.Element;
 	title: string | undefined;
-	titleIcon?: JSX.Element;
 	secondTitle: string | undefined | null;
 	trailing?: JSX.Element;
 	href?: string;
@@ -56,19 +54,6 @@ const secondaryTextStyle = {
 const ListItem = (props: ListItemProps) => {
 	const _theme = useTheme();
 
-	const makeTitleElement = () => {
-		if (props.title === undefined) {
-			return <Skeleton width={"120px"} />;
-		}
-
-		return (
-			<Stack direction="row" spacing={0.5} alignItems="center">
-				{props.titleIcon}
-				{props.title}
-			</Stack>
-		);
-	};
-
 	return (
 		<MUIListItem disablePadding secondaryAction={props.trailing}>
 			<ListItemButton
@@ -89,11 +74,8 @@ const ListItem = (props: ListItemProps) => {
 					}}
 				>
 					<ListItemText
-						primary={makeTitleElement()}
-						primaryTypographyProps={{
-							...primaryTextStyle,
-							component: "div"
-						}}
+						primary={props.title ?? <Skeleton width={"120px"} />}
+						primaryTypographyProps={primaryTextStyle}
 						secondary={
 							props.secondTitle === undefined ? (
 								<Skeleton width={"70px"} />
@@ -111,8 +93,8 @@ const ListItem = (props: ListItemProps) => {
 					sx={{ display: { xs: "none", xl: "flex" }, width: "100%" }}
 				>
 					<Grid item xs={props.secondTitle !== null ? 6 : 10}>
-						<Typography sx={{ ...textStyle, ...primaryTextStyle }} component="div">
-							{makeTitleElement()}
+						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>
+							{props.title ?? <Skeleton width={"120px"} />}
 						</Typography>
 					</Grid>
 					{props.secondTitle === null ? undefined : (
