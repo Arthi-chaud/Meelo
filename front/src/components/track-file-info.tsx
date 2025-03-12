@@ -30,7 +30,6 @@ import { useTranslation } from "react-i18next";
 import API from "../api/api";
 import { useQuery } from "../api/use-query";
 import type { TranslationKey } from "../i18n/i18n";
-import type { SongType } from "../models/song";
 import formatDuration from "../utils/formatDuration";
 import SongTypeIcon from "./song-type-icon";
 
@@ -51,8 +50,8 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		type: track.data?.type,
 		songType: songType && (
 			<Stack direction="row" spacing={1} alignItems="center">
-				<SongTypeIcon type={songType as SongType} size={24} />
-				{t(songType as TranslationKey)}
+				<SongTypeIcon type={songType} size={24} />
+				{t(songType)}
 			</Stack>
 		),
 		remastered: track.data
@@ -71,9 +70,9 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 			: undefined,
 		extension: sourceFile.data
 			? (sourceFile.data.path
-					.split(".")
-					.reverse()[0]
-					.toLocaleUpperCase() ?? "Unknown")
+				.split(".")
+				.reverse()[0]
+				.toLocaleUpperCase() ?? "Unknown")
 			: undefined,
 		path: sourceFile.data?.path,
 		registrationDate: sourceFile.data
