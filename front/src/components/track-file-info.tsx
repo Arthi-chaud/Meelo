@@ -24,6 +24,7 @@ import {
 	TableCell,
 	TableRow,
 	Typography,
+	useTheme,
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
@@ -39,6 +40,7 @@ import SongTypeIcon from "./song-type-icon";
  */
 const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const track = useQuery((id) => API.getTrack(id, ["song"]), trackId);
 	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
 	const songType = track.data?.song?.type;
@@ -50,7 +52,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		type: track.data?.type,
 		songType: songType && (
 			<Stack direction="row" spacing={1} alignItems="center">
-				<SongTypeIcon type={songType} size={24} />
+				<SongTypeIcon type={songType} size={theme.typography.body1.fontSize as number} />
 				{t(songType)}
 			</Stack>
 		),
