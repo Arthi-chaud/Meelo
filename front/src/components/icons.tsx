@@ -18,7 +18,7 @@
 
 import * as Iconsax from "iconsax-react";
 
-type IconProps = Iconsax.IconProps;
+export type IconProps = Iconsax.IconProps;
 
 export const TranscodeIcon = Iconsax.Polyswarm;
 export const PlaylistIcon = Iconsax.MusicFilter;

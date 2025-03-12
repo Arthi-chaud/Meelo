@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Tooltip } from "@mui/material";
-import { useTranslation } from "react-i18next";
 import { type SongType } from "../models/song";
+import type { IconProps } from "./icons";
 import {
     SongIcon,
     SongTypeAcapellaIcon,
@@ -34,36 +33,26 @@ import {
     SongTypeRemixIcon
 } from "./icons";
 
-const SongTypeIcon = ({ type, size = 20 }: { type: SongType; size?: number }) => {
-    const { t } = useTranslation();
-
-    const getIcon = () => {
+const SongTypeIcon = ({ type, ...props }: { type: SongType } & IconProps) => {
+    const Icon = () => {
         switch (type) {
-            case 'Original': return <SongTypeOriginalIcon size={size} />;
-            case 'Remix': return <SongTypeRemixIcon size={size} />;
-            case 'Live': return <SongTypeLiveIcon size={size} />;
-            case 'Acoustic': return <SongTypeAcousticIcon size={size} />;
-            case 'Instrumental': return <SongTypeInstrumentalIcon size={size} />;
-            case 'Edit': return <SongTypeEditIcon size={size} />;
-            case 'Clean': return <SongTypeCleanIcon size={size} />;
-            case 'Demo': return <SongTypeDemoIcon size={size} />;
-            case 'Acappella': return <SongTypeAcapellaIcon size={size} />;
-            case 'Medley': return <SongTypeMedleyIcon size={size} />;
-            case 'NonMusic': return <SongTypeNonMusicIcon size={size} />;
-            default: return <SongIcon size={size} />;
+            case 'Original': return SongTypeOriginalIcon;
+            case 'Remix': return SongTypeRemixIcon;
+            case 'Live': return SongTypeLiveIcon;
+            case 'Acoustic': return SongTypeAcousticIcon;
+            case 'Instrumental': return SongTypeInstrumentalIcon;
+            case 'Edit': return SongTypeEditIcon;
+            case 'Clean': return SongTypeCleanIcon;
+            case 'Demo': return SongTypeDemoIcon;
+            case 'Acappella': return SongTypeAcapellaIcon;
+            case 'Medley': return SongTypeMedleyIcon;
+            case 'NonMusic': return SongTypeNonMusicIcon;
+            default: return SongIcon;
         }
     };
 
-    const icon = getIcon();
-    if (!icon) return null;
-
-    return (
-        <Tooltip title={t(type) as string} arrow>
-            <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', marginRight: 1, opacity: 0.8 }}>
-                {icon}
-            </Box>
-        </Tooltip>
-    );
+    let IconComponent = Icon();
+    return <IconComponent {...props} />;
 };
 
 export default SongTypeIcon;
