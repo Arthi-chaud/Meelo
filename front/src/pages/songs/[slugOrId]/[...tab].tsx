@@ -180,25 +180,29 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								song.data && `${song.data?.name} (${t("info")})`
 							}
 						/>
-						{song.data?.type && (
-							<Stack
-								direction="row"
-								sx={{
-									overflowX: "scroll",
-									alignItems: "center",
-									paddingBottom: 2
-								}}
-								spacing={2}
-							>
-								<Typography sx={{ overflow: "unset" }}>
-									{`${t("songType")}: `}
-								</Typography>
-								<Stack direction="row" spacing={1} alignItems="center">
-									<SongTypeIcon type={song.data.type} size={24} />
-									{t(song.data.type)}
-								</Stack>
-							</Stack>
-						)}
+						<Stack
+							direction="row"
+							sx={{
+								overflowX: "scroll",
+								alignItems: "center",
+								paddingBottom: 2
+							}}
+							spacing={2}
+						>
+							<Typography sx={{ overflow: "unset" }}>
+								{`${t("songType")}: `}
+							</Typography>
+							{song.data ? (
+								song.data.type ? (
+									<Stack direction="row" spacing={1} alignItems="center">
+										<SongTypeIcon type={song.data.type} size={20} />
+										{t(song.data.type)}
+									</Stack>
+								) : null
+							) : (
+								<Skeleton width="100px" />
+							)}
+						</Stack>
 						{song.data ? (
 							song.data.bpm ? (
 								<Typography
