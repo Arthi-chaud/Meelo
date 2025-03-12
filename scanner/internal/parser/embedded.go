@@ -107,7 +107,7 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.Index = int64(trackValue)
 	})
 	ParseTag(tags, []string{"lyrics", "uslt"}, func(value string) {
-		metadata.Lyrics = strings.Split(
+		metadata.PlainLyrics = strings.Split(
 			strings.ReplaceAll(
 				strings.ReplaceAll(value, "\r", "\n"),
 				"\r\n",

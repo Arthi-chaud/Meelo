@@ -16,8 +16,8 @@ type Metadata struct {
 	Artist string `validate:"required"`
 	// Name of the artist of the parent album
 	AlbumArtist string
-	// Lyrics of the song. One string == one line. Empty lines are line jumps
-	Lyrics []string
+	// Plain Lyrics of the song. One string == one line. Empty lines are line jumps
+	PlainLyrics PlainLyrics
 	// Name of the album of the track
 	Album string
 	// Name of the release of the track

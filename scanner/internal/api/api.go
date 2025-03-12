@@ -85,7 +85,7 @@ type LyricsDto struct {
 	Lyrics string `json:"plain"`
 }
 
-func PostLyrics(config config.Config, songId int, lyrics []string) error {
+func PostLyrics(config config.Config, songId int, lyrics internal.PlainLyrics) error {
 	dto := LyricsDto{Lyrics: strings.Join(lyrics, "\n")}
 	serialized, err := json.Marshal(dto)
 	if err != nil {
