@@ -149,9 +149,12 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 			}
 		})
 	}
-	if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
-		metadata.IllustrationLocation = internal.Embedded
-		metadata.IllustrationStreamIndex = streamIndex
+
+	if !c.UseEmbeddedThumbnails {
+		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
+			metadata.IllustrationLocation = internal.Embedded
+			metadata.IllustrationStreamIndex = streamIndex
+		}
 	}
 	return metadata, errors
 }
