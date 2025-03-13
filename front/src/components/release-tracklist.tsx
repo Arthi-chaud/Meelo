@@ -216,7 +216,11 @@ const ReleaseTrackList = ({
 										<ListItemText
 											primary={
 												currentTrack ? (
-													<Stack direction="row" spacing={0.5} alignItems="center">
+													<Stack
+														direction="row"
+														spacing={0.5}
+														alignItems="center"
+													>
 														{currentTrack.name}
 													</Stack>
 												) : (
@@ -225,7 +229,7 @@ const ReleaseTrackList = ({
 											}
 											primaryTypographyProps={{
 												fontSize: "medium",
-												component: "div"
+												component: "div",
 											}}
 											secondary={
 												mainArtist === undefined

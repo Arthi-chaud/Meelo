@@ -52,11 +52,14 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		type: track.data?.type,
 		songType: track.data?.song
 			? songType && (
-				<Stack direction="row" spacing={1} alignItems="center">
-					<SongTypeIcon type={songType} size={theme.typography.body1.fontSize as number} />
-					{t(songType)}
-				</Stack>
-			)
+					<Stack direction="row" spacing={1} alignItems="center">
+						<SongTypeIcon
+							type={songType}
+							size={theme.typography.body1.fontSize as number}
+						/>
+						{t(songType)}
+					</Stack>
+				)
 			: track.data?.song === undefined
 				? undefined
 				: "N/A",
@@ -76,9 +79,9 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 			: undefined,
 		extension: sourceFile.data
 			? (sourceFile.data.path
-				.split(".")
-				.reverse()[0]
-				.toLocaleUpperCase() ?? "Unknown")
+					.split(".")
+					.reverse()[0]
+					.toLocaleUpperCase() ?? "Unknown")
 			: undefined,
 		path: sourceFile.data?.path,
 		registrationDate: sourceFile.data

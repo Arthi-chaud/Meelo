@@ -185,7 +185,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							sx={{
 								overflowX: "scroll",
 								alignItems: "center",
-								paddingBottom: 2
+								paddingBottom: 2,
 							}}
 							spacing={2}
 						>
@@ -194,8 +194,15 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							</Typography>
 							{song.data ? (
 								song.data.type ? (
-									<Stack direction="row" spacing={1} alignItems="center">
-										<SongTypeIcon type={song.data.type} size={20} />
+									<Stack
+										direction="row"
+										spacing={1}
+										alignItems="center"
+									>
+										<SongTypeIcon
+											type={song.data.type}
+											size={20}
+										/>
 										{t(song.data.type)}
 									</Stack>
 								) : null

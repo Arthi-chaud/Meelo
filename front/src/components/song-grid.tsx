@@ -55,7 +55,6 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 							/>
 						}
 						title={song?.name}
-						titleIcon={undefined}
 						secondTitle={
 							song
 								? parentArtistName === song.artist.name &&
