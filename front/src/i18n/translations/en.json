@@ -257,5 +257,6 @@
 	"emptyStateLyrics": "No lyrics to sing along to :(",
 	"emptyStatePlaylists": "There are no playlists... yet!",
 	"emptyStatePlaylist": "There are no songs in this playlist... yet!",
-	"emptyStateHome": "Oh wow, it's quiet in here..."
+	"emptyStateHome": "Oh wow, it's quiet in here...",
+	"songType": "Song Type"
 }

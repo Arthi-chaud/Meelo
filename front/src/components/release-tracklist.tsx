@@ -28,6 +28,7 @@ import {
 	ListItemText,
 	ListSubheader,
 	Skeleton,
+	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -214,12 +215,21 @@ const ReleaseTrackList = ({
 										</ListItemIcon>
 										<ListItemText
 											primary={
-												currentTrack?.name ?? (
+												currentTrack ? (
+													<Stack
+														direction="row"
+														spacing={0.5}
+														alignItems="center"
+													>
+														{currentTrack.name}
+													</Stack>
+												) : (
 													<Skeleton width="120px" />
 												)
 											}
 											primaryTypographyProps={{
 												fontSize: "medium",
+												component: "div",
 											}}
 											secondary={
 												mainArtist === undefined

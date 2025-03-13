@@ -18,7 +18,7 @@
 
 import * as Iconsax from "iconsax-react";
 
-type IconProps = Iconsax.IconProps;
+export type IconProps = Iconsax.IconProps;
 
 export const TranscodeIcon = Iconsax.Polyswarm;
 export const PlaylistIcon = Iconsax.MusicFilter;
@@ -91,3 +91,16 @@ export const MinusIcon = Iconsax.Minus;
 export const DoneIcon = Iconsax.TickSquare;
 
 export const EmptyStateIcon = Iconsax.SearchStatus1;
+
+// Icons for song type
+export const SongTypeOriginalIcon = Iconsax.Music;
+export const SongTypeRemixIcon = Iconsax.Repeat;
+export const SongTypeLiveIcon = Iconsax.Microphone2;
+export const SongTypeAcousticIcon = Iconsax.VoiceSquare;
+export const SongTypeInstrumentalIcon = Iconsax.Musicnote;
+export const SongTypeEditIcon = Iconsax.Cut;
+export const SongTypeCleanIcon = Iconsax.TickCircle;
+export const SongTypeDemoIcon = Iconsax.ReceiptEdit;
+export const SongTypeAcapellaIcon = Iconsax.VoiceCricle;
+export const SongTypeMedleyIcon = Iconsax.Layer;
+export const SongTypeNonMusicIcon = Iconsax.VolumeSlash;
