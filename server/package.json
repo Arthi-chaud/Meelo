@@ -34,7 +34,7 @@
 		"amqp-connection-manager": "^4.1.14",
 		"amqplib": "^0.10.4",
 		"archiver": "^5.3.1",
-		"axios": "^1.7.9",
+		"axios": "^1.8.3",
 		"bcrypt": "^5.1.1",
 		"blurhash": "^2.0.5",
 		"class-transformer": "^0.5.1",

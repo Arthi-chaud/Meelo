@@ -3357,14 +3357,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.7.9":
-  version: 1.7.9
-  resolution: "axios@npm:1.7.9"
+"axios@npm:^1.8.3":
+  version: 1.8.3
+  resolution: "axios@npm:1.8.3"
   dependencies:
     follow-redirects: "npm:^1.15.6"
     form-data: "npm:^4.0.0"
     proxy-from-env: "npm:^1.1.0"
-  checksum: 10c0/b7a41e24b59fee5f0f26c1fc844b45b17442832eb3a0fb42dd4f1430eb4abc571fe168e67913e8a1d91c993232bd1d1ab03e20e4d1fee8c6147649b576fc1b0b
+  checksum: 10c0/de75da9859adf0a6481d4af2b687db357a054d20f0d69b99d502b71dae3578326b1fdc0951dabaef769827484941cda93d3f89150bf9e04f05f6615fb8316780
   languageName: node
   linkType: hard
 
@@ -6899,7 +6899,7 @@ __metadata:
     amqp-connection-manager: "npm:^4.1.14"
     amqplib: "npm:^0.10.4"
     archiver: "npm:^5.3.1"
-    axios: "npm:^1.7.9"
+    axios: "npm:^1.8.3"
     bcrypt: "npm:^5.1.1"
     blurhash: "npm:^2.0.5"
     class-transformer: "npm:^0.5.1"
