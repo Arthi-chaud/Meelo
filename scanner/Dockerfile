@@ -1,4 +1,4 @@
-FROM golang:1.22.6-alpine AS builder
+FROM golang:1.24.1-alpine AS builder
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 WORKDIR /app
 COPY go.mod go.sum ./
