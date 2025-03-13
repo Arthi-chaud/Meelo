@@ -13,3 +13,4 @@ runs:
         check-latest: true
         go-version-file: 'scanner/go.mod'
         cache-dependency-path: scanner/go.sum
+        go-version: '1.24.1'
