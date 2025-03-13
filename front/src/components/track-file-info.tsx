@@ -57,7 +57,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 							type={songType}
 							size={theme.typography.body1.fontSize as number}
 						/>
-						{t(songType)}
+						<Typography>{t(songType)}</Typography>
 					</Stack>
 				)
 			: track.data?.song === undefined

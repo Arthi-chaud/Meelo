@@ -187,7 +187,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								alignItems: "center",
 								paddingBottom: 2,
 							}}
-							spacing={2}
+							spacing={1}
 						>
 							<Typography sx={{ overflow: "unset" }}>
 								{`${t("songType")}: `}
@@ -203,7 +203,9 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											type={song.data.type}
 											size={20}
 										/>
-										{t(song.data.type)}
+										<Typography>
+											{t(song.data.type)}
+										</Typography>
 									</Stack>
 								) : null
 							) : (
