@@ -127,6 +127,15 @@ export default class Metadata {
 	discIndex?: number;
 
 	/**
+	 * Name of the disc
+	 */
+	@ApiPropertyOptional()
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	discName?: string;
+
+	/**
 	 * Bitrate of the file
 	 */
 	@ApiPropertyOptional()

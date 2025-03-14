@@ -76,6 +76,7 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 			releaseId: track.releaseId,
 			name: track.name,
 			discIndex: track.discIndex,
+			discName: track.discName,
 			trackIndex: track.trackIndex,
 			type: track.type,
 			bitrate: track.bitrate,
