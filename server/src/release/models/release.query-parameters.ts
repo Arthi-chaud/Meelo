@@ -97,9 +97,12 @@ namespace ReleaseQueryParameters {
 		"album",
 		"tracks",
 		"illustration",
+		"discs",
 	] as const;
-	export const AvailableAtomicIncludes =
-		filterAtomicRelationInclude(AvailableIncludes);
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
+		AvailableIncludes,
+		["discs"],
+	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
