@@ -90,7 +90,7 @@ const formatReleaseDate = (date: Date, lang: string) => {
 };
 
 const releaseQuery = (releaseIdentifier: string | number) =>
-	API.getRelease(releaseIdentifier, ["album", "illustration"]);
+	API.getRelease(releaseIdentifier, ["album", "illustration", "discs"]);
 const releaseTracklistQuery = (
 	releaseIdentifier: number | string,
 	exclusiveOnly: boolean,
