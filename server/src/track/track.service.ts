@@ -452,8 +452,8 @@ export default class TrackService {
 					: { release: { is: where } },
 			),
 			orderBy: [
-				{ trackIndex: "asc" },
 				{ discIndex: { sort: "asc", nulls: "last" } },
+				{ trackIndex: { sort: "asc", nulls: "last" } },
 			],
 			...formatPaginationParameters(pagination),
 			include: {

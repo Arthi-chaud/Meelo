@@ -38,7 +38,7 @@ import { useTranslation } from "react-i18next";
 import { Audio } from "react-loader-spinner";
 import type { RequireAtLeastOne } from "type-fest";
 import type Artist from "../models/artist";
-import type Release from "../models/release";
+import type { ReleaseWithRelations } from "../models/release";
 import type { SongWithRelations } from "../models/song";
 import type { TrackWithRelations } from "../models/track";
 import type Tracklist from "../models/tracklist";
@@ -63,7 +63,7 @@ type TrackType = TrackWithRelations<"illustration"> &
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
 	tracklist: Tracklist<TrackType> | undefined;
-	release: Release | undefined;
+	release: ReleaseWithRelations<"discs"> | undefined;
 };
 
 /**
@@ -104,6 +104,19 @@ const ReleaseTrackList = ({
 		}
 		return formatArtists(song.artist, song.featuring);
 	};
+	// Note, at this point disc index is a string /shrug
+	const formatDisc = (discIndex: string) => {
+		const disc = release?.discs.find((d) =>
+			d.index === null
+				? discIndex === "?"
+				: d.index.toString() === discIndex,
+		);
+		const base = `${t("disc")} ${discIndex}`;
+		if (disc?.name) {
+			return `${base} — ${disc.name}`;
+		}
+		return base;
+	};
 
 	return (
 		<Box>
@@ -120,7 +133,7 @@ const ReleaseTrackList = ({
 					subheader={
 						discs.length !== 1 && (
 							<ListSubheader disableSticky>
-								{`${t("disc")} ${disc[0]}`}
+								{formatDisc(disc[0])}
 							</ListSubheader>
 						)
 					}

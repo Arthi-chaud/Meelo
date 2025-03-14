@@ -48,6 +48,7 @@ func TestEmbeddedFlac(t *testing.T) {
 	assert.Equal(t, "Artist", m.Artist)
 	assert.Equal(t, false, m.IsCompilation)
 	assert.Equal(t, "Album", m.Album)
+	assert.Equal(t, "My Disc", m.DiscName)
 	assert.Equal(t, internal.Audio, m.Type)
 	assert.Equal(t, int64(217), m.Duration)
 	assert.Equal(t, "", m.Release)

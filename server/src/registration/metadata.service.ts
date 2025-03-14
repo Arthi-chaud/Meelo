@@ -217,6 +217,7 @@ export default class MetadataService {
 			name: video ? videoName : parsedTrackName.parsedName,
 			isBonus: parsedTrackName.bonus,
 			isRemastered: parsedTrackName.remastered,
+			discName: metadata.discName ?? null,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
 			type: metadata.type,

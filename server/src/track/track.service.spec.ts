@@ -135,6 +135,7 @@ describe("Track Service", () => {
 	const trackData = {
 		type: TrackType.Audio,
 		name: "",
+		discName: null,
 		discIndex: 1,
 		trackIndex: 2,
 		bitrate: 320,
@@ -398,6 +399,7 @@ describe("Track Service", () => {
 				isBonus: false,
 				isRemastered: false,
 				name: "",
+				discName: null,
 				discIndex: 1,
 				trackIndex: 2,
 				bitrate: 320,

@@ -72,6 +72,9 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 			errors = append(errors, fmt.Errorf("invalid year: '%s'", matches[index]))
 		}
 	}
+	if index := regex.SubexpIndex("DiscName"); index != -1 {
+		metadata.DiscName = matches[index]
+	}
 	if index := regex.SubexpIndex("Disc"); index != -1 && len(matches[index]) > 0 {
 		value, err := strconv.Atoi(matches[index])
 		if err == nil {
