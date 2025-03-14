@@ -38,10 +38,10 @@ const (
 )
 
 type UserSettings struct {
-	Compilations CompilationSettings `json:"compilations" validate:"required"`
-	TrackRegex   []string            `json:"trackRegex" validate:"required"`
-	Metadata     MetadataSettings    `json:"metadata" validate:"required"`
-	UseEmbeddedThumbnails bool       `json:"useEmbeddedThumbnails"`
+	Compilations          CompilationSettings `json:"compilations" validate:"required"`
+	TrackRegex            []string            `json:"trackRegex" validate:"required"`
+	Metadata              MetadataSettings    `json:"metadata" validate:"required"`
+	UseEmbeddedThumbnails bool                `json:"useEmbeddedThumbnails"`
 }
 
 func GetUserSettings(settingsFilePath string) (UserSettings, []error) {
