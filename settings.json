@@ -16,5 +16,6 @@
 		"artists": [
 			"Various Artists"
 		]
-	}
+	},
+	"useEmbeddedThumbnails": false
 }

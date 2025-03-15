@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -9,9 +10,27 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
+	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
 func SaveThumbnail(t ThumbnailTask, c config.Config) error {
+	if c.UserSettings.UseEmbeddedThumbnails {
+		// Try to extract the embedded illustration
+		ctx, cancelFn := context.WithCancel(context.Background())
+		defer cancelFn()
+		probeData, err := ffprobe.ProbeURL(ctx, t.FilePath)
+		if err == nil {
+			streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData)
+			if streamIndex >= 0 {
+				thumbnailbytes, err := illustration.ExtractEmbeddedIllustration(t.FilePath, streamIndex)
+				if err == nil {
+					return api.PostIllustration(c, t.TrackId, api.Thumbnail, thumbnailbytes)
+				}
+			}
+		}
+	}
+
+	// If we didn't get a thumbnail from the embedded illustration, extract a frame from the video
 	thumbnailPosition := int64(t.TrackDuration / 2)
 	if t.TrackDuration == 0 {
 		t.TrackDuration = 5 // this is abitrary. If the scan os path only, we do not get the duration.
