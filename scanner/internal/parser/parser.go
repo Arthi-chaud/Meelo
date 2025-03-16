@@ -51,22 +51,7 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 	metadata.Checksum = checksum
 
 	if len(metadata.SyncedLyrics) == 0 {
-		ext := path.Ext(filePath)
-		lrcPath := strings.ReplaceAll(filePath, ext, ".lrc")
-		lyric, err := os.ReadFile(lrcPath)
-		if err != nil {
-			parsedLyrics := internal.ParseLyrics(string(lyric))
-			switch res := parsedLyrics.(type) {
-			case internal.PlainLyrics:
-				if config.Metadata.Source == c.Path || config.Metadata.Order == c.Preferred {
-					metadata.PlainLyrics = res
-				}
-			case internal.SyncedLyrics:
-				metadata.SyncedLyrics = res
-				metadata.PlainLyrics = res.ToPlain()
-			}
-		}
-
+		getLyricsFromLrc(filePath, config, &metadata)
 	}
 	// Let's save some time by skipping acoustid for unreasonably long media
 	if metadata.Type == internal.Audio || metadata.Duration < 1200 { // 20 minutes
@@ -80,4 +65,22 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		}
 	}
 	return metadata, append(errors, internal.SanitizeAndValidateMetadata(&metadata)...)
+}
+
+func getLyricsFromLrc(filePath string, config c.UserSettings, metadata *internal.Metadata) {
+	ext := path.Ext(filePath)
+	lrcPath := strings.ReplaceAll(filePath, ext, ".lrc")
+	lyric, err := os.ReadFile(lrcPath)
+	if err == nil {
+		parsedLyrics := internal.ParseLyrics(string(lyric))
+		switch res := parsedLyrics.(type) {
+		case internal.PlainLyrics:
+			if config.Metadata.Source == c.Path || config.Metadata.Order == c.Preferred {
+				metadata.PlainLyrics = res
+			}
+		case internal.SyncedLyrics:
+			metadata.SyncedLyrics = res
+			metadata.PlainLyrics = res.ToPlain()
+		}
+	}
 }

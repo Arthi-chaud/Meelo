@@ -35,7 +35,7 @@ func TestEmbedded(t *testing.T) {
 	assert.Equal(t, int64(2), m.DiscIndex)
 	assert.Equal(t, int64(3), m.Index)
 	assert.Equal(t, []string{"Pop", "Rock", "Trip-Hop"}, m.Genres)
-	assert.Equal(t, []string{"A", "B", "C", "", "D", "", "", "E", ""}, m.Lyrics)
+	assert.Equal(t, internal.PlainLyrics{"A", "B", "C", "", "D", "", "", "E", ""}, m.PlainLyrics)
 	assert.Equal(t, "Dreams", m.Name)
 }
 
