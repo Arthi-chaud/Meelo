@@ -76,17 +76,27 @@ func DeleteFiles(config config.Config, fileIds []int) error {
 	return err
 }
 
-func HasLyrics(config config.Config, songId int) (bool, error) {
-	_, err := request("GET", fmt.Sprintf("/songs/%d/lyrics", songId), nil, config, "")
-	return err == nil, err
+func HasLyrics(config config.Config, songId int) (bool, bool, error) {
+	res, err := request("GET", fmt.Sprintf("/songs/%d/lyrics", songId), nil, config, JsonContentType)
+
+	if err != nil {
+		return false, false, err
+	}
+	var resp = LyricsDto{}
+	err = validate(res, &resp)
+	if err != nil {
+		return false, false, err
+	}
+	return len(resp.Plain) > 0, resp.Synced != nil && len(*resp.Synced) > 0, err
 }
 
 type LyricsDto struct {
-	Lyrics string `json:"plain"`
+	Plain  string                   `json:"plain"`
+	Synced *(internal.SyncedLyrics) `json:"synced"`
 }
 
-func PostLyrics(config config.Config, songId int, lyrics internal.PlainLyrics) error {
-	dto := LyricsDto{Lyrics: strings.Join(lyrics, "\n")}
+func PostLyrics(config config.Config, songId int, plainLyrics internal.PlainLyrics, syncedLyrics *internal.SyncedLyrics) error {
+	dto := LyricsDto{Plain: strings.Join(plainLyrics, "\n"), Synced: syncedLyrics}
 	serialized, err := json.Marshal(dto)
 	if err != nil {
 		return err

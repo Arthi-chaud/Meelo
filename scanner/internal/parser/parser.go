@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -48,7 +49,25 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		errors = append(errors, err)
 	}
 	metadata.Checksum = checksum
-	//TODO Look for LRC file
+
+	if len(metadata.SyncedLyrics) == 0 {
+		ext := path.Ext(filePath)
+		lrcPath := strings.ReplaceAll(filePath, ext, ".lrc")
+		lyric, err := os.ReadFile(lrcPath)
+		if err != nil {
+			parsedLyrics := internal.ParseLyrics(string(lyric))
+			switch res := parsedLyrics.(type) {
+			case internal.PlainLyrics:
+				if config.Metadata.Source == c.Path || config.Metadata.Order == c.Preferred {
+					metadata.PlainLyrics = res
+				}
+			case internal.SyncedLyrics:
+				metadata.SyncedLyrics = res
+				metadata.PlainLyrics = res.ToPlain()
+			}
+		}
+
+	}
 	// Let's save some time by skipping acoustid for unreasonably long media
 	if metadata.Type == internal.Audio || metadata.Duration < 1200 { // 20 minutes
 		fingerprint, err := internal.GetFileAcousticFingerprint(filePath)
