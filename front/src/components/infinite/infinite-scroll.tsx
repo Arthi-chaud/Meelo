@@ -43,10 +43,6 @@ type InfiniteScrollProps<T extends Resource> = {
 	 * Query to use
 	 */
 	query: MeeloInfiniteQueryFn<T>;
-	/**
-	 * Component to display on page fetching (except first)
-	 */
-	loader: () => JSX.Element;
 
 	emptyState?: EmptyStateProps;
 };

@@ -24,7 +24,6 @@ import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import { Head } from "../../components/head";
-import LoadingPage from "../../components/loading/loading-page";
 import LibrariesSettings from "../../components/settings/libraries-settings";
 import UserSettings from "../../components/settings/user-settings";
 import UsersSettings from "../../components/settings/users-settings";
@@ -77,7 +76,7 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	}, [panel]);
 
 	if (!userQuery.data) {
-		return <LoadingPage />;
+		return <></>;
 	}
 	if (userQuery.data.admin === false) {
 		return <UserSettings />;

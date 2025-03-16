@@ -31,6 +31,8 @@ type Metadata struct {
 	Index int64
 	// Index of the disc the track is on
 	DiscIndex int64
+	// Name of the disc
+	DiscName string
 	// Bitrate of the file, in kbps
 	Bitrate int64 `validate:"gte=0"`
 	Bpm     float64

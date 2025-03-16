@@ -25,7 +25,6 @@ import type { ItemSize } from "../../utils/layout";
 import type { EmptyStateProps } from "../empty-state";
 import Fade from "../fade";
 import { GoBackTopIcon } from "../icons";
-import { WideLoadingComponent } from "../loading/loading";
 import InfiniteGrid from "./infinite-grid";
 import InfiniteList from "./infinite-list";
 import { parentScrollableDivId } from "./infinite-scroll";
@@ -97,7 +96,6 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 			<ScrollToTopButton />
 			{props.view.toLowerCase() === "list" ? (
 				<InfiniteList
-					loader={() => <WideLoadingComponent />}
 					query={props.query}
 					render={(item, index) => (
 						<Fade in>
@@ -111,7 +109,6 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 				<InfiniteGrid
 					query={props.query}
 					itemSize={props.itemSize}
-					loader={() => <WideLoadingComponent />}
 					render={(item) => (
 						<Fade in>
 							<Box sx={{ height: "100%" }}>

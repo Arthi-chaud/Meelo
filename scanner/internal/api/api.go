@@ -136,6 +136,9 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	if m.DiscIndex > 0 {
 		mp.WriteField("discIndex", strconv.FormatInt(m.DiscIndex, 10))
 	}
+	if len(m.DiscName) > 0 {
+		mp.WriteField("discName", m.DiscName)
+	}
 	if m.Bitrate > 0 {
 		mp.WriteField("bitrate", strconv.FormatInt(m.Bitrate, 10))
 	}

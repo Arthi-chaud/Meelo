@@ -246,6 +246,7 @@ model Release {
     /// @description additional Metadata from external providers
     externalMetadata ExternalMetadata?
     illustration     ReleaseMainIllustration?
+    discs            Disc[]
 
     @@unique([albumId, slug])
     @@map("releases")
@@ -452,6 +453,19 @@ enum TrackType {
     @@map("track-types")
 }
 
+view Disc {
+    id        Int     @unique
+    // Index of the disc
+    index     Int?
+    // Name of the disc
+    name      String?
+    // ID of the parent release
+    releaseId Int
+    release   Release @relation(fields: [releaseId], references: [id])
+
+    @@map("discs")
+}
+
 /// An track is an 'instance' of a song
 model Track {
     /// @description Unique numeric Track identifier
@@ -473,6 +487,8 @@ model Track {
     /// @description The index of the disc the track is on
     /// @example 1
     discIndex                Int?
+    /// @description The name of the disc, if it has one (not to be confused with the release name) 
+    discName                 String?
     /// @description The index of the track on the disc
     /// @example 2
     trackIndex               Int?

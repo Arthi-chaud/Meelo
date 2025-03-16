@@ -28,16 +28,16 @@ import {
 	ListItemText,
 	ListSubheader,
 	Skeleton,
+	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
 import { useAtom, useSetAtom } from "jotai";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Audio } from "react-loader-spinner";
 import type { RequireAtLeastOne } from "type-fest";
 import type Artist from "../models/artist";
-import type Release from "../models/release";
+import type { ReleaseWithRelations } from "../models/release";
 import type { SongWithRelations } from "../models/song";
 import type { TrackWithRelations } from "../models/track";
 import type Tracklist from "../models/tracklist";
@@ -52,7 +52,7 @@ import formatArtists from "../utils/formatArtists";
 import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
-import { ContextualMenuIcon, VideoIcon } from "./icons";
+import { ContextualMenuIcon, PlayIcon, VideoIcon } from "./icons";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -62,7 +62,7 @@ type TrackType = TrackWithRelations<"illustration"> &
 type ReleaseTracklistProps = {
 	mainArtist: Artist | undefined | null;
 	tracklist: Tracklist<TrackType> | undefined;
-	release: Release | undefined;
+	release: ReleaseWithRelations<"discs"> | undefined;
 };
 
 /**
@@ -76,11 +76,12 @@ const ReleaseTrackList = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const PlayingIcon = () => (
-		<Audio
-			height="25"
-			width="20"
-			color={theme.palette.text.disabled}
-			ariaLabel="bars-loading"
+		<PlayIcon
+			style={{
+				fill: theme.palette.text.disabled,
+				color: "transparent",
+				marginLeft: -4,
+			}}
 		/>
 	);
 	const [playlist] = useAtom(playlistAtom);
@@ -103,6 +104,19 @@ const ReleaseTrackList = ({
 		}
 		return formatArtists(song.artist, song.featuring);
 	};
+	// Note, at this point disc index is a string /shrug
+	const formatDisc = (discIndex: string) => {
+		const disc = release?.discs.find((d) =>
+			d.index === null
+				? discIndex === "?"
+				: d.index.toString() === discIndex,
+		);
+		const base = `${t("disc")} ${discIndex}`;
+		if (disc?.name) {
+			return `${base} — ${disc.name}`;
+		}
+		return base;
+	};
 
 	return (
 		<Box>
@@ -119,7 +133,7 @@ const ReleaseTrackList = ({
 					subheader={
 						discs.length !== 1 && (
 							<ListSubheader disableSticky>
-								{`${t("disc")} ${disc[0]}`}
+								{formatDisc(disc[0])}
 							</ListSubheader>
 						)
 					}
@@ -214,12 +228,21 @@ const ReleaseTrackList = ({
 										</ListItemIcon>
 										<ListItemText
 											primary={
-												currentTrack?.name ?? (
+												currentTrack ? (
+													<Stack
+														direction="row"
+														spacing={0.5}
+														alignItems="center"
+													>
+														{currentTrack.name}
+													</Stack>
+												) : (
 													<Skeleton width="120px" />
 												)
 											}
 											primaryTypographyProps={{
 												fontSize: "medium",
+												component: "div",
 											}}
 											secondary={
 												mainArtist === undefined

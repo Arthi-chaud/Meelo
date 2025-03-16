@@ -18,11 +18,13 @@
 
 import {
 	Skeleton,
+	Stack,
 	Table,
 	TableBody,
 	TableCell,
 	TableRow,
 	Typography,
+	useTheme,
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
@@ -30,6 +32,7 @@ import API from "../api/api";
 import { useQuery } from "../api/use-query";
 import type { TranslationKey } from "../i18n/i18n";
 import formatDuration from "../utils/formatDuration";
+import SongTypeIcon from "./song-type-icon";
 
 /**
  * Table component, listing info of track and its source file
@@ -37,13 +40,29 @@ import formatDuration from "../utils/formatDuration";
  */
 const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
 	const track = useQuery((id) => API.getTrack(id, ["song"]), trackId);
 	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
+	const songType = track.data?.song?.type;
 
 	const tableContent: Partial<
-		Record<TranslationKey, string | number | undefined>
+		Record<TranslationKey, string | number | undefined | JSX.Element>
 	> = {
 		name: track.data?.name,
+		type: track.data?.type,
+		songType: track.data?.song
+			? songType && (
+					<Stack direction="row" spacing={1} alignItems="center">
+						<SongTypeIcon
+							type={songType}
+							size={theme.typography.body1.fontSize as number}
+						/>
+						<Typography>{t(songType)}</Typography>
+					</Stack>
+				)
+			: track.data?.song === undefined
+				? undefined
+				: "N/A",
 		remastered: track.data
 			? t(track.data.isRemastered ? "yes" : "no")
 			: undefined,
@@ -58,7 +77,6 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 				? `${track.data.bitrate} kbps`
 				: t("Unknown")
 			: undefined,
-		type: track.data?.type,
 		extension: sourceFile.data
 			? (sourceFile.data.path
 					.split(".")

@@ -83,6 +83,9 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	ParseTag(tags, []string{"title"}, func(value string) {
 		metadata.Name = value
 	})
+	ParseTag(tags, []string{"discsubtitle"}, func(value string) {
+		metadata.DiscName = value
+	})
 	ParseTag(tags, []string{"genres", "genre", "tcon"}, func(value string) {
 		metadata.Genres = strings.FieldsFunc(value, func(r rune) bool {
 			return r == ';' || r == '\\' || r == ','
@@ -146,9 +149,12 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 			}
 		})
 	}
-	if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
-		metadata.IllustrationLocation = internal.Embedded
-		metadata.IllustrationStreamIndex = streamIndex
+
+	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {
+		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
+			metadata.IllustrationLocation = internal.Embedded
+			metadata.IllustrationStreamIndex = streamIndex
+		}
 	}
 	return metadata, errors
 }

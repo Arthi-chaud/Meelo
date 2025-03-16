@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	type AlbumResponse,
 	AlbumResponseBuilder,
@@ -26,14 +26,17 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import { Release, type ReleaseWithRelations } from "src/prisma/models";
+import { Disc, Release, type ReleaseWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
+
+class DiscResponse extends OmitType(Disc, ["id", "releaseId"]) {}
 
 export class ReleaseResponse extends IntersectionType(
 	Release,
 	IllustratedResponse,
 	class {
 		album?: AlbumResponse;
+		discs?: DiscResponse[];
 	},
 ) {}
 
@@ -63,6 +66,9 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 			releaseDate: release.releaseDate,
 			albumId: release.albumId,
 			registeredAt: release.registeredAt,
+			discs: release.discs
+				? release.discs.map(({ id, releaseId, ...disc }) => disc)
+				: release.discs,
 			album: release.album
 				? await this.albumResponseBuilder.buildResponse(release.album)
 				: release.album,

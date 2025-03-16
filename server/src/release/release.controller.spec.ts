@@ -9,7 +9,12 @@ import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import ParserModule from "src/parser/parser.module";
-import type { Album, Release, Track } from "src/prisma/models";
+import type {
+	Album,
+	Release,
+	ReleaseWithRelations,
+	Track,
+} from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SongModule from "src/song/song.module";
@@ -219,6 +224,18 @@ describe("Release Controller", () => {
 					expect(release.album).toStrictEqual(
 						expectedAlbumResponse(dummyRepository.albumA1),
 					);
+				});
+		});
+
+		it("should get the release with disc", () => {
+			return request(app.getHttpServer())
+				.get(`/releases/${dummyRepository.releaseA1_1.id}?with=discs`)
+				.expect(200)
+				.expect((res) => {
+					const release: ReleaseWithRelations = res.body;
+					const disc = release.discs![0];
+					expect(disc.index).toBe(1);
+					expect(disc.name).toBeNull();
 				});
 		});
 	});

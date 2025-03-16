@@ -55,7 +55,6 @@ import {
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/infinite-list";
 import ListItem from "../list-item/item";
-import { WideLoadingComponent } from "../loading/loading";
 import type Action from "./action";
 
 export const PlayNextAction = (
@@ -258,7 +257,6 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 				/>
 				<Divider sx={{ paddingTop: 1 }} />
 				<InfiniteList
-					loader={() => <WideLoadingComponent />}
 					query={props.playlistQuery}
 					render={(item, index) => (
 						<ListItem

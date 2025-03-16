@@ -19,6 +19,7 @@
 import * as yup from "yup";
 import { yupdate } from "../utils/yup";
 import Album from "./album";
+import { Disc } from "./disc";
 import Illustration from "./illustration";
 import Resource from "./resource";
 
@@ -58,7 +59,7 @@ type Release = yup.InferType<typeof Release>;
 
 export default Release;
 
-export type ReleaseInclude = "album" | "illustration";
+export type ReleaseInclude = "album" | "illustration" | "discs";
 
 export const ReleaseWithRelations = <
 	Selection extends ReleaseInclude | never = never,
@@ -70,6 +71,7 @@ export const ReleaseWithRelations = <
 			.object({
 				album: Album.required(),
 				illustration: Illustration.required().nullable(),
+				discs: yup.array(Disc.required()).required(),
 			})
 			.pick(relation),
 	);
