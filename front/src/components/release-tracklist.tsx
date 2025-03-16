@@ -35,7 +35,6 @@ import {
 import { useAtom, useSetAtom } from "jotai";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Audio } from "react-loader-spinner";
 import type { RequireAtLeastOne } from "type-fest";
 import type Artist from "../models/artist";
 import type { ReleaseWithRelations } from "../models/release";
@@ -53,7 +52,7 @@ import formatArtists from "../utils/formatArtists";
 import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
 import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
-import { ContextualMenuIcon, VideoIcon } from "./icons";
+import { ContextualMenuIcon, PlayIcon, VideoIcon } from "./icons";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -77,11 +76,12 @@ const ReleaseTrackList = ({
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const PlayingIcon = () => (
-		<Audio
-			height="25"
-			width="20"
-			color={theme.palette.text.disabled}
-			ariaLabel="bars-loading"
+		<PlayIcon
+			style={{
+				fill: theme.palette.text.disabled,
+				color: "transparent",
+				marginLeft: -4,
+			}}
 		/>
 	);
 	const [playlist] = useAtom(playlistAtom);
