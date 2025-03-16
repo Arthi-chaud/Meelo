@@ -17,7 +17,8 @@ type Metadata struct {
 	// Name of the artist of the parent album
 	AlbumArtist string
 	// Plain Lyrics of the song. One string == one line. Empty lines are line jumps
-	PlainLyrics PlainLyrics
+	PlainLyrics  PlainLyrics
+	SyncedLyrics SyncedLyrics
 	// Name of the album of the track
 	Album string
 	// Name of the release of the track

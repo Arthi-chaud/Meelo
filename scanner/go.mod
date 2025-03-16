@@ -4,18 +4,18 @@ go 1.22.6
 
 require (
 	dario.cat/mergo v1.0.0
+	github.com/alecthomas/participle/v2 v2.1.1
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/goccy/go-json v0.10.3
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.13.3
-	github.com/rs/zerolog v1.33.0 // indirect
+	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.10.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.3
 	github.com/u2takey/ffmpeg-go v0.5.0
 	gopkg.in/vansante/go-ffprobe.v2 v2.2.0
-	github.com/alecthomas/participle v0.7.1
 )
 
 require (

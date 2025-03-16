@@ -107,14 +107,14 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.Index = int64(trackValue)
 	})
 	ParseTag(tags, []string{"lyrics", "uslt"}, func(value string) {
-		metadata.PlainLyrics = strings.Split(
-			strings.ReplaceAll(
-				strings.ReplaceAll(value, "\r", "\n"),
-				"\r\n",
-				"\n",
-			),
-			"\n",
-		)
+		parsedLyrics := internal.ParseLyrics(value)
+		switch l := parsedLyrics.(type) {
+		case internal.PlainLyrics:
+			metadata.PlainLyrics = l
+		case internal.SyncedLyrics:
+			metadata.SyncedLyrics = l
+			metadata.PlainLyrics = l.ToPlain()
+		}
 	})
 	ParseTag(tags, []string{"bpm", "tbp"}, func(value string) {
 		bpm, err := strconv.ParseFloat(value, 64)
