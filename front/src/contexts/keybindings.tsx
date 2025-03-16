@@ -71,6 +71,10 @@ const useKey = (...p: Parameters<typeof _useKey>) => {
 			if (tagName === "input" || tagName === "textarea") {
 				return;
 			}
+			// Prevent default for the "/" key to stop Firefox's quick find
+			if (p[0] === "/") {
+				e.preventDefault();
+			}
 			p[1]?.(e);
 		},
 		p[2],
