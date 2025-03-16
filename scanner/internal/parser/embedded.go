@@ -150,7 +150,7 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		})
 	}
 
-	if !c.UseEmbeddedThumbnails {
+	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {
 		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
 			metadata.IllustrationLocation = internal.Embedded
 			metadata.IllustrationStreamIndex = streamIndex
