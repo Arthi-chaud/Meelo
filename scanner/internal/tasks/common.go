@@ -33,13 +33,18 @@ func pushMetadata(fileFullPath string, m internal.Metadata, c config.Config, w *
 		}
 	}
 
-	hasLyrics := len(internal.Filter(m.Lyrics, func(s string) bool {
+	hasPlainLyrics := len(internal.Filter(m.PlainLyrics, func(s string) bool {
 		return len(s) > 0
 	})) > 0
-	if hasLyrics && created.SongId != 0 {
-		hasPrevLyrics, _ := api.HasLyrics(c, created.SongId)
-		if !hasPrevLyrics {
-			err := api.PostLyrics(c, created.SongId, m.Lyrics)
+	hasSyncedLyrics := len(m.SyncedLyrics) > 0
+	if hasPlainLyrics && created.SongId != 0 {
+		hadPlainLyrics, hadSyncedLyrics, _ := api.HasLyrics(c, created.SongId)
+		if !hadPlainLyrics || (!hadSyncedLyrics && hasSyncedLyrics) {
+			syncedLyrics := &m.SyncedLyrics
+			if !hasSyncedLyrics {
+				syncedLyrics = nil
+			}
+			err := api.PostLyrics(c, created.SongId, m.PlainLyrics, syncedLyrics)
 			if err != nil {
 				log.Fatal().Msg("Could not POST lyrics")
 				log.Trace().Msg(err.Error())

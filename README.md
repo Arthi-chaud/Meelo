@@ -37,7 +37,7 @@ Meelo has all the basic features you might expect from a music player/server (pl
   - Use either the embedded metadata or the file's name (or both!) to extract metadata
   - Also works with album covers!
 - Get genres, descriptions, and ratings using MusicBrainz, Genius, Wikipedia and many more providers!
-- Download (synced) lyrics
+- Download (synced) lyrics or get them from embedded metadata and `.lrc` files
 
 Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues)
 

@@ -6,6 +6,7 @@ toolchain go1.24.1
 
 require (
 	dario.cat/mergo v1.0.0
+	github.com/alecthomas/participle/v2 v2.1.1
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/goccy/go-json v0.10.3
