@@ -31,7 +31,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "../../../i18n/i18n";
 import { ItemSize } from "../../../utils/layout";
-import type { Order } from "../../../utils/sorting";
 import type Action from "../../actions/action";
 import {
 	AscIcon,
@@ -43,6 +42,7 @@ import {
 	PlusIcon,
 } from "../../icons";
 import type { LayoutControl } from "./layout";
+import type { SortControl } from "./sort";
 
 type FilterControl<Key extends string> = {
 	// Gives the translation key from an item to choose from
@@ -62,16 +62,6 @@ type FilterControl<Key extends string> = {
 			onUpdate: (key: Key | null) => void;
 	  }
 );
-
-type SortControl<SortingKey extends string> = {
-	formatItem: (k: SortingKey) => TranslationKey;
-	// returns the label of the menu + icon
-	buttonLabel: TranslationKey;
-	buttonIcon: JSX.Element;
-	sortingKeys: SortingKey[];
-	selected: { sort: SortingKey; order: Order };
-	onUpdate: (p: { sort: SortingKey; order: Order }) => void;
-};
 
 // Controls should not maintain state regarding options
 // It should rely on the onUpdate function to update external state
@@ -178,7 +168,7 @@ const SortMenuButton = <SortingKey extends string>({
 	return (
 		<MenuButton
 			label={sort.buttonLabel}
-			icon={sort.buttonIcon}
+			icon={sort.selected.order === "asc" ? <AscIcon /> : <DescIcon />}
 			items={(closeMenu) => (
 				<>
 					{sort?.sortingKeys.map((key) => (

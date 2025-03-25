@@ -37,10 +37,10 @@ import {
 	DefaultItemSize,
 	ItemSize,
 	type LayoutOption,
-	getLayoutParams,
+	LayoutOptions,
 } from "../../utils/layout";
-import parseQueryParam from "../../utils/parse-query-param";
-import { type Order, getOrderParams } from "../../utils/sorting";
+import { parseQueryParam } from "../../utils/query-param";
+import { type Order, Orders } from "../../utils/sorting";
 import type Action from "../actions/action";
 import Fade from "../fade";
 import {
@@ -122,7 +122,10 @@ const Controls = <
 				itemSize: DefaultItemSize,
 				view:
 					((props.disableLayoutToggle !== true &&
-						getLayoutParams(props.router?.query.view)) ||
+						parseQueryParam(
+							props.router?.query.view,
+							LayoutOptions,
+						)) ||
 						undefined) ??
 					props.defaultLayout,
 				sortBy:
@@ -133,7 +136,7 @@ const Controls = <
 					props.defaultSortingKey ??
 					props.sortingKeys[0],
 				order:
-					getOrderParams(props.router?.query.order) ??
+					parseQueryParam(props.router?.query.order, Orders) ??
 					props.defaultSortingOrder ??
 					"asc",
 				library: props.disableLibrarySelector
