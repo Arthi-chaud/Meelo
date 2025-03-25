@@ -18,6 +18,11 @@
 
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
+import API from "../../../api/api";
+import { prepareMeeloInfiniteQuery } from "../../../api/use-query";
 import type { TranslationKey } from "../../../i18n/i18n";
 import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
 
@@ -41,40 +46,79 @@ export type FilterControl<Key extends string> = {
 );
 
 // Control for filter that accept multiple values
-export const useFiltersControl = <FilterKey extends TranslationKey>({
+export const useFilterControl = <FilterKey extends string>({
 	defaultFilters,
 	filterKeys,
 	filterId,
 	buttonLabel,
 	buttonIcon,
+	formatItem,
 }: {
-	buttonLabel: FilterControl<FilterKey>["buttonLabel"];
+	buttonLabel: (
+		selected: FilterKey[],
+	) => FilterControl<FilterKey>["buttonLabel"];
 	buttonIcon: FilterControl<FilterKey>["buttonIcon"];
+	formatItem: FilterControl<FilterKey>["formatItem"];
 	defaultFilters: FilterKey[];
-	filterKeys: FilterKey[];
+	filterKeys: FilterKey[] | undefined;
 	// Used to persist Filter in query param, must be unique
 	filterId: string;
 }) => {
 	// TODO Check layout update does not trigger infinite loop
 	const router = useRouter();
-	const [filterState, setFilterState] = useState(
-		() =>
-			(router.query[filterId] as string)
-				.split(",")
-				.map((f) => parseQueryParam(f, filterKeys))
-				.filter((f): f is FilterKey => f !== null) || defaultFilters,
+	const [selectedFilters, setFilterState] = useState(() =>
+		filterKeys
+			? (router.query[filterId] as string)
+					.split(",")
+					.map((f) => parseQueryParam(f, filterKeys))
+					.filter((f): f is FilterKey => f !== null) || defaultFilters
+			: [],
 	);
 	const control: FilterControl<FilterKey> = {
 		values: filterKeys,
 		buttonIcon,
-		buttonLabel,
+		buttonLabel: buttonLabel(selectedFilters),
 		multipleChoice: true,
-		selected: filterState,
-		formatItem: (t) => t,
+		selected: selectedFilters,
+		formatItem: (t) => formatItem(t),
 		onUpdate: (selected) => setFilterState(selected),
 	};
 	useEffect(() => {
-		setQueryParam(filterId, filterState.join(","), router);
-	}, [filterState]);
-	return [filterState, setFilterState, control] as const;
+		setQueryParam(
+			filterId,
+			selectedFilters.length ? selectedFilters.join(",") : null,
+			router,
+		);
+	}, [selectedFilters]);
+	return [selectedFilters, setFilterState, control] as const;
+};
+
+export const useLibraryFilter = () => {
+	const { t } = useTranslation();
+	const librariesQuery = useReactInfiniteQuery({
+		...prepareMeeloInfiniteQuery(API.getLibraries),
+		useErrorBoundary: false,
+		onError: () => {
+			toast.error(t("librariesLoadFail"));
+		},
+	});
+	const libraries = librariesQuery.data?.pages.at(0)?.items;
+	return useFilterControl<string>({
+		defaultFilters: [],
+		formatItem: (s: string) =>
+			libraries!.find((l) => l.slug === s)!.name as TranslationKey,
+		filterKeys: libraries?.map((l) => l.slug),
+		buttonLabel: (selected) => {
+			switch (selected.length) {
+				case 0:
+					return "allLibraries";
+				case 1:
+					return selected[0] as TranslationKey;
+				default:
+					return `${selected.length} ${t("libraries")}` as TranslationKey;
+			}
+		},
+		buttonIcon: undefined,
+		filterId: "library",
+	});
 };

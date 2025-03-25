@@ -41,6 +41,7 @@ import {
 	MinusIcon,
 	PlusIcon,
 } from "../../icons";
+import type { FilterControl } from "./filter";
 import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";
 
@@ -51,7 +52,7 @@ export const Controls = <
 	SortingKey extends string,
 	FilterKeys extends string,
 >(props: {
-	layout: LayoutControl;
+	layout?: LayoutControl;
 	sort?: SortControl<SortingKey>;
 	actions?: Action[];
 	filters: Filters;
@@ -83,9 +84,11 @@ export const Controls = <
 					<SortMenuButton sort={props.sort} />
 				</Grid>
 			)}
-			<Grid item>
-				<LayoutButtonGroup layout={props.layout} />
-			</Grid>
+			{props.layout && (
+				<Grid item>
+					<LayoutButtonGroup layout={props.layout} />
+				</Grid>
+			)}
 			<Grid item>
 				<ActionButtonGroup actions={props.actions ?? []} />
 			</Grid>

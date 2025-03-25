@@ -27,7 +27,7 @@ export type SortControl<SortingKey extends string> = {
 	formatItem: (k: SortingKey) => TranslationKey;
 	// returns the label of the menu + icon
 	buttonLabel: TranslationKey;
-	sortingKeys: SortingKey[];
+	sortingKeys: readonly SortingKey[];
 	selected: { sort: SortingKey; order: Order };
 	onUpdate: (p: { sort: SortingKey; order: Order }) => void;
 };
@@ -38,7 +38,7 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 	sortingKeys,
 }: {
 	defaultSortingKey: SortingKey;
-	sortingKeys: SortingKey[];
+	sortingKeys: readonly SortingKey[];
 }) => {
 	// // TODO Check update does not trigger infinite loop
 	const router = useRouter();

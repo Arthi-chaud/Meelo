@@ -40,9 +40,14 @@ import {
 } from "../../../state/player";
 import { store } from "../../../state/store";
 import { DefaultItemSize } from "../../../utils/layout";
-import Controls, { type OptionState } from "../../controls/controls";
+import Action from "../../actions/action";
+import { type OptionState } from "../../controls/controls";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import SongItem, { SongGroupItem } from "../../list-item/song-item";
+import { Controls } from "../controls/controls";
+import { useLibraryFilter } from "../controls/filter";
+import { useLayoutControl } from "../controls/layout";
+import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
 import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
@@ -119,14 +124,7 @@ const InfiniteSongView = <
 		useState<OptionState<typeof SongSortingKeys, AdditionalProps>>();
 	const queryClient = useQueryClient();
 	const query = {
-		type:
-			// @ts-ignore
-			options?.type === "All" ? undefined : (options?.type as SongType),
-		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
-		order: options?.order ?? props.initialSortingOrder ?? "asc",
-		view: "grid",
 		groups: disableGroupingVersions ? false : (options?.groups ?? false),
-		library: options?.library ?? null,
 	} as const;
 	const shuffleAction = {
 		label: "shuffle",
@@ -147,53 +145,70 @@ const InfiniteSongView = <
 			playSongsAction(queryClient, () => props.query(query));
 		},
 	} as const;
+	const [libraries, , libraryFilterControl] = useLibraryFilter();
+	const [sort, , sortControl] = useSortControl({
+		defaultSortingKey: "name",
+		sortingKeys: SongSortingKeys,
+	});
+	const [useSongGroup, setUseSongGroup] = useState(false);
+	const toggleSongGroup: Action = {
+		label: useSongGroup ? "groupVersions" : "showAllSongs",
+		onClick: () => setUseSongGroup((t) => !t),
+	};
 
 	return (
 		<>
 			<Controls
-				options={[
-					{
-						label: (options?.type as SongType) ?? "All",
-						name: "type",
-						values: [
-							"All",
-							...SongType.filter((type) => type !== "Unknown"),
-						],
-						currentValue: options?.type,
-					},
-				]}
-				actions={[
-					playAction,
-					...(props.disableShuffle !== true && !options?.groups
-						? [shuffleAction]
-						: []),
-				]}
-				toggles={
-					disableGroupingVersions
-						? []
-						: [
-								{
-									name: "groups",
-									label: options?.groups
-										? "showAllSongs"
-										: "groupVersions",
-								},
-							]
-				}
-				disableSorting={options?.groups || props.disableSorting}
-				onChange={setOptions}
-				sortingKeys={
-					options?.groups ? SongGroupSortingKeys : SongSortingKeys
-				}
-				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
-				router={props.light === true ? undefined : router}
-				disableLayoutToggle
-				defaultLayout={"list"}
+				filters={[libraryFilterControl]}
+				sort={sortControl}
+				actions={[playAction, shuffleAction, toggleSongGroup]} // TODO Move last button to its own group
 			/>
-			{options?.groups ? (
+			{
+				// <Controls
+				// 	options={[
+				// 		{
+				// 			label: (options?.type as SongType) ?? "All",
+				// 			name: "type",
+				// 			values: [
+				// 				"All",
+				// 				...SongType.filter((type) => type !== "Unknown"),
+				// 			],
+				// 			currentValue: options?.type,
+				// 		},
+				// 	]}
+				// 	actions={[
+				// 		playAction,
+				// 		...(props.disableShuffle !== true && !options?.groups
+				// 			? [shuffleAction]
+				// 			: []),
+				// 	]}
+				// 	toggles={
+				// 		disableGroupingVersions
+				// 			? []
+				// 			: [
+				// 					{
+				// 						name: "groups",
+				// 						label: options?.groups
+				// 							? "showAllSongs"
+				// 							: "groupVersions",
+				// 					},
+				// 				]
+				// 	}
+				// 	disableSorting={options?.groups || props.disableSorting}
+				// 	onChange={setOptions}
+				// 	sortingKeys={
+				// 		options?.groups ? SongGroupSortingKeys : SongSortingKeys
+				// 	}
+				// 	defaultSortingOrder={props.initialSortingOrder}
+				// 	defaultSortingKey={props.initialSortingField}
+				// 	router={props.light === true ? undefined : router}
+				// 	disableLayoutToggle
+				// 	defaultLayout={"list"}
+				// />
+			}
+			{useSongGroup ? (
 				<InfiniteView
-					itemSize={options?.itemSize ?? DefaultItemSize}
+					itemSize={DefaultItemSize}
 					view={"list"}
 					query={() => {
 						return props.groupsQuery!({
@@ -211,7 +226,7 @@ const InfiniteSongView = <
 				/>
 			) : (
 				<InfiniteView
-					itemSize={options?.itemSize ?? DefaultItemSize}
+					itemSize={DefaultItemSize}
 					view={"list"}
 					query={() => {
 						return props.query({
