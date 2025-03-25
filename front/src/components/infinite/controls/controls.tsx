@@ -16,13 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, ButtonGroup, Dialog, Grid } from "@mui/material";
+import { Button, ButtonGroup, Dialog, Grid, Tooltip } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "../../../i18n/i18n";
-import type { ItemSize, LayoutOption } from "../../../utils/layout";
+import { ItemSize, type LayoutOption } from "../../../utils/layout";
 import type { Order } from "../../../utils/sorting";
 import type Action from "../../actions/action";
+import { GridIcon, ListIcon, MinusIcon, PlusIcon } from "../../icons";
 
 type FilterControl<Key extends string> = {
 	// Gives the translation key from an item to choose from
@@ -52,16 +53,21 @@ type SortControl<SortingKey extends string> = {
 };
 
 type LayoutControl =
-	| { layout: "list"; enableToggle: false; onUpdate: never }
+	| { layout: "list"; itemSize: never; enableToggle: false; onUpdate: never }
 	| {
 			layout: "grid";
+			itemSize: ItemSize;
 			enableToggle: false;
-			onUpdate: (itemSize: ItemSize) => void;
+			onUpdate: (p: { itemSize: ItemSize }) => void;
 	  }
 	| {
 			layout: LayoutOption;
-			enableToggle: false;
-			onUpdate: (newLayout: LayoutOption, itemSize: ItemSize) => void;
+			enableToggle: true;
+			itemSize: ItemSize;
+			onUpdate: (p: {
+				layout: LayoutOption;
+				itemSize: ItemSize;
+			}) => void;
 	  };
 
 // Controls should not maintain state regarding options
@@ -77,8 +83,9 @@ const Controls = <
 	filters: Filters;
 }) => {
 	const { t } = useTranslation();
-	const [openActionModal, setOpenActionModal] = useState<string | null>(null);
-	const closeModal = () => setOpenActionModal(null);
+	const [actionModalContent, setActionModalContent] =
+		useState<JSX.Element | null>(null);
+	const closeModal = () => setActionModalContent(null);
 
 	return (
 		<Grid
@@ -97,7 +104,64 @@ const Controls = <
 		>
 			{/*TODO Filter*/}
 			{/*TODO Sort*/}
-			{/*TODO Layout*/}
+			<Grid item>
+				<ButtonGroup variant="contained">
+					{props.layout.layout === "grid" &&
+						[
+							[
+								"xs",
+								(currentIndex: number) => currentIndex - 1,
+								MinusIcon,
+							] as const,
+							[
+								"xl",
+								(currentIndex: number) => currentIndex + 1,
+								PlusIcon,
+							] as const,
+						].map(([size, f, Icon]) => (
+							<Button
+								key={`size-button-${size}`}
+								disabled={props.layout.itemSize === size}
+								onClick={() =>
+									props.layout.onUpdate({
+										layout: props.layout.layout,
+										itemSize:
+											ItemSize[
+												f(
+													ItemSize.indexOf(
+														props.layout.itemSize,
+													),
+												)
+											],
+									})
+								}
+							>
+								<Icon />
+							</Button>
+						))}
+					{props.layout.enableToggle && (
+						<Tooltip title={t("changeLayout")}>
+							<Button
+								onClick={() =>
+									props.layout.onUpdate({
+										itemSize: props.layout.itemSize,
+										layout:
+											props.layout.layout === "grid"
+												? "list"
+												: "grid",
+									})
+								}
+							>
+								{props.layout.layout === "grid" ? (
+									<ListIcon />
+								) : (
+									<GridIcon />
+								)}
+							</Button>
+						</Tooltip>
+					)}
+				</ButtonGroup>
+			</Grid>
 			<Grid item>
 				<ButtonGroup variant="contained">
 					{props.actions?.map((action) => (
@@ -111,23 +175,24 @@ const Controls = <
 								}
 								action.onClick?.();
 								action.dialog &&
-									setOpenActionModal(action.label);
+									setActionModalContent(
+										action.dialog({ close: closeModal }),
+									);
 							}}
 						>
 							{t(action.label)}
-							{action.dialog && (
-								<Dialog
-									open={openActionModal === action.label}
-									onClose={closeModal}
-									fullWidth
-								>
-									{action.dialog({ close: closeModal })}
-								</Dialog>
-							)}
 						</Button>
 					)) ?? []}
 				</ButtonGroup>
 			</Grid>
+
+			<Dialog
+				open={actionModalContent !== null}
+				onClose={closeModal}
+				fullWidth
+			>
+				{actionModalContent}
+			</Dialog>
 		</Grid>
 	);
 };
