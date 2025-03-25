@@ -2,14 +2,17 @@ import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { Head } from "../../components/head";
+import {
+	getOrderQuery,
+	getSortQuery,
+} from "../../components/infinite/controls/sort";
 import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import { SongSortingKeys } from "../../models/song";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
+	const order = getOrderQuery(context) ?? "asc";
+	const sortBy = getSortQuery(context, SongSortingKeys);
 
 	return {
 		additionalProps: { order, sortBy },

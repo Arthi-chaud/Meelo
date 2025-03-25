@@ -44,25 +44,6 @@ import {
 import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";
 
-type FilterControl<Key extends string> = {
-	// Gives the translation key from an item to choose from
-	formatItem: (k: Key) => TranslationKey;
-	values: Key[] | undefined;
-	buttonLabel: TranslationKey;
-	buttonIcon: JSX.Element | undefined;
-} & (
-	| {
-			multipleChoice: true;
-			selected: Key[];
-			onUpdate: (keys: Key[]) => void;
-	  }
-	| {
-			multipleChoice: false;
-			selected: Key | null;
-			onUpdate: (key: Key | null) => void;
-	  }
-);
-
 // Controls should not maintain state regarding options
 // It should rely on the onUpdate function to update external state
 export const Controls = <

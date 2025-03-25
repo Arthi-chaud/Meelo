@@ -58,10 +58,10 @@ export const useLayoutControl = ({
 	const [layoutState, setLayoutState] = useState<{
 		layout: LayoutOption;
 		itemSize: ItemSize;
-	}>({
+	}>(() => ({
 		layout: enableToggle ? defaultLayout : (layoutQuery ?? defaultLayout),
 		itemSize: "xs",
-	});
+	}));
 	const control: LayoutControl = {
 		layout: layoutState.layout,
 		enableToggle: enableToggle as true,

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../../../i18n/i18n";
@@ -39,16 +40,15 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 	defaultSortingKey: SortingKey;
 	sortingKeys: SortingKey[];
 }) => {
-	// // TODO Check layout update does not trigger infinite loop
+	// // TODO Check update does not trigger infinite loop
 	const router = useRouter();
-	// biome-ignore lint/complexity/useLiteralKeys: Clarity
-	const orderQuery = parseQueryParam(router.query["order"], Orders);
+	const orderQuery = getOrderQuery(router);
 	// biome-ignore lint/complexity/useLiteralKeys: Clarity
 	const sortQuery = parseQueryParam(router.query["sort"], sortingKeys);
-	const [sortState, setSortState] = useState({
+	const [sortState, setSortState] = useState(() => ({
 		sort: sortQuery ?? defaultSortingKey,
 		order: orderQuery ?? "asc",
-	});
+	}));
 	const control: SortControl<SortingKey> = {
 		sortingKeys: sortingKeys,
 		selected: sortState,
@@ -64,3 +64,14 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 	}, [sortState.sort, sortState.order]);
 	return [sortState, setSortState, control] as const;
 };
+
+export const getOrderQuery = (router: { query: ParsedUrlQuery }) =>
+	// biome-ignore lint/complexity/useLiteralKeys: Clarity
+	parseQueryParam(router.query["order"], Orders);
+
+export const getSortQuery = <SortKey extends string>(
+	router: { query: ParsedUrlQuery },
+	sortingKeys: readonly SortKey[],
+) =>
+	// biome-ignore lint/complexity/useLiteralKeys: Clarity
+	parseQueryParam(router.query["sort"], sortingKeys) ?? sortingKeys[0];
