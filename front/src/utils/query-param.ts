@@ -16,10 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const parseQueryParam = <Keys extends readonly string[]>(
+import type { NextRouter } from "next/router";
+
+export const parseQueryParam = <Keys extends readonly string[]>(
 	input: any,
 	optionValues: Keys,
-): Keys[number] | undefined => {
+): Keys[number] | null => {
 	if (Array.isArray(input)) {
 		input = input[0];
 	}
@@ -28,7 +30,23 @@ const parseQueryParam = <Keys extends readonly string[]>(
 			return option;
 		}
 	}
-	return undefined;
+	return null;
 };
 
-export default parseQueryParam;
+export const setQueryParam = (
+	key: string,
+	value: string | null,
+	router: NextRouter,
+) => {
+	const path = router.asPath.split("?")[0];
+	const params = new URLSearchParams(router.asPath.split("?").at(1) ?? "");
+
+	if (value) {
+		params.set(key, value);
+	} else {
+		params.delete(key);
+	}
+	router.push(`${path}?${params.toString()}`, undefined, {
+		shallow: true,
+	});
+};

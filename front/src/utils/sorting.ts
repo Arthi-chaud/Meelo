@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import parseQueryParam from "./parse-query-param";
+import { parseQueryParam } from "./query-param";
 
 export const Orders = ["asc", "desc"] as const;
 
@@ -27,6 +27,7 @@ export type SortingParameters<Keys extends readonly string[]> = {
 	order?: Order;
 };
 
+// TODO Remove
 const getOrderParams = (order: any) => parseQueryParam(order, Orders);
 
 const getSortingFieldParams = <Keys extends readonly string[]>(

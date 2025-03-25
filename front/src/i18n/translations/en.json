@@ -258,5 +258,6 @@
 	"emptyStatePlaylists": "There are no playlists... yet!",
 	"emptyStatePlaylist": "There are no songs in this playlist... yet!",
 	"emptyStateHome": "Oh wow, it's quiet in here...",
-	"songType": "Song Type"
+	"songType": "Song Type",
+	"loading": "Chargement"
 }
