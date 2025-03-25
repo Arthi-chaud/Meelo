@@ -82,11 +82,6 @@ const Controls = <
 	actions?: Action[];
 	filters: Filters;
 }) => {
-	const { t } = useTranslation();
-	const [actionModalContent, setActionModalContent] =
-		useState<JSX.Element | null>(null);
-	const closeModal = () => setActionModalContent(null);
-
 	return (
 		<Grid
 			container
@@ -105,86 +100,96 @@ const Controls = <
 			{/*TODO Filter*/}
 			{/*TODO Sort*/}
 			<Grid item>
-				<ButtonGroup variant="contained">
-					{props.layout.layout === "grid" &&
-						[
-							[
-								"xs",
-								(currentIndex: number) => currentIndex - 1,
-								MinusIcon,
-							] as const,
-							[
-								"xl",
-								(currentIndex: number) => currentIndex + 1,
-								PlusIcon,
-							] as const,
-						].map(([size, f, Icon]) => (
-							<Button
-								key={`size-button-${size}`}
-								disabled={props.layout.itemSize === size}
-								onClick={() =>
-									props.layout.onUpdate({
-										layout: props.layout.layout,
-										itemSize:
-											ItemSize[
-												f(
-													ItemSize.indexOf(
-														props.layout.itemSize,
-													),
-												)
-											],
-									})
-								}
-							>
-								<Icon />
-							</Button>
-						))}
-					{props.layout.enableToggle && (
-						<Tooltip title={t("changeLayout")}>
-							<Button
-								onClick={() =>
-									props.layout.onUpdate({
-										itemSize: props.layout.itemSize,
-										layout:
-											props.layout.layout === "grid"
-												? "list"
-												: "grid",
-									})
-								}
-							>
-								{props.layout.layout === "grid" ? (
-									<ListIcon />
-								) : (
-									<GridIcon />
-								)}
-							</Button>
-						</Tooltip>
-					)}
-				</ButtonGroup>
+				<LayoutButtonGroup layout={props.layout} />
 			</Grid>
 			<Grid item>
-				<ButtonGroup variant="contained">
-					{props.actions?.map((action) => (
-						<Button
-							key={`action-${action.label}`}
-							startIcon={action.icon}
-							variant="contained"
-							onClickCapture={() => {
-								if (action.disabled === true) {
-									return;
-								}
-								action.onClick?.();
-								action.dialog &&
-									setActionModalContent(
-										action.dialog({ close: closeModal }),
-									);
-							}}
-						>
-							{t(action.label)}
-						</Button>
-					)) ?? []}
-				</ButtonGroup>
+				<ActionButtonGroup actions={props.actions ?? []} />
 			</Grid>
+		</Grid>
+	);
+};
+
+const LayoutButtonGroup = ({ layout }: { layout: LayoutControl }) => {
+	const { t } = useTranslation();
+	return (
+		<ButtonGroup variant="contained">
+			{layout.layout === "grid" &&
+				[
+					[
+						"xs",
+						(currentIndex: number) => currentIndex - 1,
+						MinusIcon,
+					] as const,
+					[
+						"xl",
+						(currentIndex: number) => currentIndex + 1,
+						PlusIcon,
+					] as const,
+				].map(([size, f, Icon]) => (
+					<Button
+						key={`size-button-${size}`}
+						disabled={layout.itemSize === size}
+						onClick={() =>
+							layout.onUpdate({
+								layout: layout.layout,
+								itemSize:
+									ItemSize[
+										f(ItemSize.indexOf(layout.itemSize))
+									],
+							})
+						}
+					>
+						<Icon />
+					</Button>
+				))}
+			{layout.enableToggle && (
+				<Tooltip title={t("changeLayout")}>
+					<Button
+						onClick={() =>
+							layout.onUpdate({
+								itemSize: layout.itemSize,
+								layout:
+									layout.layout === "grid" ? "list" : "grid",
+							})
+						}
+					>
+						{layout.layout === "grid" ? <ListIcon /> : <GridIcon />}
+					</Button>
+				</Tooltip>
+			)}
+		</ButtonGroup>
+	);
+};
+
+const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
+	const { t } = useTranslation();
+	const [actionModalContent, setActionModalContent] =
+		useState<JSX.Element | null>(null);
+	const closeModal = () => setActionModalContent(null);
+
+	return (
+		<>
+			<ButtonGroup variant="contained">
+				{actions.map((action) => (
+					<Button
+						key={`action-${action.label}`}
+						startIcon={action.icon}
+						variant="contained"
+						onClickCapture={() => {
+							if (action.disabled === true) {
+								return;
+							}
+							action.onClick?.();
+							action.dialog &&
+								setActionModalContent(
+									action.dialog({ close: closeModal }),
+								);
+						}}
+					>
+						{t(action.label)}
+					</Button>
+				))}
+			</ButtonGroup>
 
 			<Dialog
 				open={actionModalContent !== null}
@@ -193,6 +198,6 @@ const Controls = <
 			>
 				{actionModalContent}
 			</Dialog>
-		</Grid>
+		</>
 	);
 };
