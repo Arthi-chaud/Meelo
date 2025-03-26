@@ -133,13 +133,13 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{selectedTab === "song" && (
 				<InfiniteSongView
-					query={({ library, type, random, sortBy, order }) =>
+					query={({ libraries, types, random, sortBy, order }) =>
 						API.getSongs(
 							{
 								genre: genreIdentifier,
-								type,
+								type: types,
 								random,
-								library: library ?? undefined,
+								library: libraries,
 							},
 							{ sortBy, order },
 							["artist", "featuring", "master", "illustration"],

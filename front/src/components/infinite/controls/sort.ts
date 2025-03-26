@@ -18,7 +18,7 @@
 
 import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { TranslationKey } from "../../../i18n/i18n";
 import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
 import { type Order, Orders } from "../../../utils/sorting";
@@ -43,8 +43,7 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 	// // TODO Check update does not trigger infinite loop
 	const router = useRouter();
 	const orderQuery = getOrderQuery(router);
-	// biome-ignore lint/complexity/useLiteralKeys: Clarity
-	const sortQuery = parseQueryParam(router.query["sort"], sortingKeys);
+	const sortQuery = getSortQuery(router, sortingKeys);
 	const [sortState, setSortState] = useState(() => ({
 		sort: sortQuery ?? defaultSortingKey,
 		order: orderQuery ?? "asc",
@@ -55,14 +54,17 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 		buttonLabel: sortState.sort,
 		formatItem: (t) => t,
 		onUpdate: (p) => {
+			setQueryParam(
+				[
+					["sort", p.sort],
+					["order", p.order],
+				],
+				router,
+			);
 			setSortState(p);
 		},
 	};
-	useEffect(() => {
-		setQueryParam("order", sortState.order, router);
-		setQueryParam("sort", sortState.sort, router);
-	}, [sortState.sort, sortState.order]);
-	return [sortState, setSortState, control] as const;
+	return [sortState, control] as const;
 };
 
 export const getOrderQuery = (router: { query: ParsedUrlQuery }) =>

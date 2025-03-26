@@ -27,35 +27,31 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
-const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
-	props,
-}) => {
+const SongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 
 	return (
 		<>
 			<Head title={t("songs")} />
 			<InfiniteSongView
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ sortBy, order, type, library, random }) =>
+				query={({ sortBy, order, types, libraries, random }) =>
 					API.getSongs(
 						{
-							type,
-							library: library ?? undefined,
+							type: types,
+							library: libraries,
 							random,
 						},
 						{ sortBy, order },
 						["artist", "featuring", "master", "illustration"],
 					)
 				}
-				groupsQuery={({ sortBy, order, library, type }) =>
+				songGroupsQuery={({ libraries, types }) =>
 					API.getSongGroups(
 						{
-							type,
-							library: library ?? undefined,
+							type: types?.at(0), // TODO: Disable multi selection of type when song group
+							library: libraries,
 						},
-						{ sortBy, order },
+						{ sortBy: "name", order: "asc" },
 						["artist", "featuring", "master", "illustration"],
 					)
 				}
@@ -64,6 +60,6 @@ const LibrarySongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	);
 };
 
-LibrarySongsPage.prepareSSR = prepareSSR;
+SongsPage.prepareSSR = prepareSSR;
 
-export default LibrarySongsPage;
+export default SongsPage;

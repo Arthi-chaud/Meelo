@@ -28,6 +28,10 @@ import {
 	useQueryClient,
 } from "../../../api/use-query";
 import { Head } from "../../../components/head";
+import {
+	getOrderQuery,
+	getSortQuery,
+} from "../../../components/infinite/controls/sort";
 import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { SongSortingKeys } from "../../../models/song";
@@ -35,7 +39,6 @@ import type Track from "../../../models/track";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { useGradientBackground } from "../../../utils/gradient-background";
-import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);
@@ -48,8 +51,8 @@ const prepareSSR = async (
 	queryClient: QueryClient,
 ) => {
 	const artistIdentifier = getSlugOrId(context.query);
-	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(context.query.sortBy, SongSortingKeys);
+	const order = getOrderQuery(context) ?? "asc";
+	const sortBy = getSortQuery(context, SongSortingKeys);
 	const songs = await queryClient.fetchInfiniteQuery(
 		prepareMeeloInfiniteQuery(() =>
 			API.getSongs(
@@ -111,32 +114,30 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteSongView
-				initialSortingField={props?.sortBy ?? "name"}
-				initialSortingOrder={props?.order ?? "asc"}
-				query={({ library, sortBy, order, type, random }) =>
+				query={({ libraries, sortBy, order, types, random }) =>
 					API.getSongs(
 						{
 							[isRareSongsPage(router) ? "rare" : "artist"]:
 								artistIdentifier,
-							type,
+							type: types,
 							random,
-							library: library ?? undefined,
+							library: libraries,
 						},
 						{ sortBy, order },
 						["artist", "featuring", "master", "illustration"],
 					)
 				}
-				groupsQuery={
+				songGroupsQuery={
 					isRareSongsPage(router)
 						? undefined
-						: ({ sortBy, order, library, type }) =>
+						: ({ sortBy, order, libraries, types }) =>
 								API.getSongGroups(
 									{
-										type,
+										type: types?.at(0), //TODO?
 										artist: artistIdentifier,
-										library: library ?? undefined,
+										library: libraries,
 									},
-									{ sortBy, order },
+									{ sortBy, order } as any, // TODO
 									[
 										"artist",
 										"featuring",

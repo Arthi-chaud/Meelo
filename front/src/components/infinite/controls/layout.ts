@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -67,11 +68,17 @@ export const useLayoutControl = ({
 		enableToggle: enableToggle as true,
 		itemSize: layoutState.itemSize,
 		onUpdate: (p) => {
+			setQueryParam([["view", layoutState.layout]], router);
 			setLayoutState(p);
 		},
 	};
-	useEffect(() => {
-		setQueryParam("view", layoutState.layout, router);
-	}, [layoutState.layout]);
-	return [layoutState, setLayoutState, control] as const;
+	return [layoutState, control] as const;
 };
+
+// TODO Delete
+export const getLayoutQuery = (
+	router: { query: ParsedUrlQuery },
+	defaultLayout: LayoutOption,
+) =>
+	// biome-ignore lint/complexity/useLiteralKeys: Clarity
+	parseQueryParam(router.query["view"], LayoutOptions) ?? defaultLayout;

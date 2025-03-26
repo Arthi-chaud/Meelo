@@ -34,17 +34,18 @@ export const parseQueryParam = <Keys extends readonly string[]>(
 };
 
 export const setQueryParam = (
-	key: string,
-	value: string | null,
+	keysAndValues: [string, string | null][],
 	router: NextRouter,
 ) => {
 	const path = router.asPath.split("?")[0];
 	const params = new URLSearchParams(router.asPath.split("?").at(1) ?? "");
 
-	if (value) {
-		params.set(key, value);
-	} else {
-		params.delete(key);
+	for (const [key, value] of keysAndValues) {
+		if (value) {
+			params.set(key, value);
+		} else {
+			params.delete(key);
+		}
 	}
 	router.push(`${path}?${params.toString()}`, undefined, {
 		shallow: true,

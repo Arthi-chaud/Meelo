@@ -205,7 +205,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value === "all" ? "All" : `${value}s`)}
+						label={t(value === "all" ? "all" : `${value}s`)}
 					/>
 				))}
 			</Tabs>
@@ -321,12 +321,12 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ songId: item.id })
 					}
-					query={({ library, type: newType }) =>
+					query={({ libraries, types }) =>
 						API.getSongs(
 							{
 								query: encodeURIComponent(query),
-								type: newType,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							undefined,
 							["artist", "featuring", "master", "illustration"],

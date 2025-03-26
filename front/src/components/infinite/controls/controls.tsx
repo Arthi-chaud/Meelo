@@ -20,14 +20,18 @@ import {
 	Button,
 	ButtonGroup,
 	Dialog,
-	Divider,
 	Grid,
 	ListItemIcon,
 	Menu,
 	MenuItem,
+	Theme,
+	ThemeProvider,
 	Tooltip,
+	createTheme,
+	useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { deepmerge } from "@mui/utils";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "../../../i18n/i18n";
 import { ItemSize } from "../../../utils/layout";
@@ -47,15 +51,11 @@ import type { SortControl } from "./sort";
 
 // Controls should not maintain state regarding options
 // It should rely on the onUpdate function to update external state
-export const Controls = <
-	Filters extends FilterControl<FilterKeys>[],
-	SortingKey extends string,
-	FilterKeys extends string,
->(props: {
+export const Controls = <SortingKey extends string>(props: {
 	layout?: LayoutControl;
 	sort?: SortControl<SortingKey>;
-	actions?: Action[];
-	filters: Filters;
+	actions?: Action[][];
+	filters: FilterControl<any>[]; // Putting string prevent from typechecking if filter is library + song type
 }) => {
 	return (
 		<Grid
@@ -72,26 +72,25 @@ export const Controls = <
 				left: 0,
 			}}
 		>
-			{props.filters.length > 0 && (
-				<Grid item>
+			<Grid item>
+				<ButtonGroup variant="contained">
 					{props.filters.map((filter, idx) => (
 						<FilterMenuButton key={idx} filter={filter} />
 					))}
-				</Grid>
-			)}
-			{props.sort && (
-				<Grid item>
-					<SortMenuButton sort={props.sort} />
-				</Grid>
-			)}
+
+					{props.sort && <SortMenuButton sort={props.sort} />}
+				</ButtonGroup>
+			</Grid>
 			{props.layout && (
 				<Grid item>
 					<LayoutButtonGroup layout={props.layout} />
 				</Grid>
 			)}
-			<Grid item>
-				<ActionButtonGroup actions={props.actions ?? []} />
-			</Grid>
+			{props.actions?.map((actions, idx) => (
+				<Grid item key={idx}>
+					<ActionButtonGroup actions={actions} />
+				</Grid>
+			))}
 		</Grid>
 	);
 };
@@ -104,43 +103,39 @@ const FilterMenuButton = <FilterKeys extends string>({
 		<MenuButton
 			label={filter.values === undefined ? "loading" : filter.buttonLabel}
 			icon={filter.values && filter.buttonIcon}
-			items={(closeMenu) => (
-				<>
-					{filter.values?.map((key) => (
-						<MenuItem
-							key={key}
-							selected={filter.selected === key}
-							onClick={() => {
-								if (filter.multipleChoice) {
-									const selectedKeys =
-										filter.selected.includes(key)
-											? filter.selected.filter(
-													(k) => k !== key,
-												)
-											: [key, ...filter.selected];
-									filter.onUpdate(selectedKeys);
-								} else {
-									filter.onUpdate(
-										filter.selected === key ? null : key,
-									);
-								}
-								// TODO Not close at every select
-								closeMenu();
-							}}
-						>
-							<ListItemIcon>
-								{(filter.multipleChoice &&
-									filter.selected.includes(key)) ||
-								filter.selected === key ? (
-									<CheckIcon />
-								) : undefined}
-							</ListItemIcon>
-							{t(filter.formatItem(key))}
-						</MenuItem>
-					))}
-					<Divider />
-				</>
-			)}
+			items={(closeMenu) =>
+				filter.values?.map((key) => (
+					<MenuItem
+						key={key}
+						selected={filter.selected === key}
+						onClick={() => {
+							if (filter.multipleChoice) {
+								const selectedKeys = filter.selected.includes(
+									key,
+								)
+									? filter.selected.filter((k) => k !== key)
+									: [key, ...filter.selected];
+								filter.onUpdate(selectedKeys);
+							} else {
+								filter.onUpdate(
+									filter.selected === key ? null : key,
+								);
+							}
+							// TODO Not close at every select
+							closeMenu();
+						}}
+					>
+						<ListItemIcon>
+							{(filter.multipleChoice &&
+								filter.selected.includes(key)) ||
+							filter.selected === key ? (
+								<CheckIcon />
+							) : undefined}
+						</ListItemIcon>
+						{t(filter.formatItem(key))}
+					</MenuItem>
+				)) ?? []
+			}
 		/>
 	);
 };
@@ -153,41 +148,37 @@ const SortMenuButton = <SortingKey extends string>({
 		<MenuButton
 			label={sort.buttonLabel}
 			icon={sort.selected.order === "asc" ? <AscIcon /> : <DescIcon />}
-			items={(closeMenu) => (
-				<>
-					{sort?.sortingKeys.map((key) => (
-						<MenuItem
-							key={key}
-							selected={sort.selected.sort === key}
-							onClick={() => {
-								sort?.onUpdate({
-									sort: key,
-									order:
-										sort.selected.sort === key
-											? "asc"
-											: sort.selected.order === "asc"
-												? "desc"
-												: "asc",
-								});
-								// TODO Not close at every select
-								closeMenu();
-							}}
-						>
-							<ListItemIcon>
-								{sort?.selected.sort === key ? (
-									sort.selected.order === "asc" ? (
-										<AscIcon />
-									) : (
-										<DescIcon />
-									)
-								) : undefined}
-							</ListItemIcon>
-							{t(sort!.formatItem(key))}
-						</MenuItem>
-					))}
-					<Divider />
-				</>
-			)}
+			items={(closeMenu) =>
+				sort.sortingKeys.map((key) => (
+					<MenuItem
+						key={key}
+						selected={sort.selected.sort === key}
+						onClick={() => {
+							sort?.onUpdate({
+								sort: key,
+								order:
+									sort.selected.sort !== key
+										? "asc"
+										: sort.selected.order === "asc"
+											? "desc"
+											: "asc",
+							});
+							closeMenu();
+						}}
+					>
+						<ListItemIcon>
+							{sort?.selected.sort === key ? (
+								sort.selected.order === "asc" ? (
+									<AscIcon />
+								) : (
+									<DescIcon />
+								)
+							) : undefined}
+						</ListItemIcon>
+						{t(sort!.formatItem(key))}
+					</MenuItem>
+				)) ?? []
+			}
 		/>
 	);
 };
@@ -288,9 +279,19 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 const MenuButton = (props: {
 	label: TranslationKey;
 	icon: JSX.Element | undefined;
-	items: (closeMenu: () => void) => JSX.Element;
+	items: (closeMenu: () => void) => JSX.Element | JSX.Element[];
 }) => {
 	const { t } = useTranslation();
+	const theme = useTheme();
+	const extendedTheme = useMemo(
+		() =>
+			deepmerge(theme, {
+				components: {
+					MuiMenuItem: { defaultProps: { sx: { borderRadius: 0 } } },
+				},
+			}),
+		[theme],
+	);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const menuOpen = Boolean(anchorEl);
 	const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) =>
@@ -299,13 +300,13 @@ const MenuButton = (props: {
 	// TODO Remove border radius or menu items
 
 	return (
-		<>
+		<ThemeProvider theme={extendedTheme}>
 			<Button onClick={handleMenuOpen} endIcon={props.icon}>
 				{t(props.label as TranslationKey)}
 			</Button>
 			<Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
 				{props.items(handleMenuClose)}
 			</Menu>
-		</>
+		</ThemeProvider>
 	);
 };

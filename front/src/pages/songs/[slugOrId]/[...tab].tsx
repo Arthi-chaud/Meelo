@@ -305,11 +305,11 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 						<InfiniteSongView
 							disableShuffle
-							query={({ library, sortBy, order, type }) =>
+							query={({ libraries, sortBy, order, types }) =>
 								API.getSongs(
 									{
-										library: library ?? undefined,
-										type,
+										library: libraries,
+										type: types,
 										versionsOf: songIdentifier,
 									},
 									{ sortBy, order },

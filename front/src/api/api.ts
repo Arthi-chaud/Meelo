@@ -141,7 +141,8 @@ export default class API {
 						([_, value]) =>
 							value !== null &&
 							value !== undefined &&
-							value !== "view",
+							value !== "view" &&
+							(Array.isArray(value) ? value.length > 0 : true),
 					)
 					.map(([key, value]) => `params-${key}-${value}`)
 			: [];
@@ -705,8 +706,8 @@ export default class API {
 	 */
 	static getSongs<I extends SongInclude | never = never>(
 		filter: {
-			library?: Identifier;
-			type?: SongType;
+			library?: Identifier[];
+			type?: SongType[];
 			genre?: Identifier;
 			artist?: Identifier;
 			versionsOf?: Identifier;
@@ -730,7 +731,11 @@ export default class API {
 					route: "/songs",
 					errorMessage: "Songs could not be loaded",
 					parameters: { pagination: pagination, include, sort },
-					otherParameters: { ...filter },
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+						type: API.formatOr(filter.type),
+					},
 					validator: PaginatedResponse(
 						SongWithRelations(include ?? []),
 					),
@@ -740,7 +745,7 @@ export default class API {
 
 	static getSongGroups<I extends SongInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			genre?: Identifier;
 			artist?: Identifier;
 			query?: string;
@@ -761,7 +766,10 @@ export default class API {
 					route: "/song-groups",
 					errorMessage: "Songs could not be loaded",
 					parameters: { pagination: pagination, include, sort },
-					otherParameters: { ...filter },
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+					},
 					validator: PaginatedResponse(
 						SongGroupWithRelations(include ?? []),
 					),
@@ -1518,5 +1526,17 @@ export default class API {
 		}
 		formattedParameters.push(`take=${pageSize}`);
 		return formattedParameters.join("&");
+	}
+
+	private static formatOr(
+		items: (string | number)[] | undefined,
+	): string | undefined {
+		if (!items || items.length === 0) {
+			return undefined;
+		}
+		if (items.length === 1) {
+			return items[0].toString();
+		}
+		return `or:${items.map((i) => i.toString()).join(",")}`;
 	}
 }

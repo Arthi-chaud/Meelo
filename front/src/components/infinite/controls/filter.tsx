@@ -17,7 +17,7 @@
  */
 
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
@@ -29,7 +29,7 @@ import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
 export type FilterControl<Key extends string> = {
 	// Gives the translation key from an item to choose from
 	formatItem: (k: Key) => TranslationKey;
-	values: Key[] | undefined;
+	values: readonly Key[] | undefined;
 	buttonLabel: TranslationKey;
 	buttonIcon: JSX.Element | undefined;
 } & (
@@ -47,7 +47,6 @@ export type FilterControl<Key extends string> = {
 
 // Control for filter that accept multiple values
 export const useFilterControl = <FilterKey extends string>({
-	defaultFilters,
 	filterKeys,
 	filterId,
 	buttonLabel,
@@ -59,38 +58,66 @@ export const useFilterControl = <FilterKey extends string>({
 	) => FilterControl<FilterKey>["buttonLabel"];
 	buttonIcon: FilterControl<FilterKey>["buttonIcon"];
 	formatItem: FilterControl<FilterKey>["formatItem"];
-	defaultFilters: FilterKey[];
-	filterKeys: FilterKey[] | undefined;
+	filterKeys: readonly FilterKey[] | undefined;
 	// Used to persist Filter in query param, must be unique
 	filterId: string;
 }) => {
 	// TODO Check layout update does not trigger infinite loop
 	const router = useRouter();
-	const [selectedFilters, setFilterState] = useState(() =>
-		filterKeys
-			? (router.query[filterId] as string)
-					.split(",")
-					.map((f) => parseQueryParam(f, filterKeys))
-					.filter((f): f is FilterKey => f !== null) || defaultFilters
-			: [],
-	);
+	const [selectedFilters, setFilterState] = useState(() => {
+		let query = router.query[filterId];
+		if (!filterKeys) {
+			return [];
+		}
+		if (query === undefined) {
+			return [];
+		}
+		if (typeof query === "string") {
+			query = query.split(",");
+		}
+		return query
+			.map((f) => parseQueryParam(f, filterKeys))
+			.filter((f): f is FilterKey => f !== null);
+	});
 	const control: FilterControl<FilterKey> = {
 		values: filterKeys,
 		buttonIcon,
 		buttonLabel: buttonLabel(selectedFilters),
 		multipleChoice: true,
 		selected: selectedFilters,
-		formatItem: (t) => formatItem(t),
-		onUpdate: (selected) => setFilterState(selected),
+		formatItem: (t: FilterKey) => formatItem(t),
+		onUpdate: (selected) => {
+			setQueryParam(
+				[[filterId, selected.length ? selected.join(",") : null]],
+				router,
+			);
+			setFilterState(selected);
+		},
 	};
-	useEffect(() => {
-		setQueryParam(
-			filterId,
-			selectedFilters.length ? selectedFilters.join(",") : null,
-			router,
-		);
-	}, [selectedFilters]);
-	return [selectedFilters, setFilterState, control] as const;
+	return [selectedFilters, control] as const;
+};
+
+export const useTypeFilterControl = <TypeKey extends TranslationKey>(props: {
+	types: readonly TypeKey[];
+	filterId?: string;
+}) => {
+	const { t } = useTranslation();
+	return useFilterControl<TypeKey>({
+		formatItem: (t: TypeKey) => t,
+		filterKeys: props.types,
+		buttonLabel: (selected) => {
+			switch (selected.length) {
+				case 0:
+					return "allTypes";
+				case 1:
+					return selected[0];
+				default:
+					return `${selected.length} ${t("types")}` as TranslationKey;
+			}
+		},
+		buttonIcon: undefined,
+		filterId: props.filterId ?? "type",
+	});
 };
 
 export const useLibraryFilter = () => {
@@ -103,17 +130,18 @@ export const useLibraryFilter = () => {
 		},
 	});
 	const libraries = librariesQuery.data?.pages.at(0)?.items;
+	const libraryNameBySlug = (s: string) =>
+		libraries!.find((l) => l.slug === s)!.name;
+
 	return useFilterControl<string>({
-		defaultFilters: [],
-		formatItem: (s: string) =>
-			libraries!.find((l) => l.slug === s)!.name as TranslationKey,
+		formatItem: (s) => libraryNameBySlug(s) as TranslationKey,
 		filterKeys: libraries?.map((l) => l.slug),
 		buttonLabel: (selected) => {
 			switch (selected.length) {
 				case 0:
 					return "allLibraries";
 				case 1:
-					return selected[0] as TranslationKey;
+					return libraryNameBySlug(selected[0]) as TranslationKey;
 				default:
 					return `${selected.length} ${t("libraries")}` as TranslationKey;
 			}

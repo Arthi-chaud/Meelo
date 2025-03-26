@@ -30,7 +30,6 @@ import { getAlbumTypeParam } from "../../../utils/album-type";
 import { getYear } from "../../../utils/date";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { useGradientBackground } from "../../../utils/gradient-background";
-import { getLayoutParams } from "../../../utils/layout";
 
 const defaultSort = {
 	sortBy: "releaseDate",
@@ -42,13 +41,11 @@ const artistQuery = (artistIdentifier: string | number) =>
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
-	const defaultLayout = getLayoutParams(context.query.view) ?? "grid";
 	const type = getAlbumTypeParam(context.query.type);
 
 	return {
 		additionalProps: {
 			artistIdentifier,
-			defaultLayout,
 			type: type ?? null,
 		},
 		queries: [artistQuery(artistIdentifier)],
@@ -83,7 +80,6 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			/>
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView
-				defaultLayout={props?.defaultLayout}
 				defaultAlbumType={defaultType}
 				initialSortingField={defaultSort.sortBy}
 				initialSortingOrder={defaultSort.order}
