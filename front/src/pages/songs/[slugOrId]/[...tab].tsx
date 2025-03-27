@@ -334,11 +334,11 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 						/>
 						<InfiniteVideoView
-							query={({ library, sortBy, order, type }) =>
+							query={({ libraries, sortBy, order, types }) =>
 								API.getVideos(
 									{
-										library: library ?? undefined,
-										type,
+										library: libraries,
+										type: types,
 										group: song.data?.groupId,
 									},
 									{ sortBy, order },

@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import { type ComponentProps, useState } from "react";
 import {
 	type InfiniteQuery,
 	type QueryClient,
@@ -35,13 +33,106 @@ import {
 	playTrackAtom,
 } from "../../../state/player";
 import { store } from "../../../state/store";
-import { DefaultItemSize } from "../../../utils/layout";
-import Controls, { type OptionState } from "../../controls/controls";
+import type { SortingParameters } from "../../../utils/sorting";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import VideoItem from "../../list-item/video-item";
 import VideoTile from "../../tile/video-tile";
+import { Controls } from "../controls/controls";
+import { useLibraryFilterControl } from "../controls/filters/library";
+import { useTypeFilterControl } from "../controls/filters/resource-type";
+import { useLayoutControl } from "../controls/layout";
+import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
+
+type QueryProps = {
+	types?: VideoType[];
+	libraries?: string[];
+	random?: number;
+} & SortingParameters<typeof VideoSortingKeys>;
+
+type VideoModel = VideoWithRelations<"artist" | "illustration" | "master">;
+
+type ViewProps = {
+	query: (qp: QueryProps) => InfiniteQuery<VideoModel>;
+	onItemClick?: (video: VideoModel) => void;
+	disableSort?: boolean;
+	subtitle: Parameters<typeof VideoTile>[0]["subtitle"];
+};
+
+const InfiniteVideoView = (props: ViewProps) => {
+	const queryClient = useQueryClient();
+
+	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
+		multipleChoices: true,
+	});
+	const [typeFilter, typeFilterControl] = useTypeFilterControl({
+		types: VideoType,
+		multipleChoices: true,
+	});
+	const [sort, sortControl] = useSortControl({
+		defaultSortingKey: "name",
+		sortingKeys: VideoSortingKeys,
+	});
+	const [layout, layoutControl] = useLayoutControl({
+		defaultLayout: "grid",
+		enableToggle: true,
+	});
+	const query = {
+		libraries: libraryFilter,
+		types: typeFilter,
+		sortBy: sort.sort,
+		order: sort.order,
+	};
+
+	const playAction = {
+		label: "playAll",
+		icon: <PlayIcon />,
+		onClick: () => {
+			playVideosAction(queryClient, () => props.query(query));
+		},
+	} as const;
+	const shuffleAction = {
+		label: "shuffle",
+		icon: <ShuffleIcon />,
+		onClick: () => {
+			playVideosAction(queryClient, () =>
+				props.query({
+					...query,
+					random: Math.floor(Math.random() * 10000),
+				}),
+			);
+		},
+	} as const;
+	return (
+		<>
+			<Controls
+				filters={[libraryFilterControl, typeFilterControl]}
+				sort={props.disableSort ? undefined : sortControl}
+				layout={layoutControl}
+				actions={[[playAction, shuffleAction]]}
+			/>
+			<InfiniteView
+				itemSize={layout.itemSize}
+				view={layout.layout}
+				query={() => props.query(query)}
+				renderListItem={(item) => (
+					<VideoItem
+						video={item}
+						// TODO Subtitle
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
+				renderGridItem={(item) => (
+					<VideoTile
+						video={item}
+						subtitle={props.subtitle}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
+			/>
+		</>
+	);
+};
 
 const playVideosAction = (
 	queryClient: QueryClient,
@@ -72,100 +163,6 @@ const playVideosAction = (
 				i++;
 			}
 		});
-};
-
-type AdditionalProps = {
-	type?: VideoType;
-	random?: number;
-};
-
-const InfiniteVideoView = <
-	T extends VideoWithRelations<"artist" | "illustration" | "master">,
->(
-	props: InfiniteResourceViewProps<
-		T,
-		typeof VideoSortingKeys,
-		AdditionalProps
-	> &
-		Omit<ComponentProps<typeof VideoTile>, "video">,
-) => {
-	const router = useRouter();
-	const queryClient = useQueryClient();
-	const [options, setOptions] =
-		useState<OptionState<typeof VideoSortingKeys, AdditionalProps>>();
-	const query = {
-		type:
-			// @ts-ignore
-			options?.type === "All" ? undefined : (options?.type as VideoType),
-		sortBy: options?.sortBy ?? props.initialSortingField ?? "name",
-		order: options?.order ?? props.initialSortingOrder ?? "asc",
-		view: "grid",
-		itemSize: DefaultItemSize,
-		library: options?.library ?? null,
-	} as const;
-	const playAction = {
-		label: "playAll",
-		icon: <PlayIcon />,
-		onClick: () => {
-			playVideosAction(queryClient, () => props.query(query));
-		},
-	} as const;
-	const shuffleAction = {
-		label: "shuffle",
-		icon: <ShuffleIcon />,
-		onClick: () => {
-			playVideosAction(queryClient, () =>
-				props.query({
-					...query,
-					random: Math.floor(Math.random() * 10000),
-				}),
-			);
-		},
-	} as const;
-	return (
-		<>
-			<Controls
-				options={[
-					{
-						label: (options?.type as VideoType) ?? "All",
-						name: "type",
-						values: ["All", ...VideoType],
-						currentValue: options?.type,
-					},
-				]}
-				onChange={setOptions}
-				sortingKeys={VideoSortingKeys}
-				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
-				router={props.light === true ? undefined : router}
-				defaultLayout={"grid"}
-				actions={[playAction, shuffleAction]}
-			/>
-			<InfiniteView
-				itemSize={options?.itemSize ?? DefaultItemSize}
-				view={options?.view ?? "grid"}
-				query={() => {
-					return props.query({
-						...query,
-						sortBy: query.sortBy,
-					});
-				}}
-				renderListItem={(item) => (
-					<VideoItem
-						video={item}
-						onClick={() => item && props.onItemClick?.(item)}
-					/>
-				)}
-				renderGridItem={(item) => (
-					<VideoTile
-						video={item}
-						subtitle={props.subtitle}
-						onClick={() => item && props.onItemClick?.(item)}
-					/>
-				)}
-			/>
-		</>
-	);
 };
 
 export default InfiniteVideoView;

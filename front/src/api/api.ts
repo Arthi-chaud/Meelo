@@ -786,13 +786,13 @@ export default class API {
 	 */
 	static getVideos<I extends VideoInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
 			group?: Identifier;
 			random?: number;
-			type?: VideoType;
+			type?: VideoType[];
 			query?: string;
 		},
 		sort?: SortingParameters<typeof VideoSortingKeys>,
@@ -814,7 +814,11 @@ export default class API {
 						include,
 						sort,
 					},
-					otherParameters: filter,
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+						type: API.formatOr(filter.type),
+					},
 					validator: PaginatedResponse(
 						VideoWithRelations(include ?? []),
 					),

@@ -341,13 +341,14 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ videoId: item.id })
 					}
+					disableSort
 					subtitle="artist"
-					query={({ library, type: newType }) =>
+					query={({ libraries, types }) =>
 						API.getVideos(
 							{
 								query: encodeURIComponent(query),
-								type: newType,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							undefined,
 							["artist", "master", "illustration"],

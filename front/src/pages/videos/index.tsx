@@ -15,7 +15,6 @@ const prepareSSR = (context: NextPageContext) => {
 	const sortBy = getSortQuery(context, VideoSortingKeys);
 
 	return {
-		additionalProps: { sortBy, order },
 		infiniteQueries: [
 			API.getVideos({}, { sortBy, order }, [
 				"artist",
@@ -26,20 +25,16 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
-const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
-	props,
-}) => {
+const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 
 	return (
 		<>
 			<Head title={t("videos")} />
 			<InfiniteVideoView
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ library, sortBy, order, random, type }) =>
+				query={({ libraries, sortBy, order, random, types }) =>
 					API.getVideos(
-						{ library: library ?? undefined, random, type },
+						{ library: libraries, random, type: types },
 						{ sortBy, order },
 						["artist", "master", "illustration"],
 					)
