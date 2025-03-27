@@ -44,7 +44,8 @@ import type Action from "../../actions/action";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import SongItem, { SongGroupItem } from "../../list-item/song-item";
 import { Controls } from "../controls/controls";
-import { useLibraryFilter, useTypeFilterControl } from "../controls/filter";
+import { useLibraryFilterControl } from "../controls/filters/library";
+import { useTypeFilterControl } from "../controls/filters/resource-type";
 import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
 
@@ -135,9 +136,12 @@ const InfiniteSongView = (props: Props) => {
 	} as const;
 
 	/// state
-	const [libraries, libraryFilterControl] = useLibraryFilter();
+	const [libraries, libraryFilterControl] = useLibraryFilterControl({
+		multipleChoices: true,
+	});
 	const [types, songTypeFilterControl] = useTypeFilterControl({
 		types: SongType,
+		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
 		defaultSortingKey: "name",

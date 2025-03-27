@@ -24,10 +24,8 @@ import {
 	ListItemIcon,
 	Menu,
 	MenuItem,
-	Theme,
 	ThemeProvider,
 	Tooltip,
-	createTheme,
 	useTheme,
 } from "@mui/material";
 import { deepmerge } from "@mui/utils";
@@ -45,7 +43,7 @@ import {
 	MinusIcon,
 	PlusIcon,
 } from "../../icons";
-import type { FilterControl } from "./filter";
+import type { FilterControl } from "./filters/control";
 import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";
 

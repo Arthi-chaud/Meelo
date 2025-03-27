@@ -18,13 +18,8 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import API from "../../../api/api";
-import { prepareMeeloInfiniteQuery } from "../../../api/use-query";
-import type { TranslationKey } from "../../../i18n/i18n";
-import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
+import type { TranslationKey } from "../../../../i18n/i18n";
+import { parseQueryParam, setQueryParam } from "../../../../utils/query-param";
 
 export type FilterControl<Key extends string> = {
 	// Gives the translation key from an item to choose from
@@ -46,7 +41,7 @@ export type FilterControl<Key extends string> = {
 );
 
 // Control for filter that accept multiple values
-export const useFilterControl = <FilterKey extends string>({
+export const useFiltersControl = <FilterKey extends string>({
 	filterKeys,
 	filterId,
 	buttonLabel,
@@ -66,14 +61,11 @@ export const useFilterControl = <FilterKey extends string>({
 	const router = useRouter();
 	const [selectedFilters, setFilterState] = useState(() => {
 		let query = router.query[filterId];
-		if (!filterKeys) {
-			return [];
-		}
-		if (query === undefined) {
+		if (!filterKeys || query === undefined) {
 			return [];
 		}
 		if (typeof query === "string") {
-			query = query.split(",");
+			query = query.trim().split(",");
 		}
 		return query
 			.map((f) => parseQueryParam(f, filterKeys))
@@ -97,56 +89,43 @@ export const useFilterControl = <FilterKey extends string>({
 	return [selectedFilters, control] as const;
 };
 
-export const useTypeFilterControl = <TypeKey extends TranslationKey>(props: {
-	types: readonly TypeKey[];
-	filterId?: string;
+export const useFilterControl = <FilterKey extends string>({
+	filterKeys,
+	filterId,
+	buttonLabel,
+	buttonIcon,
+	formatItem,
+}: {
+	buttonLabel: (
+		selected: FilterKey | null,
+	) => FilterControl<FilterKey>["buttonLabel"];
+	buttonIcon: FilterControl<FilterKey>["buttonIcon"];
+	formatItem: FilterControl<FilterKey>["formatItem"];
+	filterKeys: readonly FilterKey[] | undefined;
+	filterId: string;
 }) => {
-	const { t } = useTranslation();
-	return useFilterControl<TypeKey>({
-		formatItem: (t: TypeKey) => t,
-		filterKeys: props.types,
-		buttonLabel: (selected) => {
-			switch (selected.length) {
-				case 0:
-					return "allTypes";
-				case 1:
-					return selected[0];
-				default:
-					return `${selected.length} ${t("types")}` as TranslationKey;
-			}
-		},
-		buttonIcon: undefined,
-		filterId: props.filterId ?? "type",
+	const router = useRouter();
+	const [selectedFilter, setSelectedFilter] = useState(() => {
+		let query = router.query[filterId];
+		if (!filterKeys || query === undefined) {
+			return null;
+		}
+		if (typeof query !== "string") {
+			query = query[0];
+		}
+		return parseQueryParam(query, filterKeys);
 	});
-};
-
-export const useLibraryFilter = () => {
-	const { t } = useTranslation();
-	const librariesQuery = useReactInfiniteQuery({
-		...prepareMeeloInfiniteQuery(API.getLibraries),
-		useErrorBoundary: false,
-		onError: () => {
-			toast.error(t("librariesLoadFail"));
+	const control: FilterControl<FilterKey> = {
+		values: filterKeys,
+		buttonIcon,
+		buttonLabel: buttonLabel(selectedFilter),
+		multipleChoice: false,
+		selected: selectedFilter,
+		formatItem: (t: FilterKey) => formatItem(t),
+		onUpdate: (selected) => {
+			setQueryParam([[filterId, selected ?? null]], router);
+			setSelectedFilter(selected);
 		},
-	});
-	const libraries = librariesQuery.data?.pages.at(0)?.items;
-	const libraryNameBySlug = (s: string) =>
-		libraries!.find((l) => l.slug === s)!.name;
-
-	return useFilterControl<string>({
-		formatItem: (s) => libraryNameBySlug(s) as TranslationKey,
-		filterKeys: libraries?.map((l) => l.slug),
-		buttonLabel: (selected) => {
-			switch (selected.length) {
-				case 0:
-					return "allLibraries";
-				case 1:
-					return libraryNameBySlug(selected[0]) as TranslationKey;
-				default:
-					return `${selected.length} ${t("libraries")}` as TranslationKey;
-			}
-		},
-		buttonIcon: undefined,
-		filterId: "library",
-	});
+	};
+	return [selectedFilter, control] as const;
 };
