@@ -22,7 +22,7 @@ import type { LayoutOption } from "../../../utils/layout";
 import type { Order } from "../../../utils/sorting";
 import type { OptionState } from "../../controls/controls";
 import type { EmptyStateProps } from "../../empty-state";
-
+//TODO Delete
 type InfiniteResourceViewProps<
 	ResourceType extends Resource,
 	SortingKeys extends readonly string[],

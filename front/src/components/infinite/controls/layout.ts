@@ -59,7 +59,7 @@ export const useLayoutControl = ({
 		itemSize: ItemSize;
 	}>(() => ({
 		layout: enableToggle ? defaultLayout : (layoutQuery ?? defaultLayout),
-		itemSize: "xs",
+		itemSize: "m",
 	}));
 	const control: LayoutControl = {
 		layout: layoutState.layout,

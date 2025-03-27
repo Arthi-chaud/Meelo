@@ -115,6 +115,7 @@ type SongViewProps = {
 	query: (q: SongQueryProps) => InfiniteQuery<SongModel>;
 	onItemClick?: (song: SongModel) => void;
 	disableShuffle?: boolean;
+	disableSort?: boolean;
 	subtitles?: Parameters<typeof SongItem>[0]["subtitles"];
 	additionalActions?: Action[];
 };
@@ -162,7 +163,7 @@ export const InfiniteSongView = (props: SongViewProps) => {
 		<>
 			<Controls
 				filters={[libraryFilterControl, songTypeFilterControl]}
-				sort={sortControl}
+				sort={props.disableSort ? undefined : sortControl}
 				actions={[
 					[
 						playAction,

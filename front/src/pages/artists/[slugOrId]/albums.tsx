@@ -26,7 +26,6 @@ import { Head } from "../../../components/head";
 import InfiniteAlbumView from "../../../components/infinite/infinite-resource-view/infinite-album-view";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
-import { getAlbumTypeParam } from "../../../utils/album-type";
 import { getYear } from "../../../utils/date";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { useGradientBackground } from "../../../utils/gradient-background";
@@ -41,20 +40,17 @@ const artistQuery = (artistIdentifier: string | number) =>
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
-	const type = getAlbumTypeParam(context.query.type);
 
 	return {
 		additionalProps: {
 			artistIdentifier,
-			type: type ?? null,
 		},
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
-			API.getAlbums(
-				{ artist: artistIdentifier, type: type },
-				defaultSort,
-				["artist", "illustration"],
-			),
+			API.getAlbums({ artist: artistIdentifier }, defaultSort, [
+				"artist",
+				"illustration",
+			]),
 		],
 	};
 };
@@ -66,7 +62,6 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);
-	const defaultType = props?.type ?? null;
 	const { GradientBackground } = useGradientBackground(
 		artist.data?.illustration?.colors,
 	);
@@ -80,18 +75,15 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			/>
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView
-				defaultAlbumType={defaultType}
-				initialSortingField={defaultSort.sortBy}
-				initialSortingOrder={defaultSort.order}
 				formatSubtitle={(album) =>
 					getYear(album.releaseDate)?.toString() ?? ""
 				}
-				query={({ sortBy, order, library, type }) =>
+				query={({ sortBy, order, libraries, types }) =>
 					API.getAlbums(
 						{
 							artist: artistIdentifier,
-							type,
-							library: library ?? undefined,
+							type: types,
+							library: libraries,
 						},
 						{ sortBy, order },
 						["artist", "illustration"],

@@ -299,16 +299,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab === "album" && (
 				<InfiniteAlbumView
+					disableSort
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ albumId: item.id })
 					}
-					defaultAlbumType={null}
-					query={({ library, type: newType }) =>
+					query={({ libraries, types }) =>
 						API.getAlbums(
 							{
 								query: encodeURIComponent(query),
-								type: newType,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							undefined,
 							["artist", "illustration"],
@@ -318,6 +318,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab === "song" && (
 				<InfiniteSongView
+					disableSort
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ songId: item.id })
 					}

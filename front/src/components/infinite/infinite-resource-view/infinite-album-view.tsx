@@ -16,83 +16,70 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import { type ComponentProps, useState } from "react";
-import { useTranslation } from "react-i18next";
+import type { InfiniteQuery } from "../../../api/use-query";
 import {
 	AlbumSortingKeys,
 	AlbumType,
 	type AlbumWithRelations,
 } from "../../../models/album";
-import { DefaultItemSize } from "../../../utils/layout";
-import Controls, { type OptionState } from "../../controls/controls";
+import type { SortingParameters } from "../../../utils/sorting";
 import AlbumItem from "../../list-item/album-item";
 import AlbumTile from "../../tile/album-tile";
+import { Controls } from "../controls/controls";
+import { useLibraryFilterControl } from "../controls/filters/library";
+import { useTypeFilterControl } from "../controls/filters/resource-type";
+import { useLayoutControl } from "../controls/layout";
+import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
-type AdditionalProps = { type?: AlbumType };
+type QueryProps = {
+	types?: AlbumType[];
+	libraries?: string[];
+} & SortingParameters<typeof AlbumSortingKeys>;
 
-const InfiniteAlbumView = (
-	props: InfiniteResourceViewProps<
-		AlbumWithRelations<"artist" | "illustration">,
-		typeof AlbumSortingKeys,
-		AdditionalProps
-	> &
-		Pick<ComponentProps<typeof AlbumTile>, "formatSubtitle"> & {
-			defaultAlbumType: AlbumType | null;
-		},
-) => {
-	const router = useRouter();
-	const { t } = useTranslation();
-	const [options, setOptions] = useState<
-		OptionState<typeof AlbumSortingKeys, AdditionalProps>
-	>({
-		type: props.defaultAlbumType ?? undefined,
-		library: null,
-		order: props.initialSortingOrder ?? "asc",
-		sortBy: props.initialSortingField ?? "name",
-		view: props.defaultLayout ?? "grid",
-		itemSize: DefaultItemSize,
+type AlbumModel = AlbumWithRelations<"artist" | "illustration">;
+
+type ViewProps = {
+	query: (q: QueryProps) => InfiniteQuery<AlbumModel>;
+	onItemClick?: (song: AlbumModel) => void;
+	disableShuffle?: boolean;
+	disableSort?: boolean;
+	formatSubtitle?: Parameters<typeof AlbumItem>[0]["formatSubtitle"];
+};
+
+const InfiniteAlbumView = (props: ViewProps) => {
+	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
+		multipleChoices: true,
+	});
+	const [typeFilter, typeFilterControl] = useTypeFilterControl({
+		types: AlbumType,
+		multipleChoices: true,
+	});
+	const [sort, sortControl] = useSortControl({
+		defaultSortingKey: "name",
+		sortingKeys: AlbumSortingKeys,
+	});
+	const [layout, layoutControl] = useLayoutControl({
+		defaultLayout: "grid",
+		enableToggle: true,
 	});
 
 	return (
 		<>
 			<Controls
-				options={[
-					{
-						label: t((options?.type as AlbumType) ?? "All"),
-						name: "type",
-						values: ["All", ...AlbumType],
-						currentValue: options?.type ?? undefined,
-					},
-				]}
-				onChange={setOptions}
-				sortingKeys={AlbumSortingKeys}
-				disableSorting={props.disableSorting}
-				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
-				router={props.light === true ? undefined : router}
-				defaultLayout={props.defaultLayout ?? "grid"}
+				layout={layoutControl}
+				filters={[libraryFilterControl, typeFilterControl]}
+				sort={props.disableSort ? undefined : sortControl}
 			/>
 			<InfiniteView
-				itemSize={options.itemSize}
-				view={options?.view ?? props.defaultLayout ?? "grid"}
+				itemSize={layout.itemSize}
+				view={layout.layout}
 				query={() =>
 					props.query({
-						library: options?.library,
-						view: options?.view ?? props.defaultLayout ?? "grid",
-						type:
-							// @ts-ignore
-							options?.type === "All" ? undefined : options?.type,
-						sortBy:
-							options?.sortBy ??
-							props.initialSortingField ??
-							AlbumSortingKeys[0],
-						order:
-							options?.order ??
-							props.initialSortingOrder ??
-							"asc",
+						libraries: libraryFilter,
+						types: typeFilter,
+						sortBy: sort.sort,
+						order: sort.order,
 					})
 				}
 				renderListItem={(item) => (

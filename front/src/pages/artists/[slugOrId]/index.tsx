@@ -51,7 +51,7 @@ const latestAlbumsQuery = AlbumType.map((type) => ({
 	type: type,
 	query: (artistSlugOrId: string | number) => {
 		return API.getAlbums(
-			{ artist: artistSlugOrId, type: type },
+			{ artist: artistSlugOrId, type: [type] },
 			{ sortBy: "releaseDate", order: "desc" },
 			["illustration"],
 		);

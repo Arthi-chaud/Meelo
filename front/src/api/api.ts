@@ -639,10 +639,10 @@ export default class API {
 	 */
 	static getAlbums<I extends AlbumInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			artist?: Identifier;
 			genre?: Identifier;
-			type?: AlbumType;
+			type?: AlbumType[];
 			related?: Identifier;
 			appearance?: Identifier;
 			query?: Identifier;
@@ -663,7 +663,11 @@ export default class API {
 					route: "/albums",
 					errorMessage: "Albums could not be loaded",
 					parameters: { pagination: pagination, include, sort },
-					otherParameters: { ...filter },
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+						type: API.formatOr(filter.type),
+					},
 					validator: PaginatedResponse(
 						AlbumWithRelations(include ?? []),
 					),

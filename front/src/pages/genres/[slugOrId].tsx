@@ -117,13 +117,12 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{selectedTab === "album" && (
 				<InfiniteAlbumView
-					defaultAlbumType={null}
-					query={({ library, type, sortBy, order }) =>
+					query={({ libraries, types, sortBy, order }) =>
 						API.getAlbums(
 							{
 								genre: genreIdentifier,
-								type,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							{ sortBy, order },
 							["artist", "illustration"],

@@ -76,7 +76,7 @@ const mostListenedSongsQuery = API.getSongs(
 );
 
 const albumRecommendations = (seed: number) =>
-	API.getAlbums({ random: seed, type: "StudioRecording" }, undefined, [
+	API.getAlbums({ random: seed, type: ["StudioRecording"] }, undefined, [
 		"artist",
 		"genres",
 		"illustration",

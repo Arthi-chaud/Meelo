@@ -10,7 +10,6 @@ import {
 import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
 import { AlbumSortingKeys } from "../../models/album";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { getAlbumTypeParam } from "../../utils/album-type";
 
 const isCompilationPage = ({ asPath }: { asPath?: string }) =>
 	asPath?.includes("/compilations") ?? false;
@@ -18,14 +17,11 @@ const isCompilationPage = ({ asPath }: { asPath?: string }) =>
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";
 	const sortBy = getSortQuery(context, AlbumSortingKeys);
-	const type = getAlbumTypeParam(context.query.type);
 
 	return {
-		additionalProps: { sortBy, order, type: type ?? null },
 		infiniteQueries: [
 			API.getAlbums(
 				{
-					type: type ?? undefined,
 					artist: isCompilationPage(context)
 						? "compilations"
 						: undefined,
@@ -37,8 +33,7 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
-const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const defaultType = props?.type ?? null;
+const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
@@ -46,14 +41,11 @@ const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		<>
 			<Head title={t("albums")} />
 			<InfiniteAlbumView
-				defaultAlbumType={defaultType}
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ sortBy, order, type, library }) =>
+				query={({ sortBy, order, types, libraries }) =>
 					API.getAlbums(
 						{
-							type,
-							library: library ?? undefined,
+							type: types,
+							library: libraries,
 							artist: isCompilationPage(router)
 								? "compilations"
 								: undefined,
