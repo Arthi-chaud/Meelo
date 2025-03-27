@@ -33,7 +33,7 @@ import { Head } from "../../components/head";
 import { SearchIcon } from "../../components/icons";
 import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import { InfiniteSongView } from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
 import InfiniteView from "../../components/infinite/infinite-view";
 import AlbumItem from "../../components/list-item/album-item";

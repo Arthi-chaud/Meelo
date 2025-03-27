@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
 	type ItemSize,
 	type LayoutOption,
@@ -52,7 +51,6 @@ export const useLayoutControl = ({
 	defaultLayout: LayoutOption;
 	enableToggle: boolean;
 }) => {
-	// TODO Check layout update does not trigger infinite loop
 	const router = useRouter();
 	// biome-ignore lint/complexity/useLiteralKeys: Clarity
 	const layoutQuery = parseQueryParam(router.query["view"], LayoutOptions);
@@ -74,11 +72,3 @@ export const useLayoutControl = ({
 	};
 	return [layoutState, control] as const;
 };
-
-// TODO Delete
-export const getLayoutQuery = (
-	router: { query: ParsedUrlQuery },
-	defaultLayout: LayoutOption,
-) =>
-	// biome-ignore lint/complexity/useLiteralKeys: Clarity
-	parseQueryParam(router.query["view"], LayoutOptions) ?? defaultLayout;

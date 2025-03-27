@@ -32,7 +32,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../../components/infinite/controls/sort";
-import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
+import { HybridInfiniteSongView } from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { SongSortingKeys } from "../../../models/song";
 import type Track from "../../../models/track";
@@ -113,43 +113,48 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
-			<InfiniteSongView
-				query={({ libraries, sortBy, order, types, random }) =>
-					API.getSongs(
-						{
-							[isRareSongsPage(router) ? "rare" : "artist"]:
-								artistIdentifier,
-							type: types,
-							random,
-							library: libraries,
-						},
-						{ sortBy, order },
-						["artist", "featuring", "master", "illustration"],
-					)
-				}
-				songGroupsQuery={
+			<HybridInfiniteSongView
+				song={{
+					query: ({ libraries, sortBy, order, types, random }) =>
+						API.getSongs(
+							{
+								[isRareSongsPage(router) ? "rare" : "artist"]:
+									artistIdentifier,
+								type: types,
+								random,
+								library: libraries,
+							},
+							{ sortBy, order },
+							["artist", "featuring", "master", "illustration"],
+						),
+
+					subtitles: [(song) => getTrackReleaseName(song.master)],
+				}}
+				songGroup={
 					isRareSongsPage(router)
 						? undefined
-						: ({ sortBy, order, libraries, types }) =>
-								API.getSongGroups(
-									{
-										type: types?.at(0), //TODO?
-										artist: artistIdentifier,
-										library: libraries,
-									},
-									{ sortBy, order } as any, // TODO
-									[
-										"artist",
-										"featuring",
-										"master",
-										"illustration",
-									],
-								)
+						: {
+								query: ({ libraries, type }) =>
+									API.getSongGroups(
+										{
+											type: type,
+											artist: artistIdentifier,
+											library: libraries,
+										},
+										undefined,
+										[
+											"artist",
+											"featuring",
+											"master",
+											"illustration",
+										],
+									),
+
+								subtitles: [
+									(song) => getTrackReleaseName(song.master),
+								],
+							}
 				}
-				subtitles={[
-					(song) =>
-						getTrackReleaseName(song.master).then((name) => name),
-				]}
 			/>
 		</Box>
 	);

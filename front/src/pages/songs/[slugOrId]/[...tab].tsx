@@ -41,7 +41,7 @@ import ExternalMetadataBadge from "../../../components/external-metadata-badge";
 import GenreButton from "../../../components/genre-button";
 import { Head } from "../../../components/head";
 import { PlayIcon } from "../../../components/icons";
-import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
+import { InfiniteSongView } from "../../../components/infinite/infinite-resource-view/infinite-song-view";
 import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
 import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
 import LyricsBox from "../../../components/lyrics";

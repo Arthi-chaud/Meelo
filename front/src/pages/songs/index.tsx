@@ -6,7 +6,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../components/infinite/controls/sort";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import { HybridInfiniteSongView } from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import { SongSortingKeys } from "../../models/song";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 
@@ -33,28 +33,30 @@ const SongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	return (
 		<>
 			<Head title={t("songs")} />
-			<InfiniteSongView
-				query={({ sortBy, order, types, libraries, random }) =>
-					API.getSongs(
-						{
-							type: types,
-							library: libraries,
-							random,
-						},
-						{ sortBy, order },
-						["artist", "featuring", "master", "illustration"],
-					)
-				}
-				songGroupsQuery={({ libraries, types }) =>
-					API.getSongGroups(
-						{
-							type: types?.at(0), // TODO: Disable multi selection of type when song group
-							library: libraries,
-						},
-						{ sortBy: "name", order: "asc" },
-						["artist", "featuring", "master", "illustration"],
-					)
-				}
+			<HybridInfiniteSongView
+				song={{
+					query: ({ sortBy, order, types, libraries, random }) =>
+						API.getSongs(
+							{
+								type: types,
+								library: libraries,
+								random,
+							},
+							{ sortBy, order },
+							["artist", "featuring", "master", "illustration"],
+						),
+				}}
+				songGroup={{
+					query: ({ libraries, type }) =>
+						API.getSongGroups(
+							{
+								type: type,
+								library: libraries,
+							},
+							{ sortBy: "name", order: "asc" },
+							["artist", "featuring", "master", "illustration"],
+						),
+				}}
 			/>
 		</>
 	);

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
 import { useState } from "react";
 import {
 	type InfiniteQuery,
@@ -28,10 +29,7 @@ import {
 	SongType,
 	type SongWithRelations,
 } from "../../../models/song";
-import {
-	SongGroupSortingKeys,
-	type SongGroupWithRelations,
-} from "../../../models/song-group";
+import type { SongGroupWithRelations } from "../../../models/song-group";
 import {
 	emptyPlaylistAtom,
 	playAfterAtom,
@@ -39,6 +37,7 @@ import {
 } from "../../../state/player";
 import { store } from "../../../state/store";
 import { DefaultItemSize } from "../../../utils/layout";
+import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
 import type { SortingParameters } from "../../../utils/sorting";
 import type Action from "../../actions/action";
 import { PlayIcon, ShuffleIcon } from "../../icons";
@@ -53,26 +52,21 @@ type SongModel = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
 >;
 
+type SongQueryProps = {
+	libraries?: string[];
+	types?: SongType[];
+	random?: number;
+} & SortingParameters<typeof SongSortingKeys>;
+
 type SongGroupModel = SongGroupWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
 >;
 
-type Props = {
-	query: (q: QueryProps) => InfiniteQuery<SongModel>;
-	// TODO Fix type so that the sorting type + song type match
-	songGroupsQuery?: (q: QueryProps) => InfiniteQuery<SongGroupModel>;
-	onItemClick?: (song: SongModel) => void;
-	disableShuffle?: boolean;
-	subtitles?: Parameters<typeof SongItem>[0]["subtitles"];
-};
-
-type QueryProps = {
+type SongGroupQueryProps = {
 	libraries?: string[];
-	types?: SongType[];
-	// if true, show song groups instead of songs
-	groups?: boolean;
+	type?: SongType;
 	random?: number;
-} & SortingParameters<typeof SongSortingKeys>;
+};
 
 const playSongsAction = (
 	queryClient: QueryClient,
@@ -107,17 +101,28 @@ const playSongsAction = (
 		});
 };
 
-const InfiniteSongView = (props: Props) => {
+const shuffleActionBase = {
+	label: "shuffle" as const,
+	icon: <ShuffleIcon />,
+};
+
+const playActionBase = {
+	label: "playAll" as const,
+	icon: <PlayIcon />,
+};
+
+type SongViewProps = {
+	query: (q: SongQueryProps) => InfiniteQuery<SongModel>;
+	onItemClick?: (song: SongModel) => void;
+	disableShuffle?: boolean;
+	subtitles?: Parameters<typeof SongItem>[0]["subtitles"];
+	additionalActions?: Action[];
+};
+
+export const InfiniteSongView = (props: SongViewProps) => {
 	const queryClient = useQueryClient();
-	const [useSongGroup, setUseSongGroup] = useState(false);
-	/// Actions
-	const toggleSongGroup: Action = {
-		label: useSongGroup ? "showAllSongs" : "groupVersions",
-		onClick: () => setUseSongGroup((t) => !t),
-	};
 	const shuffleAction = {
-		label: "shuffle",
-		icon: <ShuffleIcon />,
+		...shuffleActionBase,
 		onClick: () => {
 			playSongsAction(queryClient, () =>
 				props.query({
@@ -128,8 +133,7 @@ const InfiniteSongView = (props: Props) => {
 		},
 	} as const;
 	const playAction = {
-		label: "playAll",
-		icon: <PlayIcon />,
+		...playActionBase,
 		onClick: () => {
 			playSongsAction(queryClient, () => props.query(query));
 		},
@@ -145,9 +149,9 @@ const InfiniteSongView = (props: Props) => {
 	});
 	const [sort, sortControl] = useSortControl({
 		defaultSortingKey: "name",
-		sortingKeys: useSongGroup ? SongGroupSortingKeys : SongSortingKeys,
+		sortingKeys: SongSortingKeys,
 	});
-	const query: QueryProps = {
+	const query: SongQueryProps = {
 		libraries: libraries,
 		types: types,
 		sortBy: sort.sort,
@@ -156,55 +160,147 @@ const InfiniteSongView = (props: Props) => {
 
 	return (
 		<>
-			{/* Song Grouo do not support having multiple song types */}
 			<Controls
 				filters={[libraryFilterControl, songTypeFilterControl]}
-				sort={useSongGroup ? undefined : sortControl}
+				sort={sortControl}
 				actions={[
 					[
 						playAction,
 						...(props.disableShuffle ? [] : [shuffleAction]),
 					],
-					props.songGroupsQuery ? [toggleSongGroup] : [],
+					...(props.additionalActions
+						? [props.additionalActions]
+						: []),
 				]}
 			/>
-			{useSongGroup ? (
-				<InfiniteView
-					itemSize={DefaultItemSize}
-					view={"list"}
-					query={() => {
-						return props.songGroupsQuery!({
-							...query,
-							sortBy: "name",
-						});
-					}}
-					renderListItem={(item) => (
-						<SongGroupItem
-							song={item}
-							subtitles={props.subtitles}
-						/>
-					)}
-					renderGridItem={() => <></>}
-				/>
-			) : (
-				<InfiniteView
-					itemSize={DefaultItemSize}
-					view={"list"}
-					query={() => {
-						return props.query(query);
-					}}
-					renderListItem={(item) => (
-						<SongItem
-							song={item}
-							subtitles={props.subtitles}
-							onClick={() => item && props.onItemClick?.(item)}
-						/>
-					)}
-					renderGridItem={() => <></>}
-				/>
-			)}
+			<InfiniteView
+				itemSize={DefaultItemSize}
+				view={"list"}
+				query={() => {
+					return props.query(query);
+				}}
+				renderListItem={(item) => (
+					<SongItem
+						song={item}
+						subtitles={props.subtitles}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
+				renderGridItem={() => <></>}
+			/>
 		</>
 	);
 };
 
-export default InfiniteSongView;
+type SongGroupViewProps = {
+	query: (q: SongGroupQueryProps) => InfiniteQuery<SongGroupModel>;
+	onItemClick?: (song: SongGroupModel) => void;
+	subtitles?: Parameters<typeof SongGroupItem>[0]["subtitles"];
+	additionalActions?: Action[];
+};
+
+export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
+	const queryClient = useQueryClient();
+	const playAction = {
+		...playActionBase,
+		onClick: () => {
+			playSongsAction(queryClient, () => props.query(query));
+		},
+	} as const;
+
+	/// state
+	const [libraries, libraryFilterControl] = useLibraryFilterControl({
+		multipleChoices: true,
+	});
+	const [type, songTypeFilterControl] = useTypeFilterControl({
+		types: SongType,
+		multipleChoices: false,
+	});
+	const query: SongGroupQueryProps = {
+		libraries: libraries,
+		type: type ?? undefined,
+	};
+
+	return (
+		<>
+			<Controls
+				filters={[libraryFilterControl, songTypeFilterControl]}
+				actions={[
+					[playAction],
+					...(props.additionalActions
+						? [props.additionalActions]
+						: []),
+				]}
+			/>
+			<InfiniteView
+				itemSize={DefaultItemSize}
+				view={"list"}
+				query={() => {
+					return props.query(query);
+				}}
+				renderListItem={(item) => (
+					<SongGroupItem
+						song={item}
+						subtitles={props.subtitles}
+						onClick={() => item && props.onItemClick?.(item)}
+					/>
+				)}
+				renderGridItem={() => <></>}
+			/>
+		</>
+	);
+};
+
+type HybridSongViewProps = {
+	song: SongViewProps;
+	// If not specified, there will be no toggle button
+	songGroup?: SongGroupViewProps;
+};
+
+// Infinite song View with a toggle for song groups
+export const HybridInfiniteSongView = (props: HybridSongViewProps) => {
+	const router = useRouter();
+	const [useSongGroup, setUseSongGroup] = useState(
+		parseQueryParam(router.query.groups, ["true", "false"]) === "true",
+	);
+	const toggleSongGroupAction: Action = {
+		label: useSongGroup ? "showAllSongs" : "groupVersions",
+		onClick: () => {
+			setUseSongGroup((prev) => {
+				setQueryParam(
+					[
+						["groups", (!prev).toString()],
+						["type", null],
+						["library", null],
+						["order", null],
+						["sort", null],
+					],
+					router,
+				);
+				return !prev;
+			});
+		},
+	};
+
+	if (useSongGroup && props.songGroup) {
+		return (
+			<InfiniteSongGroupView
+				{...props.songGroup}
+				additionalActions={[
+					...(props.songGroup.additionalActions ?? []),
+					toggleSongGroupAction,
+				]}
+			/>
+		);
+	}
+
+	return (
+		<InfiniteSongView
+			{...props.song}
+			additionalActions={[
+				...(props.songGroup ? [toggleSongGroupAction] : []),
+				...(props.song.additionalActions ?? []),
+			]}
+		/>
+	);
+};

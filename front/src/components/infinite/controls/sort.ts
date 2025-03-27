@@ -40,7 +40,6 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 	defaultSortingKey: SortingKey;
 	sortingKeys: readonly SortingKey[];
 }) => {
-	// // TODO Check update does not trigger infinite loop
 	const router = useRouter();
 	const orderQuery = getOrderQuery(router);
 	const sortQuery = getSortQuery(router, sortingKeys);

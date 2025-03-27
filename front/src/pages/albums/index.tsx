@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { Head } from "../../components/head";
-import { getLayoutQuery } from "../../components/infinite/controls/layout";
 import {
 	getOrderQuery,
 	getSortQuery,
@@ -20,10 +19,9 @@ const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";
 	const sortBy = getSortQuery(context, AlbumSortingKeys);
 	const type = getAlbumTypeParam(context.query.type);
-	const defaultLayout = getLayoutQuery(context, "grid");
 
 	return {
-		additionalProps: { sortBy, order, defaultLayout, type: type ?? null },
+		additionalProps: { sortBy, order, type: type ?? null },
 		infiniteQueries: [
 			API.getAlbums(
 				{
@@ -51,7 +49,6 @@ const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				defaultAlbumType={defaultType}
 				initialSortingField={props?.sortBy}
 				initialSortingOrder={props?.order}
-				defaultLayout={props?.defaultLayout}
 				query={({ sortBy, order, type, library }) =>
 					API.getAlbums(
 						{

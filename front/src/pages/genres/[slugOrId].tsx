@@ -25,7 +25,7 @@ import { useQuery } from "../../api/use-query";
 import { Head } from "../../components/head";
 import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
 import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import { InfiniteSongView } from "../../components/infinite/infinite-resource-view/infinite-song-view";
 import { useTabRouter } from "../../components/tab-router";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 import getSlugOrId from "../../utils/getSlugOrId";
