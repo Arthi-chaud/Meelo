@@ -1096,7 +1096,7 @@ export default class API {
 	 * @returns an Infinite Query of tracks
 	 */
 	static getTracks<I extends TrackInclude | never = never>(
-		filter: { song?: string | number },
+		filter: { song?: string | number; library?: Identifier[] },
 		sort?: SortingParameters<typeof TrackSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<TrackWithRelations<I>> {
@@ -1110,7 +1110,10 @@ export default class API {
 			exec: (pagination) =>
 				API.fetch({
 					route: "/tracks",
-					otherParameters: filter,
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+					},
 					parameters: { pagination: pagination, include, sort },
 					validator: PaginatedResponse(
 						TrackWithRelations(include ?? []),

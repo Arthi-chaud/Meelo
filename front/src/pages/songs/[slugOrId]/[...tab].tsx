@@ -358,9 +358,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 						/>
 						<InfiniteTrackView
-							query={({ sortBy, order }) =>
+							query={({ sortBy, order, libraries }) =>
 								API.getTracks(
-									{ song: songIdentifier },
+									{
+										song: songIdentifier,
+										library: libraries,
+									},
 									{ sortBy, order },
 									[
 										"release",
