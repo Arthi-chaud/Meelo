@@ -33,16 +33,13 @@ const prepareSSR = (context: NextPageContext) => {
 	const sortBy = getSortQuery(context, PlaylistSortingKeys);
 
 	return {
-		additionalProps: { order, sortBy },
 		infiniteQueries: [
 			API.getPlaylists({}, { sortBy, order }, ["illustration"]),
 		],
 	};
 };
 
-const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
-	props,
-}) => {
+const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 	return (
 		<>
@@ -51,11 +48,7 @@ const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				emptyState={{
 					text: "emptyStatePlaylists",
 				}}
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ view, library, ...sort }) =>
-					API.getPlaylists({}, sort, ["illustration"])
-				}
+				query={(sort) => API.getPlaylists({}, sort, ["illustration"])}
 			/>
 		</>
 	);

@@ -53,7 +53,7 @@ export const Controls = <SortingKey extends string>(props: {
 	layout?: LayoutControl;
 	sort?: SortControl<SortingKey>;
 	actions?: Action[][];
-	filters: FilterControl<any>[]; // Putting string prevent from typechecking if filter is library + song type
+	filters?: FilterControl<any>[]; // Putting string prevent from typechecking if filter is library + song type
 }) => {
 	return (
 		<Grid
@@ -70,15 +70,17 @@ export const Controls = <SortingKey extends string>(props: {
 				left: 0,
 			}}
 		>
-			<Grid item>
-				<ButtonGroup variant="contained">
-					{props.filters.map((filter, idx) => (
-						<FilterMenuButton key={idx} filter={filter} />
-					))}
+			{(props.filters || props.sort) && (
+				<Grid item>
+					<ButtonGroup variant="contained">
+						{props.filters?.map((filter, idx) => (
+							<FilterMenuButton key={idx} filter={filter} />
+						))}
 
-					{props.sort && <SortMenuButton sort={props.sort} />}
-				</ButtonGroup>
-			</Grid>
+						{props.sort && <SortMenuButton sort={props.sort} />}
+					</ButtonGroup>
+				</Grid>
+			)}
 			{props.layout && (
 				<Grid item>
 					<LayoutButtonGroup layout={props.layout} />
