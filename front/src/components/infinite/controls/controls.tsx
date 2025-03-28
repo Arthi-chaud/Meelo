@@ -70,14 +70,19 @@ export const Controls = <SortingKey extends string>(props: {
 				left: 0,
 			}}
 		>
-			{(props.filters || props.sort) && (
+			{props.filters && (
 				<Grid item>
 					<ButtonGroup variant="contained">
 						{props.filters?.map((filter, idx) => (
 							<FilterMenuButton key={idx} filter={filter} />
 						))}
-
-						{props.sort && <SortMenuButton sort={props.sort} />}
+					</ButtonGroup>
+				</Grid>
+			)}
+			{props.sort && (
+				<Grid item>
+					<ButtonGroup variant="contained">
+						<SortMenuButton sort={props.sort} />
 					</ButtonGroup>
 				</Grid>
 			)}
