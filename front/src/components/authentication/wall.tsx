@@ -26,7 +26,7 @@ import { prepareMeeloQuery } from "../../api/use-query";
 import { accessTokenAtom, userAtom } from "../../state/user";
 import ModalPage from "../modal-page";
 import ThemedImage from "../themed-image";
-import AuthenticationForm from "./authentication-form";
+import AuthenticationForm from "./form";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const [accessToken] = useAtom(accessTokenAtom);

@@ -13,7 +13,7 @@ import {
 	dehydrate,
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import AuthenticationWall from "../components/authentication/authentication-wall";
+import AuthenticationWall from "../components/authentication/wall";
 import Toaster from "../components/toaster";
 import { ResourceNotFound } from "../exceptions";
 import { DefaultWindowTitle } from "../utils/constants";
