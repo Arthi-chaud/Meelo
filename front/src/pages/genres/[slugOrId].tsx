@@ -103,11 +103,11 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Box sx={{ paddingBottom: 2 }} />
 			{selectedTab === "artist" && (
 				<InfiniteArtistView
-					query={({ library, sortBy, order }) =>
+					query={({ libraries, sortBy, order }) =>
 						API.getArtists(
 							{
 								genre: genreIdentifier,
-								library: library ?? undefined,
+								library: libraries,
 							},
 							{ sortBy, order },
 							["illustration"],

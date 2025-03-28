@@ -282,14 +282,15 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab === "artist" && (
 				<InfiniteArtistView
+					disableSort
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ artistId: item.id })
 					}
-					query={({ library }) =>
+					query={({ libraries }) =>
 						API.getArtists(
 							{
 								query: encodeURIComponent(query),
-								library: library ?? undefined,
+								library: libraries,
 							},
 							undefined,
 							["illustration"],

@@ -15,28 +15,23 @@ const prepareSSR = (context: NextPageContext) => {
 	const sortBy = getSortQuery(context, ArtistSortingKeys);
 
 	return {
-		additionalProps: { sortBy, order },
 		infiniteQueries: [
 			API.getArtists({}, { sortBy, order }, ["illustration"]),
 		],
 	};
 };
 
-const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
+const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 
 	return (
 		<>
 			<Head title={t("artists")} />
 			<InfiniteArtistView
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ library, sortBy, order }) =>
-					API.getArtists(
-						library ? { library } : {},
-						{ sortBy, order },
-						["illustration"],
-					)
+				query={({ libraries, sortBy, order }) =>
+					API.getArtists({ library: libraries }, { sortBy, order }, [
+						"illustration",
+					])
 				}
 			/>
 		</>

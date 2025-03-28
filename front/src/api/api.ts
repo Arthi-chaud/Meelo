@@ -602,7 +602,7 @@ export default class API {
 	 */
 	static getArtists<I extends ArtistInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			album?: Identifier;
 			genre?: Identifier;
 			query?: Identifier;
@@ -625,6 +625,7 @@ export default class API {
 					otherParameters: {
 						albumArtistOnly: filter.album ? undefined : "true",
 						...filter,
+						library: API.formatOr(filter.library),
 					},
 					validator: PaginatedResponse(
 						ArtistWithRelations(include ?? []),

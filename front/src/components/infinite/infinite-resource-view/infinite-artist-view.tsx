@@ -16,55 +16,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import { useState } from "react";
+import type { InfiniteQuery } from "../../../api/use-query";
 import {
 	ArtistSortingKeys,
 	type ArtistWithRelations,
 } from "../../../models/artist";
-import { DefaultItemSize } from "../../../utils/layout";
-import Controls, { type OptionState } from "../../controls/controls";
+import type { SortingParameters } from "../../../utils/sorting";
 import ArtistItem from "../../list-item/artist-item";
 import ArtistTile from "../../tile/artist-tile";
+import { Controls } from "../controls/controls";
+import { useLibraryFilterControl } from "../controls/filters/library";
+import { useLayoutControl } from "../controls/layout";
+import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
-const InfiniteArtistView = (
-	props: InfiniteResourceViewProps<
-		ArtistWithRelations<"illustration">,
-		typeof ArtistSortingKeys
-	>,
-) => {
-	const router = useRouter();
-	const [options, setOptions] =
-		useState<OptionState<typeof ArtistSortingKeys>>();
+type QueryProps = { libraries?: string[] } & SortingParameters<
+	typeof ArtistSortingKeys
+>;
+type ArtistModel = ArtistWithRelations<"illustration">;
+type ViewProps = {
+	query: (qp: QueryProps) => InfiniteQuery<ArtistModel>;
+	disableSort?: boolean;
+	onItemClick?: (p: ArtistModel) => void;
+};
 
+const InfiniteArtistView = (props: ViewProps) => {
+	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
+		multipleChoices: true,
+	});
+	const [sort, sortControl] = useSortControl({
+		defaultSortingKey: "name",
+		sortingKeys: ArtistSortingKeys,
+	});
+	const [layout, layoutControl] = useLayoutControl({
+		defaultLayout: "list",
+		enableToggle: true,
+	});
 	return (
 		<>
 			<Controls
-				onChange={setOptions}
-				sortingKeys={ArtistSortingKeys}
-				disableSorting={props.disableSorting}
-				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
-				router={props.light === true ? undefined : router}
-				defaultLayout={props.defaultLayout ?? "list"}
+				filters={[libraryFilterControl]}
+				layout={layoutControl}
+				sort={props.disableSort ? undefined : sortControl}
 			/>
 			<InfiniteView
-				itemSize={options?.itemSize ?? DefaultItemSize}
-				view={options?.view ?? props.defaultLayout ?? "list"}
+				itemSize={layout.itemSize}
+				view={layout.layout}
 				query={() =>
 					props.query({
-						library: options?.library ?? null,
-						view: options?.view ?? props.defaultLayout ?? "list",
-						sortBy:
-							options?.sortBy ??
-							props.initialSortingField ??
-							"name",
-						order:
-							options?.order ??
-							props.initialSortingOrder ??
-							"asc",
+						libraries: libraryFilter,
+						sortBy: sort.sort,
+						order: sort.order,
 					})
 				}
 				renderListItem={(item) => (
