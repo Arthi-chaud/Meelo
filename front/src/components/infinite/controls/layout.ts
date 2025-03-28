@@ -58,7 +58,7 @@ export const useLayoutControl = ({
 		layout: LayoutOption;
 		itemSize: ItemSize;
 	}>(() => ({
-		layout: enableToggle ? defaultLayout : (layoutQuery ?? defaultLayout),
+		layout: !enableToggle ? defaultLayout : (layoutQuery ?? defaultLayout),
 		itemSize: "m",
 	}));
 	const control: LayoutControl = {
@@ -66,7 +66,7 @@ export const useLayoutControl = ({
 		enableToggle: enableToggle as true,
 		itemSize: layoutState.itemSize,
 		onUpdate: (p) => {
-			setQueryParam([["view", layoutState.layout]], router);
+			setQueryParam([["view", p.layout]], router);
 			setLayoutState(p);
 		},
 	};
