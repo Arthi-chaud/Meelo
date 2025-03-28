@@ -112,7 +112,11 @@ const FilterMenuButton = <FilterKeys extends string>({
 				filter.values?.map((key) => (
 					<MenuItem
 						key={key}
-						selected={filter.selected === key}
+						selected={
+							filter.multipleChoice
+								? filter.selected?.includes(key)
+								: filter.selected === key
+						}
 						onClick={() => {
 							if (filter.multipleChoice) {
 								const selectedKeys = filter.selected.includes(
