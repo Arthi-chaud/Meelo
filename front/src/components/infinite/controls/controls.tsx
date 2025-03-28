@@ -237,14 +237,15 @@ const LayoutButtonGroup = ({ layout }: { layout: LayoutControl }) => {
 
 const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 	const { t } = useTranslation();
-	const [actionModalContent, setActionModalContent] =
-		useState<JSX.Element | null>(null);
-	const closeModal = () => setActionModalContent(null);
+	const [openedDialogIndex, setOpenedDialogIndex] = useState<number | null>(
+		null,
+	);
+	const closeModal = () => setOpenedDialogIndex(null);
 
 	return (
-		<>
-			<ButtonGroup variant="contained">
-				{actions.map((action) => (
+		<ButtonGroup variant="contained">
+			{actions.map((action, idx) => (
+				<>
 					<Button
 						key={`action-${action.label}`}
 						startIcon={action.icon}
@@ -254,25 +255,24 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 								return;
 							}
 							action.onClick?.();
-							action.dialog &&
-								setActionModalContent(
-									action.dialog({ close: closeModal }),
-								);
+							action.dialog && setOpenedDialogIndex(idx);
 						}}
 					>
 						{t(action.label)}
 					</Button>
-				))}
-			</ButtonGroup>
-
-			<Dialog
-				open={actionModalContent !== null}
-				onClose={closeModal}
-				fullWidth
-			>
-				{actionModalContent}
-			</Dialog>
-		</>
+					{action.dialog && (
+						<Dialog
+							key={idx}
+							open={openedDialogIndex === idx}
+							onClose={closeModal}
+							fullWidth
+						>
+							{action.dialog?.({ close: closeModal })}
+						</Dialog>
+					)}
+				</>
+			))}
+		</ButtonGroup>
 	);
 };
 
