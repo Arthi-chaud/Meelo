@@ -141,7 +141,8 @@ export default class API {
 						([_, value]) =>
 							value !== null &&
 							value !== undefined &&
-							value !== "view",
+							value !== "view" &&
+							(Array.isArray(value) ? value.length > 0 : true),
 					)
 					.map(([key, value]) => `params-${key}-${value}`)
 			: [];
@@ -601,7 +602,7 @@ export default class API {
 	 */
 	static getArtists<I extends ArtistInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			album?: Identifier;
 			genre?: Identifier;
 			query?: Identifier;
@@ -624,6 +625,7 @@ export default class API {
 					otherParameters: {
 						albumArtistOnly: filter.album ? undefined : "true",
 						...filter,
+						library: API.formatOr(filter.library),
 					},
 					validator: PaginatedResponse(
 						ArtistWithRelations(include ?? []),
@@ -638,10 +640,10 @@ export default class API {
 	 */
 	static getAlbums<I extends AlbumInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			artist?: Identifier;
 			genre?: Identifier;
-			type?: AlbumType;
+			type?: AlbumType[];
 			related?: Identifier;
 			appearance?: Identifier;
 			query?: Identifier;
@@ -662,7 +664,11 @@ export default class API {
 					route: "/albums",
 					errorMessage: "Albums could not be loaded",
 					parameters: { pagination: pagination, include, sort },
-					otherParameters: { ...filter },
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+						type: API.formatOr(filter.type),
+					},
 					validator: PaginatedResponse(
 						AlbumWithRelations(include ?? []),
 					),
@@ -705,8 +711,8 @@ export default class API {
 	 */
 	static getSongs<I extends SongInclude | never = never>(
 		filter: {
-			library?: Identifier;
-			type?: SongType;
+			library?: Identifier[];
+			type?: SongType[];
 			genre?: Identifier;
 			artist?: Identifier;
 			versionsOf?: Identifier;
@@ -730,7 +736,11 @@ export default class API {
 					route: "/songs",
 					errorMessage: "Songs could not be loaded",
 					parameters: { pagination: pagination, include, sort },
-					otherParameters: { ...filter },
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+						type: API.formatOr(filter.type),
+					},
 					validator: PaginatedResponse(
 						SongWithRelations(include ?? []),
 					),
@@ -740,7 +750,7 @@ export default class API {
 
 	static getSongGroups<I extends SongInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			genre?: Identifier;
 			artist?: Identifier;
 			query?: string;
@@ -761,7 +771,10 @@ export default class API {
 					route: "/song-groups",
 					errorMessage: "Songs could not be loaded",
 					parameters: { pagination: pagination, include, sort },
-					otherParameters: { ...filter },
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+					},
 					validator: PaginatedResponse(
 						SongGroupWithRelations(include ?? []),
 					),
@@ -774,13 +787,13 @@ export default class API {
 	 */
 	static getVideos<I extends VideoInclude | never = never>(
 		filter: {
-			library?: Identifier;
+			library?: Identifier[];
 			artist?: Identifier;
 			album?: Identifier;
 			song?: Identifier;
 			group?: Identifier;
 			random?: number;
-			type?: VideoType;
+			type?: VideoType[];
 			query?: string;
 		},
 		sort?: SortingParameters<typeof VideoSortingKeys>,
@@ -802,7 +815,11 @@ export default class API {
 						include,
 						sort,
 					},
-					otherParameters: filter,
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+						type: API.formatOr(filter.type),
+					},
 					validator: PaginatedResponse(
 						VideoWithRelations(include ?? []),
 					),
@@ -1080,7 +1097,7 @@ export default class API {
 	 * @returns an Infinite Query of tracks
 	 */
 	static getTracks<I extends TrackInclude | never = never>(
-		filter: { song?: string | number },
+		filter: { song?: string | number; library?: Identifier[] },
 		sort?: SortingParameters<typeof TrackSortingKeys>,
 		include?: I[],
 	): InfiniteQuery<TrackWithRelations<I>> {
@@ -1094,7 +1111,10 @@ export default class API {
 			exec: (pagination) =>
 				API.fetch({
 					route: "/tracks",
-					otherParameters: filter,
+					otherParameters: {
+						...filter,
+						library: API.formatOr(filter.library),
+					},
 					parameters: { pagination: pagination, include, sort },
 					validator: PaginatedResponse(
 						TrackWithRelations(include ?? []),
@@ -1518,5 +1538,17 @@ export default class API {
 		}
 		formattedParameters.push(`take=${pageSize}`);
 		return formattedParameters.join("&");
+	}
+
+	private static formatOr(
+		items: (string | number)[] | undefined,
+	): string | undefined {
+		if (!items || items.length === 0) {
+			return undefined;
+		}
+		if (items.length === 1) {
+			return items[0].toString();
+		}
+		return `or:${items.map((i) => i.toString()).join(",")}`;
 	}
 }

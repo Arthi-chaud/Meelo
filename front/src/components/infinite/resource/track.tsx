@@ -16,48 +16,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import { useState } from "react";
+import type { InfiniteQuery } from "../../../api/use-query";
 import {
 	TrackSortingKeys,
 	type TrackWithRelations,
 } from "../../../models/track";
 import { DefaultItemSize } from "../../../utils/layout";
-import Controls, { type OptionState } from "../../controls/controls";
+import type { SortingParameters } from "../../../utils/sorting";
 import TrackItem from "../../list-item/track-item";
+import { Controls } from "../controls/controls";
+import { useLibraryFilterControl } from "../controls/filters/library";
+import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
-const InfiniteTrackView = (
-	props: InfiniteResourceViewProps<
-		TrackWithRelations<"video" | "song" | "release" | "illustration">,
-		typeof TrackSortingKeys
-	>,
-) => {
-	const router = useRouter();
-	const [options, setOptions] =
-		useState<OptionState<typeof TrackSortingKeys>>();
+type QueryProps = {
+	libraries?: string[];
+} & SortingParameters<typeof TrackSortingKeys>;
 
+type TrackModel = TrackWithRelations<
+	"video" | "release" | "song" | "illustration"
+>;
+
+type ViewProps = {
+	query: (q: QueryProps) => InfiniteQuery<TrackModel>;
+	onItemClick?: (track: TrackModel) => void;
+	disableSort?: boolean;
+};
+
+const InfiniteTrackView = (props: ViewProps) => {
+	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
+		multipleChoices: true,
+	});
+	const [sort, sortControl] = useSortControl({
+		sortingKeys: TrackSortingKeys,
+	});
 	return (
 		<>
-			<Controls
-				onChange={setOptions}
-				sortingKeys={TrackSortingKeys}
-				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
-				router={props.light === true ? undefined : router}
-				disableLayoutToggle
-				defaultLayout={"list"}
-			/>
+			<Controls filters={[libraryFilterControl]} sort={sortControl} />
+
 			<InfiniteView
-				itemSize={options?.itemSize ?? DefaultItemSize}
-				view={options?.view ?? "list"}
+				itemSize={DefaultItemSize}
+				view={"list"}
 				query={() =>
 					props.query({
-						library: options?.library ?? null,
-						view: "list",
-						sortBy: options?.sortBy ?? "name",
-						order: options?.order ?? "asc",
+						libraries: libraryFilter,
+						sortBy: sort.sort,
+						order: sort.order,
 					})
 				}
 				renderListItem={(item) => (

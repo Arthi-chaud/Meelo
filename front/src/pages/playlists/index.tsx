@@ -20,31 +20,26 @@ import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { Head } from "../../components/head";
-import InfinitePlaylistView from "../../components/infinite/infinite-resource-view/infinite-playlist-view";
+import {
+	getOrderQuery,
+	getSortQuery,
+} from "../../components/infinite/controls/sort";
+import InfinitePlaylistView from "../../components/infinite/resource/playlist";
 import { PlaylistSortingKeys } from "../../models/playlist";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { getLayoutParams } from "../../utils/layout";
-import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 
 const prepareSSR = (context: NextPageContext) => {
-	const defaultLayout = getLayoutParams(context.query.view) ?? "list";
-	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(
-		context.query.sortBy,
-		PlaylistSortingKeys,
-	);
+	const order = getOrderQuery(context) ?? "asc";
+	const sortBy = getSortQuery(context, PlaylistSortingKeys);
 
 	return {
-		additionalProps: { defaultLayout, order, sortBy },
 		infiniteQueries: [
 			API.getPlaylists({}, { sortBy, order }, ["illustration"]),
 		],
 	};
 };
 
-const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
-	props,
-}) => {
+const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 	return (
 		<>
@@ -53,12 +48,7 @@ const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				emptyState={{
 					text: "emptyStatePlaylists",
 				}}
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				defaultLayout={props?.defaultLayout}
-				query={({ view, library, ...sort }) =>
-					API.getPlaylists({}, sort, ["illustration"])
-				}
+				query={(sort) => API.getPlaylists({}, sort, ["illustration"])}
 			/>
 		</>
 	);

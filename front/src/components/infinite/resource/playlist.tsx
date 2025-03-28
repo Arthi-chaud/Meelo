@@ -16,60 +16,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { useQueryClient } from "../../../api/use-query";
+import { type InfiniteQuery, useQueryClient } from "../../../api/use-query";
 import {
 	PlaylistSortingKeys,
 	type PlaylistWithRelations,
 } from "../../../models/playlist";
-import { DefaultItemSize } from "../../../utils/layout";
+import type { SortingParameters } from "../../../utils/sorting";
 import { CreatePlaylistAction } from "../../actions/playlist";
-import Controls, { type OptionState } from "../../controls/controls";
+import type { EmptyStateProps } from "../../empty-state";
 import PlaylistItem from "../../list-item/playlist-item";
 import PlaylistTile from "../../tile/playlist-tile";
+import { Controls } from "../controls/controls";
+import { useLayoutControl } from "../controls/layout";
+import { useSortControl } from "../controls/sort";
 import InfiniteView from "../infinite-view";
-import type InfiniteResourceViewProps from "./infinite-resource-view-props";
 
-const InfinitePlaylistView = (
-	props: InfiniteResourceViewProps<
-		PlaylistWithRelations<"illustration">,
-		typeof PlaylistSortingKeys
-	>,
-) => {
+type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;
+type PlaylistModel = PlaylistWithRelations<"illustration">;
+type ViewProps = {
+	query: (qp: QueryProps) => InfiniteQuery<PlaylistModel>;
+	onItemClick?: (p: PlaylistModel) => void;
+	emptyState?: Partial<EmptyStateProps>;
+};
+const InfinitePlaylistView = (props: ViewProps) => {
 	const queryClient = useQueryClient();
-	const router = useRouter();
-	const [options, setOptions] =
-		useState<OptionState<typeof PlaylistSortingKeys>>();
-
+	const [sort, sortControl] = useSortControl({
+		sortingKeys: PlaylistSortingKeys,
+	});
+	const [layout, layoutControl] = useLayoutControl({
+		defaultLayout: "grid",
+		enableToggle: true,
+	});
 	return (
 		<>
 			<Controls
-				actions={[CreatePlaylistAction(queryClient)]}
-				onChange={setOptions}
-				disableLibrarySelector
-				sortingKeys={PlaylistSortingKeys}
-				defaultSortingOrder={props.initialSortingOrder}
-				defaultSortingKey={props.initialSortingField}
-				router={props.light === true ? undefined : router}
-				defaultLayout={props.defaultLayout ?? "list"}
+				sort={sortControl}
+				layout={layoutControl}
+				actions={[[CreatePlaylistAction(queryClient)]]}
 			/>
 			<InfiniteView
 				emptyState={props.emptyState}
-				itemSize={options?.itemSize ?? DefaultItemSize}
-				view={options?.view ?? props.defaultLayout ?? "list"}
+				itemSize={layout.itemSize}
+				view={layout.layout}
 				query={() =>
 					props.query({
-						library: null,
-						sortBy:
-							options?.sortBy ??
-							props.initialSortingField ??
-							"name",
-						order:
-							options?.order ??
-							props.initialSortingOrder ??
-							"asc",
-						view: "grid",
+						sortBy: sort.sort,
+						order: sort.order,
 					})
 				}
 				renderListItem={(item) => (

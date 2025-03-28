@@ -16,21 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type Option<Values extends readonly string[]> = {
-	name: string;
-	label?: string;
-	icon?: JSX.Element;
-	currentValue?: Values[number];
-	values: Values;
+import type { NextRouter } from "next/router";
+
+export const parseQueryParam = <Keys extends readonly string[]>(
+	input: any,
+	optionValues: Keys,
+): Keys[number] | null => {
+	if (Array.isArray(input)) {
+		input = input[0];
+	}
+	for (const option of optionValues) {
+		if (input === option) {
+			return option;
+		}
+	}
+	return null;
 };
 
-export type OptionGroup<
-	Options extends Option<OptionsKeys[number]>[],
-	OptionsKeys extends (readonly string[])[],
-> = {
-	name: string;
-	icon?: JSX.Element;
-	options: Options;
-};
+export const setQueryParam = (
+	keysAndValues: [string, string | null][],
+	router: NextRouter,
+) => {
+	const path = router.asPath.split("?")[0];
+	const params = new URLSearchParams(router.asPath.split("?").at(1) ?? "");
 
-export default Option;
+	for (const [key, value] of keysAndValues) {
+		if (value) {
+			params.set(key, value);
+		} else {
+			params.delete(key);
+		}
+	}
+	router.push(`${path}?${params.toString()}`, undefined, {
+		shallow: true,
+	});
+};

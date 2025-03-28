@@ -31,11 +31,11 @@ import {
 } from "../../api/use-query";
 import { Head } from "../../components/head";
 import { SearchIcon } from "../../components/icons";
-import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
-import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
 import InfiniteView from "../../components/infinite/infinite-view";
+import InfiniteAlbumView from "../../components/infinite/resource/album";
+import InfiniteArtistView from "../../components/infinite/resource/artist";
+import { InfiniteSongView } from "../../components/infinite/resource/song";
+import InfiniteVideoView from "../../components/infinite/resource/video";
 import AlbumItem from "../../components/list-item/album-item";
 import ArtistItem from "../../components/list-item/artist-item";
 import SongItem from "../../components/list-item/song-item";
@@ -205,7 +205,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value === "all" ? "All" : `${value}s`)}
+						label={t(value === "all" ? "all" : `${value}s`)}
 					/>
 				))}
 			</Tabs>
@@ -282,14 +282,15 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab === "artist" && (
 				<InfiniteArtistView
+					disableSort
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ artistId: item.id })
 					}
-					query={({ library }) =>
+					query={({ libraries }) =>
 						API.getArtists(
 							{
 								query: encodeURIComponent(query),
-								library: library ?? undefined,
+								library: libraries,
 							},
 							undefined,
 							["illustration"],
@@ -299,16 +300,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab === "album" && (
 				<InfiniteAlbumView
+					disableSort
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ albumId: item.id })
 					}
-					defaultAlbumType={null}
-					query={({ library, type: newType }) =>
+					query={({ libraries, types }) =>
 						API.getAlbums(
 							{
 								query: encodeURIComponent(query),
-								type: newType,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							undefined,
 							["artist", "illustration"],
@@ -318,15 +319,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{query && selectedTab === "song" && (
 				<InfiniteSongView
+					disableSort
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ songId: item.id })
 					}
-					query={({ library, type: newType }) =>
+					query={({ libraries, types }) =>
 						API.getSongs(
 							{
 								query: encodeURIComponent(query),
-								type: newType,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							undefined,
 							["artist", "featuring", "master", "illustration"],
@@ -340,13 +342,14 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					onItemClick={(item) =>
 						item && saveSearch.mutate({ videoId: item.id })
 					}
+					disableSort
 					subtitle="artist"
-					query={({ library, type: newType }) =>
+					query={({ libraries, types }) =>
 						API.getVideos(
 							{
 								query: encodeURIComponent(query),
-								type: newType,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							undefined,
 							["artist", "master", "illustration"],

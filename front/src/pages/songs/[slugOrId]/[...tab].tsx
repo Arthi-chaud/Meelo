@@ -41,9 +41,9 @@ import ExternalMetadataBadge from "../../../components/external-metadata-badge";
 import GenreButton from "../../../components/genre-button";
 import { Head } from "../../../components/head";
 import { PlayIcon } from "../../../components/icons";
-import InfiniteSongView from "../../../components/infinite/infinite-resource-view/infinite-song-view";
-import InfiniteTrackView from "../../../components/infinite/infinite-resource-view/infinite-track-view";
-import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
+import { InfiniteSongView } from "../../../components/infinite/resource/song";
+import InfiniteTrackView from "../../../components/infinite/resource/track";
+import InfiniteVideoView from "../../../components/infinite/resource/video";
 import LyricsBox from "../../../components/lyrics";
 import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
 import SongTypeIcon from "../../../components/song-type-icon";
@@ -305,11 +305,11 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 						<InfiniteSongView
 							disableShuffle
-							query={({ library, sortBy, order, type }) =>
+							query={({ libraries, sortBy, order, types }) =>
 								API.getSongs(
 									{
-										library: library ?? undefined,
-										type,
+										library: libraries,
+										type: types,
 										versionsOf: songIdentifier,
 									},
 									{ sortBy, order },
@@ -334,11 +334,11 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 						/>
 						<InfiniteVideoView
-							query={({ library, sortBy, order, type }) =>
+							query={({ libraries, sortBy, order, types }) =>
 								API.getVideos(
 									{
-										library: library ?? undefined,
-										type,
+										library: libraries,
+										type: types,
 										group: song.data?.groupId,
 									},
 									{ sortBy, order },
@@ -358,9 +358,12 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							}
 						/>
 						<InfiniteTrackView
-							query={({ sortBy, order }) =>
+							query={({ sortBy, order, libraries }) =>
 								API.getTracks(
-									{ song: songIdentifier },
+									{
+										song: songIdentifier,
+										library: libraries,
+									},
 									{ sortBy, order },
 									[
 										"release",

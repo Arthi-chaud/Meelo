@@ -22,24 +22,24 @@ import { useTranslation } from "react-i18next";
 import API from "../../../api/api";
 import { useQuery } from "../../../api/use-query";
 import { Head } from "../../../components/head";
-import InfiniteVideoView from "../../../components/infinite/infinite-resource-view/infinite-video-view";
+import {
+	getOrderQuery,
+	getSortQuery,
+} from "../../../components/infinite/controls/sort";
+import InfiniteVideoView from "../../../components/infinite/resource/video";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { VideoSortingKeys } from "../../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";
 import { useGradientBackground } from "../../../utils/gradient-background";
-import { getOrderParams, getSortingFieldParams } from "../../../utils/sorting";
 
 const artistQuery = (identifier: string | number) =>
 	API.getArtist(identifier, ["illustration"]);
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
-	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(
-		context.query.sortBy,
-		VideoSortingKeys,
-	);
+	const order = getOrderQuery(context) ?? "asc";
+	const sortBy = getSortQuery(context, VideoSortingKeys);
 
 	return {
 		additionalProps: { artistIdentifier, order, sortBy },
@@ -74,15 +74,13 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteVideoView
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ sortBy, order, library, random, type }) =>
+				query={({ sortBy, order, libraries, random, types }) =>
 					API.getVideos(
 						{
-							type,
+							type: types,
 							artist: artistIdentifier,
 							random,
-							library: library ?? undefined,
+							library: libraries,
 						},
 						{ sortBy, order },
 						["artist", "master", "illustration"],

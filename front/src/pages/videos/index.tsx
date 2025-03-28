@@ -2,20 +2,19 @@ import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { Head } from "../../components/head";
-import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import {
+	getOrderQuery,
+	getSortQuery,
+} from "../../components/infinite/controls/sort";
+import InfiniteVideoView from "../../components/infinite/resource/video";
 import { VideoSortingKeys } from "../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { getOrderParams, getSortingFieldParams } from "../../utils/sorting";
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderParams(context.query.order) ?? "asc";
-	const sortBy = getSortingFieldParams(
-		context.query.sortBy,
-		VideoSortingKeys,
-	);
+	const order = getOrderQuery(context) ?? "asc";
+	const sortBy = getSortQuery(context, VideoSortingKeys);
 
 	return {
-		additionalProps: { sortBy, order },
 		infiniteQueries: [
 			API.getVideos({}, { sortBy, order }, [
 				"artist",
@@ -26,20 +25,16 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
-const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
-	props,
-}) => {
+const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 
 	return (
 		<>
 			<Head title={t("videos")} />
 			<InfiniteVideoView
-				initialSortingField={props?.sortBy}
-				initialSortingOrder={props?.order}
-				query={({ library, sortBy, order, random, type }) =>
+				query={({ libraries, sortBy, order, random, types }) =>
 					API.getVideos(
-						{ library: library ?? undefined, random, type },
+						{ library: libraries, random, type: types },
 						{ sortBy, order },
 						["artist", "master", "illustration"],
 					)

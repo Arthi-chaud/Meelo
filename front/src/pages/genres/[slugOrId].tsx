@@ -23,9 +23,9 @@ import { useTranslation } from "react-i18next";
 import API from "../../api/api";
 import { useQuery } from "../../api/use-query";
 import { Head } from "../../components/head";
-import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import InfiniteSongView from "../../components/infinite/infinite-resource-view/infinite-song-view";
+import InfiniteAlbumView from "../../components/infinite/resource/album";
+import InfiniteArtistView from "../../components/infinite/resource/artist";
+import { InfiniteSongView } from "../../components/infinite/resource/song";
 import { useTabRouter } from "../../components/tab-router";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 import getSlugOrId from "../../utils/getSlugOrId";
@@ -103,11 +103,11 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Box sx={{ paddingBottom: 2 }} />
 			{selectedTab === "artist" && (
 				<InfiniteArtistView
-					query={({ library, sortBy, order }) =>
+					query={({ libraries, sortBy, order }) =>
 						API.getArtists(
 							{
 								genre: genreIdentifier,
-								library: library ?? undefined,
+								library: libraries,
 							},
 							{ sortBy, order },
 							["illustration"],
@@ -117,13 +117,12 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{selectedTab === "album" && (
 				<InfiniteAlbumView
-					defaultAlbumType={null}
-					query={({ library, type, sortBy, order }) =>
+					query={({ libraries, types, sortBy, order }) =>
 						API.getAlbums(
 							{
 								genre: genreIdentifier,
-								type,
-								library: library ?? undefined,
+								type: types,
+								library: libraries,
 							},
 							{ sortBy, order },
 							["artist", "illustration"],
@@ -133,13 +132,13 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			)}
 			{selectedTab === "song" && (
 				<InfiniteSongView
-					query={({ library, type, random, sortBy, order }) =>
+					query={({ libraries, types, random, sortBy, order }) =>
 						API.getSongs(
 							{
 								genre: genreIdentifier,
-								type,
+								type: types,
 								random,
-								library: library ?? undefined,
+								library: libraries,
 							},
 							{ sortBy, order },
 							["artist", "featuring", "master", "illustration"],

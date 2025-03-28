@@ -102,7 +102,7 @@
 	"trackSetAsMaster": "Track set as Master",
 	"showAllTrack": "Show all tracks",
 	"showOnlyExclusiveTracks": "Show only exclusive tracks",
-	"All": "All",
+	"allTypes": "All Types",
 	"StudioRecording": "Studio Recording",
 	"Single": "Single",
 	"LiveRecording": "Live Recording",
@@ -258,5 +258,8 @@
 	"emptyStatePlaylists": "There are no playlists... yet!",
 	"emptyStatePlaylist": "There are no songs in this playlist... yet!",
 	"emptyStateHome": "Oh wow, it's quiet in here...",
-	"songType": "Song Type"
+	"songType": "Song Type",
+	"loading": "Chargement",
+	"types": "Types",
+	"all": "All"
 }

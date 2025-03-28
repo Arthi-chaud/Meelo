@@ -88,7 +88,7 @@
 	"you": "Vous",
 	"admin": "Administrateur",
 	"enabled": "Activé",
-	"All": "Tous Types",
+	"allTypes": "Tous Types",
 	"StudioRecording": "Album Studio",
 	"Single": "Single",
 	"LiveRecording": "Album Live",
@@ -258,5 +258,8 @@
 	"emptyStatePlaylists": "Il n'y a aucune playlist... pour l'instant!",
 	"emptyStatePlaylist": "Il n'y a aucun morceau dans cette playlist... pour l'instant!",
 	"emptyStateHome": "Oh wow, c'est silencieux par ici..",
-	"songType": "Type du Titre"
+	"songType": "Type du Titre",
+	"loading": "Chargement",
+	"types": "Types",
+	"all": "Tous"
 }
