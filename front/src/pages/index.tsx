@@ -31,7 +31,7 @@ import {
 import { GoToSettingsAction } from "../components/actions/link";
 import { EmptyState } from "../components/empty-state";
 import Fade from "../components/fade";
-import AlbumHighlightCard from "../components/highlight-card/album-highlight-card";
+import AlbumHighlightCard from "../components/highlight-card/resource/album";
 import { EmptyStateIcon } from "../components/icons";
 import SectionHeader from "../components/section-header";
 import SongGrid from "../components/song-grid";
