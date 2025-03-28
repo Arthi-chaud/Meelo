@@ -6,7 +6,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../components/infinite/controls/sort";
-import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
+import InfiniteArtistView from "../../components/infinite/resource/artist";
 import { ArtistSortingKeys } from "../../models/artist";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 

@@ -31,11 +31,11 @@ import {
 } from "../../api/use-query";
 import { Head } from "../../components/head";
 import { SearchIcon } from "../../components/icons";
-import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
-import InfiniteArtistView from "../../components/infinite/infinite-resource-view/infinite-artist-view";
-import { InfiniteSongView } from "../../components/infinite/infinite-resource-view/infinite-song-view";
-import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
 import InfiniteView from "../../components/infinite/infinite-view";
+import InfiniteAlbumView from "../../components/infinite/resource/album";
+import InfiniteArtistView from "../../components/infinite/resource/artist";
+import { InfiniteSongView } from "../../components/infinite/resource/song";
+import InfiniteVideoView from "../../components/infinite/resource/video";
 import AlbumItem from "../../components/list-item/album-item";
 import ArtistItem from "../../components/list-item/artist-item";
 import SongItem from "../../components/list-item/song-item";

@@ -6,7 +6,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../components/infinite/controls/sort";
-import InfiniteVideoView from "../../components/infinite/infinite-resource-view/infinite-video-view";
+import InfiniteVideoView from "../../components/infinite/resource/video";
 import { VideoSortingKeys } from "../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 

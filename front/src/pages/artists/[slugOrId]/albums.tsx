@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import API from "../../../api/api";
 import { useQuery } from "../../../api/use-query";
 import { Head } from "../../../components/head";
-import InfiniteAlbumView from "../../../components/infinite/infinite-resource-view/infinite-album-view";
+import InfiniteAlbumView from "../../../components/infinite/resource/album";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import { getYear } from "../../../utils/date";

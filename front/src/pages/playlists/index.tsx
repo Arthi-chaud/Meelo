@@ -24,7 +24,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../components/infinite/controls/sort";
-import InfinitePlaylistView from "../../components/infinite/infinite-resource-view/infinite-playlist-view";
+import InfinitePlaylistView from "../../components/infinite/resource/playlist";
 import { PlaylistSortingKeys } from "../../models/playlist";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 

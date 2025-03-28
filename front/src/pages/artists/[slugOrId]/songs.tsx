@@ -32,7 +32,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../../components/infinite/controls/sort";
-import { HybridInfiniteSongView } from "../../../components/infinite/infinite-resource-view/infinite-song-view";
+import { HybridInfiniteSongView } from "../../../components/infinite/resource/song";
 import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
 import { SongSortingKeys } from "../../../models/song";
 import type Track from "../../../models/track";

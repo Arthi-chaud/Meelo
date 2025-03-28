@@ -7,7 +7,7 @@ import {
 	getOrderQuery,
 	getSortQuery,
 } from "../../components/infinite/controls/sort";
-import InfiniteAlbumView from "../../components/infinite/infinite-resource-view/infinite-album-view";
+import InfiniteAlbumView from "../../components/infinite/resource/album";
 import { AlbumSortingKeys } from "../../models/album";
 import type { GetPropsTypesFrom, Page } from "../../ssr";
 
