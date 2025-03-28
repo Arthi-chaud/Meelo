@@ -16,24 +16,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "../../api/api";
-import { useQueryClient } from "../../api/use-query";
-import type { ReleaseWithRelations } from "../../models/release";
-import { DownloadReleaseAction } from "../actions/download";
-import { GoToAlbumAction, GoToArtistAction } from "../actions/link";
-import { RefreshReleaseMetadataAction } from "../actions/refresh-metadata";
-import { ChangeAlbumType } from "../actions/resource-type";
-import { ShareReleaseAction } from "../actions/share";
-import { UpdateReleaseIllustrationAction } from "../actions/update-illustration";
-import { MasterIcon, UpgradeIcon } from "../icons";
-import ContextualMenu from "./contextual-menu";
-
-import { useAtom } from "jotai";
-import { userAtom } from "../../state/user";
+import API from "../../../api/api";
+import { useQueryClient } from "../../../api/use-query";
+import type { ReleaseWithRelations } from "../../../models/release";
+import { userAtom } from "../../../state/user";
+import { DownloadReleaseAction } from "../../actions/download";
+import { GoToAlbumAction, GoToArtistAction } from "../../actions/link";
+import { RefreshReleaseMetadataAction } from "../../actions/refresh-metadata";
+import { ChangeAlbumType } from "../../actions/resource-type";
+import { ShareReleaseAction } from "../../actions/share";
+import { UpdateReleaseIllustrationAction } from "../../actions/update-illustration";
+import { MasterIcon, UpgradeIcon } from "../../icons";
+import ContextualMenu from "../menu";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<"album">;

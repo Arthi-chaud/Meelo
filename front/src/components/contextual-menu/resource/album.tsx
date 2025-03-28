@@ -18,15 +18,15 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "../../api/api";
-import { useQueryClient } from "../../api/use-query";
-import type { AlbumWithRelations } from "../../models/album";
-import { DownloadReleaseAsyncAction } from "../actions/download";
-import { GoToArtistAction } from "../actions/link";
-import { RefreshAlbumMetadataAction } from "../actions/refresh-metadata";
-import { ChangeAlbumType } from "../actions/resource-type";
-import { ShareAlbumAction } from "../actions/share";
-import ContextualMenu from "./contextual-menu";
+import API from "../../../api/api";
+import { useQueryClient } from "../../../api/use-query";
+import type { AlbumWithRelations } from "../../../models/album";
+import { DownloadReleaseAsyncAction } from "../../actions/download";
+import { GoToArtistAction } from "../../actions/link";
+import { RefreshAlbumMetadataAction } from "../../actions/refresh-metadata";
+import { ChangeAlbumType } from "../../actions/resource-type";
+import { ShareAlbumAction } from "../../actions/share";
+import ContextualMenu from "../menu";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<"artist">;

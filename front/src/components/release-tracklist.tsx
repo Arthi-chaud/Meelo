@@ -51,7 +51,7 @@ import {
 import formatArtists from "../utils/formatArtists";
 import formatDuration from "../utils/formatDuration";
 import { generateArray } from "../utils/gen-list";
-import ReleaseTrackContextualMenu from "./contextual-menu/release-track-contextual-menu";
+import ReleaseTrackContextualMenu from "./contextual-menu/resource/release-track";
 import { ContextualMenuIcon, PlayIcon, VideoIcon } from "./icons";
 
 type TrackType = TrackWithRelations<"illustration"> &

@@ -18,7 +18,7 @@
 
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "../../models/album";
-import AlbumContextualMenu from "../contextual-menu/album-contextual-menu";
+import AlbumContextualMenu from "../contextual-menu/resource/album";
 import { AlbumIcon } from "../icons";
 import Illustration from "../illustration";
 import Tile from "./tile";

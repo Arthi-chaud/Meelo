@@ -19,7 +19,7 @@
 import type { RequireExactlyOne } from "type-fest";
 import type { SongWithRelations } from "../../models/song";
 import formatArtists from "../../utils/formatArtists";
-import SongContextualMenu from "../contextual-menu/song-contextual-menu";
+import SongContextualMenu from "../contextual-menu/resource/song";
 import Illustration from "../illustration";
 import RelationPageHeader from "./relation-page-header";
 

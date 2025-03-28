@@ -19,7 +19,7 @@
 import { Box } from "@mui/material";
 import type { ArtistWithRelations } from "../../models/artist";
 import ArtistAvatar from "../artist-avatar";
-import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
+import ArtistContextualMenu from "../contextual-menu/resource/artist";
 import Tile from "./tile";
 
 const ArtistTile = (props: {

@@ -36,8 +36,8 @@ import {
 	useQueryClient,
 } from "../../../api/use-query";
 import { DeletePlaylistAction } from "../../../components/actions/playlist";
-import PlaylistContextualMenu from "../../../components/contextual-menu/playlist-contextual-menu";
-import SongContextualMenu from "../../../components/contextual-menu/song-contextual-menu";
+import PlaylistContextualMenu from "../../../components/contextual-menu/resource/playlist";
+import SongContextualMenu from "../../../components/contextual-menu/resource/song";
 import { EmptyState } from "../../../components/empty-state";
 import { Head } from "../../../components/head";
 import {

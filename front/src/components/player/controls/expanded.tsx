@@ -48,7 +48,7 @@ import {
 import formatArtists from "../../../utils/formatArtists";
 import formatDuration from "../../../utils/formatDuration";
 import { CreatePlaylistAction } from "../../actions/playlist";
-import ReleaseTrackContextualMenu from "../../contextual-menu/release-track-contextual-menu";
+import ReleaseTrackContextualMenu from "../../contextual-menu/resource/release-track";
 import {
 	CloseIcon,
 	ContextualMenuIcon,

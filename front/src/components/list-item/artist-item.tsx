@@ -18,7 +18,7 @@
 
 import type { ArtistWithRelations } from "../../models/artist";
 import ArtistAvatar from "../artist-avatar";
-import ArtistContextualMenu from "../contextual-menu/artist-contextual-menu";
+import ArtistContextualMenu from "../contextual-menu/resource/artist";
 import ListItem from "./item";
 
 type ArtistItemProps = {

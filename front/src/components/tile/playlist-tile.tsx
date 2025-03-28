@@ -17,7 +17,7 @@
  */
 
 import type { PlaylistWithRelations } from "../../models/playlist";
-import PlaylistContextualMenu from "../contextual-menu/playlist-contextual-menu";
+import PlaylistContextualMenu from "../contextual-menu/resource/playlist";
 import { PlaylistIcon } from "../icons";
 import Illustration from "../illustration";
 import Tile from "./tile";

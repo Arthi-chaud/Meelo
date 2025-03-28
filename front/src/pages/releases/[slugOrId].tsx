@@ -45,7 +45,7 @@ import {
 	useInfiniteQuery,
 	useQuery,
 } from "../../api/use-query";
-import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
+import ReleaseContextualMenu from "../../components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "../../components/external-metadata-badge";
 import Fade from "../../components/fade";
 import GenreButton from "../../components/genre-button";

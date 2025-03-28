@@ -22,7 +22,7 @@ import type { SongWithRelations } from "../../models/song";
 import type { SongGroupWithRelations } from "../../models/song-group";
 import { playTrackAtom } from "../../state/player";
 import formatArtists from "../../utils/formatArtists";
-import SongContextualMenu from "../contextual-menu/song-contextual-menu";
+import SongContextualMenu from "../contextual-menu/resource/song";
 import { SongIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";

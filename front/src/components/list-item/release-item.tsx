@@ -20,7 +20,7 @@ import { Grid } from "@mui/material";
 import { Star } from "iconsax-react";
 import type { ReleaseWithRelations } from "../../models/release";
 import { getYear } from "../../utils/date";
-import ReleaseContextualMenu from "../contextual-menu/release-contextual-menu";
+import ReleaseContextualMenu from "../contextual-menu/resource/release";
 import { AlbumIcon } from "../icons";
 import Illustration from "../illustration";
 import ListItem from "./item";

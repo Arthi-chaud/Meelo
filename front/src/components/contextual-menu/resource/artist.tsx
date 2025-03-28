@@ -17,16 +17,16 @@
  */
 
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "../../api/use-query";
-import type Artist from "../../models/artist";
+import { useQueryClient } from "../../../api/use-query";
+import type Artist from "../../../models/artist";
 import {
 	GoToArtistAction,
 	GoToArtistAlbumsAction,
 	GoToArtistSongsAction,
-} from "../actions/link";
-import { ShareArtistAction } from "../actions/share";
-import { UpdateArtistIllustrationAction } from "../actions/update-illustration";
-import ContextualMenu from "./contextual-menu";
+} from "../../actions/link";
+import { ShareArtistAction } from "../../actions/share";
+import { UpdateArtistIllustrationAction } from "../../actions/update-illustration";
+import ContextualMenu from "../menu";
 
 type ArtistContextualMenuProps = {
 	artist: Artist;

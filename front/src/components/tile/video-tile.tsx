@@ -22,7 +22,7 @@ import { useQueryClient } from "../../api/use-query";
 import type { VideoWithRelations } from "../../models/video";
 import { playTrackAtom } from "../../state/player";
 import formatDuration from "../../utils/formatDuration";
-import VideoContextualMenu from "../contextual-menu/video-contextual-menu";
+import VideoContextualMenu from "../contextual-menu/resource/video";
 import { VideoIcon } from "../icons";
 import Illustration from "../illustration";
 import Tile from "./tile";

@@ -18,27 +18,27 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "../../api/api";
-import { useQueryClient } from "../../api/use-query";
-import type { VideoWithRelations } from "../../models/video";
-import type Action from "../actions/action";
-import { DownloadAction } from "../actions/download";
+import API from "../../../api/api";
+import { useQueryClient } from "../../../api/use-query";
+import type { VideoWithRelations } from "../../../models/video";
+import type Action from "../../actions/action";
+import { DownloadAction } from "../../actions/download";
 import {
 	GoToArtistAction,
 	GoToReleaseAction,
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
-} from "../actions/link";
+} from "../../actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
-} from "../actions/playlist";
-import { RefreshTrackMetadataAction } from "../actions/refresh-metadata";
-import { ChangeVideoType } from "../actions/resource-type";
-import { ShowTrackFileInfoAction } from "../actions/show-track-info";
-import { UpdateTrackIllustrationAction } from "../actions/update-illustration";
-import ContextualMenu from "./contextual-menu";
+} from "../../actions/playlist";
+import { RefreshTrackMetadataAction } from "../../actions/refresh-metadata";
+import { ChangeVideoType } from "../../actions/resource-type";
+import { ShowTrackFileInfoAction } from "../../actions/show-track-info";
+import { UpdateTrackIllustrationAction } from "../../actions/update-illustration";
+import ContextualMenu from "../menu";
 
 type VideoContextualMenuProps = {
 	video: VideoWithRelations<"master" | "illustration">;
