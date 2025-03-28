@@ -56,7 +56,6 @@ const InfiniteAlbumView = (props: ViewProps) => {
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
-		defaultSortingKey: "name",
 		sortingKeys: AlbumSortingKeys,
 	});
 	const [layout, layoutControl] = useLayoutControl({

@@ -45,7 +45,6 @@ const InfiniteArtistView = (props: ViewProps) => {
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
-		defaultSortingKey: "name",
 		sortingKeys: ArtistSortingKeys,
 	});
 	const [layout, layoutControl] = useLayoutControl({

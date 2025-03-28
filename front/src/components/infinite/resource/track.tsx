@@ -48,7 +48,6 @@ const InfiniteTrackView = (props: ViewProps) => {
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
-		defaultSortingKey: "name",
 		sortingKeys: TrackSortingKeys,
 	});
 	return (

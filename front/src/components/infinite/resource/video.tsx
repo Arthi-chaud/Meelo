@@ -70,7 +70,6 @@ const InfiniteVideoView = (props: ViewProps) => {
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
-		defaultSortingKey: "name",
 		sortingKeys: VideoSortingKeys,
 	});
 	const [layout, layoutControl] = useLayoutControl({

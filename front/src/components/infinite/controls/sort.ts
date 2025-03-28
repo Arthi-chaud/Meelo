@@ -34,17 +34,17 @@ export type SortControl<SortingKey extends string> = {
 
 // Hook to get Sorting data to pass to Controls
 export const useSortControl = <SortingKey extends TranslationKey>({
-	defaultSortingKey,
 	sortingKeys,
 }: {
-	defaultSortingKey: SortingKey;
 	sortingKeys: readonly SortingKey[];
 }) => {
 	const router = useRouter();
 	const orderQuery = getOrderQuery(router);
 	const sortQuery = getSortQuery(router, sortingKeys);
+	// Note: getSortQuery does not return  null,
+	// falling back on the first key in the key list
 	const [sortState, setSortState] = useState(() => ({
-		sort: sortQuery ?? defaultSortingKey,
+		sort: sortQuery,
 		order: orderQuery ?? "asc",
 	}));
 	const control: SortControl<SortingKey> = {

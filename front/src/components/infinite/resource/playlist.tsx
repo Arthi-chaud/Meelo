@@ -41,7 +41,6 @@ type ViewProps = {
 const InfinitePlaylistView = (props: ViewProps) => {
 	const queryClient = useQueryClient();
 	const [sort, sortControl] = useSortControl({
-		defaultSortingKey: "name",
 		sortingKeys: PlaylistSortingKeys,
 	});
 	const [layout, layoutControl] = useLayoutControl({

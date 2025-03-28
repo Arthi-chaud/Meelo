@@ -149,7 +149,6 @@ export const InfiniteSongView = (props: SongViewProps) => {
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
-		defaultSortingKey: "name",
 		sortingKeys: SongSortingKeys,
 	});
 	const query: SongQueryProps = {
