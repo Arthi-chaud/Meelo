@@ -41,7 +41,7 @@ import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
 import type { SortingParameters } from "../../../utils/sorting";
 import type Action from "../../actions/action";
 import { PlayIcon, ShuffleIcon } from "../../icons";
-import SongItem, { SongGroupItem } from "../../list-item/song-item";
+import SongItem, { SongGroupItem } from "../../list-item/resource/song";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useTypeFilterControl } from "../controls/filters/resource-type";

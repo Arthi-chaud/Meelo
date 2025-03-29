@@ -24,7 +24,7 @@ import formatArtists from "../utils/formatArtists";
 import SongContextualMenu from "./contextual-menu/resource/song";
 import { SongIcon } from "./icons";
 import Illustration from "./illustration";
-import ListItem from "./list-item/item";
+import ListItem from "./list-item";
 
 type SongGridProps = {
 	songs: (

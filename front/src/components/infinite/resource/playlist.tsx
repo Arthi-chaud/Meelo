@@ -24,7 +24,7 @@ import {
 import type { SortingParameters } from "../../../utils/sorting";
 import { CreatePlaylistAction } from "../../actions/playlist";
 import type { EmptyStateProps } from "../../empty-state";
-import PlaylistItem from "../../list-item/playlist-item";
+import PlaylistItem from "../../list-item/resource/playlist";
 import PlaylistTile from "../../tile/playlist-tile";
 import { Controls } from "../controls/controls";
 import { useLayoutControl } from "../controls/layout";

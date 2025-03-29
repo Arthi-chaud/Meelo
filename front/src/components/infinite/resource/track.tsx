@@ -23,7 +23,7 @@ import {
 } from "../../../models/track";
 import { DefaultItemSize } from "../../../utils/layout";
 import type { SortingParameters } from "../../../utils/sorting";
-import TrackItem from "../../list-item/track-item";
+import TrackItem from "../../list-item/resource/track";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useSortControl } from "../controls/sort";

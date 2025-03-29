@@ -18,12 +18,12 @@
 
 import { Grid } from "@mui/material";
 import { Star } from "iconsax-react";
-import type { ReleaseWithRelations } from "../../models/release";
-import { getYear } from "../../utils/date";
-import ReleaseContextualMenu from "../contextual-menu/resource/release";
-import { AlbumIcon } from "../icons";
-import Illustration from "../illustration";
-import ListItem from "./item";
+import ListItem from "../";
+import type { ReleaseWithRelations } from "../../../models/release";
+import { getYear } from "../../../utils/date";
+import ReleaseContextualMenu from "../../contextual-menu/resource/release";
+import { AlbumIcon } from "../../icons";
+import Illustration from "../../illustration";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<"album" | "illustration">;

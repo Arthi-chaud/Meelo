@@ -52,7 +52,7 @@ import {
 	SongIcon,
 } from "../../../components/icons";
 import Illustration from "../../../components/illustration";
-import ListItem from "../../../components/list-item/item";
+import ListItem from "../../../components/list-item";
 import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
 import type {
 	PlaylistEntry,

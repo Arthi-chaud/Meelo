@@ -23,7 +23,7 @@ import {
 	type AlbumWithRelations,
 } from "../../../models/album";
 import type { SortingParameters } from "../../../utils/sorting";
-import AlbumItem from "../../list-item/album-item";
+import AlbumItem from "../../list-item/resource/album";
 import AlbumTile from "../../tile/album-tile";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";

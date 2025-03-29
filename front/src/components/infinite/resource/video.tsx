@@ -35,7 +35,7 @@ import {
 import { store } from "../../../state/store";
 import type { SortingParameters } from "../../../utils/sorting";
 import { PlayIcon, ShuffleIcon } from "../../icons";
-import VideoItem from "../../list-item/video-item";
+import VideoItem from "../../list-item/resource/video";
 import VideoTile from "../../tile/video-tile";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";

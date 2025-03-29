@@ -16,37 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ArtistWithRelations } from "../../models/artist";
-import ArtistAvatar from "../artist-avatar";
-import ArtistContextualMenu from "../contextual-menu/resource/artist";
-import ListItem from "./item";
+import ListItem from "../";
+import type { PlaylistWithRelations } from "../../../models/playlist";
+import PlaylistContextualMenu from "../../contextual-menu/resource/playlist";
+import { PlaylistIcon } from "../../icons";
+import Illustration from "../../illustration";
 
-type ArtistItemProps = {
-	artist: ArtistWithRelations<"illustration"> | undefined;
+type PlaylistItemProps = {
+	playlist: PlaylistWithRelations<"illustration"> | undefined;
 	onClick?: () => void;
 };
 
 /**
- * Item for a list of albums
+ * Item for a list of Playlists
  * @param props
  * @returns
  */
-const ArtistItem = ({ artist, onClick }: ArtistItemProps) => {
+const PlaylistItem = ({ playlist, onClick }: PlaylistItemProps) => {
 	return (
 		<ListItem
 			icon={
-				<ArtistAvatar
-					illustration={artist?.illustration}
+				<Illustration
+					illustration={playlist?.illustration}
+					imgProps={{ objectFit: "cover" }}
 					quality="low"
+					fallback={<PlaylistIcon />}
 				/>
 			}
 			secondTitle={null}
+			href={playlist ? `/playlists/${playlist.slug}` : undefined}
+			title={playlist?.name}
 			onClick={onClick}
-			href={artist ? `/artists/${artist.slug}` : undefined}
-			title={artist?.name}
-			trailing={artist && <ArtistContextualMenu artist={artist} />}
+			trailing={
+				playlist && <PlaylistContextualMenu playlist={playlist} />
+			}
 		/>
 	);
 };
 
-export default ArtistItem;
+export default PlaylistItem;

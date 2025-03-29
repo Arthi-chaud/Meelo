@@ -17,11 +17,11 @@
  */
 
 import { useTranslation } from "react-i18next";
-import type { AlbumWithRelations } from "../../models/album";
-import AlbumContextualMenu from "../contextual-menu/resource/album";
-import { AlbumIcon } from "../icons";
-import Illustration from "../illustration";
-import ListItem from "./item";
+import ListItem from "../";
+import type { AlbumWithRelations } from "../../../models/album";
+import AlbumContextualMenu from "../../contextual-menu/resource/album";
+import { AlbumIcon } from "../../icons";
+import Illustration from "../../illustration";
 
 type AlbumItemProps = {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;

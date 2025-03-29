@@ -22,7 +22,7 @@ import {
 	type ArtistWithRelations,
 } from "../../../models/artist";
 import type { SortingParameters } from "../../../utils/sorting";
-import ArtistItem from "../../list-item/artist-item";
+import ArtistItem from "../../list-item/resource/artist";
 import ArtistTile from "../../tile/artist-tile";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";

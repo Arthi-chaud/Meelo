@@ -18,13 +18,13 @@
 
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import type { VideoWithRelations } from "../../models/video";
-import { playTrackAtom } from "../../state/player";
-import formatArtists from "../../utils/formatArtists";
-import VideoContextualMenu from "../contextual-menu/resource/video";
-import { VideoIcon } from "../icons";
-import Illustration from "../illustration";
-import ListItem from "./item";
+import ListItem from "../";
+import type { VideoWithRelations } from "../../../models/video";
+import { playTrackAtom } from "../../../state/player";
+import formatArtists from "../../../utils/formatArtists";
+import VideoContextualMenu from "../../contextual-menu/resource/video";
+import { VideoIcon } from "../../icons";
+import Illustration from "../../illustration";
 
 type VideoType = VideoWithRelations<"artist" | "master" | "illustration">;
 

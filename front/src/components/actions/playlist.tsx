@@ -54,7 +54,7 @@ import {
 } from "../icons";
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/list";
-import ListItem from "../list-item/item";
+import ListItem from "../list-item";
 import type Action from "./action";
 
 export const PlayNextAction = (
