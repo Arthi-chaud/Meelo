@@ -17,11 +17,11 @@
  */
 
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
+import API from "api/api";
+import type IllustrationModel from "models/illustration";
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import type { RequireExactlyOne } from "type-fest";
-import API from "api/api";
-import type IllustrationModel from "models/illustration";
 import { isSSR } from "utils/is-ssr";
 import Blurhash from "./blurhash";
 import Fade from "./fade";

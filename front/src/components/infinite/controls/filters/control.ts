@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { TranslationKey } from "i18n/i18n";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type { TranslationKey } from "i18n/i18n";
 import { parseQueryParam, setQueryParam } from "utils/query-param";
 
 export type FilterControl<Key extends string> = {

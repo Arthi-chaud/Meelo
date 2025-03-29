@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "i18n/i18n";
+import { useTranslation } from "react-i18next";
 import { useFilterControl, useFiltersControl } from "./control";
 
 type TypeFilterControlArg<TypeKey extends TranslationKey> = {

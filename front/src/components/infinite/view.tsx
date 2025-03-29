@@ -17,14 +17,14 @@
  */
 
 import { Box, Button, Slide, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import type { MeeloInfiniteQueryFn } from "api/use-query";
-import type { IllustratedResource } from "models/illustration";
-import type { ItemSize } from "utils/layout";
 import type { EmptyStateProps } from "components/empty-state";
 import Fade from "components/fade";
 import { GoBackTopIcon } from "components/icons";
+import type { IllustratedResource } from "models/illustration";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { ItemSize } from "utils/layout";
 import InfiniteGrid from "./grid";
 import InfiniteList from "./list";
 import { parentScrollableDivId } from "./scroll";

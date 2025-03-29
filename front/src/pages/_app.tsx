@@ -1,3 +1,6 @@
+import AuthenticationWall from "components/authentication/wall";
+import Toaster from "components/toaster";
+import { ResourceNotFound } from "exceptions";
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
 import NextApp, { type AppContext, type AppProps } from "next/app";
@@ -13,9 +16,6 @@ import {
 	dehydrate,
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import AuthenticationWall from "components/authentication/wall";
-import Toaster from "components/toaster";
-import { ResourceNotFound } from "exceptions";
 import { DefaultWindowTitle } from "utils/constants";
 import PageNotFound from "./404";
 import InternalError from "./500";
@@ -23,7 +23,6 @@ import "core-js/actual";
 import "theme/styles.css";
 import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
-import { Provider } from "jotai";
 import API from "api/api";
 import {
 	DefaultMeeloQueryOptions,
@@ -34,6 +33,7 @@ import { KeyboardBindingModal } from "components/keyboard-bindings-modal";
 import Scaffold from "components/scaffold";
 import { KeyboardBindingsProvider } from "contexts/keybindings";
 import { withTranslations } from "i18n/i18n";
+import { Provider } from "jotai";
 import type { Page } from "ssr";
 import { store } from "state/store";
 import { accessTokenAtom } from "state/user";

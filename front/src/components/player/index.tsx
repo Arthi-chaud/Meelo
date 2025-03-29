@@ -24,15 +24,14 @@ import {
 	useMediaQuery,
 	useTheme,
 } from "@mui/material";
+import API from "api/api";
+import { DrawerBreakpoint } from "components/scaffold";
+import { useKeyboardBinding } from "contexts/keybindings";
 import Hls from "hls.js";
 import { useAtom, useSetAtom } from "jotai";
 import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useReadLocalStorage } from "usehooks-ts";
-import { v4 as uuidv4 } from "uuid";
-import API from "api/api";
-import { useKeyboardBinding } from "contexts/keybindings";
 import {
 	cursorAtom,
 	playPreviousTrackAtom,
@@ -41,7 +40,8 @@ import {
 	skipTrackAtom,
 } from "state/player";
 import { userAtom } from "state/user";
-import { DrawerBreakpoint } from "components/scaffold";
+import { useReadLocalStorage } from "usehooks-ts";
+import { v4 as uuidv4 } from "uuid";
 import { ExpandedPlayerControls } from "./controls/expanded";
 import { MinimizedPlayerControls } from "./controls/minimized";
 

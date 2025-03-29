@@ -16,13 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useConfirm } from "material-ui-confirm";
-import { useRouter } from "next/router";
-import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
 import API from "api/api";
 import { useQueryClient } from "api/use-query";
-import type { SongWithRelations } from "models/song";
 import { DownloadAsyncAction } from "components/actions/download";
 import {
 	GoToArtistAction,
@@ -42,6 +37,11 @@ import { ChangeSongType } from "components/actions/resource-type";
 import { ShareSongAction } from "components/actions/share";
 import { ShowMasterTrackFileInfoAction } from "components/actions/show-track-info";
 import { DeleteIcon } from "components/icons";
+import { useConfirm } from "material-ui-confirm";
+import type { SongWithRelations } from "models/song";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {

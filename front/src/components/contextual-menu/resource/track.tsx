@@ -16,15 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAtom } from "jotai";
-import { useConfirm } from "material-ui-confirm";
-import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import API from "api/api";
 import { useQueryClient } from "api/use-query";
-import type { TrackWithRelations } from "models/track";
-import { userAtom } from "state/user";
 import type Action from "components/actions";
 import { DownloadAction } from "components/actions/download";
 import {
@@ -42,6 +35,13 @@ import { ChangeSongType } from "components/actions/resource-type";
 import { ShowTrackFileInfoAction } from "components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "components/actions/update-illustration";
 import { MasterIcon } from "components/icons";
+import { useAtom } from "jotai";
+import { useConfirm } from "material-ui-confirm";
+import type { TrackWithRelations } from "models/track";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import { userAtom } from "state/user";
 import { ContextualMenu } from "..";
 
 type TrackContextualMenuProps = {

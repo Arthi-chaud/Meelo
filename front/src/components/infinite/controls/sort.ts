@@ -17,9 +17,9 @@
  */
 
 import type { ParsedUrlQuery } from "node:querystring";
+import type { TranslationKey } from "i18n/i18n";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type { TranslationKey } from "i18n/i18n";
 import { parseQueryParam, setQueryParam } from "utils/query-param";
 import { type Order, Orders } from "utils/sorting";
 

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import toast from "react-hot-toast";
 import API from "api/api";
-import type { TaskResponse } from "models/task";
 import { CleanIcon, ScanIcon } from "components/icons";
+import type { TaskResponse } from "models/task";
+import toast from "react-hot-toast";
 import type Action from "./";
 
 /**

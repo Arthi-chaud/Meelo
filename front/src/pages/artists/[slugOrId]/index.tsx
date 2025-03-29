@@ -17,10 +17,6 @@
  */
 
 import { Box, Container, Divider, Grid } from "@mui/material";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { Fragment, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import API from "api/api";
 import { useInfiniteQuery, useQuery } from "api/use-query";
 import ExternalMetadataBadge from "components/external-metadata-badge";
@@ -36,6 +32,10 @@ import ResourceDescription from "components/resource-description";
 import SectionHeader from "components/section-header";
 import { AlbumType } from "models/album";
 import { VideoTypeIsExtra } from "models/video";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { Fragment, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { generateArray } from "utils/gen-list";
 import getSlugOrId from "utils/getSlugOrId";

@@ -33,21 +33,21 @@ import {
 	useTheme,
 } from "@mui/material";
 import { useAtom, useSetAtom } from "jotai";
-import { Fragment, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import type { RequireAtLeastOne } from "type-fest";
 import type Artist from "models/artist";
 import type { ReleaseWithRelations } from "models/release";
 import type { SongWithRelations } from "models/song";
 import type { TrackWithRelations } from "models/track";
 import type Tracklist from "models/tracklist";
 import type { VideoWithRelations } from "models/video";
+import { Fragment, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	type TrackState,
 	cursorAtom,
 	playTracksAtom,
 	playlistAtom,
 } from "state/player";
+import type { RequireAtLeastOne } from "type-fest";
 import formatArtists from "utils/formatArtists";
 import formatDuration from "utils/formatDuration";
 import { generateArray } from "utils/gen-list";

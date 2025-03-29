@@ -30,21 +30,8 @@ import {
 	useTheme,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { shuffle } from "d3-array";
-import { Star1 } from "iconsax-react";
-import { useSetAtom } from "jotai";
-import type { NextPageContext } from "next";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import type { QueryClient } from "react-query";
 import API from "api/api";
-import {
-	prepareMeeloQuery,
-	useInfiniteQuery,
-	useQuery,
-} from "api/use-query";
+import { prepareMeeloQuery, useInfiniteQuery, useQuery } from "api/use-query";
 import ReleaseContextualMenu from "components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "components/external-metadata-badge";
 import Fade from "components/fade";
@@ -62,10 +49,19 @@ import PlaylistTile from "components/tile/resource/playlist";
 import ReleaseTile from "components/tile/resource/release";
 import VideoTile from "components/tile/resource/video";
 import TileRow from "components/tile/row";
+import { shuffle } from "d3-array";
+import { Star1 } from "iconsax-react";
+import { useSetAtom } from "jotai";
 import type { SongWithRelations } from "models/song";
 import type Tracklist from "models/tracklist";
 import type { TracklistItemWithRelations } from "models/tracklist";
 import { VideoTypeIsExtra, type VideoWithRelations } from "models/video";
+import type { NextPageContext } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { playTracksAtom } from "state/player";
 import { useAccentColor } from "utils/accent-color";

@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import API from "api/api";
 import { prepareMeeloInfiniteQuery } from "api/use-query";
 import type { TranslationKey } from "i18n/i18n";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import { useFilterControl, useFiltersControl } from "./control";
 
 function useLibraryFilterControl(p: { multipleChoices: true }): ReturnType<

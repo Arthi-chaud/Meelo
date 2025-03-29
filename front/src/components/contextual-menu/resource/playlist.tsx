@@ -16,17 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useConfirm } from "material-ui-confirm";
-import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
 import { useQueryClient } from "api/use-query";
-import type Playlist from "models/playlist";
 import {
 	DeletePlaylistAction,
 	UpdatePlaylistAction,
 } from "components/actions/playlist";
 import { SharePlaylistAction } from "components/actions/share";
 import { UpdatePlaylistIllustrationAction } from "components/actions/update-illustration";
+import { useConfirm } from "material-ui-confirm";
+import type Playlist from "models/playlist";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 import { ContextualMenu } from "..";
 
 type PlaylistContextualMenuProps = {

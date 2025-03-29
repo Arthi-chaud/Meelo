@@ -17,10 +17,6 @@
  */
 
 import { Box, Grid, Stack } from "@mui/material";
-import type { NextPageContext } from "next";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import type { QueryClient } from "react-query";
 import API from "api/api";
 import {
 	prepareMeeloInfiniteQuery,
@@ -40,6 +36,10 @@ import ArtistTile from "components/tile/resource/artist";
 import ReleaseTile from "components/tile/resource/release";
 import TileRow from "components/tile/row";
 import type { AlbumExternalMetadata } from "models/external-metadata";
+import type { NextPageContext } from "next";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { generateArray } from "utils/gen-list";
 import { useGradientBackground } from "utils/gradient-background";

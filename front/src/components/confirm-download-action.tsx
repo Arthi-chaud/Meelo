@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { useConfirm } from "material-ui-confirm";
 import type { Translator } from "i18n/i18n";
+import type { useConfirm } from "material-ui-confirm";
 
 const confirmDownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,

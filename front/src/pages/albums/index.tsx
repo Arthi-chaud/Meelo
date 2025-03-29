@@ -1,14 +1,11 @@
+import API from "api/api";
+import { Head } from "components/head";
+import { getOrderQuery, getSortQuery } from "components/infinite/controls/sort";
+import InfiniteAlbumView from "components/infinite/resource/album";
+import { AlbumSortingKeys } from "models/album";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import API from "api/api";
-import { Head } from "components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "components/infinite/controls/sort";
-import InfiniteAlbumView from "components/infinite/resource/album";
-import { AlbumSortingKeys } from "models/album";
 import type { GetPropsTypesFrom, Page } from "ssr";
 
 const isCompilationPage = ({ asPath }: { asPath?: string }) =>

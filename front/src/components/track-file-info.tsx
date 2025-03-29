@@ -26,11 +26,11 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import type { useConfirm } from "material-ui-confirm";
-import { useTranslation } from "react-i18next";
 import API from "api/api";
 import { useQuery } from "api/use-query";
 import type { TranslationKey } from "i18n/i18n";
+import type { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
 import formatDuration from "utils/formatDuration";
 import SongTypeIcon from "./song-type-icon";
 

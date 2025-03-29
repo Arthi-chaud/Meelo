@@ -16,15 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAtom } from "jotai";
-import { useConfirm } from "material-ui-confirm";
-import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import API from "api/api";
 import { useQueryClient } from "api/use-query";
-import type { ReleaseWithRelations } from "models/release";
-import { userAtom } from "state/user";
 import { DownloadReleaseAction } from "components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "components/actions/link";
 import { RefreshReleaseMetadataAction } from "components/actions/refresh-metadata";
@@ -32,6 +25,13 @@ import { ChangeAlbumType } from "components/actions/resource-type";
 import { ShareReleaseAction } from "components/actions/share";
 import { UpdateReleaseIllustrationAction } from "components/actions/update-illustration";
 import { MasterIcon, UpgradeIcon } from "components/icons";
+import { useAtom } from "jotai";
+import { useConfirm } from "material-ui-confirm";
+import type { ReleaseWithRelations } from "models/release";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import { userAtom } from "state/user";
 import { ContextualMenu } from "..";
 
 type ReleaseContextualMenuProps = {

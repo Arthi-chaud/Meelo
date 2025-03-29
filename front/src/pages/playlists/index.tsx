@@ -16,16 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { NextPageContext } from "next";
-import { useTranslation } from "react-i18next";
 import API from "api/api";
 import { Head } from "components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "components/infinite/controls/sort";
+import { getOrderQuery, getSortQuery } from "components/infinite/controls/sort";
 import InfinitePlaylistView from "components/infinite/resource/playlist";
 import { PlaylistSortingKeys } from "models/playlist";
+import type { NextPageContext } from "next";
+import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 
 const prepareSSR = (context: NextPageContext) => {

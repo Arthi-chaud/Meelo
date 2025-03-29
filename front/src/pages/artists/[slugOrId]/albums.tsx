@@ -17,14 +17,14 @@
  */
 
 import { Box } from "@mui/material";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
 import API from "api/api";
 import { useQuery } from "api/use-query";
 import { Head } from "components/head";
 import InfiniteAlbumView from "components/infinite/resource/album";
 import ArtistRelationPageHeader from "components/relation-page-header/resource/artist";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getYear } from "utils/date";
 import getSlugOrId from "utils/getSlugOrId";

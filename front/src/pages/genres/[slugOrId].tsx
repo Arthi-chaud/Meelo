@@ -17,9 +17,6 @@
  */
 
 import { Box, Skeleton, Tab, Tabs, Typography } from "@mui/material";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
 import API from "api/api";
 import { useQuery } from "api/use-query";
 import { Head } from "components/head";
@@ -27,6 +24,9 @@ import InfiniteAlbumView from "components/infinite/resource/album";
 import InfiniteArtistView from "components/infinite/resource/artist";
 import { InfiniteSongView } from "components/infinite/resource/song";
 import { useTabRouter } from "components/tab-router";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import getSlugOrId from "utils/getSlugOrId";
 

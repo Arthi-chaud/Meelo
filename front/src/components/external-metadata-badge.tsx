@@ -17,8 +17,8 @@
  */
 
 import { Box, Button, Skeleton } from "@mui/material";
-import Link from "next/link";
 import type { ExternalMetadataSource } from "models/external-metadata";
+import Link from "next/link";
 import { ProviderIcon } from "./icons";
 import Illustration from "./illustration";
 

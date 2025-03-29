@@ -25,12 +25,12 @@ import {
 	List,
 	useTheme,
 } from "@mui/material";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,
 } from "contexts/keybindings";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CloseIcon } from "./icons";
 
 export const KeyboardBindingModal = () => {
