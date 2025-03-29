@@ -18,7 +18,7 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "~/api/api";
+import API from "~/api";
 import { useQueryClient } from "~/api/use-query";
 import { DownloadReleaseAsyncAction } from "~/components/actions/download";
 import { GoToArtistAction } from "~/components/actions/link";

@@ -39,7 +39,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import { useQuery as useTanStackQuery } from "react-query";
-import API from "~/api/api";
+import API from "~/api";
 import { prepareMeeloQuery, useQuery, useQueryClient } from "~/api/use-query";
 import type Action from "~/components/actions";
 import {

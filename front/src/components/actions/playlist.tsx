@@ -31,7 +31,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api/api";
+import API from "~/api";
 import {
 	type MeeloInfiniteQueryFn,
 	type QueryClient,

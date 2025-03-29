@@ -32,7 +32,7 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api/api";
+import API from "~/api";
 import { prepareMeeloQuery, useInfiniteQuery, useQuery } from "~/api/use-query";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";

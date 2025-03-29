@@ -22,7 +22,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api/api";
+import API from "~/api";
 import { accessTokenAtom } from "~/state/user";
 
 /**

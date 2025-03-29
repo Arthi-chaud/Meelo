@@ -31,7 +31,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
-import API from "~/api/api";
+import API from "~/api";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
 import {

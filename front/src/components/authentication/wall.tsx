@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 
 import { useAtom } from "jotai";
 import { useQuery as useReactQuery } from "react-query";
-import API from "~/api/api";
+import API from "~/api";
 import { prepareMeeloQuery } from "~/api/use-query";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";

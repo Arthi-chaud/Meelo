@@ -25,7 +25,7 @@ import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
 import { Provider } from "jotai";
 import type { Page } from "ssr";
-import API from "~/api/api";
+import API from "~/api";
 import {
 	DefaultMeeloQueryOptions,
 	prepareMeeloInfiniteQuery,

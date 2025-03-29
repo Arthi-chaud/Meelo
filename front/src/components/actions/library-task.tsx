@@ -17,7 +17,7 @@
  */
 
 import toast from "react-hot-toast";
-import API from "~/api/api";
+import API from "~/api";
 import { CleanIcon, ScanIcon } from "~/components/icons";
 import type { TaskResponse } from "~/models/task";
 import type Action from "./";

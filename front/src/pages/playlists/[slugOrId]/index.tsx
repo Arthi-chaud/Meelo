@@ -28,7 +28,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { type QueryClient, useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api/api";
+import API from "~/api";
 import {
 	type Query,
 	prepareMeeloQuery,

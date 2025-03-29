@@ -18,7 +18,7 @@
 
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
-import API from "~/api/api";
+import API from "~/api";
 import { useQueryClient } from "~/api/use-query";
 import TrackContextualMenu from "~/components/contextual-menu/resource/track";
 import { MasterIcon, TrackIcon } from "~/components/icons";

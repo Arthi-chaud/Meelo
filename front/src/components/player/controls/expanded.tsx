@@ -36,7 +36,7 @@ import { type LegacyRef, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api/api";
+import API from "~/api";
 import { useQuery, useQueryClient } from "~/api/use-query";
 import { CreatePlaylistAction } from "~/components/actions/playlist";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";

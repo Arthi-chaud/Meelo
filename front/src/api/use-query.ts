@@ -28,7 +28,7 @@ import {
 } from "react-query";
 import type { InfiniteFetchFn, Page } from "~/components/infinite/scroll";
 import type Resource from "~/models/resource";
-import API from "./api";
+import API from "./";
 
 type Key = string | number;
 

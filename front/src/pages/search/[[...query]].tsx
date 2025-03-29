@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api/api";
+import API from "~/api";
 import {
 	type Query,
 	toInfiniteQuery,

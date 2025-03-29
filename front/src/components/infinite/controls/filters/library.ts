@@ -19,7 +19,7 @@
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import API from "~/api/api";
+import API from "~/api";
 import { prepareMeeloInfiniteQuery } from "~/api/use-query";
 import type { TranslationKey } from "~/i18n/i18n";
 import { useFilterControl, useFiltersControl } from "./control";

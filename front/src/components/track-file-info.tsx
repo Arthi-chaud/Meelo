@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "~/api/api";
+import API from "~/api";
 import { useQuery } from "~/api/use-query";
 import type { TranslationKey } from "~/i18n/i18n";
 import formatDuration from "~/utils/formatDuration";

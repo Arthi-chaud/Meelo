@@ -18,7 +18,7 @@
 
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
-import API from "~/api/api";
+import API from "~/api";
 import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "~/api/use-query";
 import type Resource from "~/models/resource";
 

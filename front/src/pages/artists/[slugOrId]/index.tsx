@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api/api";
+import API from "~/api";
 import { useInfiniteQuery, useQuery } from "~/api/use-query";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import { Head } from "~/components/head";

@@ -21,7 +21,7 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api/api";
+import API from "~/api";
 import { useQueryClient } from "~/api/use-query";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";

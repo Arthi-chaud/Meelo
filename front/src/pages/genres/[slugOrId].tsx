@@ -21,7 +21,7 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api/api";
+import API from "~/api";
 import { useQuery } from "~/api/use-query";
 import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";

@@ -21,7 +21,7 @@ import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api/api";
+import API from "~/api";
 import type { QueryClient } from "~/api/use-query";
 import { EditIcon } from "~/components/icons";
 import type { TranslationKey } from "~/i18n/i18n";

@@ -18,7 +18,7 @@
 
 import { IconButton, Typography } from "@mui/material";
 import type { ComponentProps } from "react";
-import API from "~/api/api";
+import API from "~/api";
 import {
 	ForwardIcon,
 	PauseIcon,

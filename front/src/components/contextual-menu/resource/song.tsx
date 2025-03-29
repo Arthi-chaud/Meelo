@@ -20,7 +20,7 @@ import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api/api";
+import API from "~/api";
 import { useQueryClient } from "~/api/use-query";
 import { DownloadAsyncAction } from "~/components/actions/download";
 import {

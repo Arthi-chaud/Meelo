@@ -17,7 +17,7 @@
  */
 
 import { useSetAtom } from "jotai";
-import API from "~/api/api";
+import API from "~/api";
 import { useQueryClient } from "~/api/use-query";
 import VideoContextualMenu from "~/components/contextual-menu/resource/video";
 import { VideoIcon } from "~/components/icons";
