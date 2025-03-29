@@ -557,7 +557,9 @@ export const ExpandedPlayerControls = (
 																			toSkip >
 																			0
 																		) {
-																			skipTrack();
+																			skipTrack(
+																				queryClient,
+																			);
 																			toSkip--;
 																		}
 																	}}

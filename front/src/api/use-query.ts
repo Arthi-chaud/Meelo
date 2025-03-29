@@ -223,6 +223,9 @@ export const transformPage = <To, From>(
 	q: InfiniteQuery<From>,
 	transformer: (item: From, index: number) => To,
 ): InfiniteQuery<To> => {
+	//TODO This will fill the cache with the 'transformed' data
+	//which is undesirable.
+	//We might want to use the 'select' property from react-query
 	return {
 		key: q.key,
 		exec: (p) =>

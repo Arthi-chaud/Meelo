@@ -21,7 +21,7 @@ import { useState } from "react";
 import {
 	type InfiniteQuery,
 	type QueryClient,
-	prepareMeeloInfiniteQuery,
+	transformPage,
 	useQueryClient,
 } from "~/api/use-query";
 import type Action from "~/components/actions";
@@ -38,11 +38,7 @@ import {
 	type SongWithRelations,
 } from "~/models/song";
 import type { SongGroupWithRelations } from "~/models/song-group";
-import {
-	emptyPlaylistAtom,
-	playAfterAtom,
-	playTrackAtom,
-} from "~/state/player";
+import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
 import { DefaultItemSize } from "~/utils/layout";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
@@ -70,35 +66,20 @@ type SongGroupQueryProps = {
 
 const playSongsAction = (
 	queryClient: QueryClient,
-	query: () => InfiniteQuery<SongModel>,
+	query: InfiniteQuery<SongModel>,
 ) => {
-	store.set(emptyPlaylistAtom);
-	queryClient.client
-		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
-		.then(async (res) => {
-			const songs = res.pages.flatMap(({ items }) => items);
-			let i = 0;
-			for (const song of songs) {
-				if (i === 0) {
-					store.set(playTrackAtom, {
-						track: {
-							...song.master,
-							illustration: song.illustration,
-						},
-						artist: song.artist,
-					});
-				} else {
-					store.set(playAfterAtom, {
-						track: {
-							...song.master,
-							illustration: song.illustration,
-						},
-						artist: song.artist,
-					});
-				}
-				i++;
-			}
-		});
+	store.set(
+		playFromInfiniteQuery,
+		transformPage(query, (song) => ({
+			track: {
+				...song.master,
+				illustration: song.illustration,
+			},
+			artist: song.artist,
+			id: song.id,
+		})),
+		queryClient,
+	);
 };
 
 const shuffleActionBase = {
@@ -125,7 +106,8 @@ export const InfiniteSongView = (props: SongViewProps) => {
 	const shuffleAction = {
 		...shuffleActionBase,
 		onClick: () => {
-			playSongsAction(queryClient, () =>
+			playSongsAction(
+				queryClient,
 				props.query({
 					...query,
 					random: Math.floor(Math.random() * 10000),
@@ -136,7 +118,7 @@ export const InfiniteSongView = (props: SongViewProps) => {
 	const playAction = {
 		...playActionBase,
 		onClick: () => {
-			playSongsAction(queryClient, () => props.query(query));
+			playSongsAction(queryClient, props.query(query));
 		},
 	} as const;
 
@@ -204,7 +186,7 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 	const playAction = {
 		...playActionBase,
 		onClick: () => {
-			playSongsAction(queryClient, () => props.query(query));
+			playSongsAction(queryClient, props.query(query));
 		},
 	} as const;
 
