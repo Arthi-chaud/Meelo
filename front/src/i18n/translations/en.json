@@ -261,5 +261,7 @@
 	"songType": "Song Type",
 	"loading": "Chargement",
 	"types": "Types",
-	"all": "All"
+	"all": "All",
+	"loadNextSongs": "Load next songs",
+	"saveQueueAsPlaylist": "Save queue as playlist"
 }

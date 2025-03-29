@@ -55,6 +55,8 @@ import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
 import {
 	cursorAtom,
+	infiniteQueryAtom,
+	loadNextQueuePageAtom,
 	playlistAtom,
 	removeTrackAtom,
 	reorderAtom,
@@ -84,8 +86,10 @@ export const ExpandedPlayerControls = (
 	const queryClient = useQueryClient();
 	const [playlist] = useAtom(playlistAtom);
 	const [cursor] = useAtom(cursorAtom);
+	const [infiniteQueueQuery] = useAtom(infiniteQueryAtom);
 	const [playlistModalIsOpen, openPlaylistModal] = useState(false);
 	const skipTrack = useSetAtom(skipTrackAtom);
+	const loadNextQueuePage = useSetAtom(loadNextQueuePageAtom);
 	const removeTrack = useSetAtom(removeTrackAtom);
 	const reorder = useSetAtom(reorderAtom);
 	const [selectedTab, selectTab] = useState<"player" | "lyrics" | "playlist">(
@@ -580,6 +584,22 @@ export const ExpandedPlayerControls = (
 						</DragDropContext>
 					</Box>
 
+					{infiniteQueueQuery !== null && (
+						<Button
+							sx={{
+								width: "100%",
+								alignSelf: "center",
+								marginTop: 1,
+								maxWidth: theme.breakpoints.values.md,
+							}}
+							variant="outlined"
+							onClick={() => {
+								loadNextQueuePage(queryClient);
+							}}
+						>
+							{t("loadNextSongs")}
+						</Button>
+					)}
 					{playlist.length > 0 && (
 						<Button
 							sx={{
@@ -594,7 +614,7 @@ export const ExpandedPlayerControls = (
 								openPlaylistModal(true);
 							}}
 						>
-							Save queue as playlist
+							{t("saveQueueAsPlaylist")}
 						</Button>
 					)}
 				</>
