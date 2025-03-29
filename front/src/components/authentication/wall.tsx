@@ -21,11 +21,11 @@ import { useEffect, useState } from "react";
 
 import { useAtom } from "jotai";
 import { useQuery as useReactQuery } from "react-query";
-import API from "../../api/api";
-import { prepareMeeloQuery } from "../../api/use-query";
-import { accessTokenAtom, userAtom } from "../../state/user";
-import ModalPage from "../modal-page";
-import ThemedImage from "../themed-image";
+import API from "api/api";
+import { prepareMeeloQuery } from "api/use-query";
+import { accessTokenAtom, userAtom } from "state/user";
+import ModalPage from "components/modal-page";
+import ThemedImage from "components/themed-image";
 import AuthenticationForm from "./form";
 
 const AuthenticationWall = (props: { children: any }) => {

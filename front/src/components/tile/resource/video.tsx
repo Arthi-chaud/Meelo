@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import API from "api/api";
+import { useQueryClient } from "api/use-query";
+import VideoContextualMenu from "components/contextual-menu/resource/video";
+import { VideoIcon } from "components/icons";
+import Illustration from "components/illustration";
+import Tile from "components/tile";
+import formatDuration from "utils/formatDuration";
 import { useSetAtom } from "jotai";
-import Tile from "../";
-import API from "../../../api/api";
-import { useQueryClient } from "../../../api/use-query";
-import type { VideoWithRelations } from "../../../models/video";
-import { playTrackAtom } from "../../../state/player";
-import formatDuration from "../../../utils/formatDuration";
-import VideoContextualMenu from "../../contextual-menu/resource/video";
-import { VideoIcon } from "../../icons";
-import Illustration from "../../illustration";
+import type { VideoWithRelations } from "models/video";
+import { playTrackAtom } from "state/player";
 
 type VideoTileProps = (
 	| {

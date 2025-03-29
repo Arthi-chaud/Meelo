@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { InfiniteQuery } from "../../../api/use-query";
+import type { InfiniteQuery } from "api/use-query";
 import {
 	TrackSortingKeys,
 	type TrackWithRelations,
-} from "../../../models/track";
-import { DefaultItemSize } from "../../../utils/layout";
-import type { SortingParameters } from "../../../utils/sorting";
-import TrackItem from "../../list-item/resource/track";
-import { Controls } from "../controls/controls";
-import { useLibraryFilterControl } from "../controls/filters/library";
-import { useSortControl } from "../controls/sort";
-import InfiniteView from "../view";
+} from "models/track";
+import { DefaultItemSize } from "utils/layout";
+import type { SortingParameters } from "utils/sorting";
+import TrackItem from "components/list-item/resource/track";
+import { Controls } from "components/infinite/controls/controls";
+import { useLibraryFilterControl } from "components/infinite/controls/filters/library";
+import { useSortControl } from "components/infinite/controls/sort";
+import InfiniteView from "components/infinite/view";
 
 type QueryProps = {
 	libraries?: string[];

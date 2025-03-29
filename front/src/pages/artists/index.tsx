@@ -1,14 +1,14 @@
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
-import API from "../../api/api";
-import { Head } from "../../components/head";
+import API from "api/api";
+import { Head } from "components/head";
 import {
 	getOrderQuery,
 	getSortQuery,
-} from "../../components/infinite/controls/sort";
-import InfiniteArtistView from "../../components/infinite/resource/artist";
-import { ArtistSortingKeys } from "../../models/artist";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
+} from "components/infinite/controls/sort";
+import InfiniteArtistView from "components/infinite/resource/artist";
+import { ArtistSortingKeys } from "models/artist";
+import type { GetPropsTypesFrom, Page } from "ssr";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

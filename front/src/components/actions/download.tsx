@@ -17,10 +17,10 @@
  */
 
 import type { useConfirm } from "material-ui-confirm";
-import API from "../../api/api";
-import type { Translator } from "../../i18n/i18n";
-import confirmDownloadAction from "../confirm-download-action";
-import { ArchiveIcon, DownloadIcon } from "../icons";
+import API from "api/api";
+import type { Translator } from "i18n/i18n";
+import confirmDownloadAction from "components/confirm-download-action";
+import { ArchiveIcon, DownloadIcon } from "components/icons";
 import type Action from "./";
 
 export const DownloadAction = (

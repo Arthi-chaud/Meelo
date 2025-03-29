@@ -23,30 +23,30 @@ import {
 	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
-} from "../../../api/use-query";
+} from "api/use-query";
 import {
 	SongSortingKeys,
 	SongType,
 	type SongWithRelations,
-} from "../../../models/song";
-import type { SongGroupWithRelations } from "../../../models/song-group";
+} from "models/song";
+import type { SongGroupWithRelations } from "models/song-group";
 import {
 	emptyPlaylistAtom,
 	playAfterAtom,
 	playTrackAtom,
-} from "../../../state/player";
-import { store } from "../../../state/store";
-import { DefaultItemSize } from "../../../utils/layout";
-import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
-import type { SortingParameters } from "../../../utils/sorting";
-import type Action from "../../actions";
-import { PlayIcon, ShuffleIcon } from "../../icons";
-import SongItem, { SongGroupItem } from "../../list-item/resource/song";
-import { Controls } from "../controls/controls";
-import { useLibraryFilterControl } from "../controls/filters/library";
-import { useTypeFilterControl } from "../controls/filters/resource-type";
-import { useSortControl } from "../controls/sort";
-import InfiniteView from "../view";
+} from "state/player";
+import { store } from "state/store";
+import { DefaultItemSize } from "utils/layout";
+import { parseQueryParam, setQueryParam } from "utils/query-param";
+import type { SortingParameters } from "utils/sorting";
+import type Action from "components/actions";
+import { PlayIcon, ShuffleIcon } from "components/icons";
+import SongItem, { SongGroupItem } from "components/list-item/resource/song";
+import { Controls } from "components/infinite/controls/controls";
+import { useLibraryFilterControl } from "components/infinite/controls/filters/library";
+import { useTypeFilterControl } from "components/infinite/controls/filters/resource-type";
+import { useSortControl } from "components/infinite/controls/sort";
+import InfiniteView from "components/infinite/view";
 
 type SongModel = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"

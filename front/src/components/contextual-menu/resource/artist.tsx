@@ -17,15 +17,15 @@
  */
 
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "../../../api/use-query";
-import type Artist from "../../../models/artist";
+import { useQueryClient } from "api/use-query";
+import type Artist from "models/artist";
 import {
 	GoToArtistAction,
 	GoToArtistAlbumsAction,
 	GoToArtistSongsAction,
-} from "../../actions/link";
-import { ShareArtistAction } from "../../actions/share";
-import { UpdateArtistIllustrationAction } from "../../actions/update-illustration";
+} from "components/actions/link";
+import { ShareArtistAction } from "components/actions/share";
+import { UpdateArtistIllustrationAction } from "components/actions/update-illustration";
 import { ContextualMenu } from "..";
 
 type ArtistContextualMenuProps = {

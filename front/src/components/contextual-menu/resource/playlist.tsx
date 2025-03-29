@@ -19,14 +19,14 @@
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "../../../api/use-query";
-import type Playlist from "../../../models/playlist";
+import { useQueryClient } from "api/use-query";
+import type Playlist from "models/playlist";
 import {
 	DeletePlaylistAction,
 	UpdatePlaylistAction,
-} from "../../actions/playlist";
-import { SharePlaylistAction } from "../../actions/share";
-import { UpdatePlaylistIllustrationAction } from "../../actions/update-illustration";
+} from "components/actions/playlist";
+import { SharePlaylistAction } from "components/actions/share";
+import { UpdatePlaylistIllustrationAction } from "components/actions/update-illustration";
 import { ContextualMenu } from "..";
 
 type PlaylistContextualMenuProps = {

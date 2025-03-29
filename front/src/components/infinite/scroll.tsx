@@ -20,13 +20,13 @@ import * as IScroll from "react-infinite-scroller";
 import {
 	type MeeloInfiniteQueryFn,
 	useInfiniteQuery,
-} from "../../api/use-query";
-import type PaginatedResponse from "../../models/pagination";
-import type { PaginationParameters } from "../../models/pagination";
-import type Resource from "../../models/resource";
-import { generateArray } from "../../utils/gen-list";
-import { EmptyState, type EmptyStateProps } from "../empty-state";
-import { EmptyStateIcon } from "../icons";
+} from "api/use-query";
+import type PaginatedResponse from "models/pagination";
+import type { PaginationParameters } from "models/pagination";
+import type Resource from "models/resource";
+import { generateArray } from "utils/gen-list";
+import { EmptyState, type EmptyStateProps } from "components/empty-state";
+import { EmptyStateIcon } from "components/icons";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 

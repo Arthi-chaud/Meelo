@@ -16,21 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { InfiniteQuery } from "../../../api/use-query";
+import type { InfiniteQuery } from "api/use-query";
+import { Controls } from "components/infinite/controls/controls";
+import { useLibraryFilterControl } from "components/infinite/controls/filters/library";
+import { useTypeFilterControl } from "components/infinite/controls/filters/resource-type";
+import { useLayoutControl } from "components/infinite/controls/layout";
+import { useSortControl } from "components/infinite/controls/sort";
+import InfiniteView from "components/infinite/view";
+import AlbumItem from "components/list-item/resource/album";
+import AlbumTile from "components/tile/resource/album";
 import {
 	AlbumSortingKeys,
 	AlbumType,
 	type AlbumWithRelations,
-} from "../../../models/album";
-import type { SortingParameters } from "../../../utils/sorting";
-import AlbumItem from "../../list-item/resource/album";
-import AlbumTile from "../../tile/resource/album";
-import { Controls } from "../controls/controls";
-import { useLibraryFilterControl } from "../controls/filters/library";
-import { useTypeFilterControl } from "../controls/filters/resource-type";
-import { useLayoutControl } from "../controls/layout";
-import { useSortControl } from "../controls/sort";
-import InfiniteView from "../view";
+} from "models/album";
+import type { SortingParameters } from "utils/sorting";
 
 type QueryProps = {
 	types?: AlbumType[];

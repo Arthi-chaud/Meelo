@@ -38,7 +38,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RootGradientBackground } from "../utils/gradient-background";
+import { RootGradientBackground } from "utils/gradient-background";
 import type Action from "./actions";
 import { LogoutAction } from "./actions/auth";
 import { GoToSearchAction, GoToSettingsAction } from "./actions/link";

@@ -21,27 +21,27 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "../../../api/api";
-import { useQueryClient } from "../../../api/use-query";
-import type { TrackWithRelations } from "../../../models/track";
-import { userAtom } from "../../../state/user";
-import type Action from "../../actions";
-import { DownloadAction } from "../../actions/download";
+import API from "api/api";
+import { useQueryClient } from "api/use-query";
+import type { TrackWithRelations } from "models/track";
+import { userAtom } from "state/user";
+import type Action from "components/actions";
+import { DownloadAction } from "components/actions/download";
 import {
 	GoToReleaseAction,
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
-} from "../../actions/link";
+} from "components/actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
-} from "../../actions/playlist";
-import { RefreshTrackMetadataAction } from "../../actions/refresh-metadata";
-import { ChangeSongType } from "../../actions/resource-type";
-import { ShowTrackFileInfoAction } from "../../actions/show-track-info";
-import { UpdateTrackIllustrationAction } from "../../actions/update-illustration";
-import { MasterIcon } from "../../icons";
+} from "components/actions/playlist";
+import { RefreshTrackMetadataAction } from "components/actions/refresh-metadata";
+import { ChangeSongType } from "components/actions/resource-type";
+import { ShowTrackFileInfoAction } from "components/actions/show-track-info";
+import { UpdateTrackIllustrationAction } from "components/actions/update-illustration";
+import { MasterIcon } from "components/icons";
 import { ContextualMenu } from "..";
 
 type TrackContextualMenuProps = {

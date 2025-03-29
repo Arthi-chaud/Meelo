@@ -18,11 +18,11 @@
 
 import { IconButton, Typography } from "@mui/material";
 import type { ComponentProps } from "react";
-import API from "../../../api/api";
-import type Artist from "../../../models/artist";
-import type { TrackWithRelations } from "../../../models/track";
-import formatDuration from "../../../utils/formatDuration";
-import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "../../icons";
+import API from "api/api";
+import type Artist from "models/artist";
+import type { TrackWithRelations } from "models/track";
+import formatDuration from "utils/formatDuration";
+import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "components/icons";
 import type PlayerSlider from "./slider";
 
 export const parentSongQuery = (id: number) =>

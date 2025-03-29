@@ -20,10 +20,10 @@ import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "../../../api/api";
-import { useQueryClient } from "../../../api/use-query";
-import type { SongWithRelations } from "../../../models/song";
-import { DownloadAsyncAction } from "../../actions/download";
+import API from "api/api";
+import { useQueryClient } from "api/use-query";
+import type { SongWithRelations } from "models/song";
+import { DownloadAsyncAction } from "components/actions/download";
 import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
@@ -31,17 +31,17 @@ import {
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
 	GoToSongVersionAction,
-} from "../../actions/link";
+} from "components/actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
-} from "../../actions/playlist";
-import { RefreshSongMetadataAction } from "../../actions/refresh-metadata";
-import { ChangeSongType } from "../../actions/resource-type";
-import { ShareSongAction } from "../../actions/share";
-import { ShowMasterTrackFileInfoAction } from "../../actions/show-track-info";
-import { DeleteIcon } from "../../icons";
+} from "components/actions/playlist";
+import { RefreshSongMetadataAction } from "components/actions/refresh-metadata";
+import { ChangeSongType } from "components/actions/resource-type";
+import { ShareSongAction } from "components/actions/share";
+import { ShowMasterTrackFileInfoAction } from "components/actions/show-track-info";
+import { DeleteIcon } from "components/icons";
 import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {

@@ -18,27 +18,27 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "../../../api/use-query";
-import type Artist from "../../../models/artist";
-import type { TrackWithRelations } from "../../../models/track";
-import { DownloadAction } from "../../actions/download";
+import { useQueryClient } from "api/use-query";
+import type Artist from "models/artist";
+import type { TrackWithRelations } from "models/track";
+import { DownloadAction } from "components/actions/download";
 import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
 	GoToSongVersionAction,
-} from "../../actions/link";
+} from "components/actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
-} from "../../actions/playlist";
-import { RefreshTrackMetadataAction } from "../../actions/refresh-metadata";
-import { ChangeSongType } from "../../actions/resource-type";
-import { ShareSongAction } from "../../actions/share";
-import { ShowTrackFileInfoAction } from "../../actions/show-track-info";
-import { UpdateTrackIllustrationAction } from "../../actions/update-illustration";
+} from "components/actions/playlist";
+import { RefreshTrackMetadataAction } from "components/actions/refresh-metadata";
+import { ChangeSongType } from "components/actions/resource-type";
+import { ShareSongAction } from "components/actions/share";
+import { ShowTrackFileInfoAction } from "components/actions/show-track-info";
+import { UpdateTrackIllustrationAction } from "components/actions/update-illustration";
 import { ContextualMenu } from "..";
 
 type ReleaseTrackContextualMenuProps = {

@@ -28,9 +28,9 @@ import Document, {
 	NextScript,
 } from "next/document";
 import type * as React from "react";
-import font from "../theme/font";
-import { LightTheme } from "../theme/theme";
-import createEmotionCache from "../utils/createEmotionCache";
+import font from "theme/font";
+import { LightTheme } from "theme/theme";
+import createEmotionCache from "utils/createEmotionCache";
 import type { MyAppProps } from "./_app";
 
 interface MyDocumentProps extends DocumentProps {

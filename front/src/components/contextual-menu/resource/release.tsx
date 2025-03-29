@@ -21,17 +21,17 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "../../../api/api";
-import { useQueryClient } from "../../../api/use-query";
-import type { ReleaseWithRelations } from "../../../models/release";
-import { userAtom } from "../../../state/user";
-import { DownloadReleaseAction } from "../../actions/download";
-import { GoToAlbumAction, GoToArtistAction } from "../../actions/link";
-import { RefreshReleaseMetadataAction } from "../../actions/refresh-metadata";
-import { ChangeAlbumType } from "../../actions/resource-type";
-import { ShareReleaseAction } from "../../actions/share";
-import { UpdateReleaseIllustrationAction } from "../../actions/update-illustration";
-import { MasterIcon, UpgradeIcon } from "../../icons";
+import API from "api/api";
+import { useQueryClient } from "api/use-query";
+import type { ReleaseWithRelations } from "models/release";
+import { userAtom } from "state/user";
+import { DownloadReleaseAction } from "components/actions/download";
+import { GoToAlbumAction, GoToArtistAction } from "components/actions/link";
+import { RefreshReleaseMetadataAction } from "components/actions/refresh-metadata";
+import { ChangeAlbumType } from "components/actions/resource-type";
+import { ShareReleaseAction } from "components/actions/share";
+import { UpdateReleaseIllustrationAction } from "components/actions/update-illustration";
+import { MasterIcon, UpgradeIcon } from "components/icons";
 import { ContextualMenu } from "..";
 
 type ReleaseContextualMenuProps = {

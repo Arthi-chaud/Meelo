@@ -17,13 +17,13 @@
  */
 
 import { Grid } from "@mui/material";
+import ReleaseContextualMenu from "components/contextual-menu/resource/release";
+import { AlbumIcon } from "components/icons";
+import Illustration from "components/illustration";
+import ListItem from "components/list-item";
 import { Star } from "iconsax-react";
-import ListItem from "../";
-import type { ReleaseWithRelations } from "../../../models/release";
-import { getYear } from "../../../utils/date";
-import ReleaseContextualMenu from "../../contextual-menu/resource/release";
-import { AlbumIcon } from "../../icons";
-import Illustration from "../../illustration";
+import type { ReleaseWithRelations } from "models/release";
+import { getYear } from "utils/date";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<"album" | "illustration">;

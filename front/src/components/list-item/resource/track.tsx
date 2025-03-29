@@ -17,15 +17,15 @@
  */
 
 import { Grid } from "@mui/material";
+import API from "api/api";
+import { useQueryClient } from "api/use-query";
+import TrackContextualMenu from "components/contextual-menu/resource/track";
+import { MasterIcon, TrackIcon } from "components/icons";
+import Illustration from "components/illustration";
+import ListItem from "components/list-item";
 import { useSetAtom } from "jotai";
-import ListItem from "../";
-import API from "../../../api/api";
-import { useQueryClient } from "../../../api/use-query";
-import type { TrackWithRelations } from "../../../models/track";
-import { playTrackAtom } from "../../../state/player";
-import TrackContextualMenu from "../../contextual-menu/resource/track";
-import { MasterIcon, TrackIcon } from "../../icons";
-import Illustration from "../../illustration";
+import type { TrackWithRelations } from "models/track";
+import { playTrackAtom } from "state/player";
 
 type TrackItemProps = {
 	track:

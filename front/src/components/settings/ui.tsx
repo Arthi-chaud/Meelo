@@ -23,8 +23,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
-import { type Language, Languages, persistLanguage } from "../../i18n/i18n";
-import SectionHeader from "../section-header";
+import { type Language, Languages, persistLanguage } from "i18n/i18n";
+import SectionHeader from "components/section-header";
 
 const SettingGroupStyle = {
 	paddingTop: 1,

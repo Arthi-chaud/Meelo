@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import SongContextualMenu from "components/contextual-menu/resource/song";
+import { SongIcon } from "components/icons";
+import Illustration from "components/illustration";
+import ListItem from "components/list-item";
 import { useSetAtom } from "jotai";
+import type { SongWithRelations } from "models/song";
+import type { SongGroupWithRelations } from "models/song-group";
 import { useEffect, useState } from "react";
-import ListItem from "../";
-import type { SongWithRelations } from "../../../models/song";
-import type { SongGroupWithRelations } from "../../../models/song-group";
-import { playTrackAtom } from "../../../state/player";
-import formatArtists from "../../../utils/formatArtists";
-import SongContextualMenu from "../../contextual-menu/resource/song";
-import { SongIcon } from "../../icons";
-import Illustration from "../../illustration";
+import { playTrackAtom } from "state/player";
+import formatArtists from "utils/formatArtists";
 
 type SongItemProps<
 	T extends SongWithRelations<

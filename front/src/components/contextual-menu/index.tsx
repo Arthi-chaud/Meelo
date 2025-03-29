@@ -29,8 +29,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type Action from "../actions";
-import { ContextualMenuIcon } from "../icons";
+import type Action from "components/actions";
+import { ContextualMenuIcon } from "components/icons";
 
 export type ContextualMenuProps = {
 	actions: Action[][];

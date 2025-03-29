@@ -39,25 +39,25 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import { useQuery as useTanStackQuery } from "react-query";
-import API from "../../api/api";
+import API from "api/api";
 import {
 	prepareMeeloQuery,
 	useQuery,
 	useQueryClient,
-} from "../../api/use-query";
-import type Library from "../../models/library";
-import type Action from "../actions";
+} from "api/use-query";
+import type Library from "models/library";
+import type Action from "components/actions";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,
 	ScanAllLibrariesAction,
 	ScanLibraryAction,
-} from "../actions/library-task";
-import { RefreshLibraryMetadataAction } from "../actions/refresh-metadata";
-import AdminGrid from "../admin-grid";
-import { AddIcon, DeleteIcon, EditIcon } from "../icons";
-import LibraryForm from "../library-form";
-import SectionHeader from "../section-header";
+} from "components/actions/library-task";
+import { RefreshLibraryMetadataAction } from "components/actions/refresh-metadata";
+import AdminGrid from "components/admin-grid";
+import { AddIcon, DeleteIcon, EditIcon } from "components/icons";
+import LibraryForm from "components/library-form";
+import SectionHeader from "components/section-header";
 
 const actionButtonStyle = {
 	overflow: "hidden",
