@@ -34,9 +34,9 @@ import Fade from "./fade";
 import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";
 import SongGrid from "./song-grid";
-import TileRow from "./tile-row";
-import AlbumTile from "./tile/album-tile";
-import VideoTile from "./tile/video-tile";
+import AlbumTile from "./tile/resource/album";
+import VideoTile from "./tile/resource/video";
+import TileRow from "./tile/row";
 
 export const SectionPadding = 4;
 

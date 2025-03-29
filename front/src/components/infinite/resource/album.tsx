@@ -24,7 +24,7 @@ import {
 } from "../../../models/album";
 import type { SortingParameters } from "../../../utils/sorting";
 import AlbumItem from "../../list-item/resource/album";
-import AlbumTile from "../../tile/album-tile";
+import AlbumTile from "../../tile/resource/album";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useTypeFilterControl } from "../controls/filters/resource-type";

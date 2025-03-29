@@ -23,7 +23,7 @@ import {
 } from "../../../models/artist";
 import type { SortingParameters } from "../../../utils/sorting";
 import ArtistItem from "../../list-item/resource/artist";
-import ArtistTile from "../../tile/artist-tile";
+import ArtistTile from "../../tile/resource/artist";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useLayoutControl } from "../controls/layout";
