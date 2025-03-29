@@ -261,5 +261,7 @@
 	"songType": "Type du Titre",
 	"loading": "Chargement",
 	"types": "Types",
-	"all": "Tous"
+	"all": "Tous",
+	"loadNextSongs": "Charger les morceaux suivants",
+	"saveQueueAsPlaylist": "Sauvegarder la playlist"
 }

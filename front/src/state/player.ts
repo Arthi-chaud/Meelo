@@ -53,6 +53,7 @@ export type PlayerState = {
 
 export const cursorAtom = atom((get) => get(_playerState).cursor);
 export const playlistAtom = atom((get) => get(_playerState).playlist);
+export const infiniteQueryAtom = atom((get) => get(_playerState).infinite);
 export const playTrackAtom = atom(null, (_, set, track: TrackState) => {
 	set(_playerState, { playlist: [track], cursor: 0, infinite: null });
 });
@@ -80,35 +81,8 @@ export const skipTrackAtom = atom(
 			playlist: state.playlist,
 			infinite: state.infinite,
 		});
-		// Load new page if close to the end
 		if (state.infinite && newCursor >= state.playlist.length - 2) {
-			const afterId = state.infinite!.afterId;
-			const pageQuery = {
-				// TODO see next atom
-				key: [...state.infinite.query.key, "queue", `after-${afterId}`],
-				exec: () =>
-					state.infinite!.query.exec({
-						afterId: state.infinite!.afterId,
-					}),
-			};
-			queryClient.client
-				.fetchQuery({
-					...prepareMeeloInfiniteQuery(() => pageQuery),
-					staleTime: 0,
-				})
-				.then((res) => {
-					const state = get(_playerState);
-					set(_playerState, {
-						cursor: state.cursor,
-						playlist: [...state.playlist, ...res.items],
-						infinite: res.afterId
-							? {
-									query: state.infinite!.query,
-									afterId: res.afterId,
-								}
-							: null,
-					});
-				});
+			set(loadNextQueuePageAtom, queryClient);
 		}
 	},
 );
@@ -116,7 +90,7 @@ export const skipTrackAtom = atom(
 export const playFromInfiniteQuery = atom(
 	null,
 	(
-		get,
+		_get,
 		set,
 		// We merge TrackState + Resource to give the query handler an Id to 'afterId' from
 		query: InfiniteQuery<TrackState & Resource>,
@@ -142,6 +116,44 @@ export const playFromInfiniteQuery = atom(
 					cursor: 0,
 					playlist: items,
 					infinite: { query, afterId: items.at(-1)!.id },
+				});
+			});
+	},
+);
+
+export const loadNextQueuePageAtom = atom(
+	null,
+	(get, set, queryClient: QueryClient) => {
+		const state = get(_playerState);
+		if (!state.infinite) {
+			return;
+		}
+		const afterId = state.infinite.afterId;
+		const pageQuery = {
+			// TODO see next atom
+			key: [...state.infinite.query.key, "queue", `after-${afterId}`],
+			exec: () =>
+				state.infinite!.query.exec({
+					afterId: state.infinite!.afterId,
+				}),
+		};
+		queryClient.client
+			.fetchQuery({
+				...prepareMeeloInfiniteQuery(() => pageQuery),
+				staleTime: 0,
+			})
+			.then((res) => {
+				const state = get(_playerState);
+				set(_playerState, {
+					cursor: state.cursor,
+					playlist: [...state.playlist, ...res.items],
+					infinite:
+						res.afterId && !res.end
+							? {
+									query: state.infinite!.query,
+									afterId: res.afterId,
+								}
+							: null,
 				});
 			});
 	},
