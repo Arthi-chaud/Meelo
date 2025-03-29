@@ -17,29 +17,29 @@
  */
 
 import { Box, Container, Divider, Grid } from "@mui/material";
-import API from "api/api";
-import { useInfiniteQuery, useQuery } from "api/use-query";
-import ExternalMetadataBadge from "components/external-metadata-badge";
-import { Head } from "components/head";
-import {
-	AlbumListPageSection,
-	SectionPadding,
-	SongGridPageSection,
-	VideoListPageSection,
-} from "components/page-section";
-import ArtistRelationPageHeader from "components/relation-page-header/resource/artist";
-import ResourceDescription from "components/resource-description";
-import SectionHeader from "components/section-header";
-import { AlbumType } from "models/album";
-import { VideoTypeIsExtra } from "models/video";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { generateArray } from "utils/gen-list";
-import getSlugOrId from "utils/getSlugOrId";
-import { useGradientBackground } from "utils/gradient-background";
+import API from "~/api/api";
+import { useInfiniteQuery, useQuery } from "~/api/use-query";
+import ExternalMetadataBadge from "~/components/external-metadata-badge";
+import { Head } from "~/components/head";
+import {
+	AlbumListPageSection,
+	SectionPadding,
+	SongGridPageSection,
+	VideoListPageSection,
+} from "~/components/page-section";
+import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
+import ResourceDescription from "~/components/resource-description";
+import SectionHeader from "~/components/section-header";
+import { AlbumType } from "~/models/album";
+import { VideoTypeIsExtra } from "~/models/video";
+import { generateArray } from "~/utils/gen-list";
+import getSlugOrId from "~/utils/getSlugOrId";
+import { useGradientBackground } from "~/utils/gradient-background";
 
 // Number of Song item in the 'Top Song' section
 const SongListSize = 6;

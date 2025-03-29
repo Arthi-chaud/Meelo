@@ -17,9 +17,9 @@
  */
 
 import { Box, Stack, Typography } from "@mui/material";
-import LyricsBox from "components/lyrics";
-import type { Lyrics, SyncedLyric } from "models/lyrics";
 import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import LyricsBox from "~/components/lyrics";
+import type { Lyrics, SyncedLyric } from "~/models/lyrics";
 
 export const LyricsComponent = ({
 	lyrics,

@@ -17,11 +17,11 @@
  */
 
 import { Chip, Grid, Skeleton, Typography, useTheme } from "@mui/material";
-import Illustration from "components/illustration";
-import type IllustrationModel from "models/illustration";
 import Link from "next/link";
 import { useMemo } from "react";
-import { useAccentColor } from "utils/accent-color";
+import Illustration from "~/components/illustration";
+import type IllustrationModel from "~/models/illustration";
+import { useAccentColor } from "~/utils/accent-color";
 
 type HighlightCardProps = {
 	title: string | undefined;

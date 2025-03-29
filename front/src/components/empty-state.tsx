@@ -17,8 +17,8 @@
  */
 
 import { Button, Grid } from "@mui/material";
-import type { TranslationKey } from "i18n/i18n";
 import { useTranslation } from "react-i18next";
+import type { TranslationKey } from "~/i18n/i18n";
 import type Action from "./actions";
 
 export type EmptyStateProps = {

@@ -17,8 +17,8 @@
  */
 
 import { Avatar } from "@mui/material";
-import type IllustrationModel from "models/illustration";
 import type { ComponentProps } from "react";
+import type IllustrationModel from "~/models/illustration";
 import { ArtistIcon } from "./icons";
 import Illustration from "./illustration";
 

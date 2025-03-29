@@ -17,7 +17,7 @@
  */
 
 import NextHead from "next/head";
-import { DefaultWindowTitle } from "utils/constants";
+import { DefaultWindowTitle } from "~/utils/constants";
 
 export const Head = ({
 	title,

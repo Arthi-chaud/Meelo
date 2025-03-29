@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "api/use-query";
-import { EmptyState, type EmptyStateProps } from "components/empty-state";
-import { EmptyStateIcon } from "components/icons";
-import type PaginatedResponse from "models/pagination";
-import type { PaginationParameters } from "models/pagination";
-import type Resource from "models/resource";
 import * as IScroll from "react-infinite-scroller";
-import { generateArray } from "utils/gen-list";
+import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "~/api/use-query";
+import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
+import { EmptyStateIcon } from "~/components/icons";
+import type PaginatedResponse from "~/models/pagination";
+import type { PaginationParameters } from "~/models/pagination";
+import type Resource from "~/models/resource";
+import { generateArray } from "~/utils/gen-list";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 

@@ -17,17 +17,17 @@
  */
 
 import { Box, Tab, Tabs } from "@mui/material";
-import API from "api/api";
-import { useQuery } from "api/use-query";
-import { Head } from "components/head";
-import LibrariesSettings from "components/settings/libraries";
-import UISettings from "components/settings/ui";
-import UsersSettings from "components/settings/users";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api/api";
+import { useQuery } from "~/api/use-query";
+import { Head } from "~/components/head";
+import LibrariesSettings from "~/components/settings/libraries";
+import UISettings from "~/components/settings/ui";
+import UsersSettings from "~/components/settings/users";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599

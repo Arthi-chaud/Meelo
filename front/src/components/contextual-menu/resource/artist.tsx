@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "api/use-query";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "~/api/use-query";
 import {
 	GoToArtistAction,
 	GoToArtistAlbumsAction,
 	GoToArtistSongsAction,
-} from "components/actions/link";
-import { ShareArtistAction } from "components/actions/share";
-import { UpdateArtistIllustrationAction } from "components/actions/update-illustration";
-import type Artist from "models/artist";
-import { useTranslation } from "react-i18next";
+} from "~/components/actions/link";
+import { ShareArtistAction } from "~/components/actions/share";
+import { UpdateArtistIllustrationAction } from "~/components/actions/update-illustration";
+import type Artist from "~/models/artist";
 import { ContextualMenu } from "..";
 
 type ArtistContextualMenuProps = {

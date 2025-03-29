@@ -21,24 +21,28 @@ import {
 	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
-} from "api/use-query";
-import { PlayIcon, ShuffleIcon } from "components/icons";
-import { Controls } from "components/infinite/controls/controls";
-import { useLibraryFilterControl } from "components/infinite/controls/filters/library";
-import { useTypeFilterControl } from "components/infinite/controls/filters/resource-type";
-import { useLayoutControl } from "components/infinite/controls/layout";
-import { useSortControl } from "components/infinite/controls/sort";
-import InfiniteView from "components/infinite/view";
-import VideoItem from "components/list-item/resource/video";
-import VideoTile from "components/tile/resource/video";
+} from "~/api/use-query";
+import { PlayIcon, ShuffleIcon } from "~/components/icons";
+import { Controls } from "~/components/infinite/controls/controls";
+import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
+import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
+import { useLayoutControl } from "~/components/infinite/controls/layout";
+import { useSortControl } from "~/components/infinite/controls/sort";
+import InfiniteView from "~/components/infinite/view";
+import VideoItem from "~/components/list-item/resource/video";
+import VideoTile from "~/components/tile/resource/video";
 import {
 	VideoSortingKeys,
 	VideoType,
 	type VideoWithRelations,
-} from "models/video";
-import { emptyPlaylistAtom, playAfterAtom, playTrackAtom } from "state/player";
-import { store } from "state/store";
-import type { SortingParameters } from "utils/sorting";
+} from "~/models/video";
+import {
+	emptyPlaylistAtom,
+	playAfterAtom,
+	playTrackAtom,
+} from "~/state/player";
+import { store } from "~/state/store";
+import type { SortingParameters } from "~/utils/sorting";
 
 type QueryProps = {
 	types?: VideoType[];

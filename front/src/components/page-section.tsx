@@ -17,19 +17,19 @@
  */
 
 import { Box, Button, Grid } from "@mui/material";
-import type { useInfiniteQuery } from "api/use-query";
-import type { TranslationKey } from "i18n/i18n";
-import type { AlbumWithRelations } from "models/album";
-import type Artist from "models/artist";
-import type Resource from "models/resource";
-import type { SongWithRelations } from "models/song";
-import type { VideoWithRelations } from "models/video";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseQueryResult } from "react-query";
-import { getYear } from "utils/date";
-import { generateArray } from "utils/gen-list";
+import type { useInfiniteQuery } from "~/api/use-query";
+import type { TranslationKey } from "~/i18n/i18n";
+import type { AlbumWithRelations } from "~/models/album";
+import type Artist from "~/models/artist";
+import type Resource from "~/models/resource";
+import type { SongWithRelations } from "~/models/song";
+import type { VideoWithRelations } from "~/models/video";
+import { getYear } from "~/utils/date";
+import { generateArray } from "~/utils/gen-list";
 import Fade from "./fade";
 import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";

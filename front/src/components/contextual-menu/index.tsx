@@ -27,10 +27,10 @@ import {
 	Menu,
 	MenuItem,
 } from "@mui/material";
-import type Action from "components/actions";
-import { ContextualMenuIcon } from "components/icons";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type Action from "~/components/actions";
+import { ContextualMenuIcon } from "~/components/icons";
 
 export type ContextualMenuProps = {
 	actions: Action[][];

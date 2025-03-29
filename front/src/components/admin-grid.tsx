@@ -17,10 +17,10 @@
  */
 
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import API from "api/api";
-import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "api/use-query";
-import type Resource from "models/resource";
 import { useEffect, useMemo, useState } from "react";
+import API from "~/api/api";
+import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "~/api/use-query";
+import type Resource from "~/models/resource";
 
 type AdminGridProps<DataType extends Resource> = {
 	infiniteQuery: MeeloInfiniteQueryFn<DataType>;

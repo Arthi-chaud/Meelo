@@ -17,8 +17,8 @@
  */
 
 import { Box, Skeleton } from "@mui/material";
-import type { CommonExternalMetadata } from "models/external-metadata";
-import { generateArray } from "utils/gen-list";
+import type { CommonExternalMetadata } from "~/models/external-metadata";
+import { generateArray } from "~/utils/gen-list";
 
 type Props = {
 	externalMetadata: CommonExternalMetadata | undefined;

@@ -17,9 +17,9 @@
  */
 
 import { Chip, Skeleton } from "@mui/material";
-import type Genre from "models/genre";
 import Link from "next/link";
 import type { ComponentProps } from "react";
+import type Genre from "~/models/genre";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug"> | undefined;

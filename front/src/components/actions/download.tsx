@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import API from "api/api";
-import confirmDownloadAction from "components/confirm-download-action";
-import { ArchiveIcon, DownloadIcon } from "components/icons";
-import type { Translator } from "i18n/i18n";
 import type { useConfirm } from "material-ui-confirm";
+import API from "~/api/api";
+import confirmDownloadAction from "~/components/confirm-download-action";
+import { ArchiveIcon, DownloadIcon } from "~/components/icons";
+import type { Translator } from "~/i18n/i18n";
 import type Action from "./";
 
 export const DownloadAction = (

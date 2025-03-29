@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ReleaseContextualMenu from "components/contextual-menu/resource/release";
-import { AlbumIcon } from "components/icons";
-import Illustration from "components/illustration";
-import Tile from "components/tile";
-import type { ReleaseWithRelations } from "models/release";
-import { getYear } from "utils/date";
+import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
+import { AlbumIcon } from "~/components/icons";
+import Illustration from "~/components/illustration";
+import Tile from "~/components/tile";
+import type { ReleaseWithRelations } from "~/models/release";
+import { getYear } from "~/utils/date";
 
 const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"album" | "illustration"> | undefined;

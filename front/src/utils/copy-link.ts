@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Translator } from "i18n/i18n";
 import toast from "react-hot-toast";
+import type { Translator } from "~/i18n/i18n";
 
 /**
  * Copy meelo url to clipboard, with hostname

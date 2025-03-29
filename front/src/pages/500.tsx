@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ErrorPage from "components/error-page";
 import { useTranslation } from "react-i18next";
+import ErrorPage from "~/components/error-page";
 
 const InternalError = () => {
 	const { t } = useTranslation();

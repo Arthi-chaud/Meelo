@@ -17,76 +17,76 @@
  */
 
 import { ResourceNotFound } from "exceptions";
+import type { RequireExactlyOne } from "type-fest";
+import * as yup from "yup";
 import {
 	type AlbumInclude,
 	type AlbumSortingKeys,
 	type AlbumType,
 	AlbumWithRelations,
-} from "models/album";
+} from "~/models/album";
 import {
 	type ArtistInclude,
 	type ArtistSortingKeys,
 	ArtistWithRelations,
-} from "models/artist";
+} from "~/models/artist";
 import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
 	SongExternalMetadata,
-} from "models/external-metadata";
-import File from "models/file";
-import Genre from "models/genre";
-import Library from "models/library";
-import { Lyrics } from "models/lyrics";
+} from "~/models/external-metadata";
+import File from "~/models/file";
+import Genre from "~/models/genre";
+import Library from "~/models/library";
+import { Lyrics } from "~/models/lyrics";
 import PaginatedResponse, {
 	type PaginationParameters,
-} from "models/pagination";
+} from "~/models/pagination";
 import Playlist, {
 	PlaylistEntryWithRelations,
 	type PlaylistInclude,
 	type PlaylistSortingKeys,
 	PlaylistWithRelations,
-} from "models/playlist";
+} from "~/models/playlist";
 import {
 	type ReleaseInclude,
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
-} from "models/release";
+} from "~/models/release";
 import {
 	type SaveSearchItem,
 	type SearchResult,
 	SearchResultTransformer,
-} from "models/search";
+} from "~/models/search";
 import {
 	type SongInclude,
 	type SongSortingKeys,
 	type SongType,
 	SongWithRelations,
-} from "models/song";
+} from "~/models/song";
 import {
 	type SongGroupSortingKeys,
 	SongGroupWithRelations,
-} from "models/song-group";
-import { TaskResponse } from "models/task";
+} from "~/models/song-group";
+import { TaskResponse } from "~/models/task";
 import {
 	type TrackInclude,
 	type TrackSortingKeys,
 	type TrackType,
 	TrackWithRelations,
-} from "models/track";
-import { TracklistItemWithRelations } from "models/tracklist";
-import User, { type UserSortingKeys } from "models/user";
+} from "~/models/track";
+import { TracklistItemWithRelations } from "~/models/tracklist";
+import User, { type UserSortingKeys } from "~/models/user";
 import {
 	type VideoInclude,
 	type VideoSortingKeys,
 	type VideoType,
 	VideoWithRelations,
-} from "models/video";
-import { store } from "state/store";
-import { accessTokenAtom } from "state/user";
-import type { RequireExactlyOne } from "type-fest";
-import { isSSR } from "utils/is-ssr";
-import type { SortingParameters } from "utils/sorting";
-import * as yup from "yup";
+} from "~/models/video";
+import { store } from "~/state/store";
+import { accessTokenAtom } from "~/state/user";
+import { isSSR } from "~/utils/is-ssr";
+import type { SortingParameters } from "~/utils/sorting";
 import type { InfiniteQuery, Query } from "./use-query";
 
 const AuthenticationResponse = yup.object({

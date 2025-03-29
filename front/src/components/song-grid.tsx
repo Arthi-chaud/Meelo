@@ -18,9 +18,9 @@
 
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
-import type { SongWithRelations } from "models/song";
-import { playTrackAtom } from "state/player";
-import formatArtists from "utils/formatArtists";
+import type { SongWithRelations } from "~/models/song";
+import { playTrackAtom } from "~/state/player";
+import formatArtists from "~/utils/formatArtists";
 import SongContextualMenu from "./contextual-menu/resource/song";
 import { SongIcon } from "./icons";
 import Illustration from "./illustration";

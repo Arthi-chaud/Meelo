@@ -29,10 +29,17 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import API from "api/api";
-import { useQuery, useQueryClient } from "api/use-query";
-import { CreatePlaylistAction } from "components/actions/playlist";
-import ReleaseTrackContextualMenu from "components/contextual-menu/resource/release-track";
+import { useAtom, useSetAtom } from "jotai";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { type LegacyRef, useCallback, useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import API from "~/api/api";
+import { useQuery, useQueryClient } from "~/api/use-query";
+import { CreatePlaylistAction } from "~/components/actions/playlist";
+import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
 import {
 	CloseIcon,
 	ContextualMenuIcon,
@@ -43,25 +50,18 @@ import {
 	PlayerIcon,
 	PlaylistIcon,
 	TrackIcon,
-} from "components/icons";
-import Illustration from "components/illustration";
-import ListItem from "components/list-item";
-import { useAtom, useSetAtom } from "jotai";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { type LegacyRef, useCallback, useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+} from "~/components/icons";
+import Illustration from "~/components/illustration";
+import ListItem from "~/components/list-item";
 import {
 	cursorAtom,
 	playlistAtom,
 	removeTrackAtom,
 	reorderAtom,
 	skipTrackAtom,
-} from "state/player";
-import formatArtists from "utils/formatArtists";
-import formatDuration from "utils/formatDuration";
+} from "~/state/player";
+import formatArtists from "~/utils/formatArtists";
+import formatDuration from "~/utils/formatDuration";
 import {
 	PlayButton,
 	type PlayerControlsProps,

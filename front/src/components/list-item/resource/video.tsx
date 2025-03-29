@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import VideoContextualMenu from "components/contextual-menu/resource/video";
-import { VideoIcon } from "components/icons";
-import Illustration from "components/illustration";
-import ListItem from "components/list-item";
 import { useSetAtom } from "jotai";
-import type { VideoWithRelations } from "models/video";
 import { useEffect, useState } from "react";
-import { playTrackAtom } from "state/player";
-import formatArtists from "utils/formatArtists";
+import VideoContextualMenu from "~/components/contextual-menu/resource/video";
+import { VideoIcon } from "~/components/icons";
+import Illustration from "~/components/illustration";
+import ListItem from "~/components/list-item";
+import type { VideoWithRelations } from "~/models/video";
+import { playTrackAtom } from "~/state/player";
+import formatArtists from "~/utils/formatArtists";
 
 type VideoType = VideoWithRelations<"artist" | "master" | "illustration">;
 

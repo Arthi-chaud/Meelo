@@ -17,19 +17,30 @@
  */
 
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
-import API from "api/api";
+import { shuffle } from "d3-array";
+import { useSetAtom } from "jotai";
+import { useConfirm } from "material-ui-confirm";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { useMemo, useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { type QueryClient, useMutation } from "react-query";
+import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api/api";
 import {
 	type Query,
 	prepareMeeloQuery,
 	useQueries,
 	useQuery,
 	useQueryClient,
-} from "api/use-query";
-import { DeletePlaylistAction } from "components/actions/playlist";
-import PlaylistContextualMenu from "components/contextual-menu/resource/playlist";
-import SongContextualMenu from "components/contextual-menu/resource/song";
-import { EmptyState } from "components/empty-state";
-import { Head } from "components/head";
+} from "~/api/use-query";
+import { DeletePlaylistAction } from "~/components/actions/playlist";
+import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
+import SongContextualMenu from "~/components/contextual-menu/resource/song";
+import { EmptyState } from "~/components/empty-state";
+import { Head } from "~/components/head";
 import {
 	ContextualMenuIcon,
 	DoneIcon,
@@ -40,31 +51,20 @@ import {
 	PlaylistIcon,
 	ShuffleIcon,
 	SongIcon,
-} from "components/icons";
-import Illustration from "components/illustration";
-import ListItem from "components/list-item";
-import RelationPageHeader from "components/relation-page-header";
-import { shuffle } from "d3-array";
-import { useSetAtom } from "jotai";
-import { useConfirm } from "material-ui-confirm";
+} from "~/components/icons";
+import Illustration from "~/components/illustration";
+import ListItem from "~/components/list-item";
+import RelationPageHeader from "~/components/relation-page-header";
 import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,
-} from "models/playlist";
-import type Release from "models/release";
-import type { SongWithRelations } from "models/song";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { type QueryClient, useMutation } from "react-query";
-import type { GetPropsTypesFrom, Page } from "ssr";
-import { playTracksAtom } from "state/player";
-import { generateArray } from "utils/gen-list";
-import getSlugOrId from "utils/getSlugOrId";
-import { useGradientBackground } from "utils/gradient-background";
+} from "~/models/playlist";
+import type Release from "~/models/release";
+import type { SongWithRelations } from "~/models/song";
+import { playTracksAtom } from "~/state/player";
+import { generateArray } from "~/utils/gen-list";
+import getSlugOrId from "~/utils/getSlugOrId";
+import { useGradientBackground } from "~/utils/gradient-background";
 
 const playlistQuery = (idOrSlug: number | string) =>
 	API.getPlaylist(idOrSlug, ["illustration"]);

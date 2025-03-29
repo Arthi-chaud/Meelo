@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { yupdate } from "utils/yup";
 import * as yup from "yup";
+import { yupdate } from "~/utils/yup";
 import Artist from "./artist";
 import Genre from "./genre";
 import Illustration from "./illustration";

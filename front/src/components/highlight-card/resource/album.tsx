@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import HighlightCard from "components/highlight-card";
-import type { AlbumWithRelations } from "models/album";
-import type { AlbumExternalMetadata } from "models/external-metadata";
 import { useTranslation } from "react-i18next";
-import { getYear } from "utils/date";
+import HighlightCard from "~/components/highlight-card";
+import type { AlbumWithRelations } from "~/models/album";
+import type { AlbumExternalMetadata } from "~/models/external-metadata";
+import { getYear } from "~/utils/date";
 
 type AlbumHighlightCardProps = {
 	album: AlbumWithRelations<"artist" | "genres" | "illustration"> | undefined;

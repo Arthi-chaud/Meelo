@@ -18,8 +18,12 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { type ItemSize, type LayoutOption, LayoutOptions } from "utils/layout";
-import { parseQueryParam, setQueryParam } from "utils/query-param";
+import {
+	type ItemSize,
+	type LayoutOption,
+	LayoutOptions,
+} from "~/utils/layout";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type LayoutControl =
 	| { layout: "list"; itemSize: never; enableToggle: false; onUpdate: never }

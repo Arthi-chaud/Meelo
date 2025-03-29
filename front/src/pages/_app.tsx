@@ -1,5 +1,3 @@
-import AuthenticationWall from "components/authentication/wall";
-import Toaster from "components/toaster";
 import { ResourceNotFound } from "exceptions";
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
@@ -16,30 +14,32 @@ import {
 	dehydrate,
 } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { DefaultWindowTitle } from "utils/constants";
+import AuthenticationWall from "~/components/authentication/wall";
+import Toaster from "~/components/toaster";
+import { DefaultWindowTitle } from "~/utils/constants";
 import PageNotFound from "./404";
 import InternalError from "./500";
 import "core-js/actual";
-import "theme/styles.css";
+import "~/theme/styles.css";
 import { CacheProvider, type EmotionCache } from "@emotion/react";
 import { deepmerge } from "@mui/utils";
-import API from "api/api";
+import { Provider } from "jotai";
+import type { Page } from "ssr";
+import API from "~/api/api";
 import {
 	DefaultMeeloQueryOptions,
 	prepareMeeloInfiniteQuery,
 	prepareMeeloQuery,
-} from "api/use-query";
-import { KeyboardBindingModal } from "components/keyboard-bindings-modal";
-import Scaffold from "components/scaffold";
-import { KeyboardBindingsProvider } from "contexts/keybindings";
-import { withTranslations } from "i18n/i18n";
-import { Provider } from "jotai";
-import type { Page } from "ssr";
-import { store } from "state/store";
-import { accessTokenAtom } from "state/user";
-import ThemeProvider from "theme/provider";
-import { UserAccessTokenCookieKey } from "utils/cookieKeys";
-import createEmotionCache from "utils/createEmotionCache";
+} from "~/api/use-query";
+import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
+import Scaffold from "~/components/scaffold";
+import { KeyboardBindingsProvider } from "~/contexts/keybindings";
+import { withTranslations } from "~/i18n/i18n";
+import { store } from "~/state/store";
+import { accessTokenAtom } from "~/state/user";
+import ThemeProvider from "~/theme/provider";
+import { UserAccessTokenCookieKey } from "~/utils/cookieKeys";
+import createEmotionCache from "~/utils/createEmotionCache";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

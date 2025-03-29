@@ -33,27 +33,27 @@ import {
 	useTheme,
 } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
-import API from "api/api";
-import { prepareMeeloQuery, useQuery, useQueryClient } from "api/use-query";
-import type Action from "components/actions";
-import {
-	CleanAllLibrariesAction,
-	CleanLibraryAction,
-	ScanAllLibrariesAction,
-	ScanLibraryAction,
-} from "components/actions/library-task";
-import { RefreshLibraryMetadataAction } from "components/actions/refresh-metadata";
-import AdminGrid from "components/admin-grid";
-import { AddIcon, DeleteIcon, EditIcon } from "components/icons";
-import LibraryForm from "components/library-form";
-import SectionHeader from "components/section-header";
 import { useConfirm } from "material-ui-confirm";
-import type Library from "models/library";
 import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import { useQuery as useTanStackQuery } from "react-query";
+import API from "~/api/api";
+import { prepareMeeloQuery, useQuery, useQueryClient } from "~/api/use-query";
+import type Action from "~/components/actions";
+import {
+	CleanAllLibrariesAction,
+	CleanLibraryAction,
+	ScanAllLibrariesAction,
+	ScanLibraryAction,
+} from "~/components/actions/library-task";
+import { RefreshLibraryMetadataAction } from "~/components/actions/refresh-metadata";
+import AdminGrid from "~/components/admin-grid";
+import { AddIcon, DeleteIcon, EditIcon } from "~/components/icons";
+import LibraryForm from "~/components/library-form";
+import SectionHeader from "~/components/section-header";
+import type Library from "~/models/library";
 
 const actionButtonStyle = {
 	overflow: "hidden",

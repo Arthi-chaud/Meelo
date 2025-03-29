@@ -16,28 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import API from "api/api";
-import { useQueryClient } from "api/use-query";
-import type Action from "components/actions";
-import { DownloadAction } from "components/actions/download";
+import { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
+import API from "~/api/api";
+import { useQueryClient } from "~/api/use-query";
+import type Action from "~/components/actions";
+import { DownloadAction } from "~/components/actions/download";
 import {
 	GoToArtistAction,
 	GoToReleaseAction,
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
-} from "components/actions/link";
+} from "~/components/actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
-} from "components/actions/playlist";
-import { RefreshTrackMetadataAction } from "components/actions/refresh-metadata";
-import { ChangeVideoType } from "components/actions/resource-type";
-import { ShowTrackFileInfoAction } from "components/actions/show-track-info";
-import { UpdateTrackIllustrationAction } from "components/actions/update-illustration";
-import { useConfirm } from "material-ui-confirm";
-import type { VideoWithRelations } from "models/video";
-import { useTranslation } from "react-i18next";
+} from "~/components/actions/playlist";
+import { RefreshTrackMetadataAction } from "~/components/actions/refresh-metadata";
+import { ChangeVideoType } from "~/components/actions/resource-type";
+import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
+import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
+import type { VideoWithRelations } from "~/models/video";
 import { ContextualMenu } from "..";
 
 type VideoContextualMenuProps = {

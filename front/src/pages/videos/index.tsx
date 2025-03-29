@@ -1,11 +1,14 @@
-import API from "api/api";
-import { Head } from "components/head";
-import { getOrderQuery, getSortQuery } from "components/infinite/controls/sort";
-import InfiniteVideoView from "components/infinite/resource/video";
-import { VideoSortingKeys } from "models/video";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api/api";
+import { Head } from "~/components/head";
+import {
+	getOrderQuery,
+	getSortQuery,
+} from "~/components/infinite/controls/sort";
+import InfiniteVideoView from "~/components/infinite/resource/video";
+import { VideoSortingKeys } from "~/models/video";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

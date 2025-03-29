@@ -18,8 +18,6 @@
 
 /* eslint-disable no-restricted-imports */
 
-import type { InfiniteFetchFn, Page } from "components/infinite/scroll";
-import type Resource from "models/resource";
 import { useEffect, useState } from "react";
 import {
 	type QueryFunctionContext,
@@ -28,6 +26,8 @@ import {
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "react-query";
+import type { InfiniteFetchFn, Page } from "~/components/infinite/scroll";
+import type Resource from "~/models/resource";
 import API from "./api";
 
 type Key = string | number;

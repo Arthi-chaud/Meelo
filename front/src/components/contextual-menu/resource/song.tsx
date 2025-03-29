@@ -16,9 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import API from "api/api";
-import { useQueryClient } from "api/use-query";
-import { DownloadAsyncAction } from "components/actions/download";
+import { useConfirm } from "material-ui-confirm";
+import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import API from "~/api/api";
+import { useQueryClient } from "~/api/use-query";
+import { DownloadAsyncAction } from "~/components/actions/download";
 import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
@@ -26,22 +30,18 @@ import {
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
 	GoToSongVersionAction,
-} from "components/actions/link";
+} from "~/components/actions/link";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
 	PlayNextAction,
-} from "components/actions/playlist";
-import { RefreshSongMetadataAction } from "components/actions/refresh-metadata";
-import { ChangeSongType } from "components/actions/resource-type";
-import { ShareSongAction } from "components/actions/share";
-import { ShowMasterTrackFileInfoAction } from "components/actions/show-track-info";
-import { DeleteIcon } from "components/icons";
-import { useConfirm } from "material-ui-confirm";
-import type { SongWithRelations } from "models/song";
-import { useRouter } from "next/router";
-import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+} from "~/components/actions/playlist";
+import { RefreshSongMetadataAction } from "~/components/actions/refresh-metadata";
+import { ChangeSongType } from "~/components/actions/resource-type";
+import { ShareSongAction } from "~/components/actions/share";
+import { ShowMasterTrackFileInfoAction } from "~/components/actions/show-track-info";
+import { DeleteIcon } from "~/components/icons";
+import type { SongWithRelations } from "~/models/song";
 import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {

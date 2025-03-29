@@ -17,22 +17,22 @@
  */
 
 import { Chip, Grid } from "@mui/material";
-import API from "api/api";
-import type { QueryClient } from "api/use-query";
-import { EditIcon } from "components/icons";
-import type { TranslationKey } from "i18n/i18n";
 import type { useConfirm } from "material-ui-confirm";
-import type Album from "models/album";
-import { AlbumType } from "models/album";
-import type Song from "models/song";
-import { SongType } from "models/song";
-import type Video from "models/video";
-import { VideoType } from "models/video";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { store } from "state/store";
-import { userAtom } from "state/user";
+import API from "~/api/api";
+import type { QueryClient } from "~/api/use-query";
+import { EditIcon } from "~/components/icons";
+import type { TranslationKey } from "~/i18n/i18n";
+import type Album from "~/models/album";
+import { AlbumType } from "~/models/album";
+import type Song from "~/models/song";
+import { SongType } from "~/models/song";
+import type Video from "~/models/video";
+import { VideoType } from "~/models/video";
+import { store } from "~/state/store";
+import { userAtom } from "~/state/user";
 import type Action from "./";
 
 const ResourceTypeForm = <Enum extends TranslationKey>(props: {

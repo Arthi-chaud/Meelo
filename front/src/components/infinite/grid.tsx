@@ -17,10 +17,10 @@
  */
 
 import { type Breakpoint, Grid } from "@mui/material";
-import type { IllustratedResource } from "models/illustration";
-import type Resource from "models/resource";
-import { useGradientBackground } from "utils/gradient-background";
-import type { ItemSize } from "utils/layout";
+import type { IllustratedResource } from "~/models/illustration";
+import type Resource from "~/models/resource";
+import { useGradientBackground } from "~/utils/gradient-background";
+import type { ItemSize } from "~/utils/layout";
 import InfiniteScroll from "./scroll";
 
 type TypedList<T extends Resource> = typeof InfiniteScroll<T>;

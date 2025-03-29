@@ -24,33 +24,33 @@ import {
 	DialogTitle,
 	Divider,
 } from "@mui/material";
-import API from "api/api";
+import { Add, Edit } from "iconsax-react";
+import type { useConfirm } from "material-ui-confirm";
+import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
+import API from "~/api/api";
 import {
 	type MeeloInfiniteQueryFn,
 	type QueryClient,
 	useQueryClient,
-} from "api/use-query";
+} from "~/api/use-query";
 import {
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
 	DeleteIcon,
 	PlayAfterIcon,
 	PlayNextIcon,
-} from "components/icons";
-import Illustration from "components/illustration";
-import InfiniteList from "components/infinite/list";
-import ListItem from "components/list-item";
-import { Add, Edit } from "iconsax-react";
-import type { useConfirm } from "material-ui-confirm";
-import type Playlist from "models/playlist";
-import type { PlaylistWithRelations } from "models/playlist";
-import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
-import { type TrackState, playAfterAtom, playNextAtom } from "state/player";
-import { store } from "state/store";
+} from "~/components/icons";
+import Illustration from "~/components/illustration";
+import InfiniteList from "~/components/infinite/list";
+import ListItem from "~/components/list-item";
+import type Playlist from "~/models/playlist";
+import type { PlaylistWithRelations } from "~/models/playlist";
+import { type TrackState, playAfterAtom, playNextAtom } from "~/state/player";
+import { store } from "~/state/store";
 import type Action from "./";
 
 export const PlayNextAction = (

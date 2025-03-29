@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import PlaylistContextualMenu from "components/contextual-menu/resource/playlist";
-import { PlaylistIcon } from "components/icons";
-import Illustration from "components/illustration";
-import Tile from "components/tile";
-import type { PlaylistWithRelations } from "models/playlist";
+import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
+import { PlaylistIcon } from "~/components/icons";
+import Illustration from "~/components/illustration";
+import Tile from "~/components/tile";
+import type { PlaylistWithRelations } from "~/models/playlist";
 
 const PlaylistTile = ({
 	playlist,

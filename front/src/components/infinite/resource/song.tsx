@@ -16,29 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
+import { useState } from "react";
 import {
 	type InfiniteQuery,
 	type QueryClient,
 	prepareMeeloInfiniteQuery,
 	useQueryClient,
-} from "api/use-query";
-import type Action from "components/actions";
-import { PlayIcon, ShuffleIcon } from "components/icons";
-import { Controls } from "components/infinite/controls/controls";
-import { useLibraryFilterControl } from "components/infinite/controls/filters/library";
-import { useTypeFilterControl } from "components/infinite/controls/filters/resource-type";
-import { useSortControl } from "components/infinite/controls/sort";
-import InfiniteView from "components/infinite/view";
-import SongItem, { SongGroupItem } from "components/list-item/resource/song";
-import { SongSortingKeys, SongType, type SongWithRelations } from "models/song";
-import type { SongGroupWithRelations } from "models/song-group";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { emptyPlaylistAtom, playAfterAtom, playTrackAtom } from "state/player";
-import { store } from "state/store";
-import { DefaultItemSize } from "utils/layout";
-import { parseQueryParam, setQueryParam } from "utils/query-param";
-import type { SortingParameters } from "utils/sorting";
+} from "~/api/use-query";
+import type Action from "~/components/actions";
+import { PlayIcon, ShuffleIcon } from "~/components/icons";
+import { Controls } from "~/components/infinite/controls/controls";
+import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
+import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
+import { useSortControl } from "~/components/infinite/controls/sort";
+import InfiniteView from "~/components/infinite/view";
+import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
+import {
+	SongSortingKeys,
+	SongType,
+	type SongWithRelations,
+} from "~/models/song";
+import type { SongGroupWithRelations } from "~/models/song-group";
+import {
+	emptyPlaylistAtom,
+	playAfterAtom,
+	playTrackAtom,
+} from "~/state/player";
+import { store } from "~/state/store";
+import { DefaultItemSize } from "~/utils/layout";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
+import type { SortingParameters } from "~/utils/sorting";
 
 type SongModel = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
