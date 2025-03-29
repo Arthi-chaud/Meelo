@@ -49,7 +49,7 @@ import {
 	VideoIcon,
 } from "../icons";
 import { parentScrollableDivId } from "../infinite/scroll";
-import Player from "../player/player";
+import Player from "../player";
 import ThemedImage from "../themed-image";
 import scaffoldActions from "./actions";
 
