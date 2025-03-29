@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Illustration from "../models/illustration";
+import type Illustration from "models/illustration";
 
 export const useAccentColor = (illustration?: Illustration | null) => {
 	const sortedColors = Array.of(...(illustration?.colors ?? [])).sort();

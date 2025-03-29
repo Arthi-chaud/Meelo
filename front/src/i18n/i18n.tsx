@@ -25,8 +25,8 @@ import i18next, {
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
-import { LanguageCookieKey } from "../utils/cookieKeys";
-import { isSSR } from "../utils/is-ssr";
+import { LanguageCookieKey } from "utils/cookieKeys";
+import { isSSR } from "utils/is-ssr";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
 
