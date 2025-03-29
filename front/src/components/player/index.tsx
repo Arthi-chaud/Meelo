@@ -32,6 +32,7 @@ import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import API from "~/api";
+import { useQueryClient } from "~/api/use-query";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
 import {
@@ -49,6 +50,7 @@ const Player = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
 	const [user] = useAtom(userAtom);
+	const queryClient = useQueryClient();
 	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
 	const playTracks = useSetAtom(playTracksAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
@@ -88,7 +90,7 @@ const Player = () => {
 		}
 		// If playlist but cursor to -1
 		if (currentTrack === undefined) {
-			skipTrack();
+			skipTrack(queryClient);
 		}
 		player.current?.play();
 	};
@@ -101,7 +103,7 @@ const Player = () => {
 		if (cursor >= playlist.length - 1) {
 			pause();
 		}
-		skipTrack();
+		skipTrack(queryClient);
 	};
 	const onRewind = () => {
 		if (player.current && player.current.currentTime > 5) {
@@ -133,7 +135,7 @@ const Player = () => {
 						API.setSongAsPlayed(currentTrack.track.songId);
 					}
 					progress.current = null;
-					skipTrack();
+					skipTrack(queryClient);
 				};
 				player.current!.onpause = () => {
 					if (player.current!.ended === false) {
@@ -163,7 +165,7 @@ const Player = () => {
 							toast.error(t("playbackError"), {
 								id: "playbackError",
 							});
-							skipTrack();
+							skipTrack(queryClient);
 						} else {
 							setUseTranscoding(true);
 						}

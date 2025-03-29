@@ -19,7 +19,7 @@
 import {
 	type InfiniteQuery,
 	type QueryClient,
-	prepareMeeloInfiniteQuery,
+	transformPage,
 	useQueryClient,
 } from "~/api/use-query";
 import { PlayIcon, ShuffleIcon } from "~/components/icons";
@@ -36,11 +36,7 @@ import {
 	VideoType,
 	type VideoWithRelations,
 } from "~/models/video";
-import {
-	emptyPlaylistAtom,
-	playAfterAtom,
-	playTrackAtom,
-} from "~/state/player";
+import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
 import type { SortingParameters } from "~/utils/sorting";
 
@@ -87,14 +83,15 @@ const InfiniteVideoView = (props: ViewProps) => {
 		label: "playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
-			playVideosAction(queryClient, () => props.query(query));
+			playVideosAction(queryClient, props.query(query));
 		},
 	} as const;
 	const shuffleAction = {
 		label: "shuffle",
 		icon: <ShuffleIcon />,
 		onClick: () => {
-			playVideosAction(queryClient, () =>
+			playVideosAction(
+				queryClient,
 				props.query({
 					...query,
 					random: Math.floor(Math.random() * 10000),
@@ -135,33 +132,22 @@ const InfiniteVideoView = (props: ViewProps) => {
 
 const playVideosAction = (
 	queryClient: QueryClient,
-	query: () => InfiniteQuery<
+	query: InfiniteQuery<
 		VideoWithRelations<"artist" | "master" | "illustration">
 	>,
 ) => {
-	store.set(emptyPlaylistAtom);
-	queryClient.client
-		.fetchInfiniteQuery(prepareMeeloInfiniteQuery(query))
-		.then(async (res) => {
-			const videos = res.pages
-				.flatMap(({ items }) => items)
-				.map((video) => ({
-					...video,
-					track: {
-						...video.master,
-						illustration: video.illustration,
-					},
-				}));
-			let i = 0;
-			for (const video of videos) {
-				if (i === 0) {
-					store.set(playTrackAtom, video);
-				} else {
-					store.set(playAfterAtom, video);
-				}
-				i++;
-			}
-		});
+	store.set(
+		playFromInfiniteQuery,
+		transformPage(query, (video) => ({
+			...video,
+			track: {
+				...video.master,
+				illustration: video.illustration,
+			},
+			id: video.id,
+		})),
+		queryClient,
+	);
 };
 
 export default InfiniteVideoView;

@@ -17,6 +17,12 @@
  */
 
 import { atom } from "jotai";
+import {
+	type InfiniteQuery,
+	type QueryClient,
+	prepareMeeloInfiniteQuery,
+} from "~/api/use-query";
+import type Resource from "~/models/resource";
 import type Artist from "../models/artist";
 import type { TrackWithRelations } from "../models/track";
 
@@ -36,31 +42,110 @@ export type PlayerState = {
 	 * If it equals -1, the playlist is finished or not playing
 	 */
 	cursor: number;
+
+	infinite: {
+		// Infinite query used to populate queue
+		query: InfiniteQuery<TrackState & Resource>;
+		// the number of items to 'skip' for the next query
+		afterId: number;
+	} | null;
 };
 
 export const cursorAtom = atom((get) => get(_playerState).cursor);
 export const playlistAtom = atom((get) => get(_playerState).playlist);
 export const playTrackAtom = atom(null, (_, set, track: TrackState) => {
-	set(_playerState, { playlist: [track], cursor: 0 });
+	set(_playerState, { playlist: [track], cursor: 0, infinite: null });
 });
 export const playTracksAtom = atom(
 	null,
 	(_, set, { tracks, cursor }: { tracks: TrackState[]; cursor?: number }) => {
-		set(_playerState, { playlist: tracks, cursor: cursor ?? 0 });
+		set(_playerState, {
+			playlist: tracks,
+			cursor: cursor ?? 0,
+			infinite: null,
+		});
 	},
 );
-export const skipTrackAtom = atom(null, (get, set) => {
-	const state = get(_playerState);
+export const skipTrackAtom = atom(
+	null,
+	(get, set, queryClient: QueryClient) => {
+		const state = get(_playerState);
 
-	let newCursor = state.cursor + 1;
-	if (newCursor >= state.playlist.length) {
-		newCursor = -1;
-	}
-	set(_playerState, {
-		cursor: newCursor,
-		playlist: state.playlist,
-	});
-});
+		let newCursor = state.cursor + 1;
+		if (newCursor >= state.playlist.length) {
+			newCursor = -1;
+		}
+		set(_playerState, {
+			cursor: newCursor,
+			playlist: state.playlist,
+			infinite: state.infinite,
+		});
+		// Load new page if close to the end
+		if (state.infinite && newCursor >= state.playlist.length - 2) {
+			const afterId = state.infinite!.afterId;
+			const pageQuery = {
+				// TODO see next atom
+				key: [...state.infinite.query.key, "queue", `after-${afterId}`],
+				exec: () =>
+					state.infinite!.query.exec({
+						afterId: state.infinite!.afterId,
+					}),
+			};
+			queryClient.client
+				.fetchQuery({
+					...prepareMeeloInfiniteQuery(() => pageQuery),
+					staleTime: 0,
+				})
+				.then((res) => {
+					const state = get(_playerState);
+					set(_playerState, {
+						cursor: state.cursor,
+						playlist: [...state.playlist, ...res.items],
+						infinite: res.afterId
+							? {
+									query: state.infinite!.query,
+									afterId: res.afterId,
+								}
+							: null,
+					});
+				});
+		}
+	},
+);
+
+export const playFromInfiniteQuery = atom(
+	null,
+	(
+		get,
+		set,
+		// We merge TrackState + Resource to give the query handler an Id to 'afterId' from
+		query: InfiniteQuery<TrackState & Resource>,
+		queryClient: QueryClient,
+	) => {
+		set(_playerState, {
+			cursor: -1,
+			playlist: [],
+			infinite: { query, afterId: -1 },
+		});
+		queryClient.client
+			.fetchInfiniteQuery({
+				...prepareMeeloInfiniteQuery(() => query),
+				// We'll use a separate cache for the queue
+				// as the query is likety to be built with 'transformPage'
+				// TODO use same cahce when that function will use the
+				// 'select' prop from react-query
+				queryKey: [...query.key, "queue"],
+			})
+			.then((res) => {
+				const items = res.pages.flatMap(({ items }) => items);
+				set(_playerState, {
+					cursor: 0,
+					playlist: items,
+					infinite: { query, afterId: items.at(-1)!.id },
+				});
+			});
+	},
+);
 
 export const playPreviousTrackAtom = atom(null, (get, set) => {
 	const state = get(_playerState);
@@ -71,10 +156,11 @@ export const playPreviousTrackAtom = atom(null, (get, set) => {
 	set(_playerState, {
 		cursor: newCursor,
 		playlist: state.playlist,
+		infinite: state.infinite,
 	});
 });
 export const emptyPlaylistAtom = atom(null, (_, set) =>
-	set(_playerState, { playlist: [], cursor: -1 }),
+	set(_playerState, { playlist: [], cursor: -1, infinite: null }),
 );
 
 export const removeTrackAtom = atom(null, (get, set, trackIndex: number) => {
@@ -82,6 +168,7 @@ export const removeTrackAtom = atom(null, (get, set, trackIndex: number) => {
 	set(_playerState, {
 		cursor: state.cursor,
 		playlist: state.playlist.filter((_, i) => i !== trackIndex),
+		infinite: state.infinite,
 	});
 });
 export const playNextAtom = atom(null, (get, set, track: TrackState) => {
@@ -90,6 +177,7 @@ export const playNextAtom = atom(null, (get, set, track: TrackState) => {
 	const newState = {
 		cursor: state.cursor,
 		playlist: state.playlist,
+		infinite: state.infinite,
 	};
 	set(_playerState, newState);
 });
@@ -99,6 +187,7 @@ export const playAfterAtom = atom(null, (get, set, track: TrackState) => {
 	set(_playerState, {
 		playlist: [...state.playlist, track],
 		cursor: state.cursor,
+		infinite: state.infinite,
 	});
 });
 
@@ -114,4 +203,8 @@ export const reorderAtom = atom(
 		});
 	},
 );
-const _playerState = atom<PlayerState>({ playlist: [], cursor: -1 });
+const _playerState = atom<PlayerState>({
+	playlist: [],
+	cursor: -1,
+	infinite: null,
+});
