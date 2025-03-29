@@ -27,7 +27,7 @@ import TrackItem from "../../list-item/track-item";
 import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useSortControl } from "../controls/sort";
-import InfiniteView from "../infinite-view";
+import InfiniteView from "../view";
 
 type QueryProps = {
 	libraries?: string[];

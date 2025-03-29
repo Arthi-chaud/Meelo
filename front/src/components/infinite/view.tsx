@@ -25,9 +25,9 @@ import type { ItemSize } from "../../utils/layout";
 import type { EmptyStateProps } from "../empty-state";
 import Fade from "../fade";
 import { GoBackTopIcon } from "../icons";
-import InfiniteGrid from "./infinite-grid";
-import InfiniteList from "./infinite-list";
-import { parentScrollableDivId } from "./infinite-scroll";
+import InfiniteGrid from "./grid";
+import InfiniteList from "./list";
+import { parentScrollableDivId } from "./scroll";
 
 export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";

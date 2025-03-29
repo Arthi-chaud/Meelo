@@ -28,7 +28,7 @@ import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useLayoutControl } from "../controls/layout";
 import { useSortControl } from "../controls/sort";
-import InfiniteView from "../infinite-view";
+import InfiniteView from "../view";
 
 type QueryProps = { libraries?: string[] } & SortingParameters<
 	typeof ArtistSortingKeys

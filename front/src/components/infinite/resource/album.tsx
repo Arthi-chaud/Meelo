@@ -30,7 +30,7 @@ import { useLibraryFilterControl } from "../controls/filters/library";
 import { useTypeFilterControl } from "../controls/filters/resource-type";
 import { useLayoutControl } from "../controls/layout";
 import { useSortControl } from "../controls/sort";
-import InfiniteView from "../infinite-view";
+import InfiniteView from "../view";
 
 type QueryProps = {
 	types?: AlbumType[];

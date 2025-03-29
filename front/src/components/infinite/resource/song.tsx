@@ -46,7 +46,7 @@ import { Controls } from "../controls/controls";
 import { useLibraryFilterControl } from "../controls/filters/library";
 import { useTypeFilterControl } from "../controls/filters/resource-type";
 import { useSortControl } from "../controls/sort";
-import InfiniteView from "../infinite-view";
+import InfiniteView from "../view";
 
 type SongModel = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"

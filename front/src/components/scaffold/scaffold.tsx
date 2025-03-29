@@ -48,7 +48,7 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "../icons";
-import { parentScrollableDivId } from "../infinite/infinite-scroll";
+import { parentScrollableDivId } from "../infinite/scroll";
 import Player from "../player/player";
 import ThemedImage from "../themed-image";
 import scaffoldActions from "./actions";

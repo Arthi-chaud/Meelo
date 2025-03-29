@@ -29,7 +29,7 @@ import PlaylistTile from "../../tile/playlist-tile";
 import { Controls } from "../controls/controls";
 import { useLayoutControl } from "../controls/layout";
 import { useSortControl } from "../controls/sort";
-import InfiniteView from "../infinite-view";
+import InfiniteView from "../view";
 
 type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;
 type PlaylistModel = PlaylistWithRelations<"illustration">;

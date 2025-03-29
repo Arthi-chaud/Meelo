@@ -31,7 +31,7 @@ import {
 } from "../../api/use-query";
 import { Head } from "../../components/head";
 import { SearchIcon } from "../../components/icons";
-import InfiniteView from "../../components/infinite/infinite-view";
+import InfiniteView from "../../components/infinite/view";
 import InfiniteAlbumView from "../../components/infinite/resource/album";
 import InfiniteArtistView from "../../components/infinite/resource/artist";
 import { InfiniteSongView } from "../../components/infinite/resource/song";

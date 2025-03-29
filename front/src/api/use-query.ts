@@ -29,7 +29,7 @@ import {
 import type {
 	InfiniteFetchFn,
 	Page,
-} from "../components/infinite/infinite-scroll";
+} from "../components/infinite/scroll";
 import type Resource from "../models/resource";
 import API from "./api";
 

@@ -52,7 +52,7 @@ import GenreButton from "../../components/genre-button";
 import { Head } from "../../components/head";
 import { PlayIcon, ShuffleIcon } from "../../components/icons";
 import Illustration from "../../components/illustration";
-import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
+import { parentScrollableDivId } from "../../components/infinite/scroll";
 import ReleaseTrackList from "../../components/release-tracklist";
 import ResourceDescription from "../../components/resource-description";
 import SongGrid from "../../components/song-grid";
