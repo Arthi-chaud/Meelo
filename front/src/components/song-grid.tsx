@@ -18,13 +18,13 @@
 
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
-import type { SongWithRelations } from "../models/song";
-import { playTrackAtom } from "../state/player";
-import formatArtists from "../utils/formatArtists";
-import SongContextualMenu from "./contextual-menu/song-contextual-menu";
+import type { SongWithRelations } from "~/models/song";
+import { playTrackAtom } from "~/state/player";
+import formatArtists from "~/utils/formatArtists";
+import SongContextualMenu from "./contextual-menu/resource/song";
 import { SongIcon } from "./icons";
 import Illustration from "./illustration";
-import ListItem from "./list-item/item";
+import ListItem from "./list-item";
 
 type SongGridProps = {
 	songs: (

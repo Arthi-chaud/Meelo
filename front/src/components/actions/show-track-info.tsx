@@ -17,11 +17,11 @@
  */
 
 import type { useConfirm } from "material-ui-confirm";
-import API from "../../api/api";
-import type { QueryClient } from "../../api/use-query";
-import { InfoIcon } from "../icons";
-import { openTrackFileInfoModal } from "../track-file-info";
-import type Action from "./action";
+import API from "~/api";
+import type { QueryClient } from "~/api/use-query";
+import { InfoIcon } from "~/components/icons";
+import { openTrackFileInfoModal } from "~/components/track-file-info";
+import type Action from "./";
 
 export const ShowTrackFileInfoAction = (
 	confirm: ReturnType<typeof useConfirm>,

@@ -17,7 +17,7 @@
  */
 
 import type { useConfirm } from "material-ui-confirm";
-import type { Translator } from "../i18n/i18n";
+import type { Translator } from "~/i18n/i18n";
 
 const confirmDownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,

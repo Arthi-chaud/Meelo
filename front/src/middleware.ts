@@ -19,7 +19,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { QueryClient } from "react-query";
-import API from "./api/api";
+import API from "./api";
 import { prepareMeeloQuery } from "./api/use-query";
 import { store } from "./state/store";
 import { accessTokenAtom } from "./state/user";

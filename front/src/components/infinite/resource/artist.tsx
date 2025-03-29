@@ -16,19 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { InfiniteQuery } from "../../../api/use-query";
-import {
-	ArtistSortingKeys,
-	type ArtistWithRelations,
-} from "../../../models/artist";
-import type { SortingParameters } from "../../../utils/sorting";
-import ArtistItem from "../../list-item/artist-item";
-import ArtistTile from "../../tile/artist-tile";
-import { Controls } from "../controls/controls";
-import { useLibraryFilterControl } from "../controls/filters/library";
-import { useLayoutControl } from "../controls/layout";
-import { useSortControl } from "../controls/sort";
-import InfiniteView from "../infinite-view";
+import type { InfiniteQuery } from "~/api/use-query";
+import { Controls } from "~/components/infinite/controls/controls";
+import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
+import { useLayoutControl } from "~/components/infinite/controls/layout";
+import { useSortControl } from "~/components/infinite/controls/sort";
+import InfiniteView from "~/components/infinite/view";
+import ArtistItem from "~/components/list-item/resource/artist";
+import ArtistTile from "~/components/tile/resource/artist";
+import { ArtistSortingKeys, type ArtistWithRelations } from "~/models/artist";
+import type { SortingParameters } from "~/utils/sorting";
 
 type QueryProps = { libraries?: string[] } & SortingParameters<
 	typeof ArtistSortingKeys

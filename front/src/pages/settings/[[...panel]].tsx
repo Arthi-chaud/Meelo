@@ -21,13 +21,13 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import API from "../../api/api";
-import { useQuery } from "../../api/use-query";
-import { Head } from "../../components/head";
-import LibrariesSettings from "../../components/settings/libraries-settings";
-import UserSettings from "../../components/settings/user-settings";
-import UsersSettings from "../../components/settings/users-settings";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
+import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api";
+import { useQuery } from "~/api/use-query";
+import { Head } from "~/components/head";
+import LibrariesSettings from "~/components/settings/libraries";
+import UISettings from "~/components/settings/ui";
+import UsersSettings from "~/components/settings/users";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
@@ -37,7 +37,7 @@ const AvailablePanels = ["interface", "libraries", "users"] as const;
 type PanelName = (typeof AvailablePanels)[number];
 
 const Panels: Record<PanelName, JSX.Element> = {
-	interface: <UserSettings />,
+	interface: <UISettings />,
 	libraries: <LibrariesSettings />,
 	users: <UsersSettings />,
 };
@@ -79,7 +79,7 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		return <></>;
 	}
 	if (userQuery.data.admin === false) {
-		return <UserSettings />;
+		return <UISettings />;
 	}
 	return (
 		<>

@@ -17,7 +17,7 @@
  */
 
 import { Box, Skeleton, Typography } from "@mui/material";
-import { generateArray } from "../utils/gen-list";
+import { generateArray } from "~/utils/gen-list";
 import { EmptyState } from "./empty-state";
 import Fade from "./fade";
 import { LyricsIcon } from "./icons";

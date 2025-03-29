@@ -30,7 +30,7 @@ import { useTranslation } from "react-i18next";
 import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,
-} from "../contexts/keybindings";
+} from "~/contexts/keybindings";
 import { CloseIcon } from "./icons";
 
 export const KeyboardBindingModal = () => {

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { store } from "../../state/store";
-import { accessTokenAtom } from "../../state/user";
-import { LogoutIcon } from "../icons";
-import type Action from "./action";
+import { LogoutIcon } from "~/components/icons";
+import { store } from "~/state/store";
+import { accessTokenAtom } from "~/state/user";
+import type Action from "./";
 
 export const LogoutAction: Action = {
 	label: "logout",

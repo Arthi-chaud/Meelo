@@ -17,7 +17,7 @@
  */
 
 import * as yup from "yup";
-import { yupdate } from "../utils/yup";
+import { yupdate } from "~/utils/yup";
 import Artist from "./artist";
 import Genre from "./genre";
 import Illustration from "./illustration";

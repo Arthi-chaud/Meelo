@@ -22,7 +22,7 @@ import { Box, useTheme } from "@mui/material";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import type { ComponentProps } from "react";
-import { useThemedSxValue } from "../utils/themed-sx-value";
+import { useThemedSxValue } from "~/utils/themed-sx-value";
 
 type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
 	Omit<ComponentProps<typeof Image>, "src">;

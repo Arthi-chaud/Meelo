@@ -39,42 +39,38 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
-import API from "../../api/api";
-import {
-	prepareMeeloQuery,
-	useInfiniteQuery,
-	useQuery,
-} from "../../api/use-query";
-import ReleaseContextualMenu from "../../components/contextual-menu/release-contextual-menu";
-import ExternalMetadataBadge from "../../components/external-metadata-badge";
-import Fade from "../../components/fade";
-import GenreButton from "../../components/genre-button";
-import { Head } from "../../components/head";
-import { PlayIcon, ShuffleIcon } from "../../components/icons";
-import Illustration from "../../components/illustration";
-import { parentScrollableDivId } from "../../components/infinite/infinite-scroll";
-import ReleaseTrackList from "../../components/release-tracklist";
-import ResourceDescription from "../../components/resource-description";
-import SongGrid from "../../components/song-grid";
-import TileRow from "../../components/tile-row";
-import AlbumTile from "../../components/tile/album-tile";
-import ArtistTile from "../../components/tile/artist-tile";
-import PlaylistTile from "../../components/tile/playlist-tile";
-import ReleaseTile from "../../components/tile/release-tile";
-import VideoTile from "../../components/tile/video-tile";
-import type { SongWithRelations } from "../../models/song";
-import type Tracklist from "../../models/tracklist";
-import type { TracklistItemWithRelations } from "../../models/tracklist";
-import { VideoTypeIsExtra, type VideoWithRelations } from "../../models/video";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
-import { playTracksAtom } from "../../state/player";
-import { useAccentColor } from "../../utils/accent-color";
-import { getDate, getYear } from "../../utils/date";
-import formatDuration from "../../utils/formatDuration";
-import { generateArray } from "../../utils/gen-list";
-import getSlugOrId from "../../utils/getSlugOrId";
-import { useGradientBackground } from "../../utils/gradient-background";
-import { useThemedSxValue } from "../../utils/themed-sx-value";
+import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api";
+import { prepareMeeloQuery, useInfiniteQuery, useQuery } from "~/api/use-query";
+import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
+import ExternalMetadataBadge from "~/components/external-metadata-badge";
+import Fade from "~/components/fade";
+import GenreButton from "~/components/genre-button";
+import { Head } from "~/components/head";
+import { PlayIcon, ShuffleIcon } from "~/components/icons";
+import Illustration from "~/components/illustration";
+import { parentScrollableDivId } from "~/components/infinite/scroll";
+import ReleaseTrackList from "~/components/release-tracklist";
+import ResourceDescription from "~/components/resource-description";
+import SongGrid from "~/components/song-grid";
+import AlbumTile from "~/components/tile/resource/album";
+import ArtistTile from "~/components/tile/resource/artist";
+import PlaylistTile from "~/components/tile/resource/playlist";
+import ReleaseTile from "~/components/tile/resource/release";
+import VideoTile from "~/components/tile/resource/video";
+import TileRow from "~/components/tile/row";
+import type { SongWithRelations } from "~/models/song";
+import type Tracklist from "~/models/tracklist";
+import type { TracklistItemWithRelations } from "~/models/tracklist";
+import { VideoTypeIsExtra, type VideoWithRelations } from "~/models/video";
+import { playTracksAtom } from "~/state/player";
+import { useAccentColor } from "~/utils/accent-color";
+import { getDate, getYear } from "~/utils/date";
+import formatDuration from "~/utils/formatDuration";
+import { generateArray } from "~/utils/gen-list";
+import getSlugOrId from "~/utils/getSlugOrId";
+import { useGradientBackground } from "~/utils/gradient-background";
+import { useThemedSxValue } from "~/utils/themed-sx-value";
 
 const formatReleaseDate = (date: Date, lang: string) => {
 	if (date.getDate() === 1 && date.getMonth() === 0) {

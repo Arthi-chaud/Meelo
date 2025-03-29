@@ -17,7 +17,7 @@
  */
 
 import * as yup from "yup";
-import { yupdate } from "../utils/yup";
+import { yupdate } from "~/utils/yup";
 import Album from "./album";
 import { Disc } from "./disc";
 import Illustration from "./illustration";

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Translator } from "../../i18n/i18n";
-import copyLinkToClipboard from "../../utils/copy-link";
-import { ShareIcon } from "../icons";
-import type Action from "./action";
+import { ShareIcon } from "~/components/icons";
+import type { Translator } from "~/i18n/i18n";
+import copyLinkToClipboard from "~/utils/copy-link";
+import type Action from "./";
 
 export const ShareAction = (url: string, t: Translator): Action => ({
 	onClick: () => copyLinkToClipboard(url, t),

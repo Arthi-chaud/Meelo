@@ -22,29 +22,29 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "../../api/api";
+import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api";
 import {
 	type Query,
 	toInfiniteQuery,
 	transformPage,
 	useQueryClient,
-} from "../../api/use-query";
-import { Head } from "../../components/head";
-import { SearchIcon } from "../../components/icons";
-import InfiniteView from "../../components/infinite/infinite-view";
-import InfiniteAlbumView from "../../components/infinite/resource/album";
-import InfiniteArtistView from "../../components/infinite/resource/artist";
-import { InfiniteSongView } from "../../components/infinite/resource/song";
-import InfiniteVideoView from "../../components/infinite/resource/video";
-import AlbumItem from "../../components/list-item/album-item";
-import ArtistItem from "../../components/list-item/artist-item";
-import SongItem from "../../components/list-item/song-item";
-import VideoItem from "../../components/list-item/video-item";
-import { useTabRouter } from "../../components/tab-router";
-import type { SaveSearchItem, SearchResult } from "../../models/search";
-import type { GetPropsTypesFrom, Page } from "../../ssr";
-import formatArtists from "../../utils/formatArtists";
-import { DefaultItemSize } from "../../utils/layout";
+} from "~/api/use-query";
+import { Head } from "~/components/head";
+import { SearchIcon } from "~/components/icons";
+import InfiniteAlbumView from "~/components/infinite/resource/album";
+import InfiniteArtistView from "~/components/infinite/resource/artist";
+import { InfiniteSongView } from "~/components/infinite/resource/song";
+import InfiniteVideoView from "~/components/infinite/resource/video";
+import InfiniteView from "~/components/infinite/view";
+import AlbumItem from "~/components/list-item/resource/album";
+import ArtistItem from "~/components/list-item/resource/artist";
+import SongItem from "~/components/list-item/resource/song";
+import VideoItem from "~/components/list-item/resource/video";
+import { useTabRouter } from "~/components/tab-router";
+import type { SaveSearchItem, SearchResult } from "~/models/search";
+import formatArtists from "~/utils/formatArtists";
+import { DefaultItemSize } from "~/utils/layout";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;

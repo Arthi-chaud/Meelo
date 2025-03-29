@@ -31,30 +31,26 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
-import API from "../../../api/api";
-import {
-	prepareMeeloQuery,
-	useInfiniteQuery,
-	useQuery,
-} from "../../../api/use-query";
-import ExternalMetadataBadge from "../../../components/external-metadata-badge";
-import GenreButton from "../../../components/genre-button";
-import { Head } from "../../../components/head";
-import { PlayIcon } from "../../../components/icons";
-import { InfiniteSongView } from "../../../components/infinite/resource/song";
-import InfiniteTrackView from "../../../components/infinite/resource/track";
-import InfiniteVideoView from "../../../components/infinite/resource/video";
-import LyricsBox from "../../../components/lyrics";
-import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
-import SongTypeIcon from "../../../components/song-type-icon";
-import { useTabRouter } from "../../../components/tab-router";
-import type { GetPropsTypesFrom, Page } from "../../../ssr";
-import { playTrackAtom } from "../../../state/player";
-import { useAccentColor } from "../../../utils/accent-color";
-import { generateArray } from "../../../utils/gen-list";
-import getSlugOrId from "../../../utils/getSlugOrId";
-import { useGradientBackground } from "../../../utils/gradient-background";
-import { useThemedSxValue } from "../../../utils/themed-sx-value";
+import type { GetPropsTypesFrom, Page } from "ssr";
+import API from "~/api";
+import { prepareMeeloQuery, useInfiniteQuery, useQuery } from "~/api/use-query";
+import ExternalMetadataBadge from "~/components/external-metadata-badge";
+import GenreButton from "~/components/genre-button";
+import { Head } from "~/components/head";
+import { PlayIcon } from "~/components/icons";
+import { InfiniteSongView } from "~/components/infinite/resource/song";
+import InfiniteTrackView from "~/components/infinite/resource/track";
+import InfiniteVideoView from "~/components/infinite/resource/video";
+import LyricsBox from "~/components/lyrics";
+import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
+import SongTypeIcon from "~/components/song-type-icon";
+import { useTabRouter } from "~/components/tab-router";
+import { playTrackAtom } from "~/state/player";
+import { useAccentColor } from "~/utils/accent-color";
+import { generateArray } from "~/utils/gen-list";
+import getSlugOrId from "~/utils/getSlugOrId";
+import { useGradientBackground } from "~/utils/gradient-background";
+import { useThemedSxValue } from "~/utils/themed-sx-value";
 
 const externalMetadataQuery = (songIdentifier: string | number) =>
 	API.getSongExternalMetadata(songIdentifier);

@@ -31,31 +31,27 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "../../api/api";
+import API from "~/api";
 import {
 	type MeeloInfiniteQueryFn,
 	type QueryClient,
 	useQueryClient,
-} from "../../api/use-query";
-import type Playlist from "../../models/playlist";
-import type { PlaylistWithRelations } from "../../models/playlist";
-import {
-	type TrackState,
-	playAfterAtom,
-	playNextAtom,
-} from "../../state/player";
-import { store } from "../../state/store";
+} from "~/api/use-query";
 import {
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
 	DeleteIcon,
 	PlayAfterIcon,
 	PlayNextIcon,
-} from "../icons";
-import Illustration from "../illustration";
-import InfiniteList from "../infinite/infinite-list";
-import ListItem from "../list-item/item";
-import type Action from "./action";
+} from "~/components/icons";
+import Illustration from "~/components/illustration";
+import InfiniteList from "~/components/infinite/list";
+import ListItem from "~/components/list-item";
+import type Playlist from "~/models/playlist";
+import type { PlaylistWithRelations } from "~/models/playlist";
+import { type TrackState, playAfterAtom, playNextAtom } from "~/state/player";
+import { store } from "~/state/store";
+import type Action from "./";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,

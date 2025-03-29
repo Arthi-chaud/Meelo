@@ -17,10 +17,10 @@
  */
 
 import { Box, ButtonBase, Grid, Typography } from "@mui/material";
-import { useQuery } from "../../../api/use-query";
-import formatArtists from "../../../utils/formatArtists";
-import { TrackIcon } from "../../icons";
-import Illustration from "../../illustration";
+import { useQuery } from "~/api/use-query";
+import { TrackIcon } from "~/components/icons";
+import Illustration from "~/components/illustration";
+import formatArtists from "~/utils/formatArtists";
 import {
 	PlayButton,
 	type PlayerControlsProps,

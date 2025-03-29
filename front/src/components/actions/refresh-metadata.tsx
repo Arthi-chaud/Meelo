@@ -20,10 +20,10 @@ import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
-import API from "../../api/api";
-import type { Translator } from "../../i18n/i18n";
-import { MetadataRefreshIcon } from "../icons";
-import type Action from "./action";
+import API from "~/api";
+import { MetadataRefreshIcon } from "~/components/icons";
+import type { Translator } from "~/i18n/i18n";
+import type Action from "./";
 
 type APIMethodParams = ArraySlice<
 	Parameters<typeof API.refreshMetadata>,
