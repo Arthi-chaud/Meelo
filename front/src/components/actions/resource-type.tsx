@@ -33,7 +33,7 @@ import { VideoType } from "../../models/video";
 import { store } from "../../state/store";
 import { userAtom } from "../../state/user";
 import { EditIcon } from "../icons";
-import type Action from "./action";
+import type Action from "./";
 
 const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 	defaultValue?: Enum;

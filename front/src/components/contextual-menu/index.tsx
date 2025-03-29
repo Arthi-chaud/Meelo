@@ -29,7 +29,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type Action from "../actions/action";
+import type Action from "../actions";
 import { ContextualMenuIcon } from "../icons";
 
 export type ContextualMenuProps = {

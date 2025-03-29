@@ -31,7 +31,7 @@ import type { QueryClient } from "../../api/use-query";
 import { store } from "../../state/store";
 import { userAtom } from "../../state/user";
 import { UpdateIllustrationIcon } from "../icons";
-import type Action from "./action";
+import type Action from "./";
 
 type IllustrationUpdateFormType = {
 	onSubmit: (newUrl: string) => void;

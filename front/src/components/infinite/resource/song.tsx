@@ -39,7 +39,7 @@ import { store } from "../../../state/store";
 import { DefaultItemSize } from "../../../utils/layout";
 import { parseQueryParam, setQueryParam } from "../../../utils/query-param";
 import type { SortingParameters } from "../../../utils/sorting";
-import type Action from "../../actions/action";
+import type Action from "../../actions";
 import { PlayIcon, ShuffleIcon } from "../../icons";
 import SongItem, { SongGroupItem } from "../../list-item/resource/song";
 import { Controls } from "../controls/controls";

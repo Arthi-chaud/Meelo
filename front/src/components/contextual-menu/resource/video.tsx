@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import API from "../../../api/api";
 import { useQueryClient } from "../../../api/use-query";
 import type { VideoWithRelations } from "../../../models/video";
-import type Action from "../../actions/action";
+import type Action from "../../actions";
 import { DownloadAction } from "../../actions/download";
 import {
 	GoToArtistAction,

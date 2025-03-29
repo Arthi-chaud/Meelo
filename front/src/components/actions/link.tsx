@@ -28,7 +28,7 @@ import {
 	SettingsIcon,
 	SongIcon,
 } from "../icons";
-import type Action from "./action";
+import type Action from "./";
 
 export const GoToSongLyricsAction = (
 	songIdentifier: string | number,

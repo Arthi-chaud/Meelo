@@ -23,7 +23,7 @@ import type { ArraySlice } from "type-fest";
 import API from "../../api/api";
 import type { Translator } from "../../i18n/i18n";
 import { MetadataRefreshIcon } from "../icons";
-import type Action from "./action";
+import type Action from "./";
 
 type APIMethodParams = ArraySlice<
 	Parameters<typeof API.refreshMetadata>,

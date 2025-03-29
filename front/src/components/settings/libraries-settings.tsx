@@ -46,7 +46,7 @@ import {
 	useQueryClient,
 } from "../../api/use-query";
 import type Library from "../../models/library";
-import type Action from "../actions/action";
+import type Action from "../actions";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,

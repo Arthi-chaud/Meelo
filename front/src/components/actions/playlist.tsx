@@ -55,7 +55,7 @@ import {
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/list";
 import ListItem from "../list-item";
-import type Action from "./action";
+import type Action from "./";
 
 export const PlayNextAction = (
 	getTrack: () => PromiseLike<TrackState>,

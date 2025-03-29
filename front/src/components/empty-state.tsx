@@ -19,7 +19,7 @@
 import { Button, Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "../i18n/i18n";
-import type Action from "./actions/action";
+import type Action from "./actions";
 
 export type EmptyStateProps = {
 	icon: React.ReactNode;

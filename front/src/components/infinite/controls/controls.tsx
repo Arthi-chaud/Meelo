@@ -33,7 +33,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "../../../i18n/i18n";
 import { ItemSize } from "../../../utils/layout";
-import type Action from "../../actions/action";
+import type Action from "../../actions";
 import {
 	AscIcon,
 	CheckIcon,

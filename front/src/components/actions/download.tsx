@@ -21,7 +21,7 @@ import API from "../../api/api";
 import type { Translator } from "../../i18n/i18n";
 import confirmDownloadAction from "../confirm-download-action";
 import { ArchiveIcon, DownloadIcon } from "../icons";
-import type Action from "./action";
+import type Action from "./";
 
 export const DownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,

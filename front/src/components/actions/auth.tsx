@@ -19,7 +19,7 @@
 import { store } from "../../state/store";
 import { accessTokenAtom } from "../../state/user";
 import { LogoutIcon } from "../icons";
-import type Action from "./action";
+import type Action from "./";
 
 export const LogoutAction: Action = {
 	label: "logout",

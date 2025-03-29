@@ -25,7 +25,7 @@ import API from "../../../api/api";
 import { useQueryClient } from "../../../api/use-query";
 import type { TrackWithRelations } from "../../../models/track";
 import { userAtom } from "../../../state/user";
-import type Action from "../../actions/action";
+import type Action from "../../actions";
 import { DownloadAction } from "../../actions/download";
 import {
 	GoToReleaseAction,
