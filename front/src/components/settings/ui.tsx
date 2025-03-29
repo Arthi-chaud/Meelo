@@ -40,7 +40,7 @@ const InputContainerStyle = {
 const RepositoryUrl = "https://github.com/Arthi-chaud/meelo";
 const LinkIconStyle = { marginBottom: -5, marginRight: 5 };
 
-const UserSettings = () => {
+const UISettings = () => {
 	const { t, i18n } = useTranslation();
 	const colorScheme = useColorScheme();
 	const [prefersNotifs, setPrefersNotif] = useLocalStorage(
@@ -199,4 +199,4 @@ const UserSettings = () => {
 	);
 };
 
-export default UserSettings;
+export default UISettings;
