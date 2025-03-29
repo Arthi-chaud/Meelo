@@ -29,7 +29,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import { deepmerge } from "@mui/utils";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type Action from "~/components/actions";
 import {
@@ -254,7 +254,7 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 	return (
 		<ButtonGroup variant="contained">
 			{actions.map((action, idx) => (
-				<>
+				<Fragment key={`action-${action.label}`}>
 					<Button
 						key={`action-${action.label}`}
 						startIcon={action.icon}
@@ -279,7 +279,7 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 							{action.dialog?.({ close: closeModal })}
 						</Dialog>
 					)}
-				</>
+				</Fragment>
 			))}
 		</ButtonGroup>
 	);
