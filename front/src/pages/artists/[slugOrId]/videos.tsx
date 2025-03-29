@@ -27,7 +27,7 @@ import {
 	getSortQuery,
 } from "../../../components/infinite/controls/sort";
 import InfiniteVideoView from "../../../components/infinite/resource/video";
-import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/resource/artist";
 import { VideoSortingKeys } from "../../../models/video";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import getSlugOrId from "../../../utils/getSlugOrId";

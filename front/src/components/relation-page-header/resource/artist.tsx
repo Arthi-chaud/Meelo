@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ArtistWithRelations } from "../../models/artist";
-import ArtistAvatar from "../artist-avatar";
-import ArtistContextualMenu from "../contextual-menu/resource/artist";
-import RelationPageHeader from "./relation-page-header";
+import RelationPageHeader from "../";
+import type { ArtistWithRelations } from "../../../models/artist";
+import ArtistAvatar from "../../artist-avatar";
+import ArtistContextualMenu from "../../contextual-menu/resource/artist";
 
 type ArtistRelationPageHeaderProps = {
 	artist: ArtistWithRelations<"illustration"> | undefined;

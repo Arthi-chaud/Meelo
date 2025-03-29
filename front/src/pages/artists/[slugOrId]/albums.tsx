@@ -24,7 +24,7 @@ import API from "../../../api/api";
 import { useQuery } from "../../../api/use-query";
 import { Head } from "../../../components/head";
 import InfiniteAlbumView from "../../../components/infinite/resource/album";
-import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/resource/artist";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
 import { getYear } from "../../../utils/date";
 import getSlugOrId from "../../../utils/getSlugOrId";

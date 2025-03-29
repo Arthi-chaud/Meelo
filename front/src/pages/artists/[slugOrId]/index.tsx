@@ -31,7 +31,7 @@ import {
 	SongGridPageSection,
 	VideoListPageSection,
 } from "../../../components/page-section";
-import ArtistRelationPageHeader from "../../../components/relation-page-header/artist-relation-page-header";
+import ArtistRelationPageHeader from "../../../components/relation-page-header/resource/artist";
 import ResourceDescription from "../../../components/resource-description";
 import SectionHeader from "../../../components/section-header";
 import { AlbumType } from "../../../models/album";

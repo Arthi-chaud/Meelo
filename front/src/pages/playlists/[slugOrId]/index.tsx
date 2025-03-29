@@ -53,7 +53,7 @@ import {
 } from "../../../components/icons";
 import Illustration from "../../../components/illustration";
 import ListItem from "../../../components/list-item";
-import RelationPageHeader from "../../../components/relation-page-header/relation-page-header";
+import RelationPageHeader from "../../../components/relation-page-header";
 import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,

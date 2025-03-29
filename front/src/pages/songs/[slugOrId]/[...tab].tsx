@@ -45,7 +45,7 @@ import { InfiniteSongView } from "../../../components/infinite/resource/song";
 import InfiniteTrackView from "../../../components/infinite/resource/track";
 import InfiniteVideoView from "../../../components/infinite/resource/video";
 import LyricsBox from "../../../components/lyrics";
-import SongRelationPageHeader from "../../../components/relation-page-header/song-relation-page-header";
+import SongRelationPageHeader from "../../../components/relation-page-header/resource/song";
 import SongTypeIcon from "../../../components/song-type-icon";
 import { useTabRouter } from "../../../components/tab-router";
 import type { GetPropsTypesFrom, Page } from "../../../ssr";
