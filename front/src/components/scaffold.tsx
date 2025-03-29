@@ -38,7 +38,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RootGradientBackground } from "../../utils/gradient-background";
+import { RootGradientBackground } from "../utils/gradient-background";
+import type Action from "./actions/action";
+import { LogoutAction } from "./actions/auth";
+import { GoToSearchAction, GoToSettingsAction } from "./actions/link";
 import {
 	AlbumIcon,
 	ArtistIcon,
@@ -47,11 +50,16 @@ import {
 	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
-} from "../icons";
-import { parentScrollableDivId } from "../infinite/scroll";
-import Player from "../player";
-import ThemedImage from "../themed-image";
-import scaffoldActions from "./actions";
+} from "./icons";
+import { parentScrollableDivId } from "./infinite/scroll";
+import Player from "./player";
+import ThemedImage from "./themed-image";
+
+export const ScaffoldActions: Action[] = [
+	GoToSearchAction,
+	GoToSettingsAction,
+	LogoutAction,
+];
 
 /**
  * Array of possible item types
@@ -99,7 +107,7 @@ const Drawer = ({
 	const theme = useTheme();
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: DrawerWidth };
-	const actions = scaffoldActions;
+	const actions = ScaffoldActions;
 	const commonDrawerProps = {
 		anchor: "left",
 		onClose: onClose,

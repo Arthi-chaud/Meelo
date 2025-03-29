@@ -31,7 +31,7 @@ import {
 	prepareMeeloQuery,
 } from "../api/use-query";
 import { KeyboardBindingModal } from "../components/keyboard-bindings-modal";
-import Scaffold from "../components/scaffold/scaffold";
+import Scaffold from "../components/scaffold";
 import { KeyboardBindingsProvider } from "../contexts/keybindings";
 import { withTranslations } from "../i18n/i18n";
 import type { Page } from "../ssr";

@@ -41,7 +41,7 @@ import {
 	skipTrackAtom,
 } from "../../state/player";
 import { userAtom } from "../../state/user";
-import { DrawerBreakpoint } from "../scaffold/scaffold";
+import { DrawerBreakpoint } from "../scaffold";
 import { ExpandedPlayerControls } from "./controls/expanded";
 import { MinimizedPlayerControls } from "./controls/minimized";
 
