@@ -27,7 +27,7 @@ import {
 } from "../../actions/playlist";
 import { SharePlaylistAction } from "../../actions/share";
 import { UpdatePlaylistIllustrationAction } from "../../actions/update-illustration";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type PlaylistContextualMenuProps = {
 	playlist: Playlist;

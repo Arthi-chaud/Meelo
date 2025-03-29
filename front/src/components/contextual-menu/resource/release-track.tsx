@@ -39,7 +39,7 @@ import { ChangeSongType } from "../../actions/resource-type";
 import { ShareSongAction } from "../../actions/share";
 import { ShowTrackFileInfoAction } from "../../actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "../../actions/update-illustration";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type ReleaseTrackContextualMenuProps = {
 	track: TrackWithRelations<"song" | "illustration">;

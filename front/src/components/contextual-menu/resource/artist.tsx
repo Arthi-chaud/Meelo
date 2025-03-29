@@ -26,7 +26,7 @@ import {
 } from "../../actions/link";
 import { ShareArtistAction } from "../../actions/share";
 import { UpdateArtistIllustrationAction } from "../../actions/update-illustration";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type ArtistContextualMenuProps = {
 	artist: Artist;

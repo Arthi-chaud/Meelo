@@ -42,7 +42,7 @@ import { ChangeSongType } from "../../actions/resource-type";
 import { ShowTrackFileInfoAction } from "../../actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "../../actions/update-illustration";
 import { MasterIcon } from "../../icons";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type TrackContextualMenuProps = {
 	track: TrackWithRelations<"video" | "song" | "illustration">;

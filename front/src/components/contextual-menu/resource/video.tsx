@@ -38,7 +38,7 @@ import { RefreshTrackMetadataAction } from "../../actions/refresh-metadata";
 import { ChangeVideoType } from "../../actions/resource-type";
 import { ShowTrackFileInfoAction } from "../../actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "../../actions/update-illustration";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type VideoContextualMenuProps = {
 	video: VideoWithRelations<"master" | "illustration">;

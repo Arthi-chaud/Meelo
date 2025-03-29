@@ -16,18 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Divider, IconButton, Menu } from "@mui/material";
+import {
+	Box,
+	Dialog,
+	Divider,
+	IconButton,
+	Link,
+	ListItemIcon,
+	ListItemText,
+	Menu,
+	MenuItem,
+} from "@mui/material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type Action from "../actions/action";
 import { ContextualMenuIcon } from "../icons";
-import ContextualMenuItem from "./item";
 
-type ContextualMenuProps = {
+export type ContextualMenuProps = {
 	actions: Action[][];
 	onSelect?: (action: Action) => void;
 	buttonIcon?: JSX.Element;
 };
-const ContextualMenu = (props: ContextualMenuProps) => {
+
+export const ContextualMenu = (props: ContextualMenuProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -92,4 +103,51 @@ const ContextualMenu = (props: ContextualMenuProps) => {
 	);
 };
 
-export default ContextualMenu;
+export const ContextualMenuItem = (
+	props: Action & { onDialogClose: () => void },
+) => {
+	const { t } = useTranslation();
+	const [modalOpen, setModalOpen] = useState(false);
+	const onClick = () => {
+		if (props.disabled === true) {
+			return;
+		}
+		props.onClick?.();
+		if (props.dialog) {
+			setModalOpen(true);
+		}
+	};
+	const closeModal = () => {
+		setModalOpen(false);
+		props.onDialogClose();
+	};
+	const item = (
+		<MenuItem
+			disabled={props.disabled}
+			onClick={onClick}
+			sx={{ borderRadius: "0" }}
+		>
+			{props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
+			<ListItemText>{t(props.label)}</ListItemText>
+		</MenuItem>
+	);
+
+	if (props.href && !props.disabled) {
+		return <Link href={props.href}>{item}</Link>;
+	}
+	return (
+		<>
+			{item}
+			{props.dialog && (
+				<Dialog
+					open={modalOpen}
+					onClose={closeModal}
+					fullWidth
+					sx={{ zIndex: 999999 }}
+				>
+					{props.dialog({ close: closeModal })}
+				</Dialog>
+			)}
+		</>
+	);
+};

@@ -32,7 +32,7 @@ import { ChangeAlbumType } from "../../actions/resource-type";
 import { ShareReleaseAction } from "../../actions/share";
 import { UpdateReleaseIllustrationAction } from "../../actions/update-illustration";
 import { MasterIcon, UpgradeIcon } from "../../icons";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type ReleaseContextualMenuProps = {
 	release: ReleaseWithRelations<"album">;

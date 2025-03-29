@@ -26,7 +26,7 @@ import { GoToArtistAction } from "../../actions/link";
 import { RefreshAlbumMetadataAction } from "../../actions/refresh-metadata";
 import { ChangeAlbumType } from "../../actions/resource-type";
 import { ShareAlbumAction } from "../../actions/share";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type AlbumContextualMenuProps = {
 	album: AlbumWithRelations<"artist">;

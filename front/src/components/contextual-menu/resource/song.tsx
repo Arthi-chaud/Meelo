@@ -42,7 +42,7 @@ import { ChangeSongType } from "../../actions/resource-type";
 import { ShareSongAction } from "../../actions/share";
 import { ShowMasterTrackFileInfoAction } from "../../actions/show-track-info";
 import { DeleteIcon } from "../../icons";
-import ContextualMenu from "../menu";
+import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {
 	song: SongWithRelations<"artist">;
