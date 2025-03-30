@@ -47,6 +47,7 @@ import {
 	ArtistIcon,
 	BurgerIcon,
 	CompilationIcon,
+	GenreIcon,
 	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
@@ -70,6 +71,7 @@ const primaryItems = [
 	"songs",
 	"videos",
 	"playlists",
+	"genres",
 	"albums/compilations",
 ] as const;
 const getPrimaryTypeIcon = (
@@ -87,6 +89,8 @@ const getPrimaryTypeIcon = (
 			return <VideoIcon {...props} />;
 		case "playlists":
 			return <PlaylistIcon {...props} />;
+		case "genres":
+			return <GenreIcon {...props} />;
 		case "albums/compilations":
 			return <CompilationIcon {...props} />;
 	}

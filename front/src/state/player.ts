@@ -17,6 +17,7 @@
  */
 
 import { atom } from "jotai";
+import API from "~/api";
 import {
 	type InfiniteQuery,
 	type QueryClient,
@@ -112,10 +113,16 @@ export const playFromInfiniteQuery = atom(
 			})
 			.then((res) => {
 				const items = res.pages.flatMap(({ items }) => items);
+				if (items.length === 0) {
+					return;
+				}
 				set(_playerState, {
 					cursor: 0,
 					playlist: items,
-					infinite: { query, afterId: items.at(-1)!.id },
+					infinite:
+						items.length < API.defaultPageSize
+							? null
+							: { query, afterId: items.at(-1)!.id },
 				});
 			});
 	},
