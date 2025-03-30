@@ -37,6 +37,7 @@ import {
 } from "~/models/external-metadata";
 import File from "~/models/file";
 import Genre from "~/models/genre";
+import type { GenreSortingKeys } from "~/models/genre";
 import Library from "~/models/library";
 import { Lyrics } from "~/models/lyrics";
 import PaginatedResponse, {
@@ -1219,7 +1220,7 @@ export default class API {
 	 */
 	static getGenres(
 		filter: { artist?: Identifier; album?: Identifier; song?: Identifier },
-		sort?: SortingParameters<typeof ArtistSortingKeys>,
+		sort?: SortingParameters<typeof GenreSortingKeys>,
 	): InfiniteQuery<Genre> {
 		return {
 			key: [

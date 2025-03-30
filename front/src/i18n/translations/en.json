@@ -263,5 +263,6 @@
 	"types": "Types",
 	"all": "All",
 	"loadNextSongs": "Load next songs",
-	"saveQueueAsPlaylist": "Save queue as playlist"
+	"saveQueueAsPlaylist": "Save queue as playlist",
+	"topGenres": "Top Genres"
 }

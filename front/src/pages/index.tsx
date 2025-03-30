@@ -38,6 +38,7 @@ import SectionHeader from "~/components/section-header";
 import SongGrid from "~/components/song-grid";
 import AlbumTile from "~/components/tile/resource/album";
 import ArtistTile from "~/components/tile/resource/artist";
+import { GenreTile } from "~/components/tile/resource/genre";
 import ReleaseTile from "~/components/tile/resource/release";
 import TileRow from "~/components/tile/row";
 import type { AlbumExternalMetadata } from "~/models/external-metadata";
@@ -82,6 +83,11 @@ const albumRecommendations = (seed: number) =>
 		"illustration",
 	]);
 
+const topGenresQuery = API.getGenres(
+	{},
+	{ sortBy: "songCount", order: "desc" },
+);
+
 const HomePageSection = <T,>(props: {
 	heading: string | JSX.Element;
 	queryData: { items?: T[] };
@@ -125,6 +131,7 @@ const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 			newlyAddedAlbumsQuery,
 			newlyAddedReleasesQuery,
 			mostListenedSongsQuery,
+			topGenresQuery,
 		],
 	};
 };
@@ -154,6 +161,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
+	const topGenres = useInfiniteQuery(() => topGenresQuery);
 	const { t } = useTranslation();
 	const tileRowWindowSize = {
 		xs: 3,
@@ -291,6 +299,24 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							<TileRow
 								tiles={releases.map((release, idx) => (
 									<ReleaseTile key={idx} release={release} />
+								))}
+								windowSize={tileRowWindowSize}
+							/>
+						)}
+					/>
+
+					<HomePageSection
+						heading={t("topGenres")}
+						queryData={topGenres}
+						render={(genres) => (
+							<TileRow
+								tiles={genres.map((genre, index) => (
+									<Box
+										sx={{ paddingBottom: 2 }}
+										key={`genre-${genre?.id}-${index}`}
+									>
+										<GenreTile key={index} genre={genre} />
+									</Box>
 								))}
 								windowSize={tileRowWindowSize}
 							/>
