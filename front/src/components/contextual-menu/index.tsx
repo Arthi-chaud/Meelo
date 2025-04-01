@@ -21,12 +21,12 @@ import {
 	Dialog,
 	Divider,
 	IconButton,
-	Link,
 	ListItemIcon,
 	ListItemText,
 	Menu,
 	MenuItem,
 } from "@mui/material";
+import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type Action from "~/components/actions";
