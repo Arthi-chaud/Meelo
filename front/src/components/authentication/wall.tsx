@@ -16,11 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from "@mui/material/Grid2";
-import { useEffect, useState } from "react";
-
 import { Box, Stack } from "@mui/material";
 import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
 import { useQuery as useReactQuery } from "react-query";
 import API from "~/api";
 import { prepareMeeloQuery } from "~/api/use-query";

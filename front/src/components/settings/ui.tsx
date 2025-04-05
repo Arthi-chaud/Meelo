@@ -54,9 +54,9 @@ const UISettings = () => {
 			notificationsAPIAvailable && Notification.permission === "granted",
 	);
 	return (
-        <NoSsr>
-            <SectionHeader heading={t("colorScheme")} />
-            <Grid container sx={SettingGroupStyle}>
+		<NoSsr>
+			<SectionHeader heading={t("colorScheme")} />
+			<Grid container sx={SettingGroupStyle}>
 				<Grid size={11}>{t("useSystemeTheme")}</Grid>
 				<Grid sx={InputContainerStyle} size={1}>
 					<Checkbox
@@ -84,8 +84,8 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-            <SectionHeader heading={t("language")} />
-            <Grid container sx={SettingGroupStyle}>
+			<SectionHeader heading={t("language")} />
+			<Grid container sx={SettingGroupStyle}>
 				<Grid size={10}>{t("language")}</Grid>
 				<Grid sx={InputContainerStyle} size={2}>
 					<Select
@@ -108,8 +108,8 @@ const UISettings = () => {
 					</Select>
 				</Grid>
 			</Grid>
-            <SectionHeader heading={t("notifications")} />
-            <Grid container sx={SettingGroupStyle}>
+			<SectionHeader heading={t("notifications")} />
+			<Grid container sx={SettingGroupStyle}>
 				<Grid size={10}>{t("permissions")}</Grid>
 				<Grid sx={InputContainerStyle} size={2}>
 					<Button
@@ -150,14 +150,14 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-            <SectionHeader heading={t("keyboadBindings")} />
-            <Grid container sx={SettingGroupStyle}>
+			<SectionHeader heading={t("keyboadBindings")} />
+			<Grid container sx={SettingGroupStyle}>
 				<Grid size={12}>
 					{t("openKeyboarBindingsModalByTypingQuestionMark")}
 				</Grid>
 			</Grid>
-            <SectionHeader heading={t("project")} />
-            <p>
+			<SectionHeader heading={t("project")} />
+			<p>
 				<Star style={LinkIconStyle} />
 				{t("enjoyingTheProject")}{" "}
 				<Link
@@ -167,7 +167,7 @@ const UISettings = () => {
 					{t("starOnGithub")}
 				</Link>
 			</p>
-            <p>
+			<p>
 				<Warning2 style={LinkIconStyle} />
 				{t("encounteredABug")}{" "}
 				<Link
@@ -177,7 +177,7 @@ const UISettings = () => {
 					{t("openAnIssue")}
 				</Link>
 			</p>
-            <p>
+			<p>
 				<Book1 style={LinkIconStyle} />
 				<Link
 					style={{ textDecoration: "underline" }}
@@ -186,8 +186,8 @@ const UISettings = () => {
 					{t("readTheDoc")}
 				</Link>
 			</p>
-        </NoSsr>
-    );
+		</NoSsr>
+	);
 };
 
 export default UISettings;
