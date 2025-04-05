@@ -20,15 +20,16 @@ import {
 	Button,
 	Container,
 	Divider,
-	Grid,
 	IconButton,
 	ListItemButton,
 	ListSubheader,
 	Rating,
 	Skeleton,
+	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/system";
 import { shuffle } from "d3-array";
 import { Star1 } from "iconsax-react";
@@ -420,150 +421,167 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				}}
 			>
 				<Grid container spacing={4} sx={{ justifyContent: "center" }}>
-					<Grid item xl={2} lg={3} sm={5} xs={8}>
+					<Grid
+						size={{
+							xl: 2,
+							lg: 3,
+							sm: 5,
+							xs: 8,
+						}}
+					>
 						<Illustration
 							illustration={illustration}
 							quality="original"
 						/>
 					</Grid>
 					<Grid
-						item
-						container
+						size={{
+							xs: 12,
+							sm: 7,
+							lg: 6,
+							xl: "grow",
+						}}
 						sx={{
 							width: "100%",
 							display: "flex",
-							flexDirection: "column",
-							justifyContent: "space-evenly",
-							alignItems: "left",
-							[theme.breakpoints.down("sm")]: {
-								alignItems: "center",
-								textAlign: "center",
-							},
 						}}
-						xs={12}
-						sm={7}
-						lg={6}
-						xl
 					>
-						<Grid item sx={{ width: "inherit" }}>
-							<Typography
-								variant="h3"
-								fontWeight="bold"
-								sx={{
-									overflow: "hidden",
-									display: "-webkit-box",
-									WebkitLineClamp: 3,
-									lineClamp: 3,
-									WebkitBoxOrient: "vertical",
+						<Stack
+							direction={"column"}
+							sx={{
+								width: "100%",
+								display: "flex",
+								justifyContent: "space-evenly",
+								alignItems: "left",
+								[theme.breakpoints.down("sm")]: {
+									alignItems: "center",
+									textAlign: "center",
+								},
+							}}
+						>
+							<Box sx={{ width: "inherit" }}>
+								<Typography
+									variant="h3"
+									fontWeight="bold"
+									sx={{
+										overflow: "hidden",
+										display: "-webkit-box",
+										WebkitLineClamp: 3,
+										lineClamp: 3,
+										WebkitBoxOrient: "vertical",
+									}}
+								>
+									{release.data?.name ?? (
+										<>
+											<Skeleton />
+											<Skeleton />
+										</>
+									)}
+								</Typography>
+							</Box>
+							{albumArtist !== null && (
+								<Box>
+									<Link
+										href={
+											albumArtist
+												? `/artists/${albumArtist.slug}`
+												: {}
+										}
+									>
+										<Button
+											variant="text"
+											sx={{
+												textTransform: "none",
+												position: "relative",
+												left: { xs: 0, sm: -8 },
+											}}
+										>
+											<Typography variant="h4">
+												{albumArtist?.name ?? (
+													<Skeleton width={"200px"} />
+												)}
+											</Typography>
+										</Button>
+									</Link>
+								</Box>
+							)}
+							<Box
+								style={{
+									alignItems: "center",
+									display: "inline-flex",
 								}}
 							>
-								{release.data?.name ?? (
-									<>
-										<Skeleton />
-										<Skeleton />
-									</>
-								)}
-							</Typography>
-						</Grid>
-						{albumArtist !== null && (
-							<Grid item>
-								<Link
-									href={
-										albumArtist
-											? `/artists/${albumArtist.slug}`
-											: {}
-									}
-								>
-									<Button
-										variant="text"
-										sx={{
-											textTransform: "none",
-											position: "relative",
-											left: { xs: 0, sm: -8 },
-										}}
-									>
-										<Typography variant="h4">
-											{albumArtist?.name ?? (
-												<Skeleton width={"200px"} />
-											)}
-										</Typography>
-									</Button>
-								</Link>
-							</Grid>
-						)}
-						<Grid
-							item
-							style={{
-								alignItems: "center",
-								display: "inline-flex",
-							}}
-						>
-							<Typography sx={{ color: "text.disabled" }}>
-								{release.data?.extensions.join(" - ") ?? <br />}
-							</Typography>
-						</Grid>
-						<Grid
-							item
-							style={{
-								alignItems: "center",
-								display: "inline-flex",
-							}}
-						>
-							<Typography
-								sx={{ color: "text.disabled" }}
-								component={"span"}
+								<Typography sx={{ color: "text.disabled" }}>
+									{release.data?.extensions.join(" - ") ?? (
+										<br />
+									)}
+								</Typography>
+							</Box>
+							<Box
+								style={{
+									alignItems: "center",
+									display: "inline-flex",
+								}}
 							>
-								{releaseDate &&
-									`${formatReleaseDate(releaseDate, i18n.language)} - `}
-								{totalDuration !== undefined ? (
-									formatDuration(totalDuration)
-								) : (
-									<Skeleton width={"100px"} />
+								<Typography
+									sx={{ color: "text.disabled" }}
+									component={"span"}
+								>
+									{releaseDate &&
+										`${formatReleaseDate(releaseDate, i18n.language)} - `}
+									{totalDuration !== undefined ? (
+										formatDuration(totalDuration)
+									) : (
+										<Skeleton width={"100px"} />
+									)}
+								</Typography>
+								{externalMetadata.data?.rating && (
+									<Rating
+										sx={{
+											paddingLeft: 1.5,
+											...ratingColor,
+										}}
+										readOnly
+										value={
+											externalMetadata.data.rating / 20
+										}
+										icon={
+											<Star1
+												size={18}
+												style={{ marginTop: -3 }}
+											/>
+										}
+										emptyIcon={
+											<Star1
+												size={18}
+												style={{
+													marginTop: -3,
+													color: theme.vars.palette
+														.text.disabled,
+												}}
+												opacity={0.2}
+											/>
+										}
+									/>
 								)}
-							</Typography>
-							{externalMetadata.data?.rating && (
-								<Rating
-									sx={{
-										paddingLeft: 1.5,
-										...ratingColor,
-									}}
-									readOnly
-									value={externalMetadata.data.rating / 20}
-									icon={
-										<Star1
-											size={18}
-											style={{ marginTop: -3 }}
-										/>
-									}
-									emptyIcon={
-										<Star1
-											size={18}
-											style={{
-												marginTop: -3,
-												color: theme.vars.palette.text
-													.disabled,
-											}}
-											opacity={0.2}
-										/>
-									}
-								/>
-							)}
-						</Grid>
+							</Box>
+						</Stack>
 					</Grid>
 					<Grid
-						item
 						container
-						lg={3}
-						xs={12}
 						sx={{
 							spacing: 5,
 							alignItems: "center",
 							justifyContent: "space-evenly",
 							display: "flex",
 						}}
+						size={{
+							lg: 3,
+							xs: 12,
+						}}
 					>
 						{[PlayIcon, ShuffleIcon].map((Icon, index) => (
-							<Grid item key={index}>
+							<Grid key={index}>
 								<IconButton
 									onClick={() => {
 										if (
@@ -598,7 +616,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								</IconButton>
 							</Grid>
 						))}
-						<Grid item>
+						<Grid>
 							{release.data && (
 								<ReleaseContextualMenu release={release.data} />
 							)}
@@ -611,7 +629,14 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					sx={{ display: "flex", paddingY: 2 }}
 				>
 					{hasGenres && (
-						<Grid item xl={2} lg={3} xs={12} marginTop={1}>
+						<Grid
+							marginTop={1}
+							size={{
+								xl: 2,
+								lg: 3,
+								xs: 12,
+							}}
+						>
 							<Fade in>
 								<Box>
 									<Grid
@@ -619,7 +644,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										spacing={1}
 										sx={{ alignItems: "center" }}
 									>
-										<Grid item>
+										<Grid>
 											<ListSubheader
 												sx={{
 													backgroundColor:
@@ -642,7 +667,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											.slice(0, 10)
 											.map((genre, index) => (
 												<Grid
-													item
 													key={index}
 													sx={{ display: "flex" }}
 												>
@@ -667,11 +691,12 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Grid>
 					)}
 					<Grid
-						item
-						xl
-						lg={hasGenres ? 9 : true}
-						xs={12}
 						id={"release-tracklist"}
+						size={{
+							xl: "grow",
+							lg: hasGenres ? 9 : "grow",
+							xs: 12,
+						}}
 					>
 						<ReleaseTrackList
 							mainArtist={albumArtist}
@@ -883,7 +908,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								({ url }) => url !== null,
 							) ?? generateArray(2)
 						).map((externalSource, index) => (
-							<Grid item key={index}>
+							<Grid key={index}>
 								<ExternalMetadataBadge
 									source={externalSource}
 								/>
