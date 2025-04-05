@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Divider, Grid } from "@mui/material";
+import { Box, Button, Divider, Stack } from "@mui/material";
 import { useAtom } from "jotai";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useState } from "react";
@@ -61,9 +61,7 @@ const AuthenticationForm = () => {
 			onSubmit={handleSubmit(onSubmit)}
 			style={{ width: "100%", height: "100%" }}
 		>
-			<Grid
-				container
-				direction="column"
+			<Stack
 				spacing={3}
 				sx={{
 					display: "flex",
@@ -131,7 +129,7 @@ const AuthenticationForm = () => {
 						}}
 					/>
 				)}
-				<Grid item>
+				<Box>
 					<Button
 						type="submit"
 						variant="contained"
@@ -139,9 +137,9 @@ const AuthenticationForm = () => {
 					>
 						{formType === "login" ? "Login" : "Signup"}
 					</Button>
-				</Grid>
-				<Divider sx={{ width: "100%", paddingY: 1 }} variant="middle" />
-				<Grid item>
+				</Box>
+				<Divider sx={{ width: "100%" }} variant="middle" />
+				<Box>
 					<Button
 						variant="outlined"
 						onClick={() =>
@@ -156,8 +154,8 @@ const AuthenticationForm = () => {
 								: "signinButton",
 						)}
 					</Button>
-				</Grid>
-			</Grid>
+				</Box>
+			</Stack>
 		</form>
 	);
 };

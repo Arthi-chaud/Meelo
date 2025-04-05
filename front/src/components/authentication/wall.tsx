@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useEffect, useState } from "react";
 
+import { Box, Stack } from "@mui/material";
 import { useAtom } from "jotai";
 import { useQuery as useReactQuery } from "react-query";
 import API from "~/api";
@@ -58,21 +59,17 @@ const AuthenticationWall = (props: { children: any }) => {
 	if (!authentified || !status.data?.id) {
 		return (
 			<ModalPage open>
-				<Grid
-					container
-					direction="column"
+				<Stack
 					sx={{
 						width: "100%",
 						height: "100%",
 						display: "flex",
 						flexWrap: "nowrap",
-						justifyContent: "center",
+						justifyContent: "space-evenly",
 						alignItems: "center",
 					}}
 				>
-					<Grid
-						xs={2}
-						item
+					<Box
 						sx={{
 							position: "relative",
 							width: "100%",
@@ -89,11 +86,11 @@ const AuthenticationWall = (props: { children: any }) => {
 							priority
 							style={{ objectFit: "contain" }}
 						/>
-					</Grid>
-					<Grid item xs>
+					</Box>
+					<Box flexGrow={1}>
 						<AuthenticationForm />
-					</Grid>
-				</Grid>
+					</Box>
+				</Stack>
 			</ModalPage>
 		);
 	}
