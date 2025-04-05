@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useSetAtom } from "jotai";
 import API from "~/api";
 import { useQueryClient } from "~/api/use-query";
@@ -80,10 +80,10 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 					spacing={1}
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
-					<Grid item sx={{ display: "flex", alignItems: "center" }}>
+					<Grid sx={{ display: "flex", alignItems: "center" }}>
 						{track?.song && isMaster ? <MasterIcon /> : undefined}
 					</Grid>
-					<Grid item>
+					<Grid>
 						{track && <TrackContextualMenu track={track} />}
 					</Grid>
 				</Grid>
