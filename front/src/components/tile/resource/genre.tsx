@@ -17,13 +17,13 @@
  */
 
 import {
-	Grid,
 	IconButton,
 	Paper,
 	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -88,7 +88,7 @@ export const GenreTile = ({ genre }: Props) => {
 						paddingY: 4,
 					}}
 				>
-					<Grid item xs={4}>
+					<Grid size={{ xs: 4 }}>
 						{genre && (
 							<IconButton
 								onClick={(e) => {
@@ -126,8 +126,7 @@ export const GenreTile = ({ genre }: Props) => {
 						)}
 					</Grid>
 					<Grid
-						item
-						xs={8}
+						size={{ xs: 8 }}
 						sx={{
 							display: "flex",
 							alignItems: "center",
