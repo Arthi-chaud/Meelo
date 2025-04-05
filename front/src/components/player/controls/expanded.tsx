@@ -22,13 +22,13 @@ import {
 	Container,
 	Dialog,
 	Divider,
-	Grid,
 	IconButton,
 	Skeleton,
 	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -161,10 +161,8 @@ export const ExpandedPlayerControls = (
 				>
 					{selectedTab !== "player" && props.track && props.artist ? (
 						<>
-							<Box
+							<Stack
 								sx={{
-									display: "flex",
-									flexDirection: "column",
 									justifyContent: "center",
 									alignItems: "center",
 								}}
@@ -184,7 +182,7 @@ export const ExpandedPlayerControls = (
 										parentSong.data?.featuring,
 									)}
 								</Typography>
-							</Box>
+							</Stack>
 						</>
 					) : (
 						<></>
@@ -198,8 +196,7 @@ export const ExpandedPlayerControls = (
 				<Divider sx={{ margin: 1, marginBottom: 0 }} variant="middle" />
 			)}
 
-			<Grid
-				container
+			<Stack
 				sx={
 					selectedTab !== "player"
 						? { width: 0, height: 0, overflow: "hidden" }
@@ -208,19 +205,19 @@ export const ExpandedPlayerControls = (
 								minHeight: "500px",
 								flexWrap: "nowrap",
 								justifyContent: "center",
+								display: "flex",
 								alignSelf: "center",
-								maxWidth: theme.breakpoints.values.md,
+								width: "100%",
 							}
 				}
-				direction="column"
 			>
-				<Grid
-					item
-					xs={7}
+				<Box
 					sx={{
+						height: "58%", // 7 /12
 						padding: 3,
 						overflow: "hidden",
 						display: "flex",
+						width: "100%",
 						justifyContent: "center",
 					}}
 				>
@@ -253,9 +250,9 @@ export const ExpandedPlayerControls = (
 							/>
 						</Box>
 					)}
-				</Grid>
-				<Grid item sx={{ width: "100%" }}>
-					<Stack spacing={3}>
+				</Box>
+				<Container maxWidth="md" disableGutters>
+					<Stack spacing={3} sx={{ width: "100%" }}>
 						<Grid
 							container
 							sx={{
@@ -267,8 +264,7 @@ export const ExpandedPlayerControls = (
 							}}
 						>
 							<Grid
-								item
-								xs={1}
+								size={{ xs: 1 }}
 								sx={{
 									display: "flex",
 									justifyContent: "end",
@@ -281,8 +277,7 @@ export const ExpandedPlayerControls = (
 								)}
 							</Grid>
 							<Grid
-								item
-								xs={10}
+								size={{ xs: 10 }}
 								sx={{
 									...playerTextStyle,
 									display: "flex",
@@ -328,7 +323,7 @@ export const ExpandedPlayerControls = (
 									<Skeleton animation={false} width={"70%"} />
 								)}
 							</Grid>
-							<Grid item xs={1}>
+							<Grid size={{ xs: 1 }}>
 								{
 									props.track && props.artist ? (
 										<ReleaseTrackContextualMenu
@@ -415,8 +410,8 @@ export const ExpandedPlayerControls = (
 							/>
 						</Container>
 					</Stack>
-				</Grid>
-			</Grid>
+				</Container>
+			</Stack>
 			{selectedTab === "lyrics" && (
 				<Box
 					sx={{
@@ -516,7 +511,6 @@ export const ExpandedPlayerControls = (
 																			}
 																		>
 																			<Grid
-																				item
 																				sx={{
 																					display:
 																						"flex",
@@ -532,9 +526,7 @@ export const ExpandedPlayerControls = (
 																					)}
 																				</Typography>
 																			</Grid>
-																			<Grid
-																				item
-																			>
+																			<Grid>
 																				<IconButton
 																					size={
 																						"small"
