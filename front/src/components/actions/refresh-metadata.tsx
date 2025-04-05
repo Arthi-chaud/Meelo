@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Checkbox, Grid } from "@mui/material";
+import { Button, Checkbox } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
@@ -41,8 +42,7 @@ const RefreshMetadataActionContent = ({
 	return (
 		<Grid container spacing={2} sx={{ padding: 2 }}>
 			<Grid
-				item
-				xs={12}
+				size={{ xs: 12 }}
 				sx={{
 					display: "flex",
 					justifyContent: "center",
@@ -55,7 +55,7 @@ const RefreshMetadataActionContent = ({
 				/>
 				{t("refreshMetadataForceLabel")}
 			</Grid>
-			<Grid item xs={12}>
+			<Grid size={{ xs: 12 }}>
 				<Button
 					fullWidth
 					variant="contained"

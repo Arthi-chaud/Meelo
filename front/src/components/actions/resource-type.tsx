@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Chip, Grid } from "@mui/material";
+import { Chip } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -47,7 +48,7 @@ const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 		<>
 			<Grid container spacing={2} justifyContent="center">
 				{props.values.map((type) => (
-					<Grid item key={type}>
+					<Grid key={type}>
 						<Chip
 							label={t(type) as string}
 							variant={
