@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Container, Divider, Grid } from "@mui/material";
+import { Box, Container, Divider, Stack } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
@@ -152,11 +153,14 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />
-			<Grid
-				container
-				direction="column"
-				rowSpacing={SectionPadding}
-				sx={{ padding: 2, flex: 1, flexGrow: 1, paddingTop: 8 }}
+			<Stack
+				spacing={SectionPadding}
+				sx={{
+					padding: 2,
+					flex: 1,
+					flexGrow: 1,
+					paddingTop: 4,
+				}}
 			>
 				<SongGridPageSection
 					title={"topSongs"}
@@ -183,6 +187,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								maxItemCount={AlbumListSize}
 								artist={artist}
 								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}`}
+								minimizePadding
 								query={query}
 							/>
 						</Fragment>
@@ -221,18 +226,18 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					query={appearances}
 				/>
 				{externalMetadata.data?.description && (
-					<>
-						<Divider sx={{ marginBottom: SectionPadding }} />
+					<Box>
+						<Divider sx={{ marginBottom: 3 }} />
 						<SectionHeader heading={t("about")} />
 						<Container
 							maxWidth={false}
-							sx={{ paddingBottom: 4, paddingTop: 3 }}
+							sx={{ paddingY: 4, paddingTop: 3 }}
 						>
 							<ResourceDescription
 								externalMetadata={externalMetadata.data}
 							/>
 						</Container>
-					</>
+					</Box>
 				)}
 				{(externalMetadata.data === undefined ||
 					externalMetadata.data?.sources.length) && (
@@ -240,11 +245,10 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Divider />
 						<Grid
 							container
-							item
 							spacing={1}
 							sx={{ alignItems: "center" }}
 						>
-							<Grid item sx={{ paddingRight: 3 }}>
+							<Grid sx={{ paddingRight: 3 }}>
 								<SectionHeader heading={t("externalLinks")} />
 							</Grid>
 							{(
@@ -252,7 +256,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									({ url }) => url !== null,
 								) ?? generateArray(2)
 							).map((externalSource, index) => (
-								<Grid item key={index}>
+								<Grid key={index}>
 									<ExternalMetadataBadge
 										source={externalSource}
 									/>
@@ -261,7 +265,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Grid>
 					</>
 				)}
-			</Grid>
+			</Stack>
 		</Box>
 	);
 };

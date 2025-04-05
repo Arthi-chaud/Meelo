@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,7 +39,7 @@ import AlbumTile from "./tile/resource/album";
 import VideoTile from "./tile/resource/video";
 import TileRow from "./tile/row";
 
-export const SectionPadding = 4;
+export const SectionPadding = 2;
 
 export type PageSectionProps<
 	T extends Resource,
@@ -69,7 +70,6 @@ export const SongGridPageSection = (
 			{...props}
 			child={(items) => (
 				<Grid
-					item
 					container
 					sx={{
 						display: "block",
@@ -99,7 +99,7 @@ export const ListPageSection = <T extends Resource>(
 			{...props}
 			maxItemCount={props.maxItemCount}
 			child={(items) => (
-				<Grid item sx={{ overflowX: "scroll", width: "100%" }}>
+				<Grid sx={{ overflowX: "scroll", width: "100%" }}>
 					<TileRow
 						tiles={(
 							items?.slice(0, props.maxItemCount) ??
@@ -182,7 +182,7 @@ const PageSection = <T extends Resource>(props: PageSectionProps<T>) => {
 	return (
 		<>
 			{data?.length !== 0 && (
-				<>
+				<Box sx={{ width: "100%" }}>
 					<SectionHeader
 						heading={
 							data !== undefined ? t(props.title) : undefined
@@ -211,15 +211,18 @@ const PageSection = <T extends Resource>(props: PageSectionProps<T>) => {
 							) : undefined
 						}
 					/>
-					{props.child(data)}
+
 					<Box
 						sx={{
+							paddingTop: SectionPadding,
 							paddingBottom: props.minimizePadding
 								? 0
 								: SectionPadding,
 						}}
-					/>
-				</>
+					>
+						{props.child(data)}
+					</Box>
+				</Box>
 			)}
 		</>
 	);
