@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid, Slider } from "@mui/material";
+import { Slider } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { type MutableRefObject, useEffect, useState } from "react";
 import { DurationComponent } from "./common";
 
@@ -49,10 +50,10 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					props.duration === undefined ? "text.disabled" : undefined,
 			}}
 		>
-			<Grid item xs="auto">
+			<Grid size={{ xs: "auto" }}>
 				<DurationComponent time={progress ?? undefined} />
 			</Grid>
-			<Grid item xs>
+			<Grid size="grow">
 				<Slider
 					style={{ paddingBottom: 0 }}
 					disabled={!props.duration || progress === null}
@@ -79,7 +80,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					}
 				/>
 			</Grid>
-			<Grid item xs="auto">
+			<Grid size={{ xs: "auto" }}>
 				<DurationComponent time={props.duration ?? undefined} />
 			</Grid>
 		</Grid>
