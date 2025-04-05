@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, ButtonBase, Grid, Typography } from "@mui/material";
+import { Box, ButtonBase, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useQuery } from "~/api/use-query";
 import { TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
@@ -43,14 +44,15 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 		>
 			<Grid
 				container
-				spacing={1}
+				spacing={1.5}
 				sx={{
 					alignItems: "center",
 					display: "flex",
+					width: "100%",
 					justifyContent: "center",
 				}}
 			>
-				<Grid item sx={{ minWidth: "60px" }}>
+				<Grid sx={{ minWidth: "52px" }}>
 					{props.track ? (
 						<Illustration
 							illustration={props.track?.illustration ?? null}
@@ -72,9 +74,8 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					)}
 				</Grid>
 				<Grid
-					item
 					container
-					xs
+					size="grow"
 					spacing={0.5}
 					sx={{
 						overflow: "hidden",
@@ -84,7 +85,6 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					}}
 				>
 					<Grid
-						item
 						sx={{
 							width: "100%",
 							display: "flex",
@@ -99,7 +99,6 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 						</Typography>
 					</Grid>
 					<Grid
-						item
 						sx={{
 							display: "flex",
 							width: "100%",
@@ -126,22 +125,19 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					</Grid>
 				</Grid>
 				<Grid
-					item
 					container
-					xs={4}
-					sm={3}
-					md={2}
+					size={{ xs: 4, sm: 3, md: 2 }}
 					flexWrap="nowrap"
 					onClick={(event) => event.stopPropagation()}
 				>
-					<Grid item xs>
+					<Grid size="grow">
 						<PlayButton
 							onPause={props.onPause}
 							onPlay={props.onPlay}
 							isPlaying={props.playing}
 						/>
 					</Grid>
-					<Grid item xs>
+					<Grid size="grow">
 						<SkipButton onClick={props.onSkipTrack} />
 					</Grid>
 				</Grid>
