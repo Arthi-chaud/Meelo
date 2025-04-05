@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { Star } from "iconsax-react";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import { AlbumIcon } from "~/components/icons";
@@ -53,12 +53,10 @@ const ReleaseItem = ({ release, onClick }: ReleaseItemProps) => {
 					spacing={1}
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
-					<Grid item sx={{ display: "flex", alignItems: "center" }}>
+					<Grid sx={{ display: "flex", alignItems: "center" }}>
 						{isMaster ? <Star /> : undefined}
 					</Grid>
-					<Grid item>
-						{<ReleaseContextualMenu release={release} />}
-					</Grid>
+					<Grid>{<ReleaseContextualMenu release={release} />}</Grid>
 				</Grid>
 			}
 		/>
