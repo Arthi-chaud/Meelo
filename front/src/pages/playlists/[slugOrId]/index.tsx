@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
+import { Box, Button, Divider, IconButton, Stack } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { shuffle } from "d3-array";
 import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
@@ -338,7 +339,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						],
 					] as const
 				).map(([label, Icon, variant, callback], index) => (
-					<Grid item xs key={index}>
+					<Grid size="grow" key={index}>
 						<Button
 							variant={variant}
 							color="primary"
@@ -382,7 +383,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				spacing={1}
 				sx={{ justifyContent: { xs: "space-evenly", sm: "end" } }}
 			>
-				<Grid item>
+				<Grid>
 					<Button
 						variant={editState ? "contained" : "outlined"}
 						color="primary"
@@ -429,7 +430,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						{t(editState ? "done" : "edit")}
 					</Button>
 				</Grid>
-				<Grid item>
+				<Grid>
 					<Button
 						variant="outlined"
 						color="error"
