@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
+import { Button, Checkbox, MenuItem, NoSsr, Select } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useColorScheme } from "@mui/material/styles";
 import { Book1, Star, Warning2 } from "iconsax-react";
 import Link from "next/link";
@@ -53,13 +54,11 @@ const UISettings = () => {
 			notificationsAPIAvailable && Notification.permission === "granted",
 	);
 	return (
-		<NoSsr>
-			<SectionHeader heading={t("colorScheme")} />
-			<Grid container sx={SettingGroupStyle}>
-				<Grid item xs={11}>
-					{t("useSystemeTheme")}
-				</Grid>
-				<Grid item xs={1} sx={InputContainerStyle}>
+        <NoSsr>
+            <SectionHeader heading={t("colorScheme")} />
+            <Grid container sx={SettingGroupStyle}>
+				<Grid size={11}>{t("useSystemeTheme")}</Grid>
+				<Grid sx={InputContainerStyle} size={1}>
 					<Checkbox
 						onChange={(_, isChecked) =>
 							colorScheme.setMode(
@@ -71,10 +70,8 @@ const UISettings = () => {
 						checked={colorScheme.mode === "system"}
 					/>
 				</Grid>
-				<Grid item xs={11}>
-					{t("useDarkTheme")}
-				</Grid>
-				<Grid item xs={1} sx={InputContainerStyle}>
+				<Grid size={11}>{t("useDarkTheme")}</Grid>
+				<Grid sx={InputContainerStyle} size={1}>
 					<Checkbox
 						onChange={(_, isChecked) =>
 							colorScheme.setMode(isChecked ? "dark" : "light")
@@ -87,12 +84,10 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("language")} />
-			<Grid container sx={SettingGroupStyle}>
-				<Grid item xs={10}>
-					{t("language")}
-				</Grid>
-				<Grid item xs={2} sx={InputContainerStyle}>
+            <SectionHeader heading={t("language")} />
+            <Grid container sx={SettingGroupStyle}>
+				<Grid size={10}>{t("language")}</Grid>
+				<Grid sx={InputContainerStyle} size={2}>
 					<Select
 						size="small"
 						value={i18n.language}
@@ -113,12 +108,10 @@ const UISettings = () => {
 					</Select>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("notifications")} />
-			<Grid container sx={SettingGroupStyle}>
-				<Grid item xs={10}>
-					{t("permissions")}
-				</Grid>
-				<Grid item xs={2} sx={InputContainerStyle}>
+            <SectionHeader heading={t("notifications")} />
+            <Grid container sx={SettingGroupStyle}>
+				<Grid size={10}>{t("permissions")}</Grid>
+				<Grid sx={InputContainerStyle} size={2}>
 					<Button
 						variant="contained"
 						onClick={() => {
@@ -147,10 +140,8 @@ const UISettings = () => {
 								: "ask"}
 					</Button>
 				</Grid>
-				<Grid item xs={10}>
-					{t("notifyOnTrackChange")}
-				</Grid>
-				<Grid item xs={2} sx={InputContainerStyle}>
+				<Grid size={10}>{t("notifyOnTrackChange")}</Grid>
+				<Grid sx={InputContainerStyle} size={2}>
 					<Checkbox
 						onChange={(_, isChecked) => {
 							setPrefersNotif(isChecked);
@@ -159,14 +150,14 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("keyboadBindings")} />
-			<Grid container sx={SettingGroupStyle}>
-				<Grid item xs={12}>
+            <SectionHeader heading={t("keyboadBindings")} />
+            <Grid container sx={SettingGroupStyle}>
+				<Grid size={12}>
 					{t("openKeyboarBindingsModalByTypingQuestionMark")}
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("project")} />
-			<p>
+            <SectionHeader heading={t("project")} />
+            <p>
 				<Star style={LinkIconStyle} />
 				{t("enjoyingTheProject")}{" "}
 				<Link
@@ -176,7 +167,7 @@ const UISettings = () => {
 					{t("starOnGithub")}
 				</Link>
 			</p>
-			<p>
+            <p>
 				<Warning2 style={LinkIconStyle} />
 				{t("encounteredABug")}{" "}
 				<Link
@@ -186,7 +177,7 @@ const UISettings = () => {
 					{t("openAnIssue")}
 				</Link>
 			</p>
-			<p>
+            <p>
 				<Book1 style={LinkIconStyle} />
 				<Link
 					style={{ textDecoration: "underline" }}
@@ -195,8 +186,8 @@ const UISettings = () => {
 					{t("readTheDoc")}
 				</Link>
 			</p>
-		</NoSsr>
-	);
+        </NoSsr>
+    );
 };
 
 export default UISettings;
