@@ -18,8 +18,8 @@
 
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import {
-	Experimental_CssVarsProvider as CssVarsProvider,
-	experimental_extendTheme as extendTheme,
+	CssVarsProvider,
+	extendTheme,
 	responsiveFontSizes,
 } from "@mui/material/styles";
 import font from "./font";
