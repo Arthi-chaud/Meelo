@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "~/i18n/i18n";
 import type Action from "./actions";
@@ -31,10 +31,9 @@ export const EmptyState = (props: EmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Grid
-			container
+		<Stack
 			direction="column"
-			rowSpacing={3}
+			spacing={3}
 			sx={{
 				paddingTop: 3,
 				width: "100%",
@@ -45,25 +44,20 @@ export const EmptyState = (props: EmptyStateProps) => {
 				color: "text.disabled",
 			}}
 		>
-			<Grid item>{props.icon}</Grid>
-			<Grid item>{t(props.text)}</Grid>
-			<Grid
-				item
-				container
-				sx={{ display: "flex", justifyContent: "center" }}
-			>
+			<Box>{props.icon}</Box>
+			<Typography>{t(props.text)}</Typography>
+			<Grid container sx={{ display: "flex", justifyContent: "center" }}>
 				{props.actions?.map((a, i) => (
-					<Grid item key={i}>
-						<Button
-							variant="outlined"
-							href={a.href}
-							onClick={a.onClick}
-						>
-							{t(a.label)}
-						</Button>
-					</Grid>
+					<Button
+						variant="outlined"
+						key={i}
+						href={a.href}
+						onClick={a.onClick}
+					>
+						{t(a.label)}
+					</Button>
 				))}
 			</Grid>
-		</Grid>
+		</Stack>
 	);
 };

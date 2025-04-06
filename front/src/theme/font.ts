@@ -18,11 +18,14 @@
 
 import { Rubik } from "next/font/google";
 
-const font = Rubik({
+export const FontVariable = "--font-rubik" as const;
+
+const Font = Rubik({
 	subsets: ["latin"],
 	preload: true,
 	display: "swap",
 	fallback: ["Rubik", "Helvetica", "Arial", "sans-serif"],
+	variable: "--font-rubik",
 });
 
-export default font;
+export default Font;

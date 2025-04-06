@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Chip, Grid, Skeleton, Typography, useTheme } from "@mui/material";
+import {
+	Box,
+	Chip,
+	Grid,
+	Skeleton,
+	Stack,
+	Typography,
+	useTheme,
+} from "@mui/material";
 import Link from "next/link";
 import { useMemo } from "react";
 import Illustration from "~/components/illustration";
@@ -87,74 +95,74 @@ const HighlightCard = (props: HighlightCardProps) => {
 				}}
 				style={{ borderRadius: theme.shape.borderRadius }}
 			>
-				<Grid item sx={{ aspectRatio: "1", height: "100%" }}>
+				<Grid sx={{ aspectRatio: "1", height: "100%" }}>
 					<Illustration
 						illustration={props.illustration}
 						imgProps={{ borderRadius: 0 }}
 						quality="medium"
 					/>
 				</Grid>
-				<Grid
-					item
-					container
-					sx={{ width: "100%", overflow: "hidden" }}
-					direction="column"
-					padding={2}
-				>
-					<Grid item sx={{ width: "100%" }}>
-						<Typography
-							variant="h6"
-							noWrap
-							style={{
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								width: "100%",
-								paddingRight: 1,
-							}}
-						>
-							{props.headline ?? <Skeleton variant="text" />}
-						</Typography>
-					</Grid>
-					<Grid
-						item
-						xs
+				<Grid container size="grow" sx={{ height: "100%" }}>
+					<Stack
 						sx={{
-							overflowY: "scroll",
-							overflowX: "clip",
-							marginRight: -2,
-							paddingY: 1,
-							paddingRight: 2,
-							...scrollbarColorStyle,
+							width: "100%",
+							height: "100%",
+							padding: 2,
 						}}
 					>
-						<Typography
-							variant="body1"
-							color="text.disabled"
-							lineHeight={1.5}
+						<Box sx={{ width: "100%" }}>
+							<Typography
+								variant="h6"
+								noWrap
+								style={{
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									width: "100%",
+									paddingRight: 1,
+								}}
+							>
+								{props.headline ?? <Skeleton variant="text" />}
+							</Typography>
+						</Box>
+						<Box
+							sx={{
+								overflowY: "scroll",
+								overflowX: "clip",
+								flexGrow: 1,
+								marginRight: -2,
+								paddingY: 1,
+								paddingRight: 2,
+								...scrollbarColorStyle,
+							}}
 						>
-							{props.body ?? <Skeleton variant="text" />}
-						</Typography>
-					</Grid>
-					{props.tags.length > 0 && (
-						<Grid
-							item
-							container
-							columnSpacing={1}
-							sx={{ height: 32, overflow: "hidden" }}
-						>
-							{props.tags.map((tag, index) => (
-								<Grid key={index} item>
-									<Link href={tag.href} key={index}>
-										<Chip
-											variant="filled"
-											clickable
-											label={tag.label}
-										/>
-									</Link>
-								</Grid>
-							))}
-						</Grid>
-					)}
+							<Typography
+								variant="body1"
+								color="text.disabled"
+								lineHeight={1.5}
+							>
+								{props.body ?? <Skeleton variant="text" />}
+							</Typography>
+						</Box>
+						{props.tags.length > 0 && (
+							<Grid
+								container
+								spacing={1}
+								sx={{ marginTop: 1, height: 24 }}
+							>
+								{props.tags.map((tag, index) => (
+									<Grid key={index}>
+										<Link href={tag.href} key={index}>
+											<Chip
+												variant="filled"
+												clickable
+												label={tag.label}
+											/>
+										</Link>
+									</Grid>
+								))}
+							</Grid>
+						)}
+					</Stack>
 				</Grid>
 			</Grid>
 		</Link>

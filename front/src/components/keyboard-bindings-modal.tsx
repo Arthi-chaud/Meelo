@@ -77,7 +77,7 @@ const KeyboardBindingModalContent = () => {
 		<List>
 			{bindings.map((binding) => (
 				<Grid container key={binding.key} spacing={2}>
-					<Grid item xs={4} sx={{ textAlign: "center" }}>
+					<Grid size={{ xs: 4 }} sx={{ textAlign: "center" }}>
 						<pre>
 							<code
 								style={{
@@ -94,8 +94,7 @@ const KeyboardBindingModalContent = () => {
 						</pre>
 					</Grid>
 					<Grid
-						item
-						xs={8}
+						size={{ xs: 8 }}
 						sx={{
 							textOverflow: "ellipsis",
 							alignContent: "center",

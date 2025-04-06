@@ -338,7 +338,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						],
 					] as const
 				).map(([label, Icon, variant, callback], index) => (
-					<Grid item xs key={index}>
+					<Grid size="grow" key={index}>
 						<Button
 							variant={variant}
 							color="primary"
@@ -382,7 +382,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				spacing={1}
 				sx={{ justifyContent: { xs: "space-evenly", sm: "end" } }}
 			>
-				<Grid item>
+				<Grid>
 					<Button
 						variant={editState ? "contained" : "outlined"}
 						color="primary"
@@ -429,7 +429,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						{t(editState ? "done" : "edit")}
 					</Button>
 				</Grid>
-				<Grid item>
+				<Grid>
 					<Button
 						variant="outlined"
 						color="error"

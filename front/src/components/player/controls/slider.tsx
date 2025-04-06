@@ -49,10 +49,10 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					props.duration === undefined ? "text.disabled" : undefined,
 			}}
 		>
-			<Grid item xs="auto">
+			<Grid size={{ xs: "auto" }}>
 				<DurationComponent time={progress ?? undefined} />
 			</Grid>
-			<Grid item xs>
+			<Grid size="grow">
 				<Slider
 					style={{ paddingBottom: 0 }}
 					disabled={!props.duration || progress === null}
@@ -79,7 +79,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					}
 				/>
 			</Grid>
-			<Grid item xs="auto">
+			<Grid size={{ xs: "auto" }}>
 				<DurationComponent time={props.duration ?? undefined} />
 			</Grid>
 		</Grid>

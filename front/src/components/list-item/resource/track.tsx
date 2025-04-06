@@ -80,10 +80,10 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 					spacing={1}
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
-					<Grid item sx={{ display: "flex", alignItems: "center" }}>
+					<Grid sx={{ display: "flex", alignItems: "center" }}>
 						{track?.song && isMaster ? <MasterIcon /> : undefined}
 					</Grid>
-					<Grid item>
+					<Grid>
 						{track && <TrackContextualMenu track={track} />}
 					</Grid>
 				</Grid>

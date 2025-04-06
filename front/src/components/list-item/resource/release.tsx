@@ -53,12 +53,10 @@ const ReleaseItem = ({ release, onClick }: ReleaseItemProps) => {
 					spacing={1}
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
-					<Grid item sx={{ display: "flex", alignItems: "center" }}>
+					<Grid sx={{ display: "flex", alignItems: "center" }}>
 						{isMaster ? <Star /> : undefined}
 					</Grid>
-					<Grid item>
-						{<ReleaseContextualMenu release={release} />}
-					</Grid>
+					<Grid>{<ReleaseContextualMenu release={release} />}</Grid>
 				</Grid>
 			}
 		/>

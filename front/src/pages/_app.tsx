@@ -21,7 +21,8 @@ import PageNotFound from "./404";
 import InternalError from "./500";
 import "core-js/actual";
 import "~/theme/styles.css";
-import { CacheProvider, type EmotionCache } from "@emotion/react";
+import type { EmotionCache } from "@emotion/react";
+import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
 import { Provider } from "jotai";
 import type { Page } from "ssr";
@@ -39,10 +40,6 @@ import { store } from "~/state/store";
 import { accessTokenAtom } from "~/state/user";
 import ThemeProvider from "~/theme/provider";
 import { UserAccessTokenCookieKey } from "~/utils/cookieKeys";
-import createEmotionCache from "~/utils/createEmotionCache";
-
-// Client-side cache, shared for the whole session of the user in the browser.
-const clientSideEmotionCache = createEmotionCache();
 
 export interface MyAppProps extends AppProps {
 	emotionCache?: EmotionCache;
@@ -51,7 +48,7 @@ export interface MyAppProps extends AppProps {
 function MyApp({
 	Component,
 	pageProps: { session, lng, ...pageProps },
-	emotionCache = clientSideEmotionCache,
+	emotionCache,
 }: MyAppProps) {
 	const [queryClient] = useState(
 		() =>
@@ -67,7 +64,7 @@ function MyApp({
 		setError(undefined);
 	}, [router]);
 	return (
-		<CacheProvider value={emotionCache}>
+		<AppCacheProvider emotionCache={emotionCache}>
 			<ThemeProvider>
 				<Head>
 					{/* It is recommended to leave this here. The rest has been moved to `_document` */}
@@ -128,7 +125,7 @@ function MyApp({
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</ThemeProvider>
-		</CacheProvider>
+		</AppCacheProvider>
 	);
 }
 

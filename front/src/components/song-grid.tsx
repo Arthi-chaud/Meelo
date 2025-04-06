@@ -41,10 +41,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 			{songs.map((song, index) => (
 				<Grid
 					key={song?.id ?? `song-grid-skeleton-${index}`}
-					item
-					xs={12}
-					sm={6}
-					lg={4}
+					size={{ xs: 12, sm: 6, lg: 4 }}
 				>
 					<ListItem
 						icon={

@@ -22,7 +22,6 @@ import {
 	CircularProgress,
 	Dialog,
 	Grid,
-	Hidden,
 	IconButton,
 	List,
 	ListItem,
@@ -114,8 +113,10 @@ const RunTaskButton = ({
 				}}
 				sx={actionButtonStyle}
 			>
-				<Hidden smUp>{icon}</Hidden>
-				<Hidden smDown>{t(label)}</Hidden>
+				<Box sx={{ display: { xs: "flex", sm: "none" } }}>{icon}</Box>
+				<Box sx={{ display: { xs: "none", sm: "flex" } }}>
+					{t(label)}
+				</Box>
 			</Button>
 
 			{dialog && (
@@ -285,7 +286,7 @@ const LibrariesSettings = () => {
 				}}
 				spacing={{ xs: 1, lg: 2 }}
 			>
-				<Grid item>
+				<Grid>
 					<Button
 						variant="contained"
 						startIcon={<AddIcon />}
@@ -295,7 +296,7 @@ const LibrariesSettings = () => {
 					</Button>
 				</Grid>
 				{[cleanAllLibaries, scanAllLibaries].map((action, index) => (
-					<Grid item key={`Library-action-${index}`}>
+					<Grid key={`Library-action-${index}`}>
 						<Button
 							variant={index % 2 ? "contained" : "outlined"}
 							startIcon={action.icon}

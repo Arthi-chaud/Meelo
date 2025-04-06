@@ -41,8 +41,7 @@ const RefreshMetadataActionContent = ({
 	return (
 		<Grid container spacing={2} sx={{ padding: 2 }}>
 			<Grid
-				item
-				xs={12}
+				size={{ xs: 12 }}
 				sx={{
 					display: "flex",
 					justifyContent: "center",
@@ -55,7 +54,7 @@ const RefreshMetadataActionContent = ({
 				/>
 				{t("refreshMetadataForceLabel")}
 			</Grid>
-			<Grid item xs={12}>
+			<Grid size={{ xs: 12 }}>
 				<Button
 					fullWidth
 					variant="contained"

@@ -71,7 +71,7 @@ export const Controls = <SortingKey extends string>(props: {
 			}}
 		>
 			{props.filters && (
-				<Grid item>
+				<Grid>
 					<ButtonGroup variant="contained">
 						{props.filters?.map((filter, idx) => (
 							<FilterMenuButton key={idx} filter={filter} />
@@ -80,19 +80,19 @@ export const Controls = <SortingKey extends string>(props: {
 				</Grid>
 			)}
 			{props.sort && (
-				<Grid item>
+				<Grid>
 					<ButtonGroup variant="contained">
 						<SortMenuButton sort={props.sort} />
 					</ButtonGroup>
 				</Grid>
 			)}
 			{props.layout && (
-				<Grid item>
+				<Grid>
 					<LayoutButtonGroup layout={props.layout} />
 				</Grid>
 			)}
 			{props.actions?.map((actions, idx) => (
-				<Grid item key={idx}>
+				<Grid key={idx}>
 					<ActionButtonGroup actions={actions} />
 				</Grid>
 			))}
