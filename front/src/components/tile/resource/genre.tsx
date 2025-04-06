@@ -20,10 +20,9 @@ import {
 	IconButton,
 	Paper,
 	Skeleton,
-	Typography,
+	Typography,Grid,
 	useTheme,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import { useMemo } from "react";

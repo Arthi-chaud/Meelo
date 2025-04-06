@@ -22,9 +22,9 @@ import {
 	DialogTitle,
 	IconButton,
 	List,
+	Grid,
 	useTheme,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {

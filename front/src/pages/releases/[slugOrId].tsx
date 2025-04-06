@@ -27,9 +27,8 @@ import {
 	Skeleton,
 	Stack,
 	Typography,
-	useTheme,
+	useTheme,Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { Box } from "@mui/system";
 import { shuffle } from "d3-array";
 import { Star1 } from "iconsax-react";

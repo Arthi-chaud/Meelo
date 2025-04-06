@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from "@mui/material/Grid2";
+import { Grid } from "@mui/material";
 import { Star } from "iconsax-react";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import { AlbumIcon } from "~/components/icons";

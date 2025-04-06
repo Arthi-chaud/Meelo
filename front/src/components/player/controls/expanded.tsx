@@ -26,9 +26,8 @@ import {
 	Skeleton,
 	Stack,
 	Typography,
-	useTheme,
+	useTheme,Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";

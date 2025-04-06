@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from "@mui/material/Grid2";
+import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
 import API from "~/api";
 import { useQueryClient } from "~/api/use-query";

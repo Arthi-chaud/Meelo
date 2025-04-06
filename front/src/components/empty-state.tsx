@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "~/i18n/i18n";
 import type Action from "./actions";

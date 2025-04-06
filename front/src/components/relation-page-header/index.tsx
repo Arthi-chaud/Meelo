@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Skeleton, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Box, Grid,Skeleton, Stack, Typography } from "@mui/material";
 
 type RelationHeaderProps = {
 	illustration: JSX.Element;

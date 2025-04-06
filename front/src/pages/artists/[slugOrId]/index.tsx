@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Container, Divider, Stack } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Box, Container, Divider, Grid,Stack } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";

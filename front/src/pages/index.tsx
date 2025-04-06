@@ -259,10 +259,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							<Grid container spacing={3}>
 								{albums.slice(0, 6).map((album, index) => (
 									<Grid
-										item
-										xs={12}
-										lg={6}
-										xl={4}
+										size={{ xs: 2, lg: 6, xl: 4 }}
 										key={index}
 									>
 										<AlbumHighlightCard

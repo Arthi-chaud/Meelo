@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Chip } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Chip, Grid, } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";

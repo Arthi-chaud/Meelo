@@ -21,8 +21,8 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
+	Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useTranslation } from "react-i18next";
 import type Library from "~/models/library";

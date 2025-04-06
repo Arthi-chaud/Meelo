@@ -24,9 +24,8 @@ import {
 	ListItem as MUIListItem,
 	Skeleton,
 	Typography,
-	useTheme,
+	useTheme,Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import Link from "next/link";
 
 type ListItemProps = {

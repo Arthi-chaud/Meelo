@@ -12,12 +12,13 @@
 		"test:cov": "jest -i --coverage"
 	},
 	"dependencies": {
-		"@emotion/cache": "^11.10.0",
-		"@emotion/react": "^11.10.0",
+		"@emotion/cache": "^11.14.0",
+		"@emotion/react": "^11.14.0",
 		"@emotion/server": "^11.11.0",
-		"@emotion/styled": "^11.10.0",
-		"@mui/material": "^6.4.10",
-		"@mui/utils": "^6.4.9",
+		"@emotion/styled": "^11.14.0",
+		"@mui/material": "^7.0.1",
+		"@mui/material-nextjs": "^7.0.0",
+		"@mui/utils": "^7.0.1",
 		"@mui/x-data-grid": "^6.20.4",
 		"@mui/x-date-pickers": "^6.20.2",
 		"accept-language-parser": "^1.5.0",

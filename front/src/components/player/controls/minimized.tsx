@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, ButtonBase, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Box, ButtonBase,Grid, Typography } from "@mui/material";
 import { useQuery } from "~/api/use-query";
 import { TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";

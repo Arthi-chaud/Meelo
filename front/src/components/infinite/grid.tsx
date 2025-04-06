@@ -68,8 +68,7 @@ const InfiniteGrid = <T extends IllustratedResource>(
 						>
 							{items.map((item, index) => (
 								<Grid
-									item
-									{...GridPresets[props.itemSize]}
+									size={GridPresets[props.itemSize]}
 									key={`item-${index}`}
 								>
 									{props.render(item)}

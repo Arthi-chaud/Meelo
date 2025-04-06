@@ -28,9 +28,8 @@ import {
 	Skeleton,
 	Typography,
 	useMediaQuery,
-	useTheme,
+	useTheme,Grid,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useConfirm } from "material-ui-confirm";
 import { type ComponentProps, useMemo, useState } from "react";
