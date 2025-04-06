@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Divider, IconButton, Grid,Stack } from "@mui/material";
+import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
 import { shuffle } from "d3-array";
 import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";

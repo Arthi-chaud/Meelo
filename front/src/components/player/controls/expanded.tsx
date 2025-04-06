@@ -22,11 +22,12 @@ import {
 	Container,
 	Dialog,
 	Divider,
+	Grid,
 	IconButton,
 	Skeleton,
 	Stack,
 	Typography,
-	useTheme,Grid,
+	useTheme,
 } from "@mui/material";
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";

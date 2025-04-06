@@ -19,10 +19,11 @@
 import {
 	Box,
 	Chip,
+	Grid,
 	Skeleton,
 	Stack,
 	Typography,
-	useTheme,Grid,
+	useTheme,
 } from "@mui/material";
 import Link from "next/link";
 import { useMemo } from "react";

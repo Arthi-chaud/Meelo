@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid,Slider } from "@mui/material";
+import { Grid, Slider } from "@mui/material";
 import { type MutableRefObject, useEffect, useState } from "react";
 import { DurationComponent } from "./common";
 

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button,Grid, Checkbox } from "@mui/material";
+import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";

@@ -18,13 +18,14 @@
 
 import {
 	Box,
+	Grid,
 	ListItemAvatar,
 	ListItemButton,
 	ListItemText,
 	ListItem as MUIListItem,
 	Skeleton,
 	Typography,
-	useTheme,Grid,
+	useTheme,
 } from "@mui/material";
 import Link from "next/link";
 

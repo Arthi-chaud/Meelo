@@ -21,7 +21,7 @@ import {
 	type DocumentHeadTagsProps,
 	documentGetInitialProps,
 } from "@mui/material-nextjs/v14-pagesRouter";
-import { getInitColorSchemeScript } from "@mui/material/styles";
+import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import {
 	type DocumentContext,
 	type DocumentProps,
@@ -63,7 +63,7 @@ export default function MyDocument(
 				<link rel="apple-touch-icon" href="/favicon.ico" />
 			</Head>
 			<body style={{ height: "100lvh" }}>
-				{getInitColorSchemeScript({ defaultMode: "system" })}
+				<InitColorSchemeScript defaultMode="system" />
 				<Main />
 				<NextScript />
 			</body>

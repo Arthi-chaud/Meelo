@@ -17,10 +17,11 @@
  */
 
 import {
+	Grid,
 	IconButton,
 	Paper,
 	Skeleton,
-	Typography,Grid,
+	Typography,
 	useTheme,
 } from "@mui/material";
 import { useSetAtom } from "jotai";

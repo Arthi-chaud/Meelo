@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Grid,Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
