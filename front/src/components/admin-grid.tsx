@@ -62,7 +62,6 @@ const AdminGrid = <DataType extends Resource>({
 			disableRowSelectionOnClick
 			disableColumnMenu
 			paginationMode="server"
-			autoHeight
 			onPaginationModelChange={({ page }) => {
 				if (page === currentPage + 1 && hasNextPage) {
 					fetchNextPage();
