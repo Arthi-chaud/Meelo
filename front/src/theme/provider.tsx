@@ -18,36 +18,40 @@
 
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import {
-	CssVarsProvider,
-	extendTheme,
-	responsiveFontSizes,
+	ThemeProvider as MUIThemeProvider,
+	createTheme,
 } from "@mui/material/styles";
-import font from "./font";
+import { responsiveFontSizes } from "@mui/material/styles";
+import Font, { FontVariable } from "./font";
 import Styles from "./style";
 import { DarkTheme, GlobalTheme, LightTheme } from "./theme";
+
+const theme = responsiveFontSizes(
+	createTheme({
+		cssVariables: true,
+		colorSchemes: {
+			light: { palette: LightTheme },
+			dark: { palette: DarkTheme },
+		},
+		typography: {
+			fontFamily: `var(${FontVariable})`,
+		},
+		...GlobalTheme,
+	}),
+);
 
 /**
  * Provides the Theme
  */
 const ThemeProvider = (props: { children: any }) => {
-	const theme = responsiveFontSizes(
-		extendTheme({
-			colorSchemes: {
-				light: { palette: LightTheme },
-				dark: { palette: DarkTheme },
-			},
-			typography: {
-				fontFamily: font.style.fontFamily,
-			},
-			...GlobalTheme,
-		}),
-	);
 	return (
-		<CssVarsProvider defaultMode="system" theme={theme}>
-			<CssBaseline />
-			<GlobalStyles styles={Styles} />
-			{props.children}
-		</CssVarsProvider>
+		<MUIThemeProvider theme={theme} defaultMode="system">
+			<main className={Font.variable}>
+				<CssBaseline />
+				<GlobalStyles styles={Styles} />
+				{props.children}
+			</main>
+		</MUIThemeProvider>
 	);
 };
 
