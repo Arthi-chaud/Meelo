@@ -56,8 +56,8 @@ const UISettings = () => {
 		<NoSsr>
 			<SectionHeader heading={t("colorScheme")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={11}>{t("useSystemeTheme")}</Grid>
-				<Grid sx={InputContainerStyle} size={1}>
+				<Grid size={{ xs: 11 }}>{t("useSystemeTheme")}</Grid>
+				<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
 					<Checkbox
 						onChange={(_, isChecked) =>
 							colorScheme.setMode(
@@ -69,8 +69,8 @@ const UISettings = () => {
 						checked={colorScheme.mode === "system"}
 					/>
 				</Grid>
-				<Grid size={11}>{t("useDarkTheme")}</Grid>
-				<Grid sx={InputContainerStyle} size={1}>
+				<Grid size={{ xs: 11 }}>{t("useDarkTheme")}</Grid>
+				<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
 					<Checkbox
 						onChange={(_, isChecked) =>
 							colorScheme.setMode(isChecked ? "dark" : "light")
@@ -85,8 +85,8 @@ const UISettings = () => {
 			</Grid>
 			<SectionHeader heading={t("language")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={10}>{t("language")}</Grid>
-				<Grid sx={InputContainerStyle} size={2}>
+				<Grid size={{ xs: 10 }}>{t("language")}</Grid>
+				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Select
 						size="small"
 						value={i18n.language}
@@ -109,8 +109,8 @@ const UISettings = () => {
 			</Grid>
 			<SectionHeader heading={t("notifications")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={10}>{t("permissions")}</Grid>
-				<Grid sx={InputContainerStyle} size={2}>
+				<Grid size={{ xs: 10 }}>{t("permissions")}</Grid>
+				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Button
 						variant="contained"
 						onClick={() => {
@@ -139,8 +139,8 @@ const UISettings = () => {
 								: "ask"}
 					</Button>
 				</Grid>
-				<Grid size={10}>{t("notifyOnTrackChange")}</Grid>
-				<Grid sx={InputContainerStyle} size={2}>
+				<Grid size={{ xs: 10 }}>{t("notifyOnTrackChange")}</Grid>
+				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Checkbox
 						onChange={(_, isChecked) => {
 							setPrefersNotif(isChecked);
@@ -151,7 +151,7 @@ const UISettings = () => {
 			</Grid>
 			<SectionHeader heading={t("keyboadBindings")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={12}>
+				<Grid size={{ xs: 12 }}>
 					{t("openKeyboarBindingsModalByTypingQuestionMark")}
 				</Grid>
 			</Grid>
