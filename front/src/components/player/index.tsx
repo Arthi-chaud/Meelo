@@ -58,9 +58,8 @@ const Player = () => {
 	const [playlist] = useAtom(playlistAtom);
 	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
 	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
-	const audioPlayer = useRef<HTMLAudioElement>(
-		typeof Audio !== "undefined" ? new Audio() : null,
-	);
+	const throwawayAudioPlayer = useRef<HTMLAudioElement>();
+	const audioPlayer = useRef<HTMLAudioElement>();
 	const [useTranscoding, setUseTranscoding] = useState(false);
 	const hls = useRef(
 		new Hls({
@@ -128,6 +127,33 @@ const Player = () => {
 						hls.current?.media?.duration,
 				);
 				player.current!.ontimeupdate = () => {
+					if (
+						!Number.isNaN(player.current!.duration) &&
+						Math.abs(
+							player.current!.currentTime -
+								player.current!.duration,
+						) <= 5
+					) {
+						console.log(
+							throwawayAudioPlayer.current.id,
+							audioPlayer.current?.id,
+						);
+						const newId = throwawayAudioPlayer.current?.id;
+						throwawayAudioPlayer.current = document.getElementById(
+							audioPlayer.current?.id,
+						);
+						audioPlayer.current = document.getElementById(newId);
+
+						console.log(
+							throwawayAudioPlayer.current.id,
+							audioPlayer.current?.id,
+						);
+
+						if (currentTrack.track.songId) {
+							API.setSongAsPlayed(currentTrack.track.songId);
+						}
+						skipTrack(queryClient);
+					}
 					progress.current = player.current!.currentTime;
 				};
 				player.current!.onended = () => {
@@ -274,7 +300,7 @@ const Player = () => {
 		if (hls.current) {
 			hls.current.detachMedia();
 		}
-		player.current?.pause();
+		// player.current?.pause();
 		progress.current = null;
 		if (typeof navigator.mediaSession !== "undefined") {
 			navigator.mediaSession.metadata = null;
@@ -379,6 +405,8 @@ const Player = () => {
 
 	return (
 		<>
+			<audio id="player1" ref={audioPlayer} />
+			<audio id="player2" ref={throwawayAudioPlayer} />
 			<Grow
 				in={playlist.length !== 0 || player.current !== undefined}
 				unmountOnExit
