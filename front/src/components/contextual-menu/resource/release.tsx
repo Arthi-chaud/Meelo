@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useDialogs } from "@toolpad/core";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
@@ -42,6 +43,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const [user] = useAtom(userAtom);
 	const userIsAdmin = user?.admin === true;
 	const queryClient = useQueryClient();
+	const dialog = useDialogs();
 	const confirm = useConfirm();
 	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
@@ -111,7 +113,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 					),
 					RefreshReleaseMetadataAction(props.release.id, t),
 				],
-				[DownloadReleaseAction(confirm, props.release.id, t)],
+				[DownloadReleaseAction(dialog, props.release.id, t)],
 				[ShareReleaseAction(props.release.id, t)],
 			]}
 		/>

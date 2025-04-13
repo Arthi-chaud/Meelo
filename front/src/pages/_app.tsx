@@ -24,6 +24,7 @@ import "~/theme/styles.css";
 import type { EmotionCache } from "@emotion/react";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
+import { DialogsProvider } from "@toolpad/core";
 import { Provider } from "jotai";
 import type { Page } from "ssr";
 import API from "~/api";
@@ -66,64 +67,66 @@ function MyApp({
 	return (
 		<AppCacheProvider emotionCache={emotionCache}>
 			<ThemeProvider>
-				<Head>
-					{/* It is recommended to leave this here. The rest has been moved to `_document` */}
-					<title>{DefaultWindowTitle}</title>
-					<meta
-						name="viewport"
-						content="initial-scale=1.0, width=device-width"
-					/>
-				</Head>
-				<QueryClientProvider client={queryClient}>
-					{/* 
+				<DialogsProvider>
+					<Head>
+						{/* It is recommended to leave this here. The rest has been moved to `_document` */}
+						<title>{DefaultWindowTitle}</title>
+						<meta
+							name="viewport"
+							content="initial-scale=1.0, width=device-width"
+						/>
+					</Head>
+					<QueryClientProvider client={queryClient}>
+						{/* 
 						Recommended for SSR
 						https://jotai.org/docs/guides/nextjs#provider
 					*/}
-					<Provider store={store}>
-						<ConfirmProvider
-							defaultOptions={{
-								cancellationButtonProps: {
-									sx: { marginX: 2 },
-								},
-							}}
-						>
-							<Hydrate state={pageProps.dehydratedState}>
-								<AuthenticationWall>
-									<ErrorBoundary
-										FallbackComponent={() => {
-											if (errorType === "not-found") {
-												return <PageNotFound />;
-											}
-											return <InternalError />;
-										}}
-										onError={(error: Error) => {
-											if (errorType) {
-												toast.error(error.message);
-											}
-											if (
-												error instanceof
-												ResourceNotFound
-											) {
-												setError("not-found");
-											} else {
-												setError("error");
-											}
-										}}
-									>
-										<KeyboardBindingsProvider>
-											<KeyboardBindingModal />
-											<Scaffold>
-												<Component {...pageProps} />
-											</Scaffold>
-										</KeyboardBindingsProvider>
-									</ErrorBoundary>
-								</AuthenticationWall>
-							</Hydrate>
-						</ConfirmProvider>
-					</Provider>
-					<Toaster />
-					<ReactQueryDevtools initialIsOpen={false} />
-				</QueryClientProvider>
+						<Provider store={store}>
+							<ConfirmProvider
+								defaultOptions={{
+									cancellationButtonProps: {
+										sx: { marginX: 2 },
+									},
+								}}
+							>
+								<Hydrate state={pageProps.dehydratedState}>
+									<AuthenticationWall>
+										<ErrorBoundary
+											FallbackComponent={() => {
+												if (errorType === "not-found") {
+													return <PageNotFound />;
+												}
+												return <InternalError />;
+											}}
+											onError={(error: Error) => {
+												if (errorType) {
+													toast.error(error.message);
+												}
+												if (
+													error instanceof
+													ResourceNotFound
+												) {
+													setError("not-found");
+												} else {
+													setError("error");
+												}
+											}}
+										>
+											<KeyboardBindingsProvider>
+												<KeyboardBindingModal />
+												<Scaffold>
+													<Component {...pageProps} />
+												</Scaffold>
+											</KeyboardBindingsProvider>
+										</ErrorBoundary>
+									</AuthenticationWall>
+								</Hydrate>
+							</ConfirmProvider>
+						</Provider>
+						<Toaster />
+						<ReactQueryDevtools initialIsOpen={false} />
+					</QueryClientProvider>
+				</DialogsProvider>
 			</ThemeProvider>
 		</AppCacheProvider>
 	);

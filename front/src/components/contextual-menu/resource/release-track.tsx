@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useDialogs } from "@toolpad/core";
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "~/api/use-query";
@@ -50,6 +51,7 @@ type ReleaseTrackContextualMenuProps = {
 const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = props.track.song?.slug;
 	const confirm = useConfirm();
+	const dialog = useDialogs();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 
@@ -92,7 +94,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
-					DownloadAction(confirm, props.track.sourceFileId, t),
+					DownloadAction(dialog, props.track.sourceFileId, t),
 					...(songSlug ? [ShareSongAction(songSlug, t)] : []),
 				],
 			]}

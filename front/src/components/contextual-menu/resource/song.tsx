@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useDialogs } from "@toolpad/core";
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
@@ -54,6 +55,7 @@ type SongContextualMenuProps = {
 const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const songSlug = props.song.slug;
 	const queryClient = useQueryClient();
+	const dialog = useDialogs();
 	const { t } = useTranslation();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(
@@ -102,7 +104,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[
 					DownloadAsyncAction(
-						confirm,
+						dialog,
 						() =>
 							getMasterTrack().then(
 								({ sourceFileId }) => sourceFileId,

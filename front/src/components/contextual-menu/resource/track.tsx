@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useDialogs } from "@toolpad/core";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
@@ -52,6 +53,7 @@ type TrackContextualMenuProps = {
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const [user] = useAtom(userAtom);
 	const userIsAdmin = user?.admin === true;
+	const dialog = useDialogs();
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const isMaster = props.track.song?.masterId === props.track.id;
@@ -127,7 +129,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
-				[DownloadAction(confirm, props.track.sourceFileId, t)],
+				[DownloadAction(dialog, props.track.sourceFileId, t)],
 			]}
 		/>
 	);

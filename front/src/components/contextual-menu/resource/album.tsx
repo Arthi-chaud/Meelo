@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useDialogs } from "@toolpad/core";
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
 import API from "~/api";
@@ -35,6 +36,7 @@ type AlbumContextualMenuProps = {
 const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 	const albumSlug = props.album.slug;
 	const confirm = useConfirm();
+	const dialog = useDialogs();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 
@@ -52,7 +54,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 				],
 				[
 					DownloadReleaseAsyncAction(
-						confirm,
+						dialog,
 						() =>
 							queryClient
 								.fetchQuery(API.getMasterRelease(albumSlug))

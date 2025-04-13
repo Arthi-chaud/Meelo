@@ -16,24 +16,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { useConfirm } from "material-ui-confirm";
+import { Button } from "@mui/material";
+import type { useDialogs } from "@toolpad/core";
 import type { Translator } from "~/i18n/i18n";
 
-const confirmDownloadAction = (
-	confirm: ReturnType<typeof useConfirm>,
+const openDownloadDialog = (
+	dialog: ReturnType<typeof useDialogs>,
 	downloadUrl: string,
 	t: Translator,
 ) => {
-	confirm({
+	dialog.confirm(t("downloadWarning"), {
+		okText: (
+			<Button href={downloadUrl} variant="outlined" color="error">
+				{t("download")}
+			</Button>
+		),
+		cancelText: t("cancel"),
 		title: t("warning"),
-		description: t("downloadWarning"),
-		confirmationText: t("download"),
-		confirmationButtonProps: {
-			color: "error",
-			variant: "outlined",
-			href: downloadUrl,
-		},
-	});
+	}); // dialog.open(({ open,  }) => <Dialog
+	//        open={open}
+	//        onClose={handleClose}
+	//        aria-describedby="alert-dialog-slide-description"
+	//      >
+	//        <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+	//        <DialogContent>
+	//          <DialogContentText id="alert-dialog-slide-description">
+	//            Let Google help apps determine location. This means sending anonymous
+	//            location data to Google, even when no apps are running.
+	//          </DialogContentText>
+	//        </DialogContent>
+	//        <DialogActions>
+	//          <Button onClick={handleClose}>Disagree</Button>
+	//          <Button onClick={handleClose}>Agree</Button>
+	//        </DialogActions>
+	//      </Dialog>)
+	// confirm({
+	// 	title: t("warning"),
+	// 	description: t("downloadWarning"),
+	// 	confirmationText: t("download"),
+	// 	confirmationButtonProps: {
+	// 		color: "error",
+	// 		variant: "outlined",
+	// 		href: downloadUrl,
+	// 	},
+	// });
 };
 
-export default confirmDownloadAction;
+export default openDownloadDialog;

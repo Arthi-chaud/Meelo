@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { useConfirm } from "material-ui-confirm";
+import type { useDialogs } from "@toolpad/core/useDialogs";
 import API from "~/api";
 import confirmDownloadAction from "~/components/confirm-download-action";
 import { ArchiveIcon, DownloadIcon } from "~/components/icons";
@@ -24,7 +24,7 @@ import type { Translator } from "~/i18n/i18n";
 import type Action from "./";
 
 export const DownloadAction = (
-	confirm: ReturnType<typeof useConfirm>,
+	confirm: ReturnType<typeof useDialogs>,
 	sourceFileId: number,
 	t: Translator,
 ): Action => ({
@@ -35,7 +35,7 @@ export const DownloadAction = (
 });
 
 export const DownloadAsyncAction = (
-	confirm: ReturnType<typeof useConfirm>,
+	confirm: ReturnType<typeof useDialogs>,
 	sourceFileId: () => PromiseLike<number>,
 	t: Translator,
 ): Action => ({
@@ -48,7 +48,7 @@ export const DownloadAsyncAction = (
 });
 
 export const DownloadReleaseAction = (
-	confirm: ReturnType<typeof useConfirm>,
+	confirm: ReturnType<typeof useDialogs>,
 	releaseId: number | string,
 	t: Translator,
 ): Action => ({
@@ -59,7 +59,7 @@ export const DownloadReleaseAction = (
 });
 
 export const DownloadReleaseAsyncAction = (
-	confirm: ReturnType<typeof useConfirm>,
+	confirm: ReturnType<typeof useDialogs>,
 	releaseId: () => PromiseLike<number | string>,
 	t: Translator,
 ): Action => ({

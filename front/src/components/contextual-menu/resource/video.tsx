@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useDialogs } from "@toolpad/core";
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
 import API from "~/api";
@@ -48,6 +49,7 @@ type VideoContextualMenuProps = {
 const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
+	const dialog = useDialogs();
 	const getPlayNextProps = () =>
 		Promise.all([
 			queryClient.fetchQuery(API.getArtist(props.video.artistId)),
@@ -97,7 +99,7 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 					RefreshTrackMetadataAction(props.video.master.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.video.master.id)],
-				[DownloadAction(confirm, props.video.master.sourceFileId, t)],
+				[DownloadAction(dialog, props.video.master.sourceFileId, t)],
 			]}
 		/>
 	);
