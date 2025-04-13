@@ -18,8 +18,9 @@
 
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
+import { useCallback } from "react";
 import type { SongWithRelations } from "~/models/song";
-import { playTrackAtom } from "~/state/player";
+import { playTracksAtom } from "~/state/player";
 import formatArtists from "~/utils/formatArtists";
 import SongContextualMenu from "./contextual-menu/resource/song";
 import { SongIcon } from "./icons";
@@ -35,7 +36,23 @@ type SongGridProps = {
 };
 
 const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
-	const playTrack = useSetAtom(playTrackAtom);
+	const playTracks = useSetAtom(playTracksAtom);
+	const playSong = useCallback(
+		(index: number) => {
+			if (songs.find((s) => s === undefined)) {
+				return;
+			}
+			const queue = songs.map((song) => ({
+				artist: song!.artist,
+				track: {
+					...song!.master,
+					illustration: song!.illustration,
+				},
+			}));
+			playTracks({ tracks: queue, cursor: index });
+		},
+		[songs, parentArtistName],
+	);
 	return (
 		<Grid container spacing={2} sx={{ display: "flex", flexGrow: 1 }}>
 			{songs.map((song, index) => (
@@ -67,18 +84,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 								/>
 							)
 						}
-						onClick={
-							song
-								? () =>
-										playTrack({
-											artist: song.artist,
-											track: {
-												...song.master,
-												illustration: song.illustration,
-											},
-										})
-								: undefined
-						}
+						onClick={song ? () => playSong(index) : undefined}
 					/>
 				</Grid>
 			))}
