@@ -145,7 +145,12 @@ const Player = () => {
 						hls.current?.media?.duration,
 				);
 				player.current!.ontimeupdate = () => {
+					const currentTrackIsAudio =
+						currentTrack?.track.type === "Audio";
+					const nextTrackIsAudio = nextTrack?.track.type === "Audio";
 					if (
+						nextTrackIsAudio &&
+						currentTrackIsAudio &&
 						!Number.isNaN(player.current!.duration) &&
 						Math.abs(
 							player.current!.currentTime -
