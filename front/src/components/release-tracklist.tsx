@@ -132,8 +132,48 @@ const ReleaseTrackList = ({
 					key={disc[0]}
 					subheader={
 						discs.length !== 1 && (
-							<ListSubheader disableSticky>
-								{formatDisc(disc[0])}
+							<ListSubheader
+								disableSticky
+								sx={{
+									padding: 0,
+									width: "100%",
+									overflow: "hidden",
+								}}
+							>
+								<ListItemButton
+									onClick={
+										tracklist &&
+										release &&
+										(() =>
+											playTracks({
+												tracks: disc[1].map(
+													(flatTrack: TrackType) => ({
+														track: flatTrack,
+														release,
+														artist: (flatTrack.song ??
+															flatTrack.video)!
+															.artist,
+													}),
+												),
+												cursor: 0,
+											}))
+									}
+									sx={{
+										lineHeight: 3,
+										borderRadius: 0,
+										paddingY: 0,
+										width: "100%",
+										textAlign: "left",
+										display: "block",
+										textTransform: "none",
+										textWrap: "nowrap",
+										whiteSpace: "nowrap",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}
+								>
+									{formatDisc(disc[0])}{" "}
+								</ListItemButton>
 							</ListSubheader>
 						)
 					}
