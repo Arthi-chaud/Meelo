@@ -36,6 +36,7 @@ import { useQueryClient } from "~/api/use-query";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
 import {
+	type TrackState,
 	cursorAtom,
 	playPreviousTrackAtom,
 	playTracksAtom,
@@ -56,11 +57,17 @@ const Player = () => {
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const [cursor] = useAtom(cursorAtom);
 	const [playlist] = useAtom(playlistAtom);
-	const currentTrack = useMemo(() => playlist[cursor], [cursor, playlist]);
-	const player = useRef<HTMLAudioElement | HTMLVideoElement>();
-	const audioPlayer = useRef<HTMLAudioElement>(
-		typeof Audio !== "undefined" ? new Audio() : null,
+	const currentTrack = useMemo<TrackState | undefined>(
+		() => playlist[cursor],
+		[cursor, playlist],
 	);
+
+	const nextTrack = useMemo<TrackState | undefined>(
+		() => playlist[cursor + 1],
+		[cursor, playlist],
+	);
+	const throwawayAudioPlayer = useRef<HTMLAudioElement>();
+	const audioPlayer = useRef<HTMLAudioElement>();
 	const [useTranscoding, setUseTranscoding] = useState(false);
 	const hls = useRef(
 		new Hls({
@@ -71,6 +78,15 @@ const Player = () => {
 		}),
 	);
 	const videoPlayer = useRef<HTMLVideoElement>();
+	const player = useMemo(() => {
+		if (!currentTrack) {
+			return null;
+		}
+		if (currentTrack.track.type === "Video") {
+			return videoPlayer;
+		}
+		return audioPlayer;
+	}, [currentTrack]);
 	const progress = useRef<number | null>(null);
 	const [duration, setDuration] = useState<number | undefined>(undefined);
 	const [playing, setPlaying] = useState<boolean>();
@@ -83,6 +99,8 @@ const Player = () => {
 	);
 	const allowNotifications: boolean | null =
 		useReadLocalStorage("allow_notifs");
+
+	const crossfade: number | null = useReadLocalStorage("crossfade");
 	const play = () => {
 		// Do nothing if empty playlist
 		if (playlist.length === 0) {
@@ -92,13 +110,15 @@ const Player = () => {
 		if (currentTrack === undefined) {
 			skipTrack(queryClient);
 		}
-		player.current?.play();
+		player?.current?.play();
 	};
 	const pause = () => {
 		setPlaying(false);
-		player.current?.pause();
+		throwawayAudioPlayer.current?.pause();
+		player?.current?.pause();
 	};
 	const onSkipTrack = () => {
+		throwawayAudioPlayer.current?.pause();
 		// If last track, disable player
 		if (cursor >= playlist.length - 1) {
 			pause();
@@ -106,7 +126,7 @@ const Player = () => {
 		skipTrack(queryClient);
 	};
 	const onRewind = () => {
-		if (player.current && player.current.currentTime > 5) {
+		if (player?.current && player.current.currentTime > 5) {
 			player.current.currentTime = 0;
 			return;
 		}
@@ -116,10 +136,41 @@ const Player = () => {
 		}
 		playPreviousTrack();
 	};
+	const switchTrackIfCrossfade = (): boolean => {
+		const currentTrackIsAudio = currentTrack?.track.type === "Audio";
+		const nextTrackIsAudio = nextTrack?.track.type === "Audio";
+		if (
+			crossfade != null &&
+			nextTrackIsAudio &&
+			currentTrackIsAudio &&
+			!Number.isNaN(player!.current!.duration) &&
+			Math.abs(
+				player!.current!.currentTime - player!.current!.duration,
+			) <= crossfade
+		) {
+			const newId = throwawayAudioPlayer.current!.id;
+			throwawayAudioPlayer.current = document.getElementById(
+				audioPlayer.current!.id,
+			) as HTMLAudioElement;
+			audioPlayer.current = document.getElementById(
+				newId,
+			) as HTMLAudioElement;
+
+			throwawayAudioPlayer.current!.onended = null;
+			throwawayAudioPlayer.current!.onpause = null;
+
+			if (currentTrack?.track.songId) {
+				API.setSongAsPlayed(currentTrack.track.songId);
+			}
+			skipTrack(queryClient);
+			return true;
+		}
+		return false;
+	};
 
 	const startPlayback = (isTrancoding: boolean) => {
 		player
-			.current!.play()
+			?.current!.play()
 			.then(() => {
 				setPlaying(true);
 				setDuration(
@@ -128,16 +179,19 @@ const Player = () => {
 						hls.current?.media?.duration,
 				);
 				player.current!.ontimeupdate = () => {
-					progress.current = player.current!.currentTime;
+					if (!switchTrackIfCrossfade()) {
+						progress.current = player.current!.currentTime;
+					}
 				};
 				player.current!.onended = () => {
-					if (currentTrack.track.songId) {
+					if (currentTrack?.track.songId) {
 						API.setSongAsPlayed(currentTrack.track.songId);
 					}
 					progress.current = null;
 					skipTrack(queryClient);
 				};
 				player.current!.onpause = () => {
+					throwawayAudioPlayer.current?.pause();
 					if (player.current!.ended === false) {
 						setPlaying(false);
 					}
@@ -210,7 +264,7 @@ const Player = () => {
 				hls.current!.detachMedia();
 				return;
 			}
-			if (!player.current) {
+			if (!player?.current) {
 				return;
 			}
 			const streamURL = API.getTranscodeStreamURL(
@@ -268,13 +322,13 @@ const Player = () => {
 		[expanded, playing, pause, play],
 	);
 	useEffect(() => {
-		if (player.current) {
+		if (player?.current) {
 			player.current.onpause = null;
 		}
 		if (hls.current) {
 			hls.current.detachMedia();
 		}
-		player.current?.pause();
+		// player?.current?.pause();
 		progress.current = null;
 		if (typeof navigator.mediaSession !== "undefined") {
 			navigator.mediaSession.metadata = null;
@@ -291,12 +345,7 @@ const Player = () => {
 			setDuration(currentTrack.track.duration ?? undefined);
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
-			if (currentTrack.track.type === "Audio") {
-				player.current = audioPlayer.current ?? undefined;
-			} else {
-				player.current = videoPlayer.current;
-			}
-			player.current!.src = API.getDirectStreamURL(
+			player!.current!.src = API.getDirectStreamURL(
 				currentTrack.track.sourceFileId,
 			);
 			startPlayback(false);
@@ -333,7 +382,7 @@ const Player = () => {
 				} catch {}
 			}
 		} else {
-			if (player.current) {
+			if (player?.current) {
 				hls.current?.detachMedia();
 				player.current.src = "";
 			}
@@ -371,16 +420,23 @@ const Player = () => {
 		onRewind: onRewind,
 		videoRef: videoPlayer as unknown as LegacyRef<HTMLVideoElement>,
 		onSlide: (newProgress: number) => {
-			if (player.current !== undefined) {
+			if (player?.current !== undefined) {
 				player.current.currentTime = newProgress;
+				if (switchTrackIfCrossfade()) {
+					throwawayAudioPlayer.current?.pause();
+				}
 			}
 		},
 	};
 
 	return (
 		<>
+			{/* biome-ignore lint/a11y/useMediaCaption: ignore */}
+			<audio id="player1" ref={audioPlayer as any} />
+			{/* biome-ignore lint/a11y/useMediaCaption: ignore */}
+			<audio id="player2" ref={throwawayAudioPlayer as any} />
 			<Grow
-				in={playlist.length !== 0 || player.current !== undefined}
+				in={playlist.length !== 0 || player?.current !== undefined}
 				unmountOnExit
 			>
 				<Box sx={{ height: 58 }} />
@@ -394,7 +450,7 @@ const Player = () => {
 				direction="up"
 				mountOnEnter
 				unmountOnExit
-				in={playlist.length !== 0 || player.current !== undefined}
+				in={playlist.length !== 0 || player?.current !== undefined}
 			>
 				<Box sx={{ padding: 1, zIndex: "modal", width: "100%" }}>
 					<Paper

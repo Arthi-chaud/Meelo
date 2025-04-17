@@ -264,5 +264,7 @@
 	"all": "All",
 	"loadNextSongs": "Load next songs",
 	"saveQueueAsPlaylist": "Save queue as playlist",
-	"topGenres": "Top Genres"
+	"topGenres": "Top Genres",
+	"crossfade": "Crossfade",
+	"playback": "Playback"
 }

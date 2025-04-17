@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Checkbox, Grid, MenuItem, NoSsr, Select } from "@mui/material";
+import {
+	Button,
+	Checkbox,
+	Grid,
+	MenuItem,
+	NoSsr,
+	Select,
+	Slider,
+} from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 import { Book1, Star, Warning2 } from "iconsax-react";
 import Link from "next/link";
@@ -47,6 +55,8 @@ const UISettings = () => {
 		"allow_notifs",
 		false,
 	);
+
+	const [crossfade, setCrossfade] = useLocalStorage("crossfade", 1.5);
 	const notificationsAPIAvailable = typeof Notification !== "undefined";
 	const [notificationsEnabled, setNotificationsEnabled] = useState(
 		() =>
@@ -54,6 +64,23 @@ const UISettings = () => {
 	);
 	return (
 		<NoSsr>
+			<SectionHeader heading={t("playback")} />
+			<Grid container sx={SettingGroupStyle}>
+				<Grid size={{ xs: 10 }}>{t("crossfade")}</Grid>
+				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
+					<Slider
+						step={0.5}
+						min={0}
+						defaultValue={crossfade}
+						onChangeCommitted={(_, n) => {
+							setCrossfade(n);
+						}}
+						valueLabelFormat={(n) => `${n}s`}
+						max={12}
+						valueLabelDisplay="auto"
+					/>
+				</Grid>
+			</Grid>
 			<SectionHeader heading={t("colorScheme")} />
 			<Grid container sx={SettingGroupStyle}>
 				<Grid size={{ xs: 11 }}>{t("useSystemeTheme")}</Grid>
