@@ -33,8 +33,16 @@ export type InfiniteViewProps<ItemType> = {
 	view: "list" | "grid";
 	itemSize: ItemSize;
 	query: MeeloInfiniteQueryFn<ItemType>;
-	renderListItem: (item: ItemType | undefined) => JSX.Element;
-	renderGridItem: (item: ItemType | undefined) => JSX.Element;
+	renderListItem: (
+		item: ItemType | undefined,
+		items: (ItemType | undefined)[],
+		index: number,
+	) => JSX.Element;
+	renderGridItem: (
+		item: ItemType | undefined,
+		items: (ItemType | undefined)[],
+		index: number,
+	) => JSX.Element;
 	emptyState?: Partial<EmptyStateProps>;
 };
 
@@ -97,10 +105,10 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 			{props.view.toLowerCase() === "list" ? (
 				<InfiniteList
 					query={props.query}
-					render={(item, index) => (
+					render={(item, items, index) => (
 						<Fade in>
 							<Box key={item?.id ?? `skeleton-${index}`}>
-								{props.renderListItem(item)}
+								{props.renderListItem(item, items, index)}
 							</Box>
 						</Fade>
 					)}
@@ -109,10 +117,10 @@ const InfiniteView = <ItemType extends IllustratedResource>(
 				<InfiniteGrid
 					query={props.query}
 					itemSize={props.itemSize}
-					render={(item) => (
+					render={(item, items, index) => (
 						<Fade in>
 							<Box sx={{ height: "100%" }}>
-								{props.renderGridItem(item)}
+								{props.renderGridItem(item, items, index)}
 							</Box>
 						</Fade>
 					)}

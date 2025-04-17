@@ -64,6 +64,7 @@ const InfiniteTrackView = (props: ViewProps) => {
 				renderListItem={(item) => (
 					<TrackItem
 						track={item}
+						// TODO on click, add rest of videos to the queue
 						onClick={() => item && props.onItemClick?.(item)}
 					/>
 				)}

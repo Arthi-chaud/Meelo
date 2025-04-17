@@ -115,6 +115,7 @@ const InfiniteVideoView = (props: ViewProps) => {
 					<VideoItem
 						video={item}
 						// TODO Subtitle
+						// TODO on click, add rest of videos to the queue
 						onClick={() => item && props.onItemClick?.(item)}
 					/>
 				)}
@@ -122,6 +123,7 @@ const InfiniteVideoView = (props: ViewProps) => {
 					<VideoTile
 						video={item}
 						subtitle={props.subtitle}
+						// TODO on click, add rest of videos to the queue
 						onClick={() => item && props.onItemClick?.(item)}
 					/>
 				)}

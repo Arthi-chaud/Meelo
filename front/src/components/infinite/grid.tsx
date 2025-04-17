@@ -27,7 +27,14 @@ type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
 type InfiniteGridProps<T extends Resource> = Omit<
 	Parameters<TypedList<T>>[0],
 	"render"
-> & { render: (item: T | undefined) => JSX.Element; itemSize: ItemSize };
+> & {
+	render: (
+		item: T | undefined,
+		items: (T | undefined)[],
+		index: number,
+	) => JSX.Element;
+	itemSize: ItemSize;
+};
 
 const GridPresets: Record<ItemSize, Partial<Record<Breakpoint, number>>> = {
 	// Note: values of sm == values of md,
@@ -71,7 +78,7 @@ const InfiniteGrid = <T extends IllustratedResource>(
 									size={GridPresets[props.itemSize]}
 									key={`item-${index}`}
 								>
-									{props.render(item)}
+									{props.render(item, items, index)}
 								</Grid>
 							))}
 						</Grid>

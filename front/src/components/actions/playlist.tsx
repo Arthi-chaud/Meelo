@@ -254,7 +254,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 				<Divider sx={{ paddingTop: 1 }} />
 				<InfiniteList
 					query={props.playlistQuery}
-					render={(item, index) => (
+					render={(item, _, index) => (
 						<ListItem
 							key={index}
 							title={item?.name}

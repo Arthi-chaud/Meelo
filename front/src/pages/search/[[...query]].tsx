@@ -17,6 +17,7 @@
  */
 
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
+import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -43,6 +44,7 @@ import SongItem from "~/components/list-item/resource/song";
 import VideoItem from "~/components/list-item/resource/video";
 import { useTabRouter } from "~/components/tab-router";
 import type { SaveSearchItem, SearchResult } from "~/models/search";
+import { playTrackAtom } from "~/state/player";
 import formatArtists from "~/utils/formatArtists";
 import { DefaultItemSize } from "~/utils/layout";
 
@@ -106,6 +108,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const searchQuery = props?.searchQuery;
 	const { t } = useTranslation();
+	const playTrack = useSetAtom(playTrackAtom);
 	const [query, setQuery] = useState<string | undefined>(
 		(searchQuery ?? Array.from(router.query.query ?? []).join(" ")) ||
 			undefined,
@@ -240,9 +243,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							/>
 						) : item.song ? (
 							<SongItem
-								onClick={() =>
-									saveSearch.mutate({ songId: item.song.id })
-								}
+								onClick={() => {
+									playTrack({
+										track: {
+											...item.song.master,
+											illustration: item.illustration,
+										},
+										artist: item.song.artist,
+									});
+									saveSearch.mutate({ songId: item.song.id });
+								}}
 								song={item.song}
 								subtitles={[
 									async (song) =>
