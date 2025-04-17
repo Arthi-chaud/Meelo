@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
 import { SongIcon } from "~/components/icons";
@@ -24,7 +23,6 @@ import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
 import type { SongWithRelations } from "~/models/song";
 import type { SongGroupWithRelations } from "~/models/song-group";
-import { playTrackAtom } from "~/state/player";
 import formatArtists from "~/utils/formatArtists";
 
 type SongItemProps<
@@ -48,6 +46,7 @@ export const SongGroupItem = <
 >({
 	song,
 	subtitles,
+	onClick,
 }: SongItemProps<T>) => {
 	return (
 		<SongItem
@@ -56,6 +55,7 @@ export const SongGroupItem = <
 					? { ...song, id: song.songId, groupId: song.id }
 					: undefined
 			}
+			onClick={onClick}
 			subtitles={[
 				...(subtitles
 					? subtitles
@@ -90,7 +90,6 @@ const SongItem = <
 	onClick,
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
-	const playTrack = useSetAtom(playTrackAtom);
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)
@@ -125,20 +124,7 @@ const SongItem = <
 				/>
 			}
 			title={song?.name}
-			onClick={
-				song &&
-				artist &&
-				(() => {
-					onClick?.();
-					playTrack({
-						artist,
-						track: {
-							...song.master,
-							illustration: song.illustration,
-						},
-					});
-				})
-			}
+			onClick={song && artist && (() => onClick?.())}
 			secondTitle={subtitle}
 			trailing={song && <SongContextualMenu song={song} />}
 		/>

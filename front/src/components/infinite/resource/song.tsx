@@ -67,6 +67,7 @@ type SongGroupQueryProps = {
 const playSongsAction = (
 	queryClient: QueryClient,
 	query: InfiniteQuery<SongModel>,
+	afterId?: number,
 ) => {
 	store.set(
 		playFromInfiniteQuery,
@@ -79,6 +80,7 @@ const playSongsAction = (
 			id: song.id,
 		})),
 		queryClient,
+		afterId,
 	);
 };
 
@@ -161,11 +163,22 @@ export const InfiniteSongView = (props: SongViewProps) => {
 				query={() => {
 					return props.query(query);
 				}}
-				renderListItem={(item) => (
+				renderListItem={(item, items, index) => (
 					<SongItem
 						song={item}
 						subtitles={props.subtitles}
-						onClick={() => item && props.onItemClick?.(item)}
+						onClick={
+							item &&
+							(() => {
+								const previousItemId = items[index - 1]?.id;
+								playSongsAction(
+									queryClient,
+									props.query(query),
+									previousItemId,
+								);
+								props.onItemClick?.(item);
+							})
+						}
 					/>
 				)}
 				renderGridItem={() => <></>}
@@ -220,11 +233,22 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 				query={() => {
 					return props.query(query);
 				}}
-				renderListItem={(item) => (
+				renderListItem={(item, items, index) => (
 					<SongGroupItem
 						song={item}
 						subtitles={props.subtitles}
-						onClick={() => item && props.onItemClick?.(item)}
+						onClick={
+							item &&
+							(() => {
+								const previousItemId = items[index - 1]?.id;
+								playSongsAction(
+									queryClient,
+									props.query(query),
+									previousItemId,
+								);
+								props.onItemClick?.(item);
+							})
+						}
 					/>
 				)}
 				renderGridItem={() => <></>}
