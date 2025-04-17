@@ -99,6 +99,8 @@ const Player = () => {
 	);
 	const allowNotifications: boolean | null =
 		useReadLocalStorage("allow_notifs");
+
+	const crossfade: number | null = useReadLocalStorage("crossfade");
 	const play = () => {
 		// Do nothing if empty playlist
 		if (playlist.length === 0) {
@@ -112,6 +114,7 @@ const Player = () => {
 	};
 	const pause = () => {
 		setPlaying(false);
+		throwawayAudioPlayer.current?.pause();
 		player?.current?.pause();
 	};
 	const onSkipTrack = () => {
@@ -133,6 +136,37 @@ const Player = () => {
 		}
 		playPreviousTrack();
 	};
+	const switchTrackIfCrossfade = (): boolean => {
+		const currentTrackIsAudio = currentTrack?.track.type === "Audio";
+		const nextTrackIsAudio = nextTrack?.track.type === "Audio";
+		if (
+			crossfade != null &&
+			nextTrackIsAudio &&
+			currentTrackIsAudio &&
+			!Number.isNaN(player!.current!.duration) &&
+			Math.abs(
+				player!.current!.currentTime - player!.current!.duration,
+			) <= crossfade
+		) {
+			const newId = throwawayAudioPlayer.current!.id;
+			throwawayAudioPlayer.current = document.getElementById(
+				audioPlayer.current!.id,
+			) as HTMLAudioElement;
+			audioPlayer.current = document.getElementById(
+				newId,
+			) as HTMLAudioElement;
+
+			throwawayAudioPlayer.current!.onended = null;
+			throwawayAudioPlayer.current!.onpause = null;
+
+			if (currentTrack?.track.songId) {
+				API.setSongAsPlayed(currentTrack.track.songId);
+			}
+			skipTrack(queryClient);
+			return true;
+		}
+		return false;
+	};
 
 	const startPlayback = (isTrancoding: boolean) => {
 		player
@@ -145,36 +179,9 @@ const Player = () => {
 						hls.current?.media?.duration,
 				);
 				player.current!.ontimeupdate = () => {
-					const currentTrackIsAudio =
-						currentTrack?.track.type === "Audio";
-					const nextTrackIsAudio = nextTrack?.track.type === "Audio";
-					if (
-						nextTrackIsAudio &&
-						currentTrackIsAudio &&
-						!Number.isNaN(player.current!.duration) &&
-						Math.abs(
-							player.current!.currentTime -
-								player.current!.duration,
-						) <= 1.5
-					) {
-						const newId = throwawayAudioPlayer.current!.id;
-						throwawayAudioPlayer.current = document.getElementById(
-							audioPlayer.current!.id,
-						) as HTMLAudioElement;
-						audioPlayer.current = document.getElementById(
-							newId,
-						) as HTMLAudioElement;
-
-						throwawayAudioPlayer.current!.onended = null;
-						throwawayAudioPlayer.current!.onpause = null;
-
-						if (currentTrack?.track.songId) {
-							API.setSongAsPlayed(currentTrack.track.songId);
-						}
-						skipTrack(queryClient);
-						return;
+					if (!switchTrackIfCrossfade()) {
+						progress.current = player.current!.currentTime;
 					}
-					progress.current = player.current!.currentTime;
 				};
 				player.current!.onended = () => {
 					if (currentTrack?.track.songId) {
@@ -184,6 +191,7 @@ const Player = () => {
 					skipTrack(queryClient);
 				};
 				player.current!.onpause = () => {
+					throwawayAudioPlayer.current?.pause();
 					if (player.current!.ended === false) {
 						setPlaying(false);
 					}
@@ -414,6 +422,9 @@ const Player = () => {
 		onSlide: (newProgress: number) => {
 			if (player?.current !== undefined) {
 				player.current.currentTime = newProgress;
+				if (switchTrackIfCrossfade()) {
+					throwawayAudioPlayer.current?.pause();
+				}
 			}
 		},
 	};

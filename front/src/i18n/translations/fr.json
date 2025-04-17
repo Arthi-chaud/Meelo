@@ -264,5 +264,7 @@
 	"all": "Tous",
 	"loadNextSongs": "Charger les morceaux suivants",
 	"saveQueueAsPlaylist": "Sauvegarder la playlist",
-	"topGenres": "Genres populaires"
+	"topGenres": "Genres populaires",
+	"crossfade": "Crossfade",
+	"playback": "Lecture"
 }
