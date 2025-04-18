@@ -121,7 +121,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    profiles: ['', 'cpu']
   mq:
     image: rabbitmq:4.0-alpine
     environment:

@@ -134,7 +134,6 @@ services:
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - transcoder_cache:/cache
-    profiles: ['', 'cpu']
     depends_on:
       db:
         condition: service_healthy
