@@ -99,7 +99,6 @@ services:
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - transcoder_cache:/cache
-    profiles: ['', 'cpu']
   db:
     image: postgres:alpine3.14
     healthcheck:
