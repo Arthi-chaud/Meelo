@@ -179,8 +179,8 @@ const Player = () => {
 						hls.current?.media?.duration,
 				);
 				player.current!.ontimeupdate = () => {
-					if (!switchTrackIfCrossfade()) {
-						progress.current = player.current!.currentTime;
+					if (!switchTrackIfCrossfade() && player.current) {
+						progress.current = player.current.currentTime;
 					}
 				};
 				player.current!.onended = () => {
@@ -192,7 +192,7 @@ const Player = () => {
 				};
 				player.current!.onpause = () => {
 					throwawayAudioPlayer.current?.pause();
-					if (player.current!.ended === false) {
+					if (player.current?.ended === false) {
 						setPlaying(false);
 					}
 				};
