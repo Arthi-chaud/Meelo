@@ -76,8 +76,8 @@ const AuthenticationWall = (props: { children: any }) => {
 						}}
 					>
 						<ThemedImage
-							light={"/banner-black.png"}
-							dark={"/banner.png"}
+							light={"/banner1-black.png"}
+							dark={"/banner1-white.png"}
 							alt="title"
 							width={200}
 							height={150}

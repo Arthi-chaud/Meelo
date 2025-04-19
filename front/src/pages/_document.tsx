@@ -59,8 +59,8 @@ export default function MyDocument(
 					name="~/theme-color"
 					content={LightTheme.background?.default}
 				/>
-				<link rel="shortcut icon" href="/favicon.ico" />
-				<link rel="apple-touch-icon" href="/favicon.ico" />
+				<link rel="shortcut icon" href="/favicon-black.ico" />
+				<link rel="apple-touch-icon" href="/favicon-black.ico" />
 			</Head>
 			<body style={{ height: "100lvh" }}>
 				<InitColorSchemeScript defaultMode="system" />

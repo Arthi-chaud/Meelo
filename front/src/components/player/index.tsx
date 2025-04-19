@@ -375,7 +375,7 @@ const Player = () => {
 						new Notification(currentTrack.track.name, {
 							icon: newIllustrationURL
 								? API.getIllustrationURL(newIllustrationURL)
-								: "/icon.png",
+								: "/icon-white.png",
 							body: currentTrack.artist.name,
 						}),
 					);
