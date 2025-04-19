@@ -78,7 +78,7 @@ const ReleaseTrackList = ({
 	const PlayingIcon = () => (
 		<PlayIcon
 			style={{
-				fill: theme.palette.text.disabled,
+				fill: theme.vars.palette.text.disabled,
 				color: "transparent",
 				marginLeft: -4,
 			}}
@@ -335,7 +335,7 @@ const ReleaseTrackList = ({
 											>
 												<VideoIcon
 													color={
-														theme.palette.text
+														theme.vars.palette.text
 															.disabled
 													}
 												/>
