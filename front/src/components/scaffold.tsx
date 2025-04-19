@@ -170,16 +170,17 @@ const Drawer = ({
 								display: "flex",
 								alignItems: "center",
 								padding: 2,
+								height: 100,
 							}}
 						>
 							<Link href="/" style={{ cursor: "pointer" }}>
 								<ThemedImage
-									light={"/banner-black.png"}
-									dark={"/banner.png"}
+									light={"/banner1-black.png"}
+									dark={"/banner1-white.png"}
 									alt="icon"
 									priority
-									width={180}
-									height={75}
+									width={200}
+									height={84}
 								/>
 							</Link>
 						</Box>
