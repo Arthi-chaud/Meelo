@@ -33,6 +33,7 @@ export type TrackState = {
 };
 
 export type PlayerState = {
+	loading: boolean;
 	/**
 	 * The collection of track in the playlist
 	 */
@@ -54,14 +55,21 @@ export type PlayerState = {
 
 export const cursorAtom = atom((get) => get(_playerState).cursor);
 export const playlistAtom = atom((get) => get(_playerState).playlist);
+export const playlistLoadingAtom = atom((get) => get(_playerState).loading);
 export const infiniteQueryAtom = atom((get) => get(_playerState).infinite);
 export const playTrackAtom = atom(null, (_, set, track: TrackState) => {
-	set(_playerState, { playlist: [track], cursor: 0, infinite: null });
+	set(_playerState, {
+		loading: false,
+		playlist: [track],
+		cursor: 0,
+		infinite: null,
+	});
 });
 export const playTracksAtom = atom(
 	null,
 	(_, set, { tracks, cursor }: { tracks: TrackState[]; cursor?: number }) => {
 		set(_playerState, {
+			loading: false,
 			playlist: tracks,
 			cursor: cursor ?? 0,
 			infinite: null,
@@ -78,6 +86,7 @@ export const skipTrackAtom = atom(
 			newCursor = -1;
 		}
 		set(_playerState, {
+			loading: false,
 			cursor: newCursor,
 			playlist: state.playlist,
 			infinite: state.infinite,
@@ -99,6 +108,7 @@ export const playFromInfiniteQuery = atom(
 		afterId?: number,
 	) => {
 		set(_playerState, {
+			loading: true,
 			cursor: -1,
 			playlist: [],
 			infinite: { query, afterId: -1 },
@@ -107,7 +117,12 @@ export const playFromInfiniteQuery = atom(
 			set(
 				_playerState,
 				await loadNextQueuePage(
-					{ cursor: 0, playlist: [], infinite: { query, afterId } },
+					{
+						loading: false,
+						cursor: 0,
+						playlist: [],
+						infinite: { query, afterId },
+					},
 					queryClient,
 				),
 			);
@@ -128,6 +143,7 @@ export const playFromInfiniteQuery = atom(
 					return;
 				}
 				set(_playerState, {
+					loading: false,
 					cursor: 0,
 					playlist: items,
 					infinite:
@@ -159,6 +175,7 @@ const loadNextQueuePage = (state: PlayerState, queryClient: QueryClient) => {
 		})
 		.then((res) => {
 			return {
+				loading: false,
 				cursor: state.cursor,
 				playlist: [...state.playlist, ...res.items],
 				infinite:
@@ -187,18 +204,25 @@ export const playPreviousTrackAtom = atom(null, (get, set) => {
 		newCursor--;
 	}
 	set(_playerState, {
+		loading: state.loading,
 		cursor: newCursor,
 		playlist: state.playlist,
 		infinite: state.infinite,
 	});
 });
 export const emptyPlaylistAtom = atom(null, (_, set) =>
-	set(_playerState, { playlist: [], cursor: -1, infinite: null }),
+	set(_playerState, {
+		loading: false,
+		playlist: [],
+		cursor: -1,
+		infinite: null,
+	}),
 );
 
 export const removeTrackAtom = atom(null, (get, set, trackIndex: number) => {
 	const state = get(_playerState);
 	set(_playerState, {
+		loading: state.loading,
 		cursor: state.cursor,
 		playlist: state.playlist.filter((_, i) => i !== trackIndex),
 		infinite: state.infinite,
@@ -211,6 +235,7 @@ export const playNextAtom = atom(null, (get, set, track: TrackState) => {
 		cursor: state.cursor,
 		playlist: state.playlist,
 		infinite: state.infinite,
+		loading: state.loading,
 	};
 	set(_playerState, newState);
 });
@@ -218,6 +243,7 @@ export const playNextAtom = atom(null, (get, set, track: TrackState) => {
 export const playAfterAtom = atom(null, (get, set, track: TrackState) => {
 	const state = get(_playerState);
 	set(_playerState, {
+		loading: state.loading,
 		playlist: [...state.playlist, track],
 		cursor: state.cursor,
 		infinite: state.infinite,
@@ -237,6 +263,7 @@ export const reorderAtom = atom(
 	},
 );
 const _playerState = atom<PlayerState>({
+	loading: false,
 	playlist: [],
 	cursor: -1,
 	infinite: null,
