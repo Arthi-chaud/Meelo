@@ -43,6 +43,7 @@ type PlayerButtonControlsProps = {
 
 export type PlayerControlsProps = ComponentProps<typeof PlayerSlider> &
 	PlayerButtonControlsProps & {
+		playlistLoading: boolean;
 		isTranscoding: boolean;
 		expanded: boolean;
 		onExpand: (expand: boolean) => void;

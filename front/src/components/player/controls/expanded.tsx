@@ -320,7 +320,14 @@ export const ExpandedPlayerControls = (
 										</Button>
 									</Link>
 								) : (
-									<Skeleton animation={false} width={"70%"} />
+									<Skeleton
+										animation={
+											props.playlistLoading
+												? "wave"
+												: false
+										}
+										width={"70%"}
+									/>
 								)}
 							</Grid>
 							<Grid size={{ xs: 1 }}>
@@ -380,7 +387,9 @@ export const ExpandedPlayerControls = (
 								</Link>
 							) : (
 								<Skeleton
-									animation={false}
+									animation={
+										props.playlistLoading ? "wave" : false
+									}
 									sx={{ margin: 1 }}
 									width={"50%"}
 								/>
