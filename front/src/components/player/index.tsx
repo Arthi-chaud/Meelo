@@ -41,6 +41,7 @@ import {
 	playPreviousTrackAtom,
 	playTracksAtom,
 	playlistAtom,
+	playlistLoadingAtom,
 	skipTrackAtom,
 } from "~/state/player";
 import { userAtom } from "~/state/user";
@@ -57,6 +58,7 @@ const Player = () => {
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const [cursor] = useAtom(cursorAtom);
 	const [playlist] = useAtom(playlistAtom);
+	const [playlistLoading] = useAtom(playlistLoadingAtom);
 	const currentTrack = useMemo<TrackState | undefined>(
 		() => playlist[cursor],
 		[cursor, playlist],
@@ -114,11 +116,17 @@ const Player = () => {
 	};
 	const pause = () => {
 		setPlaying(false);
-		throwawayAudioPlayer.current?.pause();
+		if (throwawayAudioPlayer?.current) {
+			throwawayAudioPlayer.current.pause();
+			throwawayAudioPlayer.current.src = "";
+		}
 		player?.current?.pause();
 	};
 	const onSkipTrack = () => {
-		throwawayAudioPlayer.current?.pause();
+		if (throwawayAudioPlayer?.current) {
+			throwawayAudioPlayer.current.pause();
+			throwawayAudioPlayer.current.src = "";
+		}
 		// If last track, disable player
 		if (cursor >= playlist.length - 1) {
 			pause();
@@ -156,8 +164,13 @@ const Player = () => {
 				newId,
 			) as HTMLAudioElement;
 
-			throwawayAudioPlayer.current!.onended = null;
 			throwawayAudioPlayer.current!.onpause = null;
+			throwawayAudioPlayer.current!.onended = () => {
+				if (throwawayAudioPlayer?.current) {
+					throwawayAudioPlayer.current.pause();
+					throwawayAudioPlayer.current.src = "";
+				}
+			};
 
 			if (currentTrack?.track.songId) {
 				API.setSongAsPlayed(currentTrack.track.songId);
@@ -410,6 +423,7 @@ const Player = () => {
 		track: currentTrack?.track,
 		artist: currentTrack?.artist,
 		playing: playing ?? false,
+		playlistLoading: playlistLoading,
 		onPause: pause,
 		onPlay: play,
 		isTranscoding: useTranscoding,
@@ -422,8 +436,9 @@ const Player = () => {
 		onSlide: (newProgress: number) => {
 			if (player?.current !== undefined) {
 				player.current.currentTime = newProgress;
-				if (switchTrackIfCrossfade()) {
-					throwawayAudioPlayer.current?.pause();
+				if (switchTrackIfCrossfade() && throwawayAudioPlayer.current) {
+					throwawayAudioPlayer.current.pause();
+					throwawayAudioPlayer.current.src = "";
 				}
 			}
 		},
@@ -436,7 +451,11 @@ const Player = () => {
 			{/* biome-ignore lint/a11y/useMediaCaption: ignore */}
 			<audio id="player2" ref={throwawayAudioPlayer as any} />
 			<Grow
-				in={playlist.length !== 0 || player?.current !== undefined}
+				in={
+					playlistLoading ||
+					playlist.length !== 0 ||
+					player?.current !== undefined
+				}
 				unmountOnExit
 			>
 				<Box sx={{ height: 58 }} />
@@ -450,7 +469,11 @@ const Player = () => {
 				direction="up"
 				mountOnEnter
 				unmountOnExit
-				in={playlist.length !== 0 || player?.current !== undefined}
+				in={
+					playlistLoading ||
+					playlist.length !== 0 ||
+					player?.current !== undefined
+				}
 			>
 				<Box sx={{ padding: 1, zIndex: "modal", width: "100%" }}>
 					<Paper
@@ -478,7 +501,6 @@ const Player = () => {
 			>
 				<Box
 					sx={{
-						// padding: 1,
 						zIndex: "tooltip",
 						width: "100%",
 						height: "100%",

@@ -28,6 +28,7 @@ import {
 	ListItemText,
 	BottomNavigation as MUIBottomNavigation,
 	Drawer as MUIDrawer,
+	NoSsr,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -388,7 +389,9 @@ const Scaffold = (props: { children: any }) => {
 					<Box sx={{ paddingTop: 2, paddingBottom: 0 }}>
 						{props.children}
 					</Box>
-					<Player />
+					<NoSsr>
+						<Player />
+					</NoSsr>
 				</Container>
 			</Box>
 			<BottomNavigation

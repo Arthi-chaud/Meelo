@@ -16,7 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, ButtonBase, Grid, Typography } from "@mui/material";
+import {
+	ButtonBase,
+	Grid,
+	Skeleton,
+	Typography,
+	useTheme,
+} from "@mui/material";
 import { useQuery } from "~/api/use-query";
 import { TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
@@ -34,6 +40,7 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 		parentSongQuery,
 		props.track?.songId ?? undefined,
 	);
+	const theme = useTheme();
 
 	return (
 		<ButtonBase
@@ -60,16 +67,16 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 							imgProps={{ borderRadius: 4 }}
 						/>
 					) : (
-						<Box
-							sx={{
+						<Skeleton
+							variant="rectangular"
+							style={{
+								width: "100%",
 								height: "100%",
-								display: "flex",
-								marginX: 2,
-								alignItems: "center",
+								aspectRatio: "1",
+								borderRadius: theme.shape.borderRadius,
 							}}
-						>
-							<TrackIcon />
-						</Box>
+							animation={props.playlistLoading ? "wave" : false}
+						/>
 					)}
 				</Grid>
 				<Grid
@@ -94,7 +101,14 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 						<Typography
 							sx={{ fontWeight: "bold", ...playerTextStyle }}
 						>
-							{props.track?.name ?? <br />}
+							{props.track?.name ?? (
+								<Skeleton
+									animation={
+										props.playlistLoading ? "wave" : false
+									}
+									width={"100px"}
+								/>
+							)}
 						</Typography>
 					</Grid>
 					<Grid
@@ -118,7 +132,12 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 									parentSong.data?.featuring,
 								)
 							) : (
-								<br />
+								<Skeleton
+									animation={
+										props.playlistLoading ? "wave" : false
+									}
+									width={"75px"}
+								/>
 							)}
 						</Typography>
 					</Grid>
@@ -127,6 +146,7 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					container
 					size={{ xs: 4, sm: 3, md: 2 }}
 					flexWrap="nowrap"
+					color={props.playlistLoading ? "text.disabled" : undefined}
 					onClick={(event) => event.stopPropagation()}
 				>
 					<Grid size="grow">

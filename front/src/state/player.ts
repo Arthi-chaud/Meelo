@@ -86,7 +86,7 @@ export const skipTrackAtom = atom(
 			newCursor = -1;
 		}
 		set(_playerState, {
-			loading: false,
+			loading: state.loading,
 			cursor: newCursor,
 			playlist: state.playlist,
 			infinite: state.infinite,
