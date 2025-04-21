@@ -2,7 +2,7 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
+import { getAlbums } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -20,7 +20,7 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		infiniteQueries: [
-			API.getAlbums(
+			getAlbums(
 				{
 					artist: isCompilationPage(context)
 						? "compilations"
@@ -42,7 +42,7 @@ const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 			<Head title={t("albums")} />
 			<InfiniteAlbumView
 				query={({ sortBy, order, types, libraries }) =>
-					API.getAlbums(
+					getAlbums(
 						{
 							type: types,
 							library: libraries,

@@ -18,19 +18,13 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import {
-	type InfiniteQuery,
-	type QueryClient,
-	transformPage,
-	useQueryClient,
-} from "~/api/use-query";
+import { type QueryClient, useQueryClient } from "~/api/hook";
 import type Action from "~/components/actions";
 import { PlayIcon, ShuffleIcon } from "~/components/icons";
 import { Controls } from "~/components/infinite/controls/controls";
 import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
 import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
 import { useSortControl } from "~/components/infinite/controls/sort";
-import InfiniteView from "~/components/infinite/view";
 import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
 import {
 	SongSortingKeys,
@@ -38,11 +32,12 @@ import {
 	type SongWithRelations,
 } from "~/models/song";
 import type { SongGroupWithRelations } from "~/models/song-group";
+import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
-import { DefaultItemSize } from "~/utils/layout";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import type { SortingParameters } from "~/utils/sorting";
+import InfiniteList from "../list";
 
 type SongModel = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
@@ -64,9 +59,9 @@ type SongGroupQueryProps = {
 	random?: number;
 };
 
-const playSongsAction = (
+const playSongsAction = <T extends SongModel>(
 	queryClient: QueryClient,
-	query: InfiniteQuery<SongModel>,
+	query: InfiniteQuery<T>,
 	afterId?: number,
 ) => {
 	store.set(
@@ -157,13 +152,11 @@ export const InfiniteSongView = (props: SongViewProps) => {
 						: []),
 				]}
 			/>
-			<InfiniteView
-				itemSize={DefaultItemSize}
-				view={"list"}
+			<InfiniteList
 				query={() => {
 					return props.query(query);
 				}}
-				renderListItem={(item, items, index) => (
+				render={(item, items, index) => (
 					<SongItem
 						song={item}
 						subtitles={props.subtitles}
@@ -181,7 +174,6 @@ export const InfiniteSongView = (props: SongViewProps) => {
 						}
 					/>
 				)}
-				renderGridItem={() => <></>}
 			/>
 		</>
 	);
@@ -227,13 +219,11 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 						: []),
 				]}
 			/>
-			<InfiniteView
-				itemSize={DefaultItemSize}
-				view={"list"}
+			<InfiniteList
 				query={() => {
 					return props.query(query);
 				}}
-				renderListItem={(item, items, index) => (
+				render={(item, items, index) => (
 					<SongGroupItem
 						song={item}
 						subtitles={props.subtitles}
@@ -251,7 +241,6 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 						}
 					/>
 				)}
-				renderGridItem={() => <></>}
 			/>
 		</>
 	);

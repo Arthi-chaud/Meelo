@@ -19,28 +19,32 @@
 import { Box, Button, Slide, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { MeeloInfiniteQueryFn } from "~/api/use-query";
 import type { EmptyStateProps } from "~/components/empty-state";
 import Fade from "~/components/fade";
 import { GoBackTopIcon } from "~/components/icons";
 import type { IllustratedResource } from "~/models/illustration";
+import type Resource from "~/models/resource";
+import type { InfiniteQueryFn } from "~/query";
 import type { ItemSize } from "~/utils/layout";
 import InfiniteGrid from "./grid";
 import InfiniteList from "./list";
 import { parentScrollableDivId } from "./scroll";
 
-export type InfiniteViewProps<ItemType> = {
+export type InfiniteViewProps<
+	ItemType extends Resource,
+	FinalItemType extends Resource,
+> = {
 	view: "list" | "grid";
 	itemSize: ItemSize;
-	query: MeeloInfiniteQueryFn<ItemType>;
+	query: InfiniteQueryFn<ItemType, FinalItemType>;
 	renderListItem: (
-		item: ItemType | undefined,
-		items: (ItemType | undefined)[],
+		item: FinalItemType | undefined,
+		items: (FinalItemType | undefined)[],
 		index: number,
 	) => JSX.Element;
 	renderGridItem: (
-		item: ItemType | undefined,
-		items: (ItemType | undefined)[],
+		item: FinalItemType | undefined,
+		items: (FinalItemType | undefined)[],
 		index: number,
 	) => JSX.Element;
 	emptyState?: Partial<EmptyStateProps>;
@@ -96,8 +100,11 @@ const ScrollToTopButton = () => {
  * Infinite scrolling view, which lets the user decide which way the data is displayed
  * @returns
  */
-const InfiniteView = <ItemType extends IllustratedResource>(
-	props: InfiniteViewProps<ItemType>,
+const InfiniteView = <
+	ItemType extends Resource,
+	FinalItemType extends IllustratedResource,
+>(
+	props: InfiniteViewProps<ItemType, FinalItemType>,
 ) => {
 	return (
 		<>

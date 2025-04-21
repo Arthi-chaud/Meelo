@@ -1,7 +1,7 @@
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
+import { getArtists } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -15,9 +15,7 @@ const prepareSSR = (context: NextPageContext) => {
 	const sortBy = getSortQuery(context, ArtistSortingKeys);
 
 	return {
-		infiniteQueries: [
-			API.getArtists({}, { sortBy, order }, ["illustration"]),
-		],
+		infiniteQueries: [getArtists({}, { sortBy, order }, ["illustration"])],
 	};
 };
 
@@ -29,7 +27,7 @@ const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 			<Head title={t("artists")} />
 			<InfiniteArtistView
 				query={({ libraries, sortBy, order }) =>
-					API.getArtists({ library: libraries }, { sortBy, order }, [
+					getArtists({ library: libraries }, { sortBy, order }, [
 						"illustration",
 					])
 				}

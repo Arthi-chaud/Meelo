@@ -17,7 +17,7 @@
  */
 
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
 import {
 	GoToArtistAction,
 	GoToArtistAlbumsAction,

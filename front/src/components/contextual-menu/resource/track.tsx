@@ -21,8 +21,8 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getArtist, getRelease } from "~/api/queries";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";
 import {
@@ -58,12 +58,10 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const getPlayNextProps = () =>
 		Promise.all([
 			queryClient.fetchQuery(
-				API.getArtist(
-					(props.track.song ?? props.track.video)!.artistId,
-				),
+				getArtist((props.track.song ?? props.track.video)!.artistId),
 			),
 			props.track.releaseId &&
-				queryClient.fetchQuery(API.getRelease(props.track.releaseId)),
+				queryClient.fetchQuery(getRelease(props.track.releaseId)),
 		]).then(([artist, release]) => ({
 			track: props.track,
 			artist,
@@ -71,9 +69,10 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 		}));
 	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
-		return API.updateSong(props.track.songId!, {
-			masterTrackId: props.track.id,
-		})
+		return queryClient.api
+			.updateSong(props.track.songId!, {
+				masterTrackId: props.track.id,
+			})
 			.then(() => {
 				toast.success(t("trackSetAsMaster"));
 				queryClient.client.invalidateQueries();
@@ -127,7 +126,14 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					RefreshTrackMetadataAction(props.track.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
-				[DownloadAction(confirm, props.track.sourceFileId, t)],
+				[
+					DownloadAction(
+						queryClient.api,
+						confirm,
+						props.track.sourceFileId,
+						t,
+					),
+				],
 			]}
 		/>
 	);

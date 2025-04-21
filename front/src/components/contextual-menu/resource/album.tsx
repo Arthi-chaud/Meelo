@@ -18,8 +18,8 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getMasterRelease } from "~/api/queries";
 import { DownloadReleaseAsyncAction } from "~/components/actions/download";
 import { GoToArtistAction } from "~/components/actions/link";
 import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
@@ -52,10 +52,11 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 				],
 				[
 					DownloadReleaseAsyncAction(
+						queryClient.api,
 						confirm,
 						() =>
 							queryClient
-								.fetchQuery(API.getMasterRelease(albumSlug))
+								.fetchQuery(getMasterRelease(albumSlug))
 								.then((release) => release.id),
 						t,
 					),

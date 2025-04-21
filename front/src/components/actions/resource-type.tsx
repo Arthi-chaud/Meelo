@@ -21,8 +21,7 @@ import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api";
-import type { QueryClient } from "~/api/use-query";
+import type { QueryClient } from "~/api/hook";
 import { EditIcon } from "~/components/icons";
 import type { TranslationKey } from "~/i18n/i18n";
 import type Album from "~/models/album";
@@ -131,7 +130,7 @@ const ChangeSongType = (
 		"changeSongType",
 		client,
 		(newType: SongType) =>
-			API.updateSong(s.id, { type: newType }).then((res) => {
+			client.api.updateSong(s.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("songs");
 				client.client.invalidateQueries("release");
 				client.client.invalidateQueries("tracks");
@@ -153,7 +152,7 @@ const ChangeAlbumType = (
 		"changeAlbumType",
 		client,
 		(newType: AlbumType) =>
-			API.updateAlbum(a.id, { type: newType }).then((res) => {
+			client.api.updateAlbum(a.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("albums");
 				return res;
 			}),
@@ -171,7 +170,7 @@ const ChangeVideoType = (
 		"changeVideoType",
 		client,
 		(newType: VideoType) =>
-			API.updateVideo(v.id, { type: newType }).then((res) => {
+			client.api.updateVideo(v.id, { type: newType }).then((res) => {
 				client.client.invalidateQueries("videos");
 				return res;
 			}),

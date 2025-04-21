@@ -18,7 +18,7 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
 import { DownloadAction } from "~/components/actions/download";
 import {
 	GoToArtistAction,
@@ -92,7 +92,12 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[
-					DownloadAction(confirm, props.track.sourceFileId, t),
+					DownloadAction(
+						queryClient.api,
+						confirm,
+						props.track.sourceFileId,
+						t,
+					),
 					...(songSlug ? [ShareSongAction(songSlug, t)] : []),
 				],
 			]}

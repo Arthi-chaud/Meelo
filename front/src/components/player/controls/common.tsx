@@ -18,7 +18,7 @@
 
 import { IconButton, Typography } from "@mui/material";
 import type { ComponentProps } from "react";
-import API from "~/api";
+import { getSong } from "~/api/queries";
 import {
 	ForwardIcon,
 	PauseIcon,
@@ -31,7 +31,7 @@ import formatDuration from "~/utils/formatDuration";
 import type PlayerSlider from "./slider";
 
 export const parentSongQuery = (id: number) =>
-	API.getSong(id, ["artist", "lyrics", "featuring"]);
+	getSong(id, ["artist", "lyrics", "featuring"]);
 
 type PlayerButtonControlsProps = {
 	playing: boolean;

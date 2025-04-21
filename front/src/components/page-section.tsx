@@ -21,7 +21,7 @@ import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseQueryResult } from "react-query";
-import type { useInfiniteQuery } from "~/api/use-query";
+import type { useInfiniteQuery } from "~/api/hook";
 import type { TranslationKey } from "~/i18n/i18n";
 import type { AlbumWithRelations } from "~/models/album";
 import type Artist from "~/models/artist";

@@ -20,7 +20,7 @@ import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import type { RequireExactlyOne } from "type-fest";
-import API from "~/api";
+import { useAPI } from "~/api/hook";
 import type IllustrationModel from "~/models/illustration";
 import { isSSR } from "~/utils/is-ssr";
 import Blurhash from "./blurhash";
@@ -58,6 +58,7 @@ type IllustrationProps = {
 
 const Illustration = (props: IllustrationProps) => {
 	const theme = useTheme();
+	const api = useAPI();
 	const [loadingState, setLoadingState] = useState<
 		"loading" | "errored" | "finished"
 	>(isSSR() ? "finished" : "loading");
@@ -215,7 +216,7 @@ const Illustration = (props: IllustrationProps) => {
 								...props.imgProps,
 							}}
 							src={
-								API.getIllustrationURL(url) +
+								api.getIllustrationURL(url) +
 								(props.quality === "original"
 									? ""
 									: `${

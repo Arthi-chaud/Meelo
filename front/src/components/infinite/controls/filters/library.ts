@@ -19,9 +19,10 @@
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import API from "~/api";
-import { prepareMeeloInfiniteQuery } from "~/api/use-query";
+import { useAPI } from "~/api/hook";
+import { getLibraries } from "~/api/queries";
 import type { TranslationKey } from "~/i18n/i18n";
+import { toTanStackInfiniteQuery } from "~/query";
 import { useFilterControl, useFiltersControl } from "./control";
 
 function useLibraryFilterControl(p: { multipleChoices: true }): ReturnType<
@@ -34,8 +35,9 @@ function useLibraryFilterControl(p: { multipleChoices: false }): ReturnType<
 function useLibraryFilterControl(p: { multipleChoices: boolean }): never;
 function useLibraryFilterControl(p: { multipleChoices: boolean }) {
 	const { t } = useTranslation();
+	const api = useAPI();
 	const librariesQuery = useReactInfiniteQuery({
-		...prepareMeeloInfiniteQuery(API.getLibraries),
+		...toTanStackInfiniteQuery(api, getLibraries),
 		useErrorBoundary: false,
 		onError: () => {
 			toast.error(t("librariesLoadFail"));

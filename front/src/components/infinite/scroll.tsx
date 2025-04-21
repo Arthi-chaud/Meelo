@@ -17,54 +17,26 @@
  */
 
 import * as IScroll from "react-infinite-scroller";
-import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "~/api/use-query";
+import { useInfiniteQuery } from "~/api/hook";
 import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
 import { EmptyStateIcon } from "~/components/icons";
-import type PaginatedResponse from "~/models/pagination";
-import type { PaginationParameters } from "~/models/pagination";
 import type Resource from "~/models/resource";
+import type { InfiniteQueryFn } from "~/query";
 import { generateArray } from "~/utils/gen-list";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 
-export type InfiniteFetchFn<T> = (
-	pagination: PaginationParameters,
-) => Promise<PaginatedResponse<T>>;
-
-type InfiniteScrollProps<T extends Resource> = {
+type InfiniteScrollProps<T extends Resource, F extends Resource> = {
 	/**
 	 * The method to render all items
 	 */
-	render: (items: (T | undefined)[]) => JSX.Element;
+	render: (items: (F | undefined)[]) => JSX.Element;
 	/**
 	 * Query to use
 	 */
-	query: MeeloInfiniteQueryFn<T>;
+	query: InfiniteQueryFn<T, F>;
 
 	emptyState?: EmptyStateProps;
-};
-
-/**
- * Data type for infinite data fetching
- */
-export type Page<T> = {
-	/**
-	 * List of items that where fetched
-	 * not including previously fetched data
-	 */
-	items: T[];
-	/**
-	 * The id of the last items in the previous page
-	 */
-	afterId: number | null;
-	/**
-	 * True if the fetching should stop there
-	 */
-	end: boolean;
-	/**
-	 * Size of the page
-	 */
-	pageSize: number;
 };
 
 /**
@@ -72,7 +44,9 @@ export type Page<T> = {
  * @param props
  * @returns a dynamic list component
  */
-const InfiniteScroll = <T extends Resource>(props: InfiniteScrollProps<T>) => {
+const InfiniteScroll = <T extends Resource, F extends Resource>(
+	props: InfiniteScrollProps<T, F>,
+) => {
 	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(props.query);
 	return (

@@ -28,8 +28,8 @@ import {
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "~/api";
-import { useQuery } from "~/api/use-query";
+import { useQuery } from "~/api/hook";
+import { getSourceFile, getTrack } from "~/api/queries";
 import type { TranslationKey } from "~/i18n/i18n";
 import formatDuration from "~/utils/formatDuration";
 import SongTypeIcon from "./song-type-icon";
@@ -41,8 +41,8 @@ import SongTypeIcon from "./song-type-icon";
 const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const track = useQuery((id) => API.getTrack(id, ["song"]), trackId);
-	const sourceFile = useQuery(API.getSourceFile, track.data?.sourceFileId);
+	const track = useQuery((id) => getTrack(id, ["song"]), trackId);
+	const sourceFile = useQuery(getSourceFile, track.data?.sourceFileId);
 	const songType = track.data?.song?.type;
 
 	const tableContent: Partial<

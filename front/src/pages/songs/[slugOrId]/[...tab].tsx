@@ -32,8 +32,15 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { prepareMeeloQuery, useInfiniteQuery, useQuery } from "~/api/use-query";
+import { getAPI, useInfiniteQuery, useQuery } from "~/api/hook";
+import {
+	getGenres,
+	getSong,
+	getSongExternalMetadata,
+	getSongs,
+	getTracks,
+	getVideos,
+} from "~/api/queries";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
 import { Head } from "~/components/head";
@@ -45,6 +52,7 @@ import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
 import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
+import { toTanStackQuery } from "~/query";
 import { playTrackAtom } from "~/state/player";
 import { useAccentColor } from "~/utils/accent-color";
 import { generateArray } from "~/utils/gen-list";
@@ -52,17 +60,15 @@ import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 
-const externalMetadataQuery = (songIdentifier: string | number) =>
-	API.getSongExternalMetadata(songIdentifier);
-
 const prepareSSR = async (
 	context: NextPageContext,
 	queryClient: QueryClient,
 ) => {
 	const songIdentifier = getSlugOrId(context.query);
+	const api = getAPI();
 	const song = await queryClient.fetchQuery(
-		prepareMeeloQuery(() =>
-			API.getSong(songIdentifier, [
+		toTanStackQuery(api, () =>
+			getSong(songIdentifier, [
 				"artist",
 				"featuring",
 				"lyrics",
@@ -74,21 +80,20 @@ const prepareSSR = async (
 
 	return {
 		additionalProps: { songIdentifier },
-		queries: [externalMetadataQuery(songIdentifier)],
+		queries: [getSongExternalMetadata(songIdentifier)],
 		infiniteQueries: [
-			API.getGenres({ song: songIdentifier }),
-			API.getSongs(
+			getGenres({ song: songIdentifier }),
+			getSongs(
 				{ versionsOf: songIdentifier },
 				{ sortBy: "name", order: "asc" },
 				["artist", "featuring", "master", "illustration"],
 			),
-
-			API.getVideos(
+			getVideos(
 				{ group: song.groupId },
 				{ sortBy: "name", order: "asc" },
 				["artist", "master", "illustration"],
 			),
-			API.getTracks(
+			getTracks(
 				{ song: songIdentifier },
 				{ sortBy: "name", order: "asc" },
 				["release", "song", "illustration", "video"],
@@ -110,7 +115,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const playTrack = useSetAtom(playTrackAtom);
 	const songIdentifier = props?.songIdentifier ?? getSlugOrId(router.query);
 	const song = useQuery(() =>
-		API.getSong(songIdentifier, [
+		getSong(songIdentifier, [
 			"artist",
 			"featuring",
 			"lyrics",
@@ -118,8 +123,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			"illustration",
 		]),
 	);
-	const externalMetadata = useQuery(externalMetadataQuery, songIdentifier);
-	const genres = useInfiniteQuery(API.getGenres, { song: songIdentifier });
+	const externalMetadata = useQuery(getSongExternalMetadata, songIdentifier);
+	const genres = useInfiniteQuery(getGenres, { song: songIdentifier });
 	const { GradientBackground } = useGradientBackground(
 		song.data?.illustration?.colors,
 	);
@@ -302,7 +307,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<InfiniteSongView
 							disableShuffle
 							query={({ libraries, sortBy, order, types }) =>
-								API.getSongs(
+								getSongs(
 									{
 										library: libraries,
 										type: types,
@@ -331,7 +336,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 						<InfiniteVideoView
 							query={({ libraries, sortBy, order, types }) =>
-								API.getVideos(
+								getVideos(
 									{
 										library: libraries,
 										type: types,
@@ -355,7 +360,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 						<InfiniteTrackView
 							query={({ sortBy, order, libraries }) =>
-								API.getTracks(
+								getTracks(
 									{
 										song: songIdentifier,
 										library: libraries,

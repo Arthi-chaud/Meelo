@@ -31,12 +31,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api";
-import {
-	type MeeloInfiniteQueryFn,
-	type QueryClient,
-	useQueryClient,
-} from "~/api/use-query";
+import { type QueryClient, useQueryClient } from "~/api/hook";
+import { getPlaylists } from "~/api/queries";
 import {
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
@@ -49,6 +45,7 @@ import InfiniteList from "~/components/infinite/list";
 import ListItem from "~/components/list-item";
 import type Playlist from "~/models/playlist";
 import type { PlaylistWithRelations } from "~/models/playlist";
+import type { InfiniteQueryFn } from "~/query";
 import { type TrackState, playAfterAtom, playNextAtom } from "~/state/player";
 import { store } from "~/state/store";
 import type Action from "./";
@@ -139,7 +136,8 @@ export const CreatePlaylistAction = (
 	icon: <Add />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((playlistName: string) => {
-			return API.createPlaylist(playlistName)
+			return queryClient.api
+				.createPlaylist(playlistName)
 				.then((playlist) => {
 					toast.success("Playlist created!");
 					queryClient.client.invalidateQueries("playlists");
@@ -165,7 +163,8 @@ export const UpdatePlaylistAction = (
 	icon: <Edit />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((playlistName: string) => {
-			return API.updatePlaylist(playlistName, playlist.slug)
+			return queryClient.api
+				.updatePlaylist(playlistName, playlist.slug)
 				.then(() => {
 					toast.success("Playlist updated!");
 					queryClient.client.invalidateQueries("playlists");
@@ -202,7 +201,8 @@ export const DeletePlaylistAction = (
 				variant: "outlined",
 				color: "error",
 				onClickCapture: () =>
-					API.deletePlaylist(librarySlugOrId)
+					queryClient.api
+						.deletePlaylist(librarySlugOrId)
 						.then(() => {
 							onDeleted();
 							queryClient.client.invalidateQueries("playlist");
@@ -215,7 +215,7 @@ export const DeletePlaylistAction = (
 });
 
 type SelectPlaylistFormProps = {
-	playlistQuery: MeeloInfiniteQueryFn<PlaylistWithRelations<"illustration">>;
+	playlistQuery: InfiniteQueryFn<PlaylistWithRelations<"illustration">>;
 	onSubmit: (playlistId: number) => void;
 	onClose: () => void;
 };
@@ -294,7 +294,8 @@ export const AddToPlaylistAction = (
 	label: "addToPlaylist",
 	dialog: ({ close }) => {
 		const mutation = useMutation((playlistId: number) => {
-			return API.addSongToPlaylist(songId, playlistId)
+			return queryClient.api
+				.addSongToPlaylist(songId, playlistId)
 				.then(() => {
 					toast.success("Song added to Playlist");
 					queryClient.client.invalidateQueries("playlists");
@@ -308,7 +309,7 @@ export const AddToPlaylistAction = (
 				onClose={close}
 				onSubmit={(playlistId) => mutation.mutate(playlistId)}
 				playlistQuery={() =>
-					API.getPlaylists(
+					getPlaylists(
 						{},
 						{ sortBy: "creationDate", order: "desc" },
 						["illustration"],

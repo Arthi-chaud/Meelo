@@ -23,14 +23,17 @@ import { useGradientBackground } from "~/utils/gradient-background";
 import type { ItemSize } from "~/utils/layout";
 import InfiniteScroll from "./scroll";
 
-type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
-type InfiniteGridProps<T extends Resource> = Omit<
-	Parameters<TypedList<T>>[0],
+type TypedList<
+	T extends Resource,
+	F extends Resource = T,
+> = typeof InfiniteScroll<T, F>;
+type InfiniteGridProps<T extends Resource, F extends Resource> = Omit<
+	Parameters<TypedList<T, F>>[0],
 	"render"
 > & {
 	render: (
-		item: T | undefined,
-		items: (T | undefined)[],
+		item: F | undefined,
+		items: (F | undefined)[],
 		index: number,
 	) => JSX.Element;
 	itemSize: ItemSize;
@@ -51,8 +54,8 @@ const GridPresets: Record<ItemSize, Partial<Record<Breakpoint, number>>> = {
  * @param props
  * @returns
  */
-const InfiniteGrid = <T extends IllustratedResource>(
-	props: InfiniteGridProps<T>,
+const InfiniteGrid = <T extends Resource, F extends IllustratedResource>(
+	props: InfiniteGridProps<T, F>,
 ) => {
 	return (
 		<InfiniteScroll

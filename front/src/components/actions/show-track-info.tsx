@@ -17,8 +17,8 @@
  */
 
 import type { useConfirm } from "material-ui-confirm";
-import API from "~/api";
-import type { QueryClient } from "~/api/use-query";
+import type { QueryClient } from "~/api/hook";
+import { getSongMasterTrack } from "~/api/queries";
 import { InfoIcon } from "~/components/icons";
 import { openTrackFileInfoModal } from "~/components/track-file-info";
 import type Action from "./";
@@ -41,6 +41,6 @@ export const ShowMasterTrackFileInfoAction = (
 	label: "trackInfo",
 	onClick: () =>
 		queryClient
-			.fetchQuery(API.getSongMasterTrack(songId))
+			.fetchQuery(getSongMasterTrack(songId))
 			.then((track) => openTrackFileInfoModal(confirm, track.id)),
 });

@@ -19,8 +19,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { QueryClient } from "react-query";
-import API from "./api";
-import { prepareMeeloQuery } from "./api/use-query";
+import { getAPI_ } from "./api/hook";
+import { getMasterRelease } from "./api/queries";
+import { toTanStackQuery } from "./query";
 import { store } from "./state/store";
 import { accessTokenAtom } from "./state/user";
 import { UserAccessTokenCookieKey } from "./utils/cookieKeys";
@@ -36,13 +37,14 @@ export async function middleware(request: NextRequest) {
 		// Disable SSR if user is not authentified
 		return NextResponse.redirect(`${origin}/`);
 	}
+	const api = getAPI_(accessToken);
 
 	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
 	if (albumId === "compilations") {
 		return;
 	}
 	const master = await queryClient
-		.fetchQuery(prepareMeeloQuery(API.getMasterRelease, albumId))
+		.fetchQuery(toTanStackQuery(api, getMasterRelease, albumId))
 		.catch(() => null);
 
 	if (!master) {

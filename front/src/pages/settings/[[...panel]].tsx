@@ -22,8 +22,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { useQuery } from "~/api/use-query";
+import { useQuery } from "~/api/hook";
+import { getCurrentUserStatus } from "~/api/queries";
 import { Head } from "~/components/head";
 import LibrariesSettings from "~/components/settings/libraries";
 import UISettings from "~/components/settings/ui";
@@ -67,7 +67,7 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const [panel, setPanel] = useState(
 		props?.panel ?? getPanelFromQuery(router.query.panel?.at(0)),
 	);
-	const userQuery = useQuery(API.getCurrentUserStatus);
+	const userQuery = useQuery(getCurrentUserStatus);
 
 	useEffect(() => {
 		if (userQuery.data?.admin === true) {

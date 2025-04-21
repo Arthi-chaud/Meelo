@@ -20,9 +20,9 @@ import type { InfiniteData, QueryFunctionContext } from "react-query";
 import type PaginatedResponse from "~/models/pagination";
 import type { PaginationParameters } from "~/models/pagination";
 import type Resource from "~/models/resource";
-import API from "./";
+import type API from "./api";
 
-type Key = string | number;
+type Key = string | number | Key[];
 
 //// Query types
 
@@ -47,26 +47,27 @@ export type InfiniteFetchFn<T> = (
 /**
  * Data type for infinite data fetching
  */
-export type Page<T> = {
-	/**
-	 * List of items that where fetched
-	 * not including previously fetched data
-	 */
-	items: T[];
-	/**
-	 * The id of the last items in the previous page
-	 */
-	afterId: number | null;
-	/**
-	 * True if the fetching should stop there
-	 */
-	end: boolean;
-	/**
-	 * Size of the page
-	 */
-	pageSize: number;
-};
-
+//TODO Delete
+// export type Page<T> = {
+// 	/**
+// 	 * List of items that where fetched
+// 	 * not including previously fetched data
+// 	 */
+// 	items: T[];
+// 	/**
+// 	 * The id of the last items in the previous page
+// 	 */
+// 	afterId: number | null;
+// 	/**
+// 	 * True if the fetching should stop there
+// 	 */
+// 	end: boolean;
+// 	/**
+// 	 * Size of the page
+// 	 */
+// 	pageSize: number;
+// };
+//
 //// Query functions
 
 export type QueryFn<
@@ -152,7 +153,7 @@ export const toTanStackInfiniteQuery = <
 			exec(api)(
 				context.pageParam ?? {
 					index: 0,
-					pageSize: API.DefaultPageSize,
+					pageSize: api.pageSize,
 				},
 			),
 		select: (result: InfiniteData<PaginatedResponse<QueryReturnType>>) =>

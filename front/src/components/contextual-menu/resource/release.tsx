@@ -21,8 +21,8 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getReleaseTracklist } from "~/api/queries";
 import { DownloadReleaseAction } from "~/components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
 import { RefreshReleaseMetadataAction } from "~/components/actions/refresh-metadata";
@@ -45,9 +45,10 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const confirm = useConfirm();
 	const { t } = useTranslation();
 	const masterMutation = useMutation(async () => {
-		return API.updateAlbum(props.release.albumId, {
-			masterReleaseId: props.release.id,
-		})
+		return queryClient.api
+			.updateAlbum(props.release.albumId, {
+				masterReleaseId: props.release.id,
+			})
 			.then(() => {
 				toast.success(t("releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();
@@ -55,11 +56,11 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 			.catch((error: Error) => toast.error(error.message));
 	});
 	const tracksMasterMutation = useMutation(async () => {
-		const query = API.getReleaseTracklist(props.release.id);
+		const query = getReleaseTracklist(props.release.id);
 		return queryClient
 			.fetchQuery({
 				key: query.key,
-				exec: () => query.exec({ pageSize: 1000 }),
+				exec: (api_) => () => query.exec(api_)({ pageSize: 1000 }),
 			})
 			.then(({ items: tracks }) => {
 				Promise.allSettled(
@@ -67,7 +68,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						.reverse()
 						.filter((track) => track.songId != null)
 						.map((track) =>
-							API.updateSong(track.songId!, {
+							queryClient.api.updateSong(track.songId!, {
 								masterTrackId: track.id,
 							}),
 						),
@@ -111,7 +112,14 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 					),
 					RefreshReleaseMetadataAction(props.release.id, t),
 				],
-				[DownloadReleaseAction(confirm, props.release.id, t)],
+				[
+					DownloadReleaseAction(
+						queryClient.api,
+						confirm,
+						props.release.id,
+						t,
+					),
+				],
 				[ShareReleaseAction(props.release.id, t)],
 			]}
 		/>

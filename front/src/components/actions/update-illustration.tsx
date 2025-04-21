@@ -26,8 +26,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api";
-import type { QueryClient } from "~/api/use-query";
+import type { QueryClient } from "~/api/hook";
 import { UpdateIllustrationIcon } from "~/components/icons";
 import { store } from "~/state/store";
 import { userAtom } from "~/state/user";
@@ -90,12 +89,12 @@ const UpdateIllustrationAction = (
 	const mutation = useMutation(async (newUrl: string) => {
 		const updator =
 			resourceType === "artist"
-				? API.updateArtistIllustration
+				? queryClient.api.updateArtistIllustration
 				: resourceType === "release"
-					? API.updateReleaseIllustration
+					? queryClient.api.updateReleaseIllustration
 					: resourceType === "playlist"
-						? API.updatePlaylistIllustration
-						: API.updateTrackIllustration;
+						? queryClient.api.updatePlaylistIllustration
+						: queryClient.api.updateTrackIllustration;
 
 		return updator(resourceId, newUrl)
 			.then(() => {

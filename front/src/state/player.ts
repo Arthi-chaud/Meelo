@@ -17,13 +17,14 @@
  */
 
 import { atom } from "jotai";
-import API from "~/api";
+import type API from "~/api";
+import type { QueryClient } from "~/api/hook";
+import type Resource from "~/models/resource";
 import {
 	type InfiniteQuery,
-	type QueryClient,
-	prepareMeeloInfiniteQuery,
-} from "~/api/use-query";
-import type Resource from "~/models/resource";
+	toTanStackInfiniteQuery,
+	toTanStackQuery,
+} from "~/query";
 import type Artist from "../models/artist";
 import type { TrackWithRelations } from "../models/track";
 
@@ -103,7 +104,7 @@ export const playFromInfiniteQuery = atom(
 		_get,
 		set,
 		// We merge TrackState + Resource to give the query handler an Id to 'afterId' from
-		query: InfiniteQuery<TrackState & Resource>,
+		query: InfiniteQuery<any, TrackState & Resource>,
 		queryClient: QueryClient,
 		afterId?: number,
 	) => {
@@ -130,12 +131,13 @@ export const playFromInfiniteQuery = atom(
 		}
 		queryClient.client
 			.fetchInfiniteQuery({
-				...prepareMeeloInfiniteQuery(() => query),
+				...toTanStackInfiniteQuery(queryClient.api, () => query),
 				// We'll use a separate cache for the queue
 				// as the query is likety to be built with 'transformPage'
 				// TODO use same cahce when that function will use the
 				// 'select' prop from react-query
-				queryKey: [...query.key, "queue"],
+				// TODO Check it's not the case anymore
+				// queryKey: [...query.key, "queue"],
 			})
 			.then((res) => {
 				const items = res.pages.flatMap(({ items }) => items);
@@ -147,7 +149,7 @@ export const playFromInfiniteQuery = atom(
 					cursor: 0,
 					playlist: items,
 					infinite:
-						items.length < API.defaultPageSize
+						items.length < queryClient.api.pageSize
 							? null
 							: { query, afterId: items.at(-1)!.id },
 				});
@@ -162,27 +164,31 @@ const loadNextQueuePage = (state: PlayerState, queryClient: QueryClient) => {
 	const afterId = state.infinite.afterId;
 	const pageQuery = {
 		// TODO see next atom
-		key: [...state.infinite.query.key, "queue", `after-${afterId}`],
-		exec: () =>
-			state.infinite!.query.exec({
+		key: [...state.infinite.query.key, `after-${afterId}`],
+		exec: (_api: API) => () =>
+			state.infinite!.query.exec(_api)({
 				afterId: state.infinite!.afterId,
 			}),
 	};
 	return queryClient.client
 		.fetchQuery({
-			...prepareMeeloInfiniteQuery(() => pageQuery),
+			...toTanStackQuery(queryClient.api, () => pageQuery),
 			staleTime: 0,
 		})
 		.then((res) => {
+			const afterId = res.items.at(-1)?.id;
+			const isEnd =
+				res.metadata.next === null ||
+				res.items.length < queryClient.api.pageSize;
 			return {
 				loading: false,
 				cursor: state.cursor,
 				playlist: [...state.playlist, ...res.items],
 				infinite:
-					res.afterId && !res.end
+					afterId && !isEnd
 						? {
 								query: state.infinite!.query,
-								afterId: res.afterId,
+								afterId: afterId,
 							}
 						: null,
 			};

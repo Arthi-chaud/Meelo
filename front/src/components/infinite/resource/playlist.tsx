@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type InfiniteQuery, useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
 import { CreatePlaylistAction } from "~/components/actions/playlist";
 import type { EmptyStateProps } from "~/components/empty-state";
 import { Controls } from "~/components/infinite/controls/controls";
@@ -29,6 +29,7 @@ import {
 	PlaylistSortingKeys,
 	type PlaylistWithRelations,
 } from "~/models/playlist";
+import type { InfiniteQuery } from "~/query";
 import type { SortingParameters } from "~/utils/sorting";
 
 type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;

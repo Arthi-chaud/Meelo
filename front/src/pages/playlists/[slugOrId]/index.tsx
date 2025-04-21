@@ -28,14 +28,9 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { type QueryClient, useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import {
-	type Query,
-	prepareMeeloQuery,
-	useQueries,
-	useQuery,
-	useQueryClient,
-} from "~/api/use-query";
+import type API from "~/api";
+import { getAPI, useQueries, useQuery, useQueryClient } from "~/api/hook";
+import { getPlaylist, getPlaylistEntries, getRelease } from "~/api/queries";
 import { DeletePlaylistAction } from "~/components/actions/playlist";
 import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
@@ -61,15 +56,16 @@ import type {
 } from "~/models/playlist";
 import type Release from "~/models/release";
 import type { SongWithRelations } from "~/models/song";
+import { type Query, toTanStackQuery } from "~/query";
 import { playTracksAtom } from "~/state/player";
 import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
 
 const playlistQuery = (idOrSlug: number | string) =>
-	API.getPlaylist(idOrSlug, ["illustration"]);
+	getPlaylist(idOrSlug, ["illustration"]);
 const playlistEntriesQuery = (idOrSlug: number | string) => {
-	const query = API.getPlaylistEntires(idOrSlug, [
+	const query = getPlaylistEntries(idOrSlug, [
 		"artist",
 		"featuring",
 		"master",
@@ -77,7 +73,10 @@ const playlistEntriesQuery = (idOrSlug: number | string) => {
 	]);
 	return {
 		key: query.key,
-		exec: () => query.exec({ pageSize: 10000 }).then(({ items }) => items),
+		exec: (api: API) => () =>
+			query
+				.exec(api)({ pageSize: 10000 })
+				.then(({ items }) => items),
 	};
 };
 
@@ -86,8 +85,9 @@ const prepareSSR = async (
 	queryClient: QueryClient,
 ) => {
 	const playlistIdentifier = getSlugOrId(context.query);
+	const api = getAPI();
 	const entries = await queryClient.fetchQuery(
-		prepareMeeloQuery(() => playlistEntriesQuery(playlistIdentifier)),
+		toTanStackQuery(api, () => playlistEntriesQuery(playlistIdentifier)),
 	);
 
 	return {
@@ -97,7 +97,7 @@ const prepareSSR = async (
 			...entries
 				.map((entry) =>
 					entry.master.releaseId
-						? API.getRelease(entry.master.releaseId)
+						? getRelease(entry.master.releaseId)
 						: undefined,
 				)
 				.filter(
@@ -239,12 +239,20 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				({
 					master,
 				}): Parameters<
-					typeof useQuery<Release, Parameters<typeof API.getRelease>>
-				> => [API.getRelease, master.releaseId ?? undefined],
+					typeof useQuery<
+						Release,
+						Parameters<typeof getRelease>,
+						Release
+					>
+				> => [
+					(id) => getRelease(id, []),
+					master.releaseId ?? undefined,
+				],
 			) ?? []),
 	);
 	const reorderMutation = useMutation((reorderedEntries: number[]) => {
-		return API.reorderPlaylist(playlistIdentifier, reorderedEntries)
+		return queryClient.api
+			.reorderPlaylist(playlistIdentifier, reorderedEntries)
 			.then(() => {
 				toast.success(t("playlistReorderSuccess"));
 				return entriesQuery.refetch();

@@ -1,7 +1,7 @@
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
+import { getVideos } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -16,7 +16,7 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		infiniteQueries: [
-			API.getVideos({}, { sortBy, order }, [
+			getVideos({}, { sortBy, order }, [
 				"artist",
 				"master",
 				"illustration",
@@ -33,7 +33,7 @@ const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 			<Head title={t("videos")} />
 			<InfiniteVideoView
 				query={({ libraries, sortBy, order, random, types }) =>
-					API.getVideos(
+					getVideos(
 						{ library: libraries, random, type: types },
 						{ sortBy, order },
 						["artist", "master", "illustration"],
