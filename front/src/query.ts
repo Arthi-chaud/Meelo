@@ -44,30 +44,6 @@ export type InfiniteFetchFn<T> = (
 	pagination: PaginationParameters,
 ) => Promise<PaginatedResponse<T>>;
 
-/**
- * Data type for infinite data fetching
- */
-//TODO Delete
-// export type Page<T> = {
-// 	/**
-// 	 * List of items that where fetched
-// 	 * not including previously fetched data
-// 	 */
-// 	items: T[];
-// 	/**
-// 	 * The id of the last items in the previous page
-// 	 */
-// 	afterId: number | null;
-// 	/**
-// 	 * True if the fetching should stop there
-// 	 */
-// 	end: boolean;
-// 	/**
-// 	 * Size of the page
-// 	 */
-// 	pageSize: number;
-// };
-//
 //// Query functions
 
 export type QueryFn<
@@ -150,14 +126,9 @@ export const toTanStackInfiniteQuery = <
 	return {
 		queryKey: key,
 		queryFn: (context: QueryFunctionContext) =>
-			exec(api)(
-				context.pageParam ?? {
-					index: 0,
-					pageSize: api.pageSize,
-				},
-			),
-		select: (result: InfiniteData<PaginatedResponse<QueryReturnType>>) =>
-			transformer
+			exec(api)(context.pageParam),
+		select: (result: InfiniteData<PaginatedResponse<QueryReturnType>>) => {
+			return transformer
 				? {
 						//TODO I am worried about this, performance wise
 						//I dont want the map to be applied to all elements at every new page
@@ -169,7 +140,8 @@ export const toTanStackInfiniteQuery = <
 					}
 				: (result as unknown as InfiniteData<
 						PaginatedResponse<TransformedReturnType>
-					>),
+					>);
+		},
 		enabled: enabled,
 		...DefaultQueryOptions,
 	};
@@ -199,7 +171,7 @@ export const transformPage = <To, From, From1 = From>(
 ): InfiniteQuery<From, To> => {
 	return {
 		key: q.key,
-		exec: (p) => q.exec(p),
+		exec: q.exec,
 		transformer: (item, index) =>
 			q.transformer
 				? transformer(q.transformer(item, index), index)

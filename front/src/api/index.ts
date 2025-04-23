@@ -39,7 +39,7 @@ const AuthenticationResponse = yup.object({
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
 type QueryParameters<Keys extends readonly string[]> = {
-	pagination?: PaginationParameters;
+	pagination?: PaginationParameters | null;
 	include?: string[];
 	sort?: SortingParameters<Keys>;
 };
@@ -609,13 +609,11 @@ export default class API {
 
 	private formatPagination(pagination: PaginationParameters): string {
 		const formattedParameters: string[] = [];
-		const pageSize = pagination.pageSize ?? this.pageSize;
-		const afterId = pagination.afterId;
 
-		if (afterId !== undefined) {
-			formattedParameters.push(`afterId=${afterId}`);
+		if (pagination.afterId !== undefined) {
+			formattedParameters.push(`afterId=${pagination.afterId}`);
 		}
-		formattedParameters.push(`take=${pageSize}`);
+		formattedParameters.push(`take=${this.pageSize}`);
 		return formattedParameters.join("&");
 	}
 }

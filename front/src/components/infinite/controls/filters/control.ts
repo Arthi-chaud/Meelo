@@ -57,7 +57,6 @@ export const useFiltersControl = <FilterKey extends string>({
 	// Used to persist Filter in query param, must be unique
 	filterId: string;
 }) => {
-	// TODO Check layout update does not trigger infinite loop
 	const router = useRouter();
 	const [selectedFilters, setFilterState] = useState(() => {
 		let query = router.query[filterId];

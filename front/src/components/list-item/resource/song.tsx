@@ -113,7 +113,7 @@ const SongItem = <
 				),
 			);
 		}
-	}, []);
+	}, [subtitles, song]);
 	return (
 		<ListItem
 			icon={

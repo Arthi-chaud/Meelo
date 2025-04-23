@@ -178,7 +178,7 @@ export const getSongs = <I extends SongInclude | never = never>(
 	include?: I[],
 ): InfiniteQuery<SongWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
-		route: "/releases",
+		route: "/songs",
 		filter: {
 			...filter,
 			library: formatOr(filter.library),
@@ -583,7 +583,7 @@ export const _mkSimplePaginatedQuery = <T>(
 	}>,
 ) => {
 	const key = [
-		arg.route.split("/").filter((t) => t.length > 0),
+		arg.route,
 		formatIncludeKeys(arg.include),
 		formatObject(arg.sort),
 		formatObject(arg.filter),
@@ -591,11 +591,15 @@ export const _mkSimplePaginatedQuery = <T>(
 
 	return {
 		key,
-		exec: (api: API) => (pagination: PaginationParameters) =>
-			api.fetch({
+		exec: (api: API) => (pagination: PaginationParameters) => {
+			return api.fetch({
 				route: arg.route,
 				errorMessage: arg.errorMessage,
-				parameters: { include: arg.include, pagination },
+				parameters: {
+					include: arg.include,
+					pagination,
+					sort: arg.sort,
+				},
 				otherParameters: arg.filter,
 				service: arg.service ?? Service.API,
 				...(arg.validator
@@ -603,7 +607,8 @@ export const _mkSimplePaginatedQuery = <T>(
 					: arg.customValidator
 						? { customValidator: arg.customValidator }
 						: { emptyResponse: true }),
-			}),
+			});
+		},
 	};
 };
 

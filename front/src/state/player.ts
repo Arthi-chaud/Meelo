@@ -20,11 +20,7 @@ import { atom } from "jotai";
 import type API from "~/api";
 import type { QueryClient } from "~/api/hook";
 import type Resource from "~/models/resource";
-import {
-	type InfiniteQuery,
-	toTanStackInfiniteQuery,
-	toTanStackQuery,
-} from "~/query";
+import { type InfiniteQuery, toTanStackInfiniteQuery } from "~/query";
 import type Artist from "../models/artist";
 import type { TrackWithRelations } from "../models/track";
 
@@ -129,31 +125,24 @@ export const playFromInfiniteQuery = atom(
 			);
 			return;
 		}
-		queryClient.client
-			.fetchInfiniteQuery({
-				...toTanStackInfiniteQuery(queryClient.api, () => query),
-				// We'll use a separate cache for the queue
-				// as the query is likety to be built with 'transformPage'
-				// TODO use same cahce when that function will use the
-				// 'select' prop from react-query
-				// TODO Check it's not the case anymore
-				// queryKey: [...query.key, "queue"],
-			})
-			.then((res) => {
-				const items = res.pages.flatMap(({ items }) => items);
-				if (items.length === 0) {
-					return;
-				}
-				set(_playerState, {
-					loading: false,
-					cursor: 0,
-					playlist: items,
-					infinite:
-						items.length < queryClient.api.pageSize
-							? null
-							: { query, afterId: items.at(-1)!.id },
-				});
+		const queryOpt = toTanStackInfiniteQuery(queryClient.api, () => query);
+		queryClient.client.fetchInfiniteQuery(queryOpt).then((res) => {
+			const items = res.pages.flatMap(({ items }) =>
+				query.transformer ? items.map(query.transformer) : items,
+			);
+			if (items.length === 0) {
+				return;
+			}
+			set(_playerState, {
+				loading: false,
+				cursor: 0,
+				playlist: items,
+				infinite:
+					items.length < queryClient.api.pageSize
+						? null
+						: { query, afterId: items.at(-1)!.id },
 			});
+		});
 	},
 );
 
@@ -170,9 +159,10 @@ const loadNextQueuePage = (state: PlayerState, queryClient: QueryClient) => {
 				afterId: state.infinite!.afterId,
 			}),
 	};
+	const queryOpt = toTanStackInfiniteQuery(queryClient.api, () => pageQuery);
 	return queryClient.client
 		.fetchQuery({
-			...toTanStackQuery(queryClient.api, () => pageQuery),
+			...queryOpt,
 			staleTime: 0,
 		})
 		.then((res) => {
@@ -180,10 +170,13 @@ const loadNextQueuePage = (state: PlayerState, queryClient: QueryClient) => {
 			const isEnd =
 				res.metadata.next === null ||
 				res.items.length < queryClient.api.pageSize;
+			const items = state.infinite?.query.transformer
+				? res.items.map(state.infinite.query.transformer)
+				: res.items;
 			return {
 				loading: false,
 				cursor: state.cursor,
-				playlist: [...state.playlist, ...res.items],
+				playlist: [...state.playlist, ...items],
 				infinite:
 					afterId && !isEnd
 						? {

@@ -17,13 +17,14 @@
  */
 
 import { atom, useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "react-query";
+import type { PaginationParameters } from "~/models/pagination";
 import type Resource from "~/models/resource";
 import {
 	type InfiniteQueryFn,
@@ -93,10 +94,16 @@ export const useQuery = <
 	...queryParams: Partial<Params>
 ) => {
 	const api = useAPI();
-	const hook = useReactQuery(toTanStackQuery(api, query, ...queryParams));
+	const queryOpts = useMemo(
+		() => toTanStackQuery(api, query, ...queryParams),
+		[query, queryParams],
+	);
+	const hook = useReactQuery(queryOpts);
 
 	useEffect(() => {
-		hook.refetch();
+		if (queryOpts.enabled) {
+			hook.refetch();
+		}
 	}, [api]);
 	return hook;
 };
@@ -105,22 +112,28 @@ export const useQuery = <
  * Wrapper for the react-query's *useQueries*
  */
 export const useQueries = <ReturnType, Params extends any[][]>(
-	...queries: Parameters<
+	...queries: readonly Parameters<
 		typeof useQuery<ReturnType, Params[number], ReturnType>
 	>[]
 ) => {
 	const api = useAPI();
-	const hook = useReactQueries(
-		queries.map(([query, ...params]) =>
-			toTanStackQuery(api, query, ...(params as Params[number])),
-		),
+	const queryOpts = useMemo(
+		() =>
+			queries.map(([query, ...params]) =>
+				toTanStackQuery(api, query, ...(params as Params[number])),
+			),
+		[queries],
 	);
+	const hook = useReactQueries(queryOpts);
 
 	useEffect(() => {
-		hook.forEach((query) => {
-			query.refetch();
+		queryOpts.forEach((queryOpt, idx) => {
+			if (queryOpt.enabled) {
+				hook[idx].refetch();
+			}
 		});
 	}, [api]);
+	return hook;
 };
 
 /**
@@ -135,25 +148,32 @@ export const useInfiniteQuery = <
 	...queryParams: Partial<Params>
 ) => {
 	const api = useAPI();
+	const queryOpts = useMemo(
+		() => toTanStackInfiniteQuery(api, query, ...queryParams),
+		[query, queryParams],
+	);
 	const { data, ...rest } = useReactInfiniteQuery({
-		...toTanStackInfiniteQuery(api, query, ...queryParams),
-		getNextPageParam: (lastPage) => {
-			if (
-				lastPage.metadata.next === null ||
-				lastPage.items.length < api.pageSize
-			) {
-				return undefined;
+		...queryOpts,
+		getNextPageParam: (lastPage): PaginationParameters | null => {
+			if (lastPage.metadata.next === null) {
+				return null;
 			}
-			return lastPage;
+			const lastItemId = lastPage.items.at(-1)?.id;
+			if (lastItemId) {
+				return { afterId: lastItemId };
+			}
+			return null;
 		},
 	});
 	const [items, setItems] = useState(data?.pages.at(0)?.items);
 	useEffect(() => {
 		setItems(data?.pages.flatMap((p) => p.items));
 	}, [data?.pages]);
-	useEffect(() => {
-		rest.refetch();
-	}, [api]);
+	// useEffect(() => {
+	// 	if (queryOpts.enabled) {
+	// 		rest.refetch();
+	// 	}
+	// }, [api]);
 
 	return { ...rest, data, items };
 };

@@ -60,7 +60,13 @@ const InfiniteList = <T extends Resource, F extends IllustratedResource>(
 						<GradientBackground />
 						<List>
 							{items.map((item, index) => (
-								<Fragment key={`item-${index}`}>
+								<Fragment
+									key={
+										item === undefined
+											? `skeleton-${index}`
+											: `item-${index}`
+									}
+								>
 									{props.render(item, items, index)}
 									{index === items.length - 1 || (
 										<Divider variant="middle" />
