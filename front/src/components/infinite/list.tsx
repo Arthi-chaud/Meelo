@@ -23,30 +23,33 @@ import type Resource from "~/models/resource";
 import { useGradientBackground } from "~/utils/gradient-background";
 import InfiniteScroll from "./scroll";
 
-type TypedList<T extends Resource> = typeof InfiniteScroll<T>;
-type InfiniteListProps<T extends Resource> = Omit<
-	Parameters<TypedList<T>>[0],
+type TypedList<
+	T extends Resource,
+	F extends Resource = T,
+> = typeof InfiniteScroll<T, F>;
+type InfiniteListProps<T extends Resource, F extends Resource = T> = Omit<
+	Parameters<TypedList<T, F>>[0],
 	"render"
 > & {
 	render: (
-		item: T | undefined,
-		items: (T | undefined)[],
+		item: F | undefined,
+		items: (F | undefined)[],
 		index: number,
 	) => JSX.Element;
-} & Partial<Pick<Parameters<typeof InfiniteScroll>[0], "emptyState">>;
+} & Partial<Pick<Parameters<TypedList<T, F>>[0], "emptyState">>;
 
 /**
  * Similar to InfiniteGrid, but rendered as a list
  * @param props
  * @returns
  */
-const InfiniteList = <T extends IllustratedResource>(
-	props: InfiniteListProps<T>,
+const InfiniteList = <T extends Resource, F extends IllustratedResource>(
+	props: InfiniteListProps<T, F>,
 ) => {
 	return (
 		<InfiniteScroll
 			{...props}
-			render={(items: (T | undefined)[]) => {
+			render={(items) => {
 				const { GradientBackground } = useGradientBackground(
 					items.find((item) => item?.illustration !== undefined)
 						?.illustration?.colors,
@@ -57,7 +60,13 @@ const InfiniteList = <T extends IllustratedResource>(
 						<GradientBackground />
 						<List>
 							{items.map((item, index) => (
-								<Fragment key={`item-${index}`}>
+								<Fragment
+									key={
+										item === undefined
+											? `skeleton-${index}`
+											: `item-${index}`
+									}
+								>
 									{props.render(item, items, index)}
 									{index === items.length - 1 || (
 										<Divider variant="middle" />

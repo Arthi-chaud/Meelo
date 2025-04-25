@@ -21,8 +21,8 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { useQuery } from "~/api/use-query";
+import { useQuery } from "~/api/hook";
+import { getAlbums, getArtist } from "~/api/queries";
 import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
@@ -36,7 +36,7 @@ const defaultSort = {
 } as const;
 
 const artistQuery = (artistIdentifier: string | number) =>
-	API.getArtist(artistIdentifier, ["illustration"]);
+	getArtist(artistIdentifier, ["illustration"]);
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
@@ -47,7 +47,7 @@ const prepareSSR = (context: NextPageContext) => {
 		},
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
-			API.getAlbums({ artist: artistIdentifier }, defaultSort, [
+			getAlbums({ artist: artistIdentifier }, defaultSort, [
 				"artist",
 				"illustration",
 			]),
@@ -79,7 +79,7 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 					getYear(album.releaseDate)?.toString() ?? ""
 				}
 				query={({ sortBy, order, libraries, types }) =>
-					API.getAlbums(
+					getAlbums(
 						{
 							artist: artistIdentifier,
 							type: types,

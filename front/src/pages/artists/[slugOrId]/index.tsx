@@ -22,8 +22,14 @@ import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { useInfiniteQuery, useQuery } from "~/api/use-query";
+import { useInfiniteQuery, useQuery } from "~/api/hook";
+import {
+	getAlbums,
+	getArtist,
+	getArtistExternalMetadata,
+	getSongs,
+	getVideos,
+} from "~/api/queries";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import { Head } from "~/components/head";
 import {
@@ -50,7 +56,7 @@ const VideoListSize = 10;
 const latestAlbumsQuery = AlbumType.map((type) => ({
 	type: type,
 	query: (artistSlugOrId: string | number) => {
-		return API.getAlbums(
+		return getAlbums(
 			{ artist: artistSlugOrId, type: [type] },
 			{ sortBy: "releaseDate", order: "desc" },
 			["illustration"],
@@ -59,33 +65,33 @@ const latestAlbumsQuery = AlbumType.map((type) => ({
 }));
 
 const videosQuery = (artistSlugOrId: string | number) =>
-	API.getVideos(
+	getVideos(
 		{ artist: artistSlugOrId },
 		{ sortBy: "addDate", order: "desc" },
 		["artist", "master", "illustration"],
 	);
 
 const topSongsQuery = (artistSlugOrId: string | number) =>
-	API.getSongs(
+	getSongs(
 		{ artist: artistSlugOrId },
 		{ sortBy: "totalPlayCount", order: "desc" },
 		["artist", "featuring", "master", "illustration"],
 	);
 
 const rareSongsQuery = (artistSlugOrId: string | number) =>
-	API.getSongs(
+	getSongs(
 		{ rare: artistSlugOrId },
 		{ sortBy: "releaseDate", order: "desc" },
 		["artist", "featuring", "master", "illustration"],
 	);
 
 const artistQuery = (artistSlugOrId: string | number) =>
-	API.getArtist(artistSlugOrId, ["illustration"]);
+	getArtist(artistSlugOrId, ["illustration"]);
 
 const externalMetadataQuery = (artistSlugOrId: string | number) =>
-	API.getArtistExternalMetadata(artistSlugOrId);
+	getArtistExternalMetadata(artistSlugOrId);
 const appearanceQuery = (artistSlugOrId: string | number) =>
-	API.getAlbums(
+	getAlbums(
 		{ appearance: artistSlugOrId },
 		{ sortBy: "releaseDate", order: "desc" },
 		["artist", "illustration"],

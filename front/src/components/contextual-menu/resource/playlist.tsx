@@ -19,7 +19,7 @@
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
 import {
 	DeletePlaylistAction,
 	UpdatePlaylistAction,

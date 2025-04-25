@@ -20,7 +20,7 @@ import type { NextPageContext } from "next";
 import type { ComponentType } from "react";
 
 import type { QueryClient } from "react-query";
-import type { InfiniteQuery, Query } from "./api/use-query";
+import type { InfiniteQuery, Query } from "./query";
 
 type PromiseOr<T> = T | Promise<T>;
 

@@ -18,8 +18,8 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getArtist, getRelease } from "~/api/queries";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";
 import {
@@ -50,10 +50,10 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 	const confirm = useConfirm();
 	const getPlayNextProps = () =>
 		Promise.all([
-			queryClient.fetchQuery(API.getArtist(props.video.artistId)),
+			queryClient.fetchQuery(getArtist(props.video.artistId)),
 			props.video.master.releaseId &&
 				queryClient.fetchQuery(
-					API.getRelease(props.video.master.releaseId),
+					getRelease(props.video.master.releaseId),
 				),
 		]).then(([artist, release]) => ({
 			track: {
@@ -97,7 +97,14 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 					RefreshTrackMetadataAction(props.video.master.id, t),
 				],
 				[ShowTrackFileInfoAction(confirm, props.video.master.id)],
-				[DownloadAction(confirm, props.video.master.sourceFileId, t)],
+				[
+					DownloadAction(
+						queryClient.api,
+						confirm,
+						props.video.master.sourceFileId,
+						t,
+					),
+				],
 			]}
 		/>
 	);

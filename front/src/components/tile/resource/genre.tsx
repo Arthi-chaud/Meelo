@@ -27,10 +27,11 @@ import {
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import { useMemo } from "react";
-import API from "~/api";
-import { transformPage, useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getSongs } from "~/api/queries";
 import { RadioIcon } from "~/components/icons";
 import type Genre from "~/models/genre";
+import { transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { getRandomNumber } from "~/utils/random";
 
@@ -95,7 +96,7 @@ export const GenreTile = ({ genre }: Props) => {
 									e.preventDefault();
 									play(
 										transformPage(
-											API.getSongs(
+											getSongs(
 												{
 													genre: genre.slug,
 													random: getRandomNumber(),

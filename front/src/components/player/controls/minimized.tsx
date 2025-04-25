@@ -23,7 +23,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useQuery } from "~/api/use-query";
+import { useQuery } from "~/api/hook";
 import { TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import formatArtists from "~/utils/formatArtists";

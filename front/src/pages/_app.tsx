@@ -26,16 +26,17 @@ import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
 import { Provider } from "jotai";
 import type { Page } from "ssr";
-import API from "~/api";
-import {
-	DefaultMeeloQueryOptions,
-	prepareMeeloInfiniteQuery,
-	prepareMeeloQuery,
-} from "~/api/use-query";
+import { getAPI_ } from "~/api/hook";
+import { getCurrentUserStatus, getLibraries } from "~/api/queries";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n/i18n";
+import {
+	DefaultQueryOptions,
+	toTanStackInfiniteQuery,
+	toTanStackQuery,
+} from "~/query";
 import { store } from "~/state/store";
 import { accessTokenAtom } from "~/state/user";
 import ThemeProvider from "~/theme/provider";
@@ -54,7 +55,7 @@ function MyApp({
 		() =>
 			new QueryClient({
 				defaultOptions: {
-					queries: DefaultMeeloQueryOptions,
+					queries: DefaultQueryOptions,
 				},
 			}),
 	);
@@ -135,7 +136,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
 	const queryClient = new QueryClient({
 		defaultOptions: {
-			queries: DefaultMeeloQueryOptions,
+			queries: DefaultQueryOptions,
 		},
 	});
 	const accessToken: string | undefined = (appContext.ctx.req as any)
@@ -145,26 +146,29 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 		// Disable SSR if user is not authentified
 		return { pageProps: {} };
 	}
+	const api = getAPI_(accessToken);
 	store.set(accessTokenAtom, accessToken);
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
 
 	const userQueryResult = await queryClient
-		.fetchQuery(prepareMeeloQuery(API.getCurrentUserStatus))
+		.fetchQuery(toTanStackQuery(api, getCurrentUserStatus))
 		.catch(() => null);
 	if (userQueryResult != null) {
 		try {
 			await Promise.all([
 				queryClient.prefetchInfiniteQuery(
-					prepareMeeloInfiniteQuery(API.getLibraries),
+					toTanStackInfiniteQuery(api, getLibraries),
 				),
 				...(infiniteQueries?.map((query) =>
 					queryClient.prefetchInfiniteQuery(
-						prepareMeeloInfiniteQuery(() => query),
+						toTanStackInfiniteQuery(api, () => query),
 					),
 				) ?? []),
 				...(queries?.map((query) =>
-					queryClient.prefetchQuery(prepareMeeloQuery(() => query)),
+					queryClient.prefetchQuery(
+						toTanStackQuery(api, () => query),
+					),
 				) ?? []),
 			]);
 		} catch {

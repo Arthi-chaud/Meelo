@@ -23,8 +23,9 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import type API from "~/api";
+import { useQueryClient } from "~/api/hook";
+import { getUsers } from "~/api/queries";
 import AdminGrid from "~/components/admin-grid";
 import { DeleteIcon } from "~/components/icons";
 import type User from "~/models/user";
@@ -41,7 +42,8 @@ const DeleteButton = ({
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const userDeletionMutation = useMutation(() =>
-		API.deleteUser(userId)
+		queryClient.api
+			.deleteUser(userId)
 			.catch(() => toast.error(t("userDeletionFail")))
 			.then(() => {
 				toast.success(t("userDeleted"));
@@ -81,9 +83,10 @@ const UsersSettings = () => {
 			status,
 		}: {
 			user: User;
-			status: Parameters<typeof API.updateUser>[1];
+			status: Parameters<API["updateUser"]>[1];
 		}) =>
-			API.updateUser(user.id, status)
+			queryClient.api
+				.updateUser(user.id, status)
 				.catch(() => toast.error(t("userUpdateFail")))
 				.then(() => {
 					const toastMessages: string[] = [];
@@ -96,7 +99,7 @@ const UsersSettings = () => {
 					if (status.admin === true) {
 						toastMessages.push(t("userNowAdmin"));
 					} else if (status.admin === false) {
-						toastMessages.push(t("userNowDisabled"));
+						toastMessages.push(t("userNowNotAdmin"));
 					}
 					toastMessages.forEach((message) => toast.success(message));
 					queryClient.client.invalidateQueries();
@@ -176,7 +179,7 @@ const UsersSettings = () => {
 	return (
 		<Box>
 			<AdminGrid
-				infiniteQuery={API.getUsers}
+				infiniteQuery={getUsers}
 				columns={columns.map((column) => ({
 					...column,
 					headerAlign: column.field === "name" ? "left" : "center",

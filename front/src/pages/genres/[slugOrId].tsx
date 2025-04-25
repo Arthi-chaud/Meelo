@@ -21,8 +21,8 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { useQuery } from "~/api/use-query";
+import { useQuery } from "~/api/hook";
+import { getAlbums, getArtists, getGenre, getSongs } from "~/api/queries";
 import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
@@ -36,16 +36,16 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { genreIdentifier },
-		queries: [API.getGenre(genreIdentifier)],
+		queries: [getGenre(genreIdentifier)],
 		infiniteQueries: [
-			API.getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, [
+			getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, [
 				"artist",
 				"illustration",
 			]),
-			API.getArtists({ genre: genreIdentifier }, defaultQuerySortParams, [
+			getArtists({ genre: genreIdentifier }, defaultQuerySortParams, [
 				"illustration",
 			]),
-			API.getSongs({ genre: genreIdentifier }, defaultQuerySortParams, [
+			getSongs({ genre: genreIdentifier }, defaultQuerySortParams, [
 				"artist",
 				"featuring",
 				"master",
@@ -61,7 +61,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const { t } = useTranslation();
 	const genreIdentifier = props?.genreIdentifier ?? getSlugOrId(router.query);
-	const genre = useQuery(API.getGenre, genreIdentifier);
+	const genre = useQuery(getGenre, genreIdentifier);
 	const { selectedTab, selectTab } = useTabRouter(
 		(r) => r.query.t,
 		(newTab) => `/genres/${genreIdentifier}?t=${newTab}`,
@@ -104,7 +104,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			{selectedTab === "artist" && (
 				<InfiniteArtistView
 					query={({ libraries, sortBy, order }) =>
-						API.getArtists(
+						getArtists(
 							{
 								genre: genreIdentifier,
 								library: libraries,
@@ -118,7 +118,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			{selectedTab === "album" && (
 				<InfiniteAlbumView
 					query={({ libraries, types, sortBy, order }) =>
-						API.getAlbums(
+						getAlbums(
 							{
 								genre: genreIdentifier,
 								type: types,
@@ -133,7 +133,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			{selectedTab === "song" && (
 				<InfiniteSongView
 					query={({ libraries, types, random, sortBy, order }) =>
-						API.getSongs(
+						getSongs(
 							{
 								genre: genreIdentifier,
 								type: types,

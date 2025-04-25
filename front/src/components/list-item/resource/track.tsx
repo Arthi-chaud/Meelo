@@ -18,8 +18,8 @@
 
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getArtist } from "~/api/queries";
 import TrackContextualMenu from "~/components/contextual-menu/resource/track";
 import { MasterIcon, TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
@@ -61,8 +61,8 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 					queryClient
 						.fetchQuery(
 							track.song
-								? API.getArtist(track.song.artistId)
-								: API.getArtist(track.video!.artistId),
+								? getArtist(track.song.artistId)
+								: getArtist(track.video!.artistId),
 						)
 						.then((artist) => {
 							playTrack({

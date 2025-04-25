@@ -38,8 +38,8 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import { useQuery as useTanStackQuery } from "react-query";
-import API from "~/api";
-import { prepareMeeloQuery, useQuery, useQueryClient } from "~/api/use-query";
+import { useQuery, useQueryClient } from "~/api/hook";
+import { getLibraries, getTasks } from "~/api/queries";
 import type Action from "~/components/actions";
 import {
 	CleanAllLibrariesAction,
@@ -53,6 +53,7 @@ import { AddIcon, DeleteIcon, EditIcon } from "~/components/icons";
 import LibraryForm from "~/components/library-form";
 import SectionHeader from "~/components/section-header";
 import type Library from "~/models/library";
+import { toTanStackQuery } from "~/query";
 
 const actionButtonStyle = {
 	overflow: "hidden",
@@ -95,7 +96,7 @@ const RunTaskButton = ({
 	variant,
 }: Action & Pick<ComponentProps<typeof Button>, "variant">) => {
 	const theme = useTheme();
-	const tasks = useQuery(API.getTasks);
+	const tasks = useQuery(getTasks);
 	const { t } = useTranslation();
 	const viewPortIsSmall = useMediaQuery(theme.breakpoints.up("sm"));
 	const [modalIsOpen, openModal] = useState(false);
@@ -138,23 +139,24 @@ const RunTaskButton = ({
 };
 
 const LibrariesSettings = () => {
+	const queryClient = useQueryClient();
+	const api = queryClient.api;
 	const tasks = useTanStackQuery({
-		...prepareMeeloQuery(() => API.getTasks()),
+		...toTanStackQuery(api, () => getTasks()),
 		refetchInterval: 1000,
 	});
 	const { t, i18n } = useTranslation();
-	const queryClient = useQueryClient();
 	const scanAllLibaries = {
-		...ScanAllLibrariesAction,
+		...ScanAllLibrariesAction(queryClient.api),
 		onClick: () => {
-			ScanAllLibrariesAction.onClick?.();
+			ScanAllLibrariesAction(queryClient.api).onClick?.();
 			tasks.refetch();
 		},
 	};
 	const cleanAllLibaries = {
-		...CleanAllLibrariesAction,
+		...CleanAllLibrariesAction(queryClient.api),
 		onClick: () => {
-			CleanAllLibrariesAction.onClick?.();
+			CleanAllLibrariesAction(queryClient.api).onClick?.();
 			tasks.refetch();
 		},
 	};
@@ -165,7 +167,7 @@ const LibrariesSettings = () => {
 	const closeCreateModal = () => setCreateModalOpen(false);
 	const deletionMutation = useMutation((libraryId: number) =>
 		toast
-			.promise(API.deleteLibrary(libraryId), {
+			.promise(api.deleteLibrary(libraryId), {
 				loading: t("deletingLibrary"),
 				success: t("libraryDeleted"),
 				error: t("libraryDeletionFail"),
@@ -176,7 +178,8 @@ const LibrariesSettings = () => {
 	);
 	const createMutation = useMutation(
 		(createForm: { name: string; path: string }) =>
-			API.createLibrary(createForm.name, createForm.path)
+			api
+				.createLibrary(createForm.name, createForm.path)
 				.then(() => {
 					toast.success(t("libraryCreated"));
 					queryClient.client.invalidateQueries(["libraries"]);
@@ -185,11 +188,12 @@ const LibrariesSettings = () => {
 	);
 	const editMutation = useMutation(
 		(updatedLibrary: { id: number; name: string; path: string }) =>
-			API.updateLibrary(
-				updatedLibrary.id,
-				updatedLibrary.name,
-				updatedLibrary.path,
-			)
+			api
+				.updateLibrary(
+					updatedLibrary.id,
+					updatedLibrary.name,
+					updatedLibrary.path,
+				)
 				.then(() => {
 					toast.success(t("libraryUpdated"));
 					queryClient.client.invalidateQueries(["libraries"]);
@@ -206,7 +210,7 @@ const LibrariesSettings = () => {
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
 						variant="outlined"
-						{...CleanLibraryAction(library.id)}
+						{...CleanLibraryAction(queryClient.api, library.id)}
 					/>
 				),
 			},
@@ -217,7 +221,7 @@ const LibrariesSettings = () => {
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
 						variant="contained"
-						{...ScanLibraryAction(library.id)}
+						{...ScanLibraryAction(queryClient.api, library.id)}
 					/>
 				),
 			},
@@ -327,7 +331,7 @@ const LibrariesSettings = () => {
 				/>
 			</Dialog>
 			<AdminGrid
-				infiniteQuery={API.getLibraries}
+				infiniteQuery={getLibraries}
 				columns={columns.map((column) => ({
 					...column,
 					headerAlign: column.field === "name" ? "left" : "center",

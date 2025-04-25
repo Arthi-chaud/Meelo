@@ -20,16 +20,13 @@ import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
-import API from "~/api";
+import type API from "~/api";
+import { useAPI } from "~/api/hook";
 import { MetadataRefreshIcon } from "~/components/icons";
 import type { Translator } from "~/i18n/i18n";
 import type Action from "./";
 
-type APIMethodParams = ArraySlice<
-	Parameters<typeof API.refreshMetadata>,
-	0,
-	-1
->;
+type APIMethodParams = ArraySlice<Parameters<API["refreshMetadata"]>, 0, -1>;
 
 const RefreshMetadataActionContent = ({
 	t,
@@ -37,6 +34,7 @@ const RefreshMetadataActionContent = ({
 	close,
 }: { t: Translator; params: APIMethodParams; close: () => void }) => {
 	const [force, setForce] = useState(false);
+	const api = useAPI();
 
 	return (
 		<Grid container spacing={2} sx={{ padding: 2 }}>
@@ -59,7 +57,7 @@ const RefreshMetadataActionContent = ({
 					fullWidth
 					variant="contained"
 					onClick={() => {
-						API.refreshMetadata(...[...params, force])
+						api.refreshMetadata(...[...params, force])
 							.then(() =>
 								toast.success(t("refreshMetadataStarted")),
 							)

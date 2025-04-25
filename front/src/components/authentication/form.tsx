@@ -22,7 +22,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api";
+import { useAPI } from "~/api/hook";
 import { accessTokenAtom } from "~/state/user";
 
 /**
@@ -30,6 +30,7 @@ import { accessTokenAtom } from "~/state/user";
  * On successful authentication, update store with access token
  */
 const AuthenticationForm = () => {
+	const api = useAPI();
 	const [formType, setFormType] = useState<"login" | "signup">("login");
 	const defaultValues = { username: "", password: "", confirm: "" };
 	const [password, setPassword] = useState(defaultValues.password);
@@ -42,7 +43,7 @@ const AuthenticationForm = () => {
 	const onSubmit = async (values: typeof defaultValues) => {
 		try {
 			if (formType === "signup") {
-				const createdUser = await API.register(values);
+				const createdUser = await api.register(values);
 
 				if (!createdUser.enabled) {
 					setFormType("login");
@@ -50,7 +51,7 @@ const AuthenticationForm = () => {
 					return;
 				}
 			}
-			setAccessToken((await API.login(values)).access_token);
+			setAccessToken((await api.login(values)).access_token);
 		} catch (error: any) {
 			toast.error(error.message);
 		}

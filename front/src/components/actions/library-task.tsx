@@ -17,7 +17,7 @@
  */
 
 import toast from "react-hot-toast";
-import API from "~/api";
+import type API from "~/api";
 import { CleanIcon, ScanIcon } from "~/components/icons";
 import type { TaskResponse } from "~/models/task";
 import type Action from "./";
@@ -33,30 +33,32 @@ const handleTask = <T extends TaskResponse>(task: Promise<T>) =>
 			toast.error(s.message ?? s.status ?? "Task request failed"),
 		);
 
-export const ScanAllLibrariesAction: Action = {
+export const ScanAllLibrariesAction = (api: API): Action => ({
 	label: "scanLibraries",
 	icon: <ScanIcon />,
-	onClick: () => handleTask(API.scanLibraries()),
-};
+	onClick: () => handleTask(api.scanLibraries()),
+});
 
 export const ScanLibraryAction = (
+	api: API,
 	librarySlugOrId: number | string,
 ): Action => ({
 	label: "scan",
-	icon: ScanAllLibrariesAction.icon,
-	onClick: () => handleTask(API.scanLibrary(librarySlugOrId)),
+	icon: <ScanIcon />,
+	onClick: () => handleTask(api.scanLibrary(librarySlugOrId)),
 });
 
-export const CleanAllLibrariesAction: Action = {
+export const CleanAllLibrariesAction = (api: API): Action => ({
 	label: "cleanLibraries",
 	icon: <CleanIcon />,
-	onClick: () => handleTask(API.cleanLibraries()),
-};
+	onClick: () => handleTask(api.cleanLibraries()),
+});
 
 export const CleanLibraryAction = (
+	api: API,
 	librarySlugOrId: number | string,
 ): Action => ({
 	label: "clean",
-	icon: CleanAllLibrariesAction.icon,
-	onClick: () => handleTask(API.cleanLibrary(librarySlugOrId)),
+	icon: <CleanIcon />,
+	onClick: () => handleTask(api.cleanLibrary(librarySlugOrId)),
 });

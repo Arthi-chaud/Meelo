@@ -19,7 +19,7 @@
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
+import { getPlaylists } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -34,7 +34,7 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		infiniteQueries: [
-			API.getPlaylists({}, { sortBy, order }, ["illustration"]),
+			getPlaylists({}, { sortBy, order }, ["illustration"]),
 		],
 	};
 };
@@ -48,7 +48,7 @@ const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 				emptyState={{
 					text: "emptyStatePlaylists",
 				}}
-				query={(sort) => API.getPlaylists({}, sort, ["illustration"])}
+				query={(sort) => getPlaylists({}, sort, ["illustration"])}
 			/>
 		</>
 	);

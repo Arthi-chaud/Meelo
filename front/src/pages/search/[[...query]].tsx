@@ -24,29 +24,38 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
+import { useAPI, useQueryClient } from "~/api/hook";
 import {
-	type Query,
-	toInfiniteQuery,
-	transformPage,
-	useQueryClient,
-} from "~/api/use-query";
+	getAlbums,
+	getArtists,
+	getSearchHistory,
+	getSongs,
+	getVideos,
+	searchAll,
+} from "~/api/queries";
 import { Head } from "~/components/head";
 import { SearchIcon } from "~/components/icons";
+import InfiniteList from "~/components/infinite/list";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
 import { InfiniteSongView } from "~/components/infinite/resource/song";
 import InfiniteVideoView from "~/components/infinite/resource/video";
-import InfiniteView from "~/components/infinite/view";
 import AlbumItem from "~/components/list-item/resource/album";
 import ArtistItem from "~/components/list-item/resource/artist";
 import SongItem from "~/components/list-item/resource/song";
 import VideoItem from "~/components/list-item/resource/video";
 import { useTabRouter } from "~/components/tab-router";
+import type { IllustratedResource } from "~/models/illustration";
+import type Resource from "~/models/resource";
 import type { SaveSearchItem, SearchResult } from "~/models/search";
+import {
+	type InfiniteQuery,
+	type Query,
+	toInfiniteQuery,
+	transformPage,
+} from "~/query";
 import { playTrackAtom } from "~/state/player";
 import formatArtists from "~/utils/formatArtists";
-import { DefaultItemSize } from "~/utils/layout";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;
@@ -55,35 +64,35 @@ const prepareSSR = (context: NextPageContext) => {
 	return {
 		additionalProps: { searchQuery, type },
 		infiniteQueries: [
-			searchResultQueryToInfinite(API.getSearchHistory()),
+			transformSearchResultQuery(getSearchHistory()),
 			...(searchQuery
 				? [
-						API.getArtists({ query: searchQuery }, undefined, [
+						getArtists({ query: searchQuery }, undefined, [
 							"illustration",
 						]),
-						API.getAlbums({ query: searchQuery }, undefined, [
+						getAlbums({ query: searchQuery }, undefined, [
 							"artist",
 							"illustration",
 						]),
-						API.getSongs({ query: searchQuery }, undefined, [
+						getSongs({ query: searchQuery }, undefined, [
 							"artist",
 							"featuring",
 							"master",
 							"illustration",
 						]),
-						API.getVideos({ query: searchQuery }, undefined, [
+						getVideos({ query: searchQuery }, undefined, [
 							"artist",
 							"master",
 							"illustration",
 						]),
-						searchResultQueryToInfinite(API.searchAll(searchQuery)),
+						transformSearchResultQuery(searchAll(searchQuery)),
 					]
 				: []),
 		],
 	};
 };
 
-const searchResultQueryToInfinite = (q: Query<SearchResult[]>) => {
+const transformSearchResultQuery = (q: Query<SearchResult[]>) => {
 	return transformPage(toInfiniteQuery(q), (item, index) => ({
 		...item,
 		id: index,
@@ -119,21 +128,21 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		...tabs,
 	);
 	const queryClient = useQueryClient();
+	const api = useAPI();
 	const [inputValue, setInputValue] = useState(query);
 	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
-	const saveSearch = useMutation((dto: SaveSearchItem) => {
-		return API.saveSearchHistoryEntry(dto)
-			.then(() => {
-				// Sometimes, it refreshes to fast, and shifts the history
-				// before openning a page (for artists) is done
-				setTimeout(() => {
-					queryClient.client.invalidateQueries(
-						API.getSearchHistory().key,
-					);
-				}, 500);
-			})
-
-			.catch((error: Error) => console.error(error));
+	const saveSearch = useMutation(async (dto: SaveSearchItem) => {
+		try {
+			await api.saveSearchHistoryEntry(dto);
+			// Sometimes, it refreshes to fast, and shifts the history
+			// before openning a page (for artists) is done
+			setTimeout(() => {
+				queryClient.client.invalidateQueries(getSearchHistory().key);
+			}, 500);
+		} catch (error) {
+			// biome-ignore lint/suspicious/noConsole: <explanation>
+			console.error(error);
+		}
 	});
 	useEffect(() => {
 		if (debounceId) {
@@ -214,18 +223,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			</Tabs>
 			<Box sx={{ paddingBottom: 2 }} />
 			{selectedTab === "all" && (
-				<InfiniteView
-					itemSize={DefaultItemSize}
-					view="list"
+				<InfiniteList
 					query={() =>
-						searchResultQueryToInfinite(
-							query
-								? API.searchAll(query)
-								: API.getSearchHistory(),
-						)
+						transformSearchResultQuery(
+							query ? searchAll(query) : getSearchHistory(),
+						) as unknown as InfiniteQuery<
+							Resource,
+							SearchResult & IllustratedResource
+						>
 					}
-					renderGridItem={() => <></>}
-					renderListItem={(item) =>
+					render={(item) =>
 						!item || item.album ? (
 							<AlbumItem
 								onClick={() =>
@@ -297,7 +304,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						item && saveSearch.mutate({ artistId: item.id })
 					}
 					query={({ libraries }) =>
-						API.getArtists(
+						getArtists(
 							{
 								query: encodeURIComponent(query),
 								library: libraries,
@@ -315,7 +322,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						item && saveSearch.mutate({ albumId: item.id })
 					}
 					query={({ libraries, types }) =>
-						API.getAlbums(
+						getAlbums(
 							{
 								query: encodeURIComponent(query),
 								type: types,
@@ -334,7 +341,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						item && saveSearch.mutate({ songId: item.id })
 					}
 					query={({ libraries, types }) =>
-						API.getSongs(
+						getSongs(
 							{
 								query: encodeURIComponent(query),
 								type: types,
@@ -355,7 +362,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					disableSort
 					subtitle="artist"
 					query={({ libraries, types }) =>
-						API.getVideos(
+						getVideos(
 							{
 								query: encodeURIComponent(query),
 								type: types,

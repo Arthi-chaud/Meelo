@@ -22,12 +22,8 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import {
-	prepareMeeloInfiniteQuery,
-	useQuery,
-	useQueryClient,
-} from "~/api/use-query";
+import { getAPI, useQuery, useQueryClient } from "~/api/hook";
+import { getArtist, getRelease, getSongGroups, getSongs } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -37,11 +33,12 @@ import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import { SongSortingKeys } from "~/models/song";
 import type Track from "~/models/track";
+import { toTanStackInfiniteQuery } from "~/query";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
 
 const artistQuery = (identifier: string | number) =>
-	API.getArtist(identifier, ["illustration"]);
+	getArtist(identifier, ["illustration"]);
 
 const isRareSongsPage = ({ asPath }: { asPath?: string }) =>
 	asPath?.includes("/rare-songs") ?? false;
@@ -53,9 +50,10 @@ const prepareSSR = async (
 	const artistIdentifier = getSlugOrId(context.query);
 	const order = getOrderQuery(context) ?? "asc";
 	const sortBy = getSortQuery(context, SongSortingKeys);
+	const api = getAPI();
 	const songs = await queryClient.fetchInfiniteQuery(
-		prepareMeeloInfiniteQuery(() =>
-			API.getSongs(
+		toTanStackInfiniteQuery(api, () =>
+			getSongs(
 				{
 					[isRareSongsPage(context) ? "rare" : "artist"]:
 						artistIdentifier,
@@ -73,9 +71,7 @@ const prepareSSR = async (
 			...songs.pages
 				.flatMap(({ items }) => items)
 				.filter(({ master }) => master.releaseId)
-				.map(({ master }) =>
-					API.getRelease(master.releaseId!, ["album"]),
-				),
+				.map(({ master }) => getRelease(master.releaseId!, ["album"])),
 		],
 		infiniteQueries: [],
 	};
@@ -90,7 +86,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const getTrackReleaseName = (track: Track): Promise<string | null> =>
 		track.releaseId
 			? queryClient
-					.fetchQuery(API.getRelease(track.releaseId))
+					.fetchQuery(getRelease(track.releaseId))
 					.then((release) => release.name)
 			: Promise.resolve(null);
 	const artistIdentifier =
@@ -116,7 +112,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			<HybridInfiniteSongView
 				song={{
 					query: ({ libraries, sortBy, order, types, random }) =>
-						API.getSongs(
+						getSongs(
 							{
 								[isRareSongsPage(router) ? "rare" : "artist"]:
 									artistIdentifier,
@@ -135,7 +131,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						? undefined
 						: {
 								query: ({ libraries, type }) =>
-									API.getSongGroups(
+									getSongGroups(
 										{
 											type: type,
 											artist: artistIdentifier,

@@ -18,12 +18,12 @@
 
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
-import API from "~/api";
-import { type MeeloInfiniteQueryFn, useInfiniteQuery } from "~/api/use-query";
+import { useAPI, useInfiniteQuery } from "~/api/hook";
 import type Resource from "~/models/resource";
+import type { InfiniteQueryFn } from "~/query";
 
 type AdminGridProps<DataType extends Resource> = {
-	infiniteQuery: MeeloInfiniteQueryFn<DataType>;
+	infiniteQuery: InfiniteQueryFn<DataType>;
 	columns: GridColDef<DataType>[];
 };
 
@@ -42,6 +42,7 @@ const AdminGrid = <DataType extends Resource>({
 		fetchNextPage,
 		fetchPreviousPage,
 	} = useInfiniteQuery(infiniteQuery);
+	const api = useAPI();
 	const [currentPage, setCurrentPage] = useState(0);
 	const itemsCount = useMemo(() => items?.length, [items]);
 
@@ -54,10 +55,10 @@ const AdminGrid = <DataType extends Resource>({
 			rows={data?.pages[currentPage]?.items ?? []}
 			rowCount={itemsCount}
 			paginationModel={{
-				pageSize: API.defaultPageSize,
+				pageSize: api.pageSize,
 				page: currentPage,
 			}}
-			pageSizeOptions={[API.defaultPageSize]}
+			pageSizeOptions={[api.pageSize]}
 			disableColumnSelector
 			disableRowSelectionOnClick
 			disableColumnMenu

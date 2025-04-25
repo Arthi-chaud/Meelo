@@ -21,16 +21,13 @@ import * as yup from "yup";
 /**
  * Parameters for pagination in API requests
  */
-export type PaginationParameters = Partial<{
+export type PaginationParameters = {
 	/**
-	 * The index of the last item of the previou page
+	 * The id of the last item of the previou page
 	 */
-	afterId: number;
-	/**
-	 * The number of elements in a page
-	 */
-	pageSize: number;
-}>;
+	afterId?: number;
+	pageSize?: number;
+};
 
 const PaginatedResponse = <T>(itemType: yup.Schema<T>) =>
 	yup.object({

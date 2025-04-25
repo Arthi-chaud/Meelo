@@ -41,8 +41,21 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { prepareMeeloQuery, useInfiniteQuery, useQuery } from "~/api/use-query";
+import type API from "~/api";
+import { getAPI, useInfiniteQuery, useQuery } from "~/api/hook";
+import {
+	getAlbum,
+	getAlbumExternalMetadata,
+	getAlbums,
+	getArtists,
+	getGenres,
+	getPlaylists,
+	getRelease,
+	getReleaseTracklist,
+	getReleases,
+	getSongs,
+	getVideos,
+} from "~/api/queries";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import Fade from "~/components/fade";
@@ -64,6 +77,7 @@ import type { SongWithRelations } from "~/models/song";
 import type Tracklist from "~/models/tracklist";
 import type { TracklistItemWithRelations } from "~/models/tracklist";
 import { VideoTypeIsExtra, type VideoWithRelations } from "~/models/video";
+import { toTanStackQuery } from "~/query";
 import { playTracksAtom } from "~/state/player";
 import { useAccentColor } from "~/utils/accent-color";
 import { getDate, getYear } from "~/utils/date";
@@ -87,81 +101,84 @@ const formatReleaseDate = (date: Date, lang: string) => {
 };
 
 const releaseQuery = (releaseIdentifier: string | number) =>
-	API.getRelease(releaseIdentifier, ["album", "illustration", "discs"]);
+	getRelease(releaseIdentifier, ["album", "illustration", "discs"]);
 const releaseTracklistQuery = (
 	releaseIdentifier: number | string,
 	exclusiveOnly: boolean,
 ) => {
-	const query = API.getReleaseTracklist(releaseIdentifier, exclusiveOnly, [
+	const query = getReleaseTracklist(releaseIdentifier, exclusiveOnly, [
 		"artist",
 		"featuring",
 	]);
 	return {
 		key: query.key,
-		exec: () =>
-			query.exec({ pageSize: 10000 }).then(({ items }) => {
-				return items.reduce(
-					(prev, item) => {
-						const itemKey = item.discIndex ?? "?";
-						return {
-							...prev,
-							[item.discIndex ?? "?"]: [
-								...(prev[itemKey] ?? []),
-								item,
-							],
-						};
-					},
-					{} as Tracklist<
-						TracklistItemWithRelations<"artist" | "featuring">
-					>,
-				);
-			}),
+		exec: (api: API) => () =>
+			query
+				.exec(api)({ pageSize: 10000 })
+				.then(({ items }) => {
+					return items.reduce(
+						(prev, item) => {
+							const itemKey = item.discIndex ?? "?";
+							return {
+								...prev,
+								[item.discIndex ?? "?"]: [
+									...(prev[itemKey] ?? []),
+									item,
+								],
+							};
+						},
+						{} as Tracklist<
+							TracklistItemWithRelations<"artist" | "featuring">
+						>,
+					);
+				}),
 	};
 };
-const albumQuery = (albumId: number) =>
-	API.getAlbum(albumId, ["genres", "artist"]);
+const albumQuery = (albumId: number) => getAlbum(albumId, ["genres", "artist"]);
 const externalMetadataQuery = (albumIdentifier: string | number) =>
-	API.getAlbumExternalMetadata(albumIdentifier);
+	getAlbumExternalMetadata(albumIdentifier);
 const artistsOnAlbumQuery = (albumId: number) => {
-	const query = API.getArtists({ album: albumId }, undefined, [
-		"illustration",
-	]);
+	const query = getArtists({ album: albumId }, undefined, ["illustration"]);
 
 	return {
 		key: query.key,
-		exec: () => query.exec({ pageSize: 10000 }).then((res) => res.items),
+		exec: (api: API) => () =>
+			query
+				.exec(api)({ pageSize: 10000 })
+				.then((res) => res.items),
 	};
 };
 
-const albumGenreQuery = (albumId: number) => API.getGenres({ album: albumId });
+const albumGenreQuery = (albumId: number) => getGenres({ album: albumId });
 const releaseBSidesQuery = (releaseId: number) =>
-	API.getSongs({ bsides: releaseId }, { sortBy: "name" }, [
+	getSongs({ bsides: releaseId }, { sortBy: "name" }, [
 		"artist",
 		"featuring",
 		"master",
 		"illustration",
 	]);
 const albumVideosQuery = (albumId: number) =>
-	API.getVideos({ album: albumId }, undefined, ["master", "illustration"]);
+	getVideos({ album: albumId }, undefined, ["master", "illustration"]);
 const relatedAlbumsQuery = (albumId: number) =>
-	API.getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
+	getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
 		"artist",
 		"illustration",
 	]);
 const relatedReleasesQuery = (albumId: number) =>
-	API.getReleases({ album: albumId }, { sortBy: "releaseDate" }, [
+	getReleases({ album: albumId }, { sortBy: "releaseDate" }, [
 		"illustration",
 	]);
 const relatedPlaylistsQuery = (albumId: number) =>
-	API.getPlaylists({ album: albumId }, undefined, ["illustration"]);
+	getPlaylists({ album: albumId }, undefined, ["illustration"]);
 
 const prepareSSR = async (
 	context: NextPageContext,
 	queryClient: QueryClient,
 ) => {
 	const releaseIdentifier = getSlugOrId(context.query);
+	const api = getAPI();
 	const release = await queryClient.fetchQuery(
-		prepareMeeloQuery(() => releaseQuery(releaseIdentifier)),
+		toTanStackQuery(api, () => releaseQuery(releaseIdentifier)),
 	);
 
 	return {

@@ -17,8 +17,8 @@
  */
 
 import { useSetAtom } from "jotai";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getArtist } from "~/api/queries";
 import VideoContextualMenu from "~/components/contextual-menu/resource/video";
 import { VideoIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
@@ -68,7 +68,7 @@ const VideoTile = ({
 					? () => {
 							onClick?.();
 							queryClient
-								.fetchQuery(API.getArtist(video.artistId))
+								.fetchQuery(getArtist(video.artistId))
 								.then((artist) =>
 									playTrack({
 										track: {

@@ -17,13 +17,14 @@
  */
 
 import type { useConfirm } from "material-ui-confirm";
-import API from "~/api";
+import type API from "~/api";
 import confirmDownloadAction from "~/components/confirm-download-action";
 import { ArchiveIcon, DownloadIcon } from "~/components/icons";
 import type { Translator } from "~/i18n/i18n";
 import type Action from "./";
 
 export const DownloadAction = (
+	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	sourceFileId: number,
 	t: Translator,
@@ -31,10 +32,11 @@ export const DownloadAction = (
 	icon: <DownloadIcon />,
 	label: "download",
 	onClick: () =>
-		confirmDownloadAction(confirm, API.getDirectStreamURL(sourceFileId), t),
+		confirmDownloadAction(confirm, api.getDirectStreamURL(sourceFileId), t),
 });
 
 export const DownloadAsyncAction = (
+	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	sourceFileId: () => PromiseLike<number>,
 	t: Translator,
@@ -43,11 +45,12 @@ export const DownloadAsyncAction = (
 	label: "download",
 	onClick: () =>
 		sourceFileId().then((id) =>
-			confirmDownloadAction(confirm, API.getDirectStreamURL(id), t),
+			confirmDownloadAction(confirm, api.getDirectStreamURL(id), t),
 		),
 });
 
 export const DownloadReleaseAction = (
+	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	releaseId: number | string,
 	t: Translator,
@@ -55,10 +58,11 @@ export const DownloadReleaseAction = (
 	icon: <ArchiveIcon />,
 	label: "archive",
 	onClick: () =>
-		confirmDownloadAction(confirm, API.getReleaseArchiveURL(releaseId), t),
+		confirmDownloadAction(confirm, api.getReleaseArchiveURL(releaseId), t),
 });
 
 export const DownloadReleaseAsyncAction = (
+	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	releaseId: () => PromiseLike<number | string>,
 	t: Translator,
@@ -67,6 +71,6 @@ export const DownloadReleaseAsyncAction = (
 	label: "archive",
 	onClick: () =>
 		releaseId().then((id) =>
-			confirmDownloadAction(confirm, API.getReleaseArchiveURL(id), t),
+			confirmDownloadAction(confirm, api.getReleaseArchiveURL(id), t),
 		),
 });

@@ -20,8 +20,7 @@ import { Box } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import type { InfiniteQuery } from "~/api/use-query";
+import { getGenres } from "~/api/queries";
 import { Head } from "~/components/head";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
@@ -29,18 +28,19 @@ import {
 	getSortQuery,
 	useSortControl,
 } from "~/components/infinite/controls/sort";
-import InfiniteView from "~/components/infinite/view";
+import InfiniteGrid from "~/components/infinite/grid";
 import { GenreTile } from "~/components/tile/resource/genre";
 import type Genre from "~/models/genre";
 import { GenreSortingKeys } from "~/models/genre";
 import type { IllustratedResource } from "~/models/illustration";
+import type { InfiniteQuery } from "~/query";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";
 	const sortBy = getSortQuery(context, GenreSortingKeys);
 
 	return {
-		infiniteQueries: [API.getGenres({}, { sortBy, order })],
+		infiniteQueries: [getGenres({}, { sortBy, order })],
 	};
 };
 
@@ -54,20 +54,18 @@ const GenresPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 		<>
 			<Head title={t("genres")} />
 			<Controls sort={sortControl} />
-			<InfiniteView
-				view={"grid"}
+			<InfiniteGrid
 				itemSize={"xl"}
-				renderListItem={() => <></>}
-				renderGridItem={(genre) => (
+				render={(genre) => (
 					<Box sx={{ padding: 3 }}>
 						<GenreTile genre={genre} />
 					</Box>
 				)}
 				query={() =>
-					API.getGenres(
+					getGenres(
 						{},
 						{ sortBy: sort.sort, order: sort.order },
-					) as InfiniteQuery<Genre & IllustratedResource>
+					) as unknown as InfiniteQuery<Genre & IllustratedResource>
 				}
 			/>
 		</>

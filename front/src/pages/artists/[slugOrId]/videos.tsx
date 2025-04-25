@@ -20,8 +20,8 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
-import { useQuery } from "~/api/use-query";
+import { useQuery } from "~/api/hook";
+import { getArtist, getVideos } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -34,7 +34,7 @@ import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
 
 const artistQuery = (identifier: string | number) =>
-	API.getArtist(identifier, ["illustration"]);
+	getArtist(identifier, ["illustration"]);
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
@@ -45,7 +45,7 @@ const prepareSSR = (context: NextPageContext) => {
 		additionalProps: { artistIdentifier, order, sortBy },
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
-			API.getVideos(
+			getVideos(
 				{ artist: artistIdentifier },
 				{ sortBy: sortBy, order: order },
 				["artist", "master", "illustration"],
@@ -75,7 +75,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteVideoView
 				query={({ sortBy, order, libraries, random, types }) =>
-					API.getVideos(
+					getVideos(
 						{
 							type: types,
 							artist: artistIdentifier,

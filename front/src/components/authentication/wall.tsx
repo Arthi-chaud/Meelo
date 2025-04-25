@@ -18,20 +18,22 @@
 
 import { Box, Stack } from "@mui/material";
 import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery as useReactQuery } from "react-query";
-import API from "~/api";
-import { prepareMeeloQuery } from "~/api/use-query";
+import { getAPI_ } from "~/api/hook";
+import { getCurrentUserStatus } from "~/api/queries";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";
+import { toTanStackQuery } from "~/query";
 import { accessTokenAtom, userAtom } from "~/state/user";
 import AuthenticationForm from "./form";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const [accessToken] = useAtom(accessTokenAtom);
 	const [_, setUser] = useAtom(userAtom);
+	const api = useMemo(() => getAPI_(accessToken ?? null), [accessToken]);
 	const status = useReactQuery({
-		...prepareMeeloQuery(API.getCurrentUserStatus),
+		...toTanStackQuery(api, getCurrentUserStatus),
 		useErrorBoundary: false,
 	});
 	const [authentified, setAuthenticationStatus] = useState(

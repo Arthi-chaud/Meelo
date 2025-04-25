@@ -1,7 +1,7 @@
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
+import { getSongGroups, getSongs } from "~/api/queries";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -17,7 +17,7 @@ const prepareSSR = (context: NextPageContext) => {
 	return {
 		additionalProps: { order, sortBy },
 		infiniteQueries: [
-			API.getSongs({}, { sortBy, order }, [
+			getSongs({}, { sortBy, order }, [
 				"artist",
 				"featuring",
 				"master",
@@ -36,7 +36,7 @@ const SongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 			<HybridInfiniteSongView
 				song={{
 					query: ({ sortBy, order, types, libraries, random }) =>
-						API.getSongs(
+						getSongs(
 							{
 								type: types,
 								library: libraries,
@@ -48,7 +48,7 @@ const SongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 				}}
 				songGroup={{
 					query: ({ libraries, type }) =>
-						API.getSongGroups(
+						getSongGroups(
 							{
 								type: type,
 								library: libraries,

@@ -22,13 +22,20 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import API from "~/api";
 import {
-	prepareMeeloInfiniteQuery,
+	getAPI,
 	useInfiniteQuery,
 	useQueries,
 	type useQuery,
-} from "~/api/use-query";
+} from "~/api/hook";
+import {
+	getAlbumExternalMetadata,
+	getAlbums,
+	getArtists,
+	getGenres,
+	getReleases,
+	getSongs,
+} from "~/api/queries";
 import { GoToSettingsAction } from "~/components/actions/link";
 import { EmptyState } from "~/components/empty-state";
 import Fade from "~/components/fade";
@@ -42,51 +49,49 @@ import { GenreTile } from "~/components/tile/resource/genre";
 import ReleaseTile from "~/components/tile/resource/release";
 import TileRow from "~/components/tile/row";
 import type { AlbumExternalMetadata } from "~/models/external-metadata";
+import { toTanStackInfiniteQuery } from "~/query";
 import { generateArray } from "~/utils/gen-list";
 import { useGradientBackground } from "~/utils/gradient-background";
 import { getRandomNumber } from "~/utils/random";
 
-const newlyAddedAlbumsQuery = API.getAlbums(
+const newlyAddedAlbumsQuery = getAlbums(
 	{},
 	{ sortBy: "addDate", order: "desc" },
 	["artist", "illustration"],
 );
 
-const newestAlbumsQuery = API.getAlbums(
+const newestAlbumsQuery = getAlbums(
 	{},
 	{ sortBy: "releaseDate", order: "desc" },
 	["artist", "illustration"],
 );
 
-const newlyAddedArtistsQuery = API.getArtists(
+const newlyAddedArtistsQuery = getArtists(
 	{},
 	{ sortBy: "addDate", order: "desc" },
 	["illustration"],
 );
 
-const newlyAddedReleasesQuery = API.getReleases(
+const newlyAddedReleasesQuery = getReleases(
 	{},
 	{ sortBy: "addDate", order: "desc" },
 	["album", "illustration"],
 );
 
-const mostListenedSongsQuery = API.getSongs(
+const mostListenedSongsQuery = getSongs(
 	{},
 	{ sortBy: "userPlayCount", order: "desc" },
 	["artist", "featuring", "master", "illustration"],
 );
 
 const albumRecommendations = (seed: number) =>
-	API.getAlbums({ random: seed, type: ["StudioRecording"] }, undefined, [
+	getAlbums({ random: seed, type: ["StudioRecording"] }, undefined, [
 		"artist",
 		"genres",
 		"illustration",
 	]);
 
-const topGenresQuery = API.getGenres(
-	{},
-	{ sortBy: "songCount", order: "desc" },
-);
+const topGenresQuery = getGenres({}, { sortBy: "songCount", order: "desc" });
 
 const HomePageSection = <T,>(props: {
 	heading: string | JSX.Element;
@@ -111,9 +116,10 @@ const HomePageSection = <T,>(props: {
 
 const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 	const seed = Math.floor(Math.random() * 10000000);
+	const api = getAPI();
 	const albumRecs = await queryClient
 		.fetchInfiniteQuery(
-			prepareMeeloInfiniteQuery(() => albumRecommendations(seed)),
+			toTanStackInfiniteQuery(api, () => albumRecommendations(seed)),
 		)
 		.then((res) => res.pages.at(0)?.items);
 
@@ -122,9 +128,7 @@ const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 			blurhashIndex: Math.random(),
 			recommendationSeed: seed,
 		},
-		queries: albumRecs?.map((album) =>
-			API.getAlbumExternalMetadata(album.id),
-		),
+		queries: albumRecs?.map((album) => getAlbumExternalMetadata(album.id)),
 		infiniteQueries: [
 			newlyAddedArtistsQuery,
 			newestAlbumsQuery,
@@ -150,9 +154,9 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			): Parameters<
 				typeof useQuery<
 					AlbumExternalMetadata | null,
-					Parameters<typeof API.getAlbumExternalMetadata>
+					Parameters<typeof getAlbumExternalMetadata>
 				>
-			> => [API.getAlbumExternalMetadata, album.id],
+			> => [getAlbumExternalMetadata, album.id],
 		) ?? []),
 	);
 

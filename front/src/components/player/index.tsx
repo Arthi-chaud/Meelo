@@ -31,8 +31,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
 import {
@@ -53,6 +52,7 @@ const Player = () => {
 	const theme = useTheme();
 	const [user] = useAtom(userAtom);
 	const queryClient = useQueryClient();
+	const api = queryClient.api;
 	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
 	const playTracks = useSetAtom(playTracksAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
@@ -147,6 +147,11 @@ const Player = () => {
 	const switchTrackIfCrossfade = (): boolean => {
 		const currentTrackIsAudio = currentTrack?.track.type === "Audio";
 		const nextTrackIsAudio = nextTrack?.track.type === "Audio";
+		if (!player?.current) {
+			//Can happen when component is unmounted
+			//e.g. on logout
+			return false;
+		}
 		if (
 			crossfade != null &&
 			nextTrackIsAudio &&
@@ -173,7 +178,7 @@ const Player = () => {
 			};
 
 			if (currentTrack?.track.songId) {
-				API.setSongAsPlayed(currentTrack.track.songId);
+				api.setSongAsPlayed(currentTrack.track.songId);
 			}
 			skipTrack(queryClient);
 			return true;
@@ -198,7 +203,7 @@ const Player = () => {
 				};
 				player.current!.onended = () => {
 					if (currentTrack?.track.songId) {
-						API.setSongAsPlayed(currentTrack.track.songId);
+						api.setSongAsPlayed(currentTrack.track.songId);
 					}
 					progress.current = null;
 					skipTrack(queryClient);
@@ -280,7 +285,7 @@ const Player = () => {
 			if (!player?.current) {
 				return;
 			}
-			const streamURL = API.getTranscodeStreamURL(
+			const streamURL = api.getTranscodeStreamURL(
 				currentTrack.track.sourceFileId,
 				currentTrack.track.type,
 			);
@@ -298,8 +303,10 @@ const Player = () => {
 	useEffect(() => {
 		if (!user) {
 			pause();
-			playTracks({ tracks: [] });
 		}
+		return () => {
+			playTracks({ tracks: [] });
+		};
 	}, [user]);
 	useKeyboardBinding(
 		{
@@ -358,7 +365,7 @@ const Player = () => {
 			setDuration(currentTrack.track.duration ?? undefined);
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
-			player!.current!.src = API.getDirectStreamURL(
+			player!.current!.src = api.getDirectStreamURL(
 				currentTrack.track.sourceFileId,
 			);
 			startPlayback(false);
@@ -369,7 +376,7 @@ const Player = () => {
 					artwork: newIllustrationURL
 						? [
 								{
-									src: API.getIllustrationURL(
+									src: api.getIllustrationURL(
 										newIllustrationURL,
 									),
 								},
@@ -387,7 +394,7 @@ const Player = () => {
 					setNotification(
 						new Notification(currentTrack.track.name, {
 							icon: newIllustrationURL
-								? API.getIllustrationURL(newIllustrationURL)
+								? api.getIllustrationURL(newIllustrationURL)
 								: "/icon-white.png",
 							body: currentTrack.artist.name,
 						}),

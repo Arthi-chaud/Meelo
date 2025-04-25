@@ -20,8 +20,8 @@ import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import API from "~/api";
-import { useQueryClient } from "~/api/use-query";
+import { useQueryClient } from "~/api/hook";
+import { getSongMasterTrack } from "~/api/queries";
 import { DownloadAsyncAction } from "~/components/actions/download";
 import {
 	GoToArtistAction,
@@ -57,7 +57,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 	const { t } = useTranslation();
 	const getMasterTrack = () =>
 		queryClient.fetchQuery(
-			API.getSongMasterTrack(songSlug, ["release", "illustration"]),
+			getSongMasterTrack(songSlug, ["release", "illustration"]),
 		);
 	const router = useRouter();
 	const confirm = useConfirm();
@@ -102,6 +102,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[
 					DownloadAsyncAction(
+						queryClient.api,
 						confirm,
 						() =>
 							getMasterTrack().then(
@@ -119,7 +120,8 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 									label: "deleteFromPlaylist",
 									icon: <DeleteIcon />,
 									onClick: () =>
-										API.deletePlaylistEntry(props.entryId!)
+										queryClient.api
+											.deletePlaylistEntry(props.entryId!)
 											.then(() => {
 												toast.success(
 													t(
