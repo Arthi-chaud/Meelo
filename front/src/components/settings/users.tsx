@@ -99,7 +99,7 @@ const UsersSettings = () => {
 					if (status.admin === true) {
 						toastMessages.push(t("userNowAdmin"));
 					} else if (status.admin === false) {
-						toastMessages.push(t("userNowDisabled"));
+						toastMessages.push(t("userNowNotAdmin"));
 					}
 					toastMessages.forEach((message) => toast.success(message));
 					queryClient.client.invalidateQueries();
