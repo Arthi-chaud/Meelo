@@ -296,15 +296,6 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)
 					}
 				/>
-				// <InfiniteView
-				// 	itemSize={DefaultItemSize}
-				// 	view="list"
-				// 	// query={() =>
-				// 	// }
-				// 	renderGridItem={() => <></>}
-				// 	renderListItem={(item) =>
-				// 	}
-				// />
 			)}
 			{query && selectedTab === "artist" && (
 				<InfiniteArtistView
