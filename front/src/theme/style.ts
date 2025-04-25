@@ -51,6 +51,9 @@ const Styles = {
 	"& .MuiDataGrid-row:hover": {
 		backgroundColor: "transparent !important",
 	},
+	"& .MuiDataGrid-container--top [role=row]": {
+		backgroundColor: "transparent !important",
+	},
 };
 
 export default Styles;
