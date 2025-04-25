@@ -147,6 +147,11 @@ const Player = () => {
 	const switchTrackIfCrossfade = (): boolean => {
 		const currentTrackIsAudio = currentTrack?.track.type === "Audio";
 		const nextTrackIsAudio = nextTrack?.track.type === "Audio";
+		if (!player?.current) {
+			//Can happen when component is unmounted
+			//e.g. on logout
+			return false;
+		}
 		if (
 			crossfade != null &&
 			nextTrackIsAudio &&
@@ -298,8 +303,10 @@ const Player = () => {
 	useEffect(() => {
 		if (!user) {
 			pause();
-			playTracks({ tracks: [] });
 		}
+		return () => {
+			playTracks({ tracks: [] });
+		};
 	}, [user]);
 	useKeyboardBinding(
 		{
