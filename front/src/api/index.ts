@@ -80,7 +80,7 @@ export default class API {
 		private readonly isDev = false,
 		public readonly pageSize = API.DefaultPageSize,
 	) {}
-	public static DefaultPageSize = 35;
+	public static readonly DefaultPageSize = 35;
 
 	///// Auth + User management
 
@@ -613,7 +613,9 @@ export default class API {
 		if (pagination.afterId !== undefined) {
 			formattedParameters.push(`afterId=${pagination.afterId}`);
 		}
-		formattedParameters.push(`take=${this.pageSize}`);
+		formattedParameters.push(
+			`take=${pagination.pageSize ?? this.pageSize}`,
+		);
 		return formattedParameters.join("&");
 	}
 }

@@ -25,7 +25,8 @@ export type PaginationParameters = {
 	/**
 	 * The id of the last item of the previou page
 	 */
-	afterId: number;
+	afterId?: number;
+	pageSize?: number;
 };
 
 const PaginatedResponse = <T>(itemType: yup.Schema<T>) =>
