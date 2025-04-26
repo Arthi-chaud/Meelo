@@ -29,6 +29,7 @@ describe("User Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
+		await dummyRepository.user.deleteMany({});
 	});
 
 	afterAll(async () => {

@@ -45,6 +45,7 @@ describe("Search History Controller", () => {
 		dummyRepository = module.get(PrismaService);
 		const userService = module.get(UserService);
 		await dummyRepository.onModuleInit();
+		await dummyRepository.user.deleteMany({});
 		await userService.create({
 			name: "admin",
 			password: "azerty1234",

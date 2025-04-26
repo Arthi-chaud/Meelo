@@ -91,6 +91,7 @@ describe("Authentication Controller & Role Management", () => {
 		userService = module.get(UserService);
 		settings = module.get(SettingsService);
 		await dummyRepository.onModuleInit();
+		await dummyRepository.user.deleteMany({});
 		admin = await userService.create({
 			name: "admin",
 			password: "azerty1234",
@@ -131,7 +132,7 @@ describe("Authentication Controller & Role Management", () => {
 				.expect(401);
 		});
 		it("Should get the user's access token", async () => {
-			await userService.update({ enabled: true }, { name: "user" });
+			await userService.update({ enabled: true }, { name: user.name });
 			return request(app.getHttpServer())
 				.post("/auth/login")
 				.send({
@@ -179,8 +180,8 @@ describe("Authentication Controller & Role Management", () => {
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
 				.post("/users")
-				.send({ name: "user3", password: "password3" })
 				.auth(adminToken, { type: "bearer" })
+				.send({ name: "user5", password: "password5" })
 				.expect(201);
 		});
 	});
@@ -217,7 +218,7 @@ describe("Authentication Controller & Role Management", () => {
 		it("Should allow access to public route", () => {
 			return request(app.getHttpServer())
 				.post("/users")
-				.send({ name: "user2", password: "password1" })
+				.send({ name: "user10", password: "password10" })
 				.expect(201);
 		});
 	});
@@ -301,15 +302,17 @@ describe("Authentication Controller & Role Management", () => {
 			} as Settings);
 			return request(app.getHttpServer()).get("/settings").expect(401);
 		});
-		it("Should Accept Anonymous request ", () => {
-			jest.spyOn(
+		it("Should Accept Anonymous request ", async () => {
+			const mock = jest.spyOn(
 				SettingsService.prototype,
 				"settingsValues",
 				"get",
-			).mockReturnValueOnce({
+			);
+			mock.mockReturnValue({
 				allowAnonymous: true,
 			} as Settings);
-			return request(app.getHttpServer()).get("/libraries").expect(200);
+			await request(app.getHttpServer()).get("/libraries").expect(200);
+			mock.mockReset();
 		});
 		it("Should Reject Anonymous request for User route ", () => {
 			jest.spyOn(

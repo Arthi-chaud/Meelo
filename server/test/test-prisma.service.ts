@@ -13,6 +13,7 @@ import {
 	SongType,
 	type Track,
 	TrackType,
+	User,
 	type Video,
 	VideoType,
 } from "@prisma/client";
@@ -64,6 +65,9 @@ export default class TestPrismaService extends PrismaService {
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
 
+	public user1: User;
+	public user2: User;
+
 	public videoA1: Video;
 
 	private baseTrack = {
@@ -99,6 +103,12 @@ export default class TestPrismaService extends PrismaService {
 	override async onModuleInit() {
 		await this.$connect();
 		await this.flushDatabase();
+		[this.user1, this.user2] = await this.user.createManyAndReturn({
+			data: [
+				{ name: "user", password: "1234", admin: true, enabled: true },
+				{ name: "user2", password: "1234" },
+			],
+		});
 		[this.library1, this.library2] = await this.library.createManyAndReturn(
 			{
 				data: [
@@ -416,20 +426,27 @@ export default class TestPrismaService extends PrismaService {
 				data: [
 					{
 						name: "My Playlist 1",
-						slug: "my-playlist-1",
+						slug: `my-playlist-1-${this.user1.id}`,
 						createdAt: new Date("2000-01-01"),
+						isPublic: true,
+						allowChanges: true,
+						ownerId: this.user1.id,
 					},
 					{
 						name: "The Playlist 2",
-						slug: "the-playlist-2",
-
+						slug: `the-playlist-2-${this.user1.id}`,
 						createdAt: new Date("2000-01-02"),
+						isPublic: true,
+						allowChanges: false,
+						ownerId: this.user1.id,
 					},
 					{
 						name: "Playlist 3",
-						slug: "playlist-3",
-
+						slug: `playlist-3-${this.user1.id}`,
 						createdAt: new Date("2000-01-03"),
+						isPublic: false,
+						allowChanges: false,
+						ownerId: this.user1.id,
 					},
 				],
 			});
