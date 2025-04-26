@@ -17,7 +17,8 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Playlist, Prisma } from "@prisma/client";
+import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -40,6 +41,7 @@ import {
 	PlaylistEntryNotFoundException,
 	PlaylistNotFoundException,
 	PlaylistReorderInvalidArrayException,
+	UnallowedPlaylistUpdate,
 } from "./playlist.exceptions";
 
 @Injectable()
@@ -58,7 +60,10 @@ export default class PlaylistService {
 			return await this.prismaService.playlist.create({
 				data: {
 					name: input.name,
-					slug: new Slug(input.name).toString(),
+					allowChanges: input.allowChanges,
+					isPublic: input.isPublic,
+					ownerId: input.ownerId,
+					slug: new Slug(`${input.name}-${input.ownerId}`).toString(),
 				},
 			});
 		} catch (error) {
@@ -73,10 +78,15 @@ export default class PlaylistService {
 
 	async get<I extends PlaylistQueryParameters.RelationInclude = {}>(
 		where: PlaylistQueryParameters.WhereInput,
+		// ID of the user making the request
+		userId: number | null,
 		include?: I,
 	) {
 		const args = {
-			where: PlaylistService.formatWhereInput(where),
+			where: deepmerge(
+				PlaylistService.formatWhereInput(where),
+				this._queryUserCanSeePlaylist(userId),
+			),
 			include: include ?? ({} as I),
 		};
 		return this.prismaService.playlist
@@ -93,11 +103,13 @@ export default class PlaylistService {
 
 	async getEntries<I extends SongQueryParameters.RelationInclude = {}>(
 		where: PlaylistQueryParameters.WhereInput,
+		userId: number | null,
 		pagination?: PaginationParameters,
 		include?: I,
 	): Promise<PlaylistEntryModel[]> {
+		const playlist = await this.get(where, userId); // Check if user is allowed to see playlist
 		const args = {
-			where: { playlist: PlaylistService.formatWhereInput(where) },
+			where: { playlistId: playlist.id },
 			orderBy: {
 				index: "asc" as const,
 			},
@@ -129,12 +141,17 @@ export default class PlaylistService {
 
 	async getMany<I extends PlaylistQueryParameters.RelationInclude = {}>(
 		where: PlaylistQueryParameters.ManyWhereInput,
+		// ID of the user making the request
+		userId: number | null,
 		sort?: PlaylistQueryParameters.SortingParameter,
 		pagination?: PaginationParameters,
 		include?: I,
 	) {
 		const args = {
-			where: PlaylistService.formatManyWhereInput(where),
+			where: deepmerge(
+				PlaylistService.formatManyWhereInput(where),
+				this._queryUserCanSeePlaylist(userId),
+			),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...formatPaginationParameters(pagination),
 			include: include ?? ({} as I),
@@ -194,6 +211,7 @@ export default class PlaylistService {
 							},
 						}
 					: undefined,
+			ownerId: input.owner?.id,
 		};
 	}
 
@@ -225,34 +243,54 @@ export default class PlaylistService {
 		}
 	}
 
+	// Only playlist owner can update the playlist
 	async update(
 		what: PlaylistQueryParameters.UpdateInput,
 		where: PlaylistQueryParameters.WhereInput,
+		userId: number,
 	) {
+		const playlist = await this.get(where, userId);
+		if (playlist.ownerId !== userId) {
+			throw new UnallowedPlaylistUpdate(playlist.id);
+		}
 		return this.prismaService.playlist
 			.update({
 				data: {
 					name: what.name,
 					slug: what.name
-						? new Slug(what.name).toString()
+						? new Slug(
+								`${what.name}-${playlist.ownerId}`,
+							).toString()
 						: undefined,
+					allowChanges: what.allowChanges,
+					isPublic: what.isPublic,
 				},
-				where: PlaylistService.formatWhereInput(where),
+				where: { id: playlist.id },
 			})
 			.catch((error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
 					if (error.code === PrismaError.UniqueConstraintViolation) {
-						throw new PlaylistAlreadyExistsException(what.name);
+						throw new PlaylistAlreadyExistsException(
+							what.name ?? "",
+						);
 					}
 				}
 				throw this.onNotFound(error, where);
 			});
 	}
 
-	async delete(where: PlaylistQueryParameters.DeleteInput) {
+	// Only playlist owner can delete the playlist
+	async delete(where: PlaylistQueryParameters.DeleteInput, userId: number) {
+		const playlist = await this.get(where, userId);
+
+		if (playlist.ownerId !== userId) {
+			throw new UnallowedPlaylistUpdate(playlist.id);
+		}
 		return this.prismaService.playlist
 			.delete({
-				where: PlaylistService.formatWhereInput(where),
+				where: deepmerge(PlaylistService.formatWhereInput(where), {
+					ownerId: userId,
+				}),
 			})
 			.then((deleted) => {
 				if (deleted.illustrationId !== null) {
@@ -275,11 +313,15 @@ export default class PlaylistService {
 	 */
 	async reorderPlaylist(
 		where: PlaylistQueryParameters.WhereInput,
+		userId: number,
 		entryIds: number[],
 	) {
+		const playlist = await this.get(where, userId);
+		this._guardCanUpdatePlaylist(playlist, userId);
+
 		const entries = await this.prismaService.playlistEntry.findMany({
 			where: {
-				playlist: PlaylistService.formatWhereInput(where),
+				playlistId: playlist.id,
 			},
 		});
 		const missingEntryIds = entries.filter(
@@ -310,9 +352,19 @@ export default class PlaylistService {
 	 * Deletes a playlist entry, and flattens the playlist
 	 * @param entryId the ID of the entry to delete
 	 */
-	async removeEntry(entryId: number) {
+	async removeEntry(entryId: number, userId: number) {
+		const { playlist, ...entry } = await this.prismaService.playlistEntry
+			.findUniqueOrThrow({
+				where: { id: entryId },
+				include: { playlist: true },
+			})
+			.catch(() => {
+				throw new PlaylistEntryNotFoundException(entryId);
+			});
+
+		this._guardCanUpdatePlaylist(playlist, userId);
 		const deleted = await this.prismaService.playlistEntry
-			.delete({ where: { id: entryId } })
+			.delete({ where: { id: entry.id } })
 			.catch(() => {
 				throw new PlaylistEntryNotFoundException(entryId);
 			});
@@ -327,10 +379,15 @@ export default class PlaylistService {
 	 */
 	async addSong(
 		song: SongQueryParameters.WhereInput,
+		userId: number,
 		playlist: PlaylistQueryParameters.WhereInput,
 	) {
-		await Promise.all([this.songService.get(song), this.get(playlist)]);
+		const [_, p] = await Promise.all([
+			this.songService.get(song),
+			this.get(playlist, userId),
+		]);
 
+		this._guardCanUpdatePlaylist(p, userId);
 		const lastEntry = await this.prismaService.playlistEntry
 			.findMany({
 				where: { playlist: PlaylistService.formatWhereInput(playlist) },
@@ -376,10 +433,30 @@ export default class PlaylistService {
 	}
 
 	async housekeeping() {
-		const playlists = await this.getMany({});
+		// Cannot use service function, we need to bypass the visibiliy rule  (isPublic)
+		const playlists = await this.prismaService.playlist.findMany({
+			select: { id: true },
+		});
 
 		await Promise.all(
 			playlists.map((playlist) => this.flatten({ id: playlist.id })),
 		);
+	}
+
+	private _queryUserCanSeePlaylist(userId: number | null) {
+		if (userId === null) {
+			return { OR: [{ isPublic: true }] };
+		}
+		return { OR: [{ ownerId: userId }, { isPublic: true }] };
+	}
+
+	// Throws an error if the owner of the playlist disabled changes form other users
+	private _guardCanUpdatePlaylist(playlist: Playlist, userId: number | null) {
+		if (
+			userId === null ||
+			(playlist.ownerId !== userId && !playlist.allowChanges)
+		) {
+			throw new UnallowedPlaylistUpdate(playlist.id);
+		}
 	}
 }

@@ -16,13 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty, PickType } from "@nestjs/swagger";
+import { ApiProperty, PartialType, PickType } from "@nestjs/swagger";
 import { IsNumber, IsPositive } from "class-validator";
 import { CreatePlaylist } from "src/prisma/models";
 
-export class CreatePlaylistDTO extends PickType(CreatePlaylist, ["name"]) {}
+export class CreatePlaylistDTO extends PickType(CreatePlaylist, [
+	"name",
+	"allowChanges",
+	"isPublic",
+]) {}
 
-export class UpdatePlaylistDTO extends PickType(CreatePlaylist, ["name"]) {}
+export class UpdatePlaylistDTO extends PartialType(
+	PickType(CreatePlaylist, ["name", "allowChanges", "isPublic"]),
+) {}
 
 export class CreatePlaylistEntryDTO {
 	@ApiProperty({

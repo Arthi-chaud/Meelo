@@ -20,6 +20,7 @@ import {
 	AlreadyExistsException,
 	InvalidRequestException,
 	NotFoundException,
+	UnauthorizedRequestException,
 } from "src/exceptions/meelo-exception";
 import type Slug from "src/slug/slug";
 
@@ -29,6 +30,14 @@ export class PlaylistNotFoundException extends NotFoundException {
 			typeof playlistIdentifier === "number"
 				? `Playlist ${playlistIdentifier} not found`
 				: `Playlist '${playlistIdentifier}' not found`,
+		);
+	}
+}
+
+export class UnallowedPlaylistUpdate extends UnauthorizedRequestException {
+	constructor(playlistIdentifier: Slug | number) {
+		super(
+			`Playlist ${playlistIdentifier} cannot be modified by this user.`,
 		);
 	}
 }

@@ -31,6 +31,7 @@ import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
+import UserModule from "src/user/user.module";
 import { IllustrationController } from "./illustration.controller";
 import IllustrationRepository from "./illustration.repository";
 import IllustrationService from "./illustration.service";
@@ -40,6 +41,7 @@ import IllustrationService from "./illustration.service";
 		PrismaModule,
 		HttpModule,
 		FileManagerModule,
+		UserModule,
 		forwardRef(() => ArtistModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => ReleaseModule),

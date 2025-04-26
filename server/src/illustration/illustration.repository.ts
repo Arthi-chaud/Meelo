@@ -25,6 +25,7 @@ import type ProviderQueryParameters from "src/external-metadata/models/provider.
 import ProviderService from "src/external-metadata/provider.service";
 import Logger from "src/logger/logger";
 import type PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
+import { UnallowedPlaylistUpdate } from "src/playlist/playlist.exceptions";
 import PlaylistService from "src/playlist/playlist.service";
 import type { Illustration } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
@@ -122,6 +123,7 @@ export default class IllustrationRepository {
 
 	async saveIllustrationFromUrl(
 		dto: IllustrationDownloadDto,
+		userId: number,
 	): Promise<IllustrationResponse> {
 		const resourceKeys = Object.keys(dto).filter((k) => k !== "url");
 		if (resourceKeys.length !== 1) {
@@ -140,9 +142,13 @@ export default class IllustrationRepository {
 				}).then(IllustrationResponse.from);
 			}
 			case "playlistId": {
-				return this.savePlaylistIllustration(buffer, {
-					id: dto[resourceKey]!,
-				}).then(IllustrationResponse.from);
+				return this.savePlaylistIllustration(
+					buffer,
+					{
+						id: dto[resourceKey]!,
+					},
+					userId,
+				).then(IllustrationResponse.from);
 			}
 			case "trackId": {
 				const track = await this.trackService.get({
@@ -199,8 +205,12 @@ export default class IllustrationRepository {
 	async savePlaylistIllustration(
 		buffer: Buffer,
 		where: PlaylistQueryParameters.WhereInput,
+		userId: number,
 	): Promise<Illustration> {
-		const playlist = await this.playlistService.get(where);
+		const playlist = await this.playlistService.get(where, userId);
+		if (playlist.ownerId !== userId) {
+			throw new UnallowedPlaylistUpdate(playlist.id);
+		}
 		if (playlist.illustrationId !== null) {
 			await this.deleteIllustration(playlist.illustrationId);
 		}
