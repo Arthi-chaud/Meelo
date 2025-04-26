@@ -53,10 +53,9 @@ export default class RolesGuard implements CanActivate {
 		const authMethods: AuthMethod[] = [];
 		// there is no decoration, we apply the default policy
 		if (roles === undefined || roles?.includes(RoleEnum.Default)) {
+			authMethods.push(AuthMethod.JWT);
 			if (this.settingsService.settingsValues.allowAnonymous) {
 				authMethods.push(AuthMethod.Nothing);
-			} else {
-				authMethods.push(AuthMethod.JWT);
 			}
 		}
 		if (roles?.includes(RoleEnum.Anonymous)) {
@@ -79,9 +78,7 @@ export default class RolesGuard implements CanActivate {
 		const errors: Error[] = [];
 		const request = context.switchToHttp().getRequest();
 		const validAuthMethods = this.getAuthMethod(context);
-		if (validAuthMethods.includes(AuthMethod.Nothing)) {
-			return true;
-		}
+		const allowAnonymous = validAuthMethods.includes(AuthMethod.Nothing);
 		if (validAuthMethods.includes(AuthMethod.ApiKey)) {
 			const receivedApiKey = request.headers["x-api-key"];
 			if (
@@ -90,7 +87,9 @@ export default class RolesGuard implements CanActivate {
 			) {
 				return true;
 			}
-			errors.push(new MissingApiKeyPermissionsException());
+			if (!allowAnonymous) {
+				errors.push(new MissingApiKeyPermissionsException());
+			}
 		}
 		if (validAuthMethods.includes(AuthMethod.JWT)) {
 			const userPayload = request.user as User | undefined;
@@ -106,9 +105,13 @@ export default class RolesGuard implements CanActivate {
 				}
 			}
 		}
+		if (allowAnonymous) {
+			return true;
+		}
 		if (errors.length > 0) {
 			throw errors[0];
 		}
+
 		// Probably dead code.
 		return false;
 	}
