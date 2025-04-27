@@ -364,7 +364,7 @@ export const AddToPlaylistAction = (
 				onSubmit={(playlistId) => mutation.mutate(playlistId)}
 				playlistQuery={() =>
 					getPlaylists(
-						{},
+						{ changeable: true },
 						{ sortBy: "creationDate", order: "desc" },
 						["illustration"],
 					)
