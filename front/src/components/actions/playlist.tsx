@@ -23,11 +23,17 @@ import {
 	DialogContent,
 	DialogTitle,
 	Divider,
+	Grid,
 } from "@mui/material";
 import { Add, Edit } from "iconsax-react";
 import type { useConfirm } from "material-ui-confirm";
-import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
+import {
+	HookCheckBox,
+	HookTextField,
+	useHookForm,
+} from "mui-react-hook-form-plus";
 import { useState } from "react";
+import { useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
@@ -44,7 +50,11 @@ import Illustration from "~/components/illustration";
 import InfiniteList from "~/components/infinite/list";
 import ListItem from "~/components/list-item";
 import type Playlist from "~/models/playlist";
-import type { PlaylistWithRelations } from "~/models/playlist";
+import type {
+	CreatePlaylistDto,
+	PlaylistWithRelations,
+	UpdatePlaylistDto,
+} from "~/models/playlist";
 import type { InfiniteQueryFn } from "~/query";
 import { type TrackState, playAfterAtom, playNextAtom } from "~/state/player";
 import { store } from "~/state/store";
@@ -75,19 +85,24 @@ export const PlayAfterAction = (
 });
 
 type CreateOrUpdatePlaylistFormProps = {
-	onSubmit: (playlistName: string) => void;
+	onSubmit: (dto: CreatePlaylistDto) => void;
 	onClose: () => void;
-	defaultValue?: string;
+	defaultValue?: CreatePlaylistDto;
 };
 
 const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
-	const defaultValues = { name: props.defaultValue ?? "" };
-	const { registerState, handleSubmit } = useHookForm({
+	const defaultValues: CreatePlaylistDto = {
+		name: props.defaultValue?.name ?? "",
+		isPublic: props.defaultValue?.isPublic ?? true,
+		allowChanges: props.defaultValue?.allowChanges ?? false,
+	};
+	const { registerState, handleSubmit, control, setValue } = useHookForm({
 		defaultValues,
 	});
+	const isPublic = useWatch({ control, name: "isPublic" });
 	const { t } = useTranslation();
 	const onSubmit = (values: typeof defaultValues) => {
-		props.onSubmit(values.name);
+		props.onSubmit(values);
 		props.onClose();
 	};
 
@@ -108,7 +123,6 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 							fullWidth: true,
 							label: "Enter name of the playlist",
 						}}
-						gridProps={{}}
 						rules={{
 							required: {
 								value: true,
@@ -116,6 +130,46 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 							},
 						}}
 					/>
+					<Grid container sx={{ paddingTop: 2 }}>
+						<HookCheckBox
+							{...registerState("isPublic")}
+							checkBoxProps={{
+								autoFocus: false,
+								onChange: (_, checked) => {
+									if (!checked) {
+										setValue("allowChanges", false, {
+											shouldValidate: true,
+										});
+									}
+								},
+							}}
+							formControlLabelProps={{
+								label: t("playlistIsPublic"),
+							}}
+							gridProps={{
+								size: {
+									xs: 12,
+									md: 6,
+								},
+							}}
+						/>
+						<HookCheckBox
+							{...registerState("allowChanges")}
+							checkBoxProps={{
+								autoFocus: false,
+								disabled: !isPublic,
+							}}
+							formControlLabelProps={{
+								label: t("allowPlaylistChanges"),
+							}}
+							gridProps={{
+								size: {
+									xs: 12,
+									md: 6,
+								},
+							}}
+						/>
+					</Grid>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={props.onClose}>{t("cancel")}</Button>
@@ -135,9 +189,9 @@ export const CreatePlaylistAction = (
 	label: "new",
 	icon: <Add />,
 	dialog: ({ close }) => {
-		const mutation = useMutation((playlistName: string) => {
+		const mutation = useMutation((formFields: CreatePlaylistDto) => {
 			return queryClient.api
-				.createPlaylist(playlistName)
+				.createPlaylist(formFields)
 				.then((playlist) => {
 					toast.success("Playlist created!");
 					queryClient.client.invalidateQueries("playlists");
@@ -162,9 +216,9 @@ export const UpdatePlaylistAction = (
 	label: "update",
 	icon: <Edit />,
 	dialog: ({ close }) => {
-		const mutation = useMutation((playlistName: string) => {
+		const mutation = useMutation((dto: UpdatePlaylistDto) => {
 			return queryClient.api
-				.updatePlaylist(playlistName, playlist.slug)
+				.updatePlaylist(playlist.slug, dto)
 				.then(() => {
 					toast.success("Playlist updated!");
 					queryClient.client.invalidateQueries("playlists");
@@ -177,7 +231,7 @@ export const UpdatePlaylistAction = (
 			<CreateOrUpdatePlaylistForm
 				onClose={close}
 				onSubmit={(name) => mutation.mutate(name)}
-				defaultValue={playlist.name}
+				defaultValue={playlist}
 			/>
 		);
 	},

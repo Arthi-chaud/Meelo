@@ -58,6 +58,12 @@ export const Playlist = Resource.concat(
 		 * the date the playlist was created
 		 */
 		createdAt: yupdate.required(),
+		// The ID of the user that created the playlist
+		ownerId: yup.number().required(),
+		// If true, playlist is visible to non-owners of the playlist
+		isPublic: yup.boolean().required(),
+		// If true, non-owners can add tracks to the playlist
+		allowChanges: yup.boolean().required(),
 	}),
 );
 
@@ -89,3 +95,11 @@ export const PlaylistSortingKeys = [
 	"entryCount",
 	"creationDate",
 ] as const;
+
+export type CreatePlaylistDto = {
+	name: string;
+	isPublic: boolean;
+	allowChanges: boolean;
+};
+
+export type UpdatePlaylistDto = CreatePlaylistDto;
