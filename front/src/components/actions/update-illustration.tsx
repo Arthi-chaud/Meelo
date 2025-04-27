@@ -103,7 +103,7 @@ const UpdateIllustrationAction = (
 				queryClient.client.invalidateQueries(resourceType);
 				queryClient.client.invalidateQueries(`${resourceType}s`);
 			})
-			.catch((e) => toast.error(e.message));
+			.catch(() => toast.error("Illustration update failed"));
 	});
 
 	return {

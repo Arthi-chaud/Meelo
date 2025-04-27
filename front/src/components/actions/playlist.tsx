@@ -137,9 +137,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 								autoFocus: false,
 								onChange: (_, checked) => {
 									if (!checked) {
-										setValue("allowChanges", false, {
-											shouldValidate: true,
-										});
+										setValue("allowChanges", false);
 									}
 								},
 							}}
