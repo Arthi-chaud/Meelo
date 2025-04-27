@@ -122,13 +122,15 @@ export class IllustrationController {
 		const userId: number | undefined = (req.user as any).id;
 		const user = userId ? await this.userService.get({ id: userId }) : null;
 		const isMicroservice = user === null;
-		if (user && !dto.playlistId && !user?.admin) {
-		}
-		if (isMicroservice && dto.playlistId) {
+		if (
+			(isMicroservice && dto.playlistId) ||
+			(user && !dto.playlistId && !user?.admin)
+		) {
 			throw new UnauthorizedRequestException(
 				"Only administrators can upload illustrations",
 			);
 		}
+
 		return this.illustrationRepository.saveIllustrationFromUrl(
 			dto,
 			user!.id,

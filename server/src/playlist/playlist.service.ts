@@ -83,9 +83,12 @@ export default class PlaylistService {
 		include?: I,
 	) {
 		const args = {
-			where: deepmerge(PlaylistService.formatWhereInput(where), {
-				AND: this._queryUserCanSeePlaylist(userId),
-			}),
+			where: {
+				AND: [
+					PlaylistService.formatWhereInput(where),
+					this._queryUserCanSeePlaylist(userId),
+				],
+			},
 			include: include ?? ({} as I),
 		};
 		return this.prismaService.playlist
@@ -147,9 +150,12 @@ export default class PlaylistService {
 		include?: I,
 	) {
 		const args = {
-			where: deepmerge(PlaylistService.formatManyWhereInput(where), {
-				AND: this._queryUserCanSeePlaylist(userId),
-			}),
+			where: {
+				AND: [
+					PlaylistService.formatManyWhereInput(where),
+					this._queryUserCanSeePlaylist(userId),
+				],
+			},
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...formatPaginationParameters(pagination),
 			include: include ?? ({} as I),
@@ -296,9 +302,7 @@ export default class PlaylistService {
 		}
 		return this.prismaService.playlist
 			.delete({
-				where: deepmerge(PlaylistService.formatWhereInput(where), {
-					ownerId: userId,
-				}),
+				where: { id: playlist.id },
 			})
 			.then((deleted) => {
 				if (deleted.illustrationId !== null) {
