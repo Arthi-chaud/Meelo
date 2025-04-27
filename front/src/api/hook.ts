@@ -68,13 +68,15 @@ export const getAPI_ = (accessToken: string | null) => {
 				ssr:
 					process.env.SSR_SERVER_URL ??
 					process.env.PUBLIC_SERVER_URL!,
-				csr: isDev ? "/api" : process.env.PUBLIC_SERVER_URL!,
+				csr: isDev ? "/api" : (process.env.PUBLIC_SERVER_URL ?? "/api"),
 			},
 			scanner: {
 				ssr:
 					process.env.SSR_SCANNER_URL ??
 					process.env.PUBLIC_SCANNER_URL!,
-				csr: isDev ? "/scanner" : process.env.PUBLIC_SCANNER_URL!,
+				csr: isDev
+					? "/scanner"
+					: (process.env.PUBLIC_SCANNER_URL ?? "/scanner"),
 			},
 		},
 		isDev,
