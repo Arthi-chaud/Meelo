@@ -194,6 +194,19 @@ describe("Playlist Controller", () => {
 					]);
 				});
 		});
+
+		it("Should get only editable playlists", async () => {
+			return request(app.getHttpServer())
+				.get("/playlists?changeable=true")
+				.auth(accessToken2, { type: "bearer" })
+				.expect(200)
+				.expect((res) => {
+					const playlists: Playlist[] = res.body.items;
+					expect(playlists).toStrictEqual([
+						expectedPlaylistResponse(dummyRepository.playlist1),
+					]);
+				});
+		});
 		it("Should get Some Playlists", () => {
 			return request(app.getHttpServer())
 				.get("/playlists?sortBy=id&order=desc&take=2")
