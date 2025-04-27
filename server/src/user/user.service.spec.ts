@@ -28,7 +28,9 @@ describe("User Service", () => {
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)
 			.compile();
-		await module.get<PrismaService>(PrismaService).onModuleInit();
+		const prismaService = module.get<PrismaService>(PrismaService);
+		await prismaService.onModuleInit();
+		await prismaService.user.deleteMany({});
 		userService = module.get<UserService>(UserService);
 	});
 

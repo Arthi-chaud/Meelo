@@ -361,7 +361,7 @@ export const getLibraries = (): InfiniteQuery<Library> => {
 /// Playlists
 
 export const getPlaylists = <I extends PlaylistInclude | never = never>(
-	filter: { album?: Identifier },
+	filter: { album?: Identifier; changeable?: true },
 	sort?: SortingParameters<typeof PlaylistSortingKeys>,
 	include?: I[],
 ): InfiniteQuery<PlaylistWithRelations<I>> => {
@@ -369,7 +369,10 @@ export const getPlaylists = <I extends PlaylistInclude | never = never>(
 		route: "/playlists",
 		sort,
 		include,
-		filter,
+		filter: {
+			...filter,
+			changeable: filter.changeable ? "true" : undefined,
+		},
 		validator: PaginatedResponse(PlaylistWithRelations(include ?? [])),
 	});
 };

@@ -22,7 +22,10 @@ import * as yup from "yup";
 import type { AlbumType } from "~/models/album";
 import Library from "~/models/library";
 import type { PaginationParameters } from "~/models/pagination";
-import Playlist from "~/models/playlist";
+import Playlist, {
+	type CreatePlaylistDto,
+	type UpdatePlaylistDto,
+} from "~/models/playlist";
 import type { SaveSearchItem } from "~/models/search";
 import type { SongType } from "~/models/song";
 import { TaskResponse } from "~/models/task";
@@ -208,10 +211,10 @@ export default class API {
 
 	//// Playlists
 
-	async createPlaylist(playlistName: string): Promise<Playlist> {
+	async createPlaylist(dto: CreatePlaylistDto): Promise<Playlist> {
 		return this.fetch({
 			route: "/playlists",
-			data: { name: playlistName },
+			data: dto,
 			errorMessage: "Playlist Creation Failed",
 			parameters: {},
 			method: "POST",
@@ -220,12 +223,12 @@ export default class API {
 	}
 
 	async updatePlaylist(
-		playlistName: string,
 		playlistSlugOrId: number | string,
+		dto: UpdatePlaylistDto,
 	): Promise<Playlist> {
 		return this.fetch({
 			route: `/playlists/${playlistSlugOrId}`,
-			data: { name: playlistName },
+			data: dto,
 			parameters: {},
 			method: "PUT",
 			validator: Playlist,

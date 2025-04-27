@@ -266,5 +266,7 @@
 	"saveQueueAsPlaylist": "Sauvegarder la playlist",
 	"topGenres": "Genres populaires",
 	"crossfade": "Crossfade",
-	"playback": "Lecture"
+	"playback": "Lecture",
+	"playlistIsPublic": "Permettre aux autres utilisateurs de voir la playlist",
+	"allowPlaylistChanges": "Autoriser les changements"
 }

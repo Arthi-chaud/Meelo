@@ -53,7 +53,6 @@ export default class UserController {
 	@Role(Roles.User)
 	@Response({ handler: UserResponseBuilder })
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
-		// Required to return a proper build response
 		return this.userService.get({ id: (request.user as User).id });
 	}
 

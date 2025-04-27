@@ -26,6 +26,7 @@ import {
 	ParseIntPipe,
 	Post,
 	Query,
+	Req,
 	Response,
 } from "@nestjs/common";
 import {
@@ -37,7 +38,9 @@ import {
 import { FormDataRequest, MemoryStoredFile } from "nestjs-form-data";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
+import { UnauthorizedRequestException } from "src/exceptions/meelo-exception";
 import { RegistrationService } from "src/registration/registration.service";
+import UserService from "src/user/user.service";
 import { NoIllustrationException } from "./illustration.exceptions";
 import IllustrationRepository from "./illustration.repository";
 import IllustrationService from "./illustration.service";
@@ -55,6 +58,7 @@ export class IllustrationController {
 		private illustrationService: IllustrationService,
 		private illustrationRepository: IllustrationRepository,
 		private registrationService: RegistrationService,
+		private userService: UserService,
 	) {}
 
 	@ApiOperation({
@@ -109,10 +113,28 @@ export class IllustrationController {
 	@ApiOperation({
 		summary: "Save an illustration from a url",
 	})
-	@Role(Roles.Admin, Roles.Microservice)
+	@Role(Roles.Microservice, Roles.User)
 	@Post("url")
-	async saveIllustration(@Body() dto: IllustrationDownloadDto) {
-		return this.illustrationRepository.saveIllustrationFromUrl(dto);
+	async saveIllustration(
+		@Body() dto: IllustrationDownloadDto,
+		@Req() req: Express.Request,
+	) {
+		const userId: number | undefined = (req.user as any).id;
+		const user = userId ? await this.userService.get({ id: userId }) : null;
+		const isMicroservice = user === null;
+		if (
+			(isMicroservice && dto.playlistId) ||
+			(user && !dto.playlistId && !user?.admin)
+		) {
+			throw new UnauthorizedRequestException(
+				"Only administrators can upload illustrations",
+			);
+		}
+
+		return this.illustrationRepository.saveIllustrationFromUrl(
+			dto,
+			user!.id,
+		);
 	}
 
 	@ApiOperation({

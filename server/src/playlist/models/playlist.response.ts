@@ -86,6 +86,9 @@ export class PlaylistResponseBuilder extends ResponseBuilderInterceptor<
 			name: playlist.name,
 			slug: playlist.slug,
 			createdAt: playlist.createdAt,
+			isPublic: playlist.isPublic,
+			ownerId: playlist.ownerId,
+			allowChanges: playlist.allowChanges,
 			illustrationId: playlist.illustrationId,
 			illustration: playlist.illustration
 				? IllustrationResponse.from(playlist.illustration)

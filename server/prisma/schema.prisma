@@ -52,6 +52,7 @@ model User {
     /// @description the history of song played
     playHistory   PlayHistory[]
     searchHistory SearchHistory[]
+    playlists     Playlist[]
 
     @@map("users")
 }
@@ -594,13 +595,20 @@ model Playlist {
     /// @minLength 1
     name           String          @db.Citext()
     /// @description Unique string identifer
-    /// @example my-playlist
+    /// @example my-playlist-user-id
     /// @minLength 1
     slug           String          @unique
     /// @description The date the playlist was created
     createdAt      DateTime        @default(now())
     /// @description Array of external IDs
     entries        PlaylistEntry[]
+    /// @description The owner of the playlist
+    ownerId        Int
+    owner          User            @relation(fields: ownerId, references: id, onDelete: Cascade)
+    /// @description If true, can be seen/accessed by other users
+    isPublic       Boolean
+    /// @description If true, non-owers of the playlist can modify it
+    allowChanges   Boolean
     /// @description Related Illustration
     illustrationId Int?            @unique
     illustration   Illustration?   @relation(fields: [illustrationId], references: [id])

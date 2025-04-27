@@ -17,6 +17,7 @@
  */
 
 import { PickType } from "@nestjs/swagger";
+import { Omit } from "@prisma/client/runtime/library";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Playlist } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -24,13 +25,19 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import UserQueryParameters from "src/user/models/user.query-params";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 
 namespace PlaylistQueryParameters {
 	/**
 	 * The input required to save a playlist in the database
 	 */
-	export class CreateInput extends PickType(Playlist, ["name"] as const) {}
+	export class CreateInput extends PickType(Playlist, [
+		"name",
+		"ownerId",
+		"isPublic",
+		"allowChanges",
+	] as const) {}
 
 	/**
 	 * Query parameters to find one playlist
@@ -47,6 +54,8 @@ namespace PlaylistQueryParameters {
 		RequireAtLeastOne<{
 			song: SongQueryParameters.WhereInput;
 			album: AlbumQueryParameters.WhereInput;
+			owner: Pick<UserQueryParameters.WhereInput, "id">;
+			changleableBy: Pick<UserQueryParameters.WhereInput, "id">;
 			id: { in: number[] };
 		}>
 	>;
@@ -54,7 +63,7 @@ namespace PlaylistQueryParameters {
 	/**
 	 * The input required to update an album in the database
 	 */
-	export type UpdateInput = CreateInput;
+	export type UpdateInput = Partial<Omit<CreateInput, "ownerId">>;
 
 	/**
 	 * The input to find or create an album
