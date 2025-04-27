@@ -17,7 +17,8 @@ SET
         WHERE
             "enabled" = TRUE
         ORDER BY
-            id ASC);
+            id ASC
+        LIMIT 1);
 
 -- AddForeignKey
 ALTER TABLE "playlists"
