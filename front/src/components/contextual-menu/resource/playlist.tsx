@@ -19,7 +19,8 @@
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/hook";
+import { useQuery, useQueryClient } from "~/api/hook";
+import { getCurrentUserStatus } from "~/api/queries";
 import {
 	DeletePlaylistAction,
 	UpdatePlaylistAction,
@@ -39,27 +40,36 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 	const confirm = useConfirm();
 	const router = useRouter();
 	const { t } = useTranslation();
+	const { data: user } = useQuery(getCurrentUserStatus);
 
 	return (
 		<ContextualMenu
 			onSelect={props.onSelect}
 			actions={[
-				[UpdatePlaylistAction(props.playlist, queryClient)],
-				[
-					UpdatePlaylistIllustrationAction(
-						queryClient,
-						props.playlist.id,
-					),
-				],
+				...(user?.id === props.playlist.ownerId
+					? [
+							[UpdatePlaylistAction(props.playlist, queryClient)],
+							[
+								UpdatePlaylistIllustrationAction(
+									queryClient,
+									props.playlist.id,
+								),
+							],
+						]
+					: []),
 				[SharePlaylistAction(props.playlist.slug, t)],
-				[
-					DeletePlaylistAction(
-						confirm,
-						queryClient,
-						props.playlist.slug,
-						() => router.push("/playlists"),
-					),
-				],
+				...(user?.id === props.playlist.ownerId
+					? [
+							[
+								DeletePlaylistAction(
+									confirm,
+									queryClient,
+									props.playlist.slug,
+									() => router.push("/playlists"),
+								),
+							],
+						]
+					: []),
 			]}
 		/>
 	);
