@@ -30,7 +30,12 @@ import { type QueryClient, useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import type API from "~/api";
 import { getAPI, useQueries, useQuery, useQueryClient } from "~/api/hook";
-import { getPlaylist, getPlaylistEntries, getRelease } from "~/api/queries";
+import {
+	getCurrentUserStatus,
+	getPlaylist,
+	getPlaylistEntries,
+	getRelease,
+} from "~/api/queries";
 import { DeletePlaylistAction } from "~/components/actions/playlist";
 import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
@@ -189,10 +194,15 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 
 type PlaylistEntryItemProps = {
 	onClick: () => void;
+	canRemoveEntry: boolean;
 	entry: PlaylistEntryWithRelations<"artist" | "illustration"> | undefined;
 };
 
-const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
+const PlaylistEntryItem = ({
+	entry,
+	onClick,
+	canRemoveEntry,
+}: PlaylistEntryItemProps) => (
 	<ListItem
 		icon={
 			<Illustration
@@ -204,7 +214,12 @@ const PlaylistEntryItem = ({ entry, onClick }: PlaylistEntryItemProps) => (
 		title={entry?.name}
 		onClick={onClick}
 		trailing={
-			entry && <SongContextualMenu song={entry} entryId={entry.entryId} />
+			entry && (
+				<SongContextualMenu
+					song={entry}
+					entryId={canRemoveEntry ? entry.entryId : undefined}
+				/>
+			)
 		}
 		secondTitle={entry?.artist.name}
 	/>
@@ -232,6 +247,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	);
 	const playlist = useQuery(playlistQuery, playlistIdentifier);
 	const entriesQuery = useQuery(playlistEntriesQuery, playlistIdentifier);
+	const user = useQuery(getCurrentUserStatus);
 	const masterTracksReleaseQueries = useQueries(
 		...(entriesQuery.data
 			?.filter(({ master }) => master.releaseId)
@@ -259,6 +275,19 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			})
 			.catch(() => toast.error(t("playlistReorderFail")));
 	});
+	const isOwner = useMemo(
+		() =>
+			(playlist.data &&
+				user.data &&
+				playlist.data.ownerId === user.data.id) ||
+			false,
+		[playlist.data, user.data],
+	);
+
+	const canEditPlaylist = useMemo(
+		() => isOwner || (playlist.data?.allowChanges ?? false),
+		[playlist.data, isOwner],
+	);
 
 	const entries = useMemo(() => {
 		const releases = masterTracksReleaseQueries.map((query) => query.data);
@@ -378,6 +407,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						<PlaylistEntryItem
 							key={index}
 							entry={entry}
+							canRemoveEntry={canEditPlaylist}
 							onClick={() => playPlaylist(index)}
 						/>
 					))}
@@ -396,7 +426,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						color="primary"
 						startIcon={editState ? <DoneIcon /> : <EditIcon />}
 						sx={{ width: "100%" }}
-						disabled={entries === undefined}
+						disabled={!canEditPlaylist || entries === undefined}
 						onClick={
 							entries &&
 							(() => {
@@ -441,7 +471,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 					<Button
 						variant="outlined"
 						color="error"
-						disabled={entries === undefined}
+						disabled={!isOwner || entries === undefined}
 						startIcon={deleteAction.icon}
 						sx={{ width: "100%" }}
 						onClick={deleteAction.onClick}
