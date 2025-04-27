@@ -96,13 +96,14 @@ const UpdateIllustrationAction = (
 						? queryClient.api.updatePlaylistIllustration
 						: queryClient.api.updateTrackIllustration;
 
-		return updator(resourceId, newUrl)
+		return updator
+			.call(queryClient.api, resourceId, newUrl)
 			.then(() => {
 				toast.success("Illustration updated!");
 				queryClient.client.invalidateQueries(resourceType);
 				queryClient.client.invalidateQueries(`${resourceType}s`);
 			})
-			.catch(() => toast.error("Illustration update failed"));
+			.catch((e) => toast.error(e.message));
 	});
 
 	return {
