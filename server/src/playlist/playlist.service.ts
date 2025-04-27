@@ -83,10 +83,9 @@ export default class PlaylistService {
 		include?: I,
 	) {
 		const args = {
-			where: deepmerge(
-				PlaylistService.formatWhereInput(where),
-				this._queryUserCanSeePlaylist(userId),
-			),
+			where: deepmerge(PlaylistService.formatWhereInput(where), {
+				AND: this._queryUserCanSeePlaylist(userId),
+			}),
 			include: include ?? ({} as I),
 		};
 		return this.prismaService.playlist
@@ -148,10 +147,9 @@ export default class PlaylistService {
 		include?: I,
 	) {
 		const args = {
-			where: deepmerge(
-				PlaylistService.formatManyWhereInput(where),
-				this._queryUserCanSeePlaylist(userId),
-			),
+			where: deepmerge(PlaylistService.formatManyWhereInput(where), {
+				AND: this._queryUserCanSeePlaylist(userId),
+			}),
 			orderBy: sort ? this.formatSortingInput(sort) : undefined,
 			...formatPaginationParameters(pagination),
 			include: include ?? ({} as I),
@@ -186,7 +184,7 @@ export default class PlaylistService {
 	static formatManyWhereInput(
 		input: PlaylistQueryParameters.ManyWhereInput,
 	): Prisma.PlaylistWhereInput {
-		return {
+		let query: Prisma.PlaylistWhereInput = {
 			id: input.id,
 			entries: input.song
 				? {
@@ -213,6 +211,16 @@ export default class PlaylistService {
 					: undefined,
 			ownerId: input.owner?.id,
 		};
+
+		if (input.changleableBy) {
+			query = deepmerge(query, {
+				OR: [
+					{ ownerId: input.changleableBy.id },
+					{ isPublic: true, allowChanges: true },
+				],
+			});
+		}
+		return query;
 	}
 
 	formatSortingInput(

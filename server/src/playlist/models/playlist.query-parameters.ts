@@ -55,6 +55,7 @@ namespace PlaylistQueryParameters {
 			song: SongQueryParameters.WhereInput;
 			album: AlbumQueryParameters.WhereInput;
 			owner: Pick<UserQueryParameters.WhereInput, "id">;
+			changleableBy: Pick<UserQueryParameters.WhereInput, "id">;
 			id: { in: number[] };
 		}>
 	>;

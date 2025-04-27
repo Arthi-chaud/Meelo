@@ -61,6 +61,13 @@ export class Selector {
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description:
+			"If true, will only return the playlist that the user is allowed to add/remove songs to",
+	})
+	changeable?: boolean;
 }
 
 @Controller("playlists")
@@ -91,7 +98,7 @@ export default class PlaylistController {
 	@Role(Roles.Default)
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
 	async getMany(
-		@Query() selector: Selector,
+		@Query() { changeable, ...selector }: Selector,
 		@Query() sort: PlaylistQueryParameters.SortingParameter,
 		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
 		include: PlaylistQueryParameters.RelationInclude,
@@ -99,8 +106,13 @@ export default class PlaylistController {
 		paginationParameters: PaginationParameters,
 		@Req() req: Express.Request,
 	) {
+		const userId = (req.user as any)?.id as number | undefined;
 		return this.playlistService.getMany(
-			selector,
+			{
+				...selector,
+				changleableBy:
+					changeable && userId ? { id: userId } : undefined,
+			},
 			this._getUserId(req),
 			sort,
 			paginationParameters,
