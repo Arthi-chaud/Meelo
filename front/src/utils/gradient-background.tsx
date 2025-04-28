@@ -32,11 +32,16 @@ export const useGradientBackground = (
 	colors: string[] | null | undefined,
 	index = 0,
 ) => {
-	const [_, setColors] = useAtom(colorsAtom);
+	const [_colors, setColors] = useAtom(colorsAtom);
+	const sortedColors = colors?.sort();
 
 	useEffect(() => {
-		if (colors && colors.length >= 5) {
-			setColors(colors?.sort() ?? null);
+		if (
+			colors &&
+			colors.length >= 5 &&
+			sortedColors?.toString() !== _colors?.toString()
+		) {
+			setColors(sortedColors ?? null);
 		}
 	}, [colors]);
 	if (isSSR()) {

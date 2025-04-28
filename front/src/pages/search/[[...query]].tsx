@@ -20,7 +20,7 @@ import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
@@ -144,6 +144,16 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			console.error(error);
 		}
 	});
+	const searchAllQuery = useMemo(
+		() =>
+			transformSearchResultQuery(
+				query ? searchAll(query) : getSearchHistory(),
+			) as unknown as InfiniteQuery<
+				Resource,
+				SearchResult & IllustratedResource
+			>,
+		[query],
+	);
 	useEffect(() => {
 		if (debounceId) {
 			clearTimeout(debounceId);
@@ -224,14 +234,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Box sx={{ paddingBottom: 2 }} />
 			{selectedTab === "all" && (
 				<InfiniteList
-					query={() =>
-						transformSearchResultQuery(
-							query ? searchAll(query) : getSearchHistory(),
-						) as unknown as InfiniteQuery<
-							Resource,
-							SearchResult & IllustratedResource
-						>
-					}
+					query={() => searchAllQuery}
 					render={(item) =>
 						!item || item.album ? (
 							<AlbumItem
