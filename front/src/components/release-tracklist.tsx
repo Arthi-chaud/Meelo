@@ -28,7 +28,6 @@ import {
 	ListItemText,
 	ListSubheader,
 	Skeleton,
-	Stack,
 	Typography,
 	useTheme,
 } from "@mui/material";
@@ -269,20 +268,20 @@ const ReleaseTrackList = ({
 										<ListItemText
 											primary={
 												currentTrack ? (
-													<Stack
-														direction="row"
-														spacing={0.5}
-														alignItems="center"
-													>
-														{currentTrack.name}
-													</Stack>
+													currentTrack.name
 												) : (
 													<Skeleton width="120px" />
 												)
 											}
-											primaryTypographyProps={{
-												fontSize: "medium",
-												component: "div",
+											slotProps={{
+												primary: {
+													fontSize: "medium",
+													component: "div",
+												},
+												secondary: {
+													fontSize: "small",
+													color: "text.disabled",
+												},
 											}}
 											secondary={
 												mainArtist === undefined
@@ -294,10 +293,6 @@ const ReleaseTrackList = ({
 															)
 														: undefined
 											}
-											secondaryTypographyProps={{
-												fontSize: "small",
-												color: "text.disabled",
-											}}
 										/>
 										{currentTrack?.isBonus && (
 											<Typography
