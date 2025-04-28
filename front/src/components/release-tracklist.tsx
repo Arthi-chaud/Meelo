@@ -249,6 +249,23 @@ const ReleaseTrackList = ({
 												currentlyPlayingTrack?.track
 													.id ? (
 													<PlayingIcon />
+												) : currentTrack?.type ===
+													"Video" ? (
+													<Icon
+														sx={{
+															display: "flex",
+															marginLeft: -0.5,
+														}}
+													>
+														<VideoIcon
+															color={
+																theme.vars
+																	.palette
+																	.text
+																	.disabled
+															}
+														/>
+													</Icon>
 												) : (
 													<Typography color="text.disabled">
 														{
@@ -319,22 +336,6 @@ const ReleaseTrackList = ({
 											>
 												{t("remastered")}
 											</Typography>
-										)}
-										{currentTrack?.type === "Video" && (
-											<Icon
-												sx={{
-													marginLeft: 2,
-													display: "flex",
-													alignItems: "center",
-												}}
-											>
-												<VideoIcon
-													color={
-														theme.vars.palette.text
-															.disabled
-													}
-												/>
-											</Icon>
 										)}
 										<Typography
 											color="text.disabled"
