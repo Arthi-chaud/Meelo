@@ -55,7 +55,7 @@ const ListItem = (props: ListItemProps) => {
 	const _theme = useTheme();
 
 	return (
-		<MUIListItem disablePadding secondaryAction={props.trailing}>
+		<MUIListItem disablePadding>
 			<ListItemButton
 				{...{
 					onClick: props.onClick,
@@ -70,7 +70,7 @@ const ListItem = (props: ListItemProps) => {
 				<Box
 					sx={{
 						display: { xs: "grid", xl: "none" },
-						width: props.title === undefined ? "100%" : undefined,
+						width: "100%",
 					}}
 				>
 					<ListItemText
@@ -117,6 +117,16 @@ const ListItem = (props: ListItemProps) => {
 						</Grid>
 					)}
 				</Grid>
+				<Box
+					sx={{
+						paddingLeft: 1,
+						display: "flex",
+						justifyContent: "right",
+					}}
+					onClick={(e) => e.stopPropagation()}
+				>
+					{props.trailing}
+				</Box>
 			</ListItemButton>
 		</MUIListItem>
 	);
