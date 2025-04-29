@@ -36,6 +36,7 @@ import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
+import { getRandomNumber } from "~/utils/random";
 import type { SortingParameters } from "~/utils/sorting";
 import InfiniteList from "../list";
 
@@ -107,7 +108,7 @@ export const InfiniteSongView = (props: SongViewProps) => {
 				queryClient,
 				props.query({
 					...query,
-					random: Math.floor(Math.random() * 10000),
+					random: getRandomNumber(),
 				}),
 			);
 		},
