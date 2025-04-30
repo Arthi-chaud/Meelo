@@ -150,18 +150,20 @@ const SyncedLyricsComponent = ({
 					<Typography
 						id={`lyric-${i}`}
 						key={`lyric-${i}`}
-						variant={i === currentLyricIndex ? "h4" : "h6"}
+						variant="h4"
 						component={"div"}
 						sx={{
 							cursor: "pointer",
-							transition:
-								"font-size .2s ease-in; font-weight .2s ease-in",
+							transition: "color .1s ease-in",
+							color:
+								i === currentLyricIndex
+									? undefined
+									: "text.disabled",
 							filter:
 								i === currentLyricIndex
 									? undefined
-									: "blur(1px)",
-							fontWeight:
-								i === currentLyricIndex ? "bold" : undefined,
+									: "blur(1.5px)",
+							fontWeight: "bold",
 						}}
 						onClick={() => setProgress(entry.timestamp)}
 					>
