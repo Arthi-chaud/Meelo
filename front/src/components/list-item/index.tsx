@@ -55,11 +55,30 @@ const ListItem = (props: ListItemProps) => {
 	const _theme = useTheme();
 
 	return (
-		<MUIListItem disablePadding>
+		<MUIListItem
+			disablePadding
+			sx={{
+				// Unhover button when we hover trailing
+				"& .parent:has(.secondaryItem:hover):hover": {
+					backgroundColor: "transparent",
+				},
+				// Unfocus button when we focus trailing
+				"& .parent:has(.secondaryItem:focus-within):focus-within": {
+					backgroundColor: "transparent",
+				},
+				// Unfocus button when we click on ctxt menu
+				"& .parent:has(.secondaryItem:focus):focus": {
+					backgroundColor: "transparent",
+				},
+			}}
+		>
 			<ListItemButton
 				{...{
+					className: "parent",
 					onClick: props.onClick,
-					sx: { paddingX: 1 },
+					sx: {
+						paddingX: 1,
+					},
 					component: props.href ? Link : undefined,
 					href: props.href,
 				}}
@@ -117,16 +136,28 @@ const ListItem = (props: ListItemProps) => {
 						</Grid>
 					)}
 				</Grid>
-				<Box
-					sx={{
-						paddingLeft: 1,
-						display: "flex",
-						justifyContent: "right",
-					}}
-					onClick={(e) => e.stopPropagation()}
-				>
-					{props.trailing}
-				</Box>
+				{props.trailing && (
+					<Box
+						className="secondaryItem"
+						sx={{
+							paddingLeft: 1,
+							display: "flex",
+							justifyContent: "right",
+						}}
+						// Prevent .parent to ripple on click
+						onMouseDown={(e) => e.stopPropagation()}
+						onTouchEnd={(e) => e.stopPropagation()}
+						onTouchStart={(e) => e.stopPropagation()}
+						onClick={(e) => {
+							// Prevent .parent callback to fire on click
+							e.stopPropagation();
+							// Prevent parent href to be used
+							e.preventDefault();
+						}}
+					>
+						{props.trailing}
+					</Box>
+				)}
 			</ListItemButton>
 		</MUIListItem>
 	);
