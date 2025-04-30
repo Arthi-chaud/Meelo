@@ -22,7 +22,7 @@ import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
-import AlbumService from "src/album/album.service";
+import type AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -39,8 +39,8 @@ import {
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
-import SongService from "src/song/song.service";
-import TrackService from "src/track/track.service";
+import type SongService from "src/song/song.service";
+import type TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
 import type VideoQueryParameters from "./models/video.query-parameters";
@@ -52,17 +52,14 @@ import {
 @Injectable()
 export default class VideoService extends SearchableRepositoryService {
 	private readonly logger = new Logger(VideoService.name);
+	private songService: SongService;
+	private artistService: ArtistService;
+	private trackService: TrackService;
 	constructor(
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 	) {
 		super("videos", ["name", "slug", "nameSlug", "type"], meiliSearch);
 	}

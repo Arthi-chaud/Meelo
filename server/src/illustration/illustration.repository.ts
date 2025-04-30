@@ -32,7 +32,7 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import ReleaseService from "src/release/release.service";
 import SettingsService from "src/settings/settings.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
-import TrackService from "src/track/track.service";
+import type TrackService from "src/track/track.service";
 import {
 	IllustrationNotFoundException,
 	MissingIllustrationResourceIdException,
@@ -50,6 +50,7 @@ export default class IllustrationRepository {
 	private readonly logger = new Logger(IllustrationRepository.name);
 	private readonly illustrationFileName = "cover.jpg";
 	private readonly baseIllustrationFolderPath: string;
+	private trackService: TrackService;
 	constructor(
 		private prismaService: PrismaService,
 		private illustrationService: IllustrationService,
@@ -57,8 +58,6 @@ export default class IllustrationRepository {
 		private artistService: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
 		private settingsService: SettingsService,

@@ -18,17 +18,15 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { AlbumType, SongType, VideoType } from "@prisma/client";
-import ArtistService from "src/artist/artist.service";
+import type ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
 import escapeRegex from "src/utils/escape-regex";
 import type Metadata from "../registration/models/metadata";
 
 @Injectable()
 export default class ParserService {
-	constructor(
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
-	) {}
+	private artistService: ArtistService; //TODO
+	constructor() {}
 
 	protected separators = [
 		[/\(/, /\)/],

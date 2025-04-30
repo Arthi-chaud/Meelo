@@ -24,7 +24,10 @@ import SettingsService from "./settings.service";
 @Module({
 	imports: [forwardRef(() => FileManagerModule)],
 	providers: [SettingsService, SettingsController],
-	exports: [SettingsService, SettingsController],
+	exports: [
+		{ useClass: SettingsService, provide: "SETTINGS_SERVICE" },
+		SettingsController,
+	],
 	controllers: [SettingsController],
 })
 export default class SettingsModule {}

@@ -17,6 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { ModuleRef } from "@nestjs/core";
 import { AlbumType, Prisma, SongType, TrackType } from "@prisma/client";
 import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
@@ -36,7 +37,7 @@ import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ParserService from "src/parser/parser.service";
+import type ParserService from "src/parser/parser.service";
 import type { SongWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -63,6 +64,7 @@ import {
 @Injectable()
 export default class SongService extends SearchableRepositoryService {
 	private readonly logger = new Logger(SongService.name);
+	private parserService: ParserService;
 	constructor(
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
@@ -74,15 +76,16 @@ export default class SongService extends SearchableRepositoryService {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => GenreService))
 		private genreService: GenreService,
-		@Inject(forwardRef(() => ParserService))
-		private parserService: ParserService,
 		private eventService: EventsService,
+		private moduleRef: ModuleRef,
 	) {
 		super(
 			"songs",
 			["name", "slug", "nameSlug", "lyrics", "type"],
 			meiliSearch,
 		);
+		this.parserService =
+			this.moduleRef.get<ParserService>("PARSER_SERVICE");
 	}
 
 	getTableName() {

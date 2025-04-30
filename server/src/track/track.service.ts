@@ -24,7 +24,7 @@ import AlbumService from "src/album/album.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { FileNotFoundException } from "src/file/file.exceptions";
-import FileService from "src/file/file.service";
+import type FileService from "src/file/file.service";
 import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import LibraryService from "src/library/library.service";
@@ -38,7 +38,7 @@ import {
 } from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
-import SongService from "src/song/song.service";
+import type SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";
 import type TrackQueryParameters from "./models/track.query-parameters";
 import {
@@ -49,15 +49,12 @@ import {
 
 @Injectable()
 export default class TrackService {
+	private songService: SongService;
+	private releaseService: ReleaseService;
+	private fileService: FileService;
 	constructor(
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
 		@Inject(forwardRef(() => VideoService))
 		private videoService: VideoService,
-		@Inject(forwardRef(() => ReleaseService))
-		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => FileService))
-		private fileService: FileService,
 		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
 		private prismaService: PrismaService,
