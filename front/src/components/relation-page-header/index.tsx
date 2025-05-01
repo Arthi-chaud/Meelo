@@ -55,7 +55,13 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 						</Box>
 						{props.secondTitle !== null && (
 							<Box>
-								<Typography>
+								<Typography
+									sx={{
+										WebkitLineClamp: 3,
+										display: "-webkit-box",
+										WebkitBoxOrient: "vertical",
+									}}
+								>
 									{props.secondTitle ?? <Skeleton />}
 								</Typography>
 							</Box>
