@@ -29,7 +29,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 		<>
 			<Grid
 				container
-				spacing={4}
+				spacing={2}
 				flexWrap={"nowrap"}
 				sx={{ width: "inherit", height: "auto" }}
 			>
@@ -38,11 +38,12 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 				</Grid>
 				<Grid size="grow">
 					<Stack
-						sx={{ height: "100%", justifyContent: "space-evenly" }}
+						spacing={2}
+						sx={{ height: "100%", justifyContent: "center" }}
 					>
 						<Box>
 							<Typography
-								variant="h3"
+								variant="h4"
 								sx={{
 									fontWeight: "bold",
 									WebkitLineClamp: 2,
@@ -56,6 +57,7 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 						{props.secondTitle !== null && (
 							<Box>
 								<Typography
+									variant="h5"
 									sx={{
 										WebkitLineClamp: 3,
 										display: "-webkit-box",
