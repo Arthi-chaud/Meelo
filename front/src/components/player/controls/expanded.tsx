@@ -348,7 +348,7 @@ export const ExpandedPlayerControls = (
 											}
 										/>
 									) : (
-										<IconButton>
+										<IconButton disabled>
 											<ContextualMenuIcon />
 										</IconButton>
 									)
