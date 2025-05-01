@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, Typography, type TypographyProps } from "@mui/material";
 import type { ComponentProps } from "react";
 import { getSong } from "~/api/queries";
 import {
@@ -84,6 +84,9 @@ export const PreviousButton = (props: Omit<ControlButtonProps, "icon">) => (
 	<ControlButton {...props} icon={<RewindIcon />} />
 );
 
-export const DurationComponent = ({ time }: { time?: number }) => (
-	<Typography>{formatDuration(time)}</Typography>
+export const DurationComponent = ({
+	time,
+	...props
+}: { time?: number } & TypographyProps) => (
+	<Typography {...props}>{formatDuration(time)}</Typography>
 );

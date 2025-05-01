@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Grid, Slider } from "@mui/material";
-import { type MutableRefObject, useEffect, useState } from "react";
+import { Box, Grid, Slider, useTheme } from "@mui/material";
+import { type MutableRefObject, useEffect, useMemo, useState } from "react";
+import formatDuration from "~/utils/formatDuration";
 import { DurationComponent } from "./common";
 
 type PlayerSliderProps = {
@@ -30,6 +31,10 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 	const [progress, setProgress] = useState<null | number>(
 		props.progress?.current ?? null,
 	);
+	const theme = useTheme();
+	const progressMaxWidth = useMemo(() => {
+		return `calc(${formatDuration(props.duration).length} * 1rem)`;
+	}, [props.duration, theme]);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -40,7 +45,6 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 	return (
 		<Grid
 			container
-			spacing={2}
 			sx={{
 				display: "flex",
 				justifyContent: "space-between",
@@ -49,14 +53,39 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					props.duration === undefined ? "text.disabled" : undefined,
 			}}
 		>
-			<Grid size={{ xs: "auto" }}>
-				<DurationComponent time={progress ?? undefined} />
+			<Grid
+				size="auto"
+				style={{
+					width: progressMaxWidth,
+				}}
+			>
+				<DurationComponent
+					style={{ textAlign: "center" }}
+					time={progress ?? undefined}
+				/>
 			</Grid>
-			<Grid size="grow">
+			<Grid size="grow" sx={{ display: "flex", alignItems: "center" }}>
 				<Slider
-					style={{ paddingBottom: 0 }}
-					disabled={!props.duration || progress === null}
-					size="small"
+					style={{
+						paddingBottom: 0,
+						height: 7,
+					}}
+					slotProps={{
+						track: {
+							style: {
+								height: 5,
+								minWidth: 5,
+								// Note: It overflows at the border at the very end of the track
+								// not worth trying to figure  out
+								// borderStartEndRadius: 0,
+								// borderEndEndRadius: 0,
+							},
+						},
+						rail: { style: { opacity: 0.2 } },
+					}}
+					// removing the thumb by overriding it with a dummy component
+					slots={{ thumb: Box }}
+					disabled={!props.duration}
 					color="secondary"
 					valueLabelDisplay="off"
 					onChange={(event) => {
@@ -79,8 +108,16 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 					}
 				/>
 			</Grid>
-			<Grid size={{ xs: "auto" }}>
-				<DurationComponent time={props.duration ?? undefined} />
+			<Grid
+				size="auto"
+				style={{
+					width: progressMaxWidth,
+				}}
+			>
+				<DurationComponent
+					style={{ textAlign: "center" }}
+					time={props.duration ?? undefined}
+				/>
 			</Grid>
 		</Grid>
 	);
