@@ -58,6 +58,7 @@ import ReleaseService from "src/release/release.service";
 import { formatIdentifier } from "src/repository/repository.utils";
 import Response, { ResponseType } from "src/response/response.decorator";
 import Slug from "src/slug/slug";
+import MergeSongDTO from "./models/merge-song.dto";
 import type SongGroupQueryParameters from "./models/song-group.query-params";
 import SongQueryParameters from "./models/song.query-params";
 import { SongResponseBuilder } from "./models/song.response";
@@ -246,6 +247,21 @@ export class SongController {
 			},
 			where,
 		);
+	}
+
+	@ApiOperation({
+		summary: "Merge a song with another",
+		description:
+			"All the tracks of the song will be moved to the song whose ID is given in the DTO",
+	})
+	@Post(":idOrSlug/merge")
+	@Role(Roles.Default, Roles.Microservice)
+	async mergeSong(
+		@Body() updateDTO: MergeSongDTO,
+		@IdentifierParam(SongService)
+		where: SongQueryParameters.WhereInput,
+	): Promise<void> {
+		await this.songService.merge(where, { id: updateDTO.songId });
 	}
 
 	@ApiOperation({

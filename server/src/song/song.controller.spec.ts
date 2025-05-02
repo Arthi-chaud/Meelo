@@ -634,5 +634,18 @@ describe("Song Controller", () => {
 				})
 				.expect(400);
 		});
+		describe("Merging songs", () => {
+			it("Should merge songs", async () => {
+				await request(app.getHttpServer())
+					.post(`/songs/${dummyRepository.songB1.id}/merge`)
+					.send({
+						songId: dummyRepository.songC1.id,
+					})
+					.expect(201);
+				await request(app.getHttpServer())
+					.get(`/songs/${dummyRepository.songB1.id}`)
+					.expect(404);
+			});
+		});
 	});
 });
