@@ -17,7 +17,7 @@
  */
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, Song } from "@prisma/client";
 import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
@@ -474,7 +474,10 @@ export default class TrackService {
 		what: TrackQueryParameters.UpdateInput,
 		where: TrackQueryParameters.WhereInput,
 	) {
-		return this.prismaService.track
+		if (what.song) {
+			await this.songService.get(what.song); // Just to check that the song exists
+		}
+		const updatedTrack = await this.prismaService.track
 			.update({
 				where: TrackService.formatWhereInput(where),
 				data: {
@@ -520,6 +523,10 @@ export default class TrackService {
 			.catch((error) => {
 				throw this.onNotFound(error, where);
 			});
+		if (what.song) {
+			await this.songService.housekeeping();
+		}
+		return updatedTrack;
 	}
 
 	protected formatDeleteInputToWhereInput(
