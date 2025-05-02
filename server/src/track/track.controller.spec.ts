@@ -452,4 +452,24 @@ describe("Track Controller", () => {
 				});
 		});
 	});
+
+	describe("Update track", () => {
+		it("Should reassign track", async () => {
+			await request(app.getHttpServer())
+				.put(`/tracks/${dummyRepository.trackC1_1.id}`)
+				.send({ songId: dummyRepository.songB1.id })
+				.expect(200)
+				.expect((res) => {
+					const track: Track = res.body;
+					expect(track.songId).toStrictEqual(
+						dummyRepository.songB1.id,
+					);
+				});
+			// Should fail at reasigning it back, as the old empty parent should have been deleted
+			await request(app.getHttpServer())
+				.put(`/tracks/${dummyRepository.trackC1_1.id}`)
+				.send({ songId: dummyRepository.songC1.id })
+				.expect(404);
+		});
+	});
 });

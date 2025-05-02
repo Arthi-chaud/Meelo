@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Get,
+	Inject,
+	Put,
+	Query,
+	forwardRef,
+} from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { TrackType } from "@prisma/client";
 import { IsEnum, IsOptional } from "class-validator";
@@ -39,6 +47,7 @@ import type VideoQueryParameters from "src/video/models/video.query-parameters";
 import VideoService from "src/video/video.service";
 import TrackQueryParameters from "./models/track.query-parameters";
 import { TrackResponseBuilder } from "./models/track.response";
+import UpdateTrackDTO from "./models/update-track.dto";
 import TrackService from "./track.service";
 
 class Selector {
@@ -131,6 +140,24 @@ export class TrackController {
 		where: TrackQueryParameters.WhereInput,
 	) {
 		return this.trackService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Update a track",
+	})
+	@Response({ handler: TrackResponseBuilder })
+	@Put(":idOrSlug")
+	async update(
+		@Body() updateDto: UpdateTrackDTO,
+		@IdentifierParam(TrackService)
+		where: TrackQueryParameters.WhereInput,
+	) {
+		return this.trackService.update(
+			{
+				song: { id: updateDto.songId },
+			},
+			where,
+		);
 	}
 
 	@ApiOperation({
