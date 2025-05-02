@@ -598,6 +598,22 @@ export default class SongService extends SearchableRepositoryService {
 			});
 	}
 
+	// Reassigns all the tracks of the source song to the destination
+	async merge(
+		source: SongQueryParameters.WhereInput,
+		destination: SongQueryParameters.WhereInput,
+	) {
+		// Checking that the song exists
+		const sourceSong = await this.get(source);
+		const destSong = await this.get(destination);
+
+		await this.prismaService.track.updateMany({
+			data: { songId: destSong.id },
+			where: { songId: sourceSong.id },
+		});
+		await this.housekeeping();
+	}
+
 	/**
 	 * Increment a song's play count
 	 * @param where the query parameter to find the song to update
@@ -639,9 +655,9 @@ export default class SongService extends SearchableRepositoryService {
 			where: SongService.formatManyWhereInput({ songs: where }),
 		});
 
-		this.meiliSearch
+		await this.meiliSearch
 			.index(this.indexName)
-			.deleteDocuments(toDelete.map((video) => video.id));
+			.deleteDocuments(toDelete.map((song) => song.id));
 		return deleted.count;
 	}
 
@@ -665,7 +681,11 @@ export default class SongService extends SearchableRepositoryService {
 		if (deletedSongCount) {
 			this.logger.warn(`Deleted ${deletedSongCount} songs`);
 		}
+		await this._housekeepingSongGroups();
+		await this.resolveMasterTracks();
+	}
 
+	async _housekeepingSongGroups() {
 		await this.prismaService.songGroup.deleteMany({
 			where: {
 				versions: {
@@ -674,7 +694,6 @@ export default class SongService extends SearchableRepositoryService {
 				videos: { none: {} },
 			},
 		});
-		await this.resolveMasterTracks();
 	}
 
 	async resolveMasterTracks() {
