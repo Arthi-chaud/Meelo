@@ -46,10 +46,7 @@ const RefreshMetadataActionContent = ({
 					alignItems: "center",
 				}}
 			>
-				<Checkbox
-					checked={force}
-					onChange={(_, isChecked) => setForce(isChecked)}
-				/>
+				<Checkbox checked={force} onClick={() => setForce((f) => !f)} />
 				{t("refreshMetadataForceLabel")}
 			</Grid>
 			<Grid size={{ xs: 12 }}>
