@@ -452,7 +452,7 @@ describe("Track Service", () => {
 		});
 
 		it("should reassign the track's song", async () => {
-			let updatedTrack = await trackService.update(
+			const updatedTrack = await trackService.update(
 				{
 					song: { id: dummyRepository.songA1.id },
 				},
@@ -462,16 +462,15 @@ describe("Track Service", () => {
 				...dummyRepository.trackA2_1,
 				songId: dummyRepository.songA1.id,
 			});
-			updatedTrack = await trackService.update(
-				{
-					song: { id: dummyRepository.songA2.id },
-				},
-				{ id: dummyRepository.trackA2_1.id },
-			);
-			expect(updatedTrack).toStrictEqual({
-				...dummyRepository.trackA2_1,
-				songId: dummyRepository.songA2.id,
-			});
+			// housekeeping would have deleted the song
+			expect(() =>
+				trackService.update(
+					{
+						song: { id: dummyRepository.songA2.id },
+					},
+					{ id: dummyRepository.trackA2_1.id },
+				),
+			).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should throw, as the track does not exist", async () => {
