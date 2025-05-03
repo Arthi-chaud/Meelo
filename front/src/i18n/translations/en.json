@@ -273,5 +273,6 @@
 	"mergeSong": "Merge Songs",
 	"selectPlaylist": "Select a playlist",
 	"confirm": "Confirm",
-	"warningBeforeMergingSong": "All the tracks will be reassigned to the selected song, and the old song will be deleted. Your files will not be modified or removed"
+	"warningBeforeMergingSong": "All the tracks will be reassigned to the selected song, and the old song will be deleted. Your files will not be modified or removed",
+	"reassignTrack": "Reassign Track"
 }

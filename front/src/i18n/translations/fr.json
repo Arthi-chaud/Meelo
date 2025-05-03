@@ -273,5 +273,6 @@
 	"mergeSong": "Fusionner le morceau",
 	"selectPlaylist": "Choisissez une playlist",
 	"confirm": "Confirmer",
-	"warningBeforeMergingSong": "Toutes les pistes seront réassignées à ce nouveau morceau. L'ancien morceau sera supprimé. Vos fichiers ne seront pas modifiés ou supprimés"
+	"warningBeforeMergingSong": "Toutes les pistes seront réassignées à ce nouveau morceau. L'ancien morceau sera supprimé. Vos fichiers ne seront pas modifiés ou supprimés",
+	"reassignTrack": "Réassigner la piste"
 }

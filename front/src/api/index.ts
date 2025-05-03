@@ -429,6 +429,17 @@ export default class API {
 		});
 	}
 
+	//// tracks
+	async updateTrack(trackId: number, destSongId: number): Promise<void> {
+		return this.fetch({
+			route: `/tracks/${trackId}`,
+			data: { songId: destSongId },
+			parameters: {},
+			method: "PUT",
+			emptyResponse: true,
+		});
+	}
+
 	//// videos
 
 	async updateVideo(

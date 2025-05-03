@@ -30,6 +30,7 @@ import {
 	GoToSongInfoAction,
 	GoToSongLyricsAction,
 } from "~/components/actions/link";
+import { ReassignTrackAction } from "~/components/actions/merge";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
@@ -124,6 +125,9 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id, t),
+					...(props.track.song !== null && props.track.songId !== null
+						? [ReassignTrackAction(props.track as any, queryClient)]
+						: []),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[

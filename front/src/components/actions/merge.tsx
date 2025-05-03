@@ -31,6 +31,7 @@ import { useMutation } from "react-query";
 import type { QueryClient } from "~/api/hook";
 import { getSongs } from "~/api/queries";
 import type { Song, SongWithRelations } from "~/models/song";
+import type { TrackWithRelations } from "~/models/track";
 import type { InfiniteQueryFn } from "~/query";
 import type Action from ".";
 import { MergeIcon, SongIcon } from "../icons";
@@ -50,7 +51,6 @@ export const MergeSongAction = (
 		const router = useRouter();
 		const { t } = useTranslation();
 		const mutation = useMutation(async (destSongId: number) => {
-			close();
 			await toast.promise(
 				queryClient.api.mergeSongs(song.id, destSongId),
 				{
@@ -88,6 +88,7 @@ export const MergeSongAction = (
 						<Button
 							onClick={() => {
 								mutation.mutate(selectedSongId!);
+								close();
 							}}
 						>
 							{t("confirm")}
@@ -108,6 +109,53 @@ export const MergeSongAction = (
 					}
 				/>
 			</>
+		);
+	},
+});
+
+export const ReassignTrackAction = (
+	track: TrackWithRelations<"song"> & { song: Song },
+	queryClient: QueryClient,
+): Action => ({
+	icon: <MergeIcon />,
+	label: "reassignTrack",
+	dialog: ({ close }) => {
+		const router = useRouter();
+		const { t } = useTranslation();
+		const mutation = useMutation(async (destSongId: number) => {
+			await toast.promise(
+				queryClient.api.updateTrack(track.id, destSongId),
+				{
+					loading: t("loading"),
+					success: "Merging successfull",
+					error: "error",
+				},
+			);
+			router.replace(`/songs/${destSongId}/tracks`);
+			await queryClient.client.invalidateQueries("songs");
+			await queryClient.client.invalidateQueries("tracks");
+			await queryClient.client.invalidateQueries(track.id.toString());
+			await queryClient.client.invalidateQueries(
+				track.song.id.toString(),
+			);
+			await queryClient.client.invalidateQueries(track.song.slug);
+		});
+
+		return (
+			<SelectSongForm
+				onClose={close}
+				onSelect={(songId) => {
+					mutation.mutate(songId);
+					close();
+				}}
+				songQuery={() =>
+					getSongs(
+						{ artist: track.song?.artistId },
+						{ sortBy: "name" },
+						["illustration", "artist"],
+					)
+				}
+			/>
 		);
 	},
 });
