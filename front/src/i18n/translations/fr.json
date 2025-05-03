@@ -268,5 +268,10 @@
 	"crossfade": "Crossfade",
 	"playback": "Lecture",
 	"playlistIsPublic": "Permettre aux autres utilisateurs de voir la playlist",
-	"allowPlaylistChanges": "Autoriser les changements"
+	"allowPlaylistChanges": "Autoriser les changements",
+	"selectSong": "Choisissez une chanson",
+	"mergeSong": "Fusionner le morceau",
+	"selectPlaylist": "Choisissez une playlist",
+	"confirm": "Confirmer",
+	"warningBeforeMergingSong": "Toutes les pistes seront réassignées à ce nouveau morceau. L'ancien morceau sera supprimé. Vos fichiers ne seront pas modifiés ou supprimés"
 }

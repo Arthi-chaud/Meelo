@@ -31,6 +31,7 @@ import {
 	GoToSongLyricsAction,
 	GoToSongVersionAction,
 } from "~/components/actions/link";
+import { MergeSongAction } from "~/components/actions/merge";
 import {
 	AddToPlaylistAction,
 	PlayAfterAction,
@@ -92,6 +93,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				[
 					ChangeSongType(props.song, queryClient, confirm),
 					RefreshSongMetadataAction(props.song.id, t),
+					MergeSongAction(props.song, queryClient),
 				],
 				[
 					ShowMasterTrackFileInfoAction(

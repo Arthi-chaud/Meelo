@@ -419,6 +419,16 @@ export default class API {
 		});
 	}
 
+	async mergeSongs(srcSongId: number, destSongId: number): Promise<void> {
+		return this.fetch({
+			route: `/songs/${srcSongId}/merge`,
+			data: { songId: destSongId },
+			parameters: {},
+			method: "POST",
+			emptyResponse: true,
+		});
+	}
+
 	//// videos
 
 	async updateVideo(

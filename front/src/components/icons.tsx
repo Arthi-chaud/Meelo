@@ -94,6 +94,8 @@ export const DoneIcon = Iconsax.TickSquare;
 
 export const EmptyStateIcon = Iconsax.SearchStatus1;
 
+export const MergeIcon = Iconsax.Hierarchy;
+
 // Icons for song type
 export const SongTypeOriginalIcon = Iconsax.Music;
 export const SongTypeRemixIcon = Iconsax.Repeat;
