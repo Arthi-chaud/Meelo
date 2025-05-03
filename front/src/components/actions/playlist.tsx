@@ -289,7 +289,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			>
 				{createPlaylistAction.dialog?.({ close: closeModal })}
 			</Dialog>
-			<DialogTitle>Select a playlist</DialogTitle>
+			<DialogTitle>{t("selectPlaylist")}</DialogTitle>
 			<DialogContent>
 				<ListItem
 					title={t(createPlaylistAction.label!)}
