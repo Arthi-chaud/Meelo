@@ -17,11 +17,18 @@
  */
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
+import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
+import AlbumService from "src/album/album.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
+import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import PrismaService from "src/prisma/prisma.service";
-import { formatIdentifierToIdOrSlug } from "src/repository/repository.utils";
+import ReleaseService from "src/release/release.service";
+import {
+	formatIdentifierToIdOrSlug,
+	formatPaginationParameters,
+} from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
 import {
 	LabelAlreadyExistsException,
@@ -72,7 +79,18 @@ export default class LabelService {
 			});
 	}
 
-	//TODO getMany
+	async getMany(
+		where: LabelQueryParameters.ManyWhereInput,
+		sort?: LabelQueryParameters.SortingParameter,
+		pagination?: PaginationParameters,
+	) {
+		return this.prismaService.label.findMany({
+			where: LabelService.formatManyWhereInput(where),
+			orderBy:
+				sort === undefined ? undefined : this.formatSortingInput(sort),
+			...formatPaginationParameters(pagination),
+		});
+	}
 
 	static formatWhereInput(
 		where: LabelQueryParameters.WhereInput,
@@ -81,6 +99,107 @@ export default class LabelService {
 			id: where.id,
 			slug: where.slug?.toString(),
 		};
+	}
+
+	static formatManyWhereInput(
+		where: LabelQueryParameters.ManyWhereInput,
+	): Prisma.LabelWhereInput {
+		let query: Prisma.LabelWhereInput = {};
+
+		if (where.album?.not) {
+			query = deepmerge(query, {
+				AND: [
+					{
+						releases: {
+							none: ReleaseService.formatManyWhereInput({
+								album: { is: where.album.not },
+							}),
+						},
+					},
+				],
+			});
+		} else if (where.album?.and) {
+			query = deepmerge(query, {
+				AND: where.album.and.map((artist) => ({
+					releases: {
+						some: ReleaseService.formatManyWhereInput({
+							album: { is: artist },
+						}),
+					},
+				})),
+			});
+		} else if (where.album) {
+			query = deepmerge(query, {
+				AND: [
+					{
+						releases: {
+							some: ReleaseService.formatManyWhereInput({
+								album: where.album,
+							}),
+						},
+					},
+				],
+			});
+		}
+		if (where.artist?.not) {
+			query = deepmerge(query, {
+				AND: [
+					{
+						releases: {
+							none: {
+								album: AlbumService.formatManyWhereInput({
+									artist: { is: where.artist.not },
+								}),
+							},
+						},
+					},
+				],
+			});
+		} else if (where.artist?.and) {
+			query = deepmerge(query, {
+				AND: where.artist.and.map((artist) => ({
+					releases: {
+						some: {
+							album: AlbumService.formatManyWhereInput({
+								artist: { is: artist },
+							}),
+						},
+					},
+				})),
+			});
+		} else if (where.artist) {
+			query = deepmerge(query, {
+				AND: [
+					{
+						releases: {
+							some: {
+								album: AlbumService.formatManyWhereInput({
+									artist: where.artist,
+								}),
+							},
+						},
+					},
+				],
+			});
+		}
+		return query;
+	}
+
+	formatSortingInput(
+		sortingParameter: LabelQueryParameters.SortingParameter,
+	): Prisma.LabelOrderByWithRelationInput[] {
+		sortingParameter.order ??= "asc";
+		switch (sortingParameter.sortBy) {
+			case "name":
+				return [{ slug: sortingParameter.order }];
+			default:
+				return [
+					{
+						[sortingParameter.sortBy ?? "id"]:
+							sortingParameter.order,
+					},
+				];
+		}
 	}
 
 	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
