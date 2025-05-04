@@ -21,6 +21,7 @@ import { yupdate } from "~/utils/yup";
 import Album from "./album";
 import { Disc } from "./disc";
 import Illustration from "./illustration";
+import Label from "./label";
 import Resource from "./resource";
 
 /**
@@ -52,6 +53,10 @@ const Release = Resource.concat(
 		 * Date the release was *released*
 		 */
 		releaseDate: yupdate.required().nullable(),
+		/**
+		 * Unique identifier of the label
+		 */
+		labelId: yup.number().required().nullable(),
 	}),
 );
 
@@ -59,7 +64,7 @@ type Release = yup.InferType<typeof Release>;
 
 export default Release;
 
-export type ReleaseInclude = "album" | "illustration" | "discs";
+export type ReleaseInclude = "album" | "illustration" | "discs" | "label";
 
 export const ReleaseWithRelations = <
 	Selection extends ReleaseInclude | never = never,
@@ -70,6 +75,7 @@ export const ReleaseWithRelations = <
 		yup
 			.object({
 				album: Album.required(),
+				label: Label.required().nullable(),
 				illustration: Illustration.required().nullable(),
 				discs: yup.array(Disc.required()).required(),
 			})
