@@ -36,6 +36,7 @@ import {
 } from "~/models/external-metadata";
 import File from "~/models/file";
 import Genre, { type GenreSortingKeys } from "~/models/genre";
+import Label, { type LabelSortingKeys } from "~/models/label";
 import Library from "~/models/library";
 import PaginatedResponse, {
 	type PaginationParameters,
@@ -92,6 +93,7 @@ export const getArtists = <I extends ArtistInclude | never = never>(
 		album?: Identifier;
 		genre?: Identifier;
 		query?: Identifier;
+		label?: Identifier;
 	},
 	sort?: SortingParameters<typeof ArtistSortingKeys>,
 	include: I[] = [],
@@ -142,6 +144,7 @@ export const getAlbums = <I extends AlbumInclude | never = never>(
 		related?: Identifier;
 		appearance?: Identifier;
 		query?: Identifier;
+		label?: Identifier;
 		random?: number;
 	},
 	sort?: SortingParameters<typeof AlbumSortingKeys>,
@@ -417,6 +420,26 @@ export const getGenre = (idOrSlug: string | number): Query<Genre> => {
 	return _mkSimpleQuery({
 		route: `/genres/${idOrSlug}`,
 		validator: Genre,
+	});
+};
+
+/// Labels
+export const getLabel = (identifier: string | number): Query<Label> => {
+	return _mkSimpleQuery({
+		route: `/labels/${identifier}`,
+		validator: Label,
+	});
+};
+
+export const getLabels = (
+	filter: { artist?: Identifier; album?: Identifier },
+	sort?: SortingParameters<typeof LabelSortingKeys>,
+): InfiniteQuery<Label> => {
+	return _mkSimplePaginatedQuery({
+		route: "/labels",
+		filter,
+		sort,
+		validator: PaginatedResponse(Label),
 	});
 };
 
