@@ -192,6 +192,8 @@ export default class LabelService {
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return [{ slug: sortingParameter.order }];
+			case "releaseCount":
+				return [{ releases: { _count: sortingParameter.order } }];
 			default:
 				return [
 					{
