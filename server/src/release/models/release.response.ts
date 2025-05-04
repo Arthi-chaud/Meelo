@@ -41,7 +41,7 @@ export class ReleaseResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		album?: AlbumResponse;
-		label?: Label;
+		label?: Label | null;
 		discs?: DiscResponse[];
 	},
 ) {}
@@ -82,6 +82,7 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 			illustration: release.illustration
 				? IllustrationResponse.from(release.illustration)
 				: release.illustration,
+			label: release.label,
 		};
 	}
 }
