@@ -17,15 +17,27 @@
  */
 
 import { Label } from "@prisma/client";
+import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Filter } from "src/filter/filter";
 import Slug from "src/slug/slug";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { RequireExactlyOne } from "type-fest";
 
 namespace LabelQueryParameters {
 	export type CreateInput = Pick<Label, "name">;
 	export type WhereInput = RequireExactlyOne<{ id: number; slug?: Slug }>;
-	//TODO Many where
+	export type ManyWhereInput = Partial<{
+		album: Filter<AlbumQueryParameters.WhereInput>;
+		artist: Filter<ArtistQueryParameters.WhereInput>;
+	}>;
 
-	export type ManyWhereInput = {}; // TODO
+	/**
+	 * Defines how to sort fetched entries
+	 */
+	export const SortingKeys = ["id", "name"] as const;
+	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 }
 
 export default LabelQueryParameters;

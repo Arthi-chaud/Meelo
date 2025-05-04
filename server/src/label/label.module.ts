@@ -18,11 +18,13 @@
 
 import { Module } from "@nestjs/common";
 import PrismaModule from "src/prisma/prisma.module";
+import LabelController from "./label.controller";
 import LabelService from "./label.service";
 
 @Module({
 	imports: [PrismaModule],
 	providers: [LabelService],
 	exports: [LabelService],
+	controllers: [LabelController],
 })
 export default class LabelModule {}
