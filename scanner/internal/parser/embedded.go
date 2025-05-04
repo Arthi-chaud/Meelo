@@ -83,6 +83,9 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	ParseTag(tags, []string{"title"}, func(value string) {
 		metadata.Name = value
 	})
+	ParseTag(tags, []string{"label", "tpub", "publisher"}, func(value string) {
+		metadata.Label = value
+	})
 	ParseTag(tags, []string{"discsubtitle"}, func(value string) {
 		metadata.DiscName = value
 	})

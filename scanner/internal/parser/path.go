@@ -64,6 +64,9 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 	if index := regex.SubexpIndex("Album"); index != -1 {
 		metadata.Album = matches[index]
 	}
+	if index := regex.SubexpIndex("Label"); index != -1 {
+		metadata.Label = matches[index]
+	}
 	if index := regex.SubexpIndex("Year"); index != -1 && len(matches[index]) > 0 {
 		date, err := time.Parse("2006", matches[index])
 		if err == nil {

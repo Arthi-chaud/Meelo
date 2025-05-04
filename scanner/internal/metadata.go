@@ -43,7 +43,9 @@ type Metadata struct {
 	// Genres of the track
 	Genres []string
 	// Discogs ID of the parent release
-	DiscogsId               string
+	DiscogsId string
+	// Name of the label that published thed release
+	Label                   string
 	IllustrationLocation    IllustrationLocation
 	IllustrationStreamIndex int
 	IllustrationPath        string
