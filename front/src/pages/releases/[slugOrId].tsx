@@ -101,7 +101,7 @@ const formatReleaseDate = (date: Date, lang: string) => {
 };
 
 const releaseQuery = (releaseIdentifier: string | number) =>
-	getRelease(releaseIdentifier, ["album", "illustration", "discs"]);
+	getRelease(releaseIdentifier, ["album", "illustration", "discs", "label"]);
 const releaseTracklistQuery = (
 	releaseIdentifier: number | string,
 	exclusiveOnly: boolean,
@@ -382,6 +382,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				),
 		[albumVideos.items, tracks],
 	);
+	const label = useMemo(() => {
+		return release.data?.label;
+	}, [release.data]);
 	const releaseDate = useMemo(() => {
 		if (!album.data || !release.data) {
 			return undefined;
@@ -643,7 +646,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				<Grid
 					container
 					spacing={1}
-					sx={{ display: "flex", paddingY: 2 }}
+					sx={{ display: "flex", paddingTop: 2 }}
 				>
 					{hasGenres && (
 						<Grid
@@ -766,6 +769,38 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							)}
 					</Grid>
 				</Grid>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "right",
+						paddingTop: label !== null ? 1 : 2,
+					}}
+				>
+					{!album.data || label === undefined ? (
+						<Skeleton width={"100px"} />
+					) : label ? (
+						<Typography
+							sx={{
+								color: "text.disabled",
+							}}
+						>
+							{album.data.releaseDate
+								? `${getYear(album.data.releaseDate)} - `
+								: undefined}
+							<Link
+								href={`/labels/${release.data?.label?.slug}`}
+								style={{
+									textDecoration: "underline",
+									textDecorationColor: "text.disabled",
+								}}
+							>
+								{release.data?.label?.name}
+							</Link>
+						</Typography>
+					) : (
+						<></>
+					)}
+				</Box>
 				<RelatedContentSection
 					display={(bSides.length ?? 0) > 0}
 					title={t("bonusTracks")}
