@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Grid, Stack } from "@mui/material";
+import { Box, Button, Grid, Skeleton, Stack, useTheme } from "@mui/material";
 import type { NextPageContext } from "next";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
@@ -33,6 +34,7 @@ import {
 	getAlbums,
 	getArtists,
 	getGenres,
+	getLabels,
 	getReleases,
 	getSongs,
 } from "~/api/queries";
@@ -93,6 +95,8 @@ const albumRecommendations = (seed: number) =>
 
 const topGenresQuery = getGenres({}, { sortBy: "songCount", order: "desc" });
 
+const topLabelsQuery = getLabels({}, { sortBy: "releaseCount", order: "desc" });
+
 const HomePageSection = <T,>(props: {
 	heading: string | JSX.Element;
 	queryData: { items?: T[] };
@@ -136,11 +140,13 @@ const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 			newlyAddedReleasesQuery,
 			mostListenedSongsQuery,
 			topGenresQuery,
+			topLabelsQuery,
 		],
 	};
 };
 
 const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
+	const theme = useTheme();
 	const [seed] = useState(Math.floor(Math.random() * 10000000));
 	const [blurhashIndex] = useState(getRandomNumber());
 	const featuredAlbums = useInfiniteQuery(
@@ -166,6 +172,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
 	const topGenres = useInfiniteQuery(() => topGenresQuery);
+	const topLabels = useInfiniteQuery(() => topLabelsQuery);
 	const { t } = useTranslation();
 	const tileRowWindowSize = {
 		xs: 3,
@@ -317,6 +324,45 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										key={`genre-${genre?.id}-${index}`}
 									>
 										<GenreTile key={index} genre={genre} />
+									</Box>
+								))}
+								windowSize={tileRowWindowSize}
+							/>
+						)}
+					/>
+
+					<HomePageSection
+						heading={t("topLabels")}
+						queryData={topLabels}
+						render={(labels) => (
+							<TileRow
+								tiles={labels.map((label, index) => (
+									<Box
+										sx={{ paddingBottom: 2 }}
+										key={`label-${label?.id}-${index}`}
+									>
+										<Link
+											href={
+												label
+													? `/labels/${label.slug}`
+													: {}
+											}
+										>
+											<Button
+												variant="outlined"
+												size="large"
+												sx={{
+													width: "100%",
+													textTransform: "none",
+												}}
+											>
+												{!label ? (
+													<Skeleton width={"50px"} />
+												) : (
+													label.name
+												)}
+											</Button>
+										</Link>
 									</Box>
 								))}
 								windowSize={tileRowWindowSize}
