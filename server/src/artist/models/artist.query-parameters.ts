@@ -19,6 +19,7 @@
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { Artist } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -58,6 +59,7 @@ namespace ArtistQueryParameters {
 			genre: Filter<GenreQueryParameters.WhereInput>;
 			albumArtistOnly: boolean;
 			album: Filter<AlbumQueryParameters.WhereInput>;
+			label: Filter<LabelQueryParameters.WhereInput>;
 		}>
 	>;
 

@@ -27,6 +27,7 @@ import { IsEnum, IsOptional } from "class-validator";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { EnumFilter, Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { Album } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -70,6 +71,7 @@ namespace AlbumQueryParameters {
 			library: Filter<LibraryQueryParameters.WhereInput>;
 			releaseDate: SearchDateInput;
 			genre: Filter<GenreQueryParameters.WhereInput>;
+			label: Filter<LabelQueryParameters.WhereInput>;
 			type: EnumFilter<AlbumType>;
 			albums: AlbumQueryParameters.WhereInput[];
 			// Get albums with a song in common. Does not include the given album

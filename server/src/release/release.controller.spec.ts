@@ -318,6 +318,59 @@ describe("Release Controller", () => {
 		});
 	});
 
+	describe("Get releases by label", () => {
+		it("should return releases by label", () => {
+			return request(app.getHttpServer())
+				.get(`/releases?sortBy=id&label=${dummyRepository.labelA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(2);
+					expect(releases[0].id).toBe(dummyRepository.releaseA1_1.id);
+					expect(releases[1].id).toBe(dummyRepository.releaseB1_1.id);
+				});
+		});
+
+		it("should return releases by label (using not:)", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/releases?sortBy=id&label=not:${dummyRepository.labelA.id}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(2);
+					expect(releases[0].id).toBe(dummyRepository.releaseA1_2.id);
+					expect(releases[1].id).toBe(
+						dummyRepository.compilationReleaseA1.id,
+					);
+				});
+		});
+
+		it("should return releases by label (using or: )", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/releases?sortBy=id&label=or:${dummyRepository.labelA.id},${dummyRepository.labelB.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(3);
+					expect(releases[0].id).toBe(dummyRepository.releaseA1_1.id);
+					expect(releases[1].id).toBe(dummyRepository.releaseA1_2.id);
+					expect(releases[2].id).toBe(dummyRepository.releaseB1_1.id);
+				});
+		});
+		// TODO
+		// it("should error: cannot use 'and:'", () => {
+		// 	return request(app.getHttpServer())
+		// 		.get(
+		// 			`/releases?sortBy=id&label=and:${dummyRepository.labelA.id},${dummyRepository.labelB.slug}`,
+		// 		)
+		// 		.expect(400);
+		// });
+	});
+
 	describe("Get Releases by library", () => {
 		it("should return every releases, w/ tracks & parent album", () => {
 			return request(app.getHttpServer())

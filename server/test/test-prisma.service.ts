@@ -5,6 +5,7 @@ import {
 	type Artist,
 	type File,
 	type Genre,
+	Label,
 	type Library,
 	type Lyrics,
 	type PlaylistEntry,
@@ -62,6 +63,9 @@ export default class TestPrismaService extends PrismaService {
 	public playlistEntry2: PlaylistEntry;
 	public playlistEntry3: PlaylistEntry;
 
+	public labelA: Label;
+	public labelB: Label;
+
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
 
@@ -103,6 +107,13 @@ export default class TestPrismaService extends PrismaService {
 	override async onModuleInit() {
 		await this.$connect();
 		await this.flushDatabase();
+
+		[this.labelA, this.labelB] = await this.label.createManyAndReturn({
+			data: [
+				{ name: "Warner Bros.", slug: "warner-bros" },
+				{ name: "Mushroom Records", slug: "mushroom-records" },
+			],
+		});
 		[this.user1, this.user2] = await this.user.createManyAndReturn({
 			data: [
 				{ name: "user", password: "1234", admin: true, enabled: true },
@@ -173,18 +184,21 @@ export default class TestPrismaService extends PrismaService {
 					slug: "my-artist-my-album-1",
 					nameSlug: "my-album-1",
 					albumId: this.albumA1.id,
+					labelId: this.labelA.id,
 					releaseDate: new Date("2022"),
 				},
 				{
 					name: "My Album 2",
 					slug: "my-artist-my-album-2",
 					nameSlug: "my-album-2",
+					labelId: this.labelB.id,
 					albumId: this.albumA1.id,
 				},
 				{
 					name: "My Second Album 1",
 					slug: "my-second-artist-my-second-album-1",
 					nameSlug: "my-second-album-1",
+					labelId: this.labelA.id,
 					albumId: this.albumB1.id,
 				},
 				{

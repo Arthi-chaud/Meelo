@@ -356,6 +356,60 @@ describe("Album Controller", () => {
 		});
 	});
 
+	describe("Get albums by label", () => {
+		it("should return albums by label", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?sortBy=id&label=${dummyRepository.labelA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0].id).toBe(dummyRepository.albumA1.id);
+					expect(albums[1].id).toBe(dummyRepository.albumB1.id);
+				});
+		});
+
+		it("should return albums by label (using not:)", () => {
+			return request(app.getHttpServer())
+				.get(`/albums?sortBy=id&label=not:${dummyRepository.labelA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0].id).toBe(
+						dummyRepository.compilationAlbumA.id,
+					);
+				});
+		});
+
+		it("should return albums by label (using and: )", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/albums?sortBy=id&label=and:${dummyRepository.labelA.id},${dummyRepository.labelB.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(1);
+					expect(albums[0].id).toBe(dummyRepository.albumA1.id);
+				});
+		});
+
+		it("should return albums by label (using or: )", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/albums?sortBy=id&label=or:${dummyRepository.labelA.id},${dummyRepository.labelB.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const albums: Album[] = res.body.items;
+					expect(albums.length).toBe(2);
+					expect(albums[0].id).toBe(dummyRepository.albumA1.id);
+					expect(albums[1].id).toBe(dummyRepository.albumB1.id);
+				});
+		});
+	});
+
 	describe("Get Albums by Library", () => {
 		it("should return every albums w/ artist", () => {
 			return request(app.getHttpServer())

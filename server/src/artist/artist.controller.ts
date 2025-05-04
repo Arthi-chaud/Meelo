@@ -25,6 +25,8 @@ import TransformFilter, { Filter } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import LabelQueryParameters from "src/label/label.query-parameters";
+import LabelService from "src/label/label.service";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -65,6 +67,12 @@ class Selector {
 		description: "Filter artists by albums they appear on",
 	})
 	album?: Filter<AlbumQueryParameters.WhereInput>;
+
+	@IsOptional()
+	@TransformFilter(LabelService, {
+		description: "Filter artists by label",
+	})
+	label?: Filter<LabelQueryParameters.WhereInput>;
 }
 
 @ApiTags("Artists")

@@ -45,6 +45,8 @@ import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
+import LabelQueryParameters from "src/label/label.query-parameters";
+import LabelService from "src/label/label.service";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -109,6 +111,12 @@ class Selector {
 	@IsNumber()
 	@IsPositive()
 	random?: number;
+
+	@IsOptional()
+	@TransformFilter(LabelService, {
+		description: "Filter albums by label",
+	})
+	label?: Filter<LabelQueryParameters.WhereInput>;
 }
 
 @ApiTags("Albums")

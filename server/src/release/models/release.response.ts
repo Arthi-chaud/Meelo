@@ -26,7 +26,12 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import { Disc, Release, type ReleaseWithRelations } from "src/prisma/models";
+import {
+	Disc,
+	Label,
+	Release,
+	type ReleaseWithRelations,
+} from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 class DiscResponse extends OmitType(Disc, ["id", "releaseId"]) {}
@@ -36,6 +41,7 @@ export class ReleaseResponse extends IntersectionType(
 	IllustratedResponse,
 	class {
 		album?: AlbumResponse;
+		label?: Label;
 		discs?: DiscResponse[];
 	},
 ) {}
