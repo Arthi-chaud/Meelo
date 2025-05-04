@@ -33,6 +33,8 @@ import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import LabelQueryParameters from "src/label/label.query-parameters";
+import LabelService from "src/label/label.service";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -57,6 +59,12 @@ class Selector {
 		description: "Filter releases by library",
 	})
 	library?: Filter<LibraryQueryParameters.WhereInput>;
+
+	@IsOptional()
+	@TransformFilter(LabelService, {
+		description: "Filter releases by label",
+	})
+	label?: Filter<LabelQueryParameters.WhereInput>;
 }
 
 @ApiTags("Releases")

@@ -316,6 +316,59 @@ describe("Artist Controller", () => {
 		});
 	});
 
+	describe("Get artists by label", () => {
+		it("should return artists by label", () => {
+			return request(app.getHttpServer())
+				.get(`/artists?sortBy=id&label=${dummyRepository.labelA.id}`)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(2);
+					expect(artists[0].id).toBe(dummyRepository.artistA.id);
+					expect(artists[1].id).toBe(dummyRepository.artistB.id);
+				});
+		});
+
+		it("should return artists by label (using not:)", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/artists?sortBy=id&label=not:${dummyRepository.labelA.id}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(0);
+				});
+		});
+
+		it("should return artists by label (using and:)", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/artists?sortBy=id&label=and:${dummyRepository.labelA.id},${dummyRepository.labelB.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(1);
+					expect(artists[0].id).toBe(dummyRepository.artistA.id);
+				});
+		});
+
+		it("should return artists by label (using or:)", () => {
+			return request(app.getHttpServer())
+				.get(
+					`/artists?sortBy=id&label=or:${dummyRepository.labelA.id},${dummyRepository.labelB.slug}`,
+				)
+				.expect(200)
+				.expect((res) => {
+					const artists: Artist[] = res.body.items;
+					expect(artists.length).toBe(2);
+					expect(artists[0].id).toBe(dummyRepository.artistA.id);
+					expect(artists[1].id).toBe(dummyRepository.artistB.id);
+				});
+		});
+	});
+
 	describe("Artist Illustration", () => {
 		it("Should return the illustration", async () => {
 			const illustration = await dummyRepository.illustration.create({

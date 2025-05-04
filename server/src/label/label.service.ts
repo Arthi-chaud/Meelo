@@ -21,6 +21,7 @@ import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import PrismaService from "src/prisma/prisma.service";
+import { formatIdentifierToIdOrSlug } from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
 import {
 	LabelAlreadyExistsException,
@@ -81,6 +82,8 @@ export default class LabelService {
 			slug: where.slug?.toString(),
 		};
 	}
+
+	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
 
 	async getOrCreate(data: LabelQueryParameters.CreateInput) {
 		const labelSlug = new Slug(data.name);

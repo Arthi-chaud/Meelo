@@ -275,6 +275,19 @@ export default class ArtistService extends SearchableRepositoryService {
 				},
 			});
 		}
+		if (where.label) {
+			query = deepmerge(query, {
+				AND: [
+					{
+						albums: {
+							some: AlbumService.formatManyWhereInput({
+								label: where.label,
+							}),
+						},
+					},
+				],
+			});
+		}
 		if (where.album?.and) {
 			query = deepmerge(query, {
 				AND: where.album.and.map((a) => ({

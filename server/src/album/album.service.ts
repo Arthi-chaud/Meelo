@@ -486,6 +486,37 @@ export default class AlbumService extends SearchableRepositoryService {
 				),
 			});
 		}
+		if (where.label?.and) {
+			query = deepmerge(query, {
+				AND: where.label.and.map((label) => ({
+					releases: {
+						some: ReleaseService.formatManyWhereInput({
+							label: { is: label },
+						}),
+					},
+				})),
+			});
+		} else if (where.label?.not) {
+			query = deepmerge(query, {
+				AND: [
+					{
+						releases: {
+							none: ReleaseService.formatManyWhereInput({
+								label: { is: where.label.not },
+							}),
+						},
+					},
+				],
+			});
+		} else if (where.label) {
+			query = deepmerge(query, {
+				releases: {
+					some: ReleaseService.formatManyWhereInput({
+						label: where.label,
+					}),
+				},
+			});
+		}
 		return query;
 	}
 

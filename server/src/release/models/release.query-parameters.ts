@@ -68,6 +68,7 @@ namespace ReleaseQueryParameters {
 		name: SearchStringInput;
 		album: Filter<AlbumQueryParameters.WhereInput>;
 		library: Filter<LibraryQueryParameters.WhereInput>;
+		label: Filter<LabelQueryParameters.WhereInput>;
 		releases: ReleaseQueryParameters.WhereInput[];
 	}>;
 

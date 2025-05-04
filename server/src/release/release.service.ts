@@ -210,6 +210,13 @@ export default class ReleaseService {
 				),
 			});
 		}
+		if (where.label) {
+			query = deepmerge(query, {
+				AND: filterToPrisma(where.label, (t) => ({
+					label: t ? LabelService.formatWhereInput(t) : undefined,
+				})),
+			});
+		}
 		return query;
 	}
 
