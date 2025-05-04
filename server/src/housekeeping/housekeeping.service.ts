@@ -20,6 +20,7 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
+import LabelService from "src/label/label.service";
 import PlaylistService from "src/playlist/playlist.service";
 import ReleaseService from "src/release/release.service";
 import SongService from "src/song/song.service";
@@ -43,6 +44,8 @@ export class HousekeepingService {
 		private videoService: VideoService,
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
+		@Inject(forwardRef(() => LabelService))
+		private labelService: LabelService,
 	) {}
 	/**
 	 * Calls housekeeping methods on repository services
@@ -51,6 +54,7 @@ export class HousekeepingService {
 		await this.videoService.housekeeping();
 		await this.songService.housekeeping();
 		await this.releaseService.housekeeping();
+		await this.labelService.housekeeping();
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();
 		await this.genresService.housekeeping();

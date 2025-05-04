@@ -33,6 +33,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import FileService from "src/file/file.service";
 import { filterToPrisma } from "src/filter/filter";
 import IllustrationRepository from "src/illustration/illustration.repository";
+import LabelService from "src/label/label.service";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import PrismaService from "src/prisma/prisma.service";
@@ -88,7 +89,12 @@ export default class ReleaseService {
 				registeredAt: input.registeredAt,
 				releaseDate: input.releaseDate,
 				extensions: input.extensions,
-				albumId: album.id,
+				album: { connect: { id: album.id } },
+				label: input.label
+					? {
+							connect: LabelService.formatWhereInput(input.label),
+						}
+					: undefined,
 				externalMetadata: input.discogsId
 					? {
 							create: {

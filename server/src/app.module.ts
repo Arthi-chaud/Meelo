@@ -32,6 +32,7 @@ import FileModule from "./file/file.module";
 import GenreModule from "./genre/genre.module";
 import { HousekeepingModule } from "./housekeeping/housekeeping.module";
 import IllustrationModule from "./illustration/illustration.module";
+import LabelModule from "./label/label.module";
 import LibraryModule from "./library/library.module";
 import LoggerModule from "./logger/logger.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
@@ -86,6 +87,7 @@ import VideoModule from "./video/video.module";
 		HousekeepingModule,
 		ExternalMetadataModule,
 		EventsModule,
+		LabelModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

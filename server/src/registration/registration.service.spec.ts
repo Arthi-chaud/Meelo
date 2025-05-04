@@ -6,6 +6,7 @@ import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import IllustrationService from "src/illustration/illustration.service";
+import LabelModule from "src/label/label.module";
 import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -36,6 +37,7 @@ describe("Registration Service", () => {
 				ArtistModule,
 				ParserModule,
 				SettingsModule,
+				LabelModule,
 			],
 		})
 			.overrideProvider(PrismaService)

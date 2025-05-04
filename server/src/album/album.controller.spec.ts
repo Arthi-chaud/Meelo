@@ -6,6 +6,7 @@ import ArtistService from "src/artist/artist.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LabelModule from "src/label/label.module";
 import ParserModule from "src/parser/parser.module";
 import type { Album, Artist } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
@@ -43,6 +44,7 @@ describe("Album Controller", () => {
 				IllustrationModule,
 				GenreModule,
 				FileModule,
+				LabelModule,
 			],
 			providers: [ArtistService, ReleaseService],
 		})

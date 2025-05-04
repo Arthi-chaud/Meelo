@@ -23,6 +23,7 @@ import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LabelModule from "src/label/label.module";
 import LibraryModule from "src/library/library.module";
 import ParserModule from "src/parser/parser.module";
 import ReleaseModule from "src/release/release.module";
@@ -52,6 +53,7 @@ import { RegistrationService } from "./registration.service";
 		forwardRef(() => VideoModule),
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => HousekeepingModule),
+		forwardRef(() => LabelModule),
 	],
 })
 export class RegistrationModule {}

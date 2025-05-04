@@ -248,9 +248,28 @@ model Release {
     externalMetadata ExternalMetadata?
     illustration     ReleaseMainIllustration?
     discs            Disc[]
+    /// @description the label that the release was published under
+    label            Label?                   @relation(fields: [labelId], references: [id])
+    /// @description the ID of the label of the release
+    labelId          Int?
 
     @@unique([albumId, slug])
     @@map("releases")
+}
+
+model Label {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id       Int       @id @default(autoincrement())
+    /// @description The name of the label 
+    /// @example My Label
+    name     String    @db.Citext()
+    /// @description Unique string identifier
+    /// @example my-label
+    slug     String    @unique
+    releases Release[]
+
+    @@map("labels")
 }
 
 /// A song is described by a title, an artist, and 'instanciated' by Tracks
