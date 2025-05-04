@@ -66,6 +66,7 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 			releaseDate: release.releaseDate,
 			albumId: release.albumId,
 			registeredAt: release.registeredAt,
+			labelId: release.labelId,
 			discs: release.discs
 				? release.discs.map(({ id, releaseId, ...disc }) => disc)
 				: release.discs,

@@ -194,4 +194,13 @@ export default class Metadata {
 	@IsOptional()
 	@ApiProperty()
 	bpm?: number;
+
+	/**
+	 * Name of the label of the release
+	 */
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	@ApiPropertyOptional()
+	label?: string;
 }

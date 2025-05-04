@@ -5,11 +5,13 @@ import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
+import LabelModule from "src/label/label.module";
 import ParserModule from "src/parser/parser.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
+import ReleaseService from "src/release/release.service";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
@@ -38,6 +40,7 @@ const validMetadata: MetadataDto = {
 	type: "Audio",
 	genres: ["My Genre"],
 	bpm: 120,
+	label: "Warner",
 	fingerprint: "AcoustId",
 };
 
@@ -78,6 +81,7 @@ describe("Registration Controller", () => {
 				TrackModule,
 				PlaylistModule,
 				SettingsModule,
+				LabelModule,
 			],
 			controllers: [MetadataController],
 			providers: [PrismaService],
@@ -195,6 +199,10 @@ describe("Registration Controller", () => {
 			expect(song.masterId).toBe(file.track!.id);
 			createdFile = file;
 			createdSong = song;
+			const release = await module
+				.get(ReleaseService)
+				.get({ id: createdMetadata.releaseId! }, { label: true });
+			expect(release.label?.name).toBe("Warner");
 		});
 
 		it("Should register metadata (standalone track)", async () => {

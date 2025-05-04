@@ -21,6 +21,7 @@ import { AlbumType, TrackType } from "@prisma/client";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
+import LabelService from "src/label/label.service";
 import type { File } from "src/prisma/models";
 import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";
@@ -50,6 +51,8 @@ export default class MetadataService {
 		private parserService: ParserService,
 		@Inject(forwardRef(() => VideoService))
 		private videoService: VideoService,
+		@Inject(forwardRef(() => LabelService))
+		private labelService: LabelService,
 	) {}
 
 	/**
@@ -195,6 +198,9 @@ export default class MetadataService {
 					{ releases: true },
 				)
 			: undefined;
+		const label = metadata.label
+			? await this.labelService.getOrCreate({ name: metadata.label })
+			: null;
 		//TODO Link to album
 		const parsedReleaseName = metadata.release
 			? this.parserService.parseReleaseExtension(metadata.release)
@@ -207,6 +213,7 @@ export default class MetadataService {
 							extensions: parsedReleaseName.extensions,
 							releaseDate: metadata.releaseDate,
 							album: { id: album.id },
+							label: label ? { id: label?.id } : undefined,
 							registeredAt: file.registerDate,
 							discogsId: metadata.discogsId,
 						},

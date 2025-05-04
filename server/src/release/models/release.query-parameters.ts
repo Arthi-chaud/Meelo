@@ -18,6 +18,7 @@
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Filter } from "src/filter/filter";
+import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { Release } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
@@ -40,11 +41,14 @@ namespace ReleaseQueryParameters {
 		| "slug"
 		| "nameSlug"
 		| "tracks"
+		| "label"
+		| "labelId"
 		| "externalMetadata"
 		| "registeredAt"
 	> & {
 		releaseDate?: Date;
 		registeredAt?: Date;
+		label?: LabelQueryParameters.WhereInput;
 		album: AlbumQueryParameters.WhereInput;
 		discogsId?: string;
 	};
@@ -98,6 +102,7 @@ namespace ReleaseQueryParameters {
 		"tracks",
 		"illustration",
 		"discs",
+		"label",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
