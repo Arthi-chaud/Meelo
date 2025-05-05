@@ -205,6 +205,11 @@ export default class MetadataService {
 		const parsedReleaseName = metadata.release
 			? this.parserService.parseReleaseExtension(metadata.release)
 			: undefined;
+		const releaseIsMixed = parsedReleaseName
+			? parsedReleaseName.extensions.filter(
+					(ext) => ext.toLowerCase() === "mixed",
+				).length > 0
+			: false;
 		const release =
 			parsedReleaseName && album
 				? await this.releaseService.getOrCreate(
@@ -222,6 +227,7 @@ export default class MetadataService {
 				: undefined;
 		const track: TrackQueryParameters.CreateInput = {
 			name: video ? videoName : parsedTrackName.parsedName,
+			mixed: parsedTrackName.mixed || releaseIsMixed,
 			isBonus: parsedTrackName.bonus,
 			isRemastered: parsedTrackName.remastered,
 			discName: metadata.discName ?? null,

@@ -177,6 +177,7 @@ describe("Registration Controller", () => {
 			expect(file.track!.id).toBe(createdMetadata.trackId);
 			expect(file.path).toBe("Album/01 ...Baby One More Time.m4a");
 			expect(file.fingerprint).toBe("AcoustId");
+			expect(file.track?.mixed).toBe(false);
 
 			const song = await songService.get(
 				{ id: createdMetadata.songId! },
@@ -205,14 +206,15 @@ describe("Registration Controller", () => {
 			expect(release.label?.name).toBe("Warner");
 		});
 
-		it("Should register metadata (standalone track)", async () => {
+		it("Should register metadata (standalone track, mixed)", async () => {
 			const res = await applyFormFields(
 				request(app.getHttpServer()).post("/metadata"),
 				{
 					...validMetadata,
 					album: undefined,
 					release: undefined,
-					path: "test/assets/Music/...Baby One More Time.m4a",
+					name: "...Baby One More Time [Mixed]",
+					path: "test/assets/Music/...Baby One More Time [Mixed].m4a",
 				},
 			).expect(201);
 			const createdMetadata: MetadataSavedResponse = res.body;
@@ -229,11 +231,12 @@ describe("Registration Controller", () => {
 			expect(file.checksum).toBe(validMetadata.checksum);
 			expect(file.libraryId).toBe(createdMetadata.libraryId);
 			expect(file.track!.id).toBe(createdMetadata.trackId);
-			expect(file.path).toBe("...Baby One More Time.m4a");
+			expect(file.path).toBe("...Baby One More Time [Mixed].m4a");
 			expect(file.fingerprint).toBe("AcoustId");
 			const track = await trackService.get({
 				id: createdMetadata.trackId,
 			});
+			expect(track.mixed).toBe(true);
 			expect(track.releaseId).toBeNull();
 		});
 	});
@@ -258,6 +261,7 @@ describe("Registration Controller", () => {
 				{ track: true },
 			);
 			expect(file.id).toBe(createdMetadata.sourceFileId);
+			expect(file.track?.mixed).toBe(false);
 			expect(file.checksum).toBe("zzz");
 			expect(file.registerDate).toStrictEqual(new Date("2011-04-03"));
 			expect(file.track!.id).toBe(createdMetadata.trackId);

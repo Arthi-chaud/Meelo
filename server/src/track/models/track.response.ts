@@ -72,6 +72,7 @@ export class TrackResponseBuilder extends ResponseBuilderInterceptor<
 		return {
 			id: track.id,
 			songId: track.songId,
+			mixed: track.mixed,
 			videoId: track.videoId,
 			releaseId: track.releaseId,
 			name: track.name,
