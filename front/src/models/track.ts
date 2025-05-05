@@ -80,6 +80,10 @@ const Track = Resource.concat(
 		 * If the Track is a bonus track
 		 */
 		isRemastered: yup.boolean().required(),
+		/**
+		 * If the Track is mixed with the previous/next track
+		 */
+		mixed: yup.boolean().required(),
 	}),
 );
 

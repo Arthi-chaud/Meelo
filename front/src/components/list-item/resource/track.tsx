@@ -18,6 +18,7 @@
 
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "~/api/hook";
 import { getArtist } from "~/api/queries";
 import TrackContextualMenu from "~/components/contextual-menu/resource/track";
@@ -43,6 +44,7 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 	const release = track?.release;
 	const isMaster = track ? track.song?.masterId === track.id : false;
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 	const playTrack = useSetAtom(playTrackAtom);
 
 	return (
@@ -73,7 +75,13 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 				})
 			}
 			title={track?.name}
-			secondTitle={release?.name ?? null}
+			secondTitle={[
+				release?.name ?? null,
+				track?.mixed ? t("mixed") : null,
+				track?.isRemastered ? t("remastered") : null,
+			]
+				.filter((s) => !!s)
+				.join(" — ")}
 			trailing={
 				<Grid
 					container

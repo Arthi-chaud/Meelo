@@ -275,5 +275,6 @@
 	"confirm": "Confirmer",
 	"warningBeforeMergingSong": "Toutes les pistes seront réassignées à ce nouveau morceau. L'ancien morceau sera supprimé. Vos fichiers ne seront pas modifiés ou supprimés",
 	"reassignTrack": "Réassigner la piste",
-	"topLabels": "Labels populaires"
+	"topLabels": "Labels populaires",
+	"mixed": "Mixé"
 }
