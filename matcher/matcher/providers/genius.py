@@ -239,11 +239,23 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             "div",
             attrs={"data-lyrics-container": "true"},
         )
+        # Removing the contributor count
+        for div in divs:
+            try:
+                to_remove = div.find(  # pyright: ignore
+                    "div",
+                    attrs={"data-exclude-from-selection": "true"},  # pyright: ignore
+                )
+                if to_remove:
+                    to_remove.extract()
+            except Exception:
+                pass
+
         return self._clean_html(divs)
 
     def _get_song_description(self, song: Any) -> str | None:
         html = song
-        divs = html.find_all("div", class_=re.compile(r"^SongDescription-.+"))
+        divs = html.find_all("div", class_=re.compile(r"^SongDescription[-_].+"))
         for div in divs:
             if "start the song bio" in div.get_text().lower():
                 return
@@ -303,7 +315,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                     key=lambda s: abs(len(to_slug(s["title"])) - len(song_slug)),
                 )
                 final_match = ordered_matches[0]
-            song_id = self.get_song_id_from_url(final_match["url"])
+            song_id = (
+                self.get_song_id_from_url(final_match["url"]) if final_match else None
+            )
             return SongSearchResult(song_id) if song_id else None
         except Exception:
             return None
