@@ -4339,13 +4339,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deepmerge@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "deepmerge@npm:4.3.1"
-  checksum: 10c0/e53481aaf1aa2c4082b5342be6b6d8ad9dfe387bc92ce197a66dea08bd4265904a087e75e464f14d1347cf2ac8afe1e4c16b266e0561cc5df29382d3c5f80044
-  languageName: node
-  linkType: hard
-
 "defaults@npm:^1.0.3":
   version: 1.0.4
   resolution: "defaults@npm:1.0.4"
@@ -6870,7 +6863,6 @@ __metadata:
     class-validator: "npm:^0.14.0"
     cookie-parser: "npm:^1.4.7"
     damerau-levenshtein: "npm:^1.0.8"
-    deepmerge: "npm:^4.3.1"
     fs: "npm:^0.0.1-security"
     get-rgba-palette: "npm:^2.0.1"
     helmet: "npm:^6.0.0"

@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { AlbumType, Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -275,15 +274,17 @@ export default class AlbumService extends SearchableRepositoryService {
 	}
 
 	static formatManyWhereInput(where: AlbumQueryParameters.ManyWhereInput) {
-		let query: Prisma.AlbumWhereInput = {
-			type: where.type
-				? enumFilterToPrisma(where.type, (t) => t!)
-				: undefined,
-			name: buildStringSearchParameters(where.name),
-		};
+		const query: Prisma.AlbumWhereInput[] = [
+			{
+				type: where.type
+					? enumFilterToPrisma(where.type, (t) => t!)
+					: undefined,
+				name: buildStringSearchParameters(where.name),
+			},
+		];
 
 		if (where.albums) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.albums.map((album) =>
 					AlbumService.formatWhereInput(album),
 				),
@@ -292,7 +293,7 @@ export default class AlbumService extends SearchableRepositoryService {
 		if (where.related) {
 			// Related albums have at least one song group in common
 			// Such song must have at least one audio track
-			query = deepmerge(query, {
+			query.push({
 				NOT: AlbumService.formatWhereInput(where.related),
 				releases: {
 					some: {
@@ -324,7 +325,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			});
 		}
 		if (where.library) {
-			query = deepmerge(query, {
+			query.push({
 				releases: {
 					some: ReleaseService.formatManyWhereInput({
 						library: where.library,
@@ -334,7 +335,7 @@ export default class AlbumService extends SearchableRepositoryService {
 		}
 		if (where.genre) {
 			if (where.genre.not) {
-				query = deepmerge(query, {
+				query.push({
 					AND: [
 						{
 							releases: {
@@ -364,7 +365,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					],
 				});
 			} else if (where.genre.and) {
-				query = deepmerge(query, {
+				query.push({
 					AND: where.genre.and?.map((g) => ({
 						OR: [
 							{
@@ -393,7 +394,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					})),
 				});
 			} else {
-				query = deepmerge(query, {
+				query.push({
 					OR: [
 						{
 							releases: {
@@ -423,7 +424,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			}
 		}
 		if (where.appearance?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.appearance.and.map((a) => ({
 					releases: {
 						some: {
@@ -445,7 +446,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				},
 			});
 		} else if (where.appearance) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						releases: {
@@ -475,11 +476,11 @@ export default class AlbumService extends SearchableRepositoryService {
 			where.artist?.is?.compilationArtist ||
 			where.artist?.and?.find((a) => a.compilationArtist)
 		) {
-			query = deepmerge(query, {
+			query.push({
 				artist: null,
 			});
 		} else if (where.artist) {
-			query = deepmerge(query, {
+			query.push({
 				artist: filterToPrisma(
 					where.artist,
 					ArtistService.formatWhereInput,
@@ -487,7 +488,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			});
 		}
 		if (where.label?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.label.and.map((label) => ({
 					releases: {
 						some: ReleaseService.formatManyWhereInput({
@@ -497,7 +498,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				})),
 			});
 		} else if (where.label?.not) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						releases: {
@@ -509,7 +510,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				],
 			});
 		} else if (where.label) {
-			query = deepmerge(query, {
+			query.push({
 				releases: {
 					some: ReleaseService.formatManyWhereInput({
 						label: where.label,
@@ -517,7 +518,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				},
 			});
 		}
-		return query;
+		return { AND: query };
 	}
 
 	formatManyWhereInput = AlbumService.formatManyWhereInput;
@@ -655,6 +656,9 @@ export default class AlbumService extends SearchableRepositoryService {
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput[]): Promise<number> {
+		if (!where.length) {
+			return 0;
+		}
 		const albums = await this.getMany(
 			{ albums: where },
 			undefined,
@@ -690,9 +694,10 @@ export default class AlbumService extends SearchableRepositoryService {
 			},
 			where: { releases: { none: {} } },
 		});
-		const deletedAlbumCount = await this.delete(
-			emptyAlbums.map(({ id }) => ({ id })),
-		);
+		const deletedAlbumCount =
+			emptyAlbums.length > 0
+				? await this.delete(emptyAlbums.map(({ id }) => ({ id })))
+				: 0;
 
 		if (deletedAlbumCount) {
 			this.logger.warn(`Deleted ${deletedAlbumCount} albums`);

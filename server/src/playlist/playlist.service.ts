@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Playlist, Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -190,43 +189,45 @@ export default class PlaylistService {
 	static formatManyWhereInput(
 		input: PlaylistQueryParameters.ManyWhereInput,
 	): Prisma.PlaylistWhereInput {
-		let query: Prisma.PlaylistWhereInput = {
-			id: input.id,
-			entries: input.song
-				? {
-						some: {
-							song: SongService.formatWhereInput(input.song),
-						},
-					}
-				: input.album
+		const query: Prisma.PlaylistWhereInput[] = [
+			{
+				id: input.id,
+				entries: input.song
 					? {
 							some: {
-								song: {
-									tracks: {
-										some: {
-											release: {
-												album: AlbumService.formatWhereInput(
-													input.album,
-												),
+								song: SongService.formatWhereInput(input.song),
+							},
+						}
+					: input.album
+						? {
+								some: {
+									song: {
+										tracks: {
+											some: {
+												release: {
+													album: AlbumService.formatWhereInput(
+														input.album,
+													),
+												},
 											},
 										},
 									},
 								},
-							},
-						}
-					: undefined,
-			ownerId: input.owner?.id,
-		};
+							}
+						: undefined,
+				ownerId: input.owner?.id,
+			},
+		];
 
 		if (input.changleableBy) {
-			query = deepmerge(query, {
+			query.push({
 				OR: [
 					{ ownerId: input.changleableBy.id },
 					{ isPublic: true, allowChanges: true },
 				],
 			});
 		}
-		return query;
+		return { AND: query };
 	}
 
 	formatSortingInput(

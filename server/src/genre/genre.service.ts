@@ -18,7 +18,6 @@
 
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
@@ -64,27 +63,27 @@ export default class GenreService {
 	}
 
 	static formatManyWhereInput(where: GenreQueryParameters.ManyWhereInput) {
-		let query: Prisma.GenreWhereInput = {};
+		const query: Prisma.GenreWhereInput[] = [];
 
 		if (where.genres) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.genres.map((genre) =>
 					GenreService.formatWhereInput(genre),
 				),
 			});
 		}
 		if (where.slug) {
-			query = deepmerge(query, {
+			query.push({
 				slug: buildStringSearchParameters(where.slug),
 			});
 		}
 		if (where.song) {
-			query = deepmerge(query, {
+			query.push({
 				songs: { some: SongService.formatWhereInput(where.song) },
 			});
 		}
 		if (where.artist) {
-			query = deepmerge(query, {
+			query.push({
 				songs: {
 					some: {
 						artist: ArtistService.formatWhereInput(where.artist),
@@ -93,7 +92,7 @@ export default class GenreService {
 			});
 		}
 		if (where.album) {
-			query = deepmerge(query, {
+			query.push({
 				OR: [
 					{
 						songs: {
@@ -118,7 +117,7 @@ export default class GenreService {
 				],
 			});
 		}
-		return query;
+		return { AND: query };
 	}
 
 	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;
@@ -190,6 +189,9 @@ export default class GenreService {
 	 * @param where the query parameter to find the genres to delete
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput[]): Promise<number> {
+		if (!where.length) {
+			return 0;
+		}
 		const deleted = await this.prismaService.genre.deleteMany({
 			where: GenreService.formatManyWhereInput({ genres: where }),
 		});
@@ -207,9 +209,12 @@ export default class GenreService {
 			},
 			where: { songs: { none: {} }, albums: { none: {} } },
 		});
-		const deletedGenreCount = await this.delete(
-			emptyGenres.map((genre) => ({ id: genre.id })),
-		);
+		const deletedGenreCount =
+			emptyGenres.length > 0
+				? await this.delete(
+						emptyGenres.map((genre) => ({ id: genre.id })),
+					)
+				: 0;
 
 		if (deletedGenreCount) {
 			this.logger.warn(`Deleted ${deletedGenreCount} genres`);
