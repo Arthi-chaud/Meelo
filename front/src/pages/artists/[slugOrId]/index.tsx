@@ -191,7 +191,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								title={`plural${type}`}
 								maxItemCount={AlbumListSize}
 								artist={artist}
-								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}`}
+								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}&sort=releaseDate&order=desc`}
 								minimizePadding
 								query={query}
 							/>
