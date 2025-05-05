@@ -297,12 +297,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			),
 		[bSidesQuery.items],
 	);
-	const [tracks, totalDuration, trackList] = useMemo(() => {
+	const [isMixed, tracks, totalDuration, trackList] = useMemo(() => {
 		if (tracklistQuery.data) {
 			const discMap = tracklistQuery.data;
 			const flatTracks = Array.from(Object.values(discMap)).flat();
 
 			return [
+				!flatTracks.some(({ mixed }) => !mixed),
 				flatTracks,
 				flatTracks.reduce(
 					(prevDuration, track) =>
@@ -312,7 +313,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				discMap,
 			];
 		}
-		return [[], undefined, undefined];
+		return [undefined, [], undefined, undefined];
 	}, [tracklistQuery.data]);
 	const { videos, liveVideos, videoExtras } = useMemo(
 		() =>
@@ -553,7 +554,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									{releaseDate &&
 										`${formatReleaseDate(releaseDate, i18n.language)} - `}
 									{totalDuration !== undefined ? (
-										formatDuration(totalDuration)
+										<>
+											{`${formatDuration(totalDuration)}`}
+											{isMixed && ` - ${t("mixed")}`}
+										</>
 									) : (
 										<Skeleton width={"100px"} />
 									)}
