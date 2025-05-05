@@ -71,12 +71,26 @@ class TestGenius(unittest.TestCase):
         self.assertEqual(release_date, datetime.date(2002, 3, 26))
 
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
+    def test_get_song_lyrics(self):
+        provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        song = provider.get_song("Girls-aloud-models")
+        self.assertIsNotNone(song)
+        # Lyrics
+        lyrics: str = provider.get_plain_song_lyrics(song)  # pyright: ignore
+        self.assertIsNotNone(lyrics)
+        lines = lyrics.split("\n")
+        self.assertEqual("[Intro: Sarah & Cheryl]", lines[0])
+        self.assertEqual(
+            "Girls girls girls girls girls girls girls", lines[len(lines) - 1]
+        )
+
+    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     def test_get_song_lyrics_and_description(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         song = provider.get_song("Rachel-stevens-some-girls")
         self.assertIsNotNone(song)
         # Lyrics
-        lyrics: str = provider.get_song_lyrics(song)  # pyright: ignore
+        lyrics: str = provider.get_plain_song_lyrics(song)  # pyright: ignore
         self.assertIsNotNone(lyrics)
         lines = lyrics.split("\n")
         self.assertEqual("[Verse 1]", lines[0])
@@ -96,7 +110,7 @@ class TestGenius(unittest.TestCase):
         song = provider.get_song("Madonna-die-another-day-dirty-vegas-dub")
         self.assertIsNotNone(song)
         # Lyrics
-        lyrics: str = provider.get_song_lyrics(song)  # pyright: ignore
+        lyrics: str = provider.get_plain_song_lyrics(song)  # pyright: ignore
         self.assertIsNone(lyrics)
         # Description
         desc: str = provider.get_song_description(song)  # pyright: ignore
