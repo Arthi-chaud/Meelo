@@ -544,6 +544,8 @@ model Track {
     standaloneIllustration   Illustration?      @relation(fields: [standaloneIllustrationId], references: [id], name: "track_standalone_illustration")
     video                    Video?             @relation(fields: [videoId], references: [id], onDelete: Restrict)
     videoId                  Int?
+    /// @description If true, the track fades with the previous and next tracks of the release
+    mixed                    Boolean            @default(false)
 
     @@map("tracks")
 }

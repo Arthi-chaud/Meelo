@@ -684,6 +684,8 @@ export default class ParserService {
 				"Album Version",
 				"Album Mix",
 				"Main Version",
+				"Mixed",
+				"Mixed Version",
 			] as const,
 			["Live", "Extended", "Instrumental", "Edit", "Video Mix"],
 		);
@@ -691,6 +693,8 @@ export default class ParserService {
 			parsedName,
 			remastered: ext.Remaster || ext.Remastered,
 			bonus: ext["Bonus Track"],
+			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
+			mixed: ext["Mixed"],
 			main:
 				ext["Album Version"] || ext["Main Version"] || ext["Album Mix"],
 			video: ext.Video,
