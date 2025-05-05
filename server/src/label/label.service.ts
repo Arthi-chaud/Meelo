@@ -17,7 +17,6 @@
  */
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -104,10 +103,10 @@ export default class LabelService {
 	static formatManyWhereInput(
 		where: LabelQueryParameters.ManyWhereInput,
 	): Prisma.LabelWhereInput {
-		let query: Prisma.LabelWhereInput = {};
+		const query: Prisma.LabelWhereInput[] = [];
 
 		if (where.album?.not) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						releases: {
@@ -119,7 +118,7 @@ export default class LabelService {
 				],
 			});
 		} else if (where.album?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.album.and.map((artist) => ({
 					releases: {
 						some: ReleaseService.formatManyWhereInput({
@@ -129,7 +128,7 @@ export default class LabelService {
 				})),
 			});
 		} else if (where.album) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						releases: {
@@ -142,7 +141,7 @@ export default class LabelService {
 			});
 		}
 		if (where.artist?.not) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						releases: {
@@ -156,7 +155,7 @@ export default class LabelService {
 				],
 			});
 		} else if (where.artist?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.artist.and.map((artist) => ({
 					releases: {
 						some: {
@@ -168,7 +167,7 @@ export default class LabelService {
 				})),
 			});
 		} else if (where.artist) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						releases: {
@@ -182,7 +181,7 @@ export default class LabelService {
 				],
 			});
 		}
-		return query;
+		return { AND: query };
 	}
 
 	formatSortingInput(

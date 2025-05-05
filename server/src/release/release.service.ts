@@ -22,7 +22,6 @@ import { basename } from "node:path";
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import archiver from "archiver";
-import deepmerge from "deepmerge";
 import type { Response } from "express";
 import mime from "mime";
 import { PrismaError } from "prisma-error-enum";
@@ -182,19 +181,21 @@ export default class ReleaseService {
 	}
 
 	static formatManyWhereInput(where: ReleaseQueryParameters.ManyWhereInput) {
-		let query: Prisma.ReleaseWhereInput = {
-			name: buildStringSearchParameters(where.name),
-		};
+		const query: Prisma.ReleaseWhereInput[] = [
+			{
+				name: buildStringSearchParameters(where.name),
+			},
+		];
 
 		if (where.releases) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.releases.map((release) =>
 					ReleaseService.formatWhereInput(release),
 				),
 			});
 		}
 		if (where.library) {
-			query = deepmerge(query, {
+			query.push({
 				tracks: {
 					some: TrackService.formatManyWhereInput({
 						library: where.library,
@@ -203,7 +204,7 @@ export default class ReleaseService {
 			});
 		}
 		if (where.album) {
-			query = deepmerge(query, {
+			query.push({
 				album: filterToPrisma(
 					where.album,
 					AlbumService.formatWhereInput,
@@ -211,13 +212,13 @@ export default class ReleaseService {
 			});
 		}
 		if (where.label) {
-			query = deepmerge(query, {
+			query.push({
 				AND: filterToPrisma(where.label, (t) => ({
 					label: t ? LabelService.formatWhereInput(t) : undefined,
 				})),
 			});
 		}
-		return query;
+		return { AND: query };
 	}
 
 	static formatIdentifierToWhereInput = formatIdentifierToIdOrSlug;

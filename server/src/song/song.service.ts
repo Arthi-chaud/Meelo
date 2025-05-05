@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { AlbumType, Prisma, SongType, TrackType } from "@prisma/client";
-import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -311,22 +310,17 @@ export default class SongService extends SearchableRepositoryService {
 		) {
 			throw new CompilationArtistException("Song");
 		}
-		let query: Prisma.SongWhereInput = {
-			name: buildStringSearchParameters(where.name),
-			type: where.type
-				? enumFilterToPrisma(where.type, (t) => t!)
-				: undefined,
-		};
+		const query: Prisma.SongWhereInput[] = [];
 
 		if (where.songs) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.songs.map((song) =>
 					SongService.formatWhereInput(song),
 				),
 			});
 		}
 		if (where.genre) {
-			query = deepmerge(query, {
+			query.push({
 				genres: {
 					some: filterToPrisma(
 						where.genre,
@@ -337,13 +331,13 @@ export default class SongService extends SearchableRepositoryService {
 		}
 		if (where.artist) {
 			if (where.artist.not) {
-				query = deepmerge(query, {
+				query.push({
 					artist: {
 						NOT: ArtistService.formatWhereInput(where.artist.not),
 					},
 				});
 			} else if (where.artist.and) {
-				query = deepmerge(query, {
+				query.push({
 					AND: where.artist.and.map((a) => ({
 						OR: [
 							{ artist: ArtistService.formatWhereInput(a) },
@@ -356,7 +350,7 @@ export default class SongService extends SearchableRepositoryService {
 					})),
 				});
 			} else {
-				query = deepmerge(query, {
+				query.push({
 					OR: [
 						{
 							artist: filterToPrisma(
@@ -377,7 +371,7 @@ export default class SongService extends SearchableRepositoryService {
 			}
 		}
 		if (where.library) {
-			query = deepmerge(query, {
+			query.push({
 				tracks: {
 					some: TrackService.formatManyWhereInput({
 						library: where.library,
@@ -386,7 +380,7 @@ export default class SongService extends SearchableRepositoryService {
 			});
 		}
 		if (where.album) {
-			query = deepmerge(query, {
+			query.push({
 				tracks: {
 					some: TrackService.formatManyWhereInput({
 						album: where.album,
@@ -395,12 +389,12 @@ export default class SongService extends SearchableRepositoryService {
 			});
 		}
 		if (where.group) {
-			query = deepmerge(query, {
+			query.push({
 				group: SongService.formatSongGroupWhereInput(where.group),
-			} satisfies Prisma.SongWhereInput);
+			});
 		}
 		if (where.versionsOf) {
-			query = deepmerge(query, {
+			query.push({
 				group: {
 					versions: {
 						some: filterToPrisma(
@@ -409,9 +403,15 @@ export default class SongService extends SearchableRepositoryService {
 						),
 					},
 				},
-			} satisfies Prisma.SongWhereInput);
+			});
 		}
-		return query;
+		return {
+			AND: query,
+			name: buildStringSearchParameters(where.name),
+			type: where.type
+				? enumFilterToPrisma(where.type, (t) => t!)
+				: undefined,
+		};
 	}
 
 	formatManyWhereInput = SongService.formatManyWhereInput;

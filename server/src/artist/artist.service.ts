@@ -18,7 +18,6 @@
 
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -185,19 +184,21 @@ export default class ArtistService extends SearchableRepositoryService {
 	 * Get Artists
 	 */
 	static formatManyWhereInput(where: ArtistQueryParameters.ManyWhereInput) {
-		let query: Prisma.ArtistWhereInput = {
-			name: buildStringSearchParameters(where.name),
-		};
+		const query: Prisma.ArtistWhereInput[] = [
+			{
+				name: buildStringSearchParameters(where.name),
+			},
+		];
 
 		if (where.artists) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.artists.map((artist) =>
 					ArtistService.formatWhereInput(artist),
 				),
 			});
 		}
 		if (where.library?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.library.and.map((l) => ({
 					OR: [
 						{
@@ -234,7 +235,7 @@ export default class ArtistService extends SearchableRepositoryService {
 				})),
 			});
 		} else if (where.library) {
-			query = deepmerge(query, {
+			query.push({
 				albums: {
 					some: {
 						releases: {
@@ -262,7 +263,7 @@ export default class ArtistService extends SearchableRepositoryService {
 			});
 		}
 		if (where.genre) {
-			query = deepmerge(query, {
+			query.push({
 				songs: {
 					some: {
 						genres: {
@@ -276,7 +277,7 @@ export default class ArtistService extends SearchableRepositoryService {
 			});
 		}
 		if (where.label) {
-			query = deepmerge(query, {
+			query.push({
 				AND: [
 					{
 						albums: {
@@ -289,7 +290,7 @@ export default class ArtistService extends SearchableRepositoryService {
 			});
 		}
 		if (where.album?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.album.and.map((a) => ({
 					OR: [
 						{
@@ -326,7 +327,7 @@ export default class ArtistService extends SearchableRepositoryService {
 				})),
 			});
 		} else if (where.album) {
-			query = deepmerge(query, {
+			query.push({
 				OR: [
 					{
 						songs: {
@@ -364,12 +365,12 @@ export default class ArtistService extends SearchableRepositoryService {
 			});
 		}
 		if (where.albumArtistOnly) {
-			query = deepmerge(query, {
+			query.push({
 				NOT: { albums: { none: {} } },
 			});
 		}
 
-		return query;
+		return { AND: query };
 	}
 
 	static formatIdentifierToWhereInput(

@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { AlbumType, Prisma, VideoType } from "@prisma/client";
-import deepmerge from "deepmerge";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -295,26 +294,22 @@ export default class VideoService extends SearchableRepositoryService {
 	static formatManyWhereInput(
 		where: VideoQueryParameters.ManyWhereInput,
 	): Prisma.VideoWhereInput {
-		let query: Prisma.VideoWhereInput = {
-			type: where.type
-				? enumFilterToPrisma(where.type, (t) => t!)
-				: undefined,
-		};
+		const query: Prisma.VideoWhereInput[] = [];
 
 		if (where.videos) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.videos.map((videoIdentifier) =>
 					VideoService.formatWhereInput(videoIdentifier),
 				),
 			});
 		}
 		if (where.name) {
-			query = deepmerge(query, {
+			query.push({
 				name: buildStringSearchParameters(where.name),
 			});
 		}
 		if (where.album) {
-			query = deepmerge(query, {
+			query.push({
 				OR: [
 					{
 						// Video tracks from singles that are extras
@@ -415,7 +410,7 @@ export default class VideoService extends SearchableRepositoryService {
 		}
 
 		if (where.library) {
-			query = deepmerge(query, {
+			query.push({
 				tracks: {
 					some: {
 						sourceFile: {
@@ -430,13 +425,13 @@ export default class VideoService extends SearchableRepositoryService {
 		}
 
 		if (where.song) {
-			query = deepmerge(query, {
+			query.push({
 				song: filterToPrisma(where.song, SongService.formatWhereInput),
 			});
 		}
 
 		if (where.group) {
-			query = deepmerge(query, {
+			query.push({
 				OR: [
 					{
 						song: {
@@ -456,7 +451,7 @@ export default class VideoService extends SearchableRepositoryService {
 		}
 
 		if (where.artist?.and) {
-			query = deepmerge(query, {
+			query.push({
 				AND: where.artist.and.map((a) => ({
 					OR: [
 						{
@@ -474,7 +469,7 @@ export default class VideoService extends SearchableRepositoryService {
 				})),
 			});
 		} else if (where.artist) {
-			query = deepmerge(query, {
+			query.push({
 				OR: [
 					{
 						artist: filterToPrisma(
@@ -496,7 +491,12 @@ export default class VideoService extends SearchableRepositoryService {
 				],
 			});
 		}
-		return query;
+		return {
+			AND: query,
+			type: where.type
+				? enumFilterToPrisma(where.type, (t) => t!)
+				: undefined,
+		};
 	}
 
 	private async getManyRandomIds(

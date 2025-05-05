@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -116,22 +115,22 @@ export default class FileService {
 	}
 
 	static formatManyWhereInput(where: FileQueryParameters.ManyWhereInput) {
-		let query: Prisma.FileWhereInput = {};
+		const query: Prisma.FileWhereInput[] = [];
 
 		if (where.files) {
-			query = deepmerge(query, {
+			query.push({
 				OR: where.files.map((file) =>
 					FileService.formatWhereInput(file),
 				),
 			});
 		}
 		if (where.library) {
-			query = deepmerge<Prisma.FileWhereInput>(query, {
+			query.push({
 				library: LibraryService.formatWhereInput(where.library),
 			});
 		}
 		if (where.album) {
-			query = deepmerge<Prisma.FileWhereInput>(query, {
+			query.push({
 				track: {
 					release: {
 						album: AlbumService.formatWhereInput(where.album),
@@ -140,44 +139,44 @@ export default class FileService {
 			});
 		}
 		if (where.release) {
-			query = deepmerge<Prisma.FileWhereInput>(query, {
+			query.push({
 				track: {
 					release: ReleaseService.formatWhereInput(where.release),
 				},
 			});
 		}
 		if (where.song) {
-			query = deepmerge<Prisma.FileWhereInput>(query, {
+			query.push({
 				track: {
 					song: SongService.formatWhereInput(where.song),
 				},
 			});
 		}
 		if (where.track) {
-			query = deepmerge<Prisma.FileWhereInput>(query, {
+			query.push({
 				track: TrackService.formatWhereInput(where.track),
 			});
 		}
 		if (where.paths) {
-			query = deepmerge(query, {
+			query.push({
 				path: {
 					in: where.paths,
 				},
 			});
 		}
 		if (where.inFolder) {
-			query = deepmerge(query, {
+			query.push({
 				path: {
 					startsWith: where.inFolder,
 				},
 			});
 		}
 		if (where.registrationDate) {
-			query = deepmerge(query, {
+			query.push({
 				registerDate: buildDateSearchParameters(where.registrationDate),
 			});
 		}
-		return query;
+		return { AND: query };
 	}
 
 	static formatIdentifierToWhereInput(

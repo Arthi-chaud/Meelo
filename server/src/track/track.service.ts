@@ -18,7 +18,6 @@
 
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import deepmerge from "deepmerge";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -181,24 +180,22 @@ export default class TrackService {
 	static formatManyWhereInput(
 		where: TrackQueryParameters.ManyWhereInput,
 	): Prisma.TrackWhereInput {
-		let queryParameters: Prisma.TrackWhereInput = {
-			type: where.type,
-		};
+		const query: Prisma.TrackWhereInput[] = [];
 
 		if (where.tracks) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				OR: where.tracks.map((track) =>
 					TrackService.formatWhereInput(track),
 				),
 			});
 		}
 		if (where.song) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				song: filterToPrisma(where.song, SongService.formatWhereInput),
 			});
 		}
 		if (where.video) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				video: filterToPrisma(
 					where.video,
 					VideoService.formatWhereInput,
@@ -206,7 +203,7 @@ export default class TrackService {
 			});
 		}
 		if (where.library) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				sourceFile: {
 					library: filterToPrisma(
 						where.library,
@@ -217,7 +214,7 @@ export default class TrackService {
 		}
 
 		if (where.release) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				release: filterToPrisma(
 					where.release,
 					ReleaseService.formatWhereInput,
@@ -225,43 +222,40 @@ export default class TrackService {
 			});
 		}
 		if (where.exclusiveOn) {
-			queryParameters = deepmerge<Prisma.TrackWhereInput>(
-				queryParameters,
-				{
-					type: "Audio",
-					song: {
-						group: {
-							versions: {
-								some: {
-									type: "Original",
-									tracks: {
-										every: {
-											release: {
-												OR: [
-													{
-														album: {
-															type: {
-																not: "StudioRecording",
-															},
+			query.push({
+				type: "Audio",
+				song: {
+					group: {
+						versions: {
+							some: {
+								type: "Original",
+								tracks: {
+									every: {
+										release: {
+											OR: [
+												{
+													album: {
+														type: {
+															not: "StudioRecording",
 														},
 													},
-													ReleaseService.formatWhereInput(
-														where.exclusiveOn,
-													),
-												],
-											},
+												},
+												ReleaseService.formatWhereInput(
+													where.exclusiveOn,
+												),
+											],
 										},
 									},
 								},
 							},
 						},
 					},
-					release: ReleaseService.formatWhereInput(where.exclusiveOn),
 				},
-			);
+				release: ReleaseService.formatWhereInput(where.exclusiveOn),
+			});
 		}
 		if (where.album) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				song: {
 					tracks: {
 						some: {
@@ -277,7 +271,7 @@ export default class TrackService {
 			});
 		}
 		if (where.artist) {
-			queryParameters = deepmerge(queryParameters, {
+			query.push({
 				release: {
 					album: filterToPrisma(where.artist, (a) =>
 						AlbumService.formatManyWhereInput({
@@ -287,7 +281,10 @@ export default class TrackService {
 				},
 			});
 		}
-		return queryParameters;
+		return {
+			AND: query,
+			type: where.type,
+		};
 	}
 
 	static formatIdentifierToWhereInput(
