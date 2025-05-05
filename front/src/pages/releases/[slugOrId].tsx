@@ -516,7 +516,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												left: { xs: 0, sm: -8 },
 											}}
 										>
-											<Typography variant="h4">
+											<Typography
+												variant="h4"
+												textAlign={"left"}
+											>
 												{albumArtist?.name ?? (
 													<Skeleton width={"200px"} />
 												)}
