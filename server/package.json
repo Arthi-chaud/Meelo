@@ -41,7 +41,6 @@
 		"class-validator": "^0.14.0",
 		"cookie-parser": "^1.4.7",
 		"damerau-levenshtein": "^1.0.8",
-		"deepmerge": "^4.3.1",
 		"fs": "^0.0.1-security",
 		"get-rgba-palette": "^2.0.1",
 		"helmet": "^6.0.0",
