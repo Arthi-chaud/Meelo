@@ -189,6 +189,9 @@ export default class GenreService {
 	 * @param where the query parameter to find the genres to delete
 	 */
 	async delete(where: GenreQueryParameters.DeleteInput[]): Promise<number> {
+		if (!where.length) {
+			return 0;
+		}
 		const deleted = await this.prismaService.genre.deleteMany({
 			where: GenreService.formatManyWhereInput({ genres: where }),
 		});
@@ -206,9 +209,12 @@ export default class GenreService {
 			},
 			where: { songs: { none: {} }, albums: { none: {} } },
 		});
-		const deletedGenreCount = await this.delete(
-			emptyGenres.map((genre) => ({ id: genre.id })),
-		);
+		const deletedGenreCount =
+			emptyGenres.length > 0
+				? await this.delete(
+						emptyGenres.map((genre) => ({ id: genre.id })),
+					)
+				: 0;
 
 		if (deletedGenreCount) {
 			this.logger.warn(`Deleted ${deletedGenreCount} genres`);

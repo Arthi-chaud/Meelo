@@ -393,6 +393,9 @@ export default class ReleaseService {
 	 * @param where Query parameters to find the releases to delete
 	 */
 	async delete(where: ReleaseQueryParameters.DeleteInput[]) {
+		if (!where.length) {
+			return 0;
+		}
 		const toDelete = await this.getMany(
 			{ releases: where },
 			undefined,
@@ -443,9 +446,10 @@ export default class ReleaseService {
 			},
 			where: { tracks: { none: {} } },
 		});
-		const deletedReleaseCount = await this.delete(
-			emptyReleases.map(({ id }) => ({ id })),
-		);
+		const deletedReleaseCount =
+			emptyReleases.length > 0
+				? await this.delete(emptyReleases.map(({ id }) => ({ id })))
+				: 0;
 		if (deletedReleaseCount) {
 			this.logger.warn(`Deleted ${deletedReleaseCount} releases`);
 		}

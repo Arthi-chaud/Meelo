@@ -312,7 +312,7 @@ export default class SongService extends SearchableRepositoryService {
 		}
 		const query: Prisma.SongWhereInput[] = [];
 
-		if (where.songs) {
+		if (where.songs?.length) {
 			query.push({
 				OR: where.songs.map((song) =>
 					SongService.formatWhereInput(song),
@@ -639,6 +639,9 @@ export default class SongService extends SearchableRepositoryService {
 	 * @param where Query parameters to find the song to delete
 	 */
 	async delete(where: SongQueryParameters.DeleteInput[]) {
+		if (!where.length) {
+			return 0;
+		}
 		const toDelete = await this.getMany(
 			{ songs: where },
 			undefined,
@@ -675,9 +678,10 @@ export default class SongService extends SearchableRepositoryService {
 			},
 		});
 
-		const deletedSongCount = await this.delete(
-			emptySongs.map(({ id }) => ({ id })),
-		);
+		const deletedSongCount =
+			emptySongs.length > 0
+				? await this.delete(emptySongs.map(({ id }) => ({ id })))
+				: 0;
 		if (deletedSongCount) {
 			this.logger.warn(`Deleted ${deletedSongCount} songs`);
 		}

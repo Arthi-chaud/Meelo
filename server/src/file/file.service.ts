@@ -242,6 +242,9 @@ export default class FileService {
 	}
 
 	async delete(where: FileQueryParameters.DeleteInput[]) {
+		if (!where.length) {
+			return 0;
+		}
 		return this.prismaService.file.deleteMany({
 			where: FileService.formatManyWhereInput({ files: where }),
 		});

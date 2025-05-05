@@ -417,6 +417,9 @@ export default class ArtistService extends SearchableRepositoryService {
 	}
 
 	async delete(where: ArtistQueryParameters.DeleteInput[]) {
+		if (!where.length) {
+			return 0;
+		}
 		const artists = await this.getMany(
 			{ artists: where },
 			undefined,
@@ -471,9 +474,12 @@ export default class ArtistService extends SearchableRepositoryService {
 				videos: { none: {} },
 			},
 		});
-		const deletedArtistCount = await this.delete(
-			emptyArtists.map((artist) => ({ id: artist.id })),
-		);
+		const deletedArtistCount =
+			emptyArtists.length > 0
+				? await this.delete(
+						emptyArtists.map((artist) => ({ id: artist.id })),
+					)
+				: 0;
 		if (deletedArtistCount) {
 			this.logger.warn(`Deleted ${deletedArtistCount} artists`);
 		}

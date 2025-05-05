@@ -540,6 +540,9 @@ export default class TrackService {
 	 * @param where Query parameters to find the tracks to delete
 	 */
 	async delete(where: TrackQueryParameters.DeleteInput[]): Promise<number> {
+		if (!where.length) {
+			return 0;
+		}
 		const chunkSize = 30;
 		let totalDeleted = 0;
 		for (let idx = 0; idx < where.length; idx += chunkSize) {

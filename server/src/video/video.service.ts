@@ -588,6 +588,9 @@ export default class VideoService extends SearchableRepositoryService {
 	}
 
 	async delete(where: VideoQueryParameters.WhereInput[]) {
+		if (!where.length) {
+			return 0;
+		}
 		const toDelete = await this.getMany({ videos: where });
 		const deleted = await this.prismaService.video.deleteMany({
 			where: VideoService.formatManyWhereInput({ videos: where }),
@@ -613,9 +616,10 @@ export default class VideoService extends SearchableRepositoryService {
 				},
 			},
 		});
-		const deletedVideoCount = await this.delete(
-			emptyVideos.map(({ id }) => ({ id })),
-		);
+		const deletedVideoCount =
+			emptyVideos.length > 0
+				? await this.delete(emptyVideos.map(({ id }) => ({ id })))
+				: 0;
 		if (deletedVideoCount) {
 			this.logger.warn(`Deleted ${deletedVideoCount} videos`);
 		}

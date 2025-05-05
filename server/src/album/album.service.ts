@@ -656,6 +656,9 @@ export default class AlbumService extends SearchableRepositoryService {
 	 * @param where the query parameter
 	 */
 	async delete(where: AlbumQueryParameters.DeleteInput[]): Promise<number> {
+		if (!where.length) {
+			return 0;
+		}
 		const albums = await this.getMany(
 			{ albums: where },
 			undefined,
@@ -691,9 +694,10 @@ export default class AlbumService extends SearchableRepositoryService {
 			},
 			where: { releases: { none: {} } },
 		});
-		const deletedAlbumCount = await this.delete(
-			emptyAlbums.map(({ id }) => ({ id })),
-		);
+		const deletedAlbumCount =
+			emptyAlbums.length > 0
+				? await this.delete(emptyAlbums.map(({ id }) => ({ id })))
+				: 0;
 
 		if (deletedAlbumCount) {
 			this.logger.warn(`Deleted ${deletedAlbumCount} albums`);

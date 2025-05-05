@@ -133,6 +133,9 @@ export default class FileController {
 	@Role(Roles.Admin, Roles.Microservice)
 	@Delete()
 	async deleteMany(@Body() toDelete: FileDeletionDto) {
+		if (toDelete.ids.length === 0) {
+			return;
+		}
 		await this.registrationService.unregisterFiles(
 			toDelete.ids.map((id) => ({ id })),
 		);
