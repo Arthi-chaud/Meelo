@@ -71,6 +71,15 @@ More screenshots [here](./assets/examples/)
 
 </details>
 
+## 🌐 Translation
+
+Meelo uses [Weblate](https://weblate.org/en-gb/) to handle translations.
+Feel free to contribute [here](https://hosted.weblate.org/engage/meelo/)!
+
+[![Stats](https://hosted.weblate.org/widget/meelo/front/multi-auto.svg)](https://hosted.weblate.org/engage/meelo/)
+
+Any questions about this? Open a discussion [here](https://github.com/Arthi-chaud/Meelo/discussions/categories/translation)!
+
 ## :handshake: Contributing and Bugs reporting
 
 :thinking: Is there a feature you would like to have? [Open an issue](https://github.com/Arthi-chaud/Meelo/issues/new/choose), and we will be happy to discuss it!
