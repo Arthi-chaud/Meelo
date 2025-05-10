@@ -28,7 +28,7 @@ import { Head } from "~/components/head";
 import LibrariesSettings from "~/components/settings/libraries";
 import UISettings from "~/components/settings/ui";
 import UsersSettings from "~/components/settings/users";
-import { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n/i18n";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599

@@ -770,7 +770,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								>
 									{t(
 										showOnlyExclusive
-											? "album.showAllTrack"
+											? "album.showAllTracks"
 											: "album.showOnlyExclusiveTracks",
 									)}
 								</ListItemButton>

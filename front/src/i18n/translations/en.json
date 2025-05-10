@@ -112,7 +112,6 @@
 		"scan": "Scan",
 		"scanLibraries": "Scan Libraries",
 		"cleanLibraries": "Clean Libraries",
-		"fetchMetadata": "Fetch Metadata",
 		"refreshMetadata": "Refresh Metadata",
 		"refreshMetadataForm": {
 			"forceLabel": "Force refresh if files have not changed"
@@ -327,7 +326,7 @@
 				"releaseDate": "Release Date",
 				"addDate": "Add Date",
 				"albumCount": "Album Count",
-				"name": "Name",
+				"name": "Title",
 				"songCount": "Song Count",
 				"entryCount": "Entry Count",
 				"creationDate": "Creation Date",
@@ -346,7 +345,7 @@
 	"album": {
 		"onThisAlbum": "Featured Artists",
 		"showOnlyExclusiveTracks": "Show only exclusive tracks",
-		"showAllTrack": "Show all tracks",
+		"showAllTracks": "Show all tracks",
 		"bonusTracks": "Bonus Tracks",
 		"relatedAlbums": "Related Albums",
 		"otherAlbumReleases": "Other releases of the same album"

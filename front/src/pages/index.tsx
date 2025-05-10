@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Grid, Skeleton, Stack, useTheme } from "@mui/material";
+import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
 import type { NextPageContext } from "next";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -146,7 +146,6 @@ const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 };
 
 const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const theme = useTheme();
 	const [seed] = useState(Math.floor(Math.random() * 10000000));
 	const [blurhashIndex] = useState(getRandomNumber());
 	const featuredAlbums = useInfiniteQuery(

@@ -96,7 +96,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(`models.${value}`)}
+						label={t(`models.${value}_plural`)}
 					/>
 				))}
 			</Tabs>
