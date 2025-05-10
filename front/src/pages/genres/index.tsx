@@ -49,10 +49,11 @@ const GenresPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: GenreSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	return (
 		<>
-			<Head title={t("genres")} />
+			<Head title={t("models.genre_plural")} />
 			<Controls sort={sortControl} />
 			<InfiniteGrid
 				itemSize={"xl"}

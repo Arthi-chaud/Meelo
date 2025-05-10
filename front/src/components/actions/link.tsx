@@ -34,7 +34,7 @@ export const GoToSongLyricsAction = (
 	songIdentifier: string | number,
 ): Action => ({
 	href: `/songs/${songIdentifier}/lyrics`,
-	label: "seeLyrics",
+	label: "actions.song.seeLyrics",
 	icon: <LyricsIcon />,
 });
 
@@ -42,7 +42,7 @@ export const GoToSongInfoAction = (
 	songIdentifier: string | number,
 ): Action => ({
 	href: `/songs/${songIdentifier}/info`,
-	label: "songInfo",
+	label: "actions.song.seeSongInfo",
 	icon: <InfoIcon />,
 });
 
@@ -50,7 +50,7 @@ export const GoToArtistAction = (
 	artistIdentifier: string | number,
 ): Action => ({
 	href: `/artists/${artistIdentifier}`,
-	label: "goToArtist",
+	label: "actions.goToArtist",
 	icon: <ArtistIcon />,
 });
 
@@ -58,7 +58,7 @@ export const GoToArtistAlbumsAction = (
 	artistIdentifier: string | number,
 ): Action => ({
 	href: `/artists/${artistIdentifier}/albums`,
-	label: "seeAlbums",
+	label: "actions.artist.seeAlbums",
 	icon: <AlbumIcon />,
 });
 
@@ -66,13 +66,13 @@ export const GoToArtistSongsAction = (
 	artistIdentifier: string | number,
 ): Action => ({
 	href: `/artists/${artistIdentifier}/songs`,
-	label: "seeSongs",
+	label: "actions.artist.seeSongs",
 	icon: <SongIcon />,
 });
 
 export const GoToAlbumAction = (albumIdentifier: string | number): Action => ({
 	href: `/albums/${albumIdentifier}`,
-	label: "goToAlbum",
+	label: "actions.album.goToAlbum",
 	icon: <AlbumIcon />,
 });
 
@@ -80,7 +80,7 @@ export const GoToReleaseAction = (
 	releaseIdentifier: string | number,
 ): Action => ({
 	href: `/releases/${releaseIdentifier}`,
-	label: "goToAlbum",
+	label: "actions.album.goToAlbum",
 	icon: <AlbumIcon />,
 });
 
@@ -96,7 +96,7 @@ export const GoToReleaseAsyncAction = (
 				router.push(`/releases/${id}`);
 			}
 		}),
-	label: "goToAlbum",
+	label: "actions.album.goToAlbum",
 	icon: <AlbumIcon />,
 });
 
@@ -104,7 +104,7 @@ export const GoToSongVersionAction = (
 	songIdentifier: string | number,
 ): Action => ({
 	href: `/songs/${songIdentifier}/versions`,
-	label: "seeOtherVersions",
+	label: "actions.song.seeOtherVersions",
 	icon: <AlbumIcon />,
 });
 
@@ -112,18 +112,18 @@ export const GoToRelatedTracksAction = (
 	songIdentifier: string | number,
 ): Action => ({
 	href: `/songs/${songIdentifier}/tracks`,
-	label: "seeRelatedTracks",
+	label: "actions.song.seeRelatedTracks",
 	icon: <RelatedTracksIcon />,
 });
 
 export const GoToSearchAction = {
-	label: "search",
+	label: "nav.search",
 	icon: <SearchIcon />,
 	href: "/search",
 } as const;
 
 export const GoToSettingsAction: Action = {
-	label: "settings",
+	label: "actions.goToSettingsPage",
 	icon: <SettingsIcon />,
 	href: "/settings",
 };

@@ -270,10 +270,10 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		return queryClient.api
 			.reorderPlaylist(playlistIdentifier, reorderedEntries)
 			.then(() => {
-				toast.success(t("playlistReorderSuccess"));
+				toast.success(t("toasts.playlist.reorderSuccess"));
 				return entriesQuery.refetch();
 			})
-			.catch(() => toast.error(t("playlistReorderFail")));
+			.catch(() => toast.error(t("toasts.playlist.reorderFail")));
 	});
 	const isOwner = useMemo(
 		() =>
@@ -384,7 +384,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							onClick={callback}
 							disabled={entries === undefined}
 						>
-							{t(label)}
+							{t(`actions.playback.${label}`)}
 						</Button>
 					</Grid>
 				))}
@@ -398,7 +398,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			) : entries?.length === 0 ? (
 				<EmptyState
 					actions={[]}
-					text="emptyStatePlaylist"
+					text="emptyState.playlist"
 					icon={<EmptyStateIcon />}
 				/>
 			) : (
@@ -464,7 +464,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							})
 						}
 					>
-						{t(editState ? "done" : "edit")}
+						{t(`form.${editState ? "done" : "edit"}`)}
 					</Button>
 				</Grid>
 				<Grid>

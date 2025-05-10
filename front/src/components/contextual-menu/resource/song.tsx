@@ -119,7 +119,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					? [
 							[
 								{
-									label: "deleteFromPlaylist",
+									label: "actions.deleteFromPlaylist",
 									icon: <DeleteIcon />,
 									onClick: () =>
 										queryClient.api
@@ -127,7 +127,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 											.then(() => {
 												toast.success(
 													t(
-														"playlistItemDeletionSuccess",
+														"toasts.playlist.itemDeletionSuccess",
 													),
 												);
 												queryClient.client.invalidateQueries(

@@ -168,9 +168,9 @@ const LibrariesSettings = () => {
 	const deletionMutation = useMutation((libraryId: number) =>
 		toast
 			.promise(api.deleteLibrary(libraryId), {
-				loading: t("deletingLibrary"),
-				success: t("libraryDeleted"),
-				error: t("libraryDeletionFail"),
+				loading: t("toasts.library.deletionRunning"),
+				success: t("toasts.library.deleted"),
+				error: t("toasts.library.deletionFail"),
 			})
 			.then(() => {
 				queryClient.client.invalidateQueries(["libraries"]);
@@ -181,7 +181,7 @@ const LibrariesSettings = () => {
 			api
 				.createLibrary(createForm.name, createForm.path)
 				.then(() => {
-					toast.success(t("libraryCreated"));
+					toast.success(t("toasts.library.created"));
 					queryClient.client.invalidateQueries(["libraries"]);
 				})
 				.catch((err) => toast.error(err.message)),
@@ -195,17 +195,21 @@ const LibrariesSettings = () => {
 					updatedLibrary.path,
 				)
 				.then(() => {
-					toast.success(t("libraryUpdated"));
+					toast.success(t("toasts.library.updated"));
 					queryClient.client.invalidateQueries(["libraries"]);
 				})
 				.catch((err) => toast.error(err.message)),
 	);
 	const columns: GridColDef<Library>[] = useMemo(
 		() => [
-			{ field: "name", headerName: t("name"), flex: 5 },
+			{
+				field: "name",
+				headerName: t("settings.libraries.nameColumn"),
+				flex: 5,
+			},
 			{
 				field: "clean",
-				headerName: t("clean"),
+				headerName: t("tasks.clean"),
 				flex: 3,
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
@@ -216,7 +220,7 @@ const LibrariesSettings = () => {
 			},
 			{
 				field: "scan",
-				headerName: t("scan"),
+				headerName: t("tasks.scan"),
 				flex: 3,
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
@@ -227,19 +231,19 @@ const LibrariesSettings = () => {
 			},
 			{
 				field: "refresh",
-				headerName: t("refreshMetadata"),
+				headerName: t("tasks.refreshMetadata"),
 				flex: 3,
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
 						variant="outlined"
 						{...RefreshLibraryMetadataAction(library.id, t)}
-						label="refresh"
+						label="tasks.refresh"
 					/>
 				),
 			},
 			{
 				field: "edit",
-				headerName: t("edit"),
+				headerName: t("form.edit"),
 				flex: 1,
 				renderCell: ({ row: library }) => {
 					return (
@@ -251,7 +255,7 @@ const LibrariesSettings = () => {
 			},
 			{
 				field: "delete",
-				headerName: t("delete"),
+				headerName: t("actions.delete"),
 				flex: 1,
 				renderCell: ({ row: library }) => {
 					return (
@@ -259,9 +263,13 @@ const LibrariesSettings = () => {
 							color="error"
 							onClick={() =>
 								confirm({
-									title: t("deleteLibraryAction"),
-									description: t("deleteLibraryWarning"),
-									confirmationText: t("deleteLibrary"),
+									title: t("actions.library.delete"),
+									description: t(
+										"actions.library.deletionWarning",
+									),
+									confirmationText: t(
+										"actions.library.delete",
+									),
 									confirmationButtonProps: {
 										variant: "outlined",
 										color: "error",
@@ -296,7 +304,7 @@ const LibrariesSettings = () => {
 						startIcon={<AddIcon />}
 						onClick={() => setCreateModalOpen(true)}
 					>
-						{t("createLibrary")}
+						{t("actions.library.create")}
 					</Button>
 				</Grid>
 				{[cleanAllLibaries, scanAllLibaries].map((action, index) => (
@@ -340,10 +348,10 @@ const LibrariesSettings = () => {
 			/>
 			<Box sx={{ paddingY: 2 }} />
 			<SectionHeader
-				heading={t("tasks")}
+				heading={t("settings.libraries.tasks.label")}
 				trailing={
 					<Button onClick={() => tasks.refetch()} variant="contained">
-						{t("refresh")}
+						{t("tasks.refresh")}
 					</Button>
 				}
 			/>
@@ -362,8 +370,9 @@ const LibrariesSettings = () => {
 					<ListItemText
 						primary={
 							tasks.data ? (
-								`${t("current")}: ${
-									tasks.data.current_task ?? t("none")
+								`${t("settings.libraries.tasks.current")}: ${
+									tasks.data.current_task ??
+									t("settings.libraries.tasks.none")
 								}`
 							) : (
 								<Skeleton width={"100px"} />
@@ -375,8 +384,9 @@ const LibrariesSettings = () => {
 					<ListItemText
 						primary={
 							tasks.data ? (
-								`${t("pending")}: ${
-									tasks.data.pending_tasks.length || t("none")
+								`${t("settings.libraries.tasks.pending")}: ${
+									tasks.data.pending_tasks.length ||
+									t("settings.libraries.tasks.none")
 								}`
 							) : (
 								<Skeleton width={"100px"} />

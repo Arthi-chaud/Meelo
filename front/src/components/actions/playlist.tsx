@@ -68,7 +68,7 @@ export const PlayNextAction = (
 			store.set(playNextAtom, track);
 			toast.success(`'${track.track.name}' will play next!`);
 		}),
-	label: "playNext",
+	label: "actions.playback.playNext",
 	icon: <PlayNextIcon />,
 });
 
@@ -80,7 +80,7 @@ export const PlayAfterAction = (
 			store.set(playAfterAtom, track);
 			toast.success(`'${track.track.name}' will play after!`);
 		}),
-	label: "playAfter",
+	label: "actions.playback.playAfter",
 	icon: <PlayAfterIcon />,
 });
 
@@ -142,7 +142,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 								},
 							}}
 							formControlLabelProps={{
-								label: t("playlistIsPublic"),
+								label: t("form.playlist.playlistIsPublic"),
 							}}
 							gridProps={{
 								size: {
@@ -158,7 +158,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 								disabled: !isPublic,
 							}}
 							formControlLabelProps={{
-								label: t("allowPlaylistChanges"),
+								label: t("form.playlist.allowPlaylistChanges"),
 							}}
 							gridProps={{
 								size: {
@@ -170,7 +170,7 @@ const CreateOrUpdatePlaylistForm = (props: CreateOrUpdatePlaylistFormProps) => {
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={props.onClose}>{t("cancel")}</Button>
+					<Button onClick={props.onClose}>{t("form.cancel")}</Button>
 					<Button type="submit" color="primary" variant="contained">
 						{props.defaultValue ? "Update" : "Create"}
 					</Button>
@@ -184,7 +184,7 @@ export const CreatePlaylistAction = (
 	queryClient: QueryClient,
 	onCreated?: (playlistId: number) => void,
 ): Action => ({
-	label: "new",
+	label: "actions.new",
 	icon: <Add />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((formFields: CreatePlaylistDto) => {
@@ -211,7 +211,7 @@ export const UpdatePlaylistAction = (
 	playlist: Playlist,
 	queryClient: QueryClient,
 ): Action => ({
-	label: "update",
+	label: "actions.update",
 	icon: <Edit />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((dto: UpdatePlaylistDto) => {
@@ -241,7 +241,7 @@ export const DeletePlaylistAction = (
 	librarySlugOrId: number | string,
 	onDeleted: () => void,
 ): Action => ({
-	label: "delete",
+	label: "actions.delete",
 	icon: <DeleteIcon />,
 	onClick: () =>
 		confirm({
@@ -289,7 +289,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			>
 				{createPlaylistAction.dialog?.({ close: closeModal })}
 			</Dialog>
-			<DialogTitle>{t("selectPlaylist")}</DialogTitle>
+			<DialogTitle>{t("actions.addToPlaylist.modalTitle")}</DialogTitle>
 			<DialogContent>
 				<ListItem
 					title={t(createPlaylistAction.label!)}
@@ -331,7 +331,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={props.onClose} variant="outlined">
-					{t("cancel")}
+					{t("form.cancel")}
 				</Button>
 			</DialogActions>
 		</>
@@ -343,7 +343,7 @@ export const AddToPlaylistAction = (
 	queryClient: QueryClient,
 ): Action => ({
 	icon: <AddToPlaylistIcon />,
-	label: "addToPlaylist",
+	label: "actions.addToPlaylist.label",
 	dialog: ({ close }) => {
 		const mutation = useMutation((playlistId: number) => {
 			return queryClient.api

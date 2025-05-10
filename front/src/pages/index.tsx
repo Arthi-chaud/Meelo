@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Grid, Skeleton, Stack, useTheme } from "@mui/material";
+import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
 import type { NextPageContext } from "next";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -146,7 +146,6 @@ const prepareSSR = async (_: NextPageContext, queryClient: QueryClient) => {
 };
 
 const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
-	const theme = useTheme();
 	const [seed] = useState(Math.floor(Math.random() * 10000000));
 	const [blurhashIndex] = useState(getRandomNumber());
 	const featuredAlbums = useInfiniteQuery(
@@ -227,11 +226,11 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				>
 					<EmptyState
 						icon={<EmptyStateIcon />}
-						text="emptyStateHome"
+						text="emptyState.home"
 						actions={[
 							{
 								...GoToSettingsAction,
-								label: "goToSettingsPage",
+								label: "actions.goToSettingsPage",
 							},
 						]}
 					/>
@@ -240,7 +239,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			<Fade in>
 				<Stack spacing={4} my={2}>
 					<HomePageSection
-						heading={t("newlyAddedAlbums")}
+						heading={t("home.newlyAddedAlbums")}
 						queryData={newlyAddedAlbums}
 						render={(albums) => (
 							<TileRow
@@ -252,7 +251,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 					<HomePageSection
-						heading={t("newlyAddedArtists")}
+						heading={t("home.newlyAddedArtists")}
 						queryData={newlyAddedArtists}
 						render={(artists) => (
 							<TileRow
@@ -264,7 +263,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 					<HomePageSection
-						heading={t("featuredAlbums")}
+						heading={t("home.featuredAlbums")}
 						queryData={featuredAlbums}
 						render={(albums) => (
 							<Grid container spacing={3}>
@@ -289,7 +288,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 					<HomePageSection
-						heading={t("latestAlbums")}
+						heading={t("home.latestAlbums")}
 						queryData={newestAlbums}
 						render={(albums) => (
 							<TileRow
@@ -301,7 +300,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 					<HomePageSection
-						heading={t("newlyAddedReleases")}
+						heading={t("home.newlyAddedReleases")}
 						queryData={newlyAddedReleases}
 						render={(releases) => (
 							<TileRow
@@ -314,7 +313,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 
 					<HomePageSection
-						heading={t("topGenres")}
+						heading={t("home.topGenres")}
 						queryData={topGenres}
 						render={(genres) => (
 							<TileRow
@@ -332,7 +331,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 
 					<HomePageSection
-						heading={t("topLabels")}
+						heading={t("home.topLabels")}
 						queryData={topLabels}
 						render={(labels) => (
 							<TileRow
@@ -370,7 +369,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 					<HomePageSection
-						heading={t("mostPlayedSongs")}
+						heading={t("home.mostPlayedSongs")}
 						queryData={mostListenedSongs}
 						render={(songs) => <SongGrid songs={songs} />}
 					/>

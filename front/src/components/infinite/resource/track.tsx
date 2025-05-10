@@ -46,6 +46,7 @@ const InfiniteTrackView = (props: ViewProps) => {
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: TrackSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	return (
 		<>

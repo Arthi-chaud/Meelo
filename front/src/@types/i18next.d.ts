@@ -17,7 +17,6 @@
  */
 
 import type en from "../i18n/translations/en.json";
-import type fr from "../i18n/translations/fr.json";
 import "i18next";
 
 declare module "i18next" {
@@ -26,7 +25,7 @@ declare module "i18next" {
 		returnNull: false;
 		returnObjects: false;
 		resources: {
-			translation: typeof en | typeof fr;
+			translation: typeof en;
 		};
 	}
 }

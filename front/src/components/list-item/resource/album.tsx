@@ -54,7 +54,7 @@ const AlbumItem = ({ album, formatSubtitle, onClick }: AlbumItemProps) => {
 				album
 					? (formatSubtitle?.call(this, album) ??
 						artist?.name ??
-						t("compilation"))
+						t("compilationArtistLabel"))
 					: undefined
 			}
 			trailing={album && <AlbumContextualMenu album={album} />}

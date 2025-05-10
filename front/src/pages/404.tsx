@@ -22,7 +22,7 @@ import ErrorPage from "~/components/error-page";
 const PageNotFound = () => {
 	const { t } = useTranslation();
 
-	return <ErrorPage heading={t("pageNotFound")} />;
+	return <ErrorPage heading={t("errors.pageNotFound")} />;
 };
 
 export default PageNotFound;

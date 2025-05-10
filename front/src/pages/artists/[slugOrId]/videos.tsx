@@ -69,7 +69,10 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	return (
 		<>
 			<Head
-				title={artist.data && `${artist.data?.name} (${t("videos")})`}
+				title={
+					artist.data &&
+					`${artist.data?.name} (${t("models.video_plural")})`
+				}
 			/>
 			<GradientBackground />
 			<ArtistRelationPageHeader artist={artist.data} />

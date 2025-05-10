@@ -88,8 +88,8 @@ export const KeyboardBindingsProvider = (props: {
 	const router = useRouter();
 	const [{ bindings }, setBindings] = useState<BindingsState>({
 		bindings: [
-			{ key: "/", description: "goToSearchPage" },
-			{ key: "s", description: "goToSettingsPage" },
+			{ key: "/", description: "keyboardBindings.goToSearchPage" },
+			{ key: "s", description: "keyboardBindings.goToSettingsPage" },
 		],
 	});
 	useKey(bindingKeyToUseKeyParam("/"), () => router.push("/search"));

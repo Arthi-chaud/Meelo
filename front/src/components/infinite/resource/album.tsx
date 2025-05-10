@@ -31,6 +31,7 @@ import {
 } from "~/models/album";
 import type { InfiniteQuery } from "~/query";
 import type { SortingParameters } from "~/utils/sorting";
+import { uncapitalize } from "~/utils/uncapitalize";
 
 type QueryProps = {
 	types?: AlbumType[];
@@ -53,10 +54,12 @@ const InfiniteAlbumView = (props: ViewProps) => {
 	});
 	const [typeFilter, typeFilterControl] = useTypeFilterControl({
 		types: AlbumType,
+		translate: (s) => `albumType.${uncapitalize(s)}`,
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: AlbumSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [layout, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",

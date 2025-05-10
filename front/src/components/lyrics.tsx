@@ -31,7 +31,7 @@ const LyricsBox = (props: LyricsProps) => {
 		return (
 			<EmptyState
 				actions={[]}
-				text={"emptyStateLyrics"}
+				text={"emptyState.lyrics"}
 				icon={<LyricsIcon />}
 			/>
 		);

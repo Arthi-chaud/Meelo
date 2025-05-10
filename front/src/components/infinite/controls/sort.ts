@@ -33,10 +33,12 @@ export type SortControl<SortingKey extends string> = {
 };
 
 // Hook to get Sorting data to pass to Controls
-export const useSortControl = <SortingKey extends TranslationKey>({
+export const useSortControl = <SortingKey extends string>({
 	sortingKeys,
+	translate,
 }: {
 	sortingKeys: readonly SortingKey[];
+	translate: (s: SortingKey) => TranslationKey;
 }) => {
 	const router = useRouter();
 	const orderQuery = getOrderQuery(router);
@@ -50,8 +52,8 @@ export const useSortControl = <SortingKey extends TranslationKey>({
 	const control: SortControl<SortingKey> = {
 		sortingKeys: sortingKeys,
 		selected: sortState,
-		buttonLabel: sortState.sort,
-		formatItem: (t) => t,
+		buttonLabel: translate(sortState.sort),
+		formatItem: (t) => translate(t),
 		onUpdate: (p) => {
 			setQueryParam(
 				[

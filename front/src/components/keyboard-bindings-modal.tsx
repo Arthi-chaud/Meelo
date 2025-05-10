@@ -39,7 +39,7 @@ export const KeyboardBindingModal = () => {
 	useKeyboardBinding(
 		{
 			key: "?",
-			description: "openModalShortcutDescription",
+			description: "keyboardBindings.openModalShortcutDescription",
 			handler: () => setIsOpen((x) => !x),
 		},
 		[],
@@ -51,7 +51,7 @@ export const KeyboardBindingModal = () => {
 			fullWidth
 			onClose={() => setIsOpen(false)}
 		>
-			<DialogTitle>{t("keyboadBindings")}</DialogTitle>
+			<DialogTitle>{t("keyboardBindings.modalTitle")}</DialogTitle>
 			<IconButton
 				onClick={() => setIsOpen(false)}
 				sx={() => ({

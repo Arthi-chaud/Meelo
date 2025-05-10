@@ -103,7 +103,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				title={
 					artist.data &&
 					`${artist.data?.name} (${t(
-						isRareSongs ? "rareSongs" : "songs",
+						isRareSongs ? "artist.rareSongs" : "models.song_plural",
 					)})`
 				}
 			/>

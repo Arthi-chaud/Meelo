@@ -75,7 +75,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				masterTrackId: props.track.id,
 			})
 			.then(() => {
-				toast.success(t("trackSetAsMaster"));
+				toast.success(t("toasts.trackSetAsMaster"));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
@@ -106,7 +106,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 				props.track.songId
 					? [
 							{
-								label: "setAsMaster",
+								label: "actions.setAsMaster",
 								disabled: isMaster || !userIsAdmin,
 								icon: <MasterIcon />,
 								onClick: () => masterMutation.mutate(),

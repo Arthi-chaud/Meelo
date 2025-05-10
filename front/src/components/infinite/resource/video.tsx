@@ -35,6 +35,7 @@ import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
 import type { SortingParameters } from "~/utils/sorting";
+import { uncapitalize } from "~/utils/uncapitalize";
 
 type QueryProps = {
 	types?: VideoType[];
@@ -59,10 +60,12 @@ const InfiniteVideoView = (props: ViewProps) => {
 	});
 	const [typeFilter, typeFilterControl] = useTypeFilterControl({
 		types: VideoType,
+		translate: (s) => `videoType.${uncapitalize(s)}`,
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: VideoSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [layout, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
@@ -76,14 +79,14 @@ const InfiniteVideoView = (props: ViewProps) => {
 	};
 
 	const playAction = {
-		label: "playAll",
+		label: "actions.playback.playAll",
 		icon: <PlayIcon />,
 		onClick: () => {
 			playVideosAction(queryClient, props.query(query));
 		},
 	} as const;
 	const shuffleAction = {
-		label: "shuffle",
+		label: "actions.playback.shuffle",
 		icon: <ShuffleIcon />,
 		onClick: () => {
 			playVideosAction(

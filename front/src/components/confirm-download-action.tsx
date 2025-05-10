@@ -25,9 +25,9 @@ const confirmDownloadAction = (
 	t: Translator,
 ) => {
 	confirm({
-		title: t("warning"),
-		description: t("downloadWarning"),
-		confirmationText: t("download"),
+		title: t("actions.warningModalTitle"),
+		description: t("actions.download.warning"),
+		confirmationText: t("actions.download.label"),
 		confirmationButtonProps: {
 			color: "error",
 			variant: "outlined",

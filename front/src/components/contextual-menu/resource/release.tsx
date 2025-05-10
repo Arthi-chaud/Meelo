@@ -50,7 +50,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				masterReleaseId: props.release.id,
 			})
 			.then(() => {
-				toast.success(t("releaseSetAsMaster"));
+				toast.success(t("toasts.releaseSetAsMaster"));
 				queryClient.client.invalidateQueries();
 			})
 			.catch((error: Error) => toast.error(error.message));
@@ -74,7 +74,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						),
 				)
 					.then(() => {
-						toast.success(t("tracksUpdated"));
+						toast.success(t("toasts.tracksUpdated"));
 						queryClient.client.invalidateQueries();
 					})
 					.catch((error) => toast.error(error.message));
@@ -90,7 +90,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						: []),
 					GoToAlbumAction(props.release.album.id),
 					{
-						label: "setAsMaster",
+						label: "actions.setAsMaster",
 						disabled:
 							props.release.id === props.release.album.masterId ||
 							!userIsAdmin,
@@ -98,7 +98,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						onClick: () => masterMutation.mutate(),
 					},
 					{
-						label: "setAllTracksAsMaster",
+						label: "actions.release.setAllTracksAsMaster",
 						icon: <UpgradeIcon />,
 						disabled: !userIsAdmin,
 						onClick: () => tracksMasterMutation.mutate(),

@@ -44,9 +44,9 @@ const DeleteButton = ({
 	const userDeletionMutation = useMutation(() =>
 		queryClient.api
 			.deleteUser(userId)
-			.catch(() => toast.error(t("userDeletionFail")))
+			.catch(() => toast.error(t("toasts.users.deletionFail")))
 			.then(() => {
-				toast.success(t("userDeleted"));
+				toast.success(t("toasts.users.deleted"));
 				queryClient.client.invalidateQueries();
 			}),
 	);
@@ -57,9 +57,9 @@ const DeleteButton = ({
 			disabled={disabled}
 			onClick={() =>
 				confirm({
-					title: t("warning"),
-					description: t("deleteUserWarning"),
-					confirmationText: t("deleteUser"),
+					title: t("actions.warningModalTitle"),
+					description: t("actions.deleteUser.warning"),
+					confirmationText: t("actions.deleteUser.label"),
 					confirmationButtonProps: {
 						variant: "outlined",
 						color: "error",
@@ -87,19 +87,19 @@ const UsersSettings = () => {
 		}) =>
 			queryClient.api
 				.updateUser(user.id, status)
-				.catch(() => toast.error(t("userUpdateFail")))
+				.catch(() => toast.error(t("toasts.users.updateFail")))
 				.then(() => {
 					const toastMessages: string[] = [];
 
 					if (status.enabled === true) {
-						toastMessages.push(t("userNowEnabled"));
+						toastMessages.push(t("toasts.users.nowEnabled"));
 					} else if (status.enabled === false) {
-						toastMessages.push(t("userNowDisabled"));
+						toastMessages.push(t("toasts.users.nowDisabled"));
 					}
 					if (status.admin === true) {
-						toastMessages.push(t("userNowAdmin"));
+						toastMessages.push(t("toasts.users.nowAdmin"));
 					} else if (status.admin === false) {
-						toastMessages.push(t("userNowNotAdmin"));
+						toastMessages.push(t("toasts.users.nowNotAdmin"));
 					}
 					toastMessages.forEach((message) => toast.success(message));
 					queryClient.client.invalidateQueries();
@@ -108,7 +108,7 @@ const UsersSettings = () => {
 	const columns: GridColDef<User>[] = [
 		{
 			field: "name",
-			headerName: t("name"),
+			headerName: t("settings.users.nameColumn"),
 			flex: 7,
 			renderCell: ({ row: user }) => {
 				return (
@@ -116,7 +116,7 @@ const UsersSettings = () => {
 						{user.name}
 						{user.id === currentUser?.id && (
 							<Typography color="grey" paddingX={1}>
-								{t("you")}
+								{t("settings.users.you")}
 							</Typography>
 						)}
 					</Typography>
@@ -125,7 +125,7 @@ const UsersSettings = () => {
 		},
 		{
 			field: "enabled",
-			headerName: t("enabled"),
+			headerName: t("settings.users.enabled"),
 			flex: 2,
 			renderCell: ({ row: user }) => {
 				return (
@@ -144,7 +144,7 @@ const UsersSettings = () => {
 		},
 		{
 			field: "admin",
-			headerName: t("admin"),
+			headerName: t("settings.users.admin"),
 			flex: 2,
 			renderCell: ({ row: user }) => {
 				return (
@@ -163,7 +163,7 @@ const UsersSettings = () => {
 		},
 		{
 			field: "delete",
-			headerName: t("delete"),
+			headerName: t("actions.delete"),
 			flex: 1,
 			renderCell: ({ row: user }) => {
 				return (
