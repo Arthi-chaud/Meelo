@@ -28,6 +28,7 @@ import { Head } from "~/components/head";
 import LibrariesSettings from "~/components/settings/libraries";
 import UISettings from "~/components/settings/ui";
 import UsersSettings from "~/components/settings/users";
+import { TranslationKey } from "~/i18n/i18n";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
@@ -59,6 +60,17 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
+const getTabLabel = (tab: (typeof AvailablePanels)[number]): TranslationKey => {
+	switch (tab) {
+		case "users":
+			return "models.user_plural";
+		case "libraries":
+			return "models.library_plural";
+		case "interface":
+			return "settings.interface";
+	}
+};
+
 const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	props,
 }) => {
@@ -83,14 +95,18 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	}
 	return (
 		<>
-			<Head title={t("settings")} />
+			<Head title={t("nav.settings")} />
 			<Tabs
 				value={panel}
 				onChange={(__, panelName) => setPanel(panelName)}
 				centered
 			>
 				{AvailablePanels.map((panelName, index) => (
-					<Tab key={index} value={panelName} label={t(panelName)} />
+					<Tab
+						key={index}
+						value={panelName}
+						label={t(getTabLabel(panelName))}
+					/>
 				))}
 			</Tabs>
 			{AvailablePanels.map(

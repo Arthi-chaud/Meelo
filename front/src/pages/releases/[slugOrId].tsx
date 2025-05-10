@@ -556,7 +556,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									{totalDuration !== undefined ? (
 										<>
 											{`${formatDuration(totalDuration)}`}
-											{isMixed && ` - ${t("mixed")}`}
+											{isMixed &&
+												` - ${t("track.mixed")}`}
 										</>
 									) : (
 										<Skeleton width={"100px"} />
@@ -679,7 +680,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													lineHeight: "normal",
 												}}
 											>
-												{`${t("genres")}: `}
+												{`${t("models.genre_plural")}: `}
 											</ListSubheader>
 										</Grid>
 										{(
@@ -769,8 +770,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								>
 									{t(
 										showOnlyExclusive
-											? "showAllTrack"
-											: "showOnlyExclusiveTracks",
+											? "album.showAllTrack"
+											: "album.showOnlyExclusiveTracks",
 									)}
 								</ListItemButton>
 							)}
@@ -810,7 +811,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				</Box>
 				<RelatedContentSection
 					display={(bSides.length ?? 0) > 0}
-					title={t("bonusTracks")}
+					title={t("album.bonusTracks")}
 				>
 					<SongGrid
 						parentArtistName={albumArtist?.name}
@@ -819,7 +820,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={(relatedReleases.items?.length ?? 0) > 1}
-					title={t("otherAlbumReleases")}
+					title={t("album.otherAlbumReleases")}
 				>
 					<TileRow
 						tiles={
@@ -853,7 +854,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						display={
 							videoList !== undefined && videoList.length !== 0
 						}
-						title={t(sectionLabel)}
+						title={t(`browsing.sections.${sectionLabel}`)}
 					>
 						<TileRow
 							tiles={
@@ -870,7 +871,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				))}
 				<RelatedContentSection
 					display={extras.length > 0 || videoExtras.length > 0}
-					title={t("extras")}
+					title={t("browsing.sections.extras")}
 				>
 					{extras.length > 0 ? (
 						<SongGrid
@@ -896,7 +897,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={(relatedAlbums.items?.length ?? 0) > 0}
-					title={t("relatedAlbums")}
+					title={t("album.relatedAlbums")}
 				>
 					<TileRow
 						tiles={
@@ -920,7 +921,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					display={
 						featurings !== undefined && featurings.length !== 0
 					}
-					title={t("onThisAlbum")}
+					title={t("album.onThisAlbum")}
 				>
 					<TileRow
 						tiles={
@@ -932,7 +933,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={playlists !== undefined && playlists.length !== 0}
-					title={t("featuredOnPlaylists")}
+					title={t("browsing.sections.featuredOnPlaylists")}
 				>
 					<TileRow
 						tiles={
@@ -946,7 +947,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				{externalMetadata.data?.description && (
-					<RelatedContentSection display title={t("about")}>
+					<RelatedContentSection
+						display
+						title={t("browsing.sections.about")}
+					>
 						<Box sx={{ paddingBottom: 2 }}>
 							<ResourceDescription
 								externalMetadata={externalMetadata.data}
@@ -959,7 +963,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						externalMetadata.data === undefined ||
 						(externalMetadata.data?.sources.length ?? 0) > 0
 					}
-					title={t("externalLinks")}
+					title={t("models.externalLink_plural")}
 				>
 					<Grid container spacing={1}>
 						{(

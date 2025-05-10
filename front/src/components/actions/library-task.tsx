@@ -34,7 +34,7 @@ const handleTask = <T extends TaskResponse>(task: Promise<T>) =>
 		);
 
 export const ScanAllLibrariesAction = (api: API): Action => ({
-	label: "scanLibraries",
+	label: "tasks.scanLibraries",
 	icon: <ScanIcon />,
 	onClick: () => handleTask(api.scanLibraries()),
 });
@@ -43,13 +43,13 @@ export const ScanLibraryAction = (
 	api: API,
 	librarySlugOrId: number | string,
 ): Action => ({
-	label: "scan",
+	label: "tasks.scan",
 	icon: <ScanIcon />,
 	onClick: () => handleTask(api.scanLibrary(librarySlugOrId)),
 });
 
 export const CleanAllLibrariesAction = (api: API): Action => ({
-	label: "cleanLibraries",
+	label: "tasks.cleanLibraries",
 	icon: <CleanIcon />,
 	onClick: () => handleTask(api.cleanLibraries()),
 });
@@ -58,7 +58,7 @@ export const CleanLibraryAction = (
 	api: API,
 	librarySlugOrId: number | string,
 ): Action => ({
-	label: "clean",
+	label: "tasks.clean",
 	icon: <CleanIcon />,
 	onClick: () => handleTask(api.cleanLibrary(librarySlugOrId)),
 });

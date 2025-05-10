@@ -106,7 +106,11 @@ const FilterMenuButton = <FilterKeys extends string>({
 	const { t } = useTranslation();
 	return (
 		<MenuButton
-			label={filter.values === undefined ? "loading" : filter.buttonLabel}
+			label={
+				filter.values === undefined
+					? "misc.loading"
+					: filter.buttonLabel
+			}
 			icon={filter.values && filter.buttonIcon}
 			items={(closeMenu) =>
 				filter.values?.map((key) => (
@@ -226,7 +230,7 @@ const LayoutButtonGroup = ({ layout }: { layout: LayoutControl }) => {
 					</Button>
 				))}
 			{layout.enableToggle && (
-				<Tooltip title={t("changeLayout")}>
+				<Tooltip title={t("browsing.controls.changeLayout")}>
 					<Button
 						onClick={() =>
 							layout.onUpdate({

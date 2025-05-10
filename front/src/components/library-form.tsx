@@ -62,13 +62,13 @@ const LibraryForm = (props: LibraryFormProps) => {
 							textFieldProps={{
 								autoFocus: true,
 								fullWidth: true,
-								label: t("nameOfLibrary"),
+								label: t("form.library.nameOfLibrary"),
 							}}
 							gridProps={{}}
 							rules={{
 								required: {
 									value: true,
-									message: t("nameIsRequired"),
+									message: t("form.library.nameIsRequired"),
 								},
 							}}
 						/>
@@ -76,7 +76,7 @@ const LibraryForm = (props: LibraryFormProps) => {
 							{...registerState("path")}
 							textFieldProps={{
 								fullWidth: true,
-								label: t("pathOfLibrary"),
+								label: t("form.library.pathOfLibrary"),
 								helperText:
 									"Path should be relative to the 'DATA_DIR' variable. Use './' if the library path is 'DATA_DIR' ",
 							}}
@@ -84,16 +84,20 @@ const LibraryForm = (props: LibraryFormProps) => {
 							rules={{
 								required: {
 									value: true,
-									message: t("pathIsRequired"),
+									message: t("form.library.pathIsRequired"),
 								},
 							}}
 						/>
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={props.onClose}>{t("cancel")}</Button>
+					<Button onClick={props.onClose}>{t("form.cancel")}</Button>
 					<Button type="submit" color="primary" variant="contained">
-						{t(props.defaultValues ? "update" : "create")}
+						{t(
+							props.defaultValues
+								? "actions.update"
+								: "actions.create",
+						)}
 					</Button>
 				</DialogActions>
 			</form>

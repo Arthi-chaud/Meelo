@@ -39,6 +39,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { TranslationKey } from "~/i18n/i18n";
 import { RootGradientBackground } from "~/utils/gradient-background";
 import type Action from "./actions";
 import { LogoutAction } from "./actions/auth";
@@ -59,14 +60,14 @@ import ThemedImage from "./themed-image";
 
 export const ScaffoldActions: Action[] = [
 	GoToSearchAction,
-	GoToSettingsAction,
+	{ ...GoToSettingsAction, label: "nav.settings" },
 	LogoutAction,
 ];
 
 /**
  * Array of possible item types
  */
-const primaryItems = [
+const navItems = [
 	"artists",
 	"albums",
 	"songs",
@@ -75,8 +76,28 @@ const primaryItems = [
 	"genres",
 	"albums/compilations",
 ] as const;
-const getPrimaryTypeIcon = (
-	type: (typeof primaryItems)[number],
+
+const getNavItemLabel = (type: (typeof navItems)[number]): TranslationKey => {
+	switch (type) {
+		case "albums":
+			return "models.album_plural";
+		case "artists":
+			return "models.artist_plural";
+		case "songs":
+			return "models.song_plural";
+		case "videos":
+			return "models.video_plural";
+		case "playlists":
+			return "models.playlist_plural";
+		case "genres":
+			return "models.genre_plural";
+		case "albums/compilations":
+			return "nav.compilations";
+	}
+};
+
+const getNavItemIcon = (
+	type: (typeof navItems)[number],
 	props?: IconProps,
 ): JSX.Element => {
 	switch (type) {
@@ -187,12 +208,12 @@ const Drawer = ({
 						</Box>
 						<Divider variant="middle" />
 						<List>
-							{primaryItems.map((item) => {
+							{navItems.map((item) => {
 								const path = `/${item}`;
 								const isSelected =
 									path === router.asPath.split("?")[0];
 								const Icon = (props: IconProps) =>
-									getPrimaryTypeIcon(item, props);
+									getNavItemIcon(item, props);
 
 								return (
 									<ListItem key={item}>
@@ -220,10 +241,9 @@ const Drawer = ({
 														}}
 													>
 														{t(
-															item ===
-																"albums/compilations"
-																? "compilations"
-																: item,
+															getNavItemLabel(
+																item,
+															),
 														)}
 													</Typography>
 												</ListItemText>
@@ -315,10 +335,10 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				display: { xs: "flex", [DrawerBreakpoint]: "none" },
 			}}
 		>
-			{primaryItems.slice(0, 3).map((item) => {
+			{navItems.slice(0, 3).map((item) => {
 				const path = `/${item}`;
 				const isSelected = path === router.asPath.split("?")[0];
-				const Icon = (pr: IconProps) => getPrimaryTypeIcon(item, pr);
+				const Icon = (pr: IconProps) => getNavItemIcon(item, pr);
 
 				return (
 					<BottomNavigationAction
@@ -331,11 +351,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 						icon={
 							<Icon variant={isSelected ? "Bold" : "Outline"} />
 						}
-						label={t(
-							item === "albums/compilations"
-								? "compilations"
-								: item,
-						)}
+						label={t(getNavItemLabel(item))}
 					/>
 				);
 			})}
@@ -343,7 +359,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				sx={{ flex: 1 }}
 				icon={<BurgerIcon />}
 				onClick={props.onDrawerOpen}
-				label={t("more")}
+				label={t("nav.more")}
 			/>
 		</MUIBottomNavigation>
 	);

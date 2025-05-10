@@ -47,7 +47,7 @@ const AuthenticationForm = () => {
 
 				if (!createdUser.enabled) {
 					setFormType("login");
-					toast.success(t("accountCreated"));
+					toast.success(t("toasts.auth.accountCreated"));
 					return;
 				}
 			}
@@ -76,24 +76,24 @@ const AuthenticationForm = () => {
 				<HookTextField
 					{...registerState("username")}
 					textFieldProps={{
-						label: t("username"),
+						label: t("form.auth.username"),
 					}}
 					gridProps={{}}
 					rules={{
 						required: {
 							value: true,
-							message: t("usernameIsRequired"),
+							message: t("form.auth.usernameIsRequired"),
 						},
 						minLength: {
 							value: 4,
-							message: t("usernameTooShort"),
+							message: t("form.auth.usernameTooShort"),
 						},
 					}}
 				/>
 				<HookTextField
 					{...registerState("password")}
 					textFieldProps={{
-						label: t("password"),
+						label: t("form.auth.password"),
 						type: "password",
 						onChange: (event) => setPassword(event.target.value),
 					}}
@@ -101,11 +101,11 @@ const AuthenticationForm = () => {
 					rules={{
 						required: {
 							value: true,
-							message: t("passwordIsRequired"),
+							message: t("form.auth.passwordIsRequired"),
 						},
 						minLength: {
 							value: 6,
-							message: t("passwordTooShort"),
+							message: t("form.auth.passwordTooShort"),
 						},
 					}}
 				/>
@@ -113,18 +113,18 @@ const AuthenticationForm = () => {
 					<HookTextField
 						{...registerState("confirm")}
 						textFieldProps={{
-							label: t("confirmPassword"),
+							label: t("form.confirm"),
 							type: "password",
 						}}
 						gridProps={{}}
 						rules={{
 							required: {
 								value: true,
-								message: t("pleaseConfirm"),
+								message: t("form.auth.pleaseConfirm"),
 							},
 							validate: (confirmValue) => {
 								if (confirmValue !== password) {
-									return t("passwordsAreDifferent");
+									return t("form.auth.passwordsAreDifferent");
 								}
 							},
 						}}
@@ -151,8 +151,8 @@ const AuthenticationForm = () => {
 					>
 						{t(
 							formType === "login"
-								? "signupButton"
-								: "signinButton",
+								? "auth.signup"
+								: "auth.signin",
 						)}
 					</Button>
 				</Box>

@@ -40,7 +40,7 @@ function useLibraryFilterControl(p: { multipleChoices: boolean }) {
 		...toTanStackInfiniteQuery(api, getLibraries),
 		useErrorBoundary: false,
 		onError: () => {
-			toast.error(t("librariesLoadFail"));
+			toast.error(t("toasts.library.loadFail"));
 		},
 	});
 	const libraries = librariesQuery.data?.pages.at(0)?.items;
@@ -54,11 +54,11 @@ function useLibraryFilterControl(p: { multipleChoices: boolean }) {
 			buttonLabel: (selected) => {
 				switch (selected.length) {
 					case 0:
-						return "allLibraries";
+						return "browsing.controls.filter.allLibraries";
 					case 1:
 						return libraryNameBySlug(selected[0]) as TranslationKey;
 					default:
-						return `${selected.length} ${t("libraries")}` as TranslationKey;
+						return `${selected.length} ${t("models.library_plural")}` as TranslationKey;
 				}
 			},
 			buttonIcon: undefined,
@@ -72,7 +72,7 @@ function useLibraryFilterControl(p: { multipleChoices: boolean }) {
 		buttonLabel: (selected) =>
 			selected
 				? (libraryNameBySlug(selected) as TranslationKey)
-				: "allLibraries",
+				: "browsing.controls.filter.allLibraries",
 		buttonIcon: undefined,
 		filterId: "library",
 	});

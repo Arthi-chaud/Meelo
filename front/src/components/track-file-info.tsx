@@ -32,6 +32,7 @@ import { useQuery } from "~/api/hook";
 import { getSourceFile, getTrack } from "~/api/queries";
 import type { TranslationKey } from "~/i18n/i18n";
 import formatDuration from "~/utils/formatDuration";
+import { uncapitalize } from "~/utils/uncapitalize";
 import SongTypeIcon from "./song-type-icon";
 
 /**
@@ -48,43 +49,47 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const tableContent: Partial<
 		Record<TranslationKey, string | number | undefined | JSX.Element>
 	> = {
-		name: track.data?.name,
-		type: track.data?.type,
-		songType: track.data?.song
+		"fileInfo.name": track.data?.name,
+		"fileInfo.type": track.data?.type,
+		"song.songType": track.data?.song
 			? songType && (
 					<Stack direction="row" spacing={1} alignItems="center">
 						<SongTypeIcon
 							type={songType}
 							size={theme.typography.body1.fontSize as number}
 						/>
-						<Typography>{t(songType)}</Typography>
+						<Typography>
+							{t(`songType.${uncapitalize(songType)}`)}
+						</Typography>
 					</Stack>
 				)
 			: track.data?.song === undefined
 				? undefined
 				: "N/A",
-		remastered: track.data
-			? t(track.data.isRemastered ? "yes" : "no")
+		"track.remastered": track.data
+			? t(track.data.isRemastered ? "misc.yes" : "misc.no")
 			: undefined,
-		bpm: track.data?.song
-			? (track.data.song.bpm ?? t("Unknown"))
+		"fileInfo.bpm": track.data?.song
+			? (track.data.song.bpm ?? t("fileInfo.unknown"))
 			: track.data?.song === undefined
 				? undefined
 				: "N/A",
-		duration: track.data ? formatDuration(track.data.duration) : undefined,
-		bitRate: track.data
+		"fileInfo.duration": track.data
+			? formatDuration(track.data.duration)
+			: undefined,
+		"fileInfo.bitRate": track.data
 			? track.data.bitrate
 				? `${track.data.bitrate} kbps`
-				: t("Unknown")
+				: t("fileInfo.unknown")
 			: undefined,
-		extension: sourceFile.data
+		"fileInfo.extension": sourceFile.data
 			? (sourceFile.data.path
 					.split(".")
 					.reverse()[0]
-					.toLocaleUpperCase() ?? "Unknown")
+					.toLocaleUpperCase() ?? t("fileInfo.unknown"))
 			: undefined,
-		path: sourceFile.data?.path,
-		registrationDate: sourceFile.data
+		"fileInfo.path": sourceFile.data?.path,
+		"fileInfo.registrationDate": sourceFile.data
 			? new Date(sourceFile.data.registerDate).toLocaleString()
 			: undefined,
 	};

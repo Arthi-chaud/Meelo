@@ -54,7 +54,7 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 			{items?.length === 0 && (
 				<EmptyState
 					icon={props.emptyState?.icon ?? <EmptyStateIcon />}
-					text={props.emptyState?.text ?? "emptyStateDefault"}
+					text={props.emptyState?.text ?? "emptyState.default"}
 					actions={props.emptyState?.actions ?? []}
 				/>
 			)}

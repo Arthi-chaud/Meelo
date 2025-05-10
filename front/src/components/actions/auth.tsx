@@ -22,7 +22,7 @@ import { accessTokenAtom } from "~/state/user";
 import type Action from "./";
 
 export const LogoutAction: Action = {
-	label: "logout",
+	label: "actions.logout",
 	icon: <LogoutIcon />,
 	href: "/",
 	onClick: () => store.set(accessTokenAtom, undefined),

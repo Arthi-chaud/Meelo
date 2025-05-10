@@ -187,7 +187,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				flexDirection: "column",
 			}}
 		>
-			<Head title={t("search")} />
+			<Head title={t("nav.search")} />
 			<Box
 				sx={{ display: "flex", justifyContent: "center", paddingY: 2 }}
 			>
@@ -227,7 +227,11 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value === "all" ? "all" : `${value}s`)}
+						label={t(
+							value === "all"
+								? "search.all"
+								: `models.${value}_plural`,
+						)}
 					/>
 				))}
 			</Tabs>
@@ -246,8 +250,9 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								}
 								album={item?.album}
 								formatSubtitle={(album) =>
-									`${t("album")} • ${
-										album.artist?.name ?? t("compilation")
+									`${t("models.album")} • ${
+										album.artist?.name ??
+										t("compilationArtistLabel")
 									}`
 								}
 							/>
@@ -266,7 +271,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								song={item.song}
 								subtitles={[
 									async (song) =>
-										`${t("song")} • ${formatArtists(
+										`${t("models.song")} • ${formatArtists(
 											song.artist,
 											song.featuring,
 										)}`,
@@ -282,7 +287,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								video={item.video}
 								subtitles={[
 									async (video) =>
-										`${t("video")} • ${formatArtists(
+										`${t("models.video")} • ${formatArtists(
 											video.artist,
 										)}`,
 								]}

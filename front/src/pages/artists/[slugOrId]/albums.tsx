@@ -71,7 +71,10 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		<Box sx={{ width: "100%" }}>
 			<GradientBackground />
 			<Head
-				title={artist.data && `${artist.data?.name} (${t("albums")})`}
+				title={
+					artist.data &&
+					`${artist.data?.name} (${t("models.album_plural")})`
+				}
 			/>
 			<ArtistRelationPageHeader artist={artist.data} />
 			<InfiniteAlbumView

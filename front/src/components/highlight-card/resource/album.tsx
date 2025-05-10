@@ -39,7 +39,7 @@ const AlbumHighlightCard = ({
 				externalMetadata?.description ||
 				[
 					album
-						? (album.artist?.name ?? t("compilation"))
+						? (album.artist?.name ?? t("compilationArtistLabel"))
 						: undefined,
 					album ? getYear(album.releaseDate) : undefined,
 				]

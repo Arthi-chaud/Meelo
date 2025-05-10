@@ -64,9 +64,9 @@ const UISettings = () => {
 	);
 	return (
 		<NoSsr>
-			<SectionHeader heading={t("playback")} />
+			<SectionHeader heading={t("settings.ui.playback")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={{ xs: 10 }}>{t("crossfade")}</Grid>
+				<Grid size={{ xs: 10 }}>{t("settings.ui.crossfade")}</Grid>
 				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Slider
 						step={0.5}
@@ -81,9 +81,9 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("colorScheme")} />
+			<SectionHeader heading={t("settings.ui.colorScheme")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={{ xs: 11 }}>{t("useSystemeTheme")}</Grid>
+				<Grid size={{ xs: 11 }}>{t("settings.ui.useSystemTheme")}</Grid>
 				<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
 					<Checkbox
 						onChange={(_, isChecked) =>
@@ -96,7 +96,7 @@ const UISettings = () => {
 						checked={colorScheme.mode === "system"}
 					/>
 				</Grid>
-				<Grid size={{ xs: 11 }}>{t("useDarkTheme")}</Grid>
+				<Grid size={{ xs: 11 }}>{t("settings.ui.useDarkTheme")}</Grid>
 				<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
 					<Checkbox
 						onChange={(_, isChecked) =>
@@ -110,9 +110,9 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("language")} />
+			<SectionHeader heading={t("settings.ui.language")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={{ xs: 10 }}>{t("language")}</Grid>
+				<Grid size={{ xs: 10 }}>{t("settings.ui.language")}</Grid>
 				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Select
 						size="small"
@@ -128,15 +128,15 @@ const UISettings = () => {
 								value={language}
 								style={{ borderRadius: 0 }}
 							>
-								{t(language)}
+								{t(`settings.ui.lang.${language}`)}
 							</MenuItem>
 						))}
 					</Select>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("notifications")} />
+			<SectionHeader heading={t("settings.ui.notifications")} />
 			<Grid container sx={SettingGroupStyle}>
-				<Grid size={{ xs: 10 }}>{t("permissions")}</Grid>
+				<Grid size={{ xs: 10 }}>{t("settings.ui.permissions")}</Grid>
 				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Button
 						variant="contained"
@@ -166,7 +166,9 @@ const UISettings = () => {
 								: "ask"}
 					</Button>
 				</Grid>
-				<Grid size={{ xs: 10 }}>{t("notifyOnTrackChange")}</Grid>
+				<Grid size={{ xs: 10 }}>
+					{t("settings.ui.notifyOnTrackChange")}
+				</Grid>
 				<Grid sx={InputContainerStyle} size={{ xs: 2 }}>
 					<Checkbox
 						onChange={(_, isChecked) => {
@@ -176,31 +178,33 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("keyboadBindings")} />
+			<SectionHeader heading={t("settings.ui.keyboardBindings")} />
 			<Grid container sx={SettingGroupStyle}>
 				<Grid size={{ xs: 12 }}>
-					{t("openKeyboarBindingsModalByTypingQuestionMark")}
+					{t(
+						"settings.ui.openKeyboarBindingsModalByTypingQuestionMark",
+					)}
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("project")} />
+			<SectionHeader heading={t("settings.ui.project")} />
 			<p>
 				<Star style={LinkIconStyle} />
-				{t("enjoyingTheProject")}{" "}
+				{t("settings.ui.external.enjoyingTheProject")}{" "}
 				<Link
 					style={{ textDecoration: "underline" }}
 					href={RepositoryUrl}
 				>
-					{t("starOnGithub")}
+					{t("settings.ui.external.starOnGithub")}
 				</Link>
 			</p>
 			<p>
 				<Warning2 style={LinkIconStyle} />
-				{t("encounteredABug")}{" "}
+				{t("settings.ui.external.encounteredABug")}{" "}
 				<Link
 					style={{ textDecoration: "underline" }}
 					href={`${RepositoryUrl}/issues`}
 				>
-					{t("openAnIssue")}
+					{t("settings.ui.external.openAnIssue")}
 				</Link>
 			</p>
 			<p>
@@ -209,7 +213,7 @@ const UISettings = () => {
 					style={{ textDecoration: "underline" }}
 					href="https://github.com/Arthi-chaud/Meelo/wiki"
 				>
-					{t("readTheDoc")}
+					{t("settings.ui.external.readTheDoc")}
 				</Link>
 			</p>
 		</NoSsr>

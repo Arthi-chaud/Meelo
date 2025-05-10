@@ -47,7 +47,7 @@ const RefreshMetadataActionContent = ({
 				}}
 			>
 				<Checkbox checked={force} onClick={() => setForce((f) => !f)} />
-				{t("refreshMetadataForceLabel")}
+				{t("tasks.refreshMetadataForm.forceLabel")}
 			</Grid>
 			<Grid size={{ xs: 12 }}>
 				<Button
@@ -56,15 +56,17 @@ const RefreshMetadataActionContent = ({
 					onClick={() => {
 						api.refreshMetadata(...[...params, force])
 							.then(() =>
-								toast.success(t("refreshMetadataStarted")),
+								toast.success(
+									t("toasts.refreshMetadata.started"),
+								),
 							)
 							.catch(() =>
-								toast.error(t("refreshMetadataFailed")),
+								toast.error(t("toasts.refreshMetadata.failed")),
 							);
 						close();
 					}}
 				>
-					{t("refreshMetadata")}
+					{t("tasks.refreshMetadata")}
 				</Button>
 			</Grid>
 		</Grid>
@@ -75,7 +77,7 @@ const RefreshMetadataAction = (
 	t: Translator,
 	...params: APIMethodParams
 ): Action => ({
-	label: "refreshMetadata",
+	label: "tasks.refreshMetadata",
 	icon: <MetadataRefreshIcon />,
 	dialog: ({ close }) => (
 		<RefreshMetadataActionContent t={t} params={params} close={close} />

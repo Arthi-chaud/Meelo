@@ -39,7 +39,7 @@ const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 
 	return (
 		<>
-			<Head title={t("albums")} />
+			<Head title={t("models.album_plural")} />
 			<InfiniteAlbumView
 				query={({ sortBy, order, types, libraries }) =>
 					getAlbums(

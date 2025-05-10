@@ -24,7 +24,7 @@ const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 
 	return (
 		<>
-			<Head title={t("artists")} />
+			<Head title={t("models.artist_plural")} />
 			<InfiniteArtistView
 				query={({ libraries, sortBy, order }) =>
 					getArtists({ library: libraries }, { sortBy, order }, [

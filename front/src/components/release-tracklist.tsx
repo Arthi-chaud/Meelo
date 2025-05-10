@@ -110,7 +110,7 @@ const ReleaseTrackList = ({
 				? discIndex === "?"
 				: d.index.toString() === discIndex,
 		);
-		const base = `${t("disc")} ${discIndex}`;
+		const base = `${t("models.disc")} ${discIndex}`;
 		if (disc?.name) {
 			return `${base} — ${disc.name}`;
 		}
@@ -321,7 +321,7 @@ const ReleaseTrackList = ({
 												}}
 												color="text.disabled"
 											>
-												{t("bonusTrack")}
+												{t("track.bonusTrack")}
 											</Typography>
 										)}
 										{currentTrack?.isRemastered && (
@@ -334,7 +334,7 @@ const ReleaseTrackList = ({
 													},
 												}}
 											>
-												{t("remastered")}
+												{t("track.remastered")}
 											</Typography>
 										)}
 										<Typography

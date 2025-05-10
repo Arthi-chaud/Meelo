@@ -18,7 +18,6 @@
 			"playAfter": "Play After"
 		},
 		"song": {
-			"addToPlaylist": "Add to Playlist",
 			"seeLyrics": "See Lyrics",
 			"seeOtherVersions": "See Other Versions",
 			"seeRelatedTracks": "See Related Tracks",
@@ -27,7 +26,7 @@
 			"mergeSong": {
 				"label": "Merge Songs",
 				"modalTitle": "Select a song",
-				"warningBeforeMergingSong": "All the tracks will be reassigned to the selected song, and the old song will be deleted. Your files will not be modified or removed"
+				"warningBeforeMerging": "All the tracks will be reassigned to the selected song, and the old song will be deleted. Your files will not be modified or removed"
 			}
 		},
 		"track": {
@@ -51,13 +50,14 @@
 		"library": {
 			"create": "Create Library",
 			"delete": "Delete Library",
-			"warning": "You are about to delete a library. This can not be undone"
+			"deletionWarning": "You are about to delete a library. This can not be undone"
 		},
 		"deleteUser": {
 			"label": "Delete User",
 			"warning": "You are about to delete a user. This can not be undone."
 		},
 		"new": "New",
+		"update": "Update",
 		"logout": "Logout",
 		"delete": "Delete",
 		"create": "Create",
@@ -69,16 +69,18 @@
 		"share": "Share",
 		"goToArtist": "Go To Artist",
 		"setAsMaster": "Set as Master",
+		"goToSettingsPage": "Go to Settings",
 		"deleteFromPlaylist": "Delete from Playlist",
 		"changeIllutration": "Change Illustration",
+		"goBackHome": "Go Back Home",
 		"addToPlaylist": {
+			"label": "Add to Playlist",
 			"modalTitle": "Select a playlist"
 		},
 		"warningModalTitle": "Warning"
 	},
 	"form": {
 		"cancel": "Cancel",
-		"update": "Update",
 		"done": "Done",
 		"edit": "Edit",
 		"confirm": "Confirm",
@@ -114,19 +116,18 @@
 		"refreshMetadata": "Refresh Metadata",
 		"refreshMetadataForm": {
 			"forceLabel": "Force refresh if files have not changed"
-		},
-		"releaseSetAsMaster": "Release set as master"
+		}
 	},
 	"models": {
-		"libraries": "Libraries",
-		"users": "Users",
+		"library_plural": "Libraries",
+		"user_plural": "Users",
 		"playlist_plural": "Playlists",
 		"playlist": "Playlist",
 		"lyrics": "Lyrics",
 		"versions": "Versions",
-		"tracks": "Tracks",
-		"genres": "Genres",
-		"externalLinks": "External Links",
+		"track_plural": "Tracks",
+		"genre_plural": "Genres",
+		"externalLink_plural": "External Links",
 		"disc": "Disc",
 		"artist": "Artist",
 		"artist_plural": "Artists",
@@ -163,6 +164,8 @@
 			},
 			"notifications": "Notifications",
 			"permissions": "Permissions",
+			"keyboardBindings": "Keyboard Shortcuts",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Access Keyboard Bindings list by typing '?'",
 			"project": "Project",
 			"external": {
 				"enjoyingTheProject": "Enjoying the project?",
@@ -179,18 +182,20 @@
 			"nameColumn": "Name"
 		},
 		"libraries": {
-			"tasks": "Tasks",
-			"pending": "Pending",
-			"current": "Current",
-			"none": "None",
+			"tasks": {
+				"label": "Tasks",
+				"pending": "Pending",
+				"current": "Current",
+				"none": "None"
+			},
 			"nameColumn": "Name"
 		}
 	},
 	"toasts": {
 		"linkCopied": "Link copied to clipboard",
 		"trackSetAsMaster": "Track set as Master",
+		"releaseSetAsMaster": "Release set as master",
 		"tracksUpdated": "Tracks successfully updated",
-		"librariesLoadFail": "Libraries could not be loaded",
 		"player": {
 			"networkError": "There seem to be some network issues...",
 			"playbackError": "The track's format is not supported by this browser. Skipping..."
@@ -201,6 +206,7 @@
 			"itemDeletionSuccess": "Deletion Successful"
 		},
 		"library": {
+			"loadFail": "Libraries could not be loaded",
 			"deleted": "Library deleted",
 			"deletionFail": "Deleting library failed",
 			"created": "Library created",
@@ -229,7 +235,6 @@
 	"errors": {
 		"errorOccured": "Oops... An error occured",
 		"pageNotFound": "Oops... Page not found",
-		"goBackHome": "Go Back Home",
 		"oops": "Oops"
 	},
 	"songType": {
@@ -254,14 +259,6 @@
 		"soundtrack": "Soundtrack",
 		"remixAlbum": "Remix Album",
 		"videoAlbum": "Video Album",
-		"musicVideo": "Music Video",
-		"lyricsVideo": "Lyric Video",
-		"behindTheScenes": "Behind The Scenes",
-		"interview": "Interview",
-		"advert": "Advert",
-		"photoGallery": "Photo Gallery",
-		"documentary": "Documentary",
-		"other": "Other",
 		"studioRecording_plural": "Studio Albums",
 		"single_plural": "Singles",
 		"liveRecording_plural": "Live Albums",
@@ -270,19 +267,32 @@
 		"remixAlbum_plural": "Remixes",
 		"videoAlbum_plural": "Video Albums"
 	},
+	"videoType": {
+		"musicVideo": "Music Video",
+		"lyricsVideo": "Lyric Video",
+		"live": "Live",
+		"behindTheScenes": "Behind The Scenes",
+		"interview": "Interview",
+		"advert": "Advert",
+		"photoGallery": "Photo Gallery",
+		"documentary": "Documentary",
+		"other": "Other"
+	},
 	"fileInfo": {
 		"duration": "Duration",
 		"bpm": "BPM",
 		"bitRate": "Bit Rate",
 		"type": "Type",
 		"extension": "Extension",
-		"path": "Path"
+		"path": "Path",
+		"name": "Name",
+		"registrationDate": "Registration Date",
+		"unknown": "Unknown"
 	},
 	"artist": {
 		"topSongs": "Top Songs",
 		"topVideos": "Top Videos",
 		"appearsOn": "Appears On",
-		"featuredOnPlaylists": "Featured On",
 		"rareSongs": "Rare Songs"
 	},
 	"song": {
@@ -293,8 +303,10 @@
 		"seeAll": "See All",
 		"sections": {
 			"livePerformances": "Live Performances",
+			"musicVideos": "Music Videos",
 			"extras": "Extras",
-			"about": "About"
+			"about": "About",
+			"featuredOnPlaylists": "Featured On"
 		},
 		"controls": {
 			"sortBy": "Sort By",
@@ -315,12 +327,14 @@
 				"releaseDate": "Release Date",
 				"addDate": "Add Date",
 				"albumCount": "Album Count",
+				"name": "Name",
 				"songCount": "Song Count",
 				"entryCount": "Entry Count",
 				"creationDate": "Creation Date",
 				"trackCount": "Track Count",
 				"releaseName": "Release Name",
 				"bitrate": "Bitrate",
+				"bpm": "BPM",
 				"trackIndex": "Track Index",
 				"discIndex": "Disc Index",
 				"userPlayCount": "Personal Play Count",
@@ -360,7 +374,6 @@
 	},
 	"keyboardBindings": {
 		"modalTitle": "Keyboard Shortcuts",
-		"openKeyboarBindingsModalByTypingQuestionMark": "Access Keyboard Bindings list by typing '?'",
 		"openModalShortcutDescription": "Open / Close this modal",
 		"goToSearchPage": "Go to Search page",
 		"goToSettingsPage": "Go to Settings",

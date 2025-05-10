@@ -30,7 +30,7 @@ export const DownloadAction = (
 	t: Translator,
 ): Action => ({
 	icon: <DownloadIcon />,
-	label: "download",
+	label: "actions.download.label",
 	onClick: () =>
 		confirmDownloadAction(confirm, api.getDirectStreamURL(sourceFileId), t),
 });
@@ -42,7 +42,7 @@ export const DownloadAsyncAction = (
 	t: Translator,
 ): Action => ({
 	icon: <DownloadIcon />,
-	label: "download",
+	label: "actions.download.label",
 	onClick: () =>
 		sourceFileId().then((id) =>
 			confirmDownloadAction(confirm, api.getDirectStreamURL(id), t),
@@ -56,7 +56,7 @@ export const DownloadReleaseAction = (
 	t: Translator,
 ): Action => ({
 	icon: <ArchiveIcon />,
-	label: "archive",
+	label: "actions.archive",
 	onClick: () =>
 		confirmDownloadAction(confirm, api.getReleaseArchiveURL(releaseId), t),
 });
@@ -68,7 +68,7 @@ export const DownloadReleaseAsyncAction = (
 	t: Translator,
 ): Action => ({
 	icon: <ArchiveIcon />,
-	label: "archive",
+	label: "actions.archive",
 	onClick: () =>
 		releaseId().then((id) =>
 			confirmDownloadAction(confirm, api.getReleaseArchiveURL(id), t),

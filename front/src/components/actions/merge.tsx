@@ -44,7 +44,7 @@ export const MergeSongAction = (
 	queryClient: QueryClient,
 ): Action => ({
 	icon: <MergeIcon />,
-	label: "mergeSong",
+	label: "actions.song.mergeSong.label",
 	dialog: ({ close }) => {
 		const [selectedSongId, selectSong] = useState<number>();
 		const closeModal = () => selectSong(undefined);
@@ -54,7 +54,7 @@ export const MergeSongAction = (
 			await toast.promise(
 				queryClient.api.mergeSongs(song.id, destSongId),
 				{
-					loading: t("loading"),
+					loading: t("misc.loading"),
 					success: "Merging successfull",
 					error: "error",
 				},
@@ -76,14 +76,14 @@ export const MergeSongAction = (
 					fullWidth
 					sx={{ zIndex: 999999 }}
 				>
-					<DialogTitle>{t("confirm")} ?</DialogTitle>
+					<DialogTitle>{t("form.confirm")} ?</DialogTitle>
 					<DialogContent>
-						{t("warningBeforeMergingSong")}
+						{t("actions.song.mergeSong.warningBeforeMerging")}
 					</DialogContent>
 
 					<DialogActions>
 						<Button onClick={closeModal} variant="outlined">
-							{t("cancel")}
+							{t("form.cancel")}
 						</Button>
 						<Button
 							onClick={() => {
@@ -91,7 +91,7 @@ export const MergeSongAction = (
 								close();
 							}}
 						>
-							{t("confirm")}
+							{t("form.confirm")}
 						</Button>
 					</DialogActions>
 				</Dialog>
@@ -118,7 +118,7 @@ export const ReassignTrackAction = (
 	queryClient: QueryClient,
 ): Action => ({
 	icon: <MergeIcon />,
-	label: "reassignTrack",
+	label: "actions.track.reassignTrack",
 	dialog: ({ close }) => {
 		const router = useRouter();
 		const { t } = useTranslation();
@@ -126,7 +126,7 @@ export const ReassignTrackAction = (
 			await toast.promise(
 				queryClient.api.updateTrack(track.id, destSongId),
 				{
-					loading: t("loading"),
+					loading: t("misc.loading"),
 					success: "Merging successfull",
 					error: "error",
 				},
@@ -173,7 +173,7 @@ const SelectSongForm = (props: SelectSongFormProps) => {
 
 	return (
 		<>
-			<DialogTitle>{t("selectSong")}</DialogTitle>
+			<DialogTitle>{t("actions.song.mergeSong.modalTitle")}</DialogTitle>
 			<DialogContent>
 				<InfiniteList
 					query={props.songQuery}
@@ -201,7 +201,7 @@ const SelectSongForm = (props: SelectSongFormProps) => {
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={props.onClose} variant="outlined">
-					{t("cancel")}
+					{t("form.cancel")}
 				</Button>
 			</DialogActions>
 		</>

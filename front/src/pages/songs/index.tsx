@@ -32,7 +32,7 @@ const SongsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 
 	return (
 		<>
-			<Head title={t("songs")} />
+			<Head title={t("models.song_plural")} />
 			<HybridInfiniteSongView
 				song={{
 					query: ({ sortBy, order, types, libraries, random }) =>

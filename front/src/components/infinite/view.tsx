@@ -69,7 +69,7 @@ const ScrollToTopButton = () => {
 
 	return (
 		<Slide direction="down" in={backToTopVisible}>
-			<Tooltip title={t("backToTop")}>
+			<Tooltip title={t("browsing.controls.backToTop")}>
 				<Button
 					variant="contained"
 					color="secondary"

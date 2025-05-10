@@ -38,6 +38,7 @@ import { store } from "~/state/store";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { getRandomNumber } from "~/utils/random";
 import type { SortingParameters } from "~/utils/sorting";
+import { uncapitalize } from "~/utils/uncapitalize";
 import InfiniteList from "../list";
 
 type SongModel = SongWithRelations<
@@ -81,12 +82,12 @@ const playSongsAction = <T extends SongModel>(
 };
 
 const shuffleActionBase = {
-	label: "shuffle" as const,
+	label: "actions.playback.shuffle" as const,
 	icon: <ShuffleIcon />,
 };
 
 const playActionBase = {
-	label: "playAll" as const,
+	label: "actions.playback.playAll" as const,
 	icon: <PlayIcon />,
 };
 
@@ -126,10 +127,12 @@ export const InfiniteSongView = (props: SongViewProps) => {
 	});
 	const [types, songTypeFilterControl] = useTypeFilterControl({
 		types: SongType,
+		translate: (s) => `songType.${uncapitalize(s)}`,
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: SongSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const query: SongQueryProps = {
 		libraries: libraries,
@@ -202,6 +205,7 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 	});
 	const [type, songTypeFilterControl] = useTypeFilterControl({
 		types: SongType,
+		translate: (s) => `songType.${uncapitalize(s)}`,
 		multipleChoices: false,
 	});
 	const query: SongGroupQueryProps = {
@@ -260,7 +264,9 @@ export const HybridInfiniteSongView = (props: HybridSongViewProps) => {
 		parseQueryParam(router.query.groups, ["true", "false"]) === "true",
 	);
 	const toggleSongGroupAction: Action = {
-		label: useSongGroup ? "showAllSongs" : "groupVersions",
+		label: useSongGroup
+			? "browsing.controls.showAllSongs"
+			: "browsing.controls.groupVersions",
 		onClick: () => {
 			setUseSongGroup((prev) => {
 				setQueryParam(

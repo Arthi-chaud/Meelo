@@ -234,7 +234,7 @@ const Player = () => {
 				switch (errcode) {
 					case 9: // Format error
 						if (isTrancoding) {
-							toast.error(t("playbackError"), {
+							toast.error(t("toasts.player.playbackError"), {
 								id: "playbackError",
 							});
 							skipTrack(queryClient);
@@ -246,7 +246,7 @@ const Player = () => {
 						break;
 					case 19: // Network error
 						setPlaying(false);
-						toast.error(t("networkError"), {
+						toast.error(t("toasts.player.networkError"), {
 							id: "networkError",
 						});
 						break;
@@ -270,7 +270,7 @@ const Player = () => {
 	useEffect(() => {
 		window.onbeforeunload = () => {
 			if (playing) {
-				return t("leaveWillStopPlaybackAlert");
+				return t("toasts.leaveWillStopPlaybackAlert");
 			}
 			return undefined;
 		};
@@ -311,7 +311,7 @@ const Player = () => {
 	useKeyboardBinding(
 		{
 			key: "p",
-			description: "openClosePlayer",
+			description: "keyboardBindings.openClosePlayer",
 			handler: () => setExpanded((v) => !v),
 		},
 		[expanded],
@@ -319,7 +319,7 @@ const Player = () => {
 	useKeyboardBinding(
 		{
 			key: "esc",
-			description: "closePlayer",
+			description: "keyboardBindings.closePlayer",
 			handler: () => setExpanded(false),
 		},
 		[expanded],
@@ -327,7 +327,7 @@ const Player = () => {
 	useKeyboardBinding(
 		{
 			key: "space",
-			description: "playPauseWhenExpanded",
+			description: "keyboardBindings.playPauseWhenExpanded",
 			handler: () => {
 				if (!expanded) {
 					return;

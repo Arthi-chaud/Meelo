@@ -16,13 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useTranslation } from "react-i18next";
-import ErrorPage from "~/components/error-page";
-
-const InternalError = () => {
-	const { t } = useTranslation();
-
-	return <ErrorPage heading={t("errors.errorOccured")} />;
+export const uncapitalize = <T extends string>(s: T): Uncapitalize<T> => {
+	if (s.length === 0) {
+		return s as unknown as Uncapitalize<T>;
+	}
+	return (s[0].toLowerCase() + s.slice(1)) as Uncapitalize<T>;
 };
-
-export default InternalError;

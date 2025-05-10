@@ -28,7 +28,7 @@ export const ShowTrackFileInfoAction = (
 	trackId: number,
 ): Action => ({
 	icon: <InfoIcon />,
-	label: "trackInfo",
+	label: "actions.track.seeTrackInfo",
 	onClick: () => openTrackFileInfoModal(confirm, trackId),
 });
 
@@ -38,7 +38,7 @@ export const ShowMasterTrackFileInfoAction = (
 	songId: number,
 ): Action => ({
 	icon: <InfoIcon />,
-	label: "trackInfo",
+	label: "actions.track.seeTrackInfo",
 	onClick: () =>
 		queryClient
 			.fetchQuery(getSongMasterTrack(songId))

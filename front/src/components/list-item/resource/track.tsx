@@ -77,8 +77,8 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 			title={track?.name}
 			secondTitle={[
 				release?.name ?? null,
-				track?.mixed ? t("mixed") : null,
-				track?.isRemastered ? t("remastered") : null,
+				track?.mixed ? t("track.mixed") : null,
+				track?.isRemastered ? t("track.remastered") : null,
 			]
 				.filter((s) => !!s)
 				.join(" — ")}

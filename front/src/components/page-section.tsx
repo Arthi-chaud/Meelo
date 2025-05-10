@@ -203,7 +203,7 @@ const PageSection = <T extends Resource>(props: PageSectionProps<T>) => {
 												fontWeight: "bold",
 											}}
 										>
-											{t("seeAll")}
+											{t("browsing.seeAll")}
 										</Button>
 									</Link>
 								</Fade>

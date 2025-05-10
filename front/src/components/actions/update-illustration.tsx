@@ -73,8 +73,8 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 					/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={props.onClose}>{t("cancel")}</Button>
-					<Button type="submit">{t("update")}</Button>
+					<Button onClick={props.onClose}>{t("form.cancel")}</Button>
+					<Button type="submit">{t("actions.update")}</Button>
 				</DialogActions>
 			</form>
 		</>
@@ -107,7 +107,7 @@ const UpdateIllustrationAction = (
 	});
 
 	return {
-		label: "changeIllutration",
+		label: "actions.changeIllutration",
 		disabled: store.get(userAtom)?.admin !== true,
 		icon: <UpdateIllustrationIcon />,
 		dialog: (controls) => (

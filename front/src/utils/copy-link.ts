@@ -27,5 +27,5 @@ export default function copyLinkToClipboard(route: string, t: Translator) {
 	navigator.clipboard.writeText(
 		`${location.protocol}//${location.host}${route}`,
 	);
-	toast.success(t("linkCopied"));
+	toast.success(t("toasts.linkCopied"));
 }

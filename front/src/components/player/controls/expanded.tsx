@@ -111,7 +111,7 @@ export const ExpandedPlayerControls = (
 				}
 				router.push(`/playlists/${playlistId}`);
 			} catch {
-				toast.error(t("errorOccured"));
+				toast.error(t("errors.errorOccured"));
 			}
 		},
 	);
@@ -600,7 +600,7 @@ export const ExpandedPlayerControls = (
 								loadNextQueuePage(queryClient);
 							}}
 						>
-							{t("loadNextSongs")}
+							{t("player.loadNextSongs")}
 						</Button>
 					)}
 					{playlist.length > 0 && (
@@ -617,7 +617,7 @@ export const ExpandedPlayerControls = (
 								openPlaylistModal(true);
 							}}
 						>
-							{t("saveQueueAsPlaylist")}
+							{t("player.saveQueueAsPlaylist")}
 						</Button>
 					)}
 				</>

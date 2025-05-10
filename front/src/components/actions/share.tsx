@@ -23,7 +23,7 @@ import type Action from "./";
 
 export const ShareAction = (url: string, t: Translator): Action => ({
 	onClick: () => copyLinkToClipboard(url, t),
-	label: "share",
+	label: "actions.share",
 	icon: <ShareIcon />,
 });
 

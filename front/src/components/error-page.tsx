@@ -42,7 +42,7 @@ const ErrorPage = ({ heading }: ErrorPageProps) => {
 			minHeight="100vh"
 			flexDirection="column"
 		>
-			<Head title={t("oops")} />
+			<Head title={t("errors.oops")} />
 			<Typography
 				variant="h1"
 				sx={{
@@ -56,7 +56,7 @@ const ErrorPage = ({ heading }: ErrorPageProps) => {
 			</Typography>
 			<Link href="/" onClick={() => resetBoundary()}>
 				<Button color="inherit" variant="outlined">
-					{t("goBackHome")}
+					{t("actions.goBackHome")}
 				</Button>
 			</Link>
 		</Box>

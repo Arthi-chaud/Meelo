@@ -43,6 +43,7 @@ const InfinitePlaylistView = (props: ViewProps) => {
 	const queryClient = useQueryClient();
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: PlaylistSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [layout, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",

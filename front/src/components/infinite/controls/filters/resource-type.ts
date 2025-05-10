@@ -20,25 +20,26 @@ import { useTranslation } from "react-i18next";
 import type { TranslationKey } from "~/i18n/i18n";
 import { useFilterControl, useFiltersControl } from "./control";
 
-type TypeFilterControlArg<TypeKey extends TranslationKey> = {
+type TypeFilterControlArg<TypeKey extends string> = {
 	types: readonly TypeKey[];
+	translate: (s: TypeKey) => TranslationKey;
 	filterId?: string;
 };
 
-function useTypeFilterControl<T extends TranslationKey>(
+function useTypeFilterControl<T extends string>(
 	p: TypeFilterControlArg<T> & {
 		multipleChoices: true;
 	},
 ): ReturnType<typeof useFiltersControl<T>>;
-function useTypeFilterControl<T extends TranslationKey>(
+function useTypeFilterControl<T extends string>(
 	p: TypeFilterControlArg<T> & {
 		multipleChoices: false;
 	},
 ): ReturnType<typeof useFilterControl<T>>;
-function useTypeFilterControl<T extends TranslationKey>(
+function useTypeFilterControl<T extends string>(
 	p: TypeFilterControlArg<T> & { multipleChoices: boolean },
 ): never;
-function useTypeFilterControl<TypeKey extends TranslationKey>(
+function useTypeFilterControl<TypeKey extends string>(
 	props: TypeFilterControlArg<TypeKey> & {
 		multipleChoices: boolean;
 	},
@@ -47,16 +48,18 @@ function useTypeFilterControl<TypeKey extends TranslationKey>(
 
 	if (props.multipleChoices) {
 		return useFiltersControl<TypeKey>({
-			formatItem: (t: TypeKey) => t,
+			formatItem: (t: TypeKey) => props.translate(t),
 			filterKeys: props.types,
 			buttonLabel: (selected) => {
 				switch (selected.length) {
 					case 0:
-						return "allTypes";
+						return "browsing.controls.filter.allTypes";
 					case 1:
-						return selected[0];
+						return props.translate(selected[0]);
 					default:
-						return `${selected.length} ${t("types")}` as TranslationKey;
+						return t("browsing.controls.filter.nTypes", {
+							n: selected.length,
+						}) as TranslationKey;
 				}
 			},
 			buttonIcon: undefined,
@@ -65,9 +68,12 @@ function useTypeFilterControl<TypeKey extends TranslationKey>(
 	}
 
 	return useFilterControl<TypeKey>({
-		formatItem: (t: TypeKey) => t,
+		formatItem: (t: TypeKey) => props.translate(t),
 		filterKeys: props.types,
-		buttonLabel: (selected) => selected ?? "allTypes",
+		buttonLabel: (selected) =>
+			selected
+				? props.translate(selected)
+				: "browsing.controls.filter.allTypes",
 		buttonIcon: undefined,
 		filterId: props.filterId ?? "type",
 	});

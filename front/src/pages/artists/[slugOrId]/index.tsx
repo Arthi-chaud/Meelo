@@ -46,6 +46,7 @@ import { VideoTypeIsExtra } from "~/models/video";
 import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
+import { uncapitalize } from "~/utils/uncapitalize";
 
 // Number of Song item in the 'Top Song' section
 const SongListSize = 6;
@@ -168,7 +169,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				}}
 			>
 				<SongGridPageSection
-					title={"topSongs"}
+					title={"artist.topSongs"}
 					artist={artist}
 					maxItemCount={SongListSize}
 					seeMoreHref={`/artists/${artistIdentifier}/songs`}
@@ -188,7 +189,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Fragment key={`section-${type}`}>
 							<AlbumListPageSection
 								subtitleIs="releaseYear"
-								title={`plural${type}`}
+								title={`albumType.${uncapitalize(type)}_plural`}
 								maxItemCount={AlbumListSize}
 								artist={artist}
 								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}&sort=releaseDate&order=desc`}
@@ -198,14 +199,14 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						</Fragment>
 					))}
 				<SongGridPageSection
-					title={"rareSongs"}
+					title={"artist.rareSongs"}
 					artist={artist}
 					maxItemCount={SongListSize}
 					seeMoreHref={`/artists/${artistIdentifier}/rare-songs`}
 					query={rareSongs}
 				/>
 				{[
-					{ label: "topVideos", items: musicVideos } as const,
+					{ label: "musicVideos", items: musicVideos } as const,
 					{ label: "livePerformances", items: liveVideos } as const,
 					{ label: "extras", items: extras } as const,
 				].map(
@@ -213,7 +214,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						items.length !== 0 && (
 							<Fragment key={`videos-${label}`}>
 								<VideoListPageSection
-									title={label}
+									title={`browsing.sections.${label}`}
 									artist={artist}
 									maxItemCount={VideoListSize}
 									seeMoreHref={`/artists/${artistIdentifier}/videos`}
@@ -224,7 +225,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						),
 				)}
 				<AlbumListPageSection
-					title={"appearsOn"}
+					title={"artist.appearsOn"}
 					artist={artist}
 					maxItemCount={AlbumListSize}
 					subtitleIs="artistName"
@@ -233,7 +234,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				{externalMetadata.data?.description && (
 					<Box>
 						<Divider sx={{ marginBottom: 3 }} />
-						<SectionHeader heading={t("about")} />
+						<SectionHeader heading={t("browsing.sections.about")} />
 						<Container
 							maxWidth={false}
 							sx={{ paddingY: 4, paddingTop: 3 }}
@@ -254,7 +255,9 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							sx={{ alignItems: "center" }}
 						>
 							<Grid sx={{ paddingRight: 3 }}>
-								<SectionHeader heading={t("externalLinks")} />
+								<SectionHeader
+									heading={t("models.externalLink_plural")}
+								/>
 							</Grid>
 							{(
 								externalMetadata.data?.sources.filter(

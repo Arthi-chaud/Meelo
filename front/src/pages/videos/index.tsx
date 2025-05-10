@@ -30,7 +30,7 @@ const LibraryVideosPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 
 	return (
 		<>
-			<Head title={t("videos")} />
+			<Head title={t("models.video_plural")} />
 			<InfiniteVideoView
 				query={({ libraries, sortBy, order, random, types }) =>
 					getVideos(

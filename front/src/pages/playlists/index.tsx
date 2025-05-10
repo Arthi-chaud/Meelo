@@ -43,10 +43,10 @@ const PlaylistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 	return (
 		<>
-			<Head title={t("playlists")} />
+			<Head title={t("models.playlist_plural")} />
 			<InfinitePlaylistView
 				emptyState={{
-					text: "emptyStatePlaylists",
+					text: "emptyState.playlists",
 				}}
 				query={(sort) => getPlaylists({}, sort, ["illustration"])}
 			/>

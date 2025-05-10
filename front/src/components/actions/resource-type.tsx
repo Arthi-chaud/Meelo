@@ -32,11 +32,13 @@ import type Video from "~/models/video";
 import { VideoType } from "~/models/video";
 import { store } from "~/state/store";
 import { userAtom } from "~/state/user";
+import { uncapitalize } from "~/utils/uncapitalize";
 import type Action from "./";
 
-const ResourceTypeForm = <Enum extends TranslationKey>(props: {
+const ResourceTypeForm = <Enum extends string>(props: {
 	defaultValue?: Enum;
 	values: readonly Enum[];
+	translate: (s: Enum) => TranslationKey;
 	onSelect: (type: Enum) => void;
 }) => {
 	const [currentType, setType] = useState(props.defaultValue);
@@ -48,7 +50,7 @@ const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 				{props.values.map((type) => (
 					<Grid key={type}>
 						<Chip
-							label={t(type) as string}
+							label={t(props.translate(type))}
 							variant={
 								type === currentType ? "filled" : "outlined"
 							}
@@ -66,10 +68,11 @@ const ResourceTypeForm = <Enum extends TranslationKey>(props: {
 
 const ChangeResourceType = <
 	T extends { type: TypeEnum },
-	TypeEnum extends TranslationKey,
+	TypeEnum extends string,
 >(
 	resource: T,
 	types: readonly TypeEnum[],
+	translateType: (s: TypeEnum) => TranslationKey,
 	label: TranslationKey,
 	queryClient: QueryClient,
 	onSelect: (newType: TypeEnum) => Promise<void>,
@@ -86,6 +89,7 @@ const ChangeResourceType = <
 					<ResourceTypeForm
 						defaultValue={resource.type}
 						values={types}
+						translate={translateType}
 						onSelect={(type) =>
 							toast
 								.promise(onSelect(type), {
@@ -127,7 +131,8 @@ const ChangeSongType = (
 	ChangeResourceType(
 		s,
 		SongType.filter((t) => t !== "Unknown"),
-		"changeSongType",
+		(type) => `songType.${uncapitalize(type)}`,
+		"actions.song.changeType",
 		client,
 		(newType: SongType) =>
 			client.api.updateSong(s.id, { type: newType }).then((res) => {
@@ -149,7 +154,8 @@ const ChangeAlbumType = (
 	ChangeResourceType(
 		a,
 		AlbumType,
-		"changeAlbumType",
+		(type) => `albumType.${uncapitalize(type)}`,
+		"actions.album.changeType",
 		client,
 		(newType: AlbumType) =>
 			client.api.updateAlbum(a.id, { type: newType }).then((res) => {
@@ -167,7 +173,8 @@ const ChangeVideoType = (
 	ChangeResourceType(
 		v,
 		VideoType,
-		"changeVideoType",
+		(type) => `videoType.${uncapitalize(type)}`,
+		"actions.video.changeType",
 		client,
 		(newType: VideoType) =>
 			client.api.updateVideo(v.id, { type: newType }).then((res) => {

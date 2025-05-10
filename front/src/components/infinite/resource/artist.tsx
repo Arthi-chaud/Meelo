@@ -43,6 +43,7 @@ const InfiniteArtistView = (props: ViewProps) => {
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: ArtistSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [layout, layoutControl] = useLayoutControl({
 		defaultLayout: "list",

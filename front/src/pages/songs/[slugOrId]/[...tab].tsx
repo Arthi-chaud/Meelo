@@ -52,6 +52,7 @@ import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
 import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
+import type { TranslationKey } from "~/i18n/i18n";
 import { toTanStackQuery } from "~/query";
 import { playTrackAtom } from "~/state/player";
 import { useAccentColor } from "~/utils/accent-color";
@@ -59,6 +60,7 @@ import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
+import { uncapitalize } from "~/utils/uncapitalize";
 
 const prepareSSR = async (
 	context: NextPageContext,
@@ -103,6 +105,21 @@ const prepareSSR = async (
 };
 
 const tabs = ["lyrics", "versions", "videos", "tracks", "info"] as const;
+
+const getTabLabel = (tab: (typeof tabs)[number]): TranslationKey => {
+	switch (tab) {
+		case "lyrics":
+			return "models.lyrics";
+		case "versions":
+			return "models.versions";
+		case "videos":
+			return "models.video_plural";
+		case "tracks":
+			return "models.track_plural";
+		case "info":
+			return "song.infoTab";
+	}
+};
 
 const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { selectedTab, selectTab } = useTabRouter(
@@ -156,7 +173,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						}))
 				}
 			>
-				{t("play")}
+				{t("actions.playback.play")}
 			</Button>
 			<Divider sx={{ paddingY: 1 }} />
 			<Tabs
@@ -169,7 +186,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						key={index}
 						value={value}
 						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(value)}
+						label={t(getTabLabel(value))}
 					/>
 				))}
 			</Tabs>
@@ -178,7 +195,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<>
 						<Head
 							title={
-								song.data && `${song.data?.name} (${t("info")})`
+								song.data &&
+								`${song.data?.name} (${t("song.infoTab")})`
 							}
 						/>
 						<Stack
@@ -191,7 +209,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							spacing={1}
 						>
 							<Typography sx={{ overflow: "unset" }}>
-								{`${t("songType")}: `}
+								{`${t("song.songType")}: `}
 							</Typography>
 							{song.data ? (
 								song.data.type ? (
@@ -205,7 +223,9 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											size={20}
 										/>
 										<Typography>
-											{t(song.data.type)}
+											{t(
+												`songType.${uncapitalize(song.data.type)}`,
+											)}
 										</Typography>
 									</Stack>
 								) : null
@@ -233,7 +253,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								spacing={2}
 							>
 								<Typography sx={{ overflow: "unset" }}>
-									{`${t("genres")}: `}
+									{`${t("models.genre_plural")}: `}
 								</Typography>
 								{(genres.items ?? generateArray(2)).map(
 									(genre, index) => (
@@ -258,7 +278,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								spacing={2}
 							>
 								<Typography sx={{ overflow: "unset" }}>
-									{`${t("externalLinks")}: `}
+									{`${t("models.externalLink_plural")}: `}
 								</Typography>
 								{(
 									externalMetadata.data?.sources.filter(
@@ -282,7 +302,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Head
 							title={
 								song.data &&
-								`${song.data?.name} (${t("lyrics")})`
+								`${song.data?.name} (${t("models.lyrics")})`
 							}
 						/>
 						<LyricsBox
@@ -301,7 +321,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Head
 							title={
 								song.data &&
-								`${song.data.name} (${t("versions")})`
+								`${song.data.name} (${t("models.versions")})`
 							}
 						/>
 						<InfiniteSongView
@@ -331,7 +351,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Head
 							title={
 								song.data &&
-								`${song.data.name} (${t("videos")})`
+								`${song.data.name} (${t("models.video_plural")})`
 							}
 						/>
 						<InfiniteVideoView
@@ -355,7 +375,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Head
 							title={
 								song.data &&
-								`${song.data.name} (${t("tracks")})`
+								`${song.data.name} (${t("models.track_plural")})`
 							}
 						/>
 						<InfiniteTrackView
