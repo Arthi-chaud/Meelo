@@ -34,6 +34,7 @@ import {
 } from "~/query";
 import { store } from "~/state/store";
 import { accessTokenAtom } from "~/state/user";
+import { isSSR } from "~/utils/is-ssr";
 import API from ".";
 
 const apiInstancesAtom = atom({} as Record<string, API>);
@@ -61,26 +62,23 @@ export const getAPI = () => {
 
 export const getAPI_ = (accessToken: string | null) => {
 	const isDev = process.env.NODE_ENV === "development";
-	const api = new API(
-		accessToken,
-		{
-			api: {
-				ssr:
-					process.env.SSR_SERVER_URL ??
-					process.env.PUBLIC_SERVER_URL!,
-				csr: isDev ? "/api" : (process.env.PUBLIC_SERVER_URL ?? "/api"),
-			},
-			scanner: {
-				ssr:
-					process.env.SSR_SCANNER_URL ??
-					process.env.PUBLIC_SCANNER_URL!,
-				csr: isDev
-					? "/scanner"
-					: (process.env.PUBLIC_SCANNER_URL ?? "/scanner"),
-			},
-		},
-		isDev,
-	);
+	const apiSSRUrl =
+		process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
+
+	const api = new API(accessToken, {
+		illustration: isDev ? "/api" : (apiSSRUrl ?? "/api"),
+		api: isSSR()
+			? apiSSRUrl
+			: isDev
+				? "/api"
+				: (process.env.PUBLIC_SERVER_URL ?? "/api"),
+
+		scanner: isSSR()
+			? (process.env.SSR_SCANNER_URL ?? process.env.PUBLIC_SCANNER_URL!)
+			: isDev
+				? "/scanner"
+				: (process.env.PUBLIC_SCANNER_URL ?? "/scanner"),
+	});
 	return api;
 };
 

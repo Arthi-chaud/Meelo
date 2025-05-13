@@ -16,9 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResourceNotFound } from "exceptions";
-import type { RequireExactlyOne } from "type-fest";
-import * as yup from "yup";
 import type { AlbumType } from "@meelo/models/album";
 import Library from "@meelo/models/library";
 import type { PaginationParameters } from "@meelo/models/pagination";
@@ -32,7 +29,9 @@ import { TaskResponse } from "@meelo/models/task";
 import type { TrackType } from "@meelo/models/track";
 import User from "@meelo/models/user";
 import type { VideoType } from "@meelo/models/video";
-import { isSSR } from "~/utils/is-ssr";
+import { ResourceNotFound } from "exceptions";
+import type { RequireExactlyOne } from "type-fest";
+import * as yup from "yup";
 import type { SortingParameters } from "~/utils/sorting";
 
 const AuthenticationResponse = yup.object({
@@ -72,15 +71,15 @@ type FetchParameters<Keys extends readonly string[], ReturnType> = {
 }>;
 
 type APIUrls = {
-	api: Record<"ssr" | "csr", string>;
-	scanner: Record<"ssr" | "csr", string>;
+	api: string;
+	scanner: string;
+	illustration: string;
 };
 
 export default class API {
 	constructor(
 		private readonly accessToken: string | null,
 		private readonly urls: APIUrls,
-		private readonly isDev = false,
 		public readonly pageSize = API.DefaultPageSize,
 	) {}
 	public static readonly DefaultPageSize = 35;
@@ -549,10 +548,7 @@ export default class API {
 	 * @returns the correct, rerouted URL
 	 */
 	getIllustrationURL(imageURL: string): string {
-		if (this.isDev) {
-			return `${"/api"}${imageURL}`;
-		}
-		return `${this.urls.api.csr ?? "/api"}${imageURL}`;
+		return `${this.urls.illustration}${imageURL}`;
 	}
 
 	getDirectStreamURL(fileId: number): string {
@@ -580,10 +576,8 @@ export default class API {
 		otherParameters?: any,
 		service: Service = Service.API,
 	): string {
-		const apiHost = isSSR() ? this.urls.api.ssr : this.urls.api.csr;
-		const scannerHost = isSSR()
-			? this.urls.scanner.ssr
-			: this.urls.scanner.csr;
+		const apiHost = this.urls.api;
+		const scannerHost = this.urls.scanner;
 		const host = service === Service.API ? apiHost : scannerHost;
 
 		return `${host}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
