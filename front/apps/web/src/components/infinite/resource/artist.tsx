@@ -25,7 +25,7 @@ import ArtistItem from "~/components/list-item/resource/artist";
 import ArtistTile from "~/components/tile/resource/artist";
 import { ArtistSortingKeys, type ArtistWithRelations } from "@meelo/models/artist";
 import type { InfiniteQuery } from "~/query";
-import type { SortingParameters } from "~/utils/sorting";
+import type { SortingParameters } from "@meelo/models/sorting";
 
 type QueryProps = { libraries?: string[] } & SortingParameters<
 	typeof ArtistSortingKeys

@@ -37,7 +37,7 @@ import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { getRandomNumber } from "~/utils/random";
-import type { SortingParameters } from "~/utils/sorting";
+import type { SortingParameters } from "@meelo/models/sorting";
 import { uncapitalize } from "~/utils/uncapitalize";
 import InfiniteList from "../list";
 

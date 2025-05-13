@@ -30,7 +30,7 @@ import {
 	type AlbumWithRelations,
 } from "@meelo/models/album";
 import type { InfiniteQuery } from "~/query";
-import type { SortingParameters } from "~/utils/sorting";
+import type { SortingParameters } from "@meelo/models/sorting";
 import { uncapitalize } from "~/utils/uncapitalize";
 
 type QueryProps = {

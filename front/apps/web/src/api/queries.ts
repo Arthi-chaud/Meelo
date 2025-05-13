@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { RequireExactlyOne } from "type-fest";
-import * as yup from "yup";
 import {
 	type AlbumInclude,
 	type AlbumSortingKeys,
@@ -52,7 +50,10 @@ import {
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
 } from "@meelo/models/release";
-import { type SearchResult, SearchResultTransformer } from "@meelo/models/search";
+import {
+	type SearchResult,
+	SearchResultTransformer,
+} from "@meelo/models/search";
 import {
 	type SongInclude,
 	type SongSortingKeys,
@@ -63,6 +64,7 @@ import {
 	type SongGroupSortingKeys,
 	SongGroupWithRelations,
 } from "@meelo/models/song-group";
+import type { SortingParameters } from "@meelo/models/sorting";
 import {
 	type TrackInclude,
 	type TrackSortingKeys,
@@ -76,10 +78,11 @@ import {
 	type VideoType,
 	VideoWithRelations,
 } from "@meelo/models/video";
+import type { RequireExactlyOne } from "type-fest";
+import * as yup from "yup";
 import type { InfiniteQuery, Query } from "~/query";
 import { store } from "~/state/store";
 import { accessTokenAtom } from "~/state/user";
-import type { SortingParameters } from "~/utils/sorting";
 import type API from ".";
 import { Service } from ".";
 

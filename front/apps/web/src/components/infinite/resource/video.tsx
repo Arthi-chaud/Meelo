@@ -34,7 +34,7 @@ import {
 import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
-import type { SortingParameters } from "~/utils/sorting";
+import type { SortingParameters } from "@meelo/models/sorting";
 import { uncapitalize } from "~/utils/uncapitalize";
 
 type QueryProps = {

@@ -24,7 +24,7 @@ import TrackItem from "~/components/list-item/resource/track";
 import { TrackSortingKeys, type TrackWithRelations } from "@meelo/models/track";
 import type { InfiniteQuery } from "~/query";
 import { DefaultItemSize } from "~/utils/layout";
-import type { SortingParameters } from "~/utils/sorting";
+import type { SortingParameters } from "@meelo/models/sorting";
 
 type QueryProps = {
 	libraries?: string[];

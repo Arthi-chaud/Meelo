@@ -30,7 +30,7 @@ import {
 	type PlaylistWithRelations,
 } from "@meelo/models/playlist";
 import type { InfiniteQuery } from "~/query";
-import type { SortingParameters } from "~/utils/sorting";
+import type { SortingParameters } from "@meelo/models/sorting";
 
 type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;
 type PlaylistModel = PlaylistWithRelations<"illustration">;
