@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { PaginationParameters } from "@meelo/models/pagination";
+import type Resource from "@meelo/models/resource";
 import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -24,8 +26,6 @@ import {
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "react-query";
-import type { PaginationParameters } from "~/models/pagination";
-import type Resource from "~/models/resource";
 import {
 	type InfiniteQueryFn,
 	type QueryFn,

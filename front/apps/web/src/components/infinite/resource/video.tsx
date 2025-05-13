@@ -30,7 +30,7 @@ import {
 	VideoSortingKeys,
 	VideoType,
 	type VideoWithRelations,
-} from "~/models/video";
+} from "@meelo/models/video";
 import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";

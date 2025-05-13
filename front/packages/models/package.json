@@ -1,0 +1,8 @@
+{
+	"name": "@meelo/models",
+	"sideEffects": false,
+	"dependencies": {
+		"yup": "^1.0.0"
+	},
+	"packageManager": "yarn@4.4.0"
+}

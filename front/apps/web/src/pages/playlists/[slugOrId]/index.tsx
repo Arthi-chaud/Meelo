@@ -58,9 +58,9 @@ import RelationPageHeader from "~/components/relation-page-header";
 import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,
-} from "~/models/playlist";
-import type Release from "~/models/release";
-import type { SongWithRelations } from "~/models/song";
+} from "@meelo/models/playlist";
+import type Release from "@meelo/models/release";
+import type { SongWithRelations } from "@meelo/models/song";
 import { type Query, toTanStackQuery } from "~/query";
 import { playTracksAtom } from "~/state/player";
 import { generateArray } from "~/utils/gen-list";

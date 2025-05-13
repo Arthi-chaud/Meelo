@@ -1462,6 +1462,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@meelo/models@workspace:packages/models":
+  version: 0.0.0-use.local
+  resolution: "@meelo/models@workspace:packages/models"
+  dependencies:
+    yup: "npm:^1.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@mui/core-downloads-tracker@npm:^7.0.1":
   version: 7.0.1
   resolution: "@mui/core-downloads-tracker@npm:7.0.1"

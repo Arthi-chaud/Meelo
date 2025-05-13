@@ -28,7 +28,7 @@ import {
 	AlbumSortingKeys,
 	AlbumType,
 	type AlbumWithRelations,
-} from "~/models/album";
+} from "@meelo/models/album";
 import type { InfiniteQuery } from "~/query";
 import type { SortingParameters } from "~/utils/sorting";
 import { uncapitalize } from "~/utils/uncapitalize";

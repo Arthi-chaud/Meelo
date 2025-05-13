@@ -19,7 +19,7 @@
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { useAPI, useInfiniteQuery } from "~/api/hook";
-import type Resource from "~/models/resource";
+import type Resource from "@meelo/models/resource";
 import type { InfiniteQueryFn } from "~/query";
 
 type AdminGridProps<DataType extends Resource> = {

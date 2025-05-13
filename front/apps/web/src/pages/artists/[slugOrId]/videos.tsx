@@ -29,7 +29,7 @@ import {
 } from "~/components/infinite/controls/sort";
 import InfiniteVideoView from "~/components/infinite/resource/video";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
-import { VideoSortingKeys } from "~/models/video";
+import { VideoSortingKeys } from "@meelo/models/video";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";
 

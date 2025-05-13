@@ -50,7 +50,7 @@ import ArtistTile from "~/components/tile/resource/artist";
 import { GenreTile } from "~/components/tile/resource/genre";
 import ReleaseTile from "~/components/tile/resource/release";
 import TileRow from "~/components/tile/row";
-import type { AlbumExternalMetadata } from "~/models/external-metadata";
+import type { AlbumExternalMetadata } from "@meelo/models/external-metadata";
 import { toTanStackInfiniteQuery } from "~/query";
 import { generateArray } from "~/utils/gen-list";
 import { useGradientBackground } from "~/utils/gradient-background";

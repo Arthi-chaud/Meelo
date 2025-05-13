@@ -41,7 +41,7 @@ import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
 import { MasterIcon } from "~/components/icons";
-import type { TrackWithRelations } from "~/models/track";
+import type { TrackWithRelations } from "@meelo/models/track";
 import { userAtom } from "~/state/user";
 import { ContextualMenu } from "..";
 

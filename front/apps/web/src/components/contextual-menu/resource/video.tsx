@@ -37,7 +37,7 @@ import { RefreshTrackMetadataAction } from "~/components/actions/refresh-metadat
 import { ChangeVideoType } from "~/components/actions/resource-type";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
-import type { VideoWithRelations } from "~/models/video";
+import type { VideoWithRelations } from "@meelo/models/video";
 import { ContextualMenu } from "..";
 
 type VideoContextualMenuProps = {

@@ -19,7 +19,7 @@
 import { Chip, Skeleton } from "@mui/material";
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import type Genre from "~/models/genre";
+import type Genre from "@meelo/models/genre";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug"> | undefined;

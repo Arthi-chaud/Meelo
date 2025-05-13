@@ -20,7 +20,7 @@ import * as IScroll from "react-infinite-scroller";
 import { useInfiniteQuery } from "~/api/hook";
 import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
 import { EmptyStateIcon } from "~/components/icons";
-import type Resource from "~/models/resource";
+import type Resource from "@meelo/models/resource";
 import type { InfiniteQueryFn } from "~/query";
 import { generateArray } from "~/utils/gen-list";
 

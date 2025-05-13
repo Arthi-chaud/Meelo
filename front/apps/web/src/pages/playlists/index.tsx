@@ -26,7 +26,7 @@ import {
 	getSortQuery,
 } from "~/components/infinite/controls/sort";
 import InfinitePlaylistView from "~/components/infinite/resource/playlist";
-import { PlaylistSortingKeys } from "~/models/playlist";
+import { PlaylistSortingKeys } from "@meelo/models/playlist";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

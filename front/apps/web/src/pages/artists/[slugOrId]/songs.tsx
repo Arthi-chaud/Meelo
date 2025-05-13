@@ -31,8 +31,8 @@ import {
 } from "~/components/infinite/controls/sort";
 import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
-import { SongSortingKeys } from "~/models/song";
-import type Track from "~/models/track";
+import { SongSortingKeys } from "@meelo/models/song";
+import type Track from "@meelo/models/track";
 import { toTanStackInfiniteQuery } from "~/query";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";

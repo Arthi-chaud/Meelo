@@ -30,8 +30,8 @@ import {
 	SongSortingKeys,
 	SongType,
 	type SongWithRelations,
-} from "~/models/song";
-import type { SongGroupWithRelations } from "~/models/song-group";
+} from "@meelo/models/song";
+import type { SongGroupWithRelations } from "@meelo/models/song-group";
 import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";

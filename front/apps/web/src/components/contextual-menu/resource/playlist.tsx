@@ -27,7 +27,7 @@ import {
 } from "~/components/actions/playlist";
 import { SharePlaylistAction } from "~/components/actions/share";
 import { UpdatePlaylistIllustrationAction } from "~/components/actions/update-illustration";
-import type Playlist from "~/models/playlist";
+import type Playlist from "@meelo/models/playlist";
 import { ContextualMenu } from "..";
 
 type PlaylistContextualMenuProps = {

@@ -20,7 +20,7 @@ import ReleaseContextualMenu from "~/components/contextual-menu/resource/release
 import { AlbumIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import Tile from "~/components/tile";
-import type { ReleaseWithRelations } from "~/models/release";
+import type { ReleaseWithRelations } from "@meelo/models/release";
 import { getYear } from "~/utils/date";
 
 const ReleaseTile = (props: {

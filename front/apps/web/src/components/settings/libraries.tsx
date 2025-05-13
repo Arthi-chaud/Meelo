@@ -52,7 +52,7 @@ import AdminGrid from "~/components/admin-grid";
 import { AddIcon, DeleteIcon, EditIcon } from "~/components/icons";
 import LibraryForm from "~/components/library-form";
 import SectionHeader from "~/components/section-header";
-import type Library from "~/models/library";
+import type Library from "@meelo/models/library";
 import { toTanStackQuery } from "~/query";
 
 const actionButtonStyle = {

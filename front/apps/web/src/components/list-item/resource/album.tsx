@@ -21,7 +21,7 @@ import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
 import { AlbumIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import type { AlbumWithRelations } from "~/models/album";
+import type { AlbumWithRelations } from "@meelo/models/album";
 
 type AlbumItemProps = {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;

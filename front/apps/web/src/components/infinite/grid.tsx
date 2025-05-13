@@ -17,8 +17,8 @@
  */
 
 import { type Breakpoint, Grid } from "@mui/material";
-import type { IllustratedResource } from "~/models/illustration";
-import type Resource from "~/models/resource";
+import type { IllustratedResource } from "@meelo/models/illustration";
+import type Resource from "@meelo/models/resource";
 import { useGradientBackground } from "~/utils/gradient-background";
 import type { ItemSize } from "~/utils/layout";
 import InfiniteScroll from "./scroll";

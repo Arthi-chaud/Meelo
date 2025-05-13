@@ -6,7 +6,6 @@
 			"dom.iterable",
 			"esnext"
 		],
-		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -16,22 +15,12 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"jsx": "preserve",
 		"incremental": true,
-		"baseUrl": "src/",
-		"paths": {
-			"~/*": [
-				"./*"
-			],
-			"@meelo/models/*": [
-				"../../../packages/models/src/*"
-			]
-		}
+		"baseUrl": ".",
+		"rootDir": "src"
 	},
 	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx"
+		"**/*.ts"
 	],
 	"exclude": [
 		"node_modules"

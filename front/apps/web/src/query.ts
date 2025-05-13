@@ -17,9 +17,9 @@
  */
 
 import type { InfiniteData, QueryFunctionContext } from "react-query";
-import type PaginatedResponse from "~/models/pagination";
-import type { PaginationParameters } from "~/models/pagination";
-import type Resource from "~/models/resource";
+import type PaginatedResponse from "@meelo/models/pagination";
+import type { PaginationParameters } from "@meelo/models/pagination";
+import type Resource from "@meelo/models/resource";
 import type API from "./api";
 
 type Key = string | number | Key[];

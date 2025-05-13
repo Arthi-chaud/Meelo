@@ -41,8 +41,8 @@ import {
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import ResourceDescription from "~/components/resource-description";
 import SectionHeader from "~/components/section-header";
-import { AlbumType } from "~/models/album";
-import { VideoTypeIsExtra } from "~/models/video";
+import { AlbumType } from "@meelo/models/album";
+import { VideoTypeIsExtra } from "@meelo/models/video";
 import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useGradientBackground } from "~/utils/gradient-background";

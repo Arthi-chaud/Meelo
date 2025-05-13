@@ -20,7 +20,7 @@ import PlaylistContextualMenu from "~/components/contextual-menu/resource/playli
 import { PlaylistIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import type { PlaylistWithRelations } from "~/models/playlist";
+import type { PlaylistWithRelations } from "@meelo/models/playlist";
 
 type PlaylistItemProps = {
 	playlist: PlaylistWithRelations<"illustration"> | undefined;

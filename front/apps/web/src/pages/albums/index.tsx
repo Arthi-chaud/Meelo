@@ -9,7 +9,7 @@ import {
 	getSortQuery,
 } from "~/components/infinite/controls/sort";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
-import { AlbumSortingKeys } from "~/models/album";
+import { AlbumSortingKeys } from "@meelo/models/album";
 
 const isCompilationPage = ({ asPath }: { asPath?: string }) =>
 	asPath?.includes("/compilations") ?? false;

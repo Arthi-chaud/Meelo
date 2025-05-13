@@ -18,8 +18,8 @@
 
 import { useTranslation } from "react-i18next";
 import HighlightCard from "~/components/highlight-card";
-import type { AlbumWithRelations } from "~/models/album";
-import type { AlbumExternalMetadata } from "~/models/external-metadata";
+import type { AlbumWithRelations } from "@meelo/models/album";
+import type { AlbumExternalMetadata } from "@meelo/models/external-metadata";
 import { getYear } from "~/utils/date";
 
 type AlbumHighlightCardProps = {

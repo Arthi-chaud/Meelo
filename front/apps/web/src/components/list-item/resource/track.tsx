@@ -25,7 +25,7 @@ import TrackContextualMenu from "~/components/contextual-menu/resource/track";
 import { MasterIcon, TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import type { TrackWithRelations } from "~/models/track";
+import type { TrackWithRelations } from "@meelo/models/track";
 import { playTrackAtom } from "~/state/player";
 
 type TrackItemProps = {

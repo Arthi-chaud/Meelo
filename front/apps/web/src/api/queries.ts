@@ -23,59 +23,59 @@ import {
 	type AlbumSortingKeys,
 	type AlbumType,
 	AlbumWithRelations,
-} from "~/models/album";
+} from "@meelo/models/album";
 import {
 	type ArtistInclude,
 	type ArtistSortingKeys,
 	ArtistWithRelations,
-} from "~/models/artist";
+} from "@meelo/models/artist";
 import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
 	SongExternalMetadata,
-} from "~/models/external-metadata";
-import File from "~/models/file";
-import Genre, { type GenreSortingKeys } from "~/models/genre";
-import Label, { type LabelSortingKeys } from "~/models/label";
-import Library from "~/models/library";
+} from "@meelo/models/external-metadata";
+import File from "@meelo/models/file";
+import Genre, { type GenreSortingKeys } from "@meelo/models/genre";
+import Label, { type LabelSortingKeys } from "@meelo/models/label";
+import Library from "@meelo/models/library";
 import PaginatedResponse, {
 	type PaginationParameters,
-} from "~/models/pagination";
+} from "@meelo/models/pagination";
 import {
 	PlaylistEntryWithRelations,
 	type PlaylistInclude,
 	type PlaylistSortingKeys,
 	PlaylistWithRelations,
-} from "~/models/playlist";
+} from "@meelo/models/playlist";
 import {
 	type ReleaseInclude,
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
-} from "~/models/release";
-import { type SearchResult, SearchResultTransformer } from "~/models/search";
+} from "@meelo/models/release";
+import { type SearchResult, SearchResultTransformer } from "@meelo/models/search";
 import {
 	type SongInclude,
 	type SongSortingKeys,
 	type SongType,
 	SongWithRelations,
-} from "~/models/song";
+} from "@meelo/models/song";
 import {
 	type SongGroupSortingKeys,
 	SongGroupWithRelations,
-} from "~/models/song-group";
+} from "@meelo/models/song-group";
 import {
 	type TrackInclude,
 	type TrackSortingKeys,
 	TrackWithRelations,
-} from "~/models/track";
-import { TracklistItemWithRelations } from "~/models/tracklist";
-import User, { type UserSortingKeys } from "~/models/user";
+} from "@meelo/models/track";
+import { TracklistItemWithRelations } from "@meelo/models/tracklist";
+import User, { type UserSortingKeys } from "@meelo/models/user";
 import {
 	type VideoInclude,
 	type VideoSortingKeys,
 	type VideoType,
 	VideoWithRelations,
-} from "~/models/video";
+} from "@meelo/models/video";
 import type { InfiniteQuery, Query } from "~/query";
 import { store } from "~/state/store";
 import { accessTokenAtom } from "~/state/user";

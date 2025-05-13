@@ -10,7 +10,8 @@
 		"format": "biome format ."
 	},
 	"workspaces": [
-		"apps/*"
+		"apps/*",
+		"packages/*"
 	],
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",

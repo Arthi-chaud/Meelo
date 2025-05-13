@@ -21,7 +21,7 @@ import { useLibraryFilterControl } from "~/components/infinite/controls/filters/
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import TrackItem from "~/components/list-item/resource/track";
-import { TrackSortingKeys, type TrackWithRelations } from "~/models/track";
+import { TrackSortingKeys, type TrackWithRelations } from "@meelo/models/track";
 import type { InfiniteQuery } from "~/query";
 import { DefaultItemSize } from "~/utils/layout";
 import type { SortingParameters } from "~/utils/sorting";

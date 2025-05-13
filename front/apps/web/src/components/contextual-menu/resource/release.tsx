@@ -30,7 +30,7 @@ import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareReleaseAction } from "~/components/actions/share";
 import { UpdateReleaseIllustrationAction } from "~/components/actions/update-illustration";
 import { MasterIcon, UpgradeIcon } from "~/components/icons";
-import type { ReleaseWithRelations } from "~/models/release";
+import type { ReleaseWithRelations } from "@meelo/models/release";
 import { userAtom } from "~/state/user";
 import { ContextualMenu } from "..";
 

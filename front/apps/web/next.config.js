@@ -1,5 +1,4 @@
 /** @type {import('next').NextConfig} */
-
 const config = {
 	output: "standalone",
 	reactStrictMode: false,
@@ -17,6 +16,7 @@ const config = {
 			},
 		];
 	},
+	transpilePackages: ["@meelo/models"],
 };
 
 if (process.env.NODE_ENV !== "production") {

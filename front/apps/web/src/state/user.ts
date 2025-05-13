@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type User from "@meelo/models/user";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { atom } from "jotai";
-import type User from "../models/user";
-import { UserAccessTokenCookieKey } from "../utils/cookieKeys";
+import { UserAccessTokenCookieKey } from "~/utils/cookieKeys";
 
 export const userAtom = atom<User | undefined>();
 

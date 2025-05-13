@@ -16,31 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ArtistAvatar from "~/components/artist-avatar";
-import ArtistContextualMenu from "~/components/contextual-menu/resource/artist";
-import RelationPageHeader from "~/components/relation-page-header";
-import type { ArtistWithRelations } from "@meelo/models/artist";
-
-type ArtistRelationPageHeaderProps = {
-	artist: ArtistWithRelations<"illustration"> | undefined;
-};
-
-const ArtistRelationPageHeader = ({
-	artist,
-}: ArtistRelationPageHeaderProps) => {
-	return (
-		<RelationPageHeader
-			illustration={
-				<ArtistAvatar
-					illustration={artist?.illustration}
-					quality="medium"
-				/>
-			}
-			title={artist?.name}
-			secondTitle={null}
-			trailing={artist && <ArtistContextualMenu artist={artist} />}
-		/>
-	);
-};
-
-export default ArtistRelationPageHeader;
+export * from "./album";
+export * from "./artist";
+export * from "./disc";
+export * from "./external-metadata";
+export * from "./file";
+export * from "./genre";
+export * from "./illustration";
+export * from "./index";
+export * from "./label";
+export * from "./library";
+export * from "./lyrics";
+export * from "./pagination";
+export * from "./playlist";
+export * from "./release";
+export * from "./resource";
+export * from "./search";
+export * from "./song-group";
+export * from "./song";
+export * from "./task";
+export * from "./track";
+export * from "./tracklist";
+export * from "./user";
+export * from "./video";

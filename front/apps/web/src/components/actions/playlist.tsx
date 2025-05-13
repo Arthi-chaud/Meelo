@@ -49,12 +49,12 @@ import {
 import Illustration from "~/components/illustration";
 import InfiniteList from "~/components/infinite/list";
 import ListItem from "~/components/list-item";
-import type Playlist from "~/models/playlist";
+import type Playlist from "@meelo/models/playlist";
 import type {
 	CreatePlaylistDto,
 	PlaylistWithRelations,
 	UpdatePlaylistDto,
-} from "~/models/playlist";
+} from "@meelo/models/playlist";
 import type { InfiniteQueryFn } from "~/query";
 import { type TrackState, playAfterAtom, playNextAtom } from "~/state/player";
 import { store } from "~/state/store";
