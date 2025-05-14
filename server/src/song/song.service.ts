@@ -50,6 +50,7 @@ import SearchableRepositoryService from "src/repository/searchable-repository.se
 import Slug from "src/slug/slug";
 import type SortingOrder from "src/sort/models/sorting-order";
 import TrackService from "src/track/track.service";
+import UserService from "src/user/user.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
 import type SongGroupQueryParameters from "./models/song-group.query-params";
@@ -312,6 +313,11 @@ export default class SongService extends SearchableRepositoryService {
 		}
 		const query: Prisma.SongWhereInput[] = [];
 
+		if (where.playedBy) {
+			query.push({
+				playHistory: { some: { userId: where.playedBy.id } },
+			});
+		}
 		if (where.songs?.length) {
 			query.push({
 				OR: where.songs.map((song) =>
@@ -724,33 +730,6 @@ export default class SongService extends SearchableRepositoryService {
 				})
 				.filter((q) => q !== null)
 				.map((q) => q!),
-		);
-	}
-
-	async getManyByPlayCount<I extends SongQueryParameters.RelationInclude>(
-		userId: number,
-		where: SongQueryParameters.ManyWhereInput,
-		pagination?: PaginationParameters,
-		include?: I,
-		order?: SortingOrder,
-	) {
-		const playedSongs = await this.prismaService.playHistory.groupBy({
-			where: { userId: userId },
-			by: ["songId"],
-			orderBy: {
-				_count: {
-					songId: order ?? "desc",
-				},
-			},
-		});
-		return this.getMany(
-			{
-				...where,
-				songs: playedSongs.map(({ songId }) => ({ id: songId })),
-			},
-			undefined,
-			pagination,
-			include,
 		);
 	}
 
