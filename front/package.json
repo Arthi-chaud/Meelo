@@ -5,6 +5,7 @@
 		"start:web:dev": "yarn workspace web run start:dev",
 		"start:web:prod": "yarn workspace web run start:prod",
 		"tsc:web": "yarn workspace web run tsc",
+		"tsc:all": "yarn workspaces foreach -A --exclude 'meelo' run tsc",
 		"build:web": "yarn workspace web build",
 		"lint": "biome lint .",
 		"format": "biome format ."
