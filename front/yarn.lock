@@ -1466,6 +1466,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@meelo/models@workspace:packages/models"
   dependencies:
+    typescript: "npm:5.3.3"
     yup: "npm:^1.0.0"
   languageName: unknown
   linkType: soft
