@@ -17,12 +17,12 @@
  */
 
 import * as yup from "yup";
-import { yupdate } from "~/utils/yup";
 import Album from "./album";
 import { Disc } from "./disc";
 import Illustration from "./illustration";
 import Label from "./label";
 import Resource from "./resource";
+import { yupdate } from "./utils";
 
 /**
  * A version of an album

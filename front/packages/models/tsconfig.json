@@ -1,24 +1,5 @@
 {
-	"compilerOptions": {
-		"target": "es5",
-		"lib": [
-			"dom",
-			"dom.iterable",
-			"esnext"
-		],
-		"skipLibCheck": true,
-		"strict": true,
-		"forceConsistentCasingInFileNames": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"incremental": true,
-		"baseUrl": ".",
-		"rootDir": "src"
-	},
+	"extends": ["../tsconfig.base.json"],
 	"include": [
 		"**/*.ts"
 	],

@@ -17,8 +17,8 @@
  */
 
 import * as yup from "yup";
-import { yupdate } from "~/utils/yup";
 import Resource from "./resource";
+import { yupdate } from "./utils";
 
 const File = Resource.concat(
 	yup.object({
