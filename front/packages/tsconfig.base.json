@@ -1,0 +1,14 @@
+{
+	"extends": ["../tsconfig.base.json"],
+	"compilerOptions": {
+		"baseUrl": "src/",
+		"paths": {
+			"~/*": [
+				"./*"
+			],
+			"@meelo/models/*": [
+				"../models/src/*"
+			]
+		}
+	}
+}
