@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import formatDuration from "../../src/utils/formatDuration";
 
 describe("Format Duration", () => {
