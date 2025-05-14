@@ -28,6 +28,7 @@ import type { RelationInclude as BaseRelationInclude } from "src/relation-includ
 import type Slug from "src/slug/slug";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
+import UserQueryParameters from "src/user/models/user.query-params";
 import type { SearchStringInput } from "src/utils/search-string-input";
 import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 import type SongGroupQueryParameters from "./song-group.query-params";
@@ -85,6 +86,7 @@ namespace SongQueryParameters {
 			group: SongGroupQueryParameters.WhereInput;
 			versionsOf: Filter<SongQueryParameters.WhereInput>;
 			type?: Filter<SongType>;
+			playedBy: Required<Pick<UserQueryParameters.WhereInput, "id">>;
 			songs: SongQueryParameters.WhereInput[];
 		}>
 	>;
