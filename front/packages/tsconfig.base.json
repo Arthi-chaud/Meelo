@@ -4,7 +4,11 @@
 		"baseUrl": "src/",
 		"paths": {
 			"~/*": ["./*"],
-			"@/models/*": ["../models/src/*"]
+			"@/models/*": ["../models/src/*"],
+			"@/state/*": ["../state/src/*"],
+			"@/utils/*": ["../utils/src/*"],
+			"@/api": ["../api/src/index"],
+			"@/api/*": ["../api/src/*"]
 		}
 	}
 }

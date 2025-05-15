@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type API from "@/api";
+import { useQueryClient } from "@/api/hook";
+import { getUsers } from "@/api/queries";
+import type User from "@/models/user";
+import { userAtom } from "@/state/user";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useAtom } from "jotai";
@@ -23,13 +28,8 @@ import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import type API from "~/api";
-import { useQueryClient } from "~/api/hook";
-import { getUsers } from "~/api/queries";
 import AdminGrid from "~/components/admin-grid";
 import { DeleteIcon } from "~/components/icons";
-import type User from "@/models/user";
-import { userAtom } from "~/state/user";
 
 const DeleteButton = ({
 	userId,

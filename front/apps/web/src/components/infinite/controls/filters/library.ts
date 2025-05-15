@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useAPI } from "@/api/hook";
+import { getLibraries } from "@/api/queries";
+import { toTanStackInfiniteQuery } from "@/api/query";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import { useAPI } from "~/api/hook";
-import { getLibraries } from "~/api/queries";
 import type { TranslationKey } from "~/i18n/i18n";
-import { toTanStackInfiniteQuery } from "~/query";
 import { useFilterControl, useFiltersControl } from "./control";
 
 function useLibraryFilterControl(p: { multipleChoices: true }): ReturnType<

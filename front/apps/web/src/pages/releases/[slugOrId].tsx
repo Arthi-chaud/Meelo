@@ -16,6 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type API from "@/api";
+import { getAPI, useInfiniteQuery, useQuery } from "@/api/hook";
+import {
+	getAlbum,
+	getAlbumExternalMetadata,
+	getAlbums,
+	getArtists,
+	getGenres,
+	getPlaylists,
+	getRelease,
+	getReleaseTracklist,
+	getReleases,
+	getSongs,
+	getVideos,
+} from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import type { SongWithRelations } from "@/models/song";
+import type Tracklist from "@/models/tracklist";
+import type { TracklistItemWithRelations } from "@/models/tracklist";
+import { VideoTypeIsExtra, type VideoWithRelations } from "@/models/video";
+import { playTracksAtom } from "@/state/player";
+import { getDate, getYear } from "@/utils/date";
+import formatDuration from "@/utils/format-duration";
+import { generateArray } from "@/utils/gen-list";
 import {
 	Button,
 	Container,
@@ -41,25 +65,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import type API from "~/api";
-import { getAPI, useInfiniteQuery, useQuery } from "~/api/hook";
-import {
-	getAlbum,
-	getAlbumExternalMetadata,
-	getAlbums,
-	getArtists,
-	getGenres,
-	getPlaylists,
-	getRelease,
-	getReleaseTracklist,
-	getReleases,
-	getSongs,
-	getVideos,
-} from "~/api/queries";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import Fade from "~/components/fade";
 import GenreButton from "~/components/genre-button";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import { PlayIcon, ShuffleIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
@@ -73,18 +83,8 @@ import PlaylistTile from "~/components/tile/resource/playlist";
 import ReleaseTile from "~/components/tile/resource/release";
 import VideoTile from "~/components/tile/resource/video";
 import TileRow from "~/components/tile/row";
-import type { SongWithRelations } from "@/models/song";
-import type Tracklist from "@/models/tracklist";
-import type { TracklistItemWithRelations } from "@/models/tracklist";
-import { VideoTypeIsExtra, type VideoWithRelations } from "@/models/video";
-import { toTanStackQuery } from "~/query";
-import { playTracksAtom } from "~/state/player";
 import { useAccentColor } from "~/utils/accent-color";
-import { getDate, getYear } from "~/utils/date";
-import formatDuration from "~/utils/formatDuration";
-import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
-import { useGradientBackground } from "~/utils/gradient-background";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 
 const formatReleaseDate = (date: Date, lang: string) => {

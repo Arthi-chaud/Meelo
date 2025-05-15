@@ -16,6 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQuery } from "@/api/hook";
+import { getSourceFile, getTrack } from "@/api/queries";
+import formatDuration from "@/utils/format-duration";
+import { uncapitalize } from "@/utils/uncapitalize";
 import {
 	Skeleton,
 	Stack,
@@ -28,11 +32,7 @@ import {
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "~/api/hook";
-import { getSourceFile, getTrack } from "~/api/queries";
 import type { TranslationKey } from "~/i18n/i18n";
-import formatDuration from "~/utils/formatDuration";
-import { uncapitalize } from "~/utils/uncapitalize";
 import SongTypeIcon from "./song-type-icon";
 
 /**

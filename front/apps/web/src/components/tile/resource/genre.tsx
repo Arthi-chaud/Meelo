@@ -16,6 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@/api/hook";
+import { getSongs } from "@/api/queries";
+import { transformPage } from "@/api/query";
+import type Genre from "@/models/genre";
+import { playFromInfiniteQuery } from "@/state/player";
+import { getRandomNumber } from "@/utils/random";
 import {
 	Grid,
 	IconButton,
@@ -27,13 +33,7 @@ import {
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import { useMemo } from "react";
-import { useQueryClient } from "~/api/hook";
-import { getSongs } from "~/api/queries";
 import { RadioIcon } from "~/components/icons";
-import type Genre from "@/models/genre";
-import { transformPage } from "~/query";
-import { playFromInfiniteQuery } from "~/state/player";
-import { getRandomNumber } from "~/utils/random";
 
 // Stolen from https://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript
 const stringToColour = (str: string) => {

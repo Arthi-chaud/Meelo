@@ -16,19 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
-import type { NextPageContext } from "next";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import type { QueryClient } from "react-query";
-import type { GetPropsTypesFrom, Page } from "ssr";
 import {
 	getAPI,
 	useInfiniteQuery,
 	useQueries,
 	type useQuery,
-} from "~/api/hook";
+} from "@/api/hook";
 import {
 	getAlbumExternalMetadata,
 	getAlbums,
@@ -37,10 +30,22 @@ import {
 	getLabels,
 	getReleases,
 	getSongs,
-} from "~/api/queries";
+} from "@/api/queries";
+import { toTanStackInfiniteQuery } from "@/api/query";
+import type { AlbumExternalMetadata } from "@/models/external-metadata";
+import { generateArray } from "@/utils/gen-list";
+import { getRandomNumber } from "@/utils/random";
+import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
+import type { NextPageContext } from "next";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { QueryClient } from "react-query";
+import type { GetPropsTypesFrom, Page } from "ssr";
 import { GoToSettingsAction } from "~/components/actions/link";
 import { EmptyState } from "~/components/empty-state";
 import Fade from "~/components/fade";
+import { useGradientBackground } from "~/components/gradient-background";
 import AlbumHighlightCard from "~/components/highlight-card/resource/album";
 import { EmptyStateIcon } from "~/components/icons";
 import SectionHeader from "~/components/section-header";
@@ -50,11 +55,6 @@ import ArtistTile from "~/components/tile/resource/artist";
 import { GenreTile } from "~/components/tile/resource/genre";
 import ReleaseTile from "~/components/tile/resource/release";
 import TileRow from "~/components/tile/row";
-import type { AlbumExternalMetadata } from "@/models/external-metadata";
-import { toTanStackInfiniteQuery } from "~/query";
-import { generateArray } from "~/utils/gen-list";
-import { useGradientBackground } from "~/utils/gradient-background";
-import { getRandomNumber } from "~/utils/random";
 
 const newlyAddedAlbumsQuery = getAlbums(
 	{},

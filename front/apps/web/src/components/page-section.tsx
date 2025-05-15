@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Grid } from "@mui/material";
-import Link from "next/link";
-import { type ComponentProps, Fragment } from "react";
-import { useTranslation } from "react-i18next";
-import type { UseQueryResult } from "react-query";
-import type { useInfiniteQuery } from "~/api/hook";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { useInfiniteQuery } from "@/api/hook";
 import type { AlbumWithRelations } from "@/models/album";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
 import type { SongWithRelations } from "@/models/song";
 import type { VideoWithRelations } from "@/models/video";
-import { getYear } from "~/utils/date";
-import { generateArray } from "~/utils/gen-list";
+import { getYear } from "@/utils/date";
+import { generateArray } from "@/utils/gen-list";
+import { Box, Button, Grid } from "@mui/material";
+import Link from "next/link";
+import { type ComponentProps, Fragment } from "react";
+import { useTranslation } from "react-i18next";
+import type { UseQueryResult } from "react-query";
+import type { TranslationKey } from "~/i18n/i18n";
 import Fade from "./fade";
 import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";

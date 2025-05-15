@@ -16,6 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { InfiniteQuery } from "@/api/query";
+import {
+	AlbumSortingKeys,
+	AlbumType,
+	type AlbumWithRelations,
+} from "@/models/album";
+import type { SortingParameters } from "@/models/sorting";
+import { uncapitalize } from "@/utils/uncapitalize";
 import { Controls } from "~/components/infinite/controls/controls";
 import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
 import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
@@ -24,14 +32,6 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import AlbumItem from "~/components/list-item/resource/album";
 import AlbumTile from "~/components/tile/resource/album";
-import {
-	AlbumSortingKeys,
-	AlbumType,
-	type AlbumWithRelations,
-} from "@/models/album";
-import type { InfiniteQuery } from "~/query";
-import type { SortingParameters } from "@/models/sorting";
-import { uncapitalize } from "~/utils/uncapitalize";
 
 type QueryProps = {
 	types?: AlbumType[];

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { AppName } from "@/utils/constants";
 import NextHead from "next/head";
-import { DefaultWindowTitle } from "~/utils/constants";
 
 export const Head = ({
 	title,
@@ -26,9 +26,7 @@ export const Head = ({
 	title?: string | false;
 	description?: string;
 }) => {
-	const formattedTitle = !title
-		? DefaultWindowTitle
-		: `${title} | ${DefaultWindowTitle}`;
+	const formattedTitle = !title ? AppName : `${title} | ${AppName}`;
 	return (
 		<NextHead>
 			<title>{formattedTitle}</title>

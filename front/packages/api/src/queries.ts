@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { InfiniteQuery, Query } from "@/api/query";
 import {
 	type AlbumInclude,
 	type AlbumSortingKeys,
@@ -50,10 +51,7 @@ import {
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
 } from "@/models/release";
-import {
-	type SearchResult,
-	SearchResultTransformer,
-} from "@/models/search";
+import { type SearchResult, SearchResultTransformer } from "@/models/search";
 import {
 	type SongInclude,
 	type SongSortingKeys,
@@ -78,11 +76,10 @@ import {
 	type VideoType,
 	VideoWithRelations,
 } from "@/models/video";
+import { store } from "@/state/store";
+import { accessTokenAtom } from "@/state/user";
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
-import type { InfiniteQuery, Query } from "~/query";
-import { store } from "~/state/store";
-import { accessTokenAtom } from "~/state/user";
 import type API from ".";
 import { Service } from ".";
 

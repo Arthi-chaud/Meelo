@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ReleaseWithRelations } from "@/models/release";
+import { getYear } from "@/utils/date";
 import { Grid } from "@mui/material";
 import { Star } from "iconsax-react";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import { AlbumIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import type { ReleaseWithRelations } from "@/models/release";
-import { getYear } from "~/utils/date";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<"album" | "illustration">;

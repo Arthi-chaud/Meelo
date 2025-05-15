@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type API from "@/api";
+import { useAPI } from "@/api/hook";
 import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
-import type API from "~/api";
-import { useAPI } from "~/api/hook";
 import { MetadataRefreshIcon } from "~/components/icons";
 import type { Translator } from "~/i18n/i18n";
 import type Action from "./";

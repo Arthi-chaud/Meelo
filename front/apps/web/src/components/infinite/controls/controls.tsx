@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ItemSize } from "@/models/layout";
 import {
 	Button,
 	ButtonGroup,
@@ -42,7 +43,6 @@ import {
 	PlusIcon,
 } from "~/components/icons";
 import type { TranslationKey } from "~/i18n/i18n";
-import { ItemSize } from "~/utils/layout";
 import type { FilterControl } from "./filters/control";
 import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";

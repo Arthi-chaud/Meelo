@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { QueryClient } from "@/api/hook";
+import { store } from "@/state/store";
+import { userAtom } from "@/state/user";
 import {
 	Button,
 	DialogActions,
@@ -26,10 +29,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import type { QueryClient } from "~/api/hook";
 import { UpdateIllustrationIcon } from "~/components/icons";
-import { store } from "~/state/store";
-import { userAtom } from "~/state/user";
 import type Action from "./";
 
 type IllustrationUpdateFormType = {

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { QueryClient } from "@/api/hook";
+import { getSongMasterTrack } from "@/api/queries";
 import type { useConfirm } from "material-ui-confirm";
-import type { QueryClient } from "~/api/hook";
-import { getSongMasterTrack } from "~/api/queries";
 import { InfoIcon } from "~/components/icons";
 import { openTrackFileInfoModal } from "~/components/track-file-info";
 import type Action from "./";

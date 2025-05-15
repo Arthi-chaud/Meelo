@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useAPI } from "@/api/hook";
+import type IllustrationModel from "@/models/illustration";
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import type { RequireExactlyOne } from "type-fest";
-import { useAPI } from "~/api/hook";
-import type IllustrationModel from "@/models/illustration";
 import { isSSR } from "~/utils/is-ssr";
 import Blurhash from "./blurhash";
 import Fade from "./fade";

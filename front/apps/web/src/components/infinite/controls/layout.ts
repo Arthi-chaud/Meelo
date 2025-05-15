@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRouter } from "next/router";
-import { useState } from "react";
 import {
 	type ItemSize,
 	type LayoutOption,
 	LayoutOptions,
-} from "~/utils/layout";
+} from "@/models/layout";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type LayoutControl =

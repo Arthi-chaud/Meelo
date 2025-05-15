@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@/api/hook";
+import { getMasterRelease } from "@/api/queries";
+import type { AlbumWithRelations } from "@/models/album";
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/hook";
-import { getMasterRelease } from "~/api/queries";
 import { DownloadReleaseAsyncAction } from "~/components/actions/download";
 import { GoToArtistAction } from "~/components/actions/link";
 import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareAlbumAction } from "~/components/actions/share";
-import type { AlbumWithRelations } from "@/models/album";
 import { ContextualMenu } from "..";
 
 type AlbumContextualMenuProps = {

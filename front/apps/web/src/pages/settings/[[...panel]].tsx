@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQuery } from "@/api/hook";
+import { getCurrentUserStatus } from "@/api/queries";
 import { Box, Tab, Tabs } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { useQuery } from "~/api/hook";
-import { getCurrentUserStatus } from "~/api/queries";
 import { Head } from "~/components/head";
 import LibrariesSettings from "~/components/settings/libraries";
 import UISettings from "~/components/settings/ui";

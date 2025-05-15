@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@/api/hook";
+import { getSongMasterTrack } from "@/api/queries";
+import type { SongWithRelations } from "@/models/song";
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/hook";
-import { getSongMasterTrack } from "~/api/queries";
 import { DownloadAsyncAction } from "~/components/actions/download";
 import {
 	GoToArtistAction,
@@ -42,7 +43,6 @@ import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShareSongAction } from "~/components/actions/share";
 import { ShowMasterTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { DeleteIcon } from "~/components/icons";
-import type { SongWithRelations } from "@/models/song";
 import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {

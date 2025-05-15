@@ -17,9 +17,9 @@
  */
 
 import type User from "@/models/user";
+import { UserAccessTokenStorageKey } from "@/utils/constants";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { atom } from "jotai";
-import { UserAccessTokenCookieKey } from "~/utils/cookieKeys";
 
 export const userAtom = atom<User | undefined>();
 
@@ -35,17 +35,17 @@ export const accessTokenAtom = atom<
 
 			expires.setMonth(expires.getMonth() + 1);
 			setCookie(
-				UserAccessTokenCookieKey,
+				UserAccessTokenStorageKey,
 				update,
 				// Sets cookie for a month
 				{ expires },
 			);
 		} else {
-			deleteCookie(UserAccessTokenCookieKey);
+			deleteCookie(UserAccessTokenStorageKey);
 		}
 		set(_accessToken, update);
 	},
 );
 const _accessToken = atom<string | undefined>(
-	getCookie(UserAccessTokenCookieKey)?.valueOf().toString(),
+	getCookie(UserAccessTokenStorageKey)?.valueOf().toString(),
 );

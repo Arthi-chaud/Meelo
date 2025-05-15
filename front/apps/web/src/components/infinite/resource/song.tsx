@@ -16,9 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type QueryClient, useQueryClient } from "@/api/hook";
+import { type InfiniteQuery, transformPage } from "@/api/query";
+import {
+	SongSortingKeys,
+	SongType,
+	type SongWithRelations,
+} from "@/models/song";
+import type { SongGroupWithRelations } from "@/models/song-group";
+import type { SortingParameters } from "@/models/sorting";
+import { playFromInfiniteQuery } from "@/state/player";
+import { store } from "@/state/store";
+import { getRandomNumber } from "@/utils/random";
+import { uncapitalize } from "@/utils/uncapitalize";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { type QueryClient, useQueryClient } from "~/api/hook";
 import type Action from "~/components/actions";
 import { PlayIcon, ShuffleIcon } from "~/components/icons";
 import { Controls } from "~/components/infinite/controls/controls";
@@ -26,19 +38,7 @@ import { useLibraryFilterControl } from "~/components/infinite/controls/filters/
 import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
-import {
-	SongSortingKeys,
-	SongType,
-	type SongWithRelations,
-} from "@/models/song";
-import type { SongGroupWithRelations } from "@/models/song-group";
-import { type InfiniteQuery, transformPage } from "~/query";
-import { playFromInfiniteQuery } from "~/state/player";
-import { store } from "~/state/store";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
-import { getRandomNumber } from "~/utils/random";
-import type { SortingParameters } from "@/models/sorting";
-import { uncapitalize } from "~/utils/uncapitalize";
 import InfiniteList from "../list";
 
 type SongModel = SongWithRelations<

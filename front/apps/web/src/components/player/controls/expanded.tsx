@@ -16,6 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQuery, useQueryClient } from "@/api/hook";
+import {
+	cursorAtom,
+	infiniteQueryAtom,
+	loadNextQueuePageAtom,
+	playlistAtom,
+	removeTrackAtom,
+	reorderAtom,
+	skipTrackAtom,
+} from "@/state/player";
+import formatArtists from "@/utils/format-artists";
+import formatDuration from "@/utils/format-duration";
 import {
 	Box,
 	Button,
@@ -36,7 +48,6 @@ import { type LegacyRef, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "~/api/hook";
 import { CreatePlaylistAction } from "~/components/actions/playlist";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
 import {
@@ -52,17 +63,6 @@ import {
 } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import {
-	cursorAtom,
-	infiniteQueryAtom,
-	loadNextQueuePageAtom,
-	playlistAtom,
-	removeTrackAtom,
-	reorderAtom,
-	skipTrackAtom,
-} from "~/state/player";
-import formatArtists from "~/utils/formatArtists";
-import formatDuration from "~/utils/formatDuration";
 import {
 	PlayButton,
 	type PlayerControlsProps,

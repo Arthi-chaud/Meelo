@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getAPI_ } from "@/api/hook";
+import { getCurrentUserStatus } from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import { accessTokenAtom, userAtom } from "@/state/user";
 import { Box, Stack } from "@mui/material";
 import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery as useReactQuery } from "react-query";
-import { getAPI_ } from "~/api/hook";
-import { getCurrentUserStatus } from "~/api/queries";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";
-import { toTanStackQuery } from "~/query";
-import { accessTokenAtom, userAtom } from "~/state/user";
 import AuthenticationForm from "./form";
 
 const AuthenticationWall = (props: { children: any }) => {

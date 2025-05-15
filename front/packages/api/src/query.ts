@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { InfiniteData, QueryFunctionContext } from "react-query";
 import type PaginatedResponse from "@/models/pagination";
 import type { PaginationParameters } from "@/models/pagination";
 import type Resource from "@/models/resource";
-import type API from "./api";
+import type { InfiniteData, QueryFunctionContext } from "react-query";
+import type API from ".";
 
 type Key = string | number | Key[];
 

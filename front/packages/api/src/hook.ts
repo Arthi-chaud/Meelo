@@ -18,6 +18,8 @@
 
 import type { PaginationParameters } from "@/models/pagination";
 import type Resource from "@/models/resource";
+import { store } from "@/state/store";
+import { accessTokenAtom } from "@/state/user";
 import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -26,16 +28,15 @@ import {
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "react-query";
+import API from ".";
 import {
 	type InfiniteQueryFn,
 	type QueryFn,
 	toTanStackInfiniteQuery,
 	toTanStackQuery,
-} from "~/query";
-import { store } from "~/state/store";
-import { accessTokenAtom } from "~/state/user";
-import { isSSR } from "~/utils/is-ssr";
-import API from ".";
+} from "./query";
+
+const isSSR = () => typeof window === "undefined";
 
 const apiInstancesAtom = atom({} as Record<string, API>);
 

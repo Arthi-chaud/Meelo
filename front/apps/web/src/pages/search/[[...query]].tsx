@@ -16,6 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useAPI, useQueryClient } from "@/api/hook";
+import {
+	getAlbums,
+	getArtists,
+	getSearchHistory,
+	getSongs,
+	getVideos,
+	searchAll,
+} from "@/api/queries";
+import {
+	type InfiniteQuery,
+	type Query,
+	toInfiniteQuery,
+	transformPage,
+} from "@/api/query";
+import type { IllustratedResource } from "@/models/illustration";
+import type Resource from "@/models/resource";
+import type { SaveSearchItem, SearchResult } from "@/models/search";
+import { playTrackAtom } from "@/state/player";
+import formatArtists from "@/utils/format-artists";
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
@@ -24,15 +44,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { useAPI, useQueryClient } from "~/api/hook";
-import {
-	getAlbums,
-	getArtists,
-	getSearchHistory,
-	getSongs,
-	getVideos,
-	searchAll,
-} from "~/api/queries";
 import { Head } from "~/components/head";
 import { SearchIcon } from "~/components/icons";
 import InfiniteList from "~/components/infinite/list";
@@ -45,17 +56,6 @@ import ArtistItem from "~/components/list-item/resource/artist";
 import SongItem from "~/components/list-item/resource/song";
 import VideoItem from "~/components/list-item/resource/video";
 import { useTabRouter } from "~/components/tab-router";
-import type { IllustratedResource } from "@/models/illustration";
-import type Resource from "@/models/resource";
-import type { SaveSearchItem, SearchResult } from "@/models/search";
-import {
-	type InfiniteQuery,
-	type Query,
-	toInfiniteQuery,
-	transformPage,
-} from "~/query";
-import { playTrackAtom } from "~/state/player";
-import formatArtists from "~/utils/formatArtists";
 
 const prepareSSR = (context: NextPageContext) => {
 	const searchQuery = context.query.query?.at(0) ?? null;

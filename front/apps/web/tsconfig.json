@@ -4,7 +4,11 @@
 		"baseUrl": "src/",
 		"paths": {
 			"~/*": ["./*"],
-			"@/models/*": ["../../../packages/models/src/*"]
+			"@/models/*": ["../../../packages/models/src/*"],
+			"@/utils/*": ["../../../packages/utils/src/*"],
+			"@/api": ["../../../packages/api/src/index"],
+			"@/api/*": ["../../../packages/api/src/*"],
+			"@/state/*": ["../../../packages/state/src/*"]
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]

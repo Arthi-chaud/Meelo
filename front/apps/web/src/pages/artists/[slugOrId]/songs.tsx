@@ -16,14 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getAPI, useQuery, useQueryClient } from "@/api/hook";
+import { getArtist, getRelease, getSongGroups, getSongs } from "@/api/queries";
+import { toTanStackInfiniteQuery } from "@/api/query";
+import { SongSortingKeys } from "@/models/song";
+import type Track from "@/models/track";
 import { Box } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { getAPI, useQuery, useQueryClient } from "~/api/hook";
-import { getArtist, getRelease, getSongGroups, getSongs } from "~/api/queries";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
@@ -31,11 +35,7 @@ import {
 } from "~/components/infinite/controls/sort";
 import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
-import { SongSortingKeys } from "@/models/song";
-import type Track from "@/models/track";
-import { toTanStackInfiniteQuery } from "~/query";
 import getSlugOrId from "~/utils/getSlugOrId";
-import { useGradientBackground } from "~/utils/gradient-background";
 
 const artistQuery = (identifier: string | number) =>
 	getArtist(identifier, ["illustration"]);

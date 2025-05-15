@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { LanguageStorageKey } from "@/utils/constants";
 import ALParser from "accept-language-parser";
 import { getCookie, setCookie } from "cookies-next";
 import i18next, {
@@ -25,7 +26,6 @@ import i18next, {
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
-import { LanguageCookieKey } from "~/utils/cookieKeys";
 import { isSSR } from "~/utils/is-ssr";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
@@ -37,7 +37,7 @@ export const persistLanguage = (language: Language) => {
 	const expires = new Date();
 
 	expires.setMonth(expires.getMonth() + 1);
-	setCookie(LanguageCookieKey, language, { expires });
+	setCookie(LanguageStorageKey, language, { expires });
 };
 
 // Thx https://github.com/zoriya/Kyoo/blob/master/front/apps/web/src/i18n.tsx
@@ -80,7 +80,7 @@ export const withTranslations = (
 			pageProps: {},
 		};
 		const lng =
-			getCookie(LanguageCookieKey)?.toString() ??
+			getCookie(LanguageStorageKey)?.toString() ??
 			Languages.find(
 				//@ts-ignore
 				(lang) => lang === ctx.ctx.req?.cookies[LanguageCookieKey],

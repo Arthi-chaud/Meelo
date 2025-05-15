@@ -16,7 +16,18 @@ const config = {
 			},
 		];
 	},
-	transpilePackages: ["models"],
+	webpack: (config) => {
+		config.resolve.extensions = [
+			".web.ts",
+			".web.tsx",
+			...config.resolve.extensions,
+		];
+		return config;
+	},
+	transpilePackages: ["models", "api", "state", "utils"],
+	experimental: {
+		externalDir: true,
+	},
 };
 
 if (process.env.NODE_ENV !== "production") {

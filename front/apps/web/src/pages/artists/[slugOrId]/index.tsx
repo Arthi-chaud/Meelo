@@ -16,21 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Container, Divider, Grid, Stack } from "@mui/material";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { Fragment, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import type { GetPropsTypesFrom, Page } from "ssr";
-import { useInfiniteQuery, useQuery } from "~/api/hook";
+import { useInfiniteQuery, useQuery } from "@/api/hook";
 import {
 	getAlbums,
 	getArtist,
 	getArtistExternalMetadata,
 	getSongs,
 	getVideos,
-} from "~/api/queries";
+} from "@/api/queries";
+import { AlbumType } from "@/models/album";
+import { VideoTypeIsExtra } from "@/models/video";
+import { generateArray } from "@/utils/gen-list";
+import { uncapitalize } from "@/utils/uncapitalize";
+import { Box, Container, Divider, Grid, Stack } from "@mui/material";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { Fragment, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import type { GetPropsTypesFrom, Page } from "ssr";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import {
 	AlbumListPageSection,
@@ -41,12 +46,7 @@ import {
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import ResourceDescription from "~/components/resource-description";
 import SectionHeader from "~/components/section-header";
-import { AlbumType } from "@/models/album";
-import { VideoTypeIsExtra } from "@/models/video";
-import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
-import { useGradientBackground } from "~/utils/gradient-background";
-import { uncapitalize } from "~/utils/uncapitalize";
 
 // Number of Song item in the 'Top Song' section
 const SongListSize = 6;

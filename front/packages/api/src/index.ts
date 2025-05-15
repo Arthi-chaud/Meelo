@@ -17,6 +17,7 @@
  */
 
 import type { AlbumType } from "@/models/album";
+import { ResourceNotFound } from "@/models/exceptions";
 import Library from "@/models/library";
 import type { PaginationParameters } from "@/models/pagination";
 import Playlist, {
@@ -30,7 +31,6 @@ import { TaskResponse } from "@/models/task";
 import type { TrackType } from "@/models/track";
 import User from "@/models/user";
 import type { VideoType } from "@/models/video";
-import { ResourceNotFound } from "exceptions";
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
 

@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@/api/hook";
+import { getArtist, getRelease } from "@/api/queries";
+import type { VideoWithRelations } from "@/models/video";
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "~/api/hook";
-import { getArtist, getRelease } from "~/api/queries";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";
 import {
@@ -37,7 +38,6 @@ import { RefreshTrackMetadataAction } from "~/components/actions/refresh-metadat
 import { ChangeVideoType } from "~/components/actions/resource-type";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
-import type { VideoWithRelations } from "@/models/video";
 import { ContextualMenu } from "..";
 
 type VideoContextualMenuProps = {

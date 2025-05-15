@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useInfiniteQuery } from "@/api/hook";
+import type { InfiniteQueryFn } from "@/api/query";
+import type Resource from "@/models/resource";
+import { generateArray } from "@/utils/gen-list";
 import * as IScroll from "react-infinite-scroller";
-import { useInfiniteQuery } from "~/api/hook";
 import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
 import { EmptyStateIcon } from "~/components/icons";
-import type Resource from "@/models/resource";
-import type { InfiniteQueryFn } from "~/query";
-import { generateArray } from "~/utils/gen-list";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 

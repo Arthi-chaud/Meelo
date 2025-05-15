@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Skeleton } from "@mui/material";
 import type { CommonExternalMetadata } from "@/models/external-metadata";
-import { generateArray } from "~/utils/gen-list";
+import { generateArray } from "@/utils/gen-list";
+import { Box, Skeleton } from "@mui/material";
 
 type Props = {
 	externalMetadata: CommonExternalMetadata | undefined;

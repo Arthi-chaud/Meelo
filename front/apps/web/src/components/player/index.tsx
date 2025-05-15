@@ -16,6 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@/api/hook";
+import {
+	type TrackState,
+	cursorAtom,
+	playPreviousTrackAtom,
+	playTracksAtom,
+	playlistAtom,
+	playlistLoadingAtom,
+	skipTrackAtom,
+} from "@/state/player";
+import { userAtom } from "@/state/user";
 import {
 	Box,
 	Grow,
@@ -31,19 +42,8 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
-import { useQueryClient } from "~/api/hook";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
-import {
-	type TrackState,
-	cursorAtom,
-	playPreviousTrackAtom,
-	playTracksAtom,
-	playlistAtom,
-	playlistLoadingAtom,
-	skipTrackAtom,
-} from "~/state/player";
-import { userAtom } from "~/state/user";
 import { ExpandedPlayerControls } from "./controls/expanded";
 import { MinimizedPlayerControls } from "./controls/minimized";
 

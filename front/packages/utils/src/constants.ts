@@ -16,4 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const DefaultWindowTitle = "Meelo";
+export const AppName = "Meelo";
+
+export const UserAccessTokenStorageKey = "access_token";
+
+export const LanguageStorageKey = "meelo_lang";

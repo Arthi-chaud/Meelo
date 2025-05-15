@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { QueryClient } from "@/api/hook";
+import { getSongs } from "@/api/queries";
+import type { InfiniteQueryFn } from "@/api/query";
+import type { Song, SongWithRelations } from "@/models/song";
+import type { TrackWithRelations } from "@/models/track";
 import {
 	Button,
 	Dialog,
@@ -28,11 +33,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import type { QueryClient } from "~/api/hook";
-import { getSongs } from "~/api/queries";
-import type { Song, SongWithRelations } from "@/models/song";
-import type { TrackWithRelations } from "@/models/track";
-import type { InfiniteQueryFn } from "~/query";
 import type Action from ".";
 import { MergeIcon, SongIcon } from "../icons";
 import Illustration from "../illustration";

@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type API from "@/api";
+import type { QueryClient } from "@/api/hook";
+import { type InfiniteQuery, toTanStackInfiniteQuery } from "@/api/query";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
 import type { TrackWithRelations } from "@/models/track";
 import { atom } from "jotai";
-import type API from "~/api";
-import type { QueryClient } from "~/api/hook";
-import { type InfiniteQuery, toTanStackInfiniteQuery } from "~/query";
 
 export type TrackState = {
 	track: TrackWithRelations<"illustration">;

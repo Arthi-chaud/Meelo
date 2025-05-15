@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQuery } from "@/api/hook";
+import formatArtists from "@/utils/format-artists";
 import {
 	ButtonBase,
 	Grid,
@@ -23,10 +25,8 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useQuery } from "~/api/hook";
 import { TrackIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
-import formatArtists from "~/utils/formatArtists";
 import {
 	PlayButton,
 	type PlayerControlsProps,

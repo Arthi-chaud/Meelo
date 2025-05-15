@@ -16,18 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getSong } from "@/api/queries";
+import type Artist from "@/models/artist";
+import type { TrackWithRelations } from "@/models/track";
+import formatDuration from "@/utils/format-duration";
 import { IconButton, Typography, type TypographyProps } from "@mui/material";
 import type { ComponentProps } from "react";
-import { getSong } from "~/api/queries";
 import {
 	ForwardIcon,
 	PauseIcon,
 	PlayIcon,
 	RewindIcon,
 } from "~/components/icons";
-import type Artist from "@/models/artist";
-import type { TrackWithRelations } from "@/models/track";
-import formatDuration from "~/utils/formatDuration";
 import type PlayerSlider from "./slider";
 
 export const parentSongQuery = (id: number) =>

@@ -16,6 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getAPI, useInfiniteQuery, useQuery } from "@/api/hook";
+import {
+	getGenres,
+	getSong,
+	getSongExternalMetadata,
+	getSongs,
+	getTracks,
+	getVideos,
+} from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import { playTrackAtom } from "@/state/player";
+import { generateArray } from "@/utils/gen-list";
+import { uncapitalize } from "@/utils/uncapitalize";
 import {
 	Box,
 	Button,
@@ -32,17 +45,9 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { getAPI, useInfiniteQuery, useQuery } from "~/api/hook";
-import {
-	getGenres,
-	getSong,
-	getSongExternalMetadata,
-	getSongs,
-	getTracks,
-	getVideos,
-} from "~/api/queries";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import { PlayIcon } from "~/components/icons";
 import { InfiniteSongView } from "~/components/infinite/resource/song";
@@ -53,14 +58,9 @@ import SongRelationPageHeader from "~/components/relation-page-header/resource/s
 import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
 import type { TranslationKey } from "~/i18n/i18n";
-import { toTanStackQuery } from "~/query";
-import { playTrackAtom } from "~/state/player";
 import { useAccentColor } from "~/utils/accent-color";
-import { generateArray } from "~/utils/gen-list";
 import getSlugOrId from "~/utils/getSlugOrId";
-import { useGradientBackground } from "~/utils/gradient-background";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
-import { uncapitalize } from "~/utils/uncapitalize";
 
 const prepareSSR = async (
 	context: NextPageContext,

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type API from "@/api";
 import type { useConfirm } from "material-ui-confirm";
-import type API from "~/api";
 import confirmDownloadAction from "~/components/confirm-download-action";
 import { ArchiveIcon, DownloadIcon } from "~/components/icons";
 import type { Translator } from "~/i18n/i18n";

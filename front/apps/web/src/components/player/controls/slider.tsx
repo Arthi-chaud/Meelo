@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import formatDuration from "@/utils/format-duration";
 import { Box, Grid, Slider, useTheme } from "@mui/material";
 import { type MutableRefObject, useEffect, useMemo, useState } from "react";
-import formatDuration from "~/utils/formatDuration";
 import { DurationComponent } from "./common";
 
 type PlayerSliderProps = {

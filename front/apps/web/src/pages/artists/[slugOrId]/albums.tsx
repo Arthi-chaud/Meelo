@@ -16,19 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQuery } from "@/api/hook";
+import { getAlbums, getArtist } from "@/api/queries";
+import { getYear } from "@/utils/date";
 import { Box } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { useQuery } from "~/api/hook";
-import { getAlbums, getArtist } from "~/api/queries";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
-import { getYear } from "~/utils/date";
 import getSlugOrId from "~/utils/getSlugOrId";
-import { useGradientBackground } from "~/utils/gradient-background";
 
 const defaultSort = {
 	sortBy: "releaseDate",

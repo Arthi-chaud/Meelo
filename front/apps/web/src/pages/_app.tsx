@@ -1,4 +1,5 @@
-import { ResourceNotFound } from "exceptions";
+import { ResourceNotFound } from "@/models/exceptions";
+import { AppName, UserAccessTokenStorageKey } from "@/utils/constants";
 /* eslint-disable no-restricted-imports */
 import { ConfirmProvider } from "material-ui-confirm";
 import NextApp, { type AppContext, type AppProps } from "next/app";
@@ -16,31 +17,29 @@ import {
 import { ReactQueryDevtools } from "react-query/devtools";
 import AuthenticationWall from "~/components/authentication/wall";
 import Toaster from "~/components/toaster";
-import { DefaultWindowTitle } from "~/utils/constants";
 import PageNotFound from "./404";
 import InternalError from "./500";
 import "core-js/actual";
 import "~/theme/styles.css";
+import { getAPI_ } from "@/api/hook";
+import { getCurrentUserStatus, getLibraries } from "@/api/queries";
+import {
+	DefaultQueryOptions,
+	toTanStackInfiniteQuery,
+	toTanStackQuery,
+} from "@/api/query";
+import { store } from "@/state/store";
+import { accessTokenAtom } from "@/state/user";
 import type { EmotionCache } from "@emotion/react";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
 import { Provider } from "jotai";
 import type { Page } from "ssr";
-import { getAPI_ } from "~/api/hook";
-import { getCurrentUserStatus, getLibraries } from "~/api/queries";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n/i18n";
-import {
-	DefaultQueryOptions,
-	toTanStackInfiniteQuery,
-	toTanStackQuery,
-} from "~/query";
-import { store } from "~/state/store";
-import { accessTokenAtom } from "~/state/user";
 import ThemeProvider from "~/theme/provider";
-import { UserAccessTokenCookieKey } from "~/utils/cookieKeys";
 
 export interface MyAppProps extends AppProps {
 	emotionCache?: EmotionCache;
@@ -69,7 +68,7 @@ function MyApp({
 			<ThemeProvider>
 				<Head>
 					{/* It is recommended to leave this here. The rest has been moved to `_document` */}
-					<title>{DefaultWindowTitle}</title>
+					<title>{AppName}</title>
 					<meta
 						name="viewport"
 						content="initial-scale=1.0, width=device-width"
@@ -140,7 +139,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 		},
 	});
 	const accessToken: string | undefined = (appContext.ctx.req as any)
-		?.cookies[UserAccessTokenCookieKey];
+		?.cookies[UserAccessTokenStorageKey];
 
 	if (!accessToken) {
 		// Disable SSR if user is not authentified
