@@ -28,9 +28,9 @@ import PlaylistTile from "~/components/tile/resource/playlist";
 import {
 	PlaylistSortingKeys,
 	type PlaylistWithRelations,
-} from "@meelo/models/playlist";
+} from "@/models/playlist";
 import type { InfiniteQuery } from "~/query";
-import type { SortingParameters } from "@meelo/models/sorting";
+import type { SortingParameters } from "@/models/sorting";
 
 type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;
 type PlaylistModel = PlaylistWithRelations<"illustration">;

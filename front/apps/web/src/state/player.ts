@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Artist from "@meelo/models/artist";
-import type Resource from "@meelo/models/resource";
-import type { TrackWithRelations } from "@meelo/models/track";
+import type Artist from "@/models/artist";
+import type Resource from "@/models/resource";
+import type { TrackWithRelations } from "@/models/track";
 import { atom } from "jotai";
 import type API from "~/api";
 import type { QueryClient } from "~/api/hook";

@@ -45,9 +45,9 @@ import ArtistItem from "~/components/list-item/resource/artist";
 import SongItem from "~/components/list-item/resource/song";
 import VideoItem from "~/components/list-item/resource/video";
 import { useTabRouter } from "~/components/tab-router";
-import type { IllustratedResource } from "@meelo/models/illustration";
-import type Resource from "@meelo/models/resource";
-import type { SaveSearchItem, SearchResult } from "@meelo/models/search";
+import type { IllustratedResource } from "@/models/illustration";
+import type Resource from "@/models/resource";
+import type { SaveSearchItem, SearchResult } from "@/models/search";
 import {
 	type InfiniteQuery,
 	type Query,

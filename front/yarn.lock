@@ -1462,15 +1462,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@meelo/models@workspace:packages/models":
-  version: 0.0.0-use.local
-  resolution: "@meelo/models@workspace:packages/models"
-  dependencies:
-    typescript: "npm:5.3.3"
-    yup: "npm:^1.0.0"
-  languageName: unknown
-  linkType: soft
-
 "@mui/core-downloads-tracker@npm:^7.0.1":
   version: 7.0.1
   resolution: "@mui/core-downloads-tracker@npm:7.0.1"
@@ -4478,6 +4469,15 @@ __metadata:
   checksum: 10c0/46ea0f3ffa8bc6a5bc0c7081ffc3907777f0ed6516888d40a518c5111f8366d97d2678911ad1a6882bf592fa9de6c784fea32e1687bb94e1f4944170af48a5cf
   languageName: node
   linkType: hard
+
+"models@workspace:packages/models":
+  version: 0.0.0-use.local
+  resolution: "models@workspace:packages/models"
+  dependencies:
+    typescript: "npm:5.3.3"
+    yup: "npm:^1.0.0"
+  languageName: unknown
+  linkType: soft
 
 "ms@npm:2.1.2":
   version: 2.1.2

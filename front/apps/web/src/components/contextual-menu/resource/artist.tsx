@@ -25,7 +25,7 @@ import {
 } from "~/components/actions/link";
 import { ShareArtistAction } from "~/components/actions/share";
 import { UpdateArtistIllustrationAction } from "~/components/actions/update-illustration";
-import type Artist from "@meelo/models/artist";
+import type Artist from "@/models/artist";
 import { ContextualMenu } from "..";
 
 type ArtistContextualMenuProps = {

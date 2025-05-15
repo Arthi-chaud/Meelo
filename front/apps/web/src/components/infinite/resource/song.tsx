@@ -30,14 +30,14 @@ import {
 	SongSortingKeys,
 	SongType,
 	type SongWithRelations,
-} from "@meelo/models/song";
-import type { SongGroupWithRelations } from "@meelo/models/song-group";
+} from "@/models/song";
+import type { SongGroupWithRelations } from "@/models/song-group";
 import { type InfiniteQuery, transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { store } from "~/state/store";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { getRandomNumber } from "~/utils/random";
-import type { SortingParameters } from "@meelo/models/sorting";
+import type { SortingParameters } from "@/models/sorting";
 import { uncapitalize } from "~/utils/uncapitalize";
 import InfiniteList from "../list";
 

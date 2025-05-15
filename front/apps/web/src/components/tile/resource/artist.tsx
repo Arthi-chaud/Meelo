@@ -20,7 +20,7 @@ import { Box } from "@mui/material";
 import ArtistAvatar from "~/components/artist-avatar";
 import ArtistContextualMenu from "~/components/contextual-menu/resource/artist";
 import Tile from "~/components/tile";
-import type { ArtistWithRelations } from "@meelo/models/artist";
+import type { ArtistWithRelations } from "@/models/artist";
 
 const ArtistTile = (props: {
 	artist: ArtistWithRelations<"illustration"> | undefined;

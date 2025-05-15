@@ -3,17 +3,9 @@
 	"compilerOptions": {
 		"baseUrl": "src/",
 		"paths": {
-			"~/*": [
-				"./*"
-			],
-			"@meelo/models/*": [
-				"../../../packages/models/src/*"
-			]
+			"~/*": ["./*"],
+			"@/models/*": ["../../../packages/models/src/*"]
 		}
 	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx"
-	]
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

@@ -37,8 +37,8 @@ import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShareSongAction } from "~/components/actions/share";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
-import type Artist from "@meelo/models/artist";
-import type { TrackWithRelations } from "@meelo/models/track";
+import type Artist from "@/models/artist";
+import type { TrackWithRelations } from "@/models/track";
 import { ContextualMenu } from "..";
 
 type ReleaseTrackContextualMenuProps = {

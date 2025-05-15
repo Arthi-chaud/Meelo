@@ -21,8 +21,8 @@ import SongContextualMenu from "~/components/contextual-menu/resource/song";
 import { SongIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import type { SongWithRelations } from "@meelo/models/song";
-import type { SongGroupWithRelations } from "@meelo/models/song-group";
+import type { SongWithRelations } from "@/models/song";
+import type { SongGroupWithRelations } from "@/models/song-group";
 import formatArtists from "~/utils/formatArtists";
 
 type SongItemProps<

@@ -1,5 +1,5 @@
 {
-	"name": "@meelo/models",
+	"name": "models",
 	"sideEffects": false,
 	"dependencies": {
 		"yup": "^1.0.0"

@@ -28,7 +28,7 @@ import {
 import Link from "next/link";
 import { useMemo } from "react";
 import Illustration from "~/components/illustration";
-import type IllustrationModel from "@meelo/models/illustration";
+import type IllustrationModel from "@/models/illustration";
 import { useAccentColor } from "~/utils/accent-color";
 
 type HighlightCardProps = {

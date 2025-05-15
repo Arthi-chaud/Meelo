@@ -30,9 +30,9 @@ import {
 } from "~/components/infinite/controls/sort";
 import InfiniteGrid from "~/components/infinite/grid";
 import { GenreTile } from "~/components/tile/resource/genre";
-import type Genre from "@meelo/models/genre";
-import { GenreSortingKeys } from "@meelo/models/genre";
-import type { IllustratedResource } from "@meelo/models/illustration";
+import type Genre from "@/models/genre";
+import { GenreSortingKeys } from "@/models/genre";
+import type { IllustratedResource } from "@/models/illustration";
 import type { InfiniteQuery } from "~/query";
 
 const prepareSSR = (context: NextPageContext) => {

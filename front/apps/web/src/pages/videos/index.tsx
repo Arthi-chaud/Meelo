@@ -8,7 +8,7 @@ import {
 	getSortQuery,
 } from "~/components/infinite/controls/sort";
 import InfiniteVideoView from "~/components/infinite/resource/video";
-import { VideoSortingKeys } from "@meelo/models/video";
+import { VideoSortingKeys } from "@/models/video";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

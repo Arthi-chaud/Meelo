@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { AlbumType } from "@meelo/models/album";
-import Library from "@meelo/models/library";
-import type { PaginationParameters } from "@meelo/models/pagination";
+import type { AlbumType } from "@/models/album";
+import Library from "@/models/library";
+import type { PaginationParameters } from "@/models/pagination";
 import Playlist, {
 	type CreatePlaylistDto,
 	type UpdatePlaylistDto,
-} from "@meelo/models/playlist";
-import type { SaveSearchItem } from "@meelo/models/search";
-import type { SongType } from "@meelo/models/song";
-import type { SortingParameters } from "@meelo/models/sorting";
-import { TaskResponse } from "@meelo/models/task";
-import type { TrackType } from "@meelo/models/track";
-import User from "@meelo/models/user";
-import type { VideoType } from "@meelo/models/video";
+} from "@/models/playlist";
+import type { SaveSearchItem } from "@/models/search";
+import type { SongType } from "@/models/song";
+import type { SortingParameters } from "@/models/sorting";
+import { TaskResponse } from "@/models/task";
+import type { TrackType } from "@/models/track";
+import User from "@/models/user";
+import type { VideoType } from "@/models/video";
 import { ResourceNotFound } from "exceptions";
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";

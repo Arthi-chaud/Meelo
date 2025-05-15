@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SongType } from "@meelo/models/song";
+import type { SongType } from "@/models/song";
 import type { IconProps } from "./icons";
 import {
 	SongIcon,

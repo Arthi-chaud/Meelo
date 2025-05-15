@@ -22,7 +22,7 @@ import VideoContextualMenu from "~/components/contextual-menu/resource/video";
 import { VideoIcon } from "~/components/icons";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
-import type { VideoWithRelations } from "@meelo/models/video";
+import type { VideoWithRelations } from "@/models/video";
 import { playTrackAtom } from "~/state/player";
 import formatArtists from "~/utils/formatArtists";
 

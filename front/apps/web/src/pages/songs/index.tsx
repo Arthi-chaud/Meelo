@@ -8,7 +8,7 @@ import {
 	getSortQuery,
 } from "~/components/infinite/controls/sort";
 import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
-import { SongSortingKeys } from "@meelo/models/song";
+import { SongSortingKeys } from "@/models/song";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

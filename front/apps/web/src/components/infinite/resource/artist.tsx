@@ -23,9 +23,9 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import ArtistItem from "~/components/list-item/resource/artist";
 import ArtistTile from "~/components/tile/resource/artist";
-import { ArtistSortingKeys, type ArtistWithRelations } from "@meelo/models/artist";
+import { ArtistSortingKeys, type ArtistWithRelations } from "@/models/artist";
 import type { InfiniteQuery } from "~/query";
-import type { SortingParameters } from "@meelo/models/sorting";
+import type { SortingParameters } from "@/models/sorting";
 
 type QueryProps = { libraries?: string[] } & SortingParameters<
 	typeof ArtistSortingKeys

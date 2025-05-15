@@ -42,7 +42,7 @@ import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShareSongAction } from "~/components/actions/share";
 import { ShowMasterTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { DeleteIcon } from "~/components/icons";
-import type { SongWithRelations } from "@meelo/models/song";
+import type { SongWithRelations } from "@/models/song";
 import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {

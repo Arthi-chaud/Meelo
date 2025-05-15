@@ -30,7 +30,7 @@ import { useMemo } from "react";
 import { useQueryClient } from "~/api/hook";
 import { getSongs } from "~/api/queries";
 import { RadioIcon } from "~/components/icons";
-import type Genre from "@meelo/models/genre";
+import type Genre from "@/models/genre";
 import { transformPage } from "~/query";
 import { playFromInfiniteQuery } from "~/state/player";
 import { getRandomNumber } from "~/utils/random";

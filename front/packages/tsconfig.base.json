@@ -3,12 +3,8 @@
 	"compilerOptions": {
 		"baseUrl": "src/",
 		"paths": {
-			"~/*": [
-				"./*"
-			],
-			"@meelo/models/*": [
-				"../models/src/*"
-			]
+			"~/*": ["./*"],
+			"@/models/*": ["../models/src/*"]
 		}
 	}
 }

@@ -17,7 +17,7 @@
  */
 
 import { Box, Skeleton } from "@mui/material";
-import type { CommonExternalMetadata } from "@meelo/models/external-metadata";
+import type { CommonExternalMetadata } from "@/models/external-metadata";
 import { generateArray } from "~/utils/gen-list";
 
 type Props = {

@@ -25,7 +25,7 @@ import { GoToArtistAction } from "~/components/actions/link";
 import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareAlbumAction } from "~/components/actions/share";
-import type { AlbumWithRelations } from "@meelo/models/album";
+import type { AlbumWithRelations } from "@/models/album";
 import { ContextualMenu } from "..";
 
 type AlbumContextualMenuProps = {

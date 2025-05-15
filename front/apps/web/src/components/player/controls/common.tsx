@@ -25,8 +25,8 @@ import {
 	PlayIcon,
 	RewindIcon,
 } from "~/components/icons";
-import type Artist from "@meelo/models/artist";
-import type { TrackWithRelations } from "@meelo/models/track";
+import type Artist from "@/models/artist";
+import type { TrackWithRelations } from "@/models/track";
 import formatDuration from "~/utils/formatDuration";
 import type PlayerSlider from "./slider";
 

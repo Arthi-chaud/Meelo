@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { PaginationParameters } from "@meelo/models/pagination";
-import type Resource from "@meelo/models/resource";
+import type { PaginationParameters } from "@/models/pagination";
+import type Resource from "@/models/resource";
 import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import {

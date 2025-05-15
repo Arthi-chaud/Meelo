@@ -19,7 +19,7 @@
 import toast from "react-hot-toast";
 import type API from "~/api";
 import { CleanIcon, ScanIcon } from "~/components/icons";
-import type { TaskResponse } from "@meelo/models/task";
+import type { TaskResponse } from "@/models/task";
 import type Action from "./";
 
 /**

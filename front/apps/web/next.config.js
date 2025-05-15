@@ -16,7 +16,7 @@ const config = {
 			},
 		];
 	},
-	transpilePackages: ["@meelo/models"],
+	transpilePackages: ["models"],
 };
 
 if (process.env.NODE_ENV !== "production") {

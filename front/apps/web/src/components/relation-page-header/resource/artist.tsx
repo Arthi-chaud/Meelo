@@ -19,7 +19,7 @@
 import ArtistAvatar from "~/components/artist-avatar";
 import ArtistContextualMenu from "~/components/contextual-menu/resource/artist";
 import RelationPageHeader from "~/components/relation-page-header";
-import type { ArtistWithRelations } from "@meelo/models/artist";
+import type { ArtistWithRelations } from "@/models/artist";
 
 type ArtistRelationPageHeaderProps = {
 	artist: ArtistWithRelations<"illustration"> | undefined;

@@ -28,7 +28,7 @@ import { useQueryClient } from "~/api/hook";
 import { getUsers } from "~/api/queries";
 import AdminGrid from "~/components/admin-grid";
 import { DeleteIcon } from "~/components/icons";
-import type User from "@meelo/models/user";
+import type User from "@/models/user";
 import { userAtom } from "~/state/user";
 
 const DeleteButton = ({

@@ -20,7 +20,7 @@ import type { RequireExactlyOne } from "type-fest";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
 import Illustration from "~/components/illustration";
 import RelationPageHeader from "~/components/relation-page-header";
-import type { SongWithRelations } from "@meelo/models/song";
+import type { SongWithRelations } from "@/models/song";
 import formatArtists from "~/utils/formatArtists";
 
 type SongRelationPageHeaderProps = RequireExactlyOne<{

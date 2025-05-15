@@ -21,7 +21,7 @@ import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import type { RequireExactlyOne } from "type-fest";
 import { useAPI } from "~/api/hook";
-import type IllustrationModel from "@meelo/models/illustration";
+import type IllustrationModel from "@/models/illustration";
 import { isSSR } from "~/utils/is-ssr";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
