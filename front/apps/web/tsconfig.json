@@ -1,28 +1,14 @@
 {
-	"extends": [
-		"../../tsconfig.base.json"
-	],
+	"extends": ["../../tsconfig.base.json"],
 	"compilerOptions": {
 		"baseUrl": "src/",
 		"paths": {
-			"~/*": [
-				"./*"
-			],
-			"@/models/*": [
-				"../../../packages/models/src/*"
-			],
-			"@/utils/*": [
-				"../../../packages/utils/src/*"
-			],
-			"@/api": [
-				"../../../packages/api/src/index"
-			],
-			"@/api/*": [
-				"../../../packages/api/src/*"
-			],
-			"@/state/*": [
-				"../../../packages/state/src/*"
-			]
+			"~/*": ["./*"],
+			"@/models/*": ["../../../packages/models/src/*"],
+			"@/utils/*": ["../../../packages/utils/src/*"],
+			"@/api": ["../../../packages/api/src/index"],
+			"@/api/*": ["../../../packages/api/src/*"],
+			"@/state/*": ["../../../packages/state/src/*"]
 		}
 	},
 	"include": [

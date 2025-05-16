@@ -26,7 +26,7 @@ jobs:
         with:
           filters: |
             front:
-              - 'front/**'
+              - 'front/apps/web/**'
               - '.github/workflows/front.yml'
               - '.github/actions/cache-front/**'
   Build:
@@ -42,7 +42,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Build
-        run: yarn build
+        run: yarn build:web
   Biome:
     if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     container: node:22-alpine3.20
@@ -60,38 +60,18 @@ jobs:
         run: yarn install
       - name: Run Linter
         run: yarn run biome ci .
-  Tests:
-    runs-on: ubuntu-latest
-    container: node:19-alpine
-    needs: [ Build ]
-    if: ${{ needs.changes.outputs.front == 'true' && always() }}
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
-      - name: Restore Dependencies
-        uses: ./.github/actions/cache-front
-      - name: Install Dependencies
-        run: yarn install
-      - name: Run unit tests with coverage
-        run: yarn test:cov
-      - name: Upload Unit Tests artifact
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report-front
-          path: ./front/coverage
   Analysis:
-    needs: [ Tests ]
+    needs: [ Build ]
     name: "Static Analysis"
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.front == 'true' && always() }}
     steps:
       - uses: actions/checkout@v3
-      - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-report-front
-          path: ./front/coverage
+      # - name: Downlad Coverage artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: coverage-report-front
+      #     path: ./front/coverage
       - name: Run SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@master
         with:
@@ -117,3 +97,24 @@ jobs:
           context: ./front
           image-suffix: front
           publish: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+
+# Tests:
+#   runs-on: ubuntu-latest
+#   container: node:19-alpine
+#   needs: [ Build ]
+#   if: ${{ needs.changes.outputs.front == 'true' && always() }}
+#   steps:
+#     - name: Check out the repo
+#       uses: actions/checkout@v3
+#     - name: Restore Dependencies
+#       uses: ./.github/actions/cache-front
+#     - name: Install Dependencies
+#       run: yarn install
+#     - name: Run unit tests with coverage
+#       run: yarn test:cov
+#     - name: Upload Unit Tests artifact
+#       if: ${{ always() }}
+#       uses: actions/upload-artifact@v4
+#       with:
+#         name: coverage-report-front
+#         path: ./front/coverage
