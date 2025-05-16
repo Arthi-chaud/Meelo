@@ -93,7 +93,7 @@ const ChangeResourceType = <
 						onSelect={(type) =>
 							toast
 								.promise(onSelect(type), {
-									loading: null,
+									loading: "Updating...",
 									success: "Update successful!",
 									error: "Update failed...",
 								})

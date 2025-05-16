@@ -568,9 +568,9 @@ export const _mkSimpleQuery = <T>(
 	}>,
 ) => {
 	const key = [
-		arg.route.split("/").filter((t) => t.length > 0),
-		formatIncludeKeys(arg.include),
-		formatObject(arg.params),
+		...arg.route.split("/").filter((t) => t.length > 0),
+		...formatIncludeKeys(arg.include),
+		...formatObject(arg.params),
 	];
 
 	return {
@@ -609,10 +609,10 @@ export const _mkSimplePaginatedQuery = <T>(
 	}>,
 ) => {
 	const key = [
-		arg.route,
-		formatIncludeKeys(arg.include),
-		formatObject(arg.sort),
-		formatObject(arg.filter),
+		...arg.route.split("/").filter((t) => t.length > 0),
+		...formatIncludeKeys(arg.include),
+		...formatObject(arg.sort),
+		...formatObject(arg.filter),
 	];
 
 	return {
