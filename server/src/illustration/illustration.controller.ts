@@ -133,7 +133,7 @@ export class IllustrationController {
 
 		return this.illustrationRepository.saveIllustrationFromUrl(
 			dto,
-			user!.id,
+			user?.id ?? null,
 		);
 	}
 
