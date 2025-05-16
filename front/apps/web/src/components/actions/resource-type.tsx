@@ -32,7 +32,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { EditIcon } from "~/components/icons";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n";
 import type Action from "./";
 
 const ResourceTypeForm = <Enum extends string>(props: {

@@ -20,7 +20,7 @@ import type API from "@/api";
 import type { useConfirm } from "material-ui-confirm";
 import confirmDownloadAction from "~/components/confirm-download-action";
 import { ArchiveIcon, DownloadIcon } from "~/components/icons";
-import type { Translator } from "~/i18n/i18n";
+import type { Translator } from "~/i18n";
 import type Action from "./";
 
 export const DownloadAction = (

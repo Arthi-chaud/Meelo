@@ -16,24 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { useConfirm } from "material-ui-confirm";
-import type { Translator } from "~/i18n";
+import type en from "../../../../translations/en.json";
+import "i18next";
 
-const confirmDownloadAction = (
-	confirm: ReturnType<typeof useConfirm>,
-	downloadUrl: string,
-	t: Translator,
-) => {
-	confirm({
-		title: t("actions.warningModalTitle"),
-		description: t("actions.download.warning"),
-		confirmationText: t("actions.download.label"),
-		confirmationButtonProps: {
-			color: "error",
-			variant: "outlined",
-			href: downloadUrl,
-		},
-	});
-};
-
-export default confirmDownloadAction;
+declare module "i18next" {
+	interface CustomTypeOptions {
+		defaultNS: "translation";
+		returnNull: false;
+		returnObjects: false;
+		resources: {
+			translation: typeof en;
+		};
+	}
+}

@@ -32,7 +32,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
 import SectionHeader from "~/components/section-header";
-import { type Language, Languages, persistLanguage } from "~/i18n/i18n";
+import { type Language, Languages, persistLanguage } from "~/i18n";
 
 const SettingGroupStyle = {
 	paddingTop: 1,

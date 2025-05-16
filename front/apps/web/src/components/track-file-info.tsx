@@ -32,7 +32,7 @@ import {
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n";
 import SongTypeIcon from "./song-type-icon";
 
 /**

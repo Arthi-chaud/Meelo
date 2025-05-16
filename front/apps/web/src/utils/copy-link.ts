@@ -17,7 +17,7 @@
  */
 
 import toast from "react-hot-toast";
-import type { Translator } from "~/i18n/i18n";
+import type { Translator } from "~/i18n";
 
 /**
  * Copy meelo url to clipboard, with hostname

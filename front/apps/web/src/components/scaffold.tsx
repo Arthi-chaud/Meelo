@@ -40,7 +40,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RootGradientBackground } from "~/components/gradient-background";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n";
 import type Action from "./actions";
 import { LogoutAction } from "./actions/auth";
 import { GoToSearchAction, GoToSettingsAction } from "./actions/link";

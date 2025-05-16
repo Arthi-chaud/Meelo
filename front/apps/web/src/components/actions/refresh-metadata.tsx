@@ -23,7 +23,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
 import { MetadataRefreshIcon } from "~/components/icons";
-import type { Translator } from "~/i18n/i18n";
+import type { Translator } from "~/i18n";
 import type Action from "./";
 
 type APIMethodParams = ArraySlice<Parameters<API["refreshMetadata"]>, 0, -1>;

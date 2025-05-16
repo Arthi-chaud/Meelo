@@ -38,7 +38,7 @@ import type { Page } from "ssr";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
-import { withTranslations } from "~/i18n/i18n";
+import { withTranslations } from "~/i18n";
 import ThemeProvider from "~/theme/provider";
 
 export interface MyAppProps extends AppProps {

@@ -16,16 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type en from "../i18n/translations/en.json";
-import "i18next";
+import en from "./en.json";
+import fr from "./fr.json";
 
-declare module "i18next" {
-	interface CustomTypeOptions {
-		defaultNS: "translation";
-		returnNull: false;
-		returnObjects: false;
-		resources: {
-			translation: typeof en;
-		};
-	}
-}
+export default Object.entries({ en, fr }).reduce(
+	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
+	{},
+);

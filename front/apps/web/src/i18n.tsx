@@ -20,6 +20,7 @@ import { LanguageStorageKey } from "@/utils/constants";
 import ALParser from "accept-language-parser";
 import { getCookie, setCookie } from "cookies-next";
 import i18next, {
+	type CustomTypeOptions,
 	type InitOptions,
 	type KeysBuilderWithoutReturnObjects,
 } from "i18next";
@@ -27,11 +28,9 @@ import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
 import { isSSR } from "~/utils/is-ssr";
-import en from "./translations/en.json";
-import fr from "./translations/fr.json";
+import resources from "../../../translations";
 
-const Languages = ["en", "fr"] as const;
-const Resources = { en, fr };
+export const Languages = ["en", "fr"] as const;
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();
@@ -83,7 +82,7 @@ export const withTranslations = (
 			getCookie(LanguageStorageKey)?.toString() ??
 			Languages.find(
 				//@ts-ignore
-				(lang) => lang === ctx.ctx.req?.cookies[LanguageCookieKey],
+				(lang) => lang === ctx.ctx.req?.cookies[LanguageStorageKey],
 			) ??
 			ALParser.pick(
 				Array.from(Languages),
@@ -91,10 +90,6 @@ export const withTranslations = (
 				{ loose: true },
 			) ??
 			"en";
-		const resources = {
-			en: { translation: en },
-			fr: { translation: fr },
-		};
 		await i18n.init({
 			...commonOptions,
 			lng,
@@ -111,6 +106,7 @@ export const withTranslations = (
 
 export type Translator = (key: TranslationKey) => string;
 // https://github.com/i18next/i18next/blob/master/typescript/t.d.ts
-export type TranslationKey = KeysBuilderWithoutReturnObjects<typeof en>;
-export type Language = keyof typeof Resources;
-export { Languages };
+export type TranslationKey = KeysBuilderWithoutReturnObjects<
+	CustomTypeOptions["resources"]["translation"]
+>;
+export type Language = keyof typeof Languages;

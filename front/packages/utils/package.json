@@ -2,7 +2,8 @@
 	"name": "utils",
 	"sideEffects": false,
 	"dependencies": {
-		"format-duration": "^2.0.0"
+		"format-duration": "^2.0.0",
+		"i18next": "^23.7.16"
 	},
 	"devDependencies": {
 		"jest": "^29.7.0",

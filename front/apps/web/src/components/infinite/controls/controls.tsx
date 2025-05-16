@@ -42,7 +42,7 @@ import {
 	MinusIcon,
 	PlusIcon,
 } from "~/components/icons";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n";
 import type { FilterControl } from "./filters/control";
 import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";

@@ -29,7 +29,7 @@ import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseQueryResult } from "react-query";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n";
 import Fade from "./fade";
 import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";

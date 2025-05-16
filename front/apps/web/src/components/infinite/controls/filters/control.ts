@@ -18,7 +18,7 @@
 
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type { TranslationKey } from "~/i18n/i18n";
+import type { TranslationKey } from "~/i18n";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type FilterControl<Key extends string> = {
