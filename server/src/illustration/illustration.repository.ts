@@ -123,7 +123,7 @@ export default class IllustrationRepository {
 
 	async saveIllustrationFromUrl(
 		dto: IllustrationDownloadDto,
-		userId: number,
+		userId: number | null, // Can be null if we want to save anything but a playlist's image
 	): Promise<IllustrationResponse> {
 		const resourceKeys = Object.keys(dto).filter((k) => k !== "url");
 		if (resourceKeys.length !== 1) {
@@ -147,7 +147,7 @@ export default class IllustrationRepository {
 					{
 						id: dto[resourceKey]!,
 					},
-					userId,
+					userId!,
 				).then(IllustrationResponse.from);
 			}
 			case "trackId": {
