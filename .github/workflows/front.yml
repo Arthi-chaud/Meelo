@@ -27,6 +27,8 @@ jobs:
           filters: |
             front:
               - 'front/apps/web/**'
+              - 'front/translations/**'
+              - 'front/packages/**'
               - '.github/workflows/front.yml'
               - '.github/actions/cache-front/**'
   Build:
