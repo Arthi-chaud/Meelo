@@ -63,6 +63,7 @@ const Player = () => {
 		() => playlist[cursor],
 		[cursor, playlist],
 	);
+	const markedAsPlayed = useRef(false);
 
 	const nextTrack = useMemo<TrackState | undefined>(
 		() => playlist[cursor + 1],
@@ -190,21 +191,32 @@ const Player = () => {
 		player
 			?.current!.play()
 			.then(() => {
-				setPlaying(true);
-				setDuration(
+				const duration_ =
 					currentTrack?.track.duration ??
-						player.current?.duration ??
-						hls.current?.media?.duration,
-				);
+					player.current?.duration ??
+					hls.current?.media?.duration;
+				setPlaying(true);
+				setDuration(duration_);
 				player.current!.ontimeupdate = () => {
+					if (
+						currentTrack?.track.songId &&
+						!markedAsPlayed.current &&
+						progress.current !== null
+					) {
+						const isMoreThanFourMinutes = progress.current > 4 * 60;
+						const isPastHalfwayPoint = duration_
+							? progress.current > duration_ / 2
+							: false;
+						if (isPastHalfwayPoint || isMoreThanFourMinutes) {
+							markedAsPlayed.current = true;
+							api.setSongAsPlayed(currentTrack.track.songId);
+						}
+					}
 					if (!switchTrackIfCrossfade() && player.current) {
 						progress.current = player.current.currentTime;
 					}
 				};
 				player.current!.onended = () => {
-					if (currentTrack?.track.songId) {
-						api.setSongAsPlayed(currentTrack.track.songId);
-					}
 					progress.current = null;
 					skipTrack(queryClient);
 				};
@@ -359,6 +371,7 @@ const Player = () => {
 		}
 		setUseTranscoding(false);
 		if (currentTrack) {
+			markedAsPlayed.current = false;
 			progress.current = 0;
 			notification?.close();
 			setPlaying(true);
