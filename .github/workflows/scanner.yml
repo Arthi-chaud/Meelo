@@ -29,6 +29,8 @@ jobs:
             scanner:
               - 'scanner/**'
               - '.github/workflows/scanner.yml'
+              - '.github/actions/cache-scanner/**'
+              - '.github/actions/dockerize/**'
   Build:
     needs: changes
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
