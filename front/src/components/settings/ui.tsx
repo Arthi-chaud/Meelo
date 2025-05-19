@@ -39,7 +39,7 @@ import { useAPI, useQuery } from "~/api/hook";
 import { getScrobblerStatus } from "~/api/queries";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n/i18n";
-import type { Scrobbler } from "~/models/scrobblers";
+import { type Scrobbler, Scrobblers } from "~/models/scrobblers";
 import { CheckIcon, OpenExternalIcon } from "../icons";
 
 const SettingGroupStyle = {
@@ -229,38 +229,45 @@ const UISettings = () => {
 						</Button>
 					) : anyScrobblersIsEnabled ? (
 						<>
-							{displayScrobbler("LastFM") && (
-								<Button
-									disabled={scrobblers.data.connected.includes(
-										"LastFM",
-									)}
-									variant="outlined"
-									onClick={async () => {
-										router.push(
-											(
-												await api.getLastFMAuthUrl(
-													window.location.origin,
-												)
-											).url,
-										);
-									}}
-									startIcon={
-										scrobblers.data.connected.includes(
-											"LastFM",
-										) ? (
-											<CheckIcon />
-										) : undefined
-									}
-									endIcon={
-										!scrobblers.data.connected.includes(
-											"LastFM",
-										) ? (
-											<OpenExternalIcon />
-										) : undefined
-									}
-								>
-									LastFM
-								</Button>
+							{Scrobblers.map(
+								(scrobbler) =>
+									displayScrobbler(scrobbler) && (
+										<Button
+											disabled={scrobblers.data.connected.includes(
+												scrobbler,
+											)}
+											variant="outlined"
+											onClick={async () => {
+												// TODO Handle ListenBrainz
+												router.push(
+													(
+														await api.getLastFMAuthUrl(
+															window.location
+																.origin,
+														)
+													).url,
+												);
+											}}
+											startIcon={
+												scrobblers.data.connected.includes(
+													scrobbler,
+												) ? (
+													<CheckIcon size={"1em"} />
+												) : undefined
+											}
+											endIcon={
+												!scrobblers.data.connected.includes(
+													scrobbler,
+												) ? (
+													<OpenExternalIcon
+														size={"1em"}
+													/>
+												) : undefined
+											}
+										>
+											{scrobbler}
+										</Button>
+									),
 							)}
 						</>
 					) : (
@@ -270,7 +277,6 @@ const UISettings = () => {
 							{t("settings.ui.scrobblers.no_scrobblers_enabled")}
 						</Typography>
 					)}
-					{/* TODO ListenBrainz */}
 				</Grid>
 			</Box>
 
