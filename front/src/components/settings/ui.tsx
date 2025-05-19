@@ -17,22 +17,30 @@
  */
 
 import {
+	Box,
 	Button,
 	Checkbox,
 	Grid,
 	MenuItem,
 	NoSsr,
 	Select,
+	Skeleton,
 	Slider,
+	Typography,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 import { Book1, Star, Warning2 } from "iconsax-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
+import { useAPI, useQuery } from "~/api/hook";
+import { getScrobblerStatus } from "~/api/queries";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n/i18n";
+import type { Scrobbler } from "~/models/scrobblers";
+import { CheckIcon, OpenExternalIcon } from "../icons";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -51,6 +59,28 @@ const LinkIconStyle = { marginBottom: -5, marginRight: 5 };
 const UISettings = () => {
 	const { t, i18n } = useTranslation();
 	const colorScheme = useColorScheme();
+	const api = useAPI();
+	const scrobblers = useQuery(() => getScrobblerStatus());
+	const displayScrobbler = useCallback(
+		(scrobbler: Scrobbler) => {
+			if (!scrobblers.data) {
+				return false;
+			}
+			return (
+				scrobblers.data.connected.includes(scrobbler) ||
+				scrobblers.data.available.includes(scrobbler)
+			);
+		},
+		[scrobblers.data],
+	);
+	const anyScrobblersIsEnabled = useMemo(
+		() =>
+			scrobblers.data &&
+			(scrobblers.data.available.length > 0 ||
+				scrobblers.data.connected.length > 0),
+		[scrobblers.data],
+	);
+	const router = useRouter();
 	const [prefersNotifs, setPrefersNotif] = useLocalStorage(
 		"allow_notifs",
 		false,
@@ -178,6 +208,72 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
+
+			<SectionHeader heading={t("settings.ui.scrobblers.header")} />
+			<Box
+				sx={{
+					...SettingGroupStyle,
+					justifyContent: "space-between",
+					alignItems: "center",
+					display: "flex",
+				}}
+			>
+				<Typography>
+					{t("settings.ui.scrobblers.connect_scrobblers")}
+				</Typography>
+
+				<Grid container columnSpacing={2}>
+					{scrobblers.data === undefined ? (
+						<Button variant="outlined">
+							<Skeleton width={"50px"} />
+						</Button>
+					) : anyScrobblersIsEnabled ? (
+						<>
+							{displayScrobbler("LastFM") && (
+								<Button
+									disabled={scrobblers.data.connected.includes(
+										"LastFM",
+									)}
+									variant="outlined"
+									onClick={async () => {
+										router.push(
+											(
+												await api.getLastFMAuthUrl(
+													window.location.origin,
+												)
+											).url,
+										);
+									}}
+									startIcon={
+										scrobblers.data.connected.includes(
+											"LastFM",
+										) ? (
+											<CheckIcon />
+										) : undefined
+									}
+									endIcon={
+										!scrobblers.data.connected.includes(
+											"LastFM",
+										) ? (
+											<OpenExternalIcon />
+										) : undefined
+									}
+								>
+									LastFM
+								</Button>
+							)}
+						</>
+					) : (
+						<Typography
+							sx={{ fontStyle: "italic", color: "text.disabled" }}
+						>
+							{t("settings.ui.scrobblers.no_scrobblers_enabled")}
+						</Typography>
+					)}
+					{/* TODO ListenBrainz */}
+				</Grid>
+			</Box>
+
 			<SectionHeader heading={t("settings.ui.keyboardBindings")} />
 			<Grid container sx={SettingGroupStyle}>
 				<Grid size={{ xs: 12 }}>

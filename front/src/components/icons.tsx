@@ -89,13 +89,13 @@ export const ForwardIcon = Iconsax.Next;
 export const FullscreenIcon = Iconsax.Maximize4;
 export const PlusIcon = Iconsax.Add;
 export const MinusIcon = Iconsax.Minus;
-
 export const DoneIcon = Iconsax.TickSquare;
 
 export const EmptyStateIcon = Iconsax.SearchStatus1;
 
 export const MergeIcon = Iconsax.Hierarchy;
 
+export const OpenExternalIcon = Iconsax.ExportCircle;
 // Icons for song type
 export const SongTypeOriginalIcon = Iconsax.Music;
 export const SongTypeRemixIcon = Iconsax.Repeat;

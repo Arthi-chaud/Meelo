@@ -286,6 +286,11 @@
 				"en": "Anglais",
 				"fr": "Français"
 			},
+			"scrobblers": {
+                "header": "Scrobblers",
+                "connect_scrobblers": "Associer un service",
+				"no_scrobblers_enabled": "Aucun scrobbler disponible"
+            },
 			"language": "Langue",
 			"notifications": "Notifications",
 			"notifyOnTrackChange": "Notifier quand le morceau change",

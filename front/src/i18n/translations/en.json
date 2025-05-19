@@ -161,6 +161,11 @@
                 "en": "English",
                 "fr": "French"
             },
+            "scrobblers": {
+                "header": "Scrobblers",
+                "connect_scrobblers": "Connect Scrobblers",
+				"no_scrobblers_enabled": "No s:wait service available"
+            },
             "notifications": "Notifications",
             "permissions": "Permissions",
             "keyboardBindings": "Keyboard Shortcuts",
