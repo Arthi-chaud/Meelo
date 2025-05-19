@@ -73,20 +73,28 @@ export default class LastFMScrobbler
 	public async pushScrobbles(
 		scrobbles: ScrobbleData[],
 		userSetting: PrismaJson.LastFMData,
-	): Promise<void> {
+	): Promise<Date> {
 		const dtos = scrobbles.map((s) => ({
 			artist: s.artistName,
 			track: s.songName,
 			timestamp: Math.floor(s.playedAt.getTime() / 1000),
 		}));
-		// TODO In case of failure, do sth
-		for (const dto of dtos) {
-			await this._request(
-				"track.scrobble",
-				{ ...dto, sk: userSetting.sessionToken },
-				true,
-			);
+		for (let i = 0; i < dtos.length; i++) {
+			const dto = dtos[i];
+			try {
+				await this._request(
+					"track.scrobble",
+					{ ...dto, sk: userSetting.sessionToken },
+					true,
+				);
+			} catch (e) {
+				if (i === 0) {
+					throw e;
+				}
+				return scrobbles[i].playedAt;
+			}
 		}
+		return scrobbles.at(-1)!.playedAt;
 	}
 
 	private async _request(

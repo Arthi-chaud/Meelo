@@ -138,12 +138,12 @@ export default class ScrobblerService {
 							? { gt: lastUpdateTime }
 							: undefined,
 					},
-					orderBy: { playedAt: "desc" },
+					orderBy: { playedAt: "asc" },
 				});
 			if (!scrobblesToPush.length) {
 				return;
 			}
-			const lastScrobble = scrobblesToPush[0];
+			const lastScrobble = scrobblesToPush.at(-1)!;
 			const scrobbleData: ScrobbleData[] = scrobblesToPush.map(
 				(scrobble) => ({
 					playedAt: scrobble.playedAt,
@@ -153,7 +153,7 @@ export default class ScrobblerService {
 				}),
 			);
 			try {
-				await scrobbler.pushScrobbles(
+				const lastScrobbleDate = await scrobbler.pushScrobbles(
 					scrobbleData,
 					userScrobbler.data as T,
 				);
@@ -165,7 +165,7 @@ export default class ScrobblerService {
 							scrobbler: userScrobbler.scrobbler,
 						},
 					},
-					data: { lastScrobblingDate: lastScrobble.playedAt },
+					data: { lastScrobblingDate: lastScrobbleDate },
 				});
 			} catch (e) {
 				this.logger.error("Pushing scrobbles failed");

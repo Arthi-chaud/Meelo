@@ -28,7 +28,12 @@ export type ScrobbleData = {
 interface Scrobbler<T = object> {
 	name: ScrobblerEnum;
 
-	pushScrobbles(scrobbles: ScrobbleData[], userSetting: T): Promise<void>;
+	// Scrobbles will be sorted by play date.
+	// The list will never be empty
+	//
+	// The return value should be the play date of the last successfully
+	// submitted scrobble. It should throw if not scrobbles were pushed
+	pushScrobbles(scrobbles: ScrobbleData[], userSetting: T): Promise<Date>;
 }
 
 export default Scrobbler;
