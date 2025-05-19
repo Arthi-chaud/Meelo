@@ -45,6 +45,7 @@ export default class ScrobblerController {
 		description:
 			"The callback url is the one that will be called with a 'token' query param",
 	})
+	@Role(Roles.User)
 	@Get("/lastfm/url")
 	getLastFMUserTokenUrl(
 		@Query("callback") callbackUrl: string,
