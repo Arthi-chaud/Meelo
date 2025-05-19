@@ -18,6 +18,7 @@
 
 import { type MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { MeiliSearchModule } from "nestjs-meilisearch";
 import AlbumModule from "./album/album.module";
@@ -62,6 +63,7 @@ import VideoModule from "./video/video.module";
 			cleanupAfterSuccessHandle: true,
 			cleanupAfterFailedHandle: true,
 		}),
+		ScheduleModule.forRoot(),
 		ArtistModule,
 		AlbumModule,
 		SongModule,

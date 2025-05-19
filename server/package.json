@@ -29,6 +29,7 @@
 		"@nestjs/microservices": "^11.0.20",
 		"@nestjs/passport": "^11.0.5",
 		"@nestjs/platform-express": "^11.0.20",
+		"@nestjs/schedule": "^6.0.0",
 		"@nestjs/swagger": "^11.1.4",
 		"@prisma/client": "^6.2.1",
 		"amqp-connection-manager": "^4.1.14",
