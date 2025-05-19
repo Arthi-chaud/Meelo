@@ -617,7 +617,10 @@ export const _mkSimplePaginatedQuery = <T>(
 
 	return {
 		key,
-		exec: (api: API) => (pagination: PaginationParameters) => {
+		exec: (api: API) => (pagination?: PaginationParameters) => {
+			if (pagination === undefined) {
+				pagination = { pageSize: api.pageSize };
+			}
 			return api.fetch({
 				route: arg.route,
 				errorMessage: arg.errorMessage,

@@ -585,7 +585,6 @@ export default class API {
 			? this.urls.scanner.ssr
 			: this.urls.scanner.csr;
 		const host = service === Service.API ? apiHost : scannerHost;
-
 		return `${host}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
@@ -604,9 +603,14 @@ export default class API {
 		if ((parameters.include?.length ?? 0) !== 0) {
 			formattedQueryParams.push(API.formatInclude(parameters.include!)!);
 		}
-		formattedQueryParams.push(
-			this.formatPagination(parameters.pagination ?? undefined),
-		);
+		if (
+			parameters.pagination !== undefined &&
+			parameters.pagination !== null
+		) {
+			formattedQueryParams.push(
+				this.formatPagination(parameters.pagination),
+			);
+		}
 		for (const otherParams in otherParameters) {
 			if (otherParameters[otherParams] !== undefined) {
 				formattedQueryParams.push(
@@ -629,14 +633,14 @@ export default class API {
 		return `with=${include.join(",")}`;
 	}
 
-	private formatPagination(pagination?: PaginationParameters): string {
+	private formatPagination(pagination: PaginationParameters): string {
 		const formattedParameters: string[] = [];
 
-		if (pagination?.afterId !== undefined) {
+		if (pagination.afterId !== undefined) {
 			formattedParameters.push(`afterId=${pagination.afterId}`);
 		}
 		formattedParameters.push(
-			`take=${pagination?.pageSize ?? this.pageSize}`,
+			`take=${pagination.pageSize ?? this.pageSize}`,
 		);
 		return formattedParameters.join("&");
 	}
