@@ -52,6 +52,7 @@ import {
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
 } from "~/models/release";
+import { ScrobblersStatus } from "~/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "~/models/search";
 import {
 	type SongInclude,
@@ -551,6 +552,15 @@ export const getTasks = () => {
 			pending_tasks: yup.array(yup.string().required()).required(),
 		}),
 		service: Service.Scanner,
+	});
+};
+
+/// Scrobblers
+
+export const getScrobblerStatus = (): Query<ScrobblersStatus> => {
+	return _mkSimpleQuery({
+		route: "/scrobblers",
+		validator: ScrobblersStatus,
 	});
 };
 

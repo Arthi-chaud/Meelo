@@ -469,6 +469,29 @@ export default class API {
 		});
 	}
 
+	/// LastFM
+
+	getLastFMAuthUrl(origin: string) {
+		return this.fetch({
+			route: "/scrobblers/lastfm/url",
+			parameters: {},
+			otherParameters: {
+				callback: `${origin}/scrobblers/lastfm/callback_handler`, //redirecting to the settings page
+			},
+			validator: yup.object({ url: yup.string().required() }),
+		});
+	}
+
+	async postLastFMToken(token: string) {
+		return this.fetch({
+			method: "POST",
+			route: "/scrobblers/lastfm",
+			data: { token },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
 	async fetch<ReturnType, Keys extends readonly string[]>({
 		route,
 		parameters,
