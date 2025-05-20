@@ -63,7 +63,7 @@ export default class LastFMScrobbler
 	) {}
 
 	public getUserTokenUrl(callbackUrl: string) {
-		return `http://www.last.fm/api/auth/?api_key=${this.apiKey}&cb=${encodeURIComponent(callbackUrl)}`;
+		return `https://www.last.fm/api/auth/?api_key=${this.apiKey}&cb=${encodeURIComponent(callbackUrl)}`;
 	}
 
 	public async getSessionToken(userToken: string): Promise<string> {
@@ -125,7 +125,7 @@ export default class LastFMScrobbler
 			.filter(([_, value]) => value !== undefined && value !== null);
 		const signature =
 			orderedQuery
-				.filter(([key]) => key !== "format") //&& key !== "sk")
+				.filter(([key]) => key !== "format")
 				.reduce((rest, [key, value]) => `${rest}${key}${value}`, "") +
 			this.apiSecret;
 		const urlParams = new URLSearchParams(orderedQuery);

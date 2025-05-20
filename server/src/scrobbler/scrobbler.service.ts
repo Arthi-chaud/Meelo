@@ -131,7 +131,7 @@ export default class ScrobblerService {
 		return { available, connected };
 	}
 
-	@Cron(CronExpression.EVERY_30_SECONDS)
+	@Cron(CronExpression.EVERY_5_MINUTES)
 	async pushScrobbles() {
 		for (const scrobbler of this.scrobblers) {
 			await this.pushScrobblesForScrobbler(scrobbler).catch(() => {});
@@ -144,7 +144,7 @@ export default class ScrobblerService {
 		});
 		for (const userScrobbler of userScrobblers) {
 			const lastUpdateTime = userScrobbler.lastScrobblingDate;
-			// Skipping through the song service to do only one per scrobbler
+			// Skipping through the song service to do only one query per scrobbler
 			const scrobblesToPush =
 				await this.prismaService.playHistory.findMany({
 					select: {
@@ -152,7 +152,6 @@ export default class ScrobblerService {
 						song: {
 							select: {
 								artist: { select: { name: true } },
-								featuring: { select: { name: true } },
 								name: true,
 								master: {
 									select: {

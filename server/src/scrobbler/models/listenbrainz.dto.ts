@@ -29,7 +29,7 @@ export class EnableListenBrainzDTO {
 	token: string;
 
 	@ApiProperty({
-		description: "The url to the ListenBrainz instance",
+		description: "The url to the api of the ListenBrainz instance",
 		nullable: true,
 		example: "https://api.listenbrainz.org",
 	})

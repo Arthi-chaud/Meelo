@@ -32,7 +32,7 @@ interface Scrobbler<T = object> {
 	// The list will never be empty
 	//
 	// The return value should be the play date of the last successfully
-	// submitted scrobble. It should throw if not scrobbles were pushed
+	// submitted scrobble. It should throw if no scrobbles were pushed
 	pushScrobbles(scrobbles: ScrobbleData[], userSetting: T): Promise<Date>;
 }
 

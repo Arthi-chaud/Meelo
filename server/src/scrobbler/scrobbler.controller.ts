@@ -33,7 +33,7 @@ export default class ScrobblerController {
 
 	@Get()
 	@ApiOperation({
-		summary: "Get available and enabled/disabled scrobblers",
+		summary: "Get the list of available and connected scrobblers",
 	})
 	@Role(Roles.User)
 	async getScrobblers(@Request() req: Express.Request) {
@@ -44,7 +44,7 @@ export default class ScrobblerController {
 	@ApiOperation({
 		summary: "Get the URL to get a user token",
 		description:
-			"The callback url is the one that will be called with a 'token' query param",
+			"After authentication, the user will be redirected to the callback url with a 'token' query param",
 	})
 	@Role(Roles.User)
 	@Get("/lastfm/url")
