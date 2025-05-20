@@ -66,6 +66,8 @@ export async function middleware(request: NextRequest) {
 	return NextResponse.rewrite(`${origin}/releases/${master.slug}`);
 }
 
+// Note putting the callback url in a variable make nextjs error:
+// Unknown identifier "LastFMCallbackHandlerRoute" at "config.matcher[1]".
 export const config = {
 	matcher: ["/albums/:slugOrId/", "/scrobblers/lastfm/callback_handler"],
 };

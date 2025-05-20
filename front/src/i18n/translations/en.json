@@ -95,6 +95,15 @@
 			"passwordsAreDifferent": "Password are different",
 			"confirmPasswordField": "Confirm"
 		},
+		"scrobblers": {
+			"listenbrainz": {
+				"tokenLabel": "Enter ListenBrainz User Token",
+				"tokenHelperText": "Get your user token here: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Token in required",
+				"instanceUrlLabel": "ListenBrainz' API URL",
+				"instanceUrlHelperText": "Leave empty if you use the public instance (https://api.listenbrainz.org)"
+			}
+		},
 		"library": {
 			"nameOfLibrary": "Name of the library",
 			"nameIsRequired": "Name is required",
@@ -217,6 +226,11 @@
 			"creationFail": "Creating library failed",
 			"updated": "Library updated",
 			"deletionRunning": "Deleting library…"
+		},
+		"scrobblers": {
+			"linkingSuccessful": "ListenBrainz successfully linked",
+			"linking": "Linking account...",
+			"linkingListenBrainzFailed": "Could not link ListenBrainz Account"
 		},
 		"refreshMetadata": {
 			"started": "Refreshing Metadata… (You might need to refresh the page)",

@@ -492,6 +492,18 @@ export default class API {
 		});
 	}
 
+	/// ListenBrainz
+
+	async postListenBrainzToken(token: string, instanceUrl: string | null) {
+		return this.fetch({
+			method: "POST",
+			route: "/scrobblers/listenbrainz",
+			data: { token, instanceUrl },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
 	async fetch<ReturnType, Keys extends readonly string[]>({
 		route,
 		parameters,
