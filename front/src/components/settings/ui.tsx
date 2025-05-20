@@ -47,7 +47,7 @@ import { getScrobblerStatus } from "~/api/queries";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n/i18n";
 import { type Scrobbler, Scrobblers } from "~/models/scrobblers";
-import { CheckIcon, OpenExternalIcon } from "../icons";
+import { DeleteIcon, OpenExternalIcon } from "../icons";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -265,6 +265,17 @@ const ScrobblersSection = () => {
 		[scrobblers.data],
 	);
 
+	const deletionMutation = useMutation(async (scrobbler: Scrobbler) => {
+		return toast
+			.promise(api.disconnectScrobbler(scrobbler), {
+				success: t("toasts.scrobblers.unlinkingSuccessful"),
+				loading: t("toasts.scrobblers.unlinking"),
+				error: t("toasts.scrobblers.unlinkingFailed"),
+			})
+			.then(() => {
+				queryClient.client.invalidateQueries("scrobblers");
+			});
+	});
 	const listenBrainzMutation = useMutation(
 		async (dto: typeof defaultValues) => {
 			return toast
@@ -318,14 +329,29 @@ const ScrobblersSection = () => {
 							(scrobbler) =>
 								displayScrobbler(scrobbler) && (
 									<Button
-										disabled={scrobblers.data.connected.includes(
-											scrobbler,
-										)}
+										color={
+											scrobblers.data.connected.includes(
+												scrobbler,
+											)
+												? "error"
+												: undefined
+										}
 										variant="outlined"
 										onClick={async () => {
+											const isEnabled =
+												scrobblers.data.connected.includes(
+													scrobbler,
+												);
+											if (isEnabled) {
+												deletionMutation.mutate(
+													scrobbler,
+												);
+												return;
+											}
 											switch (scrobbler) {
 												case "ListenBrainz":
 													openListenBrainzModal(true);
+
 													break;
 												case "LastFM":
 													router.push(
@@ -339,22 +365,23 @@ const ScrobblersSection = () => {
 													break;
 											}
 										}}
-										startIcon={
-											scrobblers.data.connected.includes(
-												scrobbler,
-											) ? (
-												<CheckIcon size={"1em"} />
-											) : undefined
-										}
-										endIcon={
-											!scrobblers.data.connected.includes(
-												scrobbler,
-											) ? (
-												<OpenExternalIcon
-													size={"1em"}
-												/>
-											) : undefined
-										}
+										{...(scrobblers.data.connected.includes(
+											scrobbler,
+										)
+											? {
+													startIcon: (
+														<DeleteIcon
+															size={"1em"}
+														/>
+													),
+												}
+											: {
+													endIcon: (
+														<OpenExternalIcon
+															size={"1em"}
+														/>
+													),
+												})}
 									>
 										{scrobbler}
 									</Button>

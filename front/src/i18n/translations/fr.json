@@ -381,7 +381,10 @@
 		"scrobblers": {
 			"linkingSuccessful": "Compte ListenBrainz associé!",
 			"linking": "Association en cours...",
-			"linkingListenBrainzFailed": "Echec de l'association avec ListenBrainz"
+			"linkingListenBrainzFailed": "Echec de l'association avec ListenBrainz",
+			"unlinkingSuccessful": "Compte dissocié!",
+			"unlinking": "Dissociation...",
+			"unlinkingFailed": "Echec lors de la dissociation"
 		},
 		"users": {
 			"deleted": "Compte Supprimé",

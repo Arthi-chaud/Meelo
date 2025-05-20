@@ -230,7 +230,10 @@
 		"scrobblers": {
 			"linkingSuccessful": "ListenBrainz successfully linked",
 			"linking": "Linking account...",
-			"linkingListenBrainzFailed": "Could not link ListenBrainz Account"
+			"linkingListenBrainzFailed": "Could not link ListenBrainz Account",
+			"unlinkingSuccessful": "Scrobbler successfully unlinked",
+			"unlinking": "Unlinking account...",
+			"unlinkingFailed": "Could not unlink Scrobbler"
 		},
 		"refreshMetadata": {
 			"started": "Refreshing Metadata… (You might need to refresh the page)",

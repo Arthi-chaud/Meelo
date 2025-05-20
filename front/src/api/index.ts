@@ -26,6 +26,7 @@ import Playlist, {
 	type CreatePlaylistDto,
 	type UpdatePlaylistDto,
 } from "~/models/playlist";
+import type { Scrobbler } from "~/models/scrobblers";
 import type { SaveSearchItem } from "~/models/search";
 import type { SongType } from "~/models/song";
 import { TaskResponse } from "~/models/task";
@@ -499,6 +500,24 @@ export default class API {
 			method: "POST",
 			route: "/scrobblers/listenbrainz",
 			data: { token, instanceUrl },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
+	async disconnectScrobbler(scrobbler: Scrobbler) {
+		let route = "/scrobblers";
+		switch (scrobbler) {
+			case "LastFM":
+				route = `${route}/lastfm`;
+				break;
+			case "ListenBrainz":
+				route = `${route}/listenbrainz`;
+				break;
+		}
+		return this.fetch({
+			method: "DELETE",
+			route,
 			parameters: {},
 			emptyResponse: true,
 		});
