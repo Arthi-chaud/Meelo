@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Post, Query, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Post, Query, Request } from "@nestjs/common";
 import { Get } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { User } from "@prisma/client";
+import { Scrobbler, User } from "@prisma/client";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import { EnableLastFMDTO, LastFMAuthUrlResponse } from "./models/lastfm.dto";
@@ -68,6 +68,15 @@ export default class ScrobblerController {
 		);
 	}
 
+	@Delete("/lastfm")
+	@Role(Roles.User)
+	async disableLastFMScrobbler(@Request() req: Express.Request) {
+		await this.scrobblerService.disableScrobbler(
+			(req.user as User).id,
+			Scrobbler.LastFM,
+		);
+	}
+
 	@Post("/listenbrainz")
 	@Role(Roles.User)
 	async enableListenBrainzScrobbler(
@@ -78,6 +87,15 @@ export default class ScrobblerController {
 			(req.user as User).id,
 			dto.token,
 			dto.instanceUrl,
+		);
+	}
+
+	@Delete("/listenbrainz")
+	@Role(Roles.User)
+	async disableListenBrainzScrobbler(@Request() req: Express.Request) {
+		await this.scrobblerService.disableScrobbler(
+			(req.user as User).id,
+			Scrobbler.ListenBrainz,
 		);
 	}
 }

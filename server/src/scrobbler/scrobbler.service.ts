@@ -83,6 +83,12 @@ export default class ScrobblerService {
 		return lastfm.getUserTokenUrl(callbackUrl);
 	}
 
+	async disableScrobbler(userId: number, scrobbler: Scrobbler) {
+		await this.prismaService.userScrobbler.delete({
+			where: { scrobbler_userId: { scrobbler, userId } },
+		});
+	}
+
 	async enableListenBrainz(
 		userId: number,
 		token: string,
