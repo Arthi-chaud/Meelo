@@ -23,6 +23,7 @@ import { User } from "@prisma/client";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import { EnableLastFMDTO, LastFMAuthUrlResponse } from "./models/lastfm.dto";
+import { EnableListenBrainzDTO } from "./models/listenbrainz.dto";
 import ScrobblerService from "./scrobbler.service";
 
 @ApiTags("Scrobbler")
@@ -67,6 +68,16 @@ export default class ScrobblerController {
 		);
 	}
 
-	// @Post()
-	// async enableListenBrainzScrobbler() {}
+	@Post("/listenbrainz")
+	@Role(Roles.User)
+	async enableListenBrainzScrobbler(
+		@Request() req: Express.Request,
+		@Body() dto: EnableListenBrainzDTO,
+	) {
+		await this.scrobblerService.enableListenBrainz(
+			(req.user as User).id,
+			dto.token,
+			dto.instanceUrl,
+		);
+	}
 }

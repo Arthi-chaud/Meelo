@@ -46,3 +46,12 @@ export class EnablingScrobblerFailedException extends MeeloException {
 		);
 	}
 }
+
+export class ScrobblerRequestFailedException extends MeeloException {
+	constructor(scrobbler: Scrobbler, errorMessage: string) {
+		super(
+			HttpStatus.INTERNAL_SERVER_ERROR,
+			`Request to ${scrobbler} failed: ${errorMessage}`,
+		);
+	}
+}

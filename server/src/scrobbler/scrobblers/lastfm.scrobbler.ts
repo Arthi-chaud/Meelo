@@ -19,15 +19,18 @@
 import { HttpService } from "@nestjs/axios";
 import { Scrobbler } from "@prisma/client";
 import md5 from "md5";
+import Logger from "src/logger/logger";
 import {
 	EnablingScrobblerFailedException,
 	MissingScrobblerSettingsException,
+	ScrobblerRequestFailedException,
 } from "../scrobbler.exceptions";
 import IScrobbler, { ScrobbleData } from "./scrobbler";
 
 export default class LastFMScrobbler
 	implements IScrobbler<PrismaJson.LastFMData>
 {
+	private readonly logger = new Logger(LastFMScrobbler.name);
 	public readonly name = Scrobbler.LastFM;
 	// Given 'process.env' returns an instance of the Scrobbler
 	// Will throw if the following missing environment variables are missing or empty:
@@ -64,10 +67,17 @@ export default class LastFMScrobbler
 	}
 
 	public async getSessionToken(userToken: string): Promise<string> {
-		const res = await this._request("auth.getSession", {
-			token: userToken,
-		});
-		return res.session.key;
+		try {
+			const res = await this._request("auth.getSession", {
+				token: userToken,
+			});
+			return res.session.key;
+		} catch (e) {
+			throw new EnablingScrobblerFailedException(
+				Scrobbler.LastFM,
+				e.toString(),
+			);
+		}
 	}
 
 	public async pushScrobbles(
@@ -91,6 +101,7 @@ export default class LastFMScrobbler
 				if (i === 0) {
 					throw e;
 				}
+				this.logger.error(e.toString());
 				return scrobbles[i].playedAt;
 			}
 		}
@@ -127,7 +138,8 @@ export default class LastFMScrobbler
 			});
 			return res.data;
 		} catch (e) {
-			throw new EnablingScrobblerFailedException(
+			this.logger.error(e);
+			throw new ScrobblerRequestFailedException(
 				Scrobbler.LastFM,
 				e.toString(),
 			);

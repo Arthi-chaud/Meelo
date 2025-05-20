@@ -24,8 +24,12 @@ import { MeeloException } from "src/exceptions/meelo-exception";
 import Logger from "src/logger/logger";
 import PrismaService from "src/prisma/prisma.service";
 import ScrobblersResponse from "./models/scrobblers.response";
-import { ScrobblerDisabledException } from "./scrobbler.exceptions";
+import {
+	EnablingScrobblerFailedException,
+	ScrobblerDisabledException,
+} from "./scrobbler.exceptions";
 import LastFMScrobbler from "./scrobblers/lastfm.scrobbler";
+import ListenBrainzScrobbler from "./scrobblers/listenbrainz.scrobbler";
 import IScrobbler, { ScrobbleData } from "./scrobblers/scrobbler";
 
 @Injectable()
@@ -37,7 +41,7 @@ export default class ScrobblerService {
 		httpService: HttpService,
 	) {
 		this.scrobblers = [];
-		for (const scrobbler of [LastFMScrobbler]) {
+		for (const scrobbler of [LastFMScrobbler, ListenBrainzScrobbler]) {
 			try {
 				this.scrobblers.push(scrobbler.init(process.env, httpService));
 			} catch (err) {
@@ -79,6 +83,41 @@ export default class ScrobblerService {
 		return lastfm.getUserTokenUrl(callbackUrl);
 	}
 
+	async enableListenBrainz(
+		userId: number,
+		token: string,
+		instanceUrl: string | null,
+	) {
+		const listenbrainz = this._getScrobblerOrThrow<ListenBrainzScrobbler>(
+			Scrobbler.ListenBrainz,
+		);
+		const isValid = await listenbrainz
+			.validateToken(token, instanceUrl)
+			.catch((e) => {
+				throw new EnablingScrobblerFailedException(
+					Scrobbler.ListenBrainz,
+					e.toString(),
+				);
+			});
+		if (!isValid) {
+			throw new EnablingScrobblerFailedException(
+				Scrobbler.ListenBrainz,
+				"Token is not valid",
+			);
+		}
+		await this.prismaService.userScrobbler.upsert({
+			create: {
+				userId,
+				data: { userToken: token, instanceUrl },
+				scrobbler: Scrobbler.ListenBrainz,
+			},
+			update: { data: { userToken: token, instanceUrl } },
+			where: {
+				scrobbler_userId: { scrobbler: Scrobbler.ListenBrainz, userId },
+			},
+		});
+	}
+
 	async getScrobblersForUser(userId: number): Promise<ScrobblersResponse> {
 		const connected = (
 			await this.prismaService.userScrobbler.findMany({
@@ -92,10 +131,10 @@ export default class ScrobblerService {
 		return { available, connected };
 	}
 
-	@Cron(CronExpression.EVERY_5_MINUTES)
-	async _pushScrobbles() {
+	@Cron(CronExpression.EVERY_30_SECONDS)
+	async pushScrobbles() {
 		for (const scrobbler of this.scrobblers) {
-			await this.pushScrobblesForScrobbler(scrobbler);
+			await this.pushScrobblesForScrobbler(scrobbler).catch(() => {});
 		}
 	}
 
@@ -143,7 +182,6 @@ export default class ScrobblerService {
 			if (!scrobblesToPush.length) {
 				return;
 			}
-			const lastScrobble = scrobblesToPush.at(-1)!;
 			const scrobbleData: ScrobbleData[] = scrobblesToPush.map(
 				(scrobble) => ({
 					playedAt: scrobble.playedAt,
@@ -169,7 +207,6 @@ export default class ScrobblerService {
 				});
 			} catch (e) {
 				this.logger.error("Pushing scrobbles failed");
-				this.logger.error(e);
 			}
 		}
 	}
