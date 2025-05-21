@@ -26,6 +26,7 @@ import Playlist, {
 	type CreatePlaylistDto,
 	type UpdatePlaylistDto,
 } from "~/models/playlist";
+import type { Scrobbler } from "~/models/scrobblers";
 import type { SaveSearchItem } from "~/models/search";
 import type { SongType } from "~/models/song";
 import { TaskResponse } from "~/models/task";
@@ -465,6 +466,59 @@ export default class API {
 			errorMessage: "Saving Search History failed",
 			parameters: {},
 			data: resource,
+			emptyResponse: true,
+		});
+	}
+
+	/// LastFM
+
+	getLastFMAuthUrl(origin: string) {
+		return this.fetch({
+			route: "/scrobblers/lastfm/url",
+			parameters: {},
+			otherParameters: {
+				callback: `${origin}/scrobblers/lastfm/callback_handler`, //redirecting to the settings page
+			},
+			validator: yup.object({ url: yup.string().required() }),
+		});
+	}
+
+	async postLastFMToken(token: string) {
+		return this.fetch({
+			method: "POST",
+			route: "/scrobblers/lastfm",
+			data: { token },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
+	/// ListenBrainz
+
+	async postListenBrainzToken(token: string, instanceUrl: string | null) {
+		return this.fetch({
+			method: "POST",
+			route: "/scrobblers/listenbrainz",
+			data: { token, instanceUrl },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
+	async disconnectScrobbler(scrobbler: Scrobbler) {
+		let route = "/scrobblers";
+		switch (scrobbler) {
+			case "LastFM":
+				route = `${route}/lastfm`;
+				break;
+			case "ListenBrainz":
+				route = `${route}/listenbrainz`;
+				break;
+		}
+		return this.fetch({
+			method: "DELETE",
+			route,
+			parameters: {},
 			emptyResponse: true,
 		});
 	}

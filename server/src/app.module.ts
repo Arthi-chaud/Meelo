@@ -18,6 +18,7 @@
 
 import { type MiddlewareConsumer, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";
 import { MeiliSearchModule } from "nestjs-meilisearch";
 import AlbumModule from "./album/album.module";
@@ -41,6 +42,7 @@ import PlaylistModule from "./playlist/playlist.module";
 import PrismaModule from "./prisma/prisma.module";
 import { RegistrationModule } from "./registration/registration.module";
 import ReleaseModule from "./release/release.module";
+import ScrobblerModule from "./scrobbler/scrobbler.module";
 import { SearchModule } from "./search/search.module";
 import SettingsModule from "./settings/settings.module";
 import SongModule from "./song/song.module";
@@ -62,6 +64,7 @@ import VideoModule from "./video/video.module";
 			cleanupAfterSuccessHandle: true,
 			cleanupAfterFailedHandle: true,
 		}),
+		ScheduleModule.forRoot(),
 		ArtistModule,
 		AlbumModule,
 		SongModule,
@@ -88,6 +91,7 @@ import VideoModule from "./video/video.module";
 		ExternalMetadataModule,
 		EventsModule,
 		LabelModule,
+		ScrobblerModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

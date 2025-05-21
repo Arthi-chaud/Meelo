@@ -15,6 +15,7 @@
 - `ALLOW_ANONYMOUS`: If `1`, anonymous requests will be allowed on read-only endpoints
 - `INTERNAL_CONFIG_DIR`: Path of the directory that contains the `settings.json` file
 - `INTERNAL_DATA_DIR`: Path of the directory where all the libraries are.
+- `LASTFM_API_KEY`& `LASTFM_API_SECRET`: Key and secret obtained when creating an API account on LastFM
 
 ### Files
 
