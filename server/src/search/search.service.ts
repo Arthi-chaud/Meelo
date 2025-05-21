@@ -118,7 +118,7 @@ export class SearchService {
 					matchingVideosIds,
 				] as const,
 			].map(async ([getMany, matches]) => {
-				if (!matches) {
+				if (!matches.length) {
 					return [];
 				}
 				const fullItems = await getMany(matches.map(({ id }) => id));
