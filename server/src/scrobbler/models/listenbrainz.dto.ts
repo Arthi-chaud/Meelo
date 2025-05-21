@@ -37,13 +37,3 @@ export class EnableListenBrainzDTO {
 	@ValidateIf((_, value) => value !== null)
 	instanceUrl: string | null;
 }
-
-export class LastFMAuthUrlResponse {
-	@ApiProperty({
-		description:
-			"The url that the client can call to get a token. The 'cb' query param will be set to the url passed as parameter",
-		example:
-			"http://www.last.fm/api/auth/?api_key=xxx&cb=http://example.com",
-	})
-	url: string;
-}
