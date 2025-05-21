@@ -29,9 +29,10 @@ import { LanguageCookieKey } from "~/utils/cookieKeys";
 import { isSSR } from "~/utils/is-ssr";
 import en from "./translations/en.json";
 import fr from "./translations/fr.json";
+import ru from "./translations/ru.json";
 
-const Languages = ["en", "fr"] as const;
-const Resources = { en, fr };
+const Languages = ["en", "fr", "ru"] as const;
+const Resources = { en, fr, ru };
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();
@@ -94,6 +95,7 @@ export const withTranslations = (
 		const resources = {
 			en: { translation: en },
 			fr: { translation: fr },
+			ru: { translation: ru },
 		};
 		await i18n.init({
 			...commonOptions,
