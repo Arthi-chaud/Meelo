@@ -48,9 +48,7 @@ import {
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
-import type SortingOrder from "src/sort/models/sorting-order";
 import TrackService from "src/track/track.service";
-import UserService from "src/user/user.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
 import type SongGroupQueryParameters from "./models/song-group.query-params";
