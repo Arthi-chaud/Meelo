@@ -84,9 +84,11 @@ export default class ScrobblerService {
 	}
 
 	async disableScrobbler(userId: number, scrobbler: Scrobbler) {
-		await this.prismaService.userScrobbler.delete({
-			where: { scrobbler_userId: { scrobbler, userId } },
-		});
+		await this.prismaService.userScrobbler
+			.delete({
+				where: { scrobbler_userId: { scrobbler, userId } },
+			})
+			.catch(() => {});
 	}
 
 	async enableListenBrainz(
