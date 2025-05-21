@@ -168,7 +168,8 @@
 			"useSystemLanguage": "Use System Language",
 			"lang": {
 				"en": "English",
-				"fr": "French"
+				"fr": "French",
+				"ru": "Russian"
 			},
 			"scrobblers": {
 				"header": "Scrobblers",

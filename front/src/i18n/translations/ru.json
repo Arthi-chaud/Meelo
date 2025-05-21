@@ -1,0 +1,414 @@
+{
+  "home": {
+	"newlyAddedAlbums": "Недавно добавленные альбомы",
+	"latestAlbums": "Последние альбомы",
+	"newlyAddedArtists": "Недавно добавленные исполнители",
+	"newlyAddedReleases": "Недавно добавленные релизы",
+	"mostPlayedSongs": "Самые прослушиваемые треки",
+	"topLabels": "Лучшие лейблы",
+	"topGenres": "Популярные жанры",
+	"featuredAlbums": "Избранные альбомы"
+  },
+  "actions": {
+	"playback": {
+	  "play": "Воспроизвести",
+	  "playAll": "Воспроизвести всё",
+	  "shuffle": "Перемешать",
+	  "playNext": "Воспроизвести следующим",
+	  "playAfter": "Воспроизвести после"
+	},
+	"song": {
+	  "seeLyrics": "Посмотреть текст песни",
+	  "seeOtherVersions": "Посмотреть другие версии",
+	  "seeRelatedTracks": "Посмотреть похожие треки",
+	  "seeSongInfo": "Информация о песне",
+	  "changeType": "Изменить тип песни",
+	  "mergeSong": {
+		"label": "Объединить песни",
+		"modalTitle": "Выберите песню",
+		"warningBeforeMerging": "Все треки будут переназначены выбранной песне, а старая будет удалена. Ваши файлы не будут изменены или удалены."
+	  }
+	},
+	"track": {
+	  "seeTrackInfo": "Информация о треке",
+	  "reassignTrack": "Переназначить трек"
+	},
+	"artist": {
+	  "seeAlbums": "Посмотреть альбомы",
+	  "seeSongs": "Посмотреть песни"
+	},
+	"album": {
+	  "goToAlbum": "Перейти к альбому",
+	  "changeType": "Изменить тип альбома"
+	},
+	"release": {
+	  "setAllTracksAsMaster": "Назначить все треки как основной"
+	},
+	"video": {
+	  "changeType": "Изменить тип видео"
+	},
+	"library": {
+	  "create": "Создать библиотеку",
+	  "delete": "Удалить библиотеку",
+	  "deletionWarning": "Вы собираетесь удалить библиотеку. Это действие необратимо."
+	},
+	"deleteUser": {
+	  "label": "Удалить пользователя",
+	  "warning": "Вы собираетесь удалить пользователя. Это действие необратимо."
+	},
+	"new": "Создать",
+	"update": "Обновить",
+	"logout": "Выйти",
+	"delete": "Удалить",
+	"create": "Создать",
+	"download": {
+	  "label": "Скачать",
+	  "warning": "Загрузка защищённого авторским правом контента, которым вы не владеете, не разрешена. Продолжайте только если у вас есть права на оригинальный контент."
+	},
+	"archive": "Архивировать",
+	"share": "Поделиться",
+	"goToArtist": "Перейти к исполнителю",
+	"setAsMaster": "Назначить как основной",
+	"goToSettingsPage": "Перейти к настройкам",
+	"deleteFromPlaylist": "Удалить из плейлиста",
+	"changeIllutration": "Изменить иллюстрацию",
+	"goBackHome": "Вернуться на главную",
+	"addToPlaylist": {
+	  "label": "Добавить в плейлист",
+	  "modalTitle": "Выберите плейлист"
+	},
+	"warningModalTitle": "Предупреждение"
+  },
+  "form": {
+	"cancel": "Отмена",
+	"done": "Готово",
+	"edit": "Редактировать",
+	"confirm": "Подтвердить",
+	"auth": {
+	  "username": "Имя пользователя",
+	  "password": "Пароль",
+	  "usernameIsRequired": "Имя пользователя обязательно",
+	  "passwordIsRequired": "Пароль обязателен",
+	  "usernameTooShort": "Имя пользователя слишком короткое",
+	  "passwordTooShort": "Пароль слишком короткий",
+	  "pleaseConfirm": "Пожалуйста, подтвердите пароль",
+	  "passwordsAreDifferent": "Пароли не совпадают",
+	  "confirmPasswordField": "Подтверждение"
+	},
+	"scrobblers": {
+	  "listenbrainz": {
+		"tokenLabel": "Введите токен ListenBrainz",
+		"tokenHelperText": "Получите свой токен здесь: https://listenbrainz.org/settings/",
+		"tokenIsRequired": "Токен обязателен",
+		"instanceUrlLabel": "URL API ListenBrainz",
+		"instanceUrlHelperText": "Оставьте пустым, если используете публичный сервер (https://api.listenbrainz.org)"
+	  }
+	},
+	"library": {
+	  "nameOfLibrary": "Название библиотеки",
+	  "nameIsRequired": "Название обязательно",
+	  "pathOfLibrary": "Путь к библиотеке",
+	  "pathIsRequired": "Путь обязателен"
+	},
+	"playlist": {
+	  "playlistIsPublic": "Разрешить другим пользователям видеть этот плейлист",
+	  "allowPlaylistChanges": "Разрешить другим пользователям редактировать этот плейлист"
+	}
+  },
+  "tasks": {
+	"clean": "Очистить",
+	"refresh": "Обновить",
+	"scan": "Сканировать",
+	"scanLibraries": "Сканировать библиотеки",
+	"cleanLibraries": "Очистить библиотеки",
+	"refreshMetadata": "Обновить метаданные",
+	"refreshMetadataForm": {
+	  "forceLabel": "Принудительно обновить, даже если файлы не изменились"
+	}
+  },
+  "models": {
+	"library_plural": "Библиотеки",
+	"user_plural": "Пользователи",
+	"playlist_plural": "Плейлисты",
+	"playlist": "Плейлист",
+	"lyrics": "Текст песни",
+	"versions": "Версии",
+	"track_plural": "Треки",
+	"genre_plural": "Жанры",
+	"externalLink_plural": "Внешние ссылки",
+	"disc": "Диск",
+	"artist": "Исполнитель",
+	"artist_plural": "Исполнители",
+	"album_plural": "Альбомы",
+	"album": "Альбом",
+	"video": "Видео",
+	"video_plural": "Видеозаписи",
+	"song_plural": "Песни",
+	"song": "Песня"
+  },
+  "nav": {
+	"home": "Главная",
+	"search": "Поиск",
+	"settings": "Настройки",
+	"compilations": "Сборники",
+	"musicVideos": "Музыкальные видео",
+	"more": "Ещё"
+  },
+  "settings": {
+	"interface": "Интерфейс",
+	"ui": {
+	  "colorScheme": "Тема",
+	  "autoMode": "Автоматический режим",
+	  "useSystemTheme": "Использовать системную тему",
+	  "useDarkTheme": "Использовать тёмную тему",
+	  "language": "Язык",
+	  "crossfade": "Плавный переход",
+	  "playback": "Воспроизведение",
+	  "notifyOnTrackChange": "Уведомлять при смене трека",
+	  "useSystemLanguage": "Использовать язык системы",
+	  "lang": {
+		"en": "Английский",
+		"fr": "Французский",
+		"ru": "Русский"
+	  },
+	  "scrobblers": {
+		"header": "Скробблеры",
+		"connect_scrobblers": "Подключить скробблеры",
+		"no_scrobblers_enabled": "Сервисы скробблинга недоступны"
+	  },
+	  "notifications": "Уведомления",
+	  "permissions": "Разрешения",
+	  "keyboardBindings": "Горячие клавиши",
+	  "openKeyboarBindingsModalByTypingQuestionMark": "Откройте список сочетаний клавиш, нажав «?»",
+	  "project": "Проект",
+	  "external": {
+		"enjoyingTheProject": "Нравится проект?",
+		"starOnGithub": "Поставьте звёздочку Meelo на GitHub!",
+		"encounteredABug": "Нашли ошибку?",
+		"openAnIssue": "Создайте issue на GitHub!",
+		"readTheDoc": "Прочитайте пользовательскую документацию"
+	  }
+	},
+	"users": {
+	  "you": "Вы",
+	  "admin": "Админ",
+	  "enabled": "Включён",
+	  "nameColumn": "Имя"
+	},
+	"libraries": {
+	  "tasks": {
+		"label": "Задачи",
+		"pending": "В ожидании",
+		"current": "Текущая",
+		"none": "Нет"
+	  },
+	  "nameColumn": "Имя"
+	}
+  },
+  "toasts": {
+	"linkCopied": "Ссылка скопирована в буфер обмена",
+	"trackSetAsMaster": "Трек установлен как основной",
+	"releaseSetAsMaster": "Релиз установлен как основной",
+	"tracksUpdated": "Треки успешно обновлены",
+	"player": {
+	  "networkError": "Похоже, возникли проблемы с сетью…",
+	  "playbackError": "Формат трека не поддерживается этим браузером. Пропуск…"
+	},
+	"playlist": {
+	  "reorderSuccess": "Плейлист упорядочен!",
+	  "reorderFail": "Не удалось изменить порядок в плейлисте",
+	  "itemDeletionSuccess": "Удаление прошло успешно"
+	},
+	"library": {
+	  "loadFail": "Не удалось загрузить библиотеки",
+	  "deleted": "Библиотека удалена",
+	  "deletionFail": "Не удалось удалить библиотеку",
+	  "created": "Библиотека создана",
+	  "creationFail": "Не удалось создать библиотеку",
+	  "updated": "Библиотека обновлена",
+	  "deletionRunning": "Удаление библиотеки…"
+	},
+	"scrobblers": {
+	  "linkingSuccessful": "Связь с ListenBrainz установлена",
+	  "linking": "Связываем аккаунт...",
+	  "linkingListenBrainzFailed": "Не удалось связать аккаунт ListenBrainz",
+	  "unlinkingSuccessful": "Скробблер успешно отключён",
+	  "unlinking": "Отключение аккаунта...",
+	  "unlinkingFailed": "Не удалось отключить скробблер"
+	},
+	"refreshMetadata": {
+	  "started": "Обновление метаданных… (возможно, потребуется обновить страницу)",
+	  "failed": "Упс… Не удалось обновить метаданные"
+	},
+	"users": {
+	  "deleted": "Пользователь удалён",
+	  "deletionFail": "Не удалось удалить пользователя",
+	  "updateFail": "Не удалось обновить пользователя",
+	  "nowEnabled": "Пользователь теперь активен",
+	  "nowDisabled": "Пользователь теперь отключён",
+	  "nowAdmin": "Пользователь стал администратором и может выполнять административные задачи",
+	  "nowNotAdmin": "Пользователь больше не является администратором"
+	},
+	"auth": {
+	  "accountCreated": "Поздравляем! Ваш аккаунт Meelo создан. Теперь необходимо дождаться активации администратором"
+	},
+	"leaveWillStopPlaybackAlert": "Покинув сайт, вы остановите воспроизведение."
+  },
+  "errors": {
+	"errorOccured": "Упс… Произошла ошибка",
+	"pageNotFound": "Упс… Страница не найдена",
+	"oops": "Упс"
+  },
+  "songType": {
+	"original": "Оригинал",
+	"remix": "Ремикс",
+	"live": "Живое выступление",
+	"acoustic": "Акустика",
+	"instrumental": "Инструментал",
+	"edit": "Редакция",
+	"clean": "Цензурная версия",
+	"demo": "Демо",
+	"unknown": "Неизвестно",
+	"acappella": "А капелла",
+	"medley": "Медли/Мегамикс",
+	"nonMusic": "Не музыка"
+  },
+  "albumType": {
+	"studioRecording": "Студийная запись",
+	"studioRecording_plural": "Студийные альбомы",
+	"single": "Сингл",
+	"single_plural": "Синглы",
+	"liveRecording": "Живой альбом",
+	"liveRecording_plural": "Живые альбомы",
+	"compilation": "Сборник",
+	"compilation_plural": "Сборники",
+	"soundtrack": "Саундтрек",
+	"soundtrack_plural": "Саундтреки",
+	"remixAlbum": "Альбом ремиксов",
+	"remixAlbum_plural": "Ремиксы",
+	"videoAlbum": "Видеоальбом",
+	"videoAlbum_plural": "Видеоальбомы"
+  },
+  "videoType": {
+	"musicVideo": "Музыкальное видео",
+	"lyricsVideo": "Клип с текстом",
+	"live": "Живое выступление",
+	"behindTheScenes": "Закулисье",
+	"interview": "Интервью",
+	"advert": "Реклама",
+	"photoGallery": "Фотогалерея",
+	"documentary": "Документальный фильм",
+	"other": "Другое"
+  },
+  "fileInfo": {
+	"duration": "Длительность",
+	"bpm": "BPM",
+	"bitRate": "Битрейт",
+	"type": "Тип",
+	"extension": "Расширение",
+	"path": "Путь",
+	"name": "Имя",
+	"registrationDate": "Дата регистрации",
+	"unknown": "Неизвестно"
+  },
+  "artist": {
+	"topSongs": "Лучшие песни",
+	"topVideos": "Лучшие видео",
+	"appearsOn": "Участвует в",
+	"rareSongs": "Редкие песни"
+  },
+  "song": {
+	"songType": "Тип песни",
+	"infoTab": "Инфо"
+  },
+  "browsing": {
+	"seeAll": "Смотреть всё",
+	"sections": {
+	  "livePerformances": "Живые выступления",
+	  "musicVideos": "Музыкальные клипы",
+	  "extras": "Дополнительно",
+	  "about": "О проекте",
+	  "featuredOnPlaylists": "В подборках"
+	},
+	"controls": {
+	  "sortBy": "Сортировать по",
+	  "order": "Порядок",
+	  "asc": "По возрастанию",
+	  "desc": "По убыванию",
+	  "backToTop": "Наверх",
+	  "changeLayout": "Сменить вид",
+	  "groupVersions": "Группировать версии",
+	  "showAllSongs": "Показать все версии",
+	  "filter": {
+		"allTypes": "Все типы",
+		"nTypes": "{{n}} типов",
+		"allLibraries": "Все библиотеки"
+	  },
+	  "sort": {
+		"artistName": "Имя исполнителя",
+		"releaseDate": "Дата релиза",
+		"addDate": "Дата добавления",
+		"albumCount": "Кол-во альбомов",
+		"name": "Название",
+		"songCount": "Кол-во песен",
+		"entryCount": "Кол-во записей",
+		"creationDate": "Дата создания",
+		"trackCount": "Кол-во треков",
+		"releaseName": "Название релиза",
+		"bitrate": "Битрейт",
+		"bpm": "BPM",
+		"trackIndex": "Номер трека",
+		"discIndex": "Номер диска",
+		"userPlayCount": "Ваши прослушивания",
+		"totalPlayCount": "Всего прослушиваний",
+		"registrationDate": "Дата регистрации"
+	  }
+	}
+  },
+  "album": {
+	"onThisAlbum": "Приглашённые исполнители",
+	"showOnlyExclusiveTracks": "Показать только эксклюзивные треки",
+	"showAllTracks": "Показать все треки",
+	"bonusTracks": "Бонус-треки",
+	"relatedAlbums": "Похожие альбомы",
+	"otherAlbumReleases": "Другие версии альбома"
+  },
+  "compilationArtistLabel": "Сборник",
+  "auth": {
+	"signup": "Вы новичок? Зарегистрируйтесь",
+	"signin": "Уже есть аккаунт? Войти"
+  },
+  "emptyState": {
+	"default": "Здесь пока ничего нет…",
+	"lyrics": "Нет слов, чтобы подпевать :(",
+	"playlists": "Плейлистов пока нет!",
+	"playlist": "В этом плейлисте пока нет песен!",
+	"home": "Ого, как тут тихо…"
+  },
+  "track": {
+	"mixed": "Смешанный",
+	"bonusTrack": "Бонус-трек",
+	"remastered": "Ремастирован"
+  },
+  "player": {
+	"loadNextSongs": "Загрузить следующие песни",
+	"saveQueueAsPlaylist": "Сохранить очередь как плейлист"
+  },
+  "keyboardBindings": {
+	"modalTitle": "Горячие клавиши",
+	"openModalShortcutDescription": "Открыть/Закрыть это окно",
+	"goToSearchPage": "Перейти к поиску",
+	"goToSettingsPage": "Открыть настройки",
+	"openClosePlayer": "Открыть/Закрыть плеер",
+	"closePlayer": "Закрыть плеер",
+	"playPauseWhenExpanded": "Воспроизвести/Пауза (когда плеер открыт)"
+  },
+  "search": {
+	"all": "Все"
+  },
+  "misc": {
+	"yes": "Да",
+	"no": "Нет",
+	"loading": "Загрузка"
+  }
+}

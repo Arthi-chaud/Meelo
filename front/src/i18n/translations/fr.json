@@ -293,7 +293,8 @@
 			"keyboardBindings": "Raccourcis Clavier",
 			"lang": {
 				"en": "Anglais",
-				"fr": "Français"
+				"fr": "Français",
+				"ru": "Russe"
 			},
 			"scrobblers": {
 				"header": "Scrobblers",
