@@ -177,8 +177,10 @@ const Player = () => {
 					throwawayAudioPlayer.current.src = "";
 				}
 			};
-
-			if (currentTrack?.track.songId) {
+			// Note: it might be a bit redundant, but we need to do this when
+			// user slided in the crossfade zone.
+			// Hypothesis: Since progress will be set back at 0, the 'halfway point' is never reached (?)
+			if (currentTrack?.track.songId && !markedAsPlayed.current) {
 				api.setSongAsPlayed(currentTrack.track.songId);
 			}
 			skipTrack(queryClient);
