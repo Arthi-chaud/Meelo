@@ -113,10 +113,10 @@ describe("Illustration Controller", () => {
 	const dummyIllustrationBytes = fs.readFileSync("test/sequencer.ts");
 
 	const illustrationUrlExample =
-		"https://file-examples.com/storage/fe062d525c682cad199a167/2017/10/file_example_JPG_100kB.jpg";
+		"https://fastly.picsum.photos/id/855/200/200.jpg?hmac=l4U_O6zoVhjz9BqOito1u4k30FNJz3hLVYjvrdE59MU";
 
 	const illustration2UrlExample =
-		"https://file-examples.com/storage/fe062d525c682cad199a167/2017/10/file_example_JPG_500kB.jpg";
+		"https://fastly.picsum.photos/id/584/200/200.jpg?hmac=3Qi-TuGGtoLhS0BSlFSLhp1fwexJGdcQ0IWuRa-QXnM";
 
 	describe("Stream Illustration", () => {
 		it("should return the artist illustration", async () => {
