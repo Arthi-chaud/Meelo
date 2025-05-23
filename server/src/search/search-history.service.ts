@@ -93,49 +93,83 @@ export class SearchHistoryService {
 			orderBy: { searchAt: "desc" },
 			...formatPaginationParameters(paginationParameters),
 		});
-		const artists = await this.artistService.getMany(
-			{
-				artists: history
-					.filter((item) => item.artistId !== null)
-					.map(({ artistId }) => ({
-						id: artistId!,
-					})),
+		if (history.length === 0) {
+			return [];
+		}
+		const { artistIds, albumIds, songIds, videoIds } = history.reduce(
+			(rest, item) => {
+				if (item.artistId !== null) {
+					return {
+						...rest,
+						artistIds: [...rest.artistIds, { id: item.artistId }],
+					};
+				}
+				if (item.albumId !== null) {
+					return {
+						...rest,
+						albumIds: [...rest.albumIds, { id: item.albumId }],
+					};
+				}
+				if (item.songId !== null) {
+					return {
+						...rest,
+						songIds: [...rest.songIds, { id: item.songId }],
+					};
+				}
+				if (item.videoId !== null) {
+					return {
+						...rest,
+						videoIds: [...rest.videoIds, { id: item.videoId }],
+					};
+				}
+				return rest;
 			},
-			undefined,
-			undefined,
-			{ illustration: true },
+			{ artistIds: [], albumIds: [], songIds: [], videoIds: [] },
 		);
-		const songs = await this.songService.getMany(
-			{
-				songs: history
-					.filter((item) => item.songId !== null)
-					.map(({ songId }) => ({ id: songId! })),
-			},
-			undefined,
-			undefined,
-			{ illustration: true, artist: true, master: true, featuring: true },
-		);
+		const artists = artistIds.length
+			? await this.artistService.getMany(
+					{
+						artists: artistIds,
+					},
+					undefined,
+					undefined,
+					{ illustration: true },
+				)
+			: [];
+		const songs = songIds.length
+			? await this.songService.getMany(
+					{ songs: songIds },
+					undefined,
+					undefined,
+					{
+						illustration: true,
+						artist: true,
+						master: true,
+						featuring: true,
+					},
+				)
+			: [];
 
-		const videos = await this.videoService.getMany(
-			{
-				videos: history
-					.filter((item) => item.videoId !== null)
-					.map(({ videoId }) => ({ id: videoId! })),
-			},
-			undefined,
-			{ illustration: true, artist: true, master: true },
-			undefined,
-		);
-		const albums = await this.albumService.getMany(
-			{
-				albums: history
-					.filter((item) => item.albumId !== null)
-					.map(({ albumId }) => ({ id: albumId! })),
-			},
-			undefined,
-			undefined,
-			{ illustration: true, artist: true },
-		);
+		const videos = videoIds.length
+			? await this.videoService.getMany(
+					{
+						videos: videoIds,
+					},
+					undefined,
+					{ illustration: true, artist: true, master: true },
+					undefined,
+				)
+			: [];
+		const albums = albumIds.length
+			? await this.albumService.getMany(
+					{
+						albums: albumIds,
+					},
+					undefined,
+					undefined,
+					{ illustration: true, artist: true },
+				)
+			: [];
 
 		return [...artists, ...songs, ...albums, ...videos].sort((a, b) => {
 			const getIndex = (item: any) => {

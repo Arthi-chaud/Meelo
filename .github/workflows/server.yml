@@ -29,6 +29,7 @@ jobs:
               - 'server/**'
               - '.github/workflows/server.yml'
               - '.github/actions/cache-server/**'
+              - '.github/actions/dockerize/**'
   Build:
     needs: changes
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}

@@ -28,9 +28,12 @@ import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
 import { isSSR } from "~/utils/is-ssr";
-import resources from "../../../translations";
 
-export const Languages = ["en", "fr"] as const;
+import en from "../../../translations/en.json";
+import fr from "../../../translations/fr.json";
+import ru from "../../../translations/ru.json";
+
+export const Languages = ["en", "fr", "ru"] as const;
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();
@@ -90,6 +93,11 @@ export const withTranslations = (
 				{ loose: true },
 			) ??
 			"en";
+		const resources = {
+			en: { translation: en },
+			fr: { translation: fr },
+			ru: { translation: ru },
+		};
 		await i18n.init({
 			...commonOptions,
 			lng,

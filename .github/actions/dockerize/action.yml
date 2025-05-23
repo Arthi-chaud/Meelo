@@ -47,25 +47,12 @@ runs:
         images: |
           arthichaud/meelo-${{ inputs.image-suffix }}
           ghcr.io/${{ github.repository }}-${{ inputs.image-suffix }}
-    - name: Build and push Docker images (AMD)
+    - name: Build and push Docker images
       uses: docker/build-push-action@v3
       with:
         context: ${{ inputs.context }} 
-        platforms: linux/amd64
+        platforms: ${{ (inputs.publish == 'true' || inputs.publish == true) && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
         push: ${{ inputs.publish == 'true' || inputs.publish == true }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || format('arthichaud/meelo-{0}:edge', inputs.image-suffix) }}
-        labels: ${{ steps.meta.outputs.labels }}
-        # Note: We split this into 2 because ARM is slow to build for the front, and we don't wanna wait for it for PR check for example
-        # Sad that matrixes aren't available for composite actions
-    - name: Build and push Docker images (ARM)
-      uses: docker/build-push-action@v3
-      if: ${{ inputs.publish == 'true' || inputs.publish == true }}
-      with:
-        context: ${{ inputs.context }} 
-        platforms: linux/arm64
-        push: true 
         cache-from: type=gha
         cache-to: type=gha,mode=max
         tags: ${{ github.event_name == 'release' && steps.meta.outputs.tags || format('arthichaud/meelo-{0}:edge', inputs.image-suffix) }}

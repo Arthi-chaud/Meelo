@@ -24,6 +24,7 @@ import Playlist, {
 	type CreatePlaylistDto,
 	type UpdatePlaylistDto,
 } from "@/models/playlist";
+import type { Scrobbler } from "@/models/scrobblers";
 import type { SaveSearchItem } from "@/models/search";
 import type { SongType } from "@/models/song";
 import type { SortingParameters } from "@/models/sorting";
@@ -468,6 +469,59 @@ export default class API {
 		});
 	}
 
+	/// LastFM
+
+	getLastFMAuthUrl(origin: string) {
+		return this.fetch({
+			route: "/scrobblers/lastfm/url",
+			parameters: {},
+			otherParameters: {
+				callback: `${origin}/scrobblers/lastfm/callback_handler`, //redirecting to the settings page
+			},
+			validator: yup.object({ url: yup.string().required() }),
+		});
+	}
+
+	async postLastFMToken(token: string) {
+		return this.fetch({
+			method: "POST",
+			route: "/scrobblers/lastfm",
+			data: { token },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
+	/// ListenBrainz
+
+	async postListenBrainzToken(token: string, instanceUrl: string | null) {
+		return this.fetch({
+			method: "POST",
+			route: "/scrobblers/listenbrainz",
+			data: { token, instanceUrl },
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
+	async disconnectScrobbler(scrobbler: Scrobbler) {
+		let route = "/scrobblers";
+		switch (scrobbler) {
+			case "LastFM":
+				route = `${route}/lastfm`;
+				break;
+			case "ListenBrainz":
+				route = `${route}/listenbrainz`;
+				break;
+		}
+		return this.fetch({
+			method: "DELETE",
+			route,
+			parameters: {},
+			emptyResponse: true,
+		});
+	}
+
 	async fetch<ReturnType, Keys extends readonly string[]>({
 		route,
 		parameters,
@@ -579,7 +633,6 @@ export default class API {
 		const apiHost = this.urls.api;
 		const scannerHost = this.urls.scanner;
 		const host = service === Service.API ? apiHost : scannerHost;
-
 		return `${host}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
@@ -598,9 +651,14 @@ export default class API {
 		if ((parameters.include?.length ?? 0) !== 0) {
 			formattedQueryParams.push(API.formatInclude(parameters.include!)!);
 		}
-		formattedQueryParams.push(
-			this.formatPagination(parameters.pagination ?? undefined),
-		);
+		if (
+			parameters.pagination !== undefined &&
+			parameters.pagination !== null
+		) {
+			formattedQueryParams.push(
+				this.formatPagination(parameters.pagination),
+			);
+		}
 		for (const otherParams in otherParameters) {
 			if (otherParameters[otherParams] !== undefined) {
 				formattedQueryParams.push(
@@ -623,14 +681,14 @@ export default class API {
 		return `with=${include.join(",")}`;
 	}
 
-	private formatPagination(pagination?: PaginationParameters): string {
+	private formatPagination(pagination: PaginationParameters): string {
 		const formattedParameters: string[] = [];
 
-		if (pagination?.afterId !== undefined) {
+		if (pagination.afterId !== undefined) {
 			formattedParameters.push(`afterId=${pagination.afterId}`);
 		}
 		formattedParameters.push(
-			`take=${pagination?.pageSize ?? this.pageSize}`,
+			`take=${pagination.pageSize ?? this.pageSize}`,
 		);
 		return formattedParameters.join("&");
 	}

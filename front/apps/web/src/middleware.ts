@@ -38,7 +38,16 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.redirect(`${origin}/`);
 	}
 	const api = getAPI_(accessToken);
-
+	if (pathname === "/scrobblers/lastfm/callback_handler") {
+		const lastfmToken = request.nextUrl.searchParams.get("token");
+		if (lastfmToken) {
+			await api.postLastFMToken(lastfmToken).catch((e) => {
+				// biome-ignore lint/suspicious/noConsole: Debug
+				console.error(e);
+			});
+		}
+		return NextResponse.redirect(`${origin}/settings`);
+	}
 	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
 	if (albumId === "compilations") {
 		return;
@@ -57,6 +66,8 @@ export async function middleware(request: NextRequest) {
 	return NextResponse.rewrite(`${origin}/releases/${master.slug}`);
 }
 
+// Note putting the callback url in a variable make nextjs error:
+// Unknown identifier "LastFMCallbackHandlerRoute" at "config.matcher[1]".
 export const config = {
-	matcher: "/albums/:slugOrId/",
+	matcher: ["/albums/:slugOrId/", "/scrobblers/lastfm/callback_handler"],
 };

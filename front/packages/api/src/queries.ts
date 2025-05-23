@@ -51,6 +51,7 @@ import {
 	type ReleaseSortingKeys,
 	ReleaseWithRelations,
 } from "@/models/release";
+import { ScrobblersStatus } from "@/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "@/models/search";
 import {
 	type SongInclude,
@@ -554,6 +555,15 @@ export const getTasks = () => {
 	});
 };
 
+/// Scrobblers
+
+export const getScrobblerStatus = (): Query<ScrobblersStatus> => {
+	return _mkSimpleQuery({
+		route: "/scrobblers",
+		validator: ScrobblersStatus,
+	});
+};
+
 export const _mkSimpleQuery = <T>(
 	arg: {
 		route: string;
@@ -617,7 +627,10 @@ export const _mkSimplePaginatedQuery = <T>(
 
 	return {
 		key,
-		exec: (api: API) => (pagination: PaginationParameters) => {
+		exec: (api: API) => (pagination?: PaginationParameters) => {
+			if (pagination === undefined) {
+				pagination = { pageSize: api.pageSize };
+			}
 			return api.fetch({
 				route: arg.route,
 				errorMessage: arg.errorMessage,

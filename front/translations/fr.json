@@ -195,6 +195,15 @@
 			"pathIsRequired": "Le chemin est obligatoire",
 			"pathOfLibrary": "Chemin de la bibliothèque"
 		},
+		"scrobblers": {
+			"listenbrainz": {
+				"tokenLabel": "User Token de ListenBrainz",
+				"tokenHelperText": "Récupérez le token ici: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Le Token est obligatoire",
+				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
+				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)"
+			}
+		},
 		"playlist": {
 			"allowPlaylistChanges": "Autoriser les changements",
 			"playlistIsPublic": "Permettre aux autres utilisateurs de voir la playlist"
@@ -284,7 +293,13 @@
 			"keyboardBindings": "Raccourcis Clavier",
 			"lang": {
 				"en": "Anglais",
-				"fr": "Français"
+				"fr": "Français",
+				"ru": "Russe"
+			},
+			"scrobblers": {
+				"header": "Scrobblers",
+				"connect_scrobblers": "Associer un service",
+				"no_scrobblers_enabled": "Aucun scrobbler disponible"
 			},
 			"language": "Langue",
 			"notifications": "Notifications",
@@ -364,6 +379,14 @@
 		"releaseSetAsMaster": "Disque Promu",
 		"trackSetAsMaster": "Piste devenue Principale",
 		"tracksUpdated": "Pistes mises à jour",
+		"scrobblers": {
+			"linkingSuccessful": "Compte ListenBrainz associé!",
+			"linking": "Association en cours...",
+			"linkingListenBrainzFailed": "Echec de l'association avec ListenBrainz",
+			"unlinkingSuccessful": "Compte dissocié!",
+			"unlinking": "Dissociation...",
+			"unlinkingFailed": "Echec lors de la dissociation"
+		},
 		"users": {
 			"deleted": "Compte Supprimé",
 			"deletionFail": "Echec de la suppression du compte",
