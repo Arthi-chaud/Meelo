@@ -83,8 +83,9 @@
 		"compilation_plural": "Compilations",
 		"liveRecording": "Album Live",
 		"liveRecording_plural": "Albums Live",
-		"remixAlbum": "Album de Remixes",
-		"remixAlbum_plural": "Remixes",
+		"remixAlbum_0": "Album de Remixes",
+		"remixAlbum_1": "Albums de Remixes",
+		"remixAlbum_2": "",
 		"single": "Single",
 		"single_plural": "Singles",
 		"soundtrack": "Bande Originale",
@@ -195,18 +196,18 @@
 			"pathIsRequired": "Le chemin est obligatoire",
 			"pathOfLibrary": "Chemin de la bibliothèque"
 		},
-		"scrobblers": {
-			"listenbrainz": {
-				"tokenLabel": "User Token de ListenBrainz",
-				"tokenHelperText": "Récupérez le token ici: https://listenbrainz.org/settings/",
-				"tokenIsRequired": "Le Token est obligatoire",
-				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
-				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)"
-			}
-		},
 		"playlist": {
 			"allowPlaylistChanges": "Autoriser les changements",
 			"playlistIsPublic": "Permettre aux autres utilisateurs de voir la playlist"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)",
+				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
+				"tokenHelperText": "Récupérez le token ici: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Le Token est obligatoire",
+				"tokenLabel": "User Token de ListenBrainz"
+			}
 		}
 	},
 	"home": {
@@ -296,11 +297,6 @@
 				"fr": "Français",
 				"ru": "Russe"
 			},
-			"scrobblers": {
-				"header": "Scrobblers",
-				"connect_scrobblers": "Associer un service",
-				"no_scrobblers_enabled": "Aucun scrobbler disponible"
-			},
 			"language": "Langue",
 			"notifications": "Notifications",
 			"notifyOnTrackChange": "Notifier quand le morceau change",
@@ -308,6 +304,11 @@
 			"permissions": "Permissions",
 			"playback": "Lecture",
 			"project": "Projet",
+			"scrobblers": {
+				"connect_scrobblers": "Associer un service",
+				"header": "Scrobblers",
+				"no_scrobblers_enabled": "Aucun scrobbler disponible"
+			},
 			"useDarkTheme": "Utiliser le mode sombre",
 			"useSystemLanguage": "Utiliser la langue du système",
 			"useSystemTheme": "Utiliser le thème système"
@@ -377,16 +378,16 @@
 			"started": "Mise à jour des métadonnées… (Rechargez la page pour actualiser)"
 		},
 		"releaseSetAsMaster": "Disque Promu",
-		"trackSetAsMaster": "Piste devenue Principale",
-		"tracksUpdated": "Pistes mises à jour",
 		"scrobblers": {
-			"linkingSuccessful": "Compte ListenBrainz associé!",
 			"linking": "Association en cours...",
 			"linkingListenBrainzFailed": "Echec de l'association avec ListenBrainz",
-			"unlinkingSuccessful": "Compte dissocié!",
+			"linkingSuccessful": "Compte ListenBrainz associé!",
 			"unlinking": "Dissociation...",
-			"unlinkingFailed": "Echec lors de la dissociation"
+			"unlinkingFailed": "Echec lors de la dissociation",
+			"unlinkingSuccessful": "Compte dissocié!"
 		},
+		"trackSetAsMaster": "Piste devenue Principale",
+		"tracksUpdated": "Pistes mises à jour",
 		"users": {
 			"deleted": "Compte Supprimé",
 			"deletionFail": "Echec de la suppression du compte",
