@@ -50,7 +50,6 @@
 		"yup": "^1.0.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
 		"@types/accept-language-parser": "^1.5.3",
 		"@types/d3-array": "^3.0.3",
 		"@types/node": "18.7.7",

@@ -17,10 +17,6 @@
  */
 
 import { useQueryClient } from "@/api/hook";
-import type Artist from "@/models/artist";
-import type { TrackWithRelations } from "@/models/track";
-import { useConfirm } from "material-ui-confirm";
-import { useTranslation } from "react-i18next";
 import { DownloadAction } from "@/components/actions/download";
 import {
 	GoToArtistAction,
@@ -39,6 +35,10 @@ import { ChangeSongType } from "@/components/actions/resource-type";
 import { ShareSongAction } from "@/components/actions/share";
 import { ShowTrackFileInfoAction } from "@/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "@/components/actions/update-illustration";
+import type Artist from "@/models/artist";
+import type { TrackWithRelations } from "@/models/track";
+import { useConfirm } from "material-ui-confirm";
+import { useTranslation } from "react-i18next";
 import { ContextualMenu } from "..";
 
 type ReleaseTrackContextualMenuProps = {

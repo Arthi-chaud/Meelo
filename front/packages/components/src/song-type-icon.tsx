@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SongType } from "@/models/song";
 import type { IconProps } from "@/components/icons";
 import {
 	SongIcon,
@@ -32,6 +31,7 @@ import {
 	SongTypeOriginalIcon,
 	SongTypeRemixIcon,
 } from "@/components/icons";
+import type { SongType } from "@/models/song";
 
 const SongTypeIcon = ({ type, ...props }: { type: SongType } & IconProps) => {
 	const Icon = () => {

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { LogoutIcon } from "@/components/icons";
 import { store } from "@/state/store";
 import { accessTokenAtom } from "@/state/user";
-import { LogoutIcon } from "@/components/icons";
 import type Action from "./";
 
 export const LogoutAction: Action = {

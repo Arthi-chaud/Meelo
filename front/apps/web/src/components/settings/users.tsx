@@ -19,6 +19,7 @@
 import type API from "@/api";
 import { useQueryClient } from "@/api/hook";
 import { getUsers } from "@/api/queries";
+import { DeleteIcon } from "@/components/icons";
 import type User from "@/models/user";
 import { userAtom } from "@/state/user";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
@@ -29,7 +30,6 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import AdminGrid from "~/components/admin-grid";
-import { DeleteIcon } from "@/components/icons";
 
 const DeleteButton = ({
 	userId,

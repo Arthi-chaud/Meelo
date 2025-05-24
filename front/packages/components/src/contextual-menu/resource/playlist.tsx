@@ -18,16 +18,16 @@
 
 import { useQuery, useQueryClient } from "@/api/hook";
 import { getCurrentUserStatus } from "@/api/queries";
-import type Playlist from "@/models/playlist";
-import { useConfirm } from "material-ui-confirm";
-import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
 import {
 	DeletePlaylistAction,
 	UpdatePlaylistAction,
 } from "@/components/actions/playlist";
 import { SharePlaylistAction } from "@/components/actions/share";
 import { UpdatePlaylistIllustrationAction } from "@/components/actions/update-illustration";
+import type Playlist from "@/models/playlist";
+import { useConfirm } from "material-ui-confirm";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 import { ContextualMenu } from "..";
 
 type PlaylistContextualMenuProps = {

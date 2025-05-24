@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { CloseIcon } from "@/components/icons";
 import {
 	Dialog,
 	DialogContent,
@@ -31,7 +32,6 @@ import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,
 } from "~/contexts/keybindings";
-import { CloseIcon } from "@/components/icons";
 
 export const KeyboardBindingModal = () => {
 	const [isOpen, setIsOpen] = useState(false);

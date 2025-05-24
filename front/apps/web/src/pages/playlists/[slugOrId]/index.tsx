@@ -28,6 +28,8 @@ import { type Query, toTanStackQuery } from "@/api/query";
 import { DeletePlaylistAction } from "@/components/actions/playlist";
 import PlaylistContextualMenu from "@/components/contextual-menu/resource/playlist";
 import SongContextualMenu from "@/components/contextual-menu/resource/song";
+import { EmptyState } from "@/components/empty-state";
+import { useGradientBackground } from "@/components/gradient-background";
 import {
 	ContextualMenuIcon,
 	DoneIcon,
@@ -40,6 +42,7 @@ import {
 	SongIcon,
 } from "@/components/icons";
 import Illustration from "@/components/illustration";
+import ListItem from "@/components/list-item";
 import type {
 	PlaylistEntry,
 	PlaylistEntryWithRelations,
@@ -60,10 +63,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { type QueryClient, useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { EmptyState } from "@/components/empty-state";
-import { useGradientBackground } from "@/components/gradient-background";
 import { Head } from "~/components/head";
-import ListItem from "@/components/list-item";
 import RelationPageHeader from "~/components/relation-page-header";
 import getSlugOrId from "~/utils/getSlugOrId";
 

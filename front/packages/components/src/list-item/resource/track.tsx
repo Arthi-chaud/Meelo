@@ -18,15 +18,15 @@
 
 import { useQueryClient } from "@/api/hook";
 import { getArtist } from "@/api/queries";
+import TrackContextualMenu from "@/components/contextual-menu/resource/track";
+import { MasterIcon, TrackIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
+import ListItem from "@/components/list-item";
 import type { TrackWithRelations } from "@/models/track";
 import { playTrackAtom } from "@/state/player";
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
-import TrackContextualMenu from "@/components/contextual-menu/resource/track";
-import { MasterIcon, TrackIcon } from "@/components/icons";
-import Illustration from "@/components/illustration";
-import ListItem from "@/components/list-item";
 
 type TrackItemProps = {
 	track:

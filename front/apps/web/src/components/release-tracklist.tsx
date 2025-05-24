@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import ReleaseTrackContextualMenu from "@/components/contextual-menu/resource/release-track";
+import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/components/icons";
 import type Artist from "@/models/artist";
 import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
@@ -50,8 +52,6 @@ import { useAtom, useSetAtom } from "jotai";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { RequireAtLeastOne } from "type-fest";
-import ReleaseTrackContextualMenu from "@/components/contextual-menu/resource/release-track";
-import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/components/icons";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{

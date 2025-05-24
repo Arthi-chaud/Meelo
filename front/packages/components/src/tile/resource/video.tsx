@@ -18,6 +18,7 @@
 
 import { useQueryClient } from "@/api/hook";
 import { getArtist } from "@/api/queries";
+import VideoContextualMenu from "@/components/contextual-menu/resource/video";
 import { VideoIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
 import Tile from "@/components/tile";
@@ -25,7 +26,6 @@ import type { VideoWithRelations } from "@/models/video";
 import { playTrackAtom } from "@/state/player";
 import formatDuration from "@/utils/format-duration";
 import { useSetAtom } from "jotai";
-import VideoContextualMenu from "@/components/contextual-menu/resource/video";
 
 type VideoTileProps = (
 	| {

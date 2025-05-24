@@ -17,6 +17,21 @@
  */
 
 import { useQuery, useQueryClient } from "@/api/hook";
+import { CreatePlaylistAction } from "@/components/actions/playlist";
+import ReleaseTrackContextualMenu from "@/components/contextual-menu/resource/release-track";
+import {
+	CloseIcon,
+	ContextualMenuIcon,
+	DeleteIcon,
+	DragHandleIcon,
+	FullscreenIcon,
+	LyricsIcon,
+	PlayerIcon,
+	PlaylistIcon,
+	TrackIcon,
+} from "@/components/icons";
+import Illustration from "@/components/illustration";
+import ListItem from "@/components/list-item";
 import {
 	cursorAtom,
 	infiniteQueryAtom,
@@ -48,21 +63,6 @@ import { type LegacyRef, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { CreatePlaylistAction } from "@/components/actions/playlist";
-import ReleaseTrackContextualMenu from "@/components/contextual-menu/resource/release-track";
-import {
-	CloseIcon,
-	ContextualMenuIcon,
-	DeleteIcon,
-	DragHandleIcon,
-	FullscreenIcon,
-	LyricsIcon,
-	PlayerIcon,
-	PlaylistIcon,
-	TrackIcon,
-} from "@/components/icons";
-import Illustration from "@/components/illustration";
-import ListItem from "@/components/list-item";
 import {
 	PlayButton,
 	type PlayerControlsProps,

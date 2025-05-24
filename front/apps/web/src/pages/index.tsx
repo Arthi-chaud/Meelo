@@ -33,7 +33,9 @@ import {
 } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import { GoToSettingsAction } from "@/components/actions/link";
+import { EmptyState } from "@/components/empty-state";
 import Fade from "@/components/fade";
+import { useGradientBackground } from "@/components/gradient-background";
 import { EmptyStateIcon } from "@/components/icons";
 import AlbumTile from "@/components/tile/resource/album";
 import ArtistTile from "@/components/tile/resource/artist";
@@ -50,8 +52,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { EmptyState } from "@/components/empty-state";
-import { useGradientBackground } from "@/components/gradient-background";
 import AlbumHighlightCard from "~/components/highlight-card/resource/album";
 import SectionHeader from "~/components/section-header";
 import SongGrid from "~/components/song-grid";

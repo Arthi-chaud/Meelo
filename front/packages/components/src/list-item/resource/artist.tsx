@@ -18,8 +18,8 @@
 
 import ArtistAvatar from "@/components/artist-avatar";
 import ArtistContextualMenu from "@/components/contextual-menu/resource/artist";
-import type { ArtistWithRelations } from "@/models/artist";
 import ListItem from "@/components/list-item";
+import type { ArtistWithRelations } from "@/models/artist";
 
 type ArtistItemProps = {
 	artist: ArtistWithRelations<"illustration"> | undefined;

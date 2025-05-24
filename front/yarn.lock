@@ -2664,6 +2664,7 @@ __metadata:
     "@mui/material": "*"
     next: "*"
     react: "*"
+    react-i18next: "*"
   languageName: unknown
   linkType: soft
 
@@ -6209,7 +6210,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "web@workspace:apps/web"
   dependencies:
-    "@biomejs/biome": "npm:1.9.4"
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
