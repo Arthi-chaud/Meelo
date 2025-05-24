@@ -21,9 +21,9 @@ import { playTrackAtom } from "@/state/player";
 import formatArtists from "@/utils/format-artists";
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import VideoContextualMenu from "~/components/contextual-menu/resource/video";
-import { VideoIcon } from "~/components/icons";
-import Illustration from "~/components/illustration";
+import VideoContextualMenu from "@/components/contextual-menu/resource/video";
+import { VideoIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
 import ListItem from "~/components/list-item";
 
 type VideoType = VideoWithRelations<"artist" | "master" | "illustration">;

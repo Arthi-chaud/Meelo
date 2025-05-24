@@ -17,7 +17,6 @@
  */
 
 import { useTranslation } from "react-i18next";
-import type { TranslationKey } from "~/i18n";
 import { useFilterControl, useFiltersControl } from "./control";
 
 type TypeFilterControlArg<TypeKey extends string> = {

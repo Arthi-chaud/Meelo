@@ -26,6 +26,8 @@ import {
 	getVideos,
 } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
+import { PlayIcon } from "@/components/icons";
+import SongTypeIcon from "@/components/song-type-icon";
 import { playTrackAtom } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
 import { uncapitalize } from "@/utils/uncapitalize";
@@ -49,15 +51,12 @@ import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
-import { PlayIcon } from "~/components/icons";
 import { InfiniteSongView } from "~/components/infinite/resource/song";
 import InfiniteTrackView from "~/components/infinite/resource/track";
 import InfiniteVideoView from "~/components/infinite/resource/video";
 import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
-import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
-import type { TranslationKey } from "~/i18n";
 import { useAccentColor } from "~/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";

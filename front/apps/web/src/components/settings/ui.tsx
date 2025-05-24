@@ -18,6 +18,7 @@
 
 import { useQuery, useQueryClient } from "@/api/hook";
 import { getScrobblerStatus } from "@/api/queries";
+import { DeleteIcon, OpenExternalIcon } from "@/components/icons";
 import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
 import {
 	Box,
@@ -47,7 +48,6 @@ import { useMutation } from "react-query";
 import { useLocalStorage } from "usehooks-ts";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n";
-import { DeleteIcon, OpenExternalIcon } from "../icons";
 
 const SettingGroupStyle = {
 	paddingTop: 1,

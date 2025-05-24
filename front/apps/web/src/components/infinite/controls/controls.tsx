@@ -16,6 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type Action from "@/components/actions";
+import {
+	AscIcon,
+	CheckIcon,
+	DescIcon,
+	GridIcon,
+	ListIcon,
+	MinusIcon,
+	PlusIcon,
+} from "@/components/icons";
 import { ItemSize } from "@/models/layout";
 import {
 	Button,
@@ -32,17 +42,6 @@ import {
 import { deepmerge } from "@mui/utils";
 import { Fragment, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type Action from "~/components/actions";
-import {
-	AscIcon,
-	CheckIcon,
-	DescIcon,
-	GridIcon,
-	ListIcon,
-	MinusIcon,
-	PlusIcon,
-} from "~/components/icons";
-import type { TranslationKey } from "~/i18n";
 import type { FilterControl } from "./filters/control";
 import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";

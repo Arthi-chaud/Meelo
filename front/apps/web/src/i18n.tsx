@@ -17,6 +17,7 @@
  */
 
 import { LanguageStorageKey } from "@/utils/constants";
+import { isSSR } from "@/utils/is-ssr";
 import ALParser from "accept-language-parser";
 import { getCookie, setCookie } from "cookies-next";
 import i18next, {
@@ -27,13 +28,13 @@ import i18next, {
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
-import { isSSR } from "~/utils/is-ssr";
 
 import en from "../../../translations/en.json";
 import fr from "../../../translations/fr.json";
 import ru from "../../../translations/ru.json";
 
 export const Languages = ["en", "fr", "ru"] as const;
+export type Language = keyof typeof Languages;
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();
@@ -111,10 +112,3 @@ export const withTranslations = (
 
 	return AppWithTranslations;
 };
-
-export type Translator = (key: TranslationKey) => string;
-// https://github.com/i18next/i18next/blob/master/typescript/t.d.ts
-export type TranslationKey = KeysBuilderWithoutReturnObjects<
-	CustomTypeOptions["resources"]["translation"]
->;
-export type Language = keyof typeof Languages;

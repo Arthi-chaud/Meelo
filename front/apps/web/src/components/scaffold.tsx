@@ -16,6 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type Action from "@/components/actions";
+import { LogoutAction } from "@/components/actions/auth";
+import {
+	GoToSearchAction,
+	GoToSettingsAction,
+} from "@/components/actions/link";
+import {
+	AlbumIcon,
+	ArtistIcon,
+	BurgerIcon,
+	CompilationIcon,
+	GenreIcon,
+	PlaylistIcon,
+	SongIcon,
+	VideoIcon,
+} from "@/components/icons";
 import {
 	BottomNavigationAction,
 	Box,
@@ -40,20 +56,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RootGradientBackground } from "~/components/gradient-background";
-import type { TranslationKey } from "~/i18n";
-import type Action from "./actions";
-import { LogoutAction } from "./actions/auth";
-import { GoToSearchAction, GoToSettingsAction } from "./actions/link";
-import {
-	AlbumIcon,
-	ArtistIcon,
-	BurgerIcon,
-	CompilationIcon,
-	GenreIcon,
-	PlaylistIcon,
-	SongIcon,
-	VideoIcon,
-} from "./icons";
 import { parentScrollableDivId } from "./infinite/scroll";
 import Player from "./player";
 import ThemedImage from "./themed-image";

@@ -20,7 +20,6 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { type Order, Orders } from "@/models/sorting";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type { TranslationKey } from "~/i18n";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type SortControl<SortingKey extends string> = {

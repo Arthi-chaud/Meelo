@@ -8,7 +8,8 @@
 			"@/state/*": ["../state/src/*"],
 			"@/utils/*": ["../utils/src/*"],
 			"@/api": ["../api/src/index"],
-			"@/api/*": ["../api/src/*"]
+			"@/api/*": ["../api/src/*"],
+			"@/components/*": ["../components/src/*"]
 		}
 	}
 }

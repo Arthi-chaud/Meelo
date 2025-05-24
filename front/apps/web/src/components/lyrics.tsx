@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Fade from "@/components/fade";
+import { LyricsIcon } from "@/components/icons";
 import { generateArray } from "@/utils/gen-list";
 import { Box, Skeleton, Typography } from "@mui/material";
 import { EmptyState } from "./empty-state";
-import Fade from "./fade";
-import { LyricsIcon } from "./icons";
 
 type LyricsProps = {
 	lyrics: string[] | null | undefined;

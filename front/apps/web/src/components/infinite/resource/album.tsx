@@ -31,7 +31,7 @@ import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import AlbumItem from "~/components/list-item/resource/album";
-import AlbumTile from "~/components/tile/resource/album";
+import AlbumTile from "@/components/tile/resource/album";
 
 type QueryProps = {
 	types?: AlbumType[];

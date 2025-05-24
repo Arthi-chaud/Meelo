@@ -17,9 +17,9 @@
  */
 
 import type { PlaylistWithRelations } from "@/models/playlist";
-import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
-import { PlaylistIcon } from "~/components/icons";
-import Illustration from "~/components/illustration";
+import PlaylistContextualMenu from "@/components/contextual-menu/resource/playlist";
+import { PlaylistIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
 import ListItem from "~/components/list-item";
 
 type PlaylistItemProps = {

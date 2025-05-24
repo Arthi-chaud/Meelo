@@ -18,9 +18,9 @@
 
 import type { AlbumWithRelations } from "@/models/album";
 import { useTranslation } from "react-i18next";
-import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
-import { AlbumIcon } from "~/components/icons";
-import Illustration from "~/components/illustration";
+import AlbumContextualMenu from "@/components/contextual-menu/resource/album";
+import { AlbumIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
 import ListItem from "~/components/list-item";
 
 type AlbumItemProps = {

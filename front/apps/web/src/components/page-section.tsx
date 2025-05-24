@@ -17,6 +17,11 @@
  */
 
 import type { useInfiniteQuery } from "@/api/hook";
+import Fade from "@/components/fade";
+import { MoreIcon } from "@/components/icons";
+import AlbumTile from "@/components/tile/resource/album";
+import VideoTile from "@/components/tile/resource/video";
+import TileRow from "@/components/tile/row";
 import type { AlbumWithRelations } from "@/models/album";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
@@ -29,14 +34,8 @@ import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseQueryResult } from "react-query";
-import type { TranslationKey } from "~/i18n";
-import Fade from "./fade";
-import { MoreIcon } from "./icons";
 import SectionHeader from "./section-header";
 import SongGrid from "./song-grid";
-import AlbumTile from "./tile/resource/album";
-import VideoTile from "./tile/resource/video";
-import TileRow from "./tile/row";
 
 export const SectionPadding = 2;
 

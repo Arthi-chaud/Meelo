@@ -42,16 +42,16 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import { useQuery as useTanStackQuery } from "react-query";
-import type Action from "~/components/actions";
+import type Action from "@/components/actions";
 import {
 	CleanAllLibrariesAction,
 	CleanLibraryAction,
 	ScanAllLibrariesAction,
 	ScanLibraryAction,
-} from "~/components/actions/library-task";
-import { RefreshLibraryMetadataAction } from "~/components/actions/refresh-metadata";
+} from "@/components/actions/library-task";
+import { RefreshLibraryMetadataAction } from "@/components/actions/refresh-metadata";
 import AdminGrid from "~/components/admin-grid";
-import { AddIcon, DeleteIcon, EditIcon } from "~/components/icons";
+import { AddIcon, DeleteIcon, EditIcon } from "@/components/icons";
 import LibraryForm from "~/components/library-form";
 import SectionHeader from "~/components/section-header";
 

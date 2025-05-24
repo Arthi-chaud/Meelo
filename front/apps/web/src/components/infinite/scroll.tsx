@@ -22,7 +22,7 @@ import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
 import * as IScroll from "react-infinite-scroller";
 import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
-import { EmptyStateIcon } from "~/components/icons";
+import { EmptyStateIcon } from "@/components/icons";
 
 export const parentScrollableDivId = "scrollableDiv" as const;
 

@@ -20,9 +20,9 @@ import type { ReleaseWithRelations } from "@/models/release";
 import { getYear } from "@/utils/date";
 import { Grid } from "@mui/material";
 import { Star } from "iconsax-react";
-import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
-import { AlbumIcon } from "~/components/icons";
-import Illustration from "~/components/illustration";
+import ReleaseContextualMenu from "@/components/contextual-menu/resource/release";
+import { AlbumIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
 import ListItem from "~/components/list-item";
 
 type ReleaseItemProps = {

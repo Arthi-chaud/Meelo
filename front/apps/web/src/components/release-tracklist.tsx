@@ -50,8 +50,8 @@ import { useAtom, useSetAtom } from "jotai";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { RequireAtLeastOne } from "type-fest";
-import ReleaseTrackContextualMenu from "./contextual-menu/resource/release-track";
-import { ContextualMenuIcon, PlayIcon, VideoIcon } from "./icons";
+import ReleaseTrackContextualMenu from "@/components/contextual-menu/resource/release-track";
+import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/components/icons";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{

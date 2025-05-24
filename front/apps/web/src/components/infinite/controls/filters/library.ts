@@ -22,7 +22,6 @@ import { toTanStackInfiniteQuery } from "@/api/query";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
-import type { TranslationKey } from "~/i18n";
 import { useFilterControl, useFiltersControl } from "./control";
 
 function useLibraryFilterControl(p: { multipleChoices: true }): ReturnType<

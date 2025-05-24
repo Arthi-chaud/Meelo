@@ -26,7 +26,6 @@ import {
 } from "react";
 import { useKey as _useKey } from "react-use";
 import type { Handler } from "react-use/lib/useKey";
-import type { TranslationKey } from "~/i18n";
 
 type BindingKey = "esc" | "?" | "/" | "s" | "p" | "space";
 

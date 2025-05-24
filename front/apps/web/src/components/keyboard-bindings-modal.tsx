@@ -31,7 +31,7 @@ import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,
 } from "~/contexts/keybindings";
-import { CloseIcon } from "./icons";
+import { CloseIcon } from "@/components/icons";
 
 export const KeyboardBindingModal = () => {
 	const [isOpen, setIsOpen] = useState(false);

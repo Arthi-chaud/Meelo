@@ -29,7 +29,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import AdminGrid from "~/components/admin-grid";
-import { DeleteIcon } from "~/components/icons";
+import { DeleteIcon } from "@/components/icons";
 
 const DeleteButton = ({
 	userId,

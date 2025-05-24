@@ -32,6 +32,14 @@ import {
 	getSongs,
 } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
+import { GoToSettingsAction } from "@/components/actions/link";
+import Fade from "@/components/fade";
+import { EmptyStateIcon } from "@/components/icons";
+import AlbumTile from "@/components/tile/resource/album";
+import ArtistTile from "@/components/tile/resource/artist";
+import { GenreTile } from "@/components/tile/resource/genre";
+import ReleaseTile from "@/components/tile/resource/release";
+import TileRow from "@/components/tile/row";
 import type { AlbumExternalMetadata } from "@/models/external-metadata";
 import { generateArray } from "@/utils/gen-list";
 import { getRandomNumber } from "@/utils/random";
@@ -42,19 +50,11 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { GoToSettingsAction } from "~/components/actions/link";
 import { EmptyState } from "~/components/empty-state";
-import Fade from "~/components/fade";
 import { useGradientBackground } from "~/components/gradient-background";
 import AlbumHighlightCard from "~/components/highlight-card/resource/album";
-import { EmptyStateIcon } from "~/components/icons";
 import SectionHeader from "~/components/section-header";
 import SongGrid from "~/components/song-grid";
-import AlbumTile from "~/components/tile/resource/album";
-import ArtistTile from "~/components/tile/resource/artist";
-import { GenreTile } from "~/components/tile/resource/genre";
-import ReleaseTile from "~/components/tile/resource/release";
-import TileRow from "~/components/tile/row";
 
 const newlyAddedAlbumsQuery = getAlbums(
 	{},

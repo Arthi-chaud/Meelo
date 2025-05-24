@@ -25,8 +25,8 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { TrackIcon } from "~/components/icons";
-import Illustration from "~/components/illustration";
+import { TrackIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
 import {
 	PlayButton,
 	type PlayerControlsProps,

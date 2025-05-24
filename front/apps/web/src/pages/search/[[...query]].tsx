@@ -45,7 +45,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { Head } from "~/components/head";
-import { SearchIcon } from "~/components/icons";
+import { SearchIcon } from "@/components/icons";
 import InfiniteList from "~/components/infinite/list";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";

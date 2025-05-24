@@ -23,14 +23,14 @@ import {
 	type PlaylistWithRelations,
 } from "@/models/playlist";
 import type { SortingParameters } from "@/models/sorting";
-import { CreatePlaylistAction } from "~/components/actions/playlist";
+import { CreatePlaylistAction } from "@/components/actions/playlist";
 import type { EmptyStateProps } from "~/components/empty-state";
 import { Controls } from "~/components/infinite/controls/controls";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import PlaylistItem from "~/components/list-item/resource/playlist";
-import PlaylistTile from "~/components/tile/resource/playlist";
+import PlaylistTile from "@/components/tile/resource/playlist";
 
 type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;
 type PlaylistModel = PlaylistWithRelations<"illustration">;

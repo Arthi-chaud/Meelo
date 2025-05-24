@@ -20,9 +20,9 @@ import type { SongWithRelations } from "@/models/song";
 import type { SongGroupWithRelations } from "@/models/song-group";
 import formatArtists from "@/utils/format-artists";
 import { useEffect, useState } from "react";
-import SongContextualMenu from "~/components/contextual-menu/resource/song";
-import { SongIcon } from "~/components/icons";
-import Illustration from "~/components/illustration";
+import SongContextualMenu from "@/components/contextual-menu/resource/song";
+import { SongIcon } from "@/components/icons";
+import Illustration from "@/components/illustration";
 import ListItem from "~/components/list-item";
 
 type SongItemProps<

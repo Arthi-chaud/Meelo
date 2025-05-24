@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type Action from "@/components/actions";
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import type { TranslationKey } from "~/i18n";
-import type Action from "./actions";
 
 export type EmptyStateProps = {
 	icon: React.ReactNode;

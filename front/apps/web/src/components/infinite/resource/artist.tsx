@@ -25,7 +25,7 @@ import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import ArtistItem from "~/components/list-item/resource/artist";
-import ArtistTile from "~/components/tile/resource/artist";
+import ArtistTile from "@/components/tile/resource/artist";
 
 type QueryProps = { libraries?: string[] } & SortingParameters<
 	typeof ArtistSortingKeys

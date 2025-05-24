@@ -27,7 +27,7 @@ import {
 	PauseIcon,
 	PlayIcon,
 	RewindIcon,
-} from "~/components/icons";
+} from "@/components/icons";
 import type PlayerSlider from "./slider";
 
 export const parentSongQuery = (id: number) =>

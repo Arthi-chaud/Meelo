@@ -33,7 +33,7 @@ import {
 	useSortControl,
 } from "~/components/infinite/controls/sort";
 import InfiniteGrid from "~/components/infinite/grid";
-import { GenreTile } from "~/components/tile/resource/genre";
+import { GenreTile } from "@/components/tile/resource/genre";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";
