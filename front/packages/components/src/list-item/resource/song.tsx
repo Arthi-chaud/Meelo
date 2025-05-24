@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import SongContextualMenu from "@/components/contextual-menu/resource/song";
 import { SongIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
-import ListItem from "~/components/list-item";
+import ListItem from "@/components/list-item";
 
 type SongItemProps<
 	T extends SongWithRelations<

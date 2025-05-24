@@ -62,7 +62,7 @@ import {
 	TrackIcon,
 } from "@/components/icons";
 import Illustration from "@/components/illustration";
-import ListItem from "~/components/list-item";
+import ListItem from "@/components/list-item";
 import {
 	PlayButton,
 	type PlayerControlsProps,

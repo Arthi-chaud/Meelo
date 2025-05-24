@@ -20,6 +20,7 @@ import type { QueryClient } from "@/api/hook";
 import { getSongs } from "@/api/queries";
 import type { InfiniteQueryFn } from "@/api/query";
 import { MergeIcon, SongIcon } from "@/components/icons";
+import ListItem from "@/components/list-item";
 import type { Song, SongWithRelations } from "@/models/song";
 import type { TrackWithRelations } from "@/models/track";
 import {
@@ -37,7 +38,6 @@ import { useMutation } from "react-query";
 import type Action from ".";
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/list";
-import ListItem from "../list-item";
 
 export const MergeSongAction = (
 	song: Song,

@@ -18,13 +18,12 @@
 
 import { useInfiniteQuery } from "@/api/hook";
 import type { InfiniteQueryFn } from "@/api/query";
+import { EmptyState, type EmptyStateProps } from "@/components/empty-state";
+import { EmptyStateIcon } from "@/components/icons";
 import type Resource from "@/models/resource";
+import { ParentScrollableDivId } from "@/utils/constants";
 import { generateArray } from "@/utils/gen-list";
 import * as IScroll from "react-infinite-scroller";
-import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
-import { EmptyStateIcon } from "@/components/icons";
-
-export const parentScrollableDivId = "scrollableDiv" as const;
 
 type InfiniteScrollProps<T extends Resource, F extends Resource> = {
 	/**
@@ -66,7 +65,7 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 					}
 				}}
 				getScrollParent={() =>
-					document.getElementById(parentScrollableDivId)
+					document.getElementById(ParentScrollableDivId)
 				}
 				useWindow={false}
 				hasMore={hasNextPage}

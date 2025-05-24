@@ -34,6 +34,7 @@ import {
 import { toTanStackQuery } from "@/api/query";
 import ReleaseContextualMenu from "@/components/contextual-menu/resource/release";
 import Fade from "@/components/fade";
+import { useGradientBackground } from "@/components/gradient-background";
 import { PlayIcon, ShuffleIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
 import AlbumTile from "@/components/tile/resource/album";
@@ -47,6 +48,7 @@ import type Tracklist from "@/models/tracklist";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { VideoTypeIsExtra, type VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
+import { ParentScrollableDivId } from "@/utils/constants";
 import { getDate, getYear } from "@/utils/date";
 import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
@@ -77,9 +79,7 @@ import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
-import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
-import { parentScrollableDivId } from "~/components/infinite/scroll";
 import ReleaseTrackList from "~/components/release-tracklist";
 import ResourceDescription from "~/components/resource-description";
 import SongGrid from "~/components/song-grid";
@@ -760,7 +760,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										setShowOnlyExclusive((v) => !v);
 										document
 											.getElementById(
-												parentScrollableDivId,
+												ParentScrollableDivId,
 											)
 											?.scrollTo({
 												top: 0,

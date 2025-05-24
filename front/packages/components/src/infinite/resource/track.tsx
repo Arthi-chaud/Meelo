@@ -17,14 +17,14 @@
  */
 
 import type { InfiniteQuery } from "@/api/query";
+import { Controls } from "@/components/infinite/controls/controls";
+import { useLibraryFilterControl } from "@/components/infinite/controls/filters/library";
+import { useSortControl } from "@/components/infinite/controls/sort";
+import InfiniteView from "@/components/infinite/view";
+import TrackItem from "@/components/list-item/resource/track";
 import { DefaultItemSize } from "@/models/layout";
 import type { SortingParameters } from "@/models/sorting";
 import { TrackSortingKeys, type TrackWithRelations } from "@/models/track";
-import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
-import { useSortControl } from "~/components/infinite/controls/sort";
-import InfiniteView from "~/components/infinite/view";
-import TrackItem from "~/components/list-item/resource/track";
 
 type QueryProps = {
 	libraries?: string[];

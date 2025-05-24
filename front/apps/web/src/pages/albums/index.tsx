@@ -8,8 +8,8 @@ import { Head } from "~/components/head";
 import {
 	getOrderQuery,
 	getSortQuery,
-} from "~/components/infinite/controls/sort";
-import InfiniteAlbumView from "~/components/infinite/resource/album";
+} from "@/components/infinite/controls/sort";
+import InfiniteAlbumView from "@/components/infinite/resource/album";
 
 const isCompilationPage = ({ asPath }: { asPath?: string }) =>
 	asPath?.includes("/compilations") ?? false;

@@ -25,8 +25,8 @@ import { Head } from "~/components/head";
 import {
 	getOrderQuery,
 	getSortQuery,
-} from "~/components/infinite/controls/sort";
-import InfinitePlaylistView from "~/components/infinite/resource/playlist";
+} from "@/components/infinite/controls/sort";
+import InfinitePlaylistView from "@/components/infinite/resource/playlist";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

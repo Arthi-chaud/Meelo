@@ -24,9 +24,9 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { useGradientBackground } from "~/components/gradient-background";
+import { useGradientBackground } from "@/components/gradient-background";
 import { Head } from "~/components/head";
-import InfiniteAlbumView from "~/components/infinite/resource/album";
+import InfiniteAlbumView from "@/components/infinite/resource/album";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import getSlugOrId from "~/utils/getSlugOrId";
 

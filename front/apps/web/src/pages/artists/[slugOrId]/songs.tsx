@@ -27,13 +27,13 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { useGradientBackground } from "~/components/gradient-background";
+import { useGradientBackground } from "@/components/gradient-background";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,
 	getSortQuery,
-} from "~/components/infinite/controls/sort";
-import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
+} from "@/components/infinite/controls/sort";
+import { HybridInfiniteSongView } from "@/components/infinite/resource/song";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import getSlugOrId from "~/utils/getSlugOrId";
 

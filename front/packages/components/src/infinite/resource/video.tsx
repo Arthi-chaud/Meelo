@@ -18,6 +18,15 @@
 
 import { type QueryClient, useQueryClient } from "@/api/hook";
 import { type InfiniteQuery, transformPage } from "@/api/query";
+import { PlayIcon, ShuffleIcon } from "@/components/icons";
+import { Controls } from "@/components/infinite/controls/controls";
+import { useLibraryFilterControl } from "@/components/infinite/controls/filters/library";
+import { useTypeFilterControl } from "@/components/infinite/controls/filters/resource-type";
+import { useLayoutControl } from "@/components/infinite/controls/layout";
+import { useSortControl } from "@/components/infinite/controls/sort";
+import InfiniteView from "@/components/infinite/view";
+import VideoItem from "@/components/list-item/resource/video";
+import VideoTile from "@/components/tile/resource/video";
 import type { SortingParameters } from "@/models/sorting";
 import {
 	VideoSortingKeys,
@@ -27,15 +36,6 @@ import {
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
 import { uncapitalize } from "@/utils/uncapitalize";
-import { PlayIcon, ShuffleIcon } from "@/components/icons";
-import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
-import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
-import { useLayoutControl } from "~/components/infinite/controls/layout";
-import { useSortControl } from "~/components/infinite/controls/sort";
-import InfiniteView from "~/components/infinite/view";
-import VideoItem from "~/components/list-item/resource/video";
-import VideoTile from "@/components/tile/resource/video";
 
 type QueryProps = {
 	types?: VideoType[];

@@ -22,6 +22,7 @@ import {
 	GoToSearchAction,
 	GoToSettingsAction,
 } from "@/components/actions/link";
+import { RootGradientBackground } from "@/components/gradient-background";
 import {
 	AlbumIcon,
 	ArtistIcon,
@@ -32,6 +33,7 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "@/components/icons";
+import { ParentScrollableDivId } from "@/utils/constants";
 import {
 	BottomNavigationAction,
 	Box,
@@ -55,8 +57,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RootGradientBackground } from "~/components/gradient-background";
-import { parentScrollableDivId } from "./infinite/scroll";
 import Player from "./player";
 import ThemedImage from "./themed-image";
 
@@ -371,7 +371,7 @@ const Scaffold = (props: { children: any }) => {
 	const [tempDrawerIsOpen, openDrawer] = useState(false);
 
 	useEffect(() => {
-		document.getElementById(parentScrollableDivId)?.scrollTo({ top: 0 });
+		document.getElementById(ParentScrollableDivId)?.scrollTo({ top: 0 });
 	}, [props.children]);
 
 	return (
@@ -396,7 +396,7 @@ const Scaffold = (props: { children: any }) => {
 			>
 				<Container
 					maxWidth={false}
-					id={parentScrollableDivId}
+					id={ParentScrollableDivId}
 					sx={{
 						width: "100%",
 						height: "100%",

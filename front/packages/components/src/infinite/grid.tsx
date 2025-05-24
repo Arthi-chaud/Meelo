@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useGradientBackground } from "@/components/gradient-background";
 import type { IllustratedResource } from "@/models/illustration";
 import type { ItemSize } from "@/models/layout";
 import type Resource from "@/models/resource";
 import { type Breakpoint, Grid } from "@mui/material";
-import { useGradientBackground } from "~/components/gradient-background";
 import InfiniteScroll from "./scroll";
 
 type TypedList<

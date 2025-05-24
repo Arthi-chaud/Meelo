@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import AlbumContextualMenu from "@/components/contextual-menu/resource/album";
 import { AlbumIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
-import ListItem from "~/components/list-item";
+import ListItem from "@/components/list-item";
 
 type AlbumItemProps = {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;

@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 import TrackContextualMenu from "@/components/contextual-menu/resource/track";
 import { MasterIcon, TrackIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
-import ListItem from "~/components/list-item";
+import ListItem from "@/components/list-item";
 
 type TrackItemProps = {
 	track:

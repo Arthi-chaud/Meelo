@@ -18,6 +18,13 @@
 
 import { type QueryClient, useQueryClient } from "@/api/hook";
 import { type InfiniteQuery, transformPage } from "@/api/query";
+import type Action from "@/components/actions";
+import { PlayIcon, ShuffleIcon } from "@/components/icons";
+import { Controls } from "@/components/infinite/controls/controls";
+import { useLibraryFilterControl } from "@/components/infinite/controls/filters/library";
+import { useTypeFilterControl } from "@/components/infinite/controls/filters/resource-type";
+import { useSortControl } from "@/components/infinite/controls/sort";
+import SongItem, { SongGroupItem } from "@/components/list-item/resource/song";
 import {
 	SongSortingKeys,
 	SongType,
@@ -27,18 +34,11 @@ import type { SongGroupWithRelations } from "@/models/song-group";
 import type { SortingParameters } from "@/models/sorting";
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
+import { parseQueryParam, setQueryParam } from "@/utils/query-param";
 import { getRandomNumber } from "@/utils/random";
 import { uncapitalize } from "@/utils/uncapitalize";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import type Action from "@/components/actions";
-import { PlayIcon, ShuffleIcon } from "@/components/icons";
-import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
-import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
-import { useSortControl } from "~/components/infinite/controls/sort";
-import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
-import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import InfiniteList from "../list";
 
 type SongModel = SongWithRelations<

@@ -7,8 +7,8 @@ import { Head } from "~/components/head";
 import {
 	getOrderQuery,
 	getSortQuery,
-} from "~/components/infinite/controls/sort";
-import InfiniteVideoView from "~/components/infinite/resource/video";
+} from "@/components/infinite/controls/sort";
+import InfiniteVideoView from "@/components/infinite/resource/video";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

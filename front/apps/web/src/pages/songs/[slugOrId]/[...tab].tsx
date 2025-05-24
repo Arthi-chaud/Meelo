@@ -26,7 +26,11 @@ import {
 	getVideos,
 } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
+import { useGradientBackground } from "@/components/gradient-background";
 import { PlayIcon } from "@/components/icons";
+import { InfiniteSongView } from "@/components/infinite/resource/song";
+import InfiniteTrackView from "@/components/infinite/resource/track";
+import InfiniteVideoView from "@/components/infinite/resource/video";
 import SongTypeIcon from "@/components/song-type-icon";
 import { playTrackAtom } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
@@ -49,11 +53,7 @@ import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
-import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
-import { InfiniteSongView } from "~/components/infinite/resource/song";
-import InfiniteTrackView from "~/components/infinite/resource/track";
-import InfiniteVideoView from "~/components/infinite/resource/video";
 import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
 import { useTabRouter } from "~/components/tab-router";

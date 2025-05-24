@@ -21,3 +21,8 @@ export const AppName = "Meelo";
 export const UserAccessTokenStorageKey = "access_token";
 
 export const LanguageStorageKey = "meelo_lang";
+
+// ID of the component that contains the infinite list
+//
+// For web only
+export const ParentScrollableDivId = "scrollableDiv" as const;

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { parseQueryParam, setQueryParam } from "@/utils/query-param";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type FilterControl<Key extends string> = {
 	// Gives the translation key from an item to choose from

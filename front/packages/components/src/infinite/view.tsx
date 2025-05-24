@@ -17,18 +17,18 @@
  */
 
 import type { InfiniteQueryFn } from "@/api/query";
+import type { EmptyStateProps } from "@/components/empty-state";
+import Fade from "@/components/fade";
+import { GoBackTopIcon } from "@/components/icons";
 import type { IllustratedResource } from "@/models/illustration";
 import type { ItemSize } from "@/models/layout";
 import type Resource from "@/models/resource";
+import { ParentScrollableDivId } from "@/utils/constants";
 import { Box, Button, Slide, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { EmptyStateProps } from "~/components/empty-state";
-import Fade from "@/components/fade";
-import { GoBackTopIcon } from "@/components/icons";
 import InfiniteGrid from "./grid";
 import InfiniteList from "./list";
-import { parentScrollableDivId } from "./scroll";
 
 export type InfiniteViewProps<
 	ItemType extends Resource,
@@ -55,14 +55,14 @@ const ScrollToTopButton = () => {
 	const [backToTopVisible, setBackToTopVisible] = useState(false);
 	const handleScroll = () => {
 		const position = document.getElementById(
-			parentScrollableDivId,
+			ParentScrollableDivId,
 		)?.scrollTop;
 
 		setBackToTopVisible((position ?? 0) > window.innerHeight);
 	};
 
 	useEffect(() => {
-		const elem = document.getElementById(parentScrollableDivId);
+		const elem = document.getElementById(ParentScrollableDivId);
 		elem?.addEventListener("scroll", handleScroll, { passive: true });
 		return () => elem?.removeEventListener("scroll", handleScroll);
 	}, []);
@@ -81,7 +81,7 @@ const ScrollToTopButton = () => {
 					}}
 					onClick={() =>
 						document
-							.getElementById(parentScrollableDivId)
+							.getElementById(ParentScrollableDivId)
 							?.scrollTo({
 								top: 0,
 								left: 0,

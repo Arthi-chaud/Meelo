@@ -35,7 +35,7 @@ import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
-import { useGradientBackground } from "~/components/gradient-background";
+import { useGradientBackground } from "@/components/gradient-background";
 import { Head } from "~/components/head";
 import {
 	AlbumListPageSection,

@@ -16,65 +16,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@/api/hook";
 import type { InfiniteQuery } from "@/api/query";
-import { ArtistSortingKeys, type ArtistWithRelations } from "@/models/artist";
+import { CreatePlaylistAction } from "@/components/actions/playlist";
+import type { EmptyStateProps } from "@/components/empty-state";
+import { Controls } from "@/components/infinite/controls/controls";
+import { useLayoutControl } from "@/components/infinite/controls/layout";
+import { useSortControl } from "@/components/infinite/controls/sort";
+import InfiniteView from "@/components/infinite/view";
+import PlaylistItem from "@/components/list-item/resource/playlist";
+import PlaylistTile from "@/components/tile/resource/playlist";
+import {
+	PlaylistSortingKeys,
+	type PlaylistWithRelations,
+} from "@/models/playlist";
 import type { SortingParameters } from "@/models/sorting";
-import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
-import { useLayoutControl } from "~/components/infinite/controls/layout";
-import { useSortControl } from "~/components/infinite/controls/sort";
-import InfiniteView from "~/components/infinite/view";
-import ArtistItem from "~/components/list-item/resource/artist";
-import ArtistTile from "@/components/tile/resource/artist";
 
-type QueryProps = { libraries?: string[] } & SortingParameters<
-	typeof ArtistSortingKeys
->;
-type ArtistModel = ArtistWithRelations<"illustration">;
+type QueryProps = SortingParameters<typeof PlaylistSortingKeys>;
+type PlaylistModel = PlaylistWithRelations<"illustration">;
 type ViewProps = {
-	query: (qp: QueryProps) => InfiniteQuery<ArtistModel>;
-	disableSort?: boolean;
-	onItemClick?: (p: ArtistModel) => void;
+	query: (qp: QueryProps) => InfiniteQuery<PlaylistModel>;
+	onItemClick?: (p: PlaylistModel) => void;
+	emptyState?: Partial<EmptyStateProps>;
 };
-
-const InfiniteArtistView = (props: ViewProps) => {
-	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
-		multipleChoices: true,
-	});
+const InfinitePlaylistView = (props: ViewProps) => {
+	const queryClient = useQueryClient();
 	const [sort, sortControl] = useSortControl({
-		sortingKeys: ArtistSortingKeys,
+		sortingKeys: PlaylistSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [layout, layoutControl] = useLayoutControl({
-		defaultLayout: "list",
+		defaultLayout: "grid",
 		enableToggle: true,
 	});
 	return (
 		<>
 			<Controls
-				filters={[libraryFilterControl]}
+				sort={sortControl}
 				layout={layoutControl}
-				sort={props.disableSort ? undefined : sortControl}
+				actions={[[CreatePlaylistAction(queryClient)]]}
 			/>
 			<InfiniteView
+				emptyState={props.emptyState}
 				itemSize={layout.itemSize}
 				view={layout.layout}
 				query={() =>
 					props.query({
-						libraries: libraryFilter,
 						sortBy: sort.sort,
 						order: sort.order,
 					})
 				}
 				renderListItem={(item) => (
-					<ArtistItem
-						artist={item}
+					<PlaylistItem
+						playlist={item}
 						onClick={() => item && props.onItemClick?.(item)}
 					/>
 				)}
 				renderGridItem={(item) => (
-					<ArtistTile
-						artist={item}
+					<PlaylistTile
+						playlist={item}
 						onClick={() => item && props.onItemClick?.(item)}
 					/>
 				)}
@@ -83,4 +83,4 @@ const InfiniteArtistView = (props: ViewProps) => {
 	);
 };
 
-export default InfiniteArtistView;
+export default InfinitePlaylistView;

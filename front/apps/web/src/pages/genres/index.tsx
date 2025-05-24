@@ -26,13 +26,13 @@ import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { Head } from "~/components/head";
-import { Controls } from "~/components/infinite/controls/controls";
+import { Controls } from "@/components/infinite/controls/controls";
 import {
 	getOrderQuery,
 	getSortQuery,
 	useSortControl,
-} from "~/components/infinite/controls/sort";
-import InfiniteGrid from "~/components/infinite/grid";
+} from "@/components/infinite/controls/sort";
+import InfiniteGrid from "@/components/infinite/grid";
 import { GenreTile } from "@/components/tile/resource/genre";
 
 const prepareSSR = (context: NextPageContext) => {

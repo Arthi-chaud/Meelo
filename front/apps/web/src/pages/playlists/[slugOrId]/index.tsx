@@ -60,10 +60,10 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { type QueryClient, useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { EmptyState } from "~/components/empty-state";
-import { useGradientBackground } from "~/components/gradient-background";
+import { EmptyState } from "@/components/empty-state";
+import { useGradientBackground } from "@/components/gradient-background";
 import { Head } from "~/components/head";
-import ListItem from "~/components/list-item";
+import ListItem from "@/components/list-item";
 import RelationPageHeader from "~/components/relation-page-header";
 import getSlugOrId from "~/utils/getSlugOrId";
 
