@@ -17,13 +17,12 @@
  */
 
 import ReleaseContextualMenu from "@/components/contextual-menu/resource/release";
-import { AlbumIcon } from "@/components/icons";
+import { AlbumIcon, MasterIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
 import ListItem from "@/components/list-item";
 import type { ReleaseWithRelations } from "@/models/release";
 import { getYear } from "@/utils/date";
 import { Grid } from "@mui/material";
-import { Star } from "iconsax-react";
 
 type ReleaseItemProps = {
 	release: ReleaseWithRelations<"album" | "illustration">;
@@ -54,7 +53,7 @@ const ReleaseItem = ({ release, onClick }: ReleaseItemProps) => {
 					sx={{ justifyContent: "flex-end", flexWrap: "nowrap" }}
 				>
 					<Grid sx={{ display: "flex", alignItems: "center" }}>
-						{isMaster ? <Star /> : undefined}
+						{isMaster ? <MasterIcon /> : undefined}
 					</Grid>
 					<Grid>{<ReleaseContextualMenu release={release} />}</Grid>
 				</Grid>

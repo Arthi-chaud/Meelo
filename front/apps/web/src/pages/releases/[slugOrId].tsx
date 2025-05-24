@@ -35,7 +35,7 @@ import { toTanStackQuery } from "@/api/query";
 import ReleaseContextualMenu from "@/components/contextual-menu/resource/release";
 import Fade from "@/components/fade";
 import { useGradientBackground } from "@/components/gradient-background";
-import { PlayIcon, ShuffleIcon } from "@/components/icons";
+import { PlayIcon, ShuffleIcon, StarIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
 import AlbumTile from "@/components/tile/resource/album";
 import ArtistTile from "@/components/tile/resource/artist";
@@ -68,7 +68,6 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { shuffle } from "d3-array";
-import { Star1 } from "iconsax-react";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import Link from "next/link";
@@ -574,13 +573,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											externalMetadata.data.rating / 20
 										}
 										icon={
-											<Star1
+											<StarIcon
 												size={18}
 												style={{ marginTop: -3 }}
 											/>
 										}
 										emptyIcon={
-											<Star1
+											<StarIcon
 												size={18}
 												style={{
 													marginTop: -3,

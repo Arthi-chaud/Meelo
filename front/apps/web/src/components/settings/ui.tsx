@@ -18,7 +18,13 @@
 
 import { useQuery, useQueryClient } from "@/api/hook";
 import { getScrobblerStatus } from "@/api/queries";
-import { DeleteIcon, OpenExternalIcon } from "@/components/icons";
+import {
+	BookIcon,
+	DeleteIcon,
+	MovingStarIcon,
+	OpenExternalIcon,
+	WarningIcon,
+} from "@/components/icons";
 import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
 import {
 	Box,
@@ -37,7 +43,6 @@ import {
 	Typography,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
-import { Book1, Star, Warning2 } from "iconsax-react";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -206,7 +211,7 @@ const UISettings = () => {
 			</Grid>
 			<SectionHeader heading={t("settings.ui.project")} />
 			<p>
-				<Star style={LinkIconStyle} />
+				<MovingStarIcon style={LinkIconStyle} />
 				{t("settings.ui.external.enjoyingTheProject")}{" "}
 				<Link
 					style={{ textDecoration: "underline" }}
@@ -216,7 +221,7 @@ const UISettings = () => {
 				</Link>
 			</p>
 			<p>
-				<Warning2 style={LinkIconStyle} />
+				<WarningIcon style={LinkIconStyle} />
 				{t("settings.ui.external.encounteredABug")}{" "}
 				<Link
 					style={{ textDecoration: "underline" }}
@@ -226,7 +231,7 @@ const UISettings = () => {
 				</Link>
 			</p>
 			<p>
-				<Book1 style={LinkIconStyle} />
+				<BookIcon style={LinkIconStyle} />
 				<Link
 					style={{ textDecoration: "underline" }}
 					href="https://github.com/Arthi-chaud/Meelo/wiki"

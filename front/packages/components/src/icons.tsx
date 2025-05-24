@@ -69,6 +69,8 @@ export const CleanIcon = Iconsax.Broom;
 export const MetadataRefreshIcon = Iconsax.Convertshape2;
 export const MoreIcon = Iconsax.ArrowRight2;
 export const MasterIcon = Iconsax.Star1;
+export const StarIcon = Iconsax.Star1;
+export const MovingStarIcon = Iconsax.Star;
 export const ShareIcon = Iconsax.Share;
 export const CheckIcon = Iconsax.TickCircle;
 export const ContextualMenuIcon = (props: IconProps) => (
@@ -96,6 +98,8 @@ export const EmptyStateIcon = Iconsax.SearchStatus1;
 export const MergeIcon = Iconsax.Hierarchy;
 
 export const OpenExternalIcon = Iconsax.ExportCircle;
+export const WarningIcon = Iconsax.Warning2;
+export const BookIcon = Iconsax.Book1;
 // Icons for song type
 export const SongTypeOriginalIcon = Iconsax.Music;
 export const SongTypeRemixIcon = Iconsax.Repeat;

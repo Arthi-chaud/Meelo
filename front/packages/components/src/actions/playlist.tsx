@@ -20,9 +20,11 @@ import { type QueryClient, useQueryClient } from "@/api/hook";
 import { getPlaylists } from "@/api/queries";
 import type { InfiniteQueryFn } from "@/api/query";
 import {
+	AddIcon,
 	AddItemToPlaylistIcon,
 	AddToPlaylistIcon,
 	DeleteIcon,
+	EditIcon,
 	PlayAfterIcon,
 	PlayNextIcon,
 } from "@/components/icons";
@@ -46,7 +48,6 @@ import {
 	Divider,
 	Grid,
 } from "@mui/material";
-import { Add, Edit } from "iconsax-react";
 import type { useConfirm } from "material-ui-confirm";
 import {
 	HookCheckBox,
@@ -185,7 +186,7 @@ export const CreatePlaylistAction = (
 	onCreated?: (playlistId: number) => void,
 ): Action => ({
 	label: "actions.new",
-	icon: <Add />,
+	icon: <AddIcon />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((formFields: CreatePlaylistDto) => {
 			return queryClient.api
@@ -212,7 +213,7 @@ export const UpdatePlaylistAction = (
 	queryClient: QueryClient,
 ): Action => ({
 	label: "actions.update",
-	icon: <Edit />,
+	icon: <EditIcon />,
 	dialog: ({ close }) => {
 		const mutation = useMutation((dto: UpdatePlaylistDto) => {
 			return queryClient.api

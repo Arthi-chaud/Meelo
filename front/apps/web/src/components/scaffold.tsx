@@ -33,6 +33,7 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "@/components/icons";
+import type { IconProps } from "@/components/icons";
 import { ParentScrollableDivId } from "@/utils/constants";
 import {
 	BottomNavigationAction,
@@ -52,7 +53,6 @@ import {
 } from "@mui/material";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import { deepmerge } from "@mui/utils";
-import type { IconProps } from "iconsax-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
