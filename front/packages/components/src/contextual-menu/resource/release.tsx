@@ -27,11 +27,11 @@ import { UpdateReleaseIllustrationAction } from "@/components/actions/update-ill
 import { MasterIcon, UpgradeIcon } from "@/components/icons";
 import type { ReleaseWithRelations } from "@/models/release";
 import { userAtom } from "@/state/user";
+import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import { ContextualMenu } from "..";
 
 type ReleaseContextualMenuProps = {
@@ -44,41 +44,45 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const { t } = useTranslation();
-	const masterMutation = useMutation(async () => {
-		return queryClient.api
-			.updateAlbum(props.release.albumId, {
-				masterReleaseId: props.release.id,
-			})
-			.then(() => {
-				toast.success(t("toasts.releaseSetAsMaster"));
-				queryClient.client.invalidateQueries();
-			})
-			.catch((error: Error) => toast.error(error.message));
+	const masterMutation = useMutation({
+		mutationFn: async () => {
+			return queryClient.api
+				.updateAlbum(props.release.albumId, {
+					masterReleaseId: props.release.id,
+				})
+				.then(() => {
+					toast.success(t("toasts.releaseSetAsMaster"));
+					queryClient.client.invalidateQueries();
+				})
+				.catch((error: Error) => toast.error(error.message));
+		},
 	});
-	const tracksMasterMutation = useMutation(async () => {
-		const query = getReleaseTracklist(props.release.id);
-		return queryClient
-			.fetchQuery({
-				key: query.key,
-				exec: (api_) => () => query.exec(api_)({ pageSize: 1000 }),
-			})
-			.then(({ items: tracks }) => {
-				Promise.allSettled(
-					tracks
-						.reverse()
-						.filter((track) => track.songId != null)
-						.map((track) =>
-							queryClient.api.updateSong(track.songId!, {
-								masterTrackId: track.id,
-							}),
-						),
-				)
-					.then(() => {
-						toast.success(t("toasts.tracksUpdated"));
-						queryClient.client.invalidateQueries();
-					})
-					.catch((error) => toast.error(error.message));
-			});
+	const tracksMasterMutation = useMutation({
+		mutationFn: async () => {
+			const query = getReleaseTracklist(props.release.id);
+			return queryClient
+				.fetchQuery({
+					key: query.key,
+					exec: (api_) => () => query.exec(api_)({ pageSize: 1000 }),
+				})
+				.then(({ items: tracks }) => {
+					Promise.allSettled(
+						tracks
+							.reverse()
+							.filter((track) => track.songId != null)
+							.map((track) =>
+								queryClient.api.updateSong(track.songId!, {
+									masterTrackId: track.id,
+								}),
+							),
+					)
+						.then(() => {
+							toast.success(t("toasts.tracksUpdated"));
+							queryClient.client.invalidateQueries();
+						})
+						.catch((error) => toast.error(error.message));
+				});
+		},
 	});
 
 	return (

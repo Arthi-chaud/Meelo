@@ -30,10 +30,10 @@ import type { VideoWithRelations } from "@/models/video";
 import { getYear } from "@/utils/date";
 import { generateArray } from "@/utils/gen-list";
 import { Box, Button, Grid } from "@mui/material";
+import type { UseQueryResult } from "@tanstack/react-query";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import type { UseQueryResult } from "react-query";
 import SectionHeader from "./section-header";
 import SongGrid from "./song-grid";
 

@@ -45,12 +45,12 @@ import {
 	useTheme,
 } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
+import { useMutation } from "@tanstack/react-query";
+import { useQuery as useTanStackQuery } from "@tanstack/react-query";
 import { useConfirm } from "material-ui-confirm";
 import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
-import { useQuery as useTanStackQuery } from "react-query";
 import AdminGrid from "~/components/admin-grid";
 import LibraryForm from "~/components/library-form";
 import SectionHeader from "~/components/section-header";
@@ -165,29 +165,38 @@ const LibrariesSettings = () => {
 	const [libraryEdit, setLibraryEdit] = useState<Library | undefined>(); // If set, open modal to edit library
 	const closeEditModal = () => setLibraryEdit(undefined);
 	const closeCreateModal = () => setCreateModalOpen(false);
-	const deletionMutation = useMutation((libraryId: number) =>
-		toast
-			.promise(api.deleteLibrary(libraryId), {
-				loading: t("toasts.library.deletionRunning"),
-				success: t("toasts.library.deleted"),
-				error: t("toasts.library.deletionFail"),
-			})
-			.then(() => {
-				queryClient.client.invalidateQueries(["libraries"]);
-			}),
-	);
-	const createMutation = useMutation(
-		(createForm: { name: string; path: string }) =>
+	const deletionMutation = useMutation({
+		mutationFn: (libraryId: number) =>
+			toast
+				.promise(api.deleteLibrary(libraryId), {
+					loading: t("toasts.library.deletionRunning"),
+					success: t("toasts.library.deleted"),
+					error: t("toasts.library.deletionFail"),
+				})
+				.then(() => {
+					queryClient.client.invalidateQueries({
+						queryKey: ["libraries"],
+					});
+				}),
+	});
+	const createMutation = useMutation({
+		mutationFn: (createForm: { name: string; path: string }) =>
 			api
 				.createLibrary(createForm.name, createForm.path)
 				.then(() => {
 					toast.success(t("toasts.library.created"));
-					queryClient.client.invalidateQueries(["libraries"]);
+					queryClient.client.invalidateQueries({
+						queryKey: ["libraries"],
+					});
 				})
 				.catch((err) => toast.error(err.message)),
-	);
-	const editMutation = useMutation(
-		(updatedLibrary: { id: number; name: string; path: string }) =>
+	});
+	const editMutation = useMutation({
+		mutationFn: (updatedLibrary: {
+			id: number;
+			name: string;
+			path: string;
+		}) =>
 			api
 				.updateLibrary(
 					updatedLibrary.id,
@@ -196,10 +205,12 @@ const LibrariesSettings = () => {
 				)
 				.then(() => {
 					toast.success(t("toasts.library.updated"));
-					queryClient.client.invalidateQueries(["libraries"]);
+					queryClient.client.invalidateQueries({
+						queryKey: ["libraries"],
+					});
 				})
 				.catch((err) => toast.error(err.message)),
-	);
+	});
 	const columns: GridColDef<Library>[] = useMemo(
 		() => [
 			{

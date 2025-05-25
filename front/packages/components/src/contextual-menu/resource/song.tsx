@@ -131,10 +131,10 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 													),
 												);
 												queryClient.client.invalidateQueries(
-													"playlist",
+													{ queryKey: ["playlist"] },
 												);
 												queryClient.client.invalidateQueries(
-													"playlists",
+													{ queryKey: ["playlists"] },
 												);
 											})
 											.catch(() => {}),

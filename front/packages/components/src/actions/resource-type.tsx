@@ -97,21 +97,21 @@ const ChangeResourceType = <
 									error: "Update failed...",
 								})
 								.then(() => {
-									queryClient.client.invalidateQueries(
-										"songs",
-									);
-									queryClient.client.invalidateQueries(
-										"release",
-									);
-									queryClient.client.invalidateQueries(
-										"tracks",
-									);
-									queryClient.client.invalidateQueries(
-										"videos",
-									);
-									queryClient.client.invalidateQueries(
-										"bsides",
-									);
+									queryClient.client.invalidateQueries({
+										queryKey: ["songs"],
+									});
+									queryClient.client.invalidateQueries({
+										queryKey: ["release"],
+									});
+									queryClient.client.invalidateQueries({
+										queryKey: ["tracks"],
+									});
+									queryClient.client.invalidateQueries({
+										queryKey: ["videos"],
+									});
+									queryClient.client.invalidateQueries({
+										queryKey: ["bsides"],
+									});
 								})
 						}
 					/>
@@ -135,11 +135,11 @@ const ChangeSongType = (
 		client,
 		(newType: SongType) =>
 			client.api.updateSong(s.id, { type: newType }).then((res) => {
-				client.client.invalidateQueries("songs");
-				client.client.invalidateQueries("release");
-				client.client.invalidateQueries("tracks");
-				client.client.invalidateQueries("videos");
-				client.client.invalidateQueries("bsides");
+				client.client.invalidateQueries({ queryKey: ["songs"] });
+				client.client.invalidateQueries({ queryKey: ["release"] });
+				client.client.invalidateQueries({ queryKey: ["tracks"] });
+				client.client.invalidateQueries({ queryKey: ["videos"] });
+				client.client.invalidateQueries({ queryKey: ["bsides"] });
 				return res;
 			}),
 		confirm,
@@ -158,7 +158,7 @@ const ChangeAlbumType = (
 		client,
 		(newType: AlbumType) =>
 			client.api.updateAlbum(a.id, { type: newType }).then((res) => {
-				client.client.invalidateQueries("albums");
+				client.client.invalidateQueries({ queryKey: ["albums"] });
 				return res;
 			}),
 		confirm,
@@ -177,7 +177,7 @@ const ChangeVideoType = (
 		client,
 		(newType: VideoType) =>
 			client.api.updateVideo(v.id, { type: newType }).then((res) => {
-				client.client.invalidateQueries("videos");
+				client.client.invalidateQueries({ queryKey: ["videos"] });
 				return res;
 			}),
 		confirm,

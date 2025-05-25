@@ -24,7 +24,7 @@ import { toTanStackQuery } from "@/api/query";
 import { store } from "@/state/store";
 import { accessTokenAtom } from "@/state/user";
 import { UserAccessTokenStorageKey } from "@/utils/constants";
-import { QueryClient } from "react-query";
+import { QueryClient } from "@tanstack/react-query";
 
 export async function middleware(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;

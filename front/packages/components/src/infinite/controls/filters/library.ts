@@ -19,9 +19,10 @@
 import { useAPI } from "@/api/hook";
 import { getLibraries } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
+import { useInfiniteQuery as useReactInfiniteQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useInfiniteQuery as useReactInfiniteQuery } from "react-query";
 import { useFilterControl, useFiltersControl } from "./control";
 
 function useLibraryFilterControl(p: { multipleChoices: true }): ReturnType<
@@ -35,13 +36,16 @@ function useLibraryFilterControl(p: { multipleChoices: boolean }): never;
 function useLibraryFilterControl(p: { multipleChoices: boolean }) {
 	const { t } = useTranslation();
 	const api = useAPI();
+	const query = toTanStackInfiniteQuery(api, getLibraries);
 	const librariesQuery = useReactInfiniteQuery({
-		...toTanStackInfiniteQuery(api, getLibraries),
-		useErrorBoundary: false,
-		onError: () => {
-			toast.error(t("toasts.library.loadFail"));
-		},
+		...query,
+		throwOnError: false,
 	});
+	useEffect(() => {
+		if (librariesQuery.isError) {
+			toast.error(t("toasts.library.loadFail"));
+		}
+	}, [librariesQuery.isError]);
 	const libraries = librariesQuery.data?.pages.at(0)?.items;
 	const libraryNameBySlug = (s: string) =>
 		libraries!.find((l) => l.slug === s)!.name;

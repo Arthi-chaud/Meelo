@@ -16,18 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { PaginationParameters } from "@/models/pagination";
 import type Resource from "@/models/resource";
 import { store } from "@/state/store";
 import { accessTokenAtom } from "@/state/user";
-import { atom, useAtom } from "jotai";
-import { useEffect, useMemo, useState } from "react";
 import {
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
-} from "react-query";
+} from "@tanstack/react-query";
+import { atom, useAtom } from "jotai";
+import { useEffect, useMemo, useState } from "react";
 import API from ".";
 import {
 	type InfiniteQueryFn,
@@ -127,7 +126,7 @@ export const useQueries = <ReturnType, Params extends any[][]>(
 			),
 		[queries],
 	);
-	const hook = useReactQueries(queryOpts);
+	const hook = useReactQueries({ queries: queryOpts });
 
 	useEffect(() => {
 		queryOpts.forEach((queryOpt, idx) => {
@@ -155,19 +154,7 @@ export const useInfiniteQuery = <
 		() => toTanStackInfiniteQuery(api, query, ...queryParams),
 		[query, queryParams],
 	);
-	const { data, ...rest } = useReactInfiniteQuery({
-		...queryOpts,
-		getNextPageParam: (lastPage): PaginationParameters | null => {
-			if (lastPage.metadata.next === null) {
-				return null;
-			}
-			const lastItemId = lastPage.items.at(-1)?.id;
-			if (lastItemId) {
-				return { afterId: lastItemId };
-			}
-			return null;
-		},
-	});
+	const { data, ...rest } = useReactInfiniteQuery(queryOpts);
 	const [items, setItems] = useState(data?.pages.at(0)?.items);
 	useEffect(() => {
 		setItems(data?.pages.flatMap((p) => p.items));

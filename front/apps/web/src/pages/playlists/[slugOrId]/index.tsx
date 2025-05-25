@@ -52,6 +52,7 @@ import type { SongWithRelations } from "@/models/song";
 import { playTracksAtom } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
+import { type QueryClient, useMutation } from "@tanstack/react-query";
 import { shuffle } from "d3-array";
 import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
@@ -61,7 +62,6 @@ import { useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { type QueryClient, useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { Head } from "~/components/head";
 import RelationPageHeader from "~/components/relation-page-header";
@@ -266,14 +266,16 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				],
 			) ?? []),
 	);
-	const reorderMutation = useMutation((reorderedEntries: number[]) => {
-		return queryClient.api
-			.reorderPlaylist(playlistIdentifier, reorderedEntries)
-			.then(() => {
-				toast.success(t("toasts.playlist.reorderSuccess"));
-				return entriesQuery.refetch();
-			})
-			.catch(() => toast.error(t("toasts.playlist.reorderFail")));
+	const reorderMutation = useMutation({
+		mutationFn: (reorderedEntries: number[]) => {
+			return queryClient.api
+				.reorderPlaylist(playlistIdentifier, reorderedEntries)
+				.then(() => {
+					toast.success(t("toasts.playlist.reorderSuccess"));
+					return entriesQuery.refetch();
+				})
+				.catch(() => toast.error(t("toasts.playlist.reorderFail")));
+		},
 	});
 	const isOwner = useMemo(
 		() =>

@@ -47,12 +47,12 @@ import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
 import formatArtists from "@/utils/format-artists";
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { Head } from "~/components/head";
 import { useTabRouter } from "~/components/tab-router";
@@ -131,18 +131,22 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const api = useAPI();
 	const [inputValue, setInputValue] = useState(query);
 	const [debounceId, setDebounceId] = useState<NodeJS.Timeout>();
-	const saveSearch = useMutation(async (dto: SaveSearchItem) => {
-		try {
-			await api.saveSearchHistoryEntry(dto);
-			// Sometimes, it refreshes to fast, and shifts the history
-			// before openning a page (for artists) is done
-			setTimeout(() => {
-				queryClient.client.invalidateQueries(getSearchHistory().key);
-			}, 500);
-		} catch (error) {
-			// biome-ignore lint/suspicious/noConsole: <explanation>
-			console.error(error);
-		}
+	const saveSearch = useMutation({
+		mutationFn: async (dto: SaveSearchItem) => {
+			try {
+				await api.saveSearchHistoryEntry(dto);
+				// Sometimes, it refreshes to fast, and shifts the history
+				// before openning a page (for artists) is done
+				setTimeout(() => {
+					queryClient.client.invalidateQueries({
+						queryKey: getSearchHistory().key,
+					});
+				}, 500);
+			} catch (error) {
+				// biome-ignore lint/suspicious/noConsole: <explanation>
+				console.error(error);
+			}
+		},
 	});
 	const searchAllQuery = useMemo(
 		() =>

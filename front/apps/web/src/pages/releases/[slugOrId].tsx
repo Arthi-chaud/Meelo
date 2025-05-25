@@ -67,6 +67,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import type { QueryClient } from "@tanstack/react-query";
 import { shuffle } from "d3-array";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
@@ -74,7 +75,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { QueryClient } from "react-query";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
