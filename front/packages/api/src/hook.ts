@@ -67,7 +67,9 @@ export const getAPI_ = (accessToken: string | null) => {
 		process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
 
 	const api = new API(accessToken, {
-		illustration: isDev ? "/api" : (apiSSRUrl ?? "/api"),
+		illustration: isDev
+			? "/api"
+			: (process.env.PUBLIC_SERVER_URL ?? "/api"),
 		api: isSSR()
 			? apiSSRUrl
 			: isDev
