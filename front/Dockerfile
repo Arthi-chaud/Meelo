@@ -17,6 +17,7 @@ COPY packages/*.json packages/
 COPY packages/api/*.json packages/api/
 COPY packages/models/*.json packages/models/
 COPY packages/state/*.json packages/state/
+COPY packages/components/*.json packages/components/
 COPY packages/utils/*.json packages/utils/
 
 # Install Libraries
