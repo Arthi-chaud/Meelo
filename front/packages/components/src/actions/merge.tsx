@@ -30,11 +30,11 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import type Action from ".";
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/list";
@@ -50,22 +50,30 @@ export const MergeSongAction = (
 		const closeModal = () => selectSong(undefined);
 		const router = useRouter();
 		const { t } = useTranslation();
-		const mutation = useMutation(async (destSongId: number) => {
-			await toast.promise(
-				queryClient.api.mergeSongs(song.id, destSongId),
-				{
-					loading: t("misc.loading"),
-					success: "Merging successfull",
-					error: "error",
-				},
-			);
-			router.replace(`/songs/${destSongId}/tracks`);
-			await queryClient.client.invalidateQueries("songs");
-			await queryClient.client.invalidateQueries(song.id.toString());
-			await queryClient.client.invalidateQueries(
-				song.artistId.toString(),
-			);
-			await queryClient.client.invalidateQueries(song.slug);
+		const mutation = useMutation({
+			mutationFn: async (destSongId: number) => {
+				await toast.promise(
+					queryClient.api.mergeSongs(song.id, destSongId),
+					{
+						loading: t("misc.loading"),
+						success: "Merging successfull",
+						error: "error",
+					},
+				);
+				router.replace(`/songs/${destSongId}/tracks`);
+				await queryClient.client.invalidateQueries({
+					queryKey: ["songs"],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: [song.id.toString()],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: [song.artistId.toString()],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: [song.slug],
+				});
+			},
 		});
 
 		return (
@@ -122,23 +130,33 @@ export const ReassignTrackAction = (
 	dialog: ({ close }) => {
 		const router = useRouter();
 		const { t } = useTranslation();
-		const mutation = useMutation(async (destSongId: number) => {
-			await toast.promise(
-				queryClient.api.updateTrack(track.id, destSongId),
-				{
-					loading: t("misc.loading"),
-					success: "Merging successfull",
-					error: "error",
-				},
-			);
-			router.replace(`/songs/${destSongId}/tracks`);
-			await queryClient.client.invalidateQueries("songs");
-			await queryClient.client.invalidateQueries("tracks");
-			await queryClient.client.invalidateQueries(track.id.toString());
-			await queryClient.client.invalidateQueries(
-				track.song.id.toString(),
-			);
-			await queryClient.client.invalidateQueries(track.song.slug);
+		const mutation = useMutation({
+			mutationFn: async (destSongId: number) => {
+				await toast.promise(
+					queryClient.api.updateTrack(track.id, destSongId),
+					{
+						loading: t("misc.loading"),
+						success: "Merging successfull",
+						error: "error",
+					},
+				);
+				router.replace(`/songs/${destSongId}/tracks`);
+				await queryClient.client.invalidateQueries({
+					queryKey: ["songs"],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: ["tracks"],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: [track.id.toString()],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: [track.song.id.toString()],
+				});
+				await queryClient.client.invalidateQueries({
+					queryKey: [track.song.slug],
+				});
+			},
 		});
 
 		return (

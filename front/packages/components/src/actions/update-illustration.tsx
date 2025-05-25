@@ -26,10 +26,10 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import type Action from "./";
 
 type IllustrationUpdateFormType = {
@@ -86,24 +86,30 @@ const UpdateIllustrationAction = (
 	resourceId: number,
 	resourceType: "artist" | "track" | "release" | "playlist",
 ): Action => {
-	const mutation = useMutation(async (newUrl: string) => {
-		const updator =
-			resourceType === "artist"
-				? queryClient.api.updateArtistIllustration
-				: resourceType === "release"
-					? queryClient.api.updateReleaseIllustration
-					: resourceType === "playlist"
-						? queryClient.api.updatePlaylistIllustration
-						: queryClient.api.updateTrackIllustration;
+	const mutation = useMutation({
+		mutationFn: async (newUrl: string) => {
+			const updator =
+				resourceType === "artist"
+					? queryClient.api.updateArtistIllustration
+					: resourceType === "release"
+						? queryClient.api.updateReleaseIllustration
+						: resourceType === "playlist"
+							? queryClient.api.updatePlaylistIllustration
+							: queryClient.api.updateTrackIllustration;
 
-		return updator
-			.call(queryClient.api, resourceId, newUrl)
-			.then(() => {
-				toast.success("Illustration updated!");
-				queryClient.client.invalidateQueries(resourceType);
-				queryClient.client.invalidateQueries(`${resourceType}s`);
-			})
-			.catch(() => toast.error("Illustration update failed"));
+			return updator
+				.call(queryClient.api, resourceId, newUrl)
+				.then(() => {
+					toast.success("Illustration updated!");
+					queryClient.client.invalidateQueries({
+						queryKey: [resourceType],
+					});
+					queryClient.client.invalidateQueries({
+						queryKey: [`${resourceType}s`],
+					});
+				})
+				.catch(() => toast.error("Illustration update failed"));
+		},
 	});
 
 	return {

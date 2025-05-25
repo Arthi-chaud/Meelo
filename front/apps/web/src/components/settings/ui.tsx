@@ -43,13 +43,13 @@ import {
 	Typography,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
+import { useMutation } from "@tanstack/react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import { useLocalStorage } from "usehooks-ts";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n";
@@ -270,19 +270,23 @@ const ScrobblersSection = () => {
 		[scrobblers.data],
 	);
 
-	const deletionMutation = useMutation(async (scrobbler: Scrobbler) => {
-		return toast
-			.promise(api.disconnectScrobbler(scrobbler), {
-				success: t("toasts.scrobblers.unlinkingSuccessful"),
-				loading: t("toasts.scrobblers.unlinking"),
-				error: t("toasts.scrobblers.unlinkingFailed"),
-			})
-			.then(() => {
-				queryClient.client.invalidateQueries("scrobblers");
-			});
+	const deletionMutation = useMutation({
+		mutationFn: async (scrobbler: Scrobbler) => {
+			return toast
+				.promise(api.disconnectScrobbler(scrobbler), {
+					success: t("toasts.scrobblers.unlinkingSuccessful"),
+					loading: t("toasts.scrobblers.unlinking"),
+					error: t("toasts.scrobblers.unlinkingFailed"),
+				})
+				.then(() => {
+					queryClient.client.invalidateQueries({
+						queryKey: ["scrobblers"],
+					});
+				});
+		},
 	});
-	const listenBrainzMutation = useMutation(
-		async (dto: typeof defaultValues) => {
+	const listenBrainzMutation = useMutation({
+		mutationFn: async (dto: typeof defaultValues) => {
 			return toast
 				.promise(
 					api.postListenBrainzToken(
@@ -296,10 +300,12 @@ const ScrobblersSection = () => {
 					},
 				)
 				.then(() => {
-					queryClient.client.invalidateQueries("scrobblers");
+					queryClient.client.invalidateQueries({
+						queryKey: ["scrobblers"],
+					});
 				});
 		},
-	);
+	});
 	const router = useRouter();
 
 	const defaultValues = { token: "", instanceUrl: "" as string | null };

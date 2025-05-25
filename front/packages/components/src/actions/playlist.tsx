@@ -48,6 +48,7 @@ import {
 	Divider,
 	Grid,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import type { useConfirm } from "material-ui-confirm";
 import {
 	HookCheckBox,
@@ -58,7 +59,6 @@ import { useState } from "react";
 import { useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import type Action from "./";
 
 export const PlayNextAction = (
@@ -188,15 +188,19 @@ export const CreatePlaylistAction = (
 	label: "actions.new",
 	icon: <AddIcon />,
 	dialog: ({ close }) => {
-		const mutation = useMutation((formFields: CreatePlaylistDto) => {
-			return queryClient.api
-				.createPlaylist(formFields)
-				.then((playlist) => {
-					toast.success("Playlist created!");
-					queryClient.client.invalidateQueries("playlists");
-					onCreated?.(playlist.id);
-				})
-				.catch((error: Error) => toast.error(error.message));
+		const mutation = useMutation({
+			mutationFn: (formFields: CreatePlaylistDto) => {
+				return queryClient.api
+					.createPlaylist(formFields)
+					.then((playlist) => {
+						toast.success("Playlist created!");
+						queryClient.client.invalidateQueries({
+							queryKey: ["playlists"],
+						});
+						onCreated?.(playlist.id);
+					})
+					.catch((error: Error) => toast.error(error.message));
+			},
 		});
 
 		return (
@@ -215,15 +219,21 @@ export const UpdatePlaylistAction = (
 	label: "actions.update",
 	icon: <EditIcon />,
 	dialog: ({ close }) => {
-		const mutation = useMutation((dto: UpdatePlaylistDto) => {
-			return queryClient.api
-				.updatePlaylist(playlist.slug, dto)
-				.then(() => {
-					toast.success("Playlist updated!");
-					queryClient.client.invalidateQueries("playlists");
-					queryClient.client.invalidateQueries("playlist");
-				})
-				.catch((error: Error) => toast.error(error.message));
+		const mutation = useMutation({
+			mutationFn: (dto: UpdatePlaylistDto) => {
+				return queryClient.api
+					.updatePlaylist(playlist.slug, dto)
+					.then(() => {
+						toast.success("Playlist updated!");
+						queryClient.client.invalidateQueries({
+							queryKey: ["playlists"],
+						});
+						queryClient.client.invalidateQueries({
+							queryKey: ["playlist"],
+						});
+					})
+					.catch((error: Error) => toast.error(error.message));
+			},
 		});
 
 		return (
@@ -258,8 +268,12 @@ export const DeletePlaylistAction = (
 						.deletePlaylist(librarySlugOrId)
 						.then(() => {
 							onDeleted();
-							queryClient.client.invalidateQueries("playlist");
-							queryClient.client.invalidateQueries("playlists");
+							queryClient.client.invalidateQueries({
+								queryKey: ["playlist"],
+							});
+							queryClient.client.invalidateQueries({
+								queryKey: ["playlists"],
+							});
 							toast.success("Playlist deleted");
 						})
 						.catch(() => toast.error("Playlist deletion failed")),
@@ -346,15 +360,21 @@ export const AddToPlaylistAction = (
 	icon: <AddToPlaylistIcon />,
 	label: "actions.addToPlaylist.label",
 	dialog: ({ close }) => {
-		const mutation = useMutation((playlistId: number) => {
-			return queryClient.api
-				.addSongToPlaylist(songId, playlistId)
-				.then(() => {
-					toast.success("Song added to Playlist");
-					queryClient.client.invalidateQueries("playlists");
-					queryClient.client.invalidateQueries("playlist");
-				})
-				.catch((error: Error) => toast.error(error.message));
+		const mutation = useMutation({
+			mutationFn: (playlistId: number) => {
+				return queryClient.api
+					.addSongToPlaylist(songId, playlistId)
+					.then(() => {
+						toast.success("Song added to Playlist");
+						queryClient.client.invalidateQueries({
+							queryKey: ["playlist"],
+						});
+						queryClient.client.invalidateQueries({
+							queryKey: ["playlists"],
+						});
+					})
+					.catch((error: Error) => toast.error(error.message));
+			},
 		});
 
 		return (

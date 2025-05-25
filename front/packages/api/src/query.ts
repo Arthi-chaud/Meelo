@@ -19,7 +19,7 @@
 import type PaginatedResponse from "@/models/pagination";
 import type { PaginationParameters } from "@/models/pagination";
 import type Resource from "@/models/resource";
-import type { InfiniteData, QueryFunctionContext } from "react-query";
+import type { InfiniteData, QueryFunctionContext } from "@tanstack/react-query";
 import type API from ".";
 
 type Key = string | number | Key[];
@@ -125,7 +125,7 @@ export const toTanStackInfiniteQuery = <
 
 	return {
 		queryKey: key,
-		queryFn: (context: QueryFunctionContext) =>
+		queryFn: (context: QueryFunctionContext<Key[], PaginationParameters>) =>
 			exec(api)(context.pageParam),
 		select: (result: InfiniteData<PaginatedResponse<QueryReturnType>>) => {
 			return transformer
@@ -142,6 +142,20 @@ export const toTanStackInfiniteQuery = <
 						PaginatedResponse<TransformedReturnType>
 					>);
 		},
+
+		getNextPageParam: (
+			lastPage: PaginatedResponse<QueryReturnType>,
+		): PaginationParameters | null => {
+			if (lastPage.metadata.next === null) {
+				return null;
+			}
+			const lastItemId = lastPage.items.at(-1)?.id;
+			if (lastItemId) {
+				return { afterId: lastItemId };
+			}
+			return null;
+		},
+		initialPageParam: {},
 		enabled: enabled,
 		...DefaultQueryOptions,
 	};

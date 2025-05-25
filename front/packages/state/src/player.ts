@@ -163,6 +163,7 @@ const loadNextQueuePage = (state: PlayerState, queryClient: QueryClient) => {
 	return queryClient.client
 		.fetchQuery({
 			...queryOpt,
+			initialPageParam: undefined,
 			staleTime: 0,
 		})
 		.then((res) => {

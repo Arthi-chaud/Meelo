@@ -1,6 +1,12 @@
 import { ResourceNotFound } from "@/models/exceptions";
 import { AppName, UserAccessTokenStorageKey } from "@/utils/constants";
-/* eslint-disable no-restricted-imports */
+import {
+	HydrationBoundary as Hydrate,
+	QueryClient,
+	QueryClientProvider,
+	dehydrate,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ConfirmProvider } from "material-ui-confirm";
 import NextApp, { type AppContext, type AppProps } from "next/app";
 import Head from "next/head";
@@ -8,13 +14,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import toast from "react-hot-toast";
-import {
-	Hydrate,
-	QueryClient,
-	QueryClientProvider,
-	dehydrate,
-} from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import AuthenticationWall from "~/components/authentication/wall";
 import Toaster from "~/components/toaster";
 import PageNotFound from "./404";
@@ -122,7 +121,10 @@ function MyApp({
 						</ConfirmProvider>
 					</Provider>
 					<Toaster />
-					<ReactQueryDevtools initialIsOpen={false} />
+					<ReactQueryDevtools
+						buttonPosition="bottom-left"
+						initialIsOpen={false}
+					/>
 				</QueryClientProvider>
 			</ThemeProvider>
 		</AppCacheProvider>
@@ -177,9 +179,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 			};
 		}
 	}
-	const dehydratedQueryClient = dehydrate(queryClient, {
-		dehydrateQueries: true,
-	});
+	const dehydratedQueryClient = dehydrate(queryClient);
 
 	return {
 		pageProps: {

@@ -21,9 +21,9 @@ import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { accessTokenAtom, userAtom } from "@/state/user";
 import { Box, Stack } from "@mui/material";
+import { useQuery as useReactQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery as useReactQuery } from "react-query";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";
 import AuthenticationForm from "./form";
@@ -34,7 +34,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	const api = useMemo(() => getAPI_(accessToken ?? null), [accessToken]);
 	const status = useReactQuery({
 		...toTanStackQuery(api, getCurrentUserStatus),
-		useErrorBoundary: false,
+		throwOnError: false,
 	});
 	const [authentified, setAuthenticationStatus] = useState(
 		status.data?.id !== undefined,

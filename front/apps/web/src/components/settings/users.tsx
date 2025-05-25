@@ -24,11 +24,11 @@ import type User from "@/models/user";
 import { userAtom } from "@/state/user";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
+import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import AdminGrid from "~/components/admin-grid";
 
 const DeleteButton = ({
@@ -41,15 +41,16 @@ const DeleteButton = ({
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
-	const userDeletionMutation = useMutation(() =>
-		queryClient.api
-			.deleteUser(userId)
-			.catch(() => toast.error(t("toasts.users.deletionFail")))
-			.then(() => {
-				toast.success(t("toasts.users.deleted"));
-				queryClient.client.invalidateQueries();
-			}),
-	);
+	const userDeletionMutation = useMutation({
+		mutationFn: () =>
+			queryClient.api
+				.deleteUser(userId)
+				.catch(() => toast.error(t("toasts.users.deletionFail")))
+				.then(() => {
+					toast.success(t("toasts.users.deleted"));
+					queryClient.client.invalidateQueries();
+				}),
+	});
 
 	return (
 		<IconButton
@@ -77,8 +78,8 @@ const UsersSettings = () => {
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 	const [currentUser] = useAtom(userAtom);
-	const userMutation = useMutation(
-		({
+	const userMutation = useMutation({
+		mutationFn: ({
 			user,
 			status,
 		}: {
@@ -104,7 +105,7 @@ const UsersSettings = () => {
 					toastMessages.forEach((message) => toast.success(message));
 					queryClient.client.invalidateQueries();
 				}),
-	);
+	});
 	const columns: GridColDef<User>[] = [
 		{
 			field: "name",

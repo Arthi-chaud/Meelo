@@ -38,11 +38,11 @@ import { UpdateTrackIllustrationAction } from "@/components/actions/update-illus
 import { MasterIcon } from "@/components/icons";
 import type { TrackWithRelations } from "@/models/track";
 import { userAtom } from "@/state/user";
+import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMutation } from "react-query";
 import { ContextualMenu } from "..";
 
 type TrackContextualMenuProps = {
@@ -69,16 +69,18 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 			release,
 		}));
 	const { t } = useTranslation();
-	const masterMutation = useMutation(async () => {
-		return queryClient.api
-			.updateSong(props.track.songId!, {
-				masterTrackId: props.track.id,
-			})
-			.then(() => {
-				toast.success(t("toasts.trackSetAsMaster"));
-				queryClient.client.invalidateQueries();
-			})
-			.catch((error: Error) => toast.error(error.message));
+	const masterMutation = useMutation({
+		mutationFn: async () => {
+			return queryClient.api
+				.updateSong(props.track.songId!, {
+					masterTrackId: props.track.id,
+				})
+				.then(() => {
+					toast.success(t("toasts.trackSetAsMaster"));
+					queryClient.client.invalidateQueries();
+				})
+				.catch((error: Error) => toast.error(error.message));
+		},
 	});
 
 	return (

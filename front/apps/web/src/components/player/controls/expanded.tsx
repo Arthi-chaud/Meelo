@@ -197,7 +197,6 @@ export const ExpandedPlayerControls = (
 			{selectedTab !== "player" && (
 				<Divider sx={{ margin: 1, marginBottom: 0 }} variant="middle" />
 			)}
-
 			<Stack
 				sx={
 					selectedTab !== "player"
@@ -622,7 +621,6 @@ export const ExpandedPlayerControls = (
 					)}
 				</>
 			)}
-
 			<Dialog
 				open={playlistModalIsOpen}
 				onClose={() => openPlaylistModal(false)}
