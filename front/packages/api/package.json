@@ -1,0 +1,15 @@
+{
+	"name": "api",
+	"sideEffects": false,
+	"dependencies": {
+		"jotai": "^2.12.1",
+		"react": "18.2.0",
+		"react-query": "^3.39.2",
+		"type-fest": "^4.33.0",
+		"yup": "^1.0.0"
+	},
+	"devDependencies": {
+		"typescript": "5.3.3"
+	},
+	"packageManager": "yarn@4.4.0"
+}
