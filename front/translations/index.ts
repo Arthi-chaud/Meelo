@@ -18,8 +18,9 @@
 
 import en from "./en.json";
 import fr from "./fr.json";
+import ru from "./ru.json";
 
-export default Object.entries({ en, fr }).reduce(
+export default Object.entries({ en, fr, ru }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
 );

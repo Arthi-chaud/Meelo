@@ -24,10 +24,7 @@ import i18next, { type InitOptions } from "i18next";
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
-
-import en from "../../../translations/en.json";
-import fr from "../../../translations/fr.json";
-import ru from "../../../translations/ru.json";
+import translations from "../../../translations/index";
 
 export const Languages = ["en", "fr", "ru"] as const;
 export type Language = keyof typeof Languages;
@@ -51,6 +48,7 @@ export const withTranslations = (
 		interpolation: {
 			escapeValue: false,
 		},
+		fallbackLng: "en",
 	};
 
 	const AppWithTranslations = (props: AppProps) => {
@@ -90,15 +88,11 @@ export const withTranslations = (
 				{ loose: true },
 			) ??
 			"en";
-		const resources = {
-			en: { translation: en },
-			fr: { translation: fr },
-			ru: { translation: ru },
-		};
+		const resources = translations;
 		await i18n.init({
 			...commonOptions,
 			lng,
-			fallbackLng: ctx.router.defaultLocale || "en",
+			fallbackLng: ctx.router.defaultLocale || commonOptions.fallbackLng,
 			resources,
 		});
 		props.pageProps.__lang = lng;
