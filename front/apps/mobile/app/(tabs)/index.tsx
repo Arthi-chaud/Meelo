@@ -20,7 +20,9 @@ import { Text, View } from "react-native";
 export default function Root() {
 	return (
 		<View>
-			<Text>Hello World</Text>
+			<Text style={{ fontFamily: "Rubik_500Medium", fontSize: 100 }}>
+				Hello World
+			</Text>
 		</View>
 	);
 }

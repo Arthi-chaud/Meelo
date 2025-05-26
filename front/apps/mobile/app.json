@@ -4,7 +4,7 @@
 		"slug": "meelo",
 		"version": "1.0.0",
 		"orientation": "portrait",
-		"icon": "./assets/images/icon.png",
+		"icon": "./assets/icon-black.png",
 		"scheme": "mobile",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
@@ -12,27 +12,23 @@
 			"supportsTablet": true
 		},
 		"android": {
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/images/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
-			},
+			"icon": "./assets/icon-black.png",
 			"edgeToEdgeEnabled": true,
 			"package": "com.arthichaud.meelo"
-		},
-		"web": {
-			"bundler": "metro",
-			"output": "static",
-			"favicon": "./assets/images/favicon.png"
 		},
 		"plugins": [
 			"expo-router",
 			[
 				"expo-splash-screen",
 				{
-					"image": "./assets/images/splash-icon.png",
-					"imageWidth": 200,
+					"image": "./assets/icon-black.png",
 					"resizeMode": "contain",
-					"backgroundColor": "#ffffff"
+					"imageWidth": 200,
+					"backgroundColor": "#ffffff",
+					"dark": {
+						"image": "./assets/icon-white.png",
+						"backgroundColor": "#242120"
+					}
 				}
 			]
 		],
