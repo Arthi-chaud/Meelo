@@ -4,6 +4,10 @@ const { getDefaultConfig } = require("expo/metro-config");
 const config = getDefaultConfig(__dirname);
 const path = require("node:path");
 
+const ALIASES = {
+	"iconsax-react": "iconsax-react-nativejs",
+};
+
 // Find the project and workspace directories
 const projectRoot = __dirname;
 // This can be replaced with `find-yarn-workspace-root`
@@ -17,5 +21,13 @@ config.resolver.nodeModulesPaths = [
 	path.resolve(projectRoot, "node_modules"),
 	path.resolve(monorepoRoot, "node_modules"),
 ];
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+	// Ensure you call the default resolver.
+	return context.resolveRequest(
+		context,
+		ALIASES[moduleName] ?? moduleName,
+		platform,
+	);
+};
 
 module.exports = config;

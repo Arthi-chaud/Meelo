@@ -4,27 +4,29 @@
 	],
 	"compilerOptions": {
 		"strict": true,
+		"baseUrl": "./",
 		"paths": {
+			"iconsax-react": ["iconsax-react-nativejs"],
 			"~/*": [
 				"./*"
 			],
 			"@/models/*": [
-				"../../../packages/models/src/*"
+				"../../packages/models/src/*"
 			],
 			"@/utils/*": [
-				"../../../packages/utils/src/*"
+				"../../packages/utils/src/*"
 			],
 			"@/api": [
-				"../../../packages/api/src/index"
+				"../../packages/api/src/index"
 			],
 			"@/api/*": [
-				"../../../packages/api/src/*"
+				"../../packages/api/src/*"
 			],
 			"@/state/*": [
-				"../../../packages/state/src/*"
+				"../../packages/state/src/*"
 			],
 			"@/components/*": [
-				"../../../packages/components/src/*"
+				"../../packages/components/src/*"
 			]
 		}
 	},

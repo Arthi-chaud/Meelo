@@ -15,6 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import { AlbumIcon } from "@/components/icons";
+import * as Iconsax from "iconsax-react-nativejs";
 import { Text, View } from "react-native";
 
 export default function Root() {
@@ -23,6 +26,8 @@ export default function Root() {
 			<Text style={{ fontFamily: "Rubik_500Medium", fontSize: 100 }}>
 				Hello World
 			</Text>
+			<AlbumIcon color="red" size={50} />
+			<Iconsax.Book color="red" size={50} />
 		</View>
 	);
 }
