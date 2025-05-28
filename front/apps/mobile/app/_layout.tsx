@@ -16,11 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Rubik_500Medium } from "@expo-google-fonts/rubik";
+import {
+	Rubik_300Light,
+	Rubik_400Regular,
+	Rubik_500Medium,
+	Rubik_600SemiBold,
+	Rubik_700Bold,
+	Rubik_800ExtraBold,
+	Rubik_900Black,
+} from "@expo-google-fonts/rubik";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import "~/styles/global.css";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,7 +40,13 @@ SplashScreen.setOptions({
 
 export default function RootLayout() {
 	const [loaded, error] = useFonts({
+		Rubik_300Light,
+		Rubik_400Regular,
 		Rubik_500Medium,
+		Rubik_600SemiBold,
+		Rubik_700Bold,
+		Rubik_800ExtraBold,
+		Rubik_900Black,
 	});
 
 	useEffect(() => {

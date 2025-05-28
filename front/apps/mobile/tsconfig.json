@@ -1,40 +1,27 @@
 {
-	"extends": [
-		"expo/tsconfig.base"
-	],
+	"extends": ["expo/tsconfig.base"],
 	"compilerOptions": {
 		"strict": true,
 		"baseUrl": "./",
 		"paths": {
 			"iconsax-react": ["iconsax-react-nativejs"],
-			"~/*": [
-				"./*"
-			],
-			"@/models/*": [
-				"../../packages/models/src/*"
-			],
-			"@/utils/*": [
-				"../../packages/utils/src/*"
-			],
-			"@/api": [
-				"../../packages/api/src/index"
-			],
-			"@/api/*": [
-				"../../packages/api/src/*"
-			],
-			"@/state/*": [
-				"../../packages/state/src/*"
-			],
-			"@/components/*": [
-				"../../packages/components/src/*"
-			]
+			"~/*": ["./*"],
+			"@/models/*": ["../../packages/models/src/*"],
+			"@/utils/*": ["../../packages/utils/src/*"],
+			"@/api": ["../../packages/api/src/index"],
+			"@/api/*": ["../../packages/api/src/*"],
+			"@/state/*": ["../../packages/state/src/*"],
+			"@/components/*": ["../../packages/components/src/*"],
+			"@/primitives/*": ["../../packages/primitives/src/*"]
 		}
 	},
 	"include": [
 		"**/*.ts",
 		"**/*.tsx",
+		"nativewind.d.ts",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
-		"../../packages/utils/src/*.d.ts"
+		"../../packages/utils/src/*.d.ts",
+		"nativewind-env.d.ts"
 	]
 }

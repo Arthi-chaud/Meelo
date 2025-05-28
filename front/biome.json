@@ -4,7 +4,12 @@
 		"lineWidth": 80
 	},
 	"files": {
-		"ignore": ["**/.next/**", "translations/*.json", "**/.expo/**"]
+		"ignore": [
+			"**/.next/**",
+			"translations/*.json",
+			"**/.expo/**",
+			"**/android/**"
+		]
 	},
 	"linter": {
 		"rules": {

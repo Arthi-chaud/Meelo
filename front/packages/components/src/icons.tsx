@@ -17,7 +17,6 @@
  */
 
 import * as Iconsax from "iconsax-react";
-import type { PropsWithChildren, ReactNode } from "react";
 
 export type IconProps = Iconsax.IconProps;
 type Icon = (props: Omit<IconProps, "children">) => any;

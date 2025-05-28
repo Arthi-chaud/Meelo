@@ -3,6 +3,7 @@ const { getDefaultConfig } = require("expo/metro-config");
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 const path = require("node:path");
+const { withNativeWind } = require("nativewind/metro");
 
 const ALIASES = {
 	"iconsax-react": "iconsax-react-nativejs",
@@ -30,4 +31,4 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 	);
 };
 
-module.exports = config;
+module.exports = withNativeWind(config, { input: "./styles/global.css" });

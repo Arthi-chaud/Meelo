@@ -23,8 +23,11 @@ import { Text, View } from "react-native";
 export default function Root() {
 	return (
 		<View>
-			<Text style={{ fontFamily: "Rubik_500Medium", fontSize: 100 }}>
-				Hello World
+			<Text style={{ fontFamily: "Rubik_700Bold", fontSize: 110 }}>
+				Bold
+			</Text>
+			<Text className="text-green-500 text-9xl font-rubik-extrabold">
+				Extra Bold
 			</Text>
 			<AlbumIcon color="red" size={50} />
 			<Iconsax.Book color="red" size={50} />
