@@ -16,23 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AlbumIcon } from "@/components/icons";
-import { Text1 } from "@/primitives/text";
-import * as Iconsax from "iconsax-react-nativejs";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 
-export default function Root() {
-	return (
-		<View>
-			<Text style={{ fontFamily: "Rubik_700Bold", fontSize: 110 }}>
-				Bold
-			</Text>
-			<Text1 />
-			<Text className="text-green-500 text-9xl font-rubik-extrabold">
-				Extra Bold
-			</Text>
-			<AlbumIcon color="red" size={50} />
-			<Iconsax.Book color="red" size={50} />
-		</View>
-	);
-}
+//TODO Setup nativewind for Make it typecheck
+export const Text1 = () => (
+	<Text className="text-pink-300 text-9xl font-rubik-light">AAAA</Text>
+);

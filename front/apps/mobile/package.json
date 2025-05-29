@@ -12,7 +12,7 @@
 	},
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
-		"components": "workspace:*",
+		"components": "workspace:^",
 		"expo": "~53.0.9",
 		"expo-constants": "~17.1.6",
 		"expo-dev-client": "~5.1.8",
@@ -25,6 +25,7 @@
 		"expo-system-ui": "^5.0.7",
 		"iconsax-react-nativejs": "^0.0.8",
 		"nativewind": "^4.1.23",
+		"primitives": "workspace:^",
 		"react": "19.0.0",
 		"react-native": "0.79.2",
 		"react-native-reanimated": "^3.17.5",
@@ -37,9 +38,6 @@
 		"@babel/core": "^7.25.2",
 		"@types/react": "~19.0.10",
 		"typescript": "~5.8.3"
-	},
-	"installConfig": {
-		"hoistingLimits": "workspaces"
 	},
 	"packageManager": "yarn@4.4.0"
 }

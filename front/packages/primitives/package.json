@@ -1,0 +1,14 @@
+{
+	"name": "primitives",
+	"sideEffects": false,
+	"peerDependencies": {
+		"nativewind": "*",
+		"react": "*",
+		"react-native": "*",
+		"tailwindcss": "*"
+	},
+	"devDependencies": {
+		"typescript": "5.3.3"
+	},
+	"packageManager": "yarn@4.4.0"
+}

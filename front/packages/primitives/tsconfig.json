@@ -1,0 +1,17 @@
+{
+	"extends": [
+		"../tsconfig.base.json"
+	],
+	"include": [
+		"**/*.ts",
+		"**/*.tsx",
+		"../utils/src/*.d.ts",
+		"../../apps/mobile/nativewind-env.d.ts"
+	],
+	"compilerOptions": {
+		"jsx": "react-jsx"
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

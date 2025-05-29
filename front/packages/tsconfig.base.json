@@ -9,7 +9,8 @@
 			"@/utils/*": ["../utils/src/*"],
 			"@/api": ["../api/src/index"],
 			"@/api/*": ["../api/src/*"],
-			"@/components/*": ["../components/src/*"]
+			"@/components/*": ["../components/src/*"],
+			"@/primitives/*": ["../primitives/src/*"]
 		}
 	}
 }
