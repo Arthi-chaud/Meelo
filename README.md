@@ -1,4 +1,4 @@
-# <img alt="Icon" src="./front/public/banner1-white.png" width="150px">
+# <img alt="Icon" src="./front/assets/banner1-white.png" width="150px">
 
 Welcome! Meelo is a self-hosted music server and web app. It works similarly to Plex, Jellyfin, Koel and Black Candy, but focuses on flexibility, browsing and listening experiences. Actually, Meelo is designed for music collectors. What does it mean? Scroll down to see our killer features :arrow_heading_down:
 
