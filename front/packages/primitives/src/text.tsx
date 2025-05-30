@@ -16,9 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Text } from "react-native";
+import { Text as RNText, type TextProps } from "react-native";
+import type { RequireExactlyOne } from "type-fest";
 
-//TODO Setup nativewind for Make it typecheck
-export const Text1 = () => (
-	<Text className="text-pink-300 text-9xl font-rubik-light">AAAA</Text>
+type TextVariant =
+	| "h1"
+	| "h2"
+	| "h3"
+	| "h4"
+	| "h5"
+	| "h6"
+	| "body"
+	| "subtitle";
+
+export const getTextStyle = (variant: TextVariant): string => {
+	switch (variant) {
+		case "h1":
+			return "font-rubik-light text-5xl";
+		case "h2":
+			return "font-rubik-light text-4xl";
+		case "h3":
+			return "font-rubik-regular text-3xl";
+		case "h4":
+			return "font-rubik-regular text-2xl";
+		case "h5":
+			return "font-rubik-regular text-xl";
+		case "h6":
+			return "font-rubik-medium text-lg";
+		case "body":
+			return "font-rubik-regular text-base";
+		case "subtitle":
+			return "font-rubik-medium";
+		default:
+			return "font-rubik";
+	}
+};
+
+/* Primitive for any text
+ * DO NOT USE the style props to set the font weight.
+ * Use the font family class names instead
+ */
+export const Text = ({
+	children,
+	content,
+	variant,
+	...props
+}: Omit<TextProps, "children"> & {
+	variant: TextVariant;
+} & RequireExactlyOne<{ content: string } & Pick<TextProps, "children">>) => (
+	<RNText
+		{...props}
+		className={`${getTextStyle(variant)} ${props.className}`}
+	>
+		{content ?? children}
+	</RNText>
 );

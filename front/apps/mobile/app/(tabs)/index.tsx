@@ -16,23 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AlbumIcon } from "@/components/icons";
-import { Text1 } from "@/primitives/text";
-import * as Iconsax from "iconsax-react-nativejs";
-import { Text, View } from "react-native";
+import { Text } from "@/primitives/text";
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
 
 export default function Root() {
+	const { t } = useTranslation();
+
 	return (
-		<View>
-			<Text style={{ fontFamily: "Rubik_700Bold", fontSize: 110 }}>
-				Bold
-			</Text>
-			<Text1 />
-			<Text className="text-green-500 text-9xl font-rubik-extrabold">
-				Extra Bold
-			</Text>
-			<AlbumIcon color="red" size={50} />
-			<Iconsax.Book color="red" size={50} />
+		<View className="m-3">
+			{(
+				[
+					"h1",
+					"h2",
+					"h3",
+					"h4",
+					"h5",
+					"h6",
+					"body",
+					"subtitle",
+				] as const
+			).map((s) => (
+				<Text key={s} variant={s}>
+					{s}
+				</Text>
+			))}
+			<Text variant="body" content={t("browsing.sections.musicVideos")} />
 		</View>
 	);
 }

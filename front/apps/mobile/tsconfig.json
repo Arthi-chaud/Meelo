@@ -18,10 +18,10 @@
 	"include": [
 		"**/*.ts",
 		"**/*.tsx",
+		"../../packages/utils/src/*.d.ts",
 		"nativewind.d.ts",
 		".expo/types/**/*.ts",
 		"expo-env.d.ts",
-		"../../packages/utils/src/*.d.ts",
 		"nativewind-env.d.ts"
 	]
 }

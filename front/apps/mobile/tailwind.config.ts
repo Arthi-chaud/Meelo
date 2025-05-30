@@ -9,6 +9,7 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
+				rubik: ["Rubik_400Regular"],
 				"rubik-light": ["Rubik_300Light"],
 				"rubik-regular": ["Rubik_400Regular"],
 				"rubik-medium": ["Rubik_500Medium"],

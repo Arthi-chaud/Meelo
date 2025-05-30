@@ -22,6 +22,7 @@ config.resolver.nodeModulesPaths = [
 	path.resolve(projectRoot, "node_modules"),
 	path.resolve(monorepoRoot, "node_modules"),
 ];
+config.resolver.disableHierarchicalLookup = true;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
 	// Ensure you call the default resolver.
 	return context.resolveRequest(
