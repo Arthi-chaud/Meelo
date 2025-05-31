@@ -28,8 +28,12 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import i18next from "i18next";
 import { useEffect } from "react";
+import { initReactI18next } from "react-i18next";
 import "~/styles/global.css";
+import "intl-pluralrules";
+import resources from "../../../translations";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -47,6 +51,18 @@ export default function RootLayout() {
 		Rubik_700Bold,
 		Rubik_800ExtraBold,
 		Rubik_900Black,
+	});
+
+	useEffect(() => {
+		i18next.use(initReactI18next).init({
+			interpolation: {
+				escapeValue: false,
+			},
+			returnEmptyString: false,
+			fallbackLng: "en",
+			lng: "en", // TODO Choose using local storage
+			resources,
+		});
 	});
 
 	useEffect(() => {
