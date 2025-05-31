@@ -18,13 +18,21 @@
 
 import { Text } from "@/primitives/text";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Button, View } from "react-native";
+import { useColorScheme } from "~/hooks/color-scheme";
 
 export default function Root() {
 	const { t } = useTranslation();
+	const [colorScheme, setColorScheme] = useColorScheme();
 
 	return (
-		<View className="m-3">
+		<View className="m-3 bg-surface-light  dark:bg-surface-dark">
+			<Button
+				title="Toggle"
+				onPress={() => {
+					setColorScheme(colorScheme === "light" ? "dark" : "light");
+				}}
+			/>
 			{(
 				[
 					"h1",
@@ -37,11 +45,12 @@ export default function Root() {
 					"subtitle",
 				] as const
 			).map((s) => (
-				<Text key={s} variant={s}>
+				<Text key={s} variant={s} className="text-primary">
 					{s}
 				</Text>
 			))}
 			<Text variant="body" content={t("browsing.sections.musicVideos")} />
+			<Button title="AA" />
 		</View>
 	);
 }

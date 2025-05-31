@@ -66,7 +66,7 @@ export const Text = ({
 } & RequireExactlyOne<{ content: string } & Pick<TextProps, "children">>) => (
 	<RNText
 		{...props}
-		className={`${getTextStyle(variant)} ${props.className}`}
+		className={`text-primary-light dark:text-primary-dark ${getTextStyle(variant)} ${props.className}`}
 	>
 		{content ?? children}
 	</RNText>
