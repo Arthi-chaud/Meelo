@@ -1,1 +1,173 @@
-{}
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Aggiungi alla playlist",
+			"modalTitle": "Seleziona una playlist"
+		},
+		"album": {
+			"goToAlbum": "Vai all'album"
+		},
+		"archive": "Archivia",
+		"artist": {
+			"seeAlbums": "Vedi gli album",
+			"seeSongs": "Vedi i brani"
+		},
+		"changeIllutration": "Cambia illustrazione",
+		"create": "Crea",
+		"delete": "Cancella",
+		"deleteFromPlaylist": "Cancella dalla playlist",
+		"deleteUser": {
+			"label": "Cancella l'utente",
+			"warning": "Stai cercando di cancellare un utente. Questa azione è irreversibile."
+		},
+		"download": {
+			"label": "Scarica",
+			"warning": "Il download di materiale protetto da copyright di cui non possiedi i diritti non è autorizzato. Procedi solo se, e solo se, possiedi il contenuto originale."
+		},
+		"goBackHome": "Torna alla pagina principale",
+		"goToArtist": "Vai all'artista",
+		"goToSettingsPage": "Vai all'impostazioni",
+		"library": {
+			"create": "Crea una libreria",
+			"delete": "Cancella la libreria",
+			"deletionWarning": "Stai cercando di cancellare una libreria. Questa azione è irreversibile"
+		},
+		"logout": "Esci",
+		"new": "Nuovo",
+		"playback": {
+			"play": "Riproduci",
+			"playAfter": "Riproduci il precedente",
+			"playAll": "Riproduci tutto",
+			"playNext": "Riproduci il prossimo",
+			"shuffle": "Casuale"
+		},
+		"release": {
+			"setAllTracksAsMaster": "Imposta tutti i brani come principali"
+		},
+		"setAsMaster": "Imposta come principale",
+		"share": "Condividi",
+		"song": {
+			"changeType": "Cambia genere del brano",
+			"mergeSong": {
+				"modalTitle": "Seleziona un brano",
+				"warningBeforeMerging": "Tutti i brani verrano reassegnati al brano selezionato, e il brano vecchio verrà cancellato. I tuoi file non verranno modificati o rimossi"
+			},
+			"seeLyrics": "Vedi il testo",
+			"seeOtherVersions": "Vedi altre versioni",
+			"seeRelatedTracks": "Vedi brani simili",
+			"seeSongInfo": "Info brano"
+		},
+		"track": {
+			"reassignTrack": "Riassegna brano",
+			"seeTrackInfo": "Info del brano"
+		},
+		"update": "Aggiorna",
+		"video": {
+			"changeType": "Cambia tipo di video"
+		},
+		"warningModalTitle": "Attenzione"
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "Conferma",
+			"password": "Password",
+			"passwordIsRequired": "La password è obbligatoria",
+			"passwordTooShort": "La password è troppo corta",
+			"passwordsAreDifferent": "Le password sono diverse",
+			"pleaseConfirm": "Per favore, conferma la password",
+			"username": "Nome utente",
+			"usernameIsRequired": "Il nome utente è obbligatorio",
+			"usernameTooShort": "Il nome utente è troppo corto"
+		},
+		"cancel": "Annulla",
+		"confirm": "Conferma",
+		"done": "Fatto",
+		"edit": "Modifica",
+		"library": {
+			"nameIsRequired": "Il nome è obbligatorio",
+			"nameOfLibrary": "Nome della libreria",
+			"pathIsRequired": "Il percorso è obbligatorio",
+			"pathOfLibrary": "Percorso della libreria"
+		},
+		"playlist": {
+			"allowPlaylistChanges": "Permetti agli altri utenti di aggiornare questa playlist",
+			"playlistIsPublic": "Permetti agli altri utenti di vedere questa playlist"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Lascia vuoto se utilizzi l'istanza pubblica (https://api.listenbrainz.org)",
+				"instanceUrlLabel": "ListenBrainz' API URL",
+				"tokenHelperText": "Ottieni il tuo token utente qua: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Il token è obbligatorio",
+				"tokenLabel": "Inserisci il token utente di ListenBrainz"
+			}
+		}
+	},
+	"home": {
+		"featuredAlbums": "Album in evidenza",
+		"latestAlbums": "Ultimi album",
+		"mostPlayedSongs": "Brani con più riproduzioni",
+		"newlyAddedAlbums": "Ultimi album aggiunti",
+		"newlyAddedArtists": "Ultimi artisti aggiunti",
+		"newlyAddedReleases": "Ultime uscite aggiunte",
+		"topGenres": "Generi più popolari"
+	},
+	"models": {
+		"album_0": "Album",
+		"album_1": "Album",
+		"album_2": "Album",
+		"album_plural": "Album",
+		"artist_0": "Artista",
+		"artist_1": "Artisti",
+		"artist_2": "Artisti",
+		"disc": "Disco",
+		"externalLink_plural": "Link esterni",
+		"genre_plural": "Generi",
+		"library_plural": "Librerie",
+		"lyrics": "Testo del brano",
+		"playlist_0": "Playlist",
+		"playlist_1": "Playlists",
+		"playlist_2": "Playlists",
+		"playlist_plural": "Playlists",
+		"song_0": "Brano",
+		"song_1": "Brani",
+		"song_2": "Brani",
+		"song_plural": "Brani",
+		"track_plural": "Brani",
+		"user_plural": "Utenti",
+		"versions": "Versioni",
+		"video_0": "Video",
+		"video_1": "Video",
+		"video_2": "Video"
+	},
+	"nav": {
+		"compilations": "Compilations",
+		"home": "Pagina principale",
+		"more": "Altro",
+		"musicVideos": "Video musicali",
+		"search": "Cerca",
+		"settings": "Impostazioni"
+	},
+	"settings": {
+		"interface": "Interfaccia",
+		"ui": {
+			"autoMode": "Modo automatico",
+			"colorScheme": "Tema",
+			"crossfade": "Transizione fluida",
+			"language": "Lingua",
+			"useDarkTheme": "Usa il tema oscuro",
+			"useSystemTheme": "Usa il tema di sistema"
+		}
+	},
+	"tasks": {
+		"clean": "Rimuovi",
+		"cleanLibraries": "Svuota le librerie",
+		"refresh": "Riaggiorna",
+		"refreshMetadata": "Riaggiorna il metadata",
+		"refreshMetadataForm": {
+			"forceLabel": "Forza l'aggiornamento se i file non sono cambiati"
+		},
+		"scan": "Scansiona",
+		"scanLibraries": "Scansiona librerie"
+	}
+}
