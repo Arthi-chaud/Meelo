@@ -1864,18 +1864,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^11.0.20":
-  version: 11.0.20
-  resolution: "@nestjs/common@npm:11.0.20"
+"@nestjs/common@npm:^11.1.2":
+  version: 11.1.2
+  resolution: "@nestjs/common@npm:11.1.2"
   dependencies:
-    file-type: "npm:20.4.1"
+    file-type: "npm:21.0.0"
     iterare: "npm:1.2.1"
     load-esm: "npm:1.0.2"
     tslib: "npm:2.8.1"
     uid: "npm:2.0.2"
   peerDependencies:
-    class-transformer: "*"
-    class-validator: "*"
+    class-transformer: ">=0.4.1"
+    class-validator: ">=0.13.2"
     reflect-metadata: ^0.1.12 || ^0.2.0
     rxjs: ^7.1.0
   peerDependenciesMeta:
@@ -1883,7 +1883,7 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10c0/f60b7f5a15b8371e4a167e1393129f02111f5b7ee248280be9d7851fb294bbe958d998f14c6ba4d18152f671ac9172be72d64f6168edb5967c8ea12bf0310aeb
+  checksum: 10c0/020851e0da61bb76bfa95e64262f5f2073d6b8648811aba9a113f6b0d388684599f49036beac4e683a70655a519e543f2111495b00f4307a8badcf75df967a91
   languageName: node
   linkType: hard
 
@@ -1901,9 +1901,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:^11.0.20":
-  version: 11.0.20
-  resolution: "@nestjs/core@npm:11.0.20"
+"@nestjs/core@npm:^11.1.2":
+  version: 11.1.2
+  resolution: "@nestjs/core@npm:11.1.2"
   dependencies:
     "@nuxt/opencollective": "npm:0.4.1"
     fast-safe-stringify: "npm:2.1.1"
@@ -1925,7 +1925,7 @@ __metadata:
       optional: true
     "@nestjs/websockets":
       optional: true
-  checksum: 10c0/6d823fe897c23db43e1a77c85ca98863d8e52d072516830bef9f46e78575c6646b538af87ad651e03fe79ee80d37e1f1883c20cdb504176a73bb8eec0d48da7f
+  checksum: 10c0/40842df2ea71416c81641abee5afc59e22d335283b85ea9aeb012bfe9b3e52ced1974c587b9f2e8ae1751773fe7086ad8bccdea2d9affaa21bc59efc924e206d
   languageName: node
   linkType: hard
 
@@ -1958,9 +1958,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/microservices@npm:^11.0.20":
-  version: 11.0.20
-  resolution: "@nestjs/microservices@npm:11.0.20"
+"@nestjs/microservices@npm:^11.1.2":
+  version: 11.1.2
+  resolution: "@nestjs/microservices@npm:11.1.2"
   dependencies:
     iterare: "npm:1.2.1"
     tslib: "npm:2.8.1"
@@ -1997,7 +1997,7 @@ __metadata:
       optional: true
     nats:
       optional: true
-  checksum: 10c0/e59614d77c79330e6d3368552d7d4fc79e8788590f25e7c72657797f9e45415653ce0e6c7afeff54eb232c7aeae4525537948507c20b9c94c263c5c014529e71
+  checksum: 10c0/7e297f87220408fad4511ef05454d3cd73235eb5987179ebb93a7a7a4005ed48e39bd765886b215a9a7efc47917cf61329cba49f0c50899306da41b0d6558a4b
   languageName: node
   linkType: hard
 
@@ -2011,19 +2011,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/platform-express@npm:^11.0.20":
-  version: 11.0.20
-  resolution: "@nestjs/platform-express@npm:11.0.20"
+"@nestjs/platform-express@npm:^11.1.2":
+  version: 11.1.2
+  resolution: "@nestjs/platform-express@npm:11.1.2"
   dependencies:
     cors: "npm:2.8.5"
     express: "npm:5.1.0"
-    multer: "npm:1.4.5-lts.2"
+    multer: "npm:2.0.0"
     path-to-regexp: "npm:8.2.0"
     tslib: "npm:2.8.1"
   peerDependencies:
     "@nestjs/common": ^11.0.0
     "@nestjs/core": ^11.0.0
-  checksum: 10c0/60ec436d48a867572b4ac7684e0dd81c1961729da2b92159ecb31bd9b5f288a8e2ea94481f4ade27ac4b8bb157b6660f15531fe7919b68c38f4084df32b03f1c
+  checksum: 10c0/79d3411d4b53b866ca40639b31ca91c5474a49392e00fb94af671fe2104339122903ae18c19dd1c3918d066dc4d802da4760c68403c1327d04f9bdad031dca8f
   languageName: node
   linkType: hard
 
@@ -2289,7 +2289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tokenizer/inflate@npm:^0.2.6":
+"@tokenizer/inflate@npm:^0.2.7":
   version: 0.2.7
   resolution: "@tokenizer/inflate@npm:0.2.7"
   dependencies:
@@ -4898,15 +4898,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-type@npm:20.4.1":
-  version: 20.4.1
-  resolution: "file-type@npm:20.4.1"
+"file-type@npm:21.0.0":
+  version: 21.0.0
+  resolution: "file-type@npm:21.0.0"
   dependencies:
-    "@tokenizer/inflate": "npm:^0.2.6"
-    strtok3: "npm:^10.2.0"
+    "@tokenizer/inflate": "npm:^0.2.7"
+    strtok3: "npm:^10.2.2"
     token-types: "npm:^6.0.0"
     uint8array-extras: "npm:^1.4.0"
-  checksum: 10c0/ae6f65e537205a9a3e07ae574de74ed5210aa78899d6478351a466f97e3f17096b93d74cb97f3fce7488bc8486a21e449ab076ec358ed06984f4a9a8f48a9f55
+  checksum: 10c0/ee6b0bb5771ad154e236bb77b5c00907743fef3637c3825713c1d6913377d3d969ebba4a6f0aa854b8231552e2c1bd0387229fe67394dc3d08a01819c7d107b1
   languageName: node
   linkType: hard
 
@@ -6861,13 +6861,13 @@ __metadata:
     "@golevelup/ts-jest": "npm:^0.5.5"
     "@nestjs/axios": "npm:^4.0.0"
     "@nestjs/cli": "npm:^11.0.1"
-    "@nestjs/common": "npm:^11.0.20"
+    "@nestjs/common": "npm:^11.1.2"
     "@nestjs/config": "npm:^4.0.0"
-    "@nestjs/core": "npm:^11.0.20"
+    "@nestjs/core": "npm:^11.1.2"
     "@nestjs/jwt": "npm:^11.0.0"
-    "@nestjs/microservices": "npm:^11.0.20"
+    "@nestjs/microservices": "npm:^11.1.2"
     "@nestjs/passport": "npm:^11.0.5"
-    "@nestjs/platform-express": "npm:^11.0.20"
+    "@nestjs/platform-express": "npm:^11.1.2"
     "@nestjs/schedule": "npm:^6.0.0"
     "@nestjs/schematics": "npm:^11.0.0"
     "@nestjs/swagger": "npm:^11.1.4"
@@ -7235,9 +7235,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multer@npm:1.4.5-lts.2":
-  version: 1.4.5-lts.2
-  resolution: "multer@npm:1.4.5-lts.2"
+"multer@npm:2.0.0":
+  version: 2.0.0
+  resolution: "multer@npm:2.0.0"
   dependencies:
     append-field: "npm:^1.0.0"
     busboy: "npm:^1.0.0"
@@ -7246,7 +7246,7 @@ __metadata:
     object-assign: "npm:^4.1.1"
     type-is: "npm:^1.6.4"
     xtend: "npm:^4.0.0"
-  checksum: 10c0/59c934621bde284e04e25aa35ef79f8a9ed0c2ac4c5bae4c2880670105ec1645480ae57a84ed92323b2a8d8f875ca3189ad8a18fa0ed0bdc6fd26553d9426883
+  checksum: 10c0/b1bb5faead3193f2bad5dc1dd3a89c195b3b95a178253d81636efee07538df761515b59fcd508037b8c0472a087f33d13002ed76e167a00ef7d32694e3038138
   languageName: node
   linkType: hard
 
@@ -8833,7 +8833,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strtok3@npm:^10.2.0":
+"strtok3@npm:^10.2.2":
   version: 10.2.2
   resolution: "strtok3@npm:10.2.2"
   dependencies:

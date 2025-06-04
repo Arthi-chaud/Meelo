@@ -1,9 +1,16 @@
 FROM node:18-alpine3.18
 WORKDIR /app
-COPY ./*.json ./
-COPY ./*.lock ./
-COPY ./.yarnrc.yml ./
-COPY ./.yarn /app/.yarn
+
+COPY ./.yarnrc.yml ./*.lock  ./
+COPY ./.yarn ./.yarn
+COPY package.json tsconfig.base.json ./
+COPY apps/web/*.json apps/web/
+COPY packages/*.json packages/
+COPY packages/api/*.json packages/api/
+COPY packages/models/*.json packages/models/
+COPY packages/state/*.json packages/state/
+COPY packages/utils/*.json packages/utils/
+
 RUN yarn install
 
 ENV PORT 3000
