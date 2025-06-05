@@ -19,14 +19,20 @@
 import { useQuery } from "@/api/hook";
 import { TrackIcon } from "@/components/icons";
 import Illustration from "@/components/illustration";
+import type IllustrationModel from "@/models/illustration";
 import formatArtists from "@/utils/format-artists";
 import {
+	Box,
+	type BoxProps,
 	ButtonBase,
 	Grid,
 	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useAccentColor } from "~/utils/accent-color";
+import { useThemedSxValue } from "~/utils/themed-sx-value";
 import {
 	PlayButton,
 	type PlayerControlsProps,
@@ -36,19 +42,80 @@ import {
 	playerTextStyle,
 } from "./common";
 
+const ProgressBar = ({
+	progress,
+	duration,
+	illustration,
+	boxProps,
+}: Pick<PlayerControlsProps, "progress" | "duration"> & {
+	illustration: IllustrationModel | null | undefined;
+} & Record<"boxProps", BoxProps>) => {
+	const theme = useTheme();
+	const accentColorHook = useAccentColor(illustration);
+	const [progressState, setProgress] = useState(0);
+	const accentColor = useThemedSxValue(
+		"borderTopColor",
+		accentColorHook?.light,
+		accentColorHook?.dark,
+	);
+
+	useEffect(() => {
+		const cb = () => {
+			setProgress(
+				!duration
+					? 0
+					: (100 * (progress?.current ?? 0)) / (duration ?? 1),
+			);
+		};
+		const tm = setInterval(cb, 200);
+		return () => {
+			clearInterval(tm);
+		};
+	});
+
+	return (
+		<Box
+			sx={{
+				...boxProps,
+				borderRadius: theme.shape.borderRadius,
+				borderTop: "3px solid",
+				...accentColor,
+				width: `${progressState}%`,
+				position: "absolute",
+				transition: "width .2s ease-in-out",
+			}}
+		/>
+	);
+};
+
 export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	const parentSong = useQuery(
 		parentSongQuery,
 		props.track?.songId ?? undefined,
 	);
 	const theme = useTheme();
-
 	return (
 		<ButtonBase
 			onClick={() => props.onExpand(true)}
 			disableTouchRipple
-			sx={{ width: "100%", height: "100%", padding: 0, margin: 0 }}
+			sx={{
+				width: "100%",
+				height: "100%",
+				padding: 0,
+				margin: 0,
+				position: "relative",
+				paddingBottom: "1px",
+			}}
 		>
+			<ProgressBar
+				progress={props.progress}
+				illustration={props.track?.illustration}
+				duration={props.duration}
+				boxProps={{
+					bottom: -8,
+					left: -8,
+				}}
+			/>
 			<Grid
 				container
 				spacing={1.5}
@@ -57,6 +124,7 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					display: "flex",
 					width: "100%",
 					justifyContent: "center",
+					overflow: "hidden",
 				}}
 			>
 				<Grid sx={{ minWidth: "52px" }}>
