@@ -30,6 +30,7 @@ import {
 import {
 	PlayButton,
 	type PlayerControlsProps,
+	PreviousButton,
 	SkipButton,
 	parentSongQuery,
 	playerTextStyle,
@@ -144,11 +145,17 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				</Grid>
 				<Grid
 					container
-					size={{ xs: 4, sm: 3, md: 2 }}
+					size={{ xs: 4, sm: 4, md: 4, lg: 3, xl: 2 }}
 					flexWrap="nowrap"
 					color={props.playlistLoading ? "text.disabled" : undefined}
 					onClick={(event) => event.stopPropagation()}
 				>
+					<Grid
+						size="grow"
+						sx={{ display: { xs: "none", sm: "block" } }}
+					>
+						<PreviousButton onClick={props.onRewind} />
+					</Grid>
 					<Grid size="grow">
 						<PlayButton
 							onPause={props.onPause}
