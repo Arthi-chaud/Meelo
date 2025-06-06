@@ -9,7 +9,7 @@
 			"@/api": ["../../../packages/api/src/index"],
 			"@/api/*": ["../../../packages/api/src/*"],
 			"@/state/*": ["../../../packages/state/src/*"],
-			"@/components/*": ["../../../packages/components/src/*"]
+			"@/ui/*": ["../../../packages/ui/src/*"]
 		}
 	},
 	"include": [

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CloseIcon } from "@/components/icons";
+import { CloseIcon } from "@/ui/icons";
 import {
 	Dialog,
 	DialogContent,

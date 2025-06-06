@@ -17,16 +17,12 @@
  */
 
 import type { useInfiniteQuery } from "@/api/hook";
-import Fade from "@/components/fade";
-import { MoreIcon } from "@/components/icons";
-import AlbumTile from "@/components/tile/resource/album";
-import VideoTile from "@/components/tile/resource/video";
-import TileRow from "@/components/tile/row";
 import type { AlbumWithRelations } from "@/models/album";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
 import type { SongWithRelations } from "@/models/song";
 import type { VideoWithRelations } from "@/models/video";
+import { MoreIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
 import { generateArray } from "@/utils/gen-list";
 import { Box, Button, Grid } from "@mui/material";
@@ -34,6 +30,10 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import Fade from "~/components/fade";
+import AlbumTile from "~/components/tile/resource/album";
+import VideoTile from "~/components/tile/resource/video";
+import TileRow from "~/components/tile/row";
 import SectionHeader from "./section-header";
 import SongGrid from "./song-grid";
 

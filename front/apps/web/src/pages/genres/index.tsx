@@ -18,14 +18,6 @@
 
 import { getGenres } from "@/api/queries";
 import type { InfiniteQuery } from "@/api/query";
-import { Controls } from "@/components/infinite/controls/controls";
-import {
-	getOrderQuery,
-	getSortQuery,
-	useSortControl,
-} from "@/components/infinite/controls/sort";
-import InfiniteGrid from "@/components/infinite/grid";
-import { GenreTile } from "@/components/tile/resource/genre";
 import type Genre from "@/models/genre";
 import { GenreSortingKeys } from "@/models/genre";
 import type { IllustratedResource } from "@/models/illustration";
@@ -34,6 +26,14 @@ import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { Head } from "~/components/head";
+import { Controls } from "~/components/infinite/controls/controls";
+import {
+	getOrderQuery,
+	getSortQuery,
+	useSortControl,
+} from "~/components/infinite/controls/sort";
+import InfiniteGrid from "~/components/infinite/grid";
+import { GenreTile } from "~/components/tile/resource/genre";
 
 const prepareSSR = (context: NextPageContext) => {
 	const order = getOrderQuery(context) ?? "asc";

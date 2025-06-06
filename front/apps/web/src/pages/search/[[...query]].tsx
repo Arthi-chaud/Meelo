@@ -31,20 +31,11 @@ import {
 	toInfiniteQuery,
 	transformPage,
 } from "@/api/query";
-import { SearchIcon } from "@/components/icons";
-import InfiniteList from "@/components/infinite/list";
-import InfiniteAlbumView from "@/components/infinite/resource/album";
-import InfiniteArtistView from "@/components/infinite/resource/artist";
-import { InfiniteSongView } from "@/components/infinite/resource/song";
-import InfiniteVideoView from "@/components/infinite/resource/video";
-import AlbumItem from "@/components/list-item/resource/album";
-import ArtistItem from "@/components/list-item/resource/artist";
-import SongItem from "@/components/list-item/resource/song";
-import VideoItem from "@/components/list-item/resource/video";
 import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
+import { SearchIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
@@ -55,6 +46,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { Head } from "~/components/head";
+import InfiniteList from "~/components/infinite/list";
+import InfiniteAlbumView from "~/components/infinite/resource/album";
+import InfiniteArtistView from "~/components/infinite/resource/artist";
+import { InfiniteSongView } from "~/components/infinite/resource/song";
+import InfiniteVideoView from "~/components/infinite/resource/video";
+import AlbumItem from "~/components/list-item/resource/album";
+import ArtistItem from "~/components/list-item/resource/artist";
+import SongItem from "~/components/list-item/resource/song";
+import VideoItem from "~/components/list-item/resource/video";
 import { useTabRouter } from "~/components/tab-router";
 
 const prepareSSR = (context: NextPageContext) => {

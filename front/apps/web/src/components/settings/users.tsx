@@ -19,9 +19,9 @@
 import type API from "@/api";
 import { useQueryClient } from "@/api/hook";
 import { getUsers } from "@/api/queries";
-import { DeleteIcon } from "@/components/icons";
 import type User from "@/models/user";
 import { userAtom } from "@/state/user";
+import { DeleteIcon } from "@/ui/icons";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useMutation } from "@tanstack/react-query";
