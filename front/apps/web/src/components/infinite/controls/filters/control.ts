@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { parseQueryParam, setQueryParam } from "@/utils/query-param";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { useRouter } from "next/router";
 import { useState } from "react";
 

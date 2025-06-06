@@ -17,7 +17,7 @@
  */
 
 import { LanguageStorageKey } from "@/utils/constants";
-import { isSSR } from "@/utils/is-ssr";
+import { isSSR } from "~/utils/is-ssr";
 import ALParser from "accept-language-parser";
 import { getCookie, setCookie } from "cookies-next";
 import i18next, { type InitOptions } from "i18next";
