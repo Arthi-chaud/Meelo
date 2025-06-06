@@ -17,9 +17,8 @@
  */
 
 import { useQuery } from "@/api/hook";
-import { TrackIcon } from "@/components/icons";
-import Illustration from "@/components/illustration";
 import type IllustrationModel from "@/models/illustration";
+import { TrackIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import {
 	Box,
@@ -31,6 +30,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import Illustration from "~/components/illustration";
 import { useAccentColor } from "~/utils/accent-color";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 import {
