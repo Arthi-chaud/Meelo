@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { blurHashToDataURL } from "@/utils/blurhashToDataUrl";
 import { Box } from "@mui/material";
 import { type ComponentProps, useEffect, useMemo, useState } from "react";
 import { Blurhash as RBlurhash } from "react-blurhash";
+import { blurHashToDataURL } from "~/utils/blurhash-to-url";
 
 type BlurhashProps = ComponentProps<typeof Box> & {
 	blurhash?: string;

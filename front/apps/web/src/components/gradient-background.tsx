@@ -17,7 +17,7 @@
  */
 
 import { generateArray } from "@/utils/gen-list";
-import { isSSR } from "@/utils/is-ssr";
+import { isSSR } from "~/utils/is-ssr";
 import { Box, useTheme } from "@mui/material";
 import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
