@@ -17,7 +17,7 @@
  */
 
 import { ShareIcon } from "@/ui/icons";
-import copyLinkToClipboard from "@/utils/copy-link";
+import copyLinkToClipboard from "~/utils/copy-link";
 import type Action from "./";
 
 export const ShareAction = (url: string, t: Translator): Action => ({

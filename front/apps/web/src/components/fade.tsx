@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isClientSideRendering } from "@/utils/is-ssr";
+import { isClientSideRendering } from "~/utils/is-ssr";
 import { Fade as MUIFade } from "@mui/material";
 import type { ComponentProps } from "react";
 /**
