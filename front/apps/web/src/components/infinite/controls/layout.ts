@@ -21,9 +21,9 @@ import {
 	type LayoutOption,
 	LayoutOptions,
 } from "@/models/layout";
-import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type LayoutControl =
 	| { layout: "list"; itemSize: never; enableToggle: false; onUpdate: never }
