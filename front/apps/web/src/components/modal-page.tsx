@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CloseIcon } from "@/components/icons";
+import { CloseIcon } from "@/ui/icons";
 import { isClientSideRendering } from "@/utils/is-ssr";
 import { Box, IconButton, Paper, Slide } from "@mui/material";
 import { useRouter } from "next/router";

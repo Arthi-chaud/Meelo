@@ -19,16 +19,8 @@
 import { useQuery, useQueryClient } from "@/api/hook";
 import { getLibraries, getTasks } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
-import type Action from "@/components/actions";
-import {
-	CleanAllLibrariesAction,
-	CleanLibraryAction,
-	ScanAllLibrariesAction,
-	ScanLibraryAction,
-} from "@/components/actions/library-task";
-import { RefreshLibraryMetadataAction } from "@/components/actions/refresh-metadata";
-import { AddIcon, DeleteIcon, EditIcon } from "@/components/icons";
 import type Library from "@/models/library";
+import { AddIcon, DeleteIcon, EditIcon } from "@/ui/icons";
 import {
 	Box,
 	Button,
@@ -51,6 +43,14 @@ import { useConfirm } from "material-ui-confirm";
 import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type Action from "~/components/actions";
+import {
+	CleanAllLibrariesAction,
+	CleanLibraryAction,
+	ScanAllLibrariesAction,
+	ScanLibraryAction,
+} from "~/components/actions/library-task";
+import { RefreshLibraryMetadataAction } from "~/components/actions/refresh-metadata";
 import AdminGrid from "~/components/admin-grid";
 import LibraryForm from "~/components/library-form";
 import SectionHeader from "~/components/section-header";

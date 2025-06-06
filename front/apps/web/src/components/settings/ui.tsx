@@ -18,14 +18,14 @@
 
 import { useQuery, useQueryClient } from "@/api/hook";
 import { getScrobblerStatus } from "@/api/queries";
+import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
 import {
 	BookIcon,
 	DeleteIcon,
 	MovingStarIcon,
 	OpenExternalIcon,
 	WarningIcon,
-} from "@/components/icons";
-import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
+} from "@/ui/icons";
 import {
 	Box,
 	Button,
