@@ -28,7 +28,7 @@ import type { SortingParameters } from "@/models/sorting";
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
-import { parseQueryParam, setQueryParam } from "@/utils/query-param";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { getRandomNumber } from "@/utils/random";
 import { uncapitalize } from "@/utils/uncapitalize";
 import { useRouter } from "next/router";
