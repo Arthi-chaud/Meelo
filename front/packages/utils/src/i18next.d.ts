@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type en from "./en.json";
+import type en from "../../../translations/en.json";
 import "i18next";
 
 declare module "i18next" {
@@ -28,13 +28,4 @@ declare module "i18next" {
 			translation: typeof en;
 		};
 	}
-}
-
-declare global {
-	// https://github.com/i18next/i18next/blob/master/typescript/t.d.ts
-	type TranslationKey = KeysBuilderWithoutReturnObjects<
-		CustomTypeOptions["resources"]["translation"]
-	>;
-
-	type Translator = (key: TranslationKey) => string;
 }
