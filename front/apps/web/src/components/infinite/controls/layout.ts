@@ -21,7 +21,7 @@ import {
 	type LayoutOption,
 	LayoutOptions,
 } from "@/models/layout";
-import { parseQueryParam, setQueryParam } from "@/utils/query-param";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
