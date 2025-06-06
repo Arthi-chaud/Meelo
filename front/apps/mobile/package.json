@@ -1,0 +1,47 @@
+{
+	"name": "mobile",
+	"main": "index.ts",
+	"version": "1.0.0",
+	"private": true,
+	"sideEffects": false,
+	"scripts": {
+		"start": "expo start",
+		"android": "expo run:android",
+		"ios": "expo run:ios",
+		"web": "expo start --web"
+	},
+	"dependencies": {
+		"@expo-google-fonts/rubik": "^0.3.0",
+		"expo": "~53.0.9",
+		"expo-constants": "~17.1.6",
+		"expo-dev-client": "~5.1.8",
+		"expo-font": "~13.3.1",
+		"expo-image": "~2.1.7",
+		"expo-linking": "~7.1.5",
+		"expo-router": "~5.0.7",
+		"expo-splash-screen": "~0.30.8",
+		"expo-status-bar": "~2.2.3",
+		"expo-system-ui": "^5.0.7",
+		"i18next": "^23.7.16",
+		"iconsax-react-nativejs": "^0.0.8",
+		"intl-pluralrules": "^2.0.1",
+		"react": "19.0.0",
+		"react-i18next": "^12.2.2",
+		"react-native": "0.79.2",
+		"react-native-edge-to-edge": "^1.6.1",
+		"react-native-reanimated": "^3.17.5",
+		"react-native-safe-area-context": "^5.4.1",
+		"react-native-screens": "~4.10.0",
+		"react-native-svg": "^15.12.0",
+		"utils": "workspace:^"
+	},
+	"installConfig": {
+		"hoistingLimits": "workspaces"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.25.2",
+		"@types/react": "~19.0.10",
+		"typescript": "~5.8.3"
+	},
+	"packageManager": "yarn@4.4.0"
+}
