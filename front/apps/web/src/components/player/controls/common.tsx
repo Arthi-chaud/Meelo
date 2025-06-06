@@ -17,14 +17,9 @@
  */
 
 import { getSong } from "@/api/queries";
-import {
-	ForwardIcon,
-	PauseIcon,
-	PlayIcon,
-	RewindIcon,
-} from "@/components/icons";
 import type Artist from "@/models/artist";
 import type { TrackWithRelations } from "@/models/track";
+import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
 import { IconButton, Typography, type TypographyProps } from "@mui/material";
 import type { ComponentProps } from "react";

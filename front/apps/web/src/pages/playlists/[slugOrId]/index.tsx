@@ -25,11 +25,13 @@ import {
 	getRelease,
 } from "@/api/queries";
 import { type Query, toTanStackQuery } from "@/api/query";
-import { DeletePlaylistAction } from "@/components/actions/playlist";
-import PlaylistContextualMenu from "@/components/contextual-menu/resource/playlist";
-import SongContextualMenu from "@/components/contextual-menu/resource/song";
-import { EmptyState } from "@/components/empty-state";
-import { useGradientBackground } from "@/components/gradient-background";
+import type {
+	PlaylistEntry,
+	PlaylistEntryWithRelations,
+} from "@/models/playlist";
+import type Release from "@/models/release";
+import type { SongWithRelations } from "@/models/song";
+import { playTracksAtom } from "@/state/player";
 import {
 	ContextualMenuIcon,
 	DoneIcon,
@@ -40,16 +42,7 @@ import {
 	PlaylistIcon,
 	ShuffleIcon,
 	SongIcon,
-} from "@/components/icons";
-import Illustration from "@/components/illustration";
-import ListItem from "@/components/list-item";
-import type {
-	PlaylistEntry,
-	PlaylistEntryWithRelations,
-} from "@/models/playlist";
-import type Release from "@/models/release";
-import type { SongWithRelations } from "@/models/song";
-import { playTracksAtom } from "@/state/player";
+} from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
 import { type QueryClient, useMutation } from "@tanstack/react-query";
@@ -63,7 +56,14 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { DeletePlaylistAction } from "~/components/actions/playlist";
+import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
+import SongContextualMenu from "~/components/contextual-menu/resource/song";
+import { EmptyState } from "~/components/empty-state";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
+import Illustration from "~/components/illustration";
+import ListItem from "~/components/list-item";
 import RelationPageHeader from "~/components/relation-page-header";
 import getSlugOrId from "~/utils/getSlugOrId";
 
