@@ -2668,20 +2668,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"components@workspace:packages/components":
-  version: 0.0.0-use.local
-  resolution: "components@workspace:packages/components"
-  dependencies:
-    iconsax-react: "npm:^0.0.8"
-    typescript: "npm:5.3.3"
-  peerDependencies:
-    "@mui/material": "*"
-    next: "*"
-    react: "*"
-    react-i18next: "*"
-  languageName: unknown
-  linkType: soft
-
 "concat-map@npm:0.0.1":
   version: 0.0.1
   resolution: "concat-map@npm:0.0.1"
@@ -3424,7 +3410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iconsax-react@npm:^0.0.8":
+"iconsax-react@npm:0.0.8":
   version: 0.0.8
   resolution: "iconsax-react@npm:0.0.8"
   dependencies:
@@ -5998,6 +5984,15 @@ __metadata:
   checksum: 10c0/1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
   languageName: node
   linkType: hard
+
+"ui@workspace:packages/ui":
+  version: 0.0.0-use.local
+  resolution: "ui@workspace:packages/ui"
+  dependencies:
+    iconsax-react: "npm:0.0.8"
+    typescript: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
 
 "unique-filename@npm:^3.0.0":
   version: 3.0.0
