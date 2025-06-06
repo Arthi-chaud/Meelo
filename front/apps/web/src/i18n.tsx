@@ -17,13 +17,17 @@
  */
 
 import { LanguageStorageKey } from "@/utils/constants";
-import { isSSR } from "~/utils/is-ssr";
 import ALParser from "accept-language-parser";
 import { getCookie, setCookie } from "cookies-next";
-import i18next, { type InitOptions } from "i18next";
+import i18next, {
+	type KeysBuilderWithoutReturnObjects,
+	type InitOptions,
+	type CustomTypeOptions,
+} from "i18next";
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
+import { isSSR } from "~/utils/is-ssr";
 import translations from "../../../translations";
 
 export const Languages = ["en", "fr", "de", "ru", "it", "id"] as const;
@@ -102,3 +106,12 @@ export const withTranslations = (
 
 	return AppWithTranslations;
 };
+
+declare global {
+	// https://github.com/i18next/i18next/blob/master/typescript/t.d.ts
+	type TranslationKey = KeysBuilderWithoutReturnObjects<
+		CustomTypeOptions["resources"]["translation"]
+	>;
+
+	type Translator = (key: TranslationKey) => string;
+}
