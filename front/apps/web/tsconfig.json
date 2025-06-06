@@ -16,6 +16,6 @@
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		"../../packages/utils/src/*.d.ts"
+		"../../translations/*.d.ts"
 	]
 }

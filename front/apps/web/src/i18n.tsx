@@ -24,10 +24,9 @@ import i18next, { type InitOptions } from "i18next";
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
-import translations from "../../../translations/index";
+import translations, { type Language, Languages } from "../../../translations";
 
-export const Languages = ["en", "fr", "ru", "it", "ru"] as const;
-export type Language = keyof typeof Languages;
+export { type Language, Languages } from "../../../translations";
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();
