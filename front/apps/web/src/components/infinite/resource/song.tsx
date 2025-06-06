@@ -28,7 +28,6 @@ import type { SortingParameters } from "@/models/sorting";
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
-import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import { getRandomNumber } from "@/utils/random";
 import { uncapitalize } from "@/utils/uncapitalize";
 import { useRouter } from "next/router";
@@ -39,6 +38,7 @@ import { useLibraryFilterControl } from "~/components/infinite/controls/filters/
 import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
+import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 import InfiniteList from "../list";
 
 type SongModel = SongWithRelations<
