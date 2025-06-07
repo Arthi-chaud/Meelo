@@ -11,7 +11,8 @@
 			"@/api": ["../../packages/api/src/index"],
 			"@/api/*": ["../../packages/api/src/*"],
 			"@/state/*": ["../../packages/state/src/*"],
-			"@/ui/*": ["../../packages/ui/src/*"]
+			"@/components/*": ["../../packages/components/src/*"],
+			"@/primitives/*": ["../../packages/primitives/src/*"]
 		}
 	},
 	"include": [
