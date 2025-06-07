@@ -32,7 +32,7 @@ import i18next from "i18next";
 import { useEffect } from "react";
 import { initReactI18next } from "react-i18next";
 import "intl-pluralrules";
-import resources from "../../../translations";
+import resources from "../../../../translations";
 
 SplashScreen.preventAutoHideAsync();
 
