@@ -37,6 +37,9 @@
 			"eas": {
 				"projectId": "b8d8dcdb-a905-4674-9c62-db4256e0d94f"
 			}
+		},
+		"ios": {
+			"bundleIdentifier": "com.arthichaud.meelo"
 		}
 	}
 }

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// import { Text } from "primitives/src/text";
 import { useTranslation } from "react-i18next";
-import { Button, Text, View } from "react-native";
+import { Button, View } from "react-native";
 import { useColorScheme } from "~/hooks/color-scheme";
+import { Text } from "~/primitives/text";
 
 export default function Root() {
 	const { t } = useTranslation();
@@ -45,9 +45,11 @@ export default function Root() {
 					"subtitle",
 				] as const
 			).map((s) => (
-				<Text key={s}>{s}</Text>
+				<Text key={s} variant={s}>
+					{s}
+				</Text>
 			))}
-			<Text>{t("browsing.sections.musicVideos")}</Text>
+			<Text variant="body">{t("browsing.sections.musicVideos")}</Text>
 			<Button title="AA" />
 		</View>
 	);
