@@ -16,21 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { MasterIcon } from "@/ui/icons";
 import { useTranslation } from "react-i18next";
-import { Button, View } from "react-native";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useColorScheme } from "~/hooks/color-scheme";
-import { Button as MeeloButton } from "~/primitives/button";
+import { Button } from "~/primitives/button";
 import { Text } from "~/primitives/text";
 
 const styles = StyleSheet.create((theme) => ({
 	main: {
 		backgroundColor: theme.colors.background,
+		flex: 1,
 	},
 	container: {
 		backgroundColor: theme.colors.background,
 		display: "flex",
 		alignItems: "center",
+		width: "100%",
 	},
 }));
 
@@ -40,12 +43,17 @@ export default function Root() {
 
 	return (
 		<View style={styles.main}>
-			<Button
-				title="Toggle"
-				onPress={() => {
-					setColorScheme(colorScheme === "light" ? "dark" : "light");
-				}}
-			/>
+			<View style={{ flexDirection: "row" }}>
+				<Button
+					title="Toggle"
+					width="fitContent"
+					onPress={() => {
+						setColorScheme(
+							colorScheme === "light" ? "dark" : "light",
+						);
+					}}
+				/>
+			</View>
 			{(
 				[
 					"h1",
@@ -66,7 +74,7 @@ export default function Root() {
 				{t("browsing.sections.musicVideos")}
 			</Text>
 			<View style={styles.container}>
-				<MeeloButton
+				<Button
 					onPress={() => {
 						console.log("ok");
 					}}
@@ -74,11 +82,18 @@ export default function Root() {
 					title={t("auth.signin")}
 					width="fill"
 				/>
-				<MeeloButton
+				<Button
 					onPress={() => {}}
 					width="fitContent"
 					variant="filled"
 					title={t("auth.signup")}
+				/>
+
+				<Button
+					onPress={() => {}}
+					width="fitContent"
+					leadingIcon={MasterIcon}
+					title={t("actions.release.setAllTracksAsMaster")}
 				/>
 			</View>
 		</View>
