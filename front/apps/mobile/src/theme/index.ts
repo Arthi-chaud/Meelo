@@ -28,6 +28,7 @@ const baseTheme = {
 };
 
 export const lightTheme = {
+	name: "light" as const,
 	...baseTheme,
 	colors: {
 		text: {
@@ -41,6 +42,7 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
+	name: "dark" as const,
 	...baseTheme,
 	colors: {
 		text: {
@@ -62,8 +64,8 @@ export const breakpoints = {
 };
 
 export const appThemes = {
-	light: lightTheme,
-	dark: darkTheme,
+	light: { ...lightTheme, op: darkTheme },
+	dark: { ...darkTheme, op: lightTheme },
 };
 
 StyleSheet.configure({
