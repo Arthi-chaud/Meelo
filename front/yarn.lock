@@ -7975,10 +7975,13 @@ __metadata:
     react-i18next: "npm:^12.2.2"
     react-native: "npm:0.79.3"
     react-native-edge-to-edge: "npm:^1.6.1"
+    react-native-nitro-modules: "npm:0.26.2"
     react-native-reanimated: "npm:^3.17.5"
     react-native-safe-area-context: "npm:^5.4.1"
     react-native-screens: "npm:~4.11.1"
     react-native-svg: "npm:^15.12.0"
+    react-native-unistyles: "npm:^3.0.0-rc.4"
+    type-fest: "npm:^4.33.0"
     typescript: "npm:~5.8.3"
     utils: "workspace:^"
   languageName: unknown
@@ -8984,6 +8987,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-nitro-modules@npm:0.26.2":
+  version: 0.26.2
+  resolution: "react-native-nitro-modules@npm:0.26.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/e4d1f00c4628d7ea48f84aea6b36f48e11f38ecad0431106f3878387b8b49be1a2f158c3220841bc057b0e9f7bf2da8b6b0171244c9e695c337b744d1da8f548
+  languageName: node
+  linkType: hard
+
 "react-native-reanimated@npm:^3.17.5":
   version: 3.18.0
   resolution: "react-native-reanimated@npm:3.18.0"
@@ -9043,6 +9056,23 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/80ad7ed06fc095767a8f786416fa0f4258a644ffc80a27a9425ad753abe0feab523f3e8817758411f7bead38449ab8c2f1272a9f124d185ffcf69afaf57eba31
+  languageName: node
+  linkType: hard
+
+"react-native-unistyles@npm:^3.0.0-rc.4":
+  version: 3.0.0-rc.4
+  resolution: "react-native-unistyles@npm:3.0.0-rc.4"
+  peerDependencies:
+    "@react-native/normalize-colors": "*"
+    react: "*"
+    react-native: ">=0.76.0"
+    react-native-edge-to-edge: "*"
+    react-native-nitro-modules: "*"
+    react-native-reanimated: "*"
+  peerDependenciesMeta:
+    react-native-reanimated:
+      optional: true
+  checksum: 10c0/50d69618396262b3e074d6d162b03cc7d69934ff405be96aca47062290e1954be32a4ab3d8d02eb610d576c9500bad3ac19368093425c89cb92856aa4df5785f
   languageName: node
   linkType: hard
 
