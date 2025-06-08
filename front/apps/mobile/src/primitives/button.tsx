@@ -45,8 +45,8 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	button: {
 		paddingVertical: theme.gap(1),
-		paddingHorizontal: theme.gap(2),
-		borderRadius: theme.borderRadius.sm, //TODO
+		paddingHorizontal: theme.gap(2.5),
+		borderRadius: theme.borderRadius, //TODO
 		variants: {
 			variant: {
 				outlined: {
@@ -65,7 +65,7 @@ const styles = StyleSheet.create((theme) => ({
 		},
 	},
 	label: {
-		...theme.fontStyles.semiBold,
+		...theme.fontStyles.medium,
 		fontSize: theme.fontSize.rem(1.5),
 		textAlign: "center",
 		variants: {
