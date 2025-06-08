@@ -18,15 +18,22 @@
 
 import { useTranslation } from "react-i18next";
 import { Button, View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Text } from "~/primitives/text";
+
+const styles = StyleSheet.create((theme) => ({
+	container: {
+		backgroundColor: theme.colors.background,
+	},
+}));
 
 export default function Root() {
 	const { t } = useTranslation();
 	const [colorScheme, setColorScheme] = useColorScheme();
 
 	return (
-		<View>
+		<View style={styles.container}>
 			<Button
 				title="Toggle"
 				onPress={() => {
@@ -49,7 +56,9 @@ export default function Root() {
 					{s}
 				</Text>
 			))}
-			<Text variant="body">{t("browsing.sections.musicVideos")}</Text>
+			<Text variant="body" color="secondary">
+				{t("browsing.sections.musicVideos")}
+			</Text>
 			<Button title="AA" />
 		</View>
 	);
