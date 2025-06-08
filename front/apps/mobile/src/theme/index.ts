@@ -1,3 +1,4 @@
+import { Appearance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 const baseTheme = {
 	// TODO Use font size from device
@@ -24,18 +25,22 @@ const baseTheme = {
 export const lightTheme = {
 	...baseTheme,
 	colors: {
-		primary: "#242120",
-		secondary: "#242120",
-		surface: "#efefef",
+		text: {
+			primary: "#242120",
+			secondary: "rgba(0, 0, 0, 0.38)",
+		},
+		background: "#efefef",
 	},
 };
 
 export const darkTheme = {
 	...baseTheme,
 	colors: {
-		primary: "#ffffff",
-		secondary: "#ffffff",
-		surface: "#242120",
+		text: {
+			primary: "#ffffff",
+			secondary: "rgba(255, 255, 255, 0.58)",
+		},
+		background: "#242120",
 	},
 };
 
@@ -55,8 +60,13 @@ export const appThemes = {
 StyleSheet.configure({
 	themes: appThemes,
 	breakpoints,
-	// TODO Choose using local storage
-	settings: { adaptiveThemes: true },
+	settings: {
+		// TODO Use local storage
+		initialTheme: () => {
+			const ap = Appearance.getColorScheme();
+			return ap ?? "light";
+		},
+	},
 });
 
 type AppThemes = typeof appThemes;

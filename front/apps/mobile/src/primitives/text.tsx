@@ -24,6 +24,11 @@ import type { RequireExactlyOne } from "type-fest";
 const styles = StyleSheet.create((theme) => ({
 	text: {
 		variants: {
+			color: {
+				primary: { color: theme.colors.text.primary },
+				secondary: { color: theme.colors.text.secondary },
+				default: { color: theme.colors.text.primary },
+			},
 			variant: {
 				h1: {
 					fontSize: theme.fontSize.rem(4),
@@ -62,7 +67,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-type TextProps = Required<UnistylesVariants<typeof styles>> &
+type TextProps = UnistylesVariants<typeof styles> &
 	RNTextProps &
 	RequireExactlyOne<{
 		content: string;
@@ -72,6 +77,7 @@ type TextProps = Required<UnistylesVariants<typeof styles>> &
 export const Text = ({ content, children, ...props }: TextProps) => {
 	styles.useVariants({
 		variant: props.variant,
+		color: props.color,
 	});
 	return (
 		<RNText {...props} style={[styles.text, props.style]}>

@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useEffect, useMemo } from "react";
 import { Appearance, useColorScheme as useRNColorScheme } from "react-native";
+import { UnistylesRuntime } from "react-native-unistyles";
 
 export type ColorScheme = "light" | "dark";
 
@@ -24,14 +26,23 @@ export type ColorScheme = "light" | "dark";
 export const useColorScheme = () => {
 	const userPreference = "system" as "system" | ColorScheme;
 	const systemColorScheme = useRNColorScheme();
-	const actualColorScheme =
-		userPreference === "system" ? (systemColorScheme ?? "light") : "light";
+	const actualColorScheme = useMemo(
+		() =>
+			userPreference === "system"
+				? (systemColorScheme ?? "light")
+				: "light",
+		[systemColorScheme, userPreference],
+	);
 	const setColorScheme = (
 		setter: ColorScheme | ((c: ColorScheme) => ColorScheme),
-	) =>
+	) => {
 		Appearance.setColorScheme(
 			typeof setter === "function" ? setter(actualColorScheme) : setter,
 		);
+	};
+	useEffect(() => {
+		UnistylesRuntime.setTheme(actualColorScheme);
+	}, [actualColorScheme]);
 
 	return [actualColorScheme, setColorScheme] as const;
 };
