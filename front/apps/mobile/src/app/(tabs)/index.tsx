@@ -24,6 +24,9 @@ import { Button as MeeloButton } from "~/primitives/button";
 import { Text } from "~/primitives/text";
 
 const styles = StyleSheet.create((theme) => ({
+	main: {
+		backgroundColor: theme.colors.background,
+	},
 	container: {
 		backgroundColor: theme.colors.background,
 		display: "flex",
@@ -36,7 +39,7 @@ export default function Root() {
 	const [colorScheme, setColorScheme] = useColorScheme();
 
 	return (
-		<View style={styles.container}>
+		<View style={styles.main}>
 			<Button
 				title="Toggle"
 				onPress={() => {
@@ -62,22 +65,20 @@ export default function Root() {
 			<Text variant="body" color="secondary">
 				{t("browsing.sections.musicVideos")}
 			</Text>
-
-			<MeeloButton
-				onPress={() => {
-					console.log("pressed");
-				}}
-				variant="outlined"
-				title={t("auth.signin")}
-			/>
-			<MeeloButton
-				onPress={() => {
-					console.log("pressed");
-				}}
-				width="fitContent"
-				variant="filled"
-				title={t("auth.signup")}
-			/>
+			<View style={styles.container}>
+				<MeeloButton
+					onPress={() => {}}
+					variant="outlined"
+					title={t("auth.signin")}
+					width="fill"
+				/>
+				<MeeloButton
+					onPress={() => {}}
+					width="fitContent"
+					variant="filled"
+					title={t("auth.signup")}
+				/>
+			</View>
 		</View>
 	);
 }
