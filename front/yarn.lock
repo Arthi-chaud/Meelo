@@ -7976,7 +7976,7 @@ __metadata:
     react-native: "npm:0.79.3"
     react-native-edge-to-edge: "npm:^1.6.1"
     react-native-nitro-modules: "npm:0.26.2"
-    react-native-reanimated: "npm:^3.17.5"
+    react-native-reanimated: "npm:^3.17.3"
     react-native-safe-area-context: "npm:^5.4.1"
     react-native-screens: "npm:~4.11.1"
     react-native-svg: "npm:^15.12.0"
@@ -8997,7 +8997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:^3.17.5":
+"react-native-reanimated@npm:^3.17.3":
   version: 3.18.0
   resolution: "react-native-reanimated@npm:3.18.0"
   dependencies:
