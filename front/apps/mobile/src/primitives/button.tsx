@@ -34,12 +34,11 @@ const styles = StyleSheet.create((theme) => ({
 			},
 			width: {
 				fill: {
-					// width: "100%"
+					width: "100%",
 				},
 				fitContent: {
-					// flexGrow: 0,
-					// flexDirection: "row",
-					// alignItems: "center",
+					display: "flex",
+					flexDirection: "row",
 				},
 			},
 		},
@@ -95,8 +94,8 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 
 export const Button = (props: ButtonProps) => {
 	styles.useVariants({
-		width: props.width,
-		variant: props.variant,
+		width: props.width ?? "fitContent",
+		variant: props.variant ?? "filled",
 	});
 	return (
 		<View style={styles.container}>
