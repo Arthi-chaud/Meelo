@@ -7,9 +7,7 @@ const baseTheme = {
 		default: 14,
 		rem: (ratio: number) => 14 * ratio,
 	},
-	borderRadius: {
-		sm: 3,
-	},
+	borderRadius: 8, // TODO Normalise?
 	fontStyles: {
 		light: {
 			fontFamily: "Rubik_300Light",
