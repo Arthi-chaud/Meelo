@@ -1,10 +1,14 @@
 import { Appearance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 const baseTheme = {
+	gap: (n: number) => n * 8,
 	// TODO Use font size from device
 	fontSize: {
 		default: 14,
 		rem: (ratio: number) => 14 * ratio,
+	},
+	borderRadius: {
+		sm: 3,
 	},
 	fontStyles: {
 		light: {
@@ -15,6 +19,9 @@ const baseTheme = {
 		},
 		medium: {
 			fontFamily: "Rubik_500Medium",
+		},
+		semiBold: {
+			fontFamily: "Rubik_600SemiBold",
 		},
 		bold: {
 			fontFamily: "Rubik_700Bold",
@@ -28,7 +35,9 @@ export const lightTheme = {
 		text: {
 			primary: "#242120",
 			secondary: "rgba(0, 0, 0, 0.38)",
+			onAccentSurface: "#ffffff",
 		},
+		button: "#242120",
 		background: "#efefef",
 	},
 };
@@ -39,7 +48,9 @@ export const darkTheme = {
 		text: {
 			primary: "#ffffff",
 			secondary: "rgba(255, 255, 255, 0.58)",
+			onAccentSurface: "#000000",
 		},
+		button: "#efefef",
 		background: "#242120",
 	},
 };

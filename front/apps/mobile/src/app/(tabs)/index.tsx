@@ -20,11 +20,14 @@ import { useTranslation } from "react-i18next";
 import { Button, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useColorScheme } from "~/hooks/color-scheme";
+import { Button as MeeloButton } from "~/primitives/button";
 import { Text } from "~/primitives/text";
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
 		backgroundColor: theme.colors.background,
+		display: "flex",
+		alignItems: "center",
 	},
 }));
 
@@ -59,7 +62,22 @@ export default function Root() {
 			<Text variant="body" color="secondary">
 				{t("browsing.sections.musicVideos")}
 			</Text>
-			<Button title="AA" />
+
+			<MeeloButton
+				onPress={() => {
+					console.log("pressed");
+				}}
+				variant="outlined"
+				title={t("auth.signin")}
+			/>
+			<MeeloButton
+				onPress={() => {
+					console.log("pressed");
+				}}
+				width="fitContent"
+				variant="filled"
+				title={t("auth.signup")}
+			/>
 		</View>
 	);
 }
