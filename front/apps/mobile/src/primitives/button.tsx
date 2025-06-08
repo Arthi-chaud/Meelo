@@ -16,37 +16,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useCallback } from "react";
 import {
 	Pressable,
 	type ButtonProps as RNButtonProps,
 	Text,
 	type TextProps,
-	View,
 } from "react-native";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+} from "react-native-reanimated";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
+
+// TODO Make the button animation cooler/dynamic
+
+type ButtonProps = UnistylesVariants<typeof styles> & {
+	labelProps?: TextProps;
+	buttonProps?: RNButtonProps;
+	onPress: RNButtonProps["onPress"];
+	title: RNButtonProps["title"];
+};
+
+export const Button = (props: ButtonProps) => {
+	const scale = useSharedValue<number>(1);
+	const handlePress = useCallback(() => {
+		scale.value = 0.97;
+	}, []);
+	const handleRelease = useCallback(() => {
+		scale.value = 1;
+	}, []);
+	const animatedStyle = useAnimatedStyle(() => ({
+		transform: [{ scale: withSpring(scale.value) }],
+	}));
+	styles.useVariants({
+		width: props.width ?? "fitContent",
+		variant: props.variant ?? "filled",
+	});
+	return (
+		<Animated.View style={[styles.container, animatedStyle]}>
+			<Pressable
+				{...props.buttonProps}
+				style={[styles.content]}
+				onPress={props.onPress}
+				onPressIn={handlePress}
+				onPressOut={handleRelease}
+			>
+				<Text style={styles.label}>{props.title}</Text>
+			</Pressable>
+		</Animated.View>
+	);
+};
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
-		variants: {
-			variant: {
-				outlined: {},
-				filled: {},
-			},
-			width: {
-				fill: {
-					width: "100%",
-				},
-				fitContent: {
-					display: "flex",
-					flexDirection: "row",
-				},
-			},
-		},
-	},
-	button: {
-		paddingVertical: theme.gap(1),
-		paddingHorizontal: theme.gap(2.5),
-		borderRadius: theme.borderRadius, //TODO
 		variants: {
 			variant: {
 				outlined: {
@@ -59,10 +83,21 @@ const styles = StyleSheet.create((theme) => ({
 				},
 			},
 			width: {
-				fill: {},
-				fitContent: {},
+				fill: {
+					width: "100%",
+				},
+				fitContent: {
+					display: "flex",
+					flexDirection: "row",
+				},
 			},
 		},
+		borderRadius: theme.borderRadius,
+	},
+	// Separate this to make sure the entire surface is clickable
+	content: {
+		paddingVertical: theme.gap(1),
+		paddingHorizontal: theme.gap(2.5),
 	},
 	label: {
 		...theme.fontStyles.medium,
@@ -84,28 +119,3 @@ const styles = StyleSheet.create((theme) => ({
 		},
 	},
 }));
-
-type ButtonProps = UnistylesVariants<typeof styles> & {
-	labelProps?: TextProps;
-	buttonProps?: RNButtonProps;
-	onPress: RNButtonProps["onPress"];
-	title: RNButtonProps["title"];
-};
-
-export const Button = (props: ButtonProps) => {
-	styles.useVariants({
-		width: props.width ?? "fitContent",
-		variant: props.variant ?? "filled",
-	});
-	return (
-		<View style={styles.container}>
-			<Pressable
-				{...props.buttonProps}
-				onPress={props.onPress}
-				style={styles.button}
-			>
-				<Text style={styles.label}>{props.title}</Text>
-			</Pressable>
-		</View>
-	);
-};

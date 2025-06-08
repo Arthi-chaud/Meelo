@@ -1,5 +1,7 @@
 const { getDefaultConfig } = require("expo/metro-config");
-
+const {
+	wrapWithReanimatedMetroConfig,
+} = require("react-native-reanimated/metro-config");
 /** @type {import('expo/metro-config').MetroConfig} */
 const defaultConfig = getDefaultConfig(__dirname);
 const path = require("node:path");
@@ -28,21 +30,23 @@ function addMonorepoSupport(config) {
 	};
 }
 
-module.exports = addMonorepoSupport({
-	...defaultConfig,
-	resolver: {
-		...defaultConfig.resolver,
-		resolveRequest: (context, moduleName, platform) => {
-			// Ensure you call the default resolver.
-			return context.resolveRequest(
-				context,
-				ALIASES[moduleName] ?? moduleName,
-				platform,
-			);
+module.exports = wrapWithReanimatedMetroConfig(
+	addMonorepoSupport({
+		...defaultConfig,
+		resolver: {
+			...defaultConfig.resolver,
+			resolveRequest: (context, moduleName, platform) => {
+				// Ensure you call the default resolver.
+				return context.resolveRequest(
+					context,
+					ALIASES[moduleName] ?? moduleName,
+					platform,
+				);
+			},
+			requireCycleIgnorePatterns: [
+				...defaultConfig.resolver.requireCycleIgnorePatterns,
+				/.*/,
+			],
 		},
-		requireCycleIgnorePatterns: [
-			...defaultConfig.resolver.requireCycleIgnorePatterns,
-			/.*/,
-		],
-	},
-});
+	}),
+);

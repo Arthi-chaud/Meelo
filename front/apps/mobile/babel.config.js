@@ -8,6 +8,7 @@ module.exports = (api) => {
 				{
 					root: "src",
 				},
+				"react-native-reanimated/plugin", // Always keep last
 			],
 		],
 	};

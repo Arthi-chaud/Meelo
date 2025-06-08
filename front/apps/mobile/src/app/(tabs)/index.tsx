@@ -67,7 +67,9 @@ export default function Root() {
 			</Text>
 			<View style={styles.container}>
 				<MeeloButton
-					onPress={() => {}}
+					onPress={() => {
+						console.log("ok");
+					}}
 					variant="outlined"
 					title={t("auth.signin")}
 					width="fill"
