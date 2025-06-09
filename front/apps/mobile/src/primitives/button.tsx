@@ -100,6 +100,7 @@ export const Button = (props: ButtonProps) => {
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
+		elevation: 3,
 		variants: {
 			variant: {
 				outlined: {
