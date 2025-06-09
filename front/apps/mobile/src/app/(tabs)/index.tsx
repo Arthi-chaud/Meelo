@@ -23,6 +23,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Text } from "~/primitives/text";
+import { TextInput } from "~/primitives/text_input";
 
 const styles = StyleSheet.create((theme) => ({
 	main: {
@@ -88,7 +89,6 @@ export default function Root() {
 					variant="filled"
 					title={t("auth.signup")}
 				/>
-
 				<Button
 					onPress={() => {}}
 					width="fitContent"
@@ -96,6 +96,7 @@ export default function Root() {
 					title={t("actions.release.setAllTracksAsMaster")}
 				/>
 			</View>
+			<TextInput placeholder="Password" />
 		</View>
 	);
 }
