@@ -16,4 +16,4 @@ RUN yarn install
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD yarn && yarn run start:dev
+CMD yarn && cd apps/web && yarn run start:dev
