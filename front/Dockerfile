@@ -24,7 +24,7 @@ COPY packages/utils/*.json packages/utils/
 RUN yarn workspaces focus -A 
 
 # NextJS
-COPY ./apps/ apps/
+COPY ./apps/web/ apps/web/
 COPY ./packages/ packages/
 COPY ./translations/ translations/
 COPY ./assets/* apps/web/public/
