@@ -38,8 +38,6 @@ import {
 	withUnistyles,
 } from "react-native-unistyles";
 
-// TODO Make the button animation cooler/dynamic
-
 type ButtonProps = UnistylesVariants<typeof styles> & {
 	labelProps?: TextProps;
 	buttonProps?: RNButtonProps;
@@ -66,7 +64,14 @@ export const Button = (props: ButtonProps) => {
 		scale.value = 1;
 	}, []);
 	const animatedStyle = useAnimatedStyle(() => ({
-		transform: [{ scale: withSpring(scale.value) }],
+		transform: [
+			{
+				scale: withSpring(scale.value, {
+					damping: 15,
+					stiffness: 200,
+				}),
+			},
+		],
 	}));
 	styles.useVariants({
 		width: props.width ?? "fitContent",
