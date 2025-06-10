@@ -58,7 +58,7 @@ export const Button = (props: ButtonProps) => {
 	const scale = useSharedValue<number>(1);
 	const Leading = withUnistyles(props.leadingIcon ?? View);
 	const handlePress = useCallback(() => {
-		scale.value = 0.97;
+		scale.value = 0.98;
 	}, []);
 	const handleRelease = useCallback(() => {
 		scale.value = 1;
