@@ -7959,6 +7959,7 @@ __metadata:
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@types/react": "npm:~19.0.10"
     expo: "npm:~53.0.9"
+    expo-asset: "npm:~11.1.5"
     expo-constants: "npm:~17.1.6"
     expo-dev-client: "npm:~5.1.8"
     expo-font: "npm:~13.3.1"
