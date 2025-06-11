@@ -36,9 +36,13 @@ export const useColorScheme = () => {
 	const setColorScheme = (
 		setter: ColorScheme | ((c: ColorScheme) => ColorScheme),
 	) => {
-		Appearance.setColorScheme(
-			typeof setter === "function" ? setter(actualColorScheme) : setter,
-		);
+		const newTheme =
+			typeof setter === "function" ? setter(actualColorScheme) : setter;
+		// Note: if we don't use the unistyle rt to update the theme, some components may not be updated
+		// E.g. icons and images
+		// Not sure why
+		UnistylesRuntime.setTheme(newTheme);
+		Appearance.setColorScheme(newTheme);
 	};
 	useEffect(() => {
 		UnistylesRuntime.setTheme(actualColorScheme);
