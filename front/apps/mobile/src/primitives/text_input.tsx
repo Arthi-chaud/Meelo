@@ -39,6 +39,8 @@ const styles = StyleSheet.create((theme) => ({
 		backgroundColor: theme.colors.background,
 		borderColor: theme.colors.text.primary,
 		marginTop: theme.gap(2),
+		// TODO Make sure it's responsive w/ adaptive fonts
+		width: theme.fontSize.rem(20),
 	},
 	placeholder: {
 		position: "absolute",
