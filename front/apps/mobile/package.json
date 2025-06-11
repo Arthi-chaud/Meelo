@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
 		"expo": "~53.0.9",
+		"expo-asset": "~11.1.5",
 		"expo-constants": "~17.1.6",
 		"expo-dev-client": "~5.1.8",
 		"expo-font": "~13.3.1",

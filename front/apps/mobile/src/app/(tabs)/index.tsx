@@ -20,6 +20,7 @@ import { MasterIcon } from "@/ui/icons";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { MeeloBanner } from "~/components/meelo_banner";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Text } from "~/primitives/text";
@@ -74,6 +75,7 @@ export default function Root() {
 			<Text variant="body" color="secondary">
 				{t("browsing.sections.musicVideos")}
 			</Text>
+			<MeeloBanner />
 			<View style={styles.container}>
 				<Button
 					onPress={() => {
@@ -95,8 +97,8 @@ export default function Root() {
 					leadingIcon={MasterIcon}
 					title={t("actions.release.setAllTracksAsMaster")}
 				/>
+				<TextInput placeholder="Password" />
 			</View>
-			<TextInput placeholder="Password" />
 		</View>
 	);
 }

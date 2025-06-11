@@ -27,6 +27,15 @@
 						"backgroundColor": "#242120"
 					}
 				}
+			],
+			[
+				"expo-asset",
+				{
+					"assets": [
+						"./assets/banner1_white.png",
+						"./assets/banner1_black.png"
+					]
+				}
 			]
 		],
 		"experiments": {
