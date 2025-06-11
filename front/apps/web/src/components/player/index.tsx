@@ -507,6 +507,7 @@ const Player = () => {
 							display: "flex",
 							width: "100%",
 							height: "fit-content",
+							overflow: "hidden",
 							background: playerBgColor,
 							transition: transition,
 							backdropFilter: blur,

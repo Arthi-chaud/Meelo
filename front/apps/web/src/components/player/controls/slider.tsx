@@ -75,6 +75,7 @@ const PlayerSlider = (props: PlayerSliderProps) => {
 							style: {
 								height: 5,
 								minWidth: 5,
+								transition: "width .2s ease-in",
 								// Note: It overflows at the border at the very end of the track
 								// not worth trying to figure  out
 								// borderStartEndRadius: 0,
