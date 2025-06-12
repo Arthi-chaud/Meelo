@@ -63,7 +63,7 @@ export const TextInput = ({ placeholder, style, ...props }: TextInputProps) => {
 		const springConfig = { damping: 100, stiffness: 500 };
 		return {
 			//TODO use theme.gap
-			top: withSpring(labelIsRaised ? -12 : 16, springConfig),
+			top: withSpring(labelIsRaised ? -14 : 16, springConfig),
 			fontSize: 16,
 			color: withSpring(
 				labelIsRaised
