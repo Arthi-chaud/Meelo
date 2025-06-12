@@ -1,0 +1,63 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Tambah ke Playlist",
+			"modalTitle": "Pilih Playlist"
+		},
+		"album": {
+			"changeType": "Ubah Jenius Album",
+			"goToAlbum": "Ke Album"
+		},
+		"archive": "Arsipkan",
+		"artist": {
+			"seeAlbums": "Tampilkan Album",
+			"seeSongs": "Tampilkan lagu"
+		},
+		"changeIllutration": "Ubah Gambar Ilustrasi",
+		"create": "Buat",
+		"delete": "Hapus",
+		"deleteFromPlaylist": "Hapus dari Playlist",
+		"deleteUser": {
+			"label": "Hapus Pengguna",
+			"warning": "Kamu akan menghapus pengguna. Tindakan ini tidak dapat dibatalkan."
+		},
+		"download": {
+			"label": "Unduh",
+			"warning": "Dilarang mengunduh materi berhak cipta yang bukan milik Anda. Lanjutkan hanya jika Anda benar-benar memiliki konten aslinya."
+		},
+		"goBackHome": "Kembali ke Beranda",
+		"goToArtist": "Ke Artis",
+		"goToSettingsPage": "Pergi ke Pengaturan",
+		"library": {
+			"create": "Buat Koleksi",
+			"delete": "Hapus Koleksi",
+			"deletionWarning": "Kamu akan menghapus koleksi ini. Tindakan ini tidak dapat dibatalkan"
+		},
+		"logout": "Keluar",
+		"new": "Buat",
+		"playback": {
+			"play": "Putar",
+			"playAfter": "Putar Setelah",
+			"playAll": "Putar Semua",
+			"playNext": "Putar Selanjutnya",
+			"shuffle": "Acak"
+		},
+		"release": {
+			"setAllTracksAsMaster": "Tetapkan Semua Lagu sebagai Master"
+		},
+		"setAsMaster": "Tetapkan sebagai Master",
+		"share": "Bagikan",
+		"song": {
+			"changeType": "Ubah Jenis Lagu",
+			"mergeSong": {
+				"label": "Gabungkan Lagu",
+				"modalTitle": "Pilih Lagu",
+				"warningBeforeMerging": "Semua track akan dipindahkan ke lagu yang dipilih, dan lagu lama akan dihapus. File Anda tidak akan diubah atau dihapus"
+			},
+			"seeLyrics": "Lihat Lirik",
+			"seeOtherVersions": "Lihat Versi Lain",
+			"seeRelatedTracks": "Lihat Lagu Terkait",
+			"seeSongInfo": "Informasi Lagu"
+		}
+	}
+}
