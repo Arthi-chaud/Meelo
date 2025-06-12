@@ -18,11 +18,12 @@
 
 import { MasterIcon } from "@/ui/icons";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
+import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
 
@@ -44,7 +45,7 @@ export default function Root() {
 	const [colorScheme, setColorScheme] = useColorScheme();
 
 	return (
-		<View style={styles.main}>
+		<ScrollView style={styles.main}>
 			<View style={{ flexDirection: "row" }}>
 				<Button
 					title="Toggle"
@@ -97,8 +98,21 @@ export default function Root() {
 					leadingIcon={MasterIcon}
 					title={t("actions.release.setAllTracksAsMaster")}
 				/>
+				<Divider h withInsets />
 				<TextInput placeholder="Password" />
 			</View>
-		</View>
+			<View
+				style={{
+					flex: 1,
+					height: 300,
+					flexDirection: "row",
+					display: "flex",
+				}}
+			>
+				<View style={{ flex: 1 }} />
+				<Divider withInsets v />
+				<View style={{ flex: 1 }} />
+			</View>
+		</ScrollView>
 	);
 }
