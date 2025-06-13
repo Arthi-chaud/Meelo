@@ -494,6 +494,70 @@ describe("Song Service", () => {
 		});
 	});
 
+	describe("Natural sort", () => {
+		it("should order by name, using natural sort", async () => {
+			//Setup
+			const tmpArtist = await dummyRepository.artist.create({
+				data: { name: "TMP", slug: "tmp" },
+			});
+			const songGroup = { slug: new Slug("tmp") };
+			const song1 = await songService.create({
+				name: "A 02",
+				artist: { id: tmpArtist.id },
+				group: songGroup,
+				genres: [],
+			});
+			const song2 = await songService.create({
+				name: "B 01",
+				artist: { id: tmpArtist.id },
+				group: songGroup,
+				genres: [],
+			});
+
+			const song3 = await songService.create({
+				name: "B 2",
+				artist: { id: tmpArtist.id },
+				group: songGroup,
+				genres: [],
+			});
+
+			const song4 = await songService.create({
+				name: "B 23",
+				artist: { id: tmpArtist.id },
+				group: songGroup,
+				genres: [],
+			});
+
+			const song5 = await songService.create({
+				name: "B 003",
+				artist: { id: tmpArtist.id },
+				group: songGroup,
+				genres: [],
+			});
+			const expectedOrder = [song1, song2, song3, song5, song4].map(
+				({ id }) => ({ id }),
+			);
+
+			// assertions
+			const sortedSongs = await songService.getMany(
+				{ artist: { is: { id: tmpArtist.id } } },
+				{ sortBy: "name" },
+			);
+			expect(sortedSongs.length).toBe(expectedOrder.length);
+			for (const [idx, sortedSong] of sortedSongs.entries()) {
+				expect(sortedSong.id).toBe(expectedOrder[idx].id);
+			}
+
+			//Teardown
+			await dummyRepository.song.deleteMany({
+				where: { artistId: tmpArtist.id },
+			});
+			await dummyRepository.artist.delete({
+				where: { id: tmpArtist.id },
+			});
+		});
+	});
+
 	describe("Song with featuring", () => {
 		let mainArtist: Artist;
 		let featuredArtist: Artist;
