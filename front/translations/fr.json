@@ -103,6 +103,8 @@
 		"topVideos": "Meilleurs Clips Vidéos"
 	},
 	"auth": {
+		"loginButton": "Se connecter",
+		"signupButton": "Créer le compte",
 		"signin": "On s'est déjà vu ? Connectez-vous",
 		"signup": "Nouveau ici ? Inscrivez-vous"
 	},

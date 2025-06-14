@@ -101,10 +101,6 @@
 		"topSongs": "Top Songs",
 		"topVideos": "Top Videos"
 	},
-	"auth": {
-		"signin": "Already have an account ? Login",
-		"signup": "New here ? Signup"
-	},
 	"browsing": {
 		"controls": {
 			"asc": "Asc",
@@ -227,6 +223,12 @@
 		"openClosePlayer": "Open / Close Player",
 		"openModalShortcutDescription": "Open / Close this modal",
 		"playPauseWhenExpanded": "Play / Pause (When player is open)"
+	},
+	"auth": {
+		"loginButton": "Login",
+		"signupButton": "Signup",
+		"signup": "New here ? Signup",
+		"signin": "Already have an account ? Login"
 	},
 	"misc": {
 		"loading": "Loading",

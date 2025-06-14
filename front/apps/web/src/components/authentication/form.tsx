@@ -141,7 +141,11 @@ const AuthenticationForm = () => {
 						variant="contained"
 						onClick={() => {}}
 					>
-						{formType === "login" ? "Login" : "Signup"}
+						{t(
+							formType === "login"
+								? "auth.loginButton"
+								: "auth.signupButton",
+						)}
 					</Button>
 				</Box>
 				<Divider sx={{ width: "100%" }} variant="middle" />
