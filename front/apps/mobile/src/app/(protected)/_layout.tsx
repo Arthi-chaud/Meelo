@@ -24,5 +24,5 @@ export default function ProtectedLayout() {
 	if (!isLoggedIn) {
 		return <Redirect href="/auth" />;
 	}
-	return <Stack screenOptions={{ headerShown: false }} />;
+	return <Stack />;
 }
