@@ -58,12 +58,10 @@ const styles = StyleSheet.create((theme) => ({
 				horizontal: {
 					width: "100%",
 					height: 1,
-					marginVertical: theme.gap(2),
 				},
 				vertical: {
 					height: "100%",
 					width: 1,
-					marginHorizontal: theme.gap(1),
 				},
 			},
 		},
