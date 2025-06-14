@@ -379,6 +379,8 @@
 	},
 	"compilationArtistLabel": "Compilation",
 	"auth": {
+		"loginButton": "Login",
+		"signupButton": "Signup",
 		"signup": "New here ? Signup",
 		"signin": "Already have an account ? Login"
 	},
