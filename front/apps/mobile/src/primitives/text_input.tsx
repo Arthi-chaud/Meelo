@@ -38,7 +38,7 @@ const styles = StyleSheet.create((theme) => ({
 		borderWidth: 2,
 		backgroundColor: theme.colors.background,
 		borderColor: theme.colors.text.primary,
-		marginTop: theme.gap(2),
+		marginTop: theme.gap(1),
 		// TODO Make sure it's responsive w/ adaptive fonts
 		width: theme.fontSize.rem(20),
 	},

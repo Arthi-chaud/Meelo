@@ -17,15 +17,25 @@
  */
 
 import { Image } from "expo-image";
+import type { ImageProps } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { useColorScheme } from "~/hooks/color-scheme";
-export const MeeloBanner = () => {
+
+const styles = StyleSheet.create((_theme) => ({
+	image: {
+		flex: 1,
+		width: "100%",
+	},
+}));
+
+export const MeeloBanner = (props: Pick<ImageProps, "style">) => {
 	const [colorScheme, _] = useColorScheme();
 
 	return (
 		<Image
 			priority={"high"}
 			contentFit="contain"
-			style={{ flex: 1 }}
+			style={[styles.image, props.style]}
 			source={
 				colorScheme === "dark"
 					? require("../../assets/banner1_white.png")
