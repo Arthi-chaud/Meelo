@@ -17,10 +17,9 @@
  */
 
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useRootViewStyle } from "~/hooks/root-view-style";
@@ -33,18 +32,16 @@ const styles = StyleSheet.create((theme) => ({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		flex: 1,
 		justifyContent: "space-evenly",
 	},
 	banner: {
-		flex: 1,
+		height: 300,
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "center",
 		alignItems: "flex-end",
 	},
 	formContainer: {
-		flex: 2,
 		display: "flex",
 		width: "100%",
 		flexDirection: "column",
@@ -54,45 +51,148 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-//TODO Handle empty fields
 //TODO On press, push to API
 //TODO On authed, update atom
-//
+//TODO Handle overflow w/ keyboard
 
 export default function AuthenticationScreen() {
 	const { t } = useTranslation();
 	const [formType, setFormType] = useState<"login" | "signup">("login");
 	const safeAreaStyle = useRootViewStyle();
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			url: "",
+			username: "",
+			password: "",
+			confirm: "",
+		},
+	});
+	const onSubmit = (data) => console.log(data);
 	return (
-		<View style={[styles.root, safeAreaStyle]}>
+		<ScrollView contentContainerStyle={[styles.root, safeAreaStyle]}>
 			<MeeloBanner style={styles.banner} />
 			<View style={styles.formContainer}>
-				<TextInput
-					placeholder={t("form.auth.url")}
-					textContentType="URL"
+				<Controller
+					control={control}
+					name="url"
+					rules={{
+						required: {
+							value: true,
+							message: t("form.auth.instanceUrlIsRequired"),
+						},
+					}}
+					render={({ field: { onChange, onBlur, value } }) => (
+						<TextInput
+							placeholder={t("form.auth.instanceUrl")}
+							textContentType="URL"
+							onBlur={onBlur}
+							onChangeText={onChange}
+							error={errors.url?.message}
+							value={value}
+						/>
+					)}
 				/>
-				<TextInput
-					placeholder={t("form.auth.username")}
-					textContentType="username"
-					autoComplete={formType === "login" ? "username" : undefined}
+
+				<Controller
+					control={control}
+					name="username"
+					rules={{
+						required: {
+							value: true,
+							message: t("form.auth.usernameTooShort"),
+						},
+						minLength: {
+							value: 4,
+							message: t("form.auth.usernameTooShort"),
+						},
+					}}
+					render={({ field: { onChange, onBlur, value } }) => (
+						<TextInput
+							placeholder={t("form.auth.username")}
+							textContentType="username"
+							onBlur={onBlur}
+							onChangeText={onChange}
+							value={value}
+							autoComplete={
+								formType === "login" ? "username" : undefined
+							}
+							error={errors.username?.message}
+						/>
+					)}
 				/>
-				<TextInput
-					placeholder={t("form.auth.password")}
-					textContentType={
-						formType === "login" ? "password" : "newPassword"
-					}
-					autoComplete={formType === "login" ? "password" : undefined}
-					secureTextEntry
+
+				<Controller
+					control={control}
+					name="password"
+					rules={{
+						required: {
+							value: true,
+							message: t("form.auth.passwordIsRequired"),
+						},
+						minLength: {
+							value: 6,
+							message: t("form.auth.passwordTooShort"),
+						},
+					}}
+					render={({ field: { onChange, onBlur, value } }) => (
+						<TextInput
+							placeholder={t("form.auth.password")}
+							textContentType={
+								formType === "login"
+									? "password"
+									: "newPassword"
+							}
+							onBlur={onBlur}
+							onChangeText={onChange}
+							value={value}
+							autoComplete={
+								formType === "login" ? "password" : undefined
+							}
+							error={errors.password?.message}
+							secureTextEntry
+						/>
+					)}
 				/>
 				{formType === "signup" && (
-					<TextInput
-						placeholder={t("form.auth.confirmPasswordField")}
-						textContentType="newPassword"
-						secureTextEntry
+					<Controller
+						control={control}
+						name="confirm"
+						rules={{
+							required: {
+								value: true,
+								message: t("form.auth.pleaseConfirm"),
+							},
+							minLength: {
+								value: 6,
+								message: t("form.auth.passwordTooShort"),
+							},
+							validate: (confirmValue, form) => {
+								if (confirmValue !== form.password) {
+									return t("form.auth.passwordsAreDifferent");
+								}
+							},
+						}}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								placeholder={t(
+									"form.auth.confirmPasswordField",
+								)}
+								onBlur={onBlur}
+								onChangeText={onChange}
+								value={value}
+								textContentType="newPassword"
+								secureTextEntry
+								error={errors.confirm?.message}
+							/>
+						)}
 					/>
 				)}
 				<Button
-					onPress={() => {}}
+					onPress={handleSubmit(onSubmit)}
 					title={t(
 						formType === "login"
 							? "auth.loginButton"
@@ -110,6 +210,6 @@ export default function AuthenticationScreen() {
 					)}
 				/>
 			</View>
-		</View>
+		</ScrollView>
 	);
 }

@@ -16,9 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ErrorIcon } from "@/ui/icons";
 import {
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
+	View,
 } from "react-native";
 import Animated, {
 	useAnimatedStyle,
@@ -28,7 +30,7 @@ import Animated, {
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
-type TextInputProps = RNTextInputProps;
+type TextInputProps = RNTextInputProps & { error?: string };
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
@@ -37,7 +39,14 @@ const styles = StyleSheet.create((theme) => ({
 		borderRadius: theme.borderRadius,
 		borderWidth: 2,
 		backgroundColor: theme.colors.background,
-		borderColor: theme.colors.text.primary,
+		variants: {
+			error: {
+				true: { borderColor: theme.colors.error },
+				default: {
+					borderColor: theme.colors.text.primary,
+				},
+			},
+		},
 		marginTop: theme.gap(1),
 		// TODO Make sure it's responsive w/ adaptive fonts
 		width: theme.fontSize.rem(20),
@@ -47,13 +56,45 @@ const styles = StyleSheet.create((theme) => ({
 		paddingHorizontal: theme.gap(1),
 		left: theme.gap(1.5),
 		backgroundColor: theme.colors.background,
+		variants: {
+			error: {
+				true: { color: theme.colors.error },
+				false: {
+					color: theme.colors.text.primary,
+				},
+			},
+		},
 	},
 	input: {
-		color: theme.colors.text.primary,
+		variants: {
+			error: {
+				true: { color: theme.colors.error },
+				false: { color: theme.colors.text.primary },
+			},
+		},
+	},
+	errorContainer: {
+		display: "flex",
+		flexDirection: "row",
+		gap: theme.gap(0.5),
+		alignItems: "center",
+		paddingLeft: theme.gap(1),
+	},
+	errorMessage: {
+		color: theme.colors.error,
+		fontFamily: theme.fontStyles.light.fontFamily,
+	},
+	errorIcon: {
+		color: theme.colors.error,
 	},
 }));
 
-export const TextInput = ({ placeholder, style, ...props }: TextInputProps) => {
+export const TextInput = ({
+	placeholder,
+	style,
+	error,
+	...props
+}: TextInputProps) => {
 	const isFocused = useSharedValue(false);
 	const isEmpty = useSharedValue(true);
 	const animatedTheme = useAnimatedTheme();
@@ -64,18 +105,20 @@ export const TextInput = ({ placeholder, style, ...props }: TextInputProps) => {
 		return {
 			//TODO use theme.gap
 			top: withSpring(labelIsRaised ? -14 : 16, springConfig),
-			fontSize: 16,
+			fontSize: animatedTheme.value.fontSize.default,
 			color: withSpring(
-				labelIsRaised
-					? animatedTheme.value.colors.text.primary
-					: animatedTheme.value.colors.text.secondary,
+				error?.length
+					? animatedTheme.value.colors.error
+					: labelIsRaised
+						? animatedTheme.value.colors.text.primary
+						: animatedTheme.value.colors.text.secondary,
 				springConfig,
 			),
 			fontFamily: isFocused.value
 				? animatedTheme.value.fontStyles.semiBold.fontFamily
 				: animatedTheme.value.fontStyles.regular.fontFamily,
 		};
-	});
+	}, [error]);
 
 	const containerStyle = useAnimatedStyle(() => ({
 		borderWidth: withSpring(isFocused.value ? 3 : 1, {
@@ -83,24 +126,39 @@ export const TextInput = ({ placeholder, style, ...props }: TextInputProps) => {
 			stiffness: 500,
 		}),
 	}));
+	styles.useVariants({ error: !!error });
 	return (
-		<Animated.View style={[styles.container, containerStyle]}>
-			<Animated.Text style={[styles.placeholder, labelStyle]}>
-				{placeholder}
-			</Animated.Text>
-			<RNTextInput
-				{...props}
-				onChangeText={(t) => {
-					isEmpty.value = t.length === 0;
-				}}
-				onBlur={() => {
-					isFocused.value = false;
-				}}
-				onFocus={() => {
-					isFocused.value = true;
-				}}
-				style={[styles.input, style]}
-			/>
-		</Animated.View>
+		<View>
+			<Animated.View style={[styles.container, containerStyle]}>
+				<Animated.Text style={[styles.placeholder, labelStyle]}>
+					{placeholder}
+				</Animated.Text>
+				<RNTextInput
+					{...props}
+					onChangeText={(t) => {
+						isEmpty.value = t.length === 0;
+						props.onChangeText?.(t);
+					}}
+					onBlur={(e) => {
+						isFocused.value = false;
+						props.onBlur?.(e);
+					}}
+					onFocus={(e) => {
+						isFocused.value = true;
+						props.onFocus?.(e);
+					}}
+					style={[styles.input, style]}
+				/>
+			</Animated.View>
+
+			{error && (
+				<View style={styles.errorContainer}>
+					<ErrorIcon size={16} style={styles.errorIcon} />
+					<Animated.Text style={[styles.errorMessage]}>
+						{error}
+					</Animated.Text>
+				</View>
+			)}
+		</View>
 	);
 };

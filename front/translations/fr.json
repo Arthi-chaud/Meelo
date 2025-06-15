@@ -179,11 +179,13 @@
 			"confirmPassword": "Confirmez le mot de passe",
 			"confirmPasswordField": "Confirmer",
 			"password": "Mot de passe",
+			"instanceUrl": "URL du server",
 			"passwordIsRequired": "Un mot de passe est attendu",
 			"passwordTooShort": "Le mot de passe est trop court",
 			"passwordsAreDifferent": "Les mots de passes sont différents",
 			"pleaseConfirm": "Confirmez le mot de passe",
 			"username": "Nom d'Utilisateur",
+			"instanceUrlIsRequired": "L'URL du server est manquant",
 			"usernameIsRequired": "Un nom d'utilisateur est attendu",
 			"usernameTooShort": "Le nom d'utilisateur est trop court"
 		},
