@@ -48,6 +48,7 @@ export const AutoMode: Icon = Iconsax.Autobrightness;
 export const TranslateIcon: Icon = Iconsax.Translate;
 export const SettingsIcon: Icon = Iconsax.Setting2;
 export const SearchIcon: Icon = Iconsax.SearchNormal1;
+export const BrowseIcon: Icon = Iconsax.MusicSquare;
 export const UpdateIllustrationIcon: Icon = Iconsax.Image;
 export const BurgerIcon: Icon = Iconsax.HambergerMenu;
 export const AddIcon: Icon = Iconsax.AddCircle;
