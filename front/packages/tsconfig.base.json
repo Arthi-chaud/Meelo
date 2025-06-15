@@ -9,7 +9,7 @@
 			"@/utils/*": ["../utils/src/*"],
 			"@/api": ["../api/src/index"],
 			"@/api/*": ["../api/src/*"],
-			"@/components/*": ["../components/src/*"]
+			"@/ui/*": ["../api/ui/*"]
 		}
 	}
 }
