@@ -18,9 +18,12 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { MeeloBanner } from "~/components/meelo_banner";
+import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { TextInput } from "~/primitives/text_input";
@@ -31,7 +34,6 @@ const styles = StyleSheet.create((theme) => ({
 		flexDirection: "column",
 		alignItems: "center",
 		flex: 1,
-		paddingVertical: theme.gap(8),
 		justifyContent: "space-evenly",
 	},
 	banner: {
@@ -55,19 +57,38 @@ const styles = StyleSheet.create((theme) => ({
 //TODO Handle empty fields
 //TODO On press, push to API
 //TODO On authed, update atom
+//
 
 export default function AuthenticationScreen() {
 	const { t } = useTranslation();
 	const [formType, setFormType] = useState<"login" | "signup">("login");
+	const safeAreaStyle = useRootViewStyle();
 	return (
-		<View style={styles.root}>
+		<View style={[styles.root, safeAreaStyle]}>
 			<MeeloBanner style={styles.banner} />
 			<View style={styles.formContainer}>
-				<TextInput placeholder={t("form.auth.username")} />
-				<TextInput placeholder={t("form.auth.password")} />
+				<TextInput
+					placeholder={t("form.auth.url")}
+					textContentType="URL"
+				/>
+				<TextInput
+					placeholder={t("form.auth.username")}
+					textContentType="username"
+					autoComplete={formType === "login" ? "username" : undefined}
+				/>
+				<TextInput
+					placeholder={t("form.auth.password")}
+					textContentType={
+						formType === "login" ? "password" : "newPassword"
+					}
+					autoComplete={formType === "login" ? "password" : undefined}
+					secureTextEntry
+				/>
 				{formType === "signup" && (
 					<TextInput
 						placeholder={t("form.auth.confirmPasswordField")}
+						textContentType="newPassword"
+						secureTextEntry
 					/>
 				)}
 				<Button
