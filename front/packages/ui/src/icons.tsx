@@ -103,6 +103,8 @@ export const EmptyStateIcon: Icon = Iconsax.SearchStatus1;
 
 export const MergeIcon: Icon = Iconsax.Hierarchy;
 
+export const ErrorIcon: Icon = Iconsax.CloseCircle;
+
 export const OpenExternalIcon: Icon = Iconsax.ExportCircle;
 export const WarningIcon: Icon = Iconsax.Warning2;
 export const BookIcon: Icon = Iconsax.Book1;

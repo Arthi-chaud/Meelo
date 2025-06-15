@@ -27,6 +27,7 @@
 		"iconsax-react-nativejs": "^0.0.8",
 		"intl-pluralrules": "^2.0.1",
 		"react": "19.0.0",
+		"react-hook-form": "^7.58.0",
 		"react-i18next": "^12.2.2",
 		"react-native": "0.79.3",
 		"react-native-edge-to-edge": "^1.6.1",
