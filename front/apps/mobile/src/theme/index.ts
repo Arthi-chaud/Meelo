@@ -35,7 +35,10 @@ export const lightTheme = {
 			primary: "#242120",
 			secondary: "rgba(0, 0, 0, 0.38)",
 			onAccentSurface: "#ffffff",
+			error: "#ff2c2c",
 		},
+
+		error: "#ff2c2c",
 		divider: "rgba(0, 0, 0, 0.38)",
 		button: "#242120",
 		background: "#efefef",
@@ -51,6 +54,7 @@ export const darkTheme = {
 			secondary: "rgba(255, 255, 255, 0.58)",
 			onAccentSurface: "#000000",
 		},
+		error: "#ff2c2c",
 		divider: "rgba(255, 255, 255, 0.58)",
 		button: "#efefef",
 		background: "#242120",

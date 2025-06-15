@@ -87,12 +87,14 @@
 		"auth": {
 			"username": "Username",
 			"password": "Password",
+			"instanceUrl": "Server URL",
 			"usernameIsRequired": "Username is required",
 			"passwordIsRequired": "Password is required",
+			"instanceUrlIsRequired": "Instance URL is required",
 			"usernameTooShort": "Username is too short",
 			"passwordTooShort": "Password is too short",
 			"pleaseConfirm": "Please, confirm password",
-			"passwordsAreDifferent": "Password are different",
+			"passwordsAreDifferent": "Passwords are different",
 			"confirmPasswordField": "Confirm"
 		},
 		"scrobblers": {
