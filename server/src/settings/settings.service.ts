@@ -50,8 +50,11 @@ export default class SettingsService {
 		const uncheckedSettings = plainToClass(Settings, {
 			meeloFolder: process.env.INTERNAL_CONFIG_DIR!,
 			dataFolder: process.env.INTERNAL_DATA_DIR!,
+			enableUserRegistration:
+				// opt-in
+				process.env.ENABLE_USER_REGISTRATION !== "0",
 			allowAnonymous: process.env.ALLOW_ANONYMOUS === "1",
-		});
+		} satisfies Settings);
 		// Validation
 		const validationError = validateSync(uncheckedSettings, {
 			forbidUnknownValues: true,

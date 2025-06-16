@@ -34,6 +34,12 @@ export default class Settings {
 	@IsBoolean()
 	allowAnonymous: boolean;
 	/**
+	 * If false, it will not be possible to create new accounts
+	 */
+	@ApiProperty()
+	@IsBoolean()
+	enableUserRegistration: boolean;
+	/**
 	 * The folder where `settings.json` and metadata are stored
 	 */
 	@ApiHideProperty()
