@@ -53,6 +53,7 @@ import {
 } from "@/models/release";
 import { ScrobblersStatus } from "@/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "@/models/search";
+import { Settings } from "@/models/settings";
 import {
 	type SongInclude,
 	type SongSortingKeys,
@@ -562,6 +563,11 @@ export const getScrobblerStatus = (): Query<ScrobblersStatus> => {
 		route: "/scrobblers",
 		validator: ScrobblersStatus,
 	});
+};
+
+/// Settings
+export const getSettings = (): Query<Settings> => {
+	return _mkSimpleQuery({ route: "/settings", validator: Settings });
 };
 
 export const _mkSimpleQuery = <T>(
