@@ -18,12 +18,13 @@
 
 import { Module } from "@nestjs/common";
 import PrismaModule from "src/prisma/prisma.module";
+import SettingsModule from "src/settings/settings.module";
 import { UserResponseBuilder } from "./models/user.response";
 import UserController from "./user.controller";
 import UserService from "./user.service";
 
 @Module({
-	imports: [PrismaModule],
+	imports: [PrismaModule, SettingsModule],
 	providers: [UserService, UserResponseBuilder],
 	controllers: [UserController],
 	exports: [UserService, UserResponseBuilder],

@@ -21,6 +21,7 @@ import {
 	Controller,
 	Delete,
 	Get,
+	HttpStatus,
 	Post,
 	Put,
 	Query,
@@ -31,10 +32,14 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import type { User } from "@prisma/client";
 import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
-import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import {
+	InvalidRequestException,
+	MeeloException,
+} from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import Response, { ResponseType } from "src/response/response.decorator";
+import SettingsService from "src/settings/settings.service";
 import UserCreateDTO from "./models/create-user.dto";
 import UpdateUserDTO from "./models/update-user.dto";
 import type UserQueryParameters from "./models/user.query-params";
@@ -44,7 +49,10 @@ import UserService from "./user.service";
 @ApiTags("Users")
 @Controller("users")
 export default class UserController {
-	constructor(private userService: UserService) {}
+	constructor(
+		private userService: UserService,
+		private settingsService: SettingsService,
+	) {}
 
 	@ApiOperation({
 		summary: "Get info about the currently authentified user",
@@ -58,11 +66,18 @@ export default class UserController {
 
 	@ApiOperation({
 		summary: "Create a new user account",
+		description: "Will throw (401) if registration is disbaled in settings",
 	})
 	@Public()
 	@Response({ handler: UserResponseBuilder })
 	@Post()
 	async createUserAccount(@Body() userDTO: UserCreateDTO) {
+		if (!this.settingsService.settingsValues.enableUserRegistration) {
+			throw new MeeloException(
+				HttpStatus.UNAUTHORIZED,
+				"User registration has been disabled by the admin.",
+			);
+		}
 		return this.userService.create(userDTO);
 	}
 
