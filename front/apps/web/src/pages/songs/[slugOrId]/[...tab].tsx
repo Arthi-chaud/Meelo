@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import {
 	getGenres,
 	getSong,
@@ -46,6 +45,7 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
 import { useGradientBackground } from "~/components/gradient-background";
