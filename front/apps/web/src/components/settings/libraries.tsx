@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery, useQueryClient } from "~/api";
 import { getLibraries, getTasks } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import type Library from "@/models/library";
@@ -43,6 +42,7 @@ import { useConfirm } from "material-ui-confirm";
 import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import {
 	CleanAllLibrariesAction,

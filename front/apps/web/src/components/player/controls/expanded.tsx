@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery, useQueryClient } from "~/api";
 import {
 	cursorAtom,
 	infiniteQueryAtom,
@@ -59,6 +58,7 @@ import { type LegacyRef, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from "~/api";
 import { CreatePlaylistAction } from "~/components/actions/playlist";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
 import Illustration from "~/components/illustration";

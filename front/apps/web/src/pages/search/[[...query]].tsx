@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAPI, useQueryClient } from "~/api";
 import {
 	getAlbums,
 	getArtists,
@@ -45,6 +44,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { useAPI, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
 import InfiniteList from "~/components/infinite/list";
 import InfiniteAlbumView from "~/components/infinite/resource/album";

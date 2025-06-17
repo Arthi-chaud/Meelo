@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "~/api";
 import { getArtist, getRelease } from "@/api/queries";
 import type { VideoWithRelations } from "@/models/video";
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";
 import {

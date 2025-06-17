@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "~/api";
 import { getArtist } from "@/api/queries";
 import type { TrackWithRelations } from "@/models/track";
 import { playTrackAtom } from "@/state/player";
@@ -24,6 +23,7 @@ import { MasterIcon, TrackIcon } from "@/ui/icons";
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "~/api";
 import TrackContextualMenu from "~/components/contextual-menu/resource/track";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
