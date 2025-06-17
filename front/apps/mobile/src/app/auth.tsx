@@ -16,16 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ErrorIcon } from "@/ui/icons";
+import { router } from "expo-router";
+import { useSetAtom } from "jotai";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { getAPI_ } from "~/api";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
+import { Text } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
+import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
 	root: {
@@ -41,6 +47,14 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: "center",
 		alignItems: "flex-end",
 	},
+	errorContainer: {
+		display: "flex",
+		flexDirection: "row",
+		gap: theme.gap(1),
+	},
+	errorMsg: {
+		color: theme.colors.error,
+	},
 	formContainer: {
 		display: "flex",
 		width: "100%",
@@ -51,27 +65,44 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-//TODO On press, push to API
-//TODO On authed, update atom
 //TODO Handle overflow w/ keyboard
+//TODO toast on error
 
 export default function AuthenticationScreen() {
 	const { t } = useTranslation();
+	const defaultValues = {
+		url: "http://192.168.65.1:3000",
+		username: "test",
+		password: "test1234",
+		confirm: "",
+	};
+	const setAccessToken = useSetAtom(accessTokenAtom);
+	const setInstanceUrl = useSetAtom(instanceUrlAtom);
+	const [isLoading, setLoading] = useState(false);
+	const [errorMsg, setErrorMessage] = useState<string>();
+
 	const [formType, setFormType] = useState<"login" | "signup">("login");
 	const safeAreaStyle = useRootViewStyle();
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
-	} = useForm({
-		defaultValues: {
-			url: "",
-			username: "",
-			password: "",
-			confirm: "",
-		},
-	});
-	const onSubmit = (data) => console.log(data);
+	} = useForm({ defaultValues });
+	const onSubmit = (data: typeof defaultValues) => {
+		const instanceUrl = data.url.replace(/\/$/, "");
+		const api = getAPI_(null, instanceUrl);
+		setLoading(true);
+		api.login({ username: data.username, password: data.password })
+			.then(({ access_token }) => {
+				setAccessToken(access_token);
+				setInstanceUrl(instanceUrl);
+				router.replace("/");
+			})
+			.catch((e) => {
+				setErrorMessage(e.toString());
+				setLoading(false);
+			});
+	};
 	return (
 		<ScrollView contentContainerStyle={[styles.root, safeAreaStyle]}>
 			<MeeloBanner style={styles.banner} />
@@ -192,6 +223,7 @@ export default function AuthenticationScreen() {
 					/>
 				)}
 				<Button
+					disabled={isLoading}
 					onPress={handleSubmit(onSubmit)}
 					title={t(
 						formType === "login"
@@ -199,6 +231,12 @@ export default function AuthenticationScreen() {
 							: "auth.signupButton",
 					)}
 				/>
+				{errorMsg && (
+					<View style={styles.errorContainer}>
+						<ErrorIcon style={styles.errorMsg} />
+						<Text style={styles.errorMsg}>{errorMsg}</Text>
+					</View>
+				)}
 				<Divider h withInsets />
 				<Button
 					variant="outlined"
