@@ -16,11 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ErrorIcon } from "@/ui/icons";
 import {
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
-	View,
 } from "react-native";
 import Animated, {
 	useAnimatedStyle,
@@ -42,9 +40,7 @@ const styles = StyleSheet.create((theme) => ({
 		variants: {
 			error: {
 				true: { borderColor: theme.colors.error },
-				default: {
-					borderColor: theme.colors.text.primary,
-				},
+				false: { borderColor: theme.colors.text.primary },
 			},
 		},
 		marginTop: theme.gap(1),
@@ -59,7 +55,7 @@ const styles = StyleSheet.create((theme) => ({
 		variants: {
 			error: {
 				true: { color: theme.colors.error },
-				false: {
+				default: {
 					color: theme.colors.text.primary,
 				},
 			},
@@ -69,23 +65,11 @@ const styles = StyleSheet.create((theme) => ({
 		variants: {
 			error: {
 				true: { color: theme.colors.error },
-				false: { color: theme.colors.text.primary },
+				default: {
+					color: theme.colors.text.primary,
+				},
 			},
 		},
-	},
-	errorContainer: {
-		display: "flex",
-		flexDirection: "row",
-		gap: theme.gap(0.5),
-		alignItems: "center",
-		paddingLeft: theme.gap(1),
-	},
-	errorMessage: {
-		color: theme.colors.error,
-		fontFamily: theme.fontStyles.light.fontFamily,
-	},
-	errorIcon: {
-		color: theme.colors.error,
 	},
 }));
 
@@ -105,9 +89,9 @@ export const TextInput = ({
 		return {
 			//TODO use theme.gap
 			top: withSpring(labelIsRaised ? -14 : 16, springConfig),
-			fontSize: animatedTheme.value.fontSize.default,
+			fontSize: 16,
 			color: withSpring(
-				error?.length
+				error
 					? animatedTheme.value.colors.error
 					: labelIsRaised
 						? animatedTheme.value.colors.text.primary
@@ -118,7 +102,7 @@ export const TextInput = ({
 				? animatedTheme.value.fontStyles.semiBold.fontFamily
 				: animatedTheme.value.fontStyles.regular.fontFamily,
 		};
-	}, [error]);
+	}, [error, animatedTheme]);
 
 	const containerStyle = useAnimatedStyle(() => ({
 		borderWidth: withSpring(isFocused.value ? 3 : 1, {
@@ -128,37 +112,32 @@ export const TextInput = ({
 	}));
 	styles.useVariants({ error: !!error });
 	return (
-		<View>
-			<Animated.View style={[styles.container, containerStyle]}>
-				<Animated.Text style={[styles.placeholder, labelStyle]}>
-					{placeholder}
-				</Animated.Text>
-				<RNTextInput
-					{...props}
-					onChangeText={(t) => {
-						isEmpty.value = t.length === 0;
-						props.onChangeText?.(t);
-					}}
-					onBlur={(e) => {
-						isFocused.value = false;
-						props.onBlur?.(e);
-					}}
-					onFocus={(e) => {
-						isFocused.value = true;
-						props.onFocus?.(e);
-					}}
-					style={[styles.input, style]}
-				/>
-			</Animated.View>
+		<Animated.View style={[styles.container, containerStyle]}>
+			<Animated.Text style={[styles.placeholder, labelStyle]}>
+				{placeholder}
+			</Animated.Text>
+			<RNTextInput
+				{...props}
+				onChangeText={(t) => {
+					isEmpty.value = t.length === 0;
+					props.onChangeText?.(t);
+				}}
+				onBlur={(e) => {
+					isFocused.value = false;
+					props.onBlur?.(e);
+				}}
+				onFocus={(e) => {
+					isFocused.value = true;
+					props.onFocus?.(e);
+				}}
+				style={[styles.input, style]}
+			/>
 
 			{error && (
-				<View style={styles.errorContainer}>
-					<ErrorIcon size={16} style={styles.errorIcon} />
-					<Animated.Text style={[styles.errorMessage]}>
-						{error}
-					</Animated.Text>
-				</View>
+				<Animated.Text style={[styles.placeholder, labelStyle]}>
+					{error}
+				</Animated.Text>
 			)}
-		</View>
+		</Animated.View>
 	);
 };

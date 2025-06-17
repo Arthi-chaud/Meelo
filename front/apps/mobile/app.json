@@ -29,6 +29,14 @@
 				}
 			],
 			[
+				"expo-build-properties",
+				{
+					"android": {
+						"usesCleartextTraffic": true
+					}
+				}
+			],
+			[
 				"expo-asset",
 				{
 					"assets": [

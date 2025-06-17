@@ -12,8 +12,11 @@
 	},
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
+		"@tanstack/react-query": "^5.77.0",
+		"api": "workspace:^",
 		"expo": "~53.0.9",
 		"expo-asset": "~11.1.5",
+		"expo-build-properties": "^0.14.6",
 		"expo-constants": "~17.1.6",
 		"expo-dev-client": "~5.1.8",
 		"expo-font": "~13.3.1",
@@ -26,6 +29,7 @@
 		"i18next": "^23.7.16",
 		"iconsax-react-nativejs": "^0.0.8",
 		"intl-pluralrules": "^2.0.1",
+		"jotai": "^2.12.5",
 		"react": "19.0.0",
 		"react-hook-form": "^7.58.0",
 		"react-i18next": "^12.2.2",
@@ -37,6 +41,7 @@
 		"react-native-screens": "~4.11.1",
 		"react-native-svg": "^15.12.0",
 		"react-native-unistyles": "^3.0.0-rc.4",
+		"state": "workspace:^",
 		"type-fest": "^4.33.0",
 		"utils": "workspace:^"
 	},

@@ -76,15 +76,16 @@ export const Button = (props: ButtonProps) => {
 	styles.useVariants({
 		width: props.width ?? "fitContent",
 		variant: props.variant ?? "filled",
+		disabled: props.disabled ?? false,
 	});
 	return (
 		<Animated.View style={[styles.container, animatedStyle]}>
 			<Pressable
 				{...props.buttonProps}
 				style={[styles.content]}
-				onPress={props.onPress}
-				onPressIn={handlePress}
-				onPressOut={handleRelease}
+				onPress={!props.disabled ? props.onPress : undefined}
+				onPressIn={!props.disabled ? handlePress : undefined}
+				onPressOut={!props.disabled ? handleRelease : undefined}
 			>
 				{props.leadingIcon ? (
 					<Leading
@@ -102,6 +103,12 @@ const styles = StyleSheet.create((theme) => ({
 	container: {
 		elevation: 3,
 		variants: {
+			disabled: {
+				true: {
+					opacity: 0.5,
+				},
+				default: {},
+			},
 			variant: {
 				outlined: {
 					borderColor: theme.colors.button,
@@ -146,6 +153,7 @@ const styles = StyleSheet.create((theme) => ({
 				fill: {},
 				fitContent: {},
 			},
+			disabled: { true: {}, default: {} },
 			variant: {
 				outlined: {
 					color: theme.colors.text.primary,

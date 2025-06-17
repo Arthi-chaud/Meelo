@@ -1,38 +1,18 @@
 {
-	"extends": [
-		"expo/tsconfig.base"
-	],
+	"extends": ["expo/tsconfig.base"],
 	"compilerOptions": {
 		"baseUrl": "./src",
 		"strict": true,
 		"paths": {
-			"iconsax-react": [
-				"iconsax-react-nativejs"
-			],
-			"~/*": [
-				"./*"
-			],
-			"@/models/*": [
-				"../../../packages/models/src/*"
-			],
-			"@/utils/*": [
-				"../../../packages/utils/src/*"
-			],
-			"@/api": [
-				"../../../packages/api/src/index"
-			],
-			"@/api/*": [
-				"../../../packages/api/src/*"
-			],
-			"@/state/*": [
-				"../../../packages/state/src/*"
-			],
-			"@/components/*": [
-				"../../../packages/components/src/*"
-			],
-			"@/ui/*": [
-				"../../../packages/ui/src/*"
-			]
+			"iconsax-react": ["iconsax-react-nativejs"],
+			"~/*": ["./*"],
+			"@/models/*": ["../../../packages/models/src/*"],
+			"@/utils/*": ["../../../packages/utils/src/*"],
+			"@/api": ["../../../packages/api/src/index"],
+			"@/api/*": ["../../../packages/api/src/*"],
+			"@/state/*": ["../../../packages/state/src/*"],
+			"@/components/*": ["../../../packages/components/src/*"],
+			"@/ui/*": ["../../../packages/ui/src/*"]
 		}
 	},
 	"include": [

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { store } from "@/state/store";
 import {
 	Rubik_300Light,
 	Rubik_400Regular,
@@ -29,9 +30,12 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import i18next from "i18next";
-import { useEffect } from "react";
+import { Provider } from "jotai";
+import { useEffect, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import "intl-pluralrules";
+import { DefaultQueryOptions } from "@/api/query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import resources from "../../../../translations";
 
 SplashScreen.preventAutoHideAsync();
@@ -52,7 +56,16 @@ export default function RootLayout() {
 		Rubik_900Black,
 	});
 
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: DefaultQueryOptions,
+				},
+			}),
+	);
 	useEffect(() => {
+		//TODO set store with local storage values
 		i18next.use(initReactI18next).init({
 			interpolation: {
 				escapeValue: false,
@@ -74,5 +87,11 @@ export default function RootLayout() {
 		return null;
 	}
 
-	return <Stack screenOptions={{ headerShown: false }} />;
+	return (
+		<QueryClientProvider client={queryClient}>
+			<Provider store={store}>
+				<Stack screenOptions={{ headerShown: false }} />
+			</Provider>
+		</QueryClientProvider>
+	);
 }

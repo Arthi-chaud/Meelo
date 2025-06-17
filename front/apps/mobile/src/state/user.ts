@@ -16,12 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type User from "@/models/user";
-import { UserAccessTokenStorageKey } from "@/utils/constants";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { atom } from "jotai";
 
-export const userAtom = atom<User | undefined>();
+export const instanceUrlAtom = atom(null as string | null);
 
 export const accessTokenAtom = atom<
 	string | undefined,
@@ -34,18 +31,11 @@ export const accessTokenAtom = atom<
 			const expires = new Date();
 
 			expires.setMonth(expires.getMonth() + 1);
-			setCookie(
-				UserAccessTokenStorageKey,
-				update,
-				// Sets cookie for a month
-				{ expires },
-			);
+			//TODO
 		} else {
-			deleteCookie(UserAccessTokenStorageKey);
+			//TODO Delete
 		}
 		set(_accessToken, update);
 	},
 );
-const _accessToken = atom<string | undefined>(
-	getCookie(UserAccessTokenStorageKey)?.valueOf().toString(),
-);
+const _accessToken = atom<string | undefined>();

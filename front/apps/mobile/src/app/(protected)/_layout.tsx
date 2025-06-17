@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { getCurrentUserStatus } from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
 import {
 	BrowseIcon,
 	HomeIcon,
@@ -23,12 +25,14 @@ import {
 	SearchIcon,
 	SettingsIcon,
 } from "@/ui/icons";
+import { useQuery as useTanStackQuery } from "@tanstack/react-query";
 import { Redirect, Tabs } from "expo-router";
+import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-
-const isLoggedIn = false;
+import { useAPI } from "~/api";
+import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
 	//TODO Blur bg of navbar
@@ -50,10 +54,18 @@ const TabIcon = ({
 const TabButton = (props: any) => <TouchableOpacity {...props} />;
 
 export default function ProtectedLayout() {
+	const accessToken = useAtomValue(accessTokenAtom);
+	const instanceUrl = useAtomValue(instanceUrlAtom);
+	const api = useAPI();
+	const user = useTanStackQuery({
+		...toTanStackQuery(api, getCurrentUserStatus),
+		enabled: !!(accessToken && instanceUrl),
+	});
 	const { t } = useTranslation();
-	if (!isLoggedIn) {
+	if (!accessToken || !instanceUrl || user.error) {
 		return <Redirect href="/auth" />;
 	}
+	//TODO Proper handling of when user is loading
 	return (
 		<Tabs
 			screenOptions={{
