@@ -17,25 +17,39 @@
  */
 
 import { atom } from "jotai";
+import { storage } from "~/utils/storage";
 
-export const instanceUrlAtom = atom(null as string | null);
+const AccessTokenKey = "access-token";
+const InstanceUrlKey = "instance-url";
 
-export const accessTokenAtom = atom<
-	string | undefined,
-	[string | undefined],
-	void
->(
+export const instanceUrlAtom = atom<string | null, [string | null], void>(
+	(get) => get(_instanceUrlAtom),
+	(_, set, update) => {
+		if (update !== null) {
+			storage.set(InstanceUrlKey, update);
+		} else {
+			storage.delete(InstanceUrlKey);
+		}
+		set(_instanceUrlAtom, update);
+	},
+);
+
+const _instanceUrlAtom = atom(storage.getString(InstanceUrlKey) ?? null);
+
+export const accessTokenAtom = atom<string | null, [string | null], void>(
 	(get) => get(_accessToken),
 	(_, set, update) => {
-		if (update !== undefined) {
+		if (update !== null) {
 			const expires = new Date();
 
 			expires.setMonth(expires.getMonth() + 1);
-			//TODO
+			storage.set(AccessTokenKey, update);
 		} else {
-			//TODO Delete
+			storage.delete(AccessTokenKey);
 		}
 		set(_accessToken, update);
 	},
 );
-const _accessToken = atom<string | undefined>();
+const _accessToken = atom<string | null>(
+	storage.getString(AccessTokenKey) ?? null,
+);
