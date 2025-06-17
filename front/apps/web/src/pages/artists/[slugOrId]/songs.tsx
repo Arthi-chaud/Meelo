@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI, useQuery, useQueryClient } from "~/api";
 import { getArtist, getRelease, getSongGroups, getSongs } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import { SongSortingKeys } from "@/models/song";
@@ -27,6 +26,7 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAPI, useQuery, useQueryClient } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import {

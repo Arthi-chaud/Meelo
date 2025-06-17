@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { useInfiniteQuery } from "~/api";
 import type { AlbumWithRelations } from "@/models/album";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
@@ -30,6 +29,7 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import Link from "next/link";
 import { type ComponentProps, Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import type { useInfiniteQuery } from "~/api";
 import Fade from "~/components/fade";
 import AlbumTile from "~/components/tile/resource/album";
 import VideoTile from "~/components/tile/resource/video";

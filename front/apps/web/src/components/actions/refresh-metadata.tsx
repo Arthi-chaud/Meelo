@@ -17,12 +17,12 @@
  */
 
 import type API from "@/api";
-import { useAPI } from "~/api";
 import { MetadataRefreshIcon } from "@/ui/icons";
 import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
+import { useAPI } from "~/api";
 import type Action from "./";
 
 type APIMethodParams = ArraySlice<Parameters<API["refreshMetadata"]>, 0, -1>;

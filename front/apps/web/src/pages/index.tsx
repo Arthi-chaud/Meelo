@@ -17,12 +17,6 @@
  */
 
 import {
-	getAPI,
-	useInfiniteQuery,
-	useQueries,
-	type useQuery,
-} from "~/api";
-import {
 	getAlbumExternalMetadata,
 	getAlbums,
 	getArtists,
@@ -43,6 +37,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAPI, useInfiniteQuery, useQueries, type useQuery } from "~/api";
 import { GoToSettingsAction } from "~/components/actions/link";
 import { EmptyState } from "~/components/empty-state";
 import Fade from "~/components/fade";

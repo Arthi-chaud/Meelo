@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery, useQueryClient } from "~/api";
 import { getScrobblerStatus } from "@/api/queries";
 import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
 import {
@@ -51,6 +50,7 @@ import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
+import { useQuery, useQueryClient } from "~/api";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n";
 

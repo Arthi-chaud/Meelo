@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "~/api";
 import { getSongs } from "@/api/queries";
 import { transformPage } from "@/api/query";
 import type Genre from "@/models/genre";
@@ -34,6 +33,7 @@ import {
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import { useMemo } from "react";
+import { useQueryClient } from "~/api";
 
 // Stolen from https://stackoverflow.com/questions/3426404/create-a-hexadecimal-colour-based-on-a-string-with-javascript
 const stringToColour = (str: string) => {

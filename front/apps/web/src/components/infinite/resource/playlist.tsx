@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "~/api";
 import type { InfiniteQuery } from "@/api/query";
 import {
 	PlaylistSortingKeys,
 	type PlaylistWithRelations,
 } from "@/models/playlist";
 import type { SortingParameters } from "@/models/sorting";
+import { useQueryClient } from "~/api";
 import { CreatePlaylistAction } from "~/components/actions/playlist";
 import type { EmptyStateProps } from "~/components/empty-state";
 import { Controls } from "~/components/infinite/controls/controls";
