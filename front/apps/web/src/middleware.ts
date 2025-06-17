@@ -18,13 +18,13 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 
-import { getAPI_ } from "~/api";
 import { getMasterRelease } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { store } from "@/state/store";
-import { accessTokenAtom } from "@/state/user";
 import { UserAccessTokenStorageKey } from "@/utils/constants";
 import { QueryClient } from "@tanstack/react-query";
+import { getAPI_ } from "~/api";
+import { accessTokenAtom } from "~/state/user";
 
 export async function middleware(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;

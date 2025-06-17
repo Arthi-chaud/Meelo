@@ -29,13 +29,13 @@ import {
 import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { store } from "@/state/store";
-import { userAtom } from "@/state/user";
 import { EditIcon } from "@/ui/icons";
 import { Chip, Grid } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { userAtom } from "~/state/user";
 import type Action from "./";
 
 const ResourceTypeForm = <Enum extends string>(props: {

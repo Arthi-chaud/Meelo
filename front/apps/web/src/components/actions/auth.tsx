@@ -17,8 +17,8 @@
  */
 
 import { store } from "@/state/store";
-import { accessTokenAtom } from "@/state/user";
 import { LogoutIcon } from "@/ui/icons";
+import { accessTokenAtom } from "~/state/user";
 import type Action from "./";
 
 export const LogoutAction: Action = {
