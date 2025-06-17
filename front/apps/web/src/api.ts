@@ -26,8 +26,8 @@ import {
 import type { InfiniteQueryFn, QueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
 import { store } from "@/state/store";
-import { accessTokenAtom } from "@/state/user";
 import { atom, useAtom } from "jotai";
+import { accessTokenAtom } from "~/state/user";
 
 const isSSR = () => typeof window === "undefined";
 
