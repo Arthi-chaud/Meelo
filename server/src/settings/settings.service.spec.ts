@@ -27,6 +27,7 @@ describe("Settings Service", () => {
 				dataFolder: "test/assets/",
 				meeloFolder: "test/assets/",
 				allowAnonymous: false,
+				enableUserRegistration: true,
 			});
 		});
 	});

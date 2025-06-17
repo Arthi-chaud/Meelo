@@ -189,7 +189,7 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Test User Role", () => {
 		it("Should deny access to admin-only route", () => {
 			return request(app.getHttpServer())
-				.get("/settings")
+				.get("/users")
 				.auth(userToken, { type: "bearer" })
 				.expect(401);
 		});
@@ -210,7 +210,7 @@ describe("Authentication Controller & Role Management", () => {
 
 	describe("Test Anonymous Role", () => {
 		it("Should deny access to admin-only route", () => {
-			return request(app.getHttpServer()).get("/settings").expect(401);
+			return request(app.getHttpServer()).get("/users").expect(401);
 		});
 		it("Should deny access to route", () => {
 			return request(app.getHttpServer()).get("/albums").expect(401);
@@ -225,7 +225,7 @@ describe("Authentication Controller & Role Management", () => {
 	describe("Test Microservice role", () => {
 		it("Should deny access to admin-only route", () => {
 			return request(app.getHttpServer())
-				.get("/settings")
+				.get("/users")
 				.set("x-api-key", "a")
 				.expect(401)
 				.expect((r) => {
@@ -300,7 +300,7 @@ describe("Authentication Controller & Role Management", () => {
 			).mockReturnValueOnce({
 				allowAnonymous: true,
 			} as Settings);
-			return request(app.getHttpServer()).get("/settings").expect(401);
+			return request(app.getHttpServer()).get("/users").expect(401);
 		});
 		it("Should Accept Anonymous request ", async () => {
 			const mock = jest.spyOn(
@@ -330,6 +330,23 @@ describe("Authentication Controller & Role Management", () => {
 						new UnauthorizedAnonymousRequestException().message,
 					);
 				});
+		});
+	});
+
+	describe("Test disabled user registration", () => {
+		it("Should regject", () => {
+			jest.spyOn(
+				SettingsService.prototype,
+				"settingsValues",
+				"get",
+			).mockReturnValueOnce({
+				allowAnonymous: true,
+				enableUserRegistration: false,
+			} as Settings);
+			return request(app.getHttpServer())
+				.post("/users")
+				.send({ name: "user1", password: "password1" })
+				.expect(401);
 		});
 	});
 });

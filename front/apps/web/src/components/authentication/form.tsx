@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAPI } from "@/api/hook";
+import { useAPI, useQuery } from "@/api/hook";
+import { getSettings } from "@/api/queries";
 import { accessTokenAtom } from "@/state/user";
 import { Box, Button, Divider, Stack } from "@mui/material";
 import { useAtom } from "jotai";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
@@ -34,11 +35,15 @@ const AuthenticationForm = () => {
 	const [formType, setFormType] = useState<"login" | "signup">("login");
 	const defaultValues = { username: "", password: "", confirm: "" };
 	const [password, setPassword] = useState(defaultValues.password);
+	const settings = useQuery(getSettings);
 	const [_, setAccessToken] = useAtom(accessTokenAtom);
 	const { registerState, handleSubmit } = useHookForm({
 		defaultValues,
 	});
 	const { t } = useTranslation();
+	const registrationIsDisabled = useMemo(() => {
+		return !settings.data || !settings.data.enableUserRegistration;
+	}, [settings.data]);
 
 	const onSubmit = async (values: typeof defaultValues) => {
 		try {
@@ -142,6 +147,7 @@ const AuthenticationForm = () => {
 				<Divider sx={{ width: "100%" }} variant="middle" />
 				<Box>
 					<Button
+						disabled={registrationIsDisabled}
 						variant="outlined"
 						onClick={() =>
 							setFormType(

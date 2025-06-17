@@ -18,11 +18,11 @@
 
 import { Controller, Get } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Admin } from "src/authentication/roles/roles.decorators";
+import { Public } from "src/authentication/roles/roles.decorators";
 import type Settings from "./models/settings";
 import SettingsService from "./settings.service";
 
-@Admin()
+@Public()
 @ApiTags("Settings")
 @Controller("settings")
 export default class SettingsController {
