@@ -20,7 +20,6 @@ import PageNotFound from "./404";
 import InternalError from "./500";
 import "core-js/actual";
 import "~/theme/styles.css";
-import { getAPI_ } from "~/api";
 import { getCurrentUserStatus, getLibraries } from "@/api/queries";
 import {
 	DefaultQueryOptions,
@@ -28,16 +27,17 @@ import {
 	toTanStackQuery,
 } from "@/api/query";
 import { store } from "@/state/store";
-import { accessTokenAtom } from "@/state/user";
 import type { EmotionCache } from "@emotion/react";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
 import { Provider } from "jotai";
 import type { Page } from "ssr";
+import { getAPI_ } from "~/api";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n";
+import { accessTokenAtom } from "~/state/user";
 import ThemeProvider from "~/theme/provider";
 
 export interface MyAppProps extends AppProps {
