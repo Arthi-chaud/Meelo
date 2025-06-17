@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery, useQueryClient } from "@/api/hook";
+import { useQuery, useQueryClient } from "~/api";
 import { getLibraries, getTasks } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import type Library from "@/models/library";

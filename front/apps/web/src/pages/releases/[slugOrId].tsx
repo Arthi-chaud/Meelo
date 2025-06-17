@@ -17,7 +17,6 @@
  */
 
 import type API from "@/api";
-import { getAPI, useInfiniteQuery, useQuery } from "@/api/hook";
 import {
 	getAlbum,
 	getAlbumExternalMetadata,
@@ -66,6 +65,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import Fade from "~/components/fade";

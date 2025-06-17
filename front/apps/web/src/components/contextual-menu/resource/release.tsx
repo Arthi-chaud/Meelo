@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "@/api/hook";
+import { useQueryClient } from "~/api";
 import { getReleaseTracklist } from "@/api/queries";
 import type { ReleaseWithRelations } from "@/models/release";
 import { userAtom } from "@/state/user";

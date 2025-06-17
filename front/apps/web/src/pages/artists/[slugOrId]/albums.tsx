@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery } from "@/api/hook";
+import { useQuery } from "~/api";
 import { getAlbums, getArtist } from "@/api/queries";
 import { getYear } from "@/utils/date";
 import { Box } from "@mui/material";

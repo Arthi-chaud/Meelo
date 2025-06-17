@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAPI } from "@/api/hook";
+import { useAPI } from "~/api";
 import { getLibraries } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import { useInfiniteQuery as useReactInfiniteQuery } from "@tanstack/react-query";
