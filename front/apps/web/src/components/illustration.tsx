@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAPI } from "@/api/hook";
+import { useAPI } from "~/api";
 import type IllustrationModel from "@/models/illustration";
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";

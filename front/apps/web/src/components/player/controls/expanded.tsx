@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery, useQueryClient } from "@/api/hook";
+import { useQuery, useQueryClient } from "~/api";
 import {
 	cursorAtom,
 	infiniteQueryAtom,

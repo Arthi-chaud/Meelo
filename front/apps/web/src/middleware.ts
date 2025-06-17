@@ -18,7 +18,7 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 
-import { getAPI_ } from "@/api/hook";
+import { getAPI_ } from "~/api";
 import { getMasterRelease } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { store } from "@/state/store";

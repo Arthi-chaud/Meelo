@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI, useQuery, useQueryClient } from "@/api/hook";
+import { getAPI, useQuery, useQueryClient } from "~/api";
 import { getArtist, getRelease, getSongGroups, getSongs } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import { SongSortingKeys } from "@/models/song";

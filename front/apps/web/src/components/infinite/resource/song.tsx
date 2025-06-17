@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type QueryClient, useQueryClient } from "@/api/hook";
+import type { QueryClient } from "@/api/hook";
 import { type InfiniteQuery, transformPage } from "@/api/query";
 import {
 	SongSortingKeys,
@@ -32,6 +32,7 @@ import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { Controls } from "~/components/infinite/controls/controls";
 import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type QueryClient, useQueryClient } from "@/api/hook";
+import type { QueryClient } from "@/api/hook";
 import { type InfiniteQuery, transformPage } from "@/api/query";
 import type { SortingParameters } from "@/models/sorting";
 import { videoTypeToTranslationKey } from "@/models/utils";
@@ -28,6 +28,7 @@ import {
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
+import { useQueryClient } from "~/api";
 import { Controls } from "~/components/infinite/controls/controls";
 import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
 import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
