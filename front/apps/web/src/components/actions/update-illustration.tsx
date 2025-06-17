@@ -18,7 +18,6 @@
 
 import type { QueryClient } from "@/api/hook";
 import { store } from "@/state/store";
-import { userAtom } from "@/state/user";
 import { UpdateIllustrationIcon } from "@/ui/icons";
 import {
 	Button,
@@ -30,6 +29,7 @@ import { useMutation } from "@tanstack/react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { userAtom } from "~/state/user";
 import type Action from "./";
 
 type IllustrationUpdateFormType = {

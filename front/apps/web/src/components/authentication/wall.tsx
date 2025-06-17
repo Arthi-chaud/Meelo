@@ -16,22 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI_ } from "~/api";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
-import { accessTokenAtom, userAtom } from "@/state/user";
 import { Box, Stack } from "@mui/material";
-import { useQuery as useReactQuery } from "@tanstack/react-query";
+import {
+	useQueryClient,
+	useQuery as useReactQuery,
+} from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
+import { getAPI_ } from "~/api";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";
+import { accessTokenAtom, userAtom } from "~/state/user";
 import AuthenticationForm from "./form";
 
 const AuthenticationWall = (props: { children: any }) => {
 	const [accessToken] = useAtom(accessTokenAtom);
 	const [_, setUser] = useAtom(userAtom);
 	const api = useMemo(() => getAPI_(accessToken ?? null), [accessToken]);
+	const queryClient = useQueryClient();
 	const status = useReactQuery({
 		...toTanStackQuery(api, getCurrentUserStatus),
 		throwOnError: false,
@@ -41,6 +45,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	);
 
 	useEffect(() => {
+		queryClient.invalidateQueries({ queryKey: getCurrentUserStatus().key });
 		status.refetch();
 	}, [accessToken]);
 	useEffect(() => {

@@ -16,16 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "~/api";
 import { getArtist, getRelease } from "@/api/queries";
 import type { TrackWithRelations } from "@/models/track";
-import { userAtom } from "@/state/user";
 import { MasterIcon } from "@/ui/icons";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";
 import {
@@ -43,6 +42,7 @@ import { RefreshTrackMetadataAction } from "~/components/actions/refresh-metadat
 import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
+import { userAtom } from "~/state/user";
 import { ContextualMenu } from "..";
 
 type TrackContextualMenuProps = {
