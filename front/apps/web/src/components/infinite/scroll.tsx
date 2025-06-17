@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useInfiniteQuery } from "@/api/hook";
+import { useInfiniteQuery } from "~/api";
 import type { InfiniteQueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
 import { EmptyStateIcon } from "@/ui/icons";

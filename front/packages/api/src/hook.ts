@@ -17,17 +17,14 @@
  */
 
 import type Resource from "@/models/resource";
-import { store } from "@/state/store";
-import { accessTokenAtom } from "@/state/user";
 import {
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "@tanstack/react-query";
-import { atom, useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
-import API from ".";
+import type API from ".";
 import {
 	type InfiniteQueryFn,
 	type QueryFn,
@@ -35,67 +32,16 @@ import {
 	toTanStackQuery,
 } from "./query";
 
-const isSSR = () => typeof window === "undefined";
-
-const apiInstancesAtom = atom({} as Record<string, API>);
-
-export const useAPI = () => {
-	const [accessToken] = useAtom(accessTokenAtom);
-	const [apiInstances, setApiInstances] = useAtom(apiInstancesAtom);
-	if (!accessToken) {
-		return getAPI_(null);
-	}
-	const matchingInstance = apiInstances[accessToken];
-	if (!matchingInstance) {
-		const newInstance = getAPI_(accessToken);
-		setApiInstances((rest) => ({ ...rest, [accessToken]: newInstance }));
-		return newInstance;
-	}
-	return matchingInstance;
-};
-
-// Get API instance using atom to resolve access token
-export const getAPI = () => {
-	const accessToken = store.get(accessTokenAtom);
-	return getAPI_(accessToken ?? null);
-};
-
-export const getAPI_ = (accessToken: string | null) => {
-	const isDev = process.env.NODE_ENV === "development";
-	const apiSSRUrl =
-		process.env.SSR_SERVER_URL ?? process.env.PUBLIC_SERVER_URL!;
-
-	const api = new API(accessToken, {
-		illustration: isDev
-			? "/api"
-			: (process.env.PUBLIC_SERVER_URL ?? "/api"),
-		api: isSSR()
-			? apiSSRUrl
-			: isDev
-				? "/api"
-				: (process.env.PUBLIC_SERVER_URL ?? "/api"),
-
-		scanner: isSSR()
-			? (process.env.SSR_SCANNER_URL ?? process.env.PUBLIC_SCANNER_URL!)
-			: isDev
-				? "/scanner"
-				: (process.env.PUBLIC_SCANNER_URL ?? "/scanner"),
-	});
-	return api;
-};
-
-/**
- * Wrapper for the react-query's *useQuery*
- */
-export const useQuery = <
+export const mkUseQuery = <
 	ReturnType,
 	Params extends any[],
 	Transformed = ReturnType,
 >(
+	getAPIHook: () => API,
 	query: QueryFn<ReturnType, Transformed, Params>,
 	...queryParams: Partial<Params>
 ) => {
-	const api = useAPI();
+	const api = getAPIHook();
 	const queryOpts = useMemo(
 		() => toTanStackQuery(api, query, ...queryParams),
 		[query, queryParams],
@@ -110,19 +56,20 @@ export const useQuery = <
 	return hook;
 };
 
-/**
- * Wrapper for the react-query's *useQueries*
- */
-export const useQueries = <ReturnType, Params extends any[][]>(
-	...queries: readonly Parameters<
-		typeof useQuery<ReturnType, Params[number], ReturnType>
-	>[]
+type QueryList<ReturnType, Params extends any[][]> = [
+	query: QueryFn<ReturnType, ReturnType, Params[number]>,
+	...params: Params[number],
+][];
+
+export const mkUseQueries = <ReturnType, Params extends any[][]>(
+	getAPIHook: () => API,
+	...queries: QueryList<ReturnType, Params>
 ) => {
-	const api = useAPI();
+	const api = getAPIHook();
 	const queryOpts = useMemo(
 		() =>
 			queries.map(([query, ...params]) =>
-				toTanStackQuery(api, query, ...(params as Params[number])),
+				toTanStackQuery(api, query, ...params),
 			),
 		[queries],
 	);
@@ -138,18 +85,16 @@ export const useQueries = <ReturnType, Params extends any[][]>(
 	return hook;
 };
 
-/**
- * Wrapper for the react-query's *useInfiniteQuery*
- */
-export const useInfiniteQuery = <
+export const mkUseInfiniteQuery = <
 	ReturnType extends Resource,
 	Params extends any[],
 	TransformedType = ReturnType,
 >(
+	getAPIHook: () => API,
 	query: InfiniteQueryFn<ReturnType, TransformedType, Params>,
 	...queryParams: Partial<Params>
 ) => {
-	const api = useAPI();
+	const api = getAPIHook();
 	const queryOpts = useMemo(
 		() => toTanStackInfiniteQuery(api, query, ...queryParams),
 		[query, queryParams],
@@ -159,11 +104,6 @@ export const useInfiniteQuery = <
 	useEffect(() => {
 		setItems(data?.pages.flatMap((p) => p.items));
 	}, [data?.pages]);
-	// useEffect(() => {
-	// 	if (queryOpts.enabled) {
-	// 		rest.refetch();
-	// 	}
-	// }, [api]);
 
 	return { ...rest, data, items };
 };
@@ -171,8 +111,8 @@ export const useInfiniteQuery = <
 /**
  * Wrapper of the useQueryClient Hook, to wrap `toTanStackQuery`
  */
-export const useQueryClient = () => {
-	const api = useAPI();
+export const mkUseQueryClient = (getAPIHook: () => API) => {
+	const api = getAPIHook();
 	const queryClient = useReactQueryClient();
 
 	return {
@@ -184,4 +124,4 @@ export const useQueryClient = () => {
 	};
 };
 
-export type QueryClient = ReturnType<typeof useQueryClient>;
+export type QueryClient = ReturnType<typeof mkUseQueryClient>;

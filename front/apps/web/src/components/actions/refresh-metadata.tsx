@@ -17,7 +17,7 @@
  */
 
 import type API from "@/api";
-import { useAPI } from "@/api/hook";
+import { useAPI } from "~/api";
 import { MetadataRefreshIcon } from "@/ui/icons";
 import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";

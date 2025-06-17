@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery } from "@/api/hook";
+import { useQuery } from "~/api";
 import type IllustrationModel from "@/models/illustration";
 import { TrackIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";

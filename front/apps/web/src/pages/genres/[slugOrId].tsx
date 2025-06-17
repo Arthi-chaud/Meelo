@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery } from "@/api/hook";
+import { useQuery } from "~/api";
 import { getAlbums, getArtists, getGenre, getSongs } from "@/api/queries";
 import { Box, Skeleton, Tab, Tabs, Typography } from "@mui/material";
 import type { NextPageContext } from "next";

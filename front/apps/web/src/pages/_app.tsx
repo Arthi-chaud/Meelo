@@ -20,7 +20,7 @@ import PageNotFound from "./404";
 import InternalError from "./500";
 import "core-js/actual";
 import "~/theme/styles.css";
-import { getAPI_ } from "@/api/hook";
+import { getAPI_ } from "~/api";
 import { getCurrentUserStatus, getLibraries } from "@/api/queries";
 import {
 	DefaultQueryOptions,

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI_ } from "@/api/hook";
+import { getAPI_ } from "~/api";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { accessTokenAtom, userAtom } from "@/state/user";

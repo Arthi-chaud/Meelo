@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "@/api/hook";
+import { useQueryClient } from "~/api";
 import { getSongs } from "@/api/queries";
 import { transformPage } from "@/api/query";
 import type Genre from "@/models/genre";

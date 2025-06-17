@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type QueryClient, useQueryClient } from "@/api/hook";
+import type { QueryClient } from "@/api/hook";
 import { getPlaylists } from "@/api/queries";
 import type { InfiniteQueryFn } from "@/api/query";
 import type Playlist from "@/models/playlist";
@@ -56,6 +56,7 @@ import { useState } from "react";
 import { useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "~/api";
 import Illustration from "~/components/illustration";
 import InfiniteList from "~/components/infinite/list";
 import ListItem from "~/components/list-item";

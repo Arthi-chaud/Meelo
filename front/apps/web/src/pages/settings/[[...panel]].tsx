@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery } from "@/api/hook";
+import { useQuery } from "~/api";
 import { getCurrentUserStatus } from "@/api/queries";
 import { Box, Tab, Tabs } from "@mui/material";
 import type { NextPageContext } from "next";

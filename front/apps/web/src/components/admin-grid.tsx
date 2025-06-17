@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAPI, useInfiniteQuery } from "@/api/hook";
+import { useAPI, useInfiniteQuery } from "~/api";
 import type { InfiniteQueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";

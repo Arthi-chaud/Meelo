@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useInfiniteQuery, useQuery } from "@/api/hook";
+import { useInfiniteQuery, useQuery } from "~/api";
 import {
 	getAlbums,
 	getArtist,

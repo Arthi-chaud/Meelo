@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery } from "@/api/hook";
+import { useQuery } from "~/api";
 import { getSourceFile, getTrack } from "@/api/queries";
 import { songTypeToTranslationKey } from "@/models/utils";
 import formatDuration from "@/utils/format-duration";

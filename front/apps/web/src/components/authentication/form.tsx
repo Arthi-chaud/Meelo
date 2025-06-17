@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAPI, useQuery } from "@/api/hook";
+import { useAPI, useQuery } from "~/api";
 import { getSettings } from "@/api/queries";
 import { accessTokenAtom } from "@/state/user";
 import { Box, Button, Divider, Stack } from "@mui/material";

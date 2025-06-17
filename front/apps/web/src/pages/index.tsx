@@ -21,7 +21,7 @@ import {
 	useInfiniteQuery,
 	useQueries,
 	type useQuery,
-} from "@/api/hook";
+} from "~/api";
 import {
 	getAlbumExternalMetadata,
 	getAlbums,

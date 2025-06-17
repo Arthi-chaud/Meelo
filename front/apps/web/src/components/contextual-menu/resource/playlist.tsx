@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery, useQueryClient } from "@/api/hook";
+import { useQuery, useQueryClient } from "~/api";
 import { getCurrentUserStatus } from "@/api/queries";
 import type Playlist from "@/models/playlist";
 import { useConfirm } from "material-ui-confirm";

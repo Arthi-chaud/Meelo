@@ -17,7 +17,7 @@
  */
 
 import type API from "@/api";
-import { useQueryClient } from "@/api/hook";
+import { useQueryClient } from "~/api";
 import { getUsers } from "@/api/queries";
 import type User from "@/models/user";
 import { userAtom } from "@/state/user";
