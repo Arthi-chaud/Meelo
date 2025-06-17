@@ -17,7 +17,6 @@
  */
 
 import type API from "@/api";
-import { getAPI, useQueries, useQuery, useQueryClient } from "@/api/hook";
 import {
 	getCurrentUserStatus,
 	getPlaylist,
@@ -56,6 +55,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAPI, useQueries, useQuery, useQueryClient } from "~/api";
 import { DeletePlaylistAction } from "~/components/actions/playlist";
 import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";

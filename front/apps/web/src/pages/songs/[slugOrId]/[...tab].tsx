@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI, useInfiniteQuery, useQuery } from "@/api/hook";
+import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import {
 	getGenres,
 	getSong,

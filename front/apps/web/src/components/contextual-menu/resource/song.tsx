@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQueryClient } from "@/api/hook";
+import { useQueryClient } from "~/api";
 import { getSongMasterTrack } from "@/api/queries";
 import type { SongWithRelations } from "@/models/song";
 import { DeleteIcon } from "@/ui/icons";
