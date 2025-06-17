@@ -3920,7 +3920,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.0, ajv@npm:^8.9.0":
+"ajv@npm:^8.0.0, ajv@npm:^8.11.0, ajv@npm:^8.9.0":
   version: 8.17.1
   resolution: "ajv@npm:8.17.1"
   dependencies:
@@ -4018,7 +4018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"api@workspace:packages/api":
+"api@workspace:^, api@workspace:packages/api":
   version: 0.0.0-use.local
   resolution: "api@workspace:packages/api"
   dependencies:
@@ -5493,6 +5493,18 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/0cb762147b1e6becf204c8445c9169fb8465ade493f747cda12551fdbc20908d33406e4a2e41451b27fda40e5691e682820e841810918b4b140a4007136fcbd3
+  languageName: node
+  linkType: hard
+
+"expo-build-properties@npm:^0.14.6":
+  version: 0.14.6
+  resolution: "expo-build-properties@npm:0.14.6"
+  dependencies:
+    ajv: "npm:^8.11.0"
+    semver: "npm:^7.6.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/ef03bc96fe200418ab8bd2b41866413f1df45140a28e9eb414bf6db496cc2d053ca53ec14ca9ab273a391e676b00ac3d51f04c3adf75ad62404545a2cc23d2e5
   languageName: node
   linkType: hard
 
@@ -7112,6 +7124,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jotai@npm:^2.12.5":
+  version: 2.12.5
+  resolution: "jotai@npm:2.12.5"
+  peerDependencies:
+    "@types/react": ">=17.0.0"
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/5075b2c78f3e170d84a14b9f69a5903a5aa5b61242ee9acebc5665ce5a5fb13724748107dfd1069d00fe45b3a4ed15e07c40c0861dc817effc10532b733afabe
+  languageName: node
+  linkType: hard
+
 "js-cookie@npm:^2.2.1":
   version: 2.2.1
   resolution: "js-cookie@npm:2.2.1"
@@ -7957,9 +7984,12 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.25.2"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
+    "@tanstack/react-query": "npm:^5.77.0"
     "@types/react": "npm:~19.0.10"
+    api: "workspace:^"
     expo: "npm:~53.0.9"
     expo-asset: "npm:~11.1.5"
+    expo-build-properties: "npm:^0.14.6"
     expo-constants: "npm:~17.1.6"
     expo-dev-client: "npm:~5.1.8"
     expo-font: "npm:~13.3.1"
@@ -7972,6 +8002,7 @@ __metadata:
     i18next: "npm:^23.7.16"
     iconsax-react-nativejs: "npm:^0.0.8"
     intl-pluralrules: "npm:^2.0.1"
+    jotai: "npm:^2.12.5"
     react: "npm:19.0.0"
     react-hook-form: "npm:^7.58.0"
     react-i18next: "npm:^12.2.2"
@@ -7983,6 +8014,7 @@ __metadata:
     react-native-screens: "npm:~4.11.1"
     react-native-svg: "npm:^15.12.0"
     react-native-unistyles: "npm:^3.0.0-rc.4"
+    state: "workspace:^"
     type-fest: "npm:^4.33.0"
     typescript: "npm:~5.8.3"
     utils: "workspace:^"
@@ -10059,7 +10091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"state@workspace:packages/state":
+"state@workspace:^, state@workspace:packages/state":
   version: 0.0.0-use.local
   resolution: "state@workspace:packages/state"
   dependencies:
