@@ -78,8 +78,6 @@ import {
 	type VideoType,
 	VideoWithRelations,
 } from "@/models/video";
-import { store } from "@/state/store";
-import { accessTokenAtom } from "@/state/user";
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
 import type API from ".";
@@ -519,10 +517,8 @@ export const getSearchHistory = (): Query<SearchResult[]> => {
 /// Users
 
 export const getCurrentUserStatus = (): Query<User> => {
-	const accessToken = store.get(accessTokenAtom);
-
 	return {
-		key: ["user", accessToken ?? ""],
+		key: ["users", "me"],
 		exec: (api) => () =>
 			api.fetch({
 				route: "/users/me",
