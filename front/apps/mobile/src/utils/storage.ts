@@ -16,27 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSetAtom } from "jotai";
-import { useTranslation } from "react-i18next";
-import { View } from "react-native";
-import { Button } from "~/primitives/button";
-import { Text } from "~/primitives/text";
-import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
+import { MMKV } from "react-native-mmkv";
 
-export default function SettingsView() {
-	const { t } = useTranslation();
-	const setAccessToken = useSetAtom(accessTokenAtom);
-	const setInstanceUrl = useSetAtom(instanceUrlAtom);
-	return (
-		<View>
-			<Text>Settings</Text>
-			<Button
-				title={t("actions.logout")}
-				onPress={() => {
-					setAccessToken(null);
-					setInstanceUrl(null);
-				}}
-			/>
-		</View>
-	);
-}
+export const storage = new MMKV();
