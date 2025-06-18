@@ -80,7 +80,9 @@ export const TextInput = ({
 	...props
 }: TextInputProps) => {
 	const isFocused = useSharedValue(false);
-	const isEmpty = useSharedValue(true);
+	const isEmpty = useSharedValue(
+		props.value === undefined || !props.value.length,
+	);
 	const animatedTheme = useAnimatedTheme();
 
 	const labelStyle = useAnimatedStyle(() => {
