@@ -37,6 +37,9 @@ import ToastManager from "toastify-react-native";
 import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastConfigParams } from "toastify-react-native/utils/interfaces";
+import { useColorScheme } from "~/hooks/color-scheme";
+import { Toast as MeeloToast } from "~/primitives/toast";
 import resources from "../../../../translations";
 
 SplashScreen.preventAutoHideAsync();
@@ -56,6 +59,7 @@ export default function RootLayout() {
 		Rubik_800ExtraBold,
 		Rubik_900Black,
 	});
+	const [colorScheme] = useColorScheme();
 
 	const [queryClient] = useState(
 		() =>
@@ -93,7 +97,18 @@ export default function RootLayout() {
 			<Provider store={store}>
 				<Stack screenOptions={{ headerShown: false }} />
 			</Provider>
-			<ToastManager />
+			<ToastManager
+				theme={colorScheme}
+				custom={MeeloToast}
+				config={{
+					success: (p: ToastConfigParams) => (
+						<MeeloToast {...p} variant={"success"} />
+					),
+					error: (p: ToastConfigParams) => (
+						<MeeloToast {...p} variant={"error"} />
+					),
+				}}
+			/>
 		</QueryClientProvider>
 	);
 }

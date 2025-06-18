@@ -20,6 +20,7 @@ import { MasterIcon } from "@/ui/icons";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { Toast } from "toastify-react-native";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
@@ -80,17 +81,11 @@ export default function Root() {
 			<View style={styles.container}>
 				<Button
 					onPress={() => {
-						console.log("ok");
+						Toast.success(t("toasts.auth.accountCreated"));
 					}}
-					variant="outlined"
-					title={t("auth.signin")}
-					width="fill"
-				/>
-				<Button
-					onPress={() => {}}
 					width="fitContent"
 					variant="filled"
-					title={t("auth.signup")}
+					title={"toast"}
 				/>
 				<Button
 					onPress={() => {}}
