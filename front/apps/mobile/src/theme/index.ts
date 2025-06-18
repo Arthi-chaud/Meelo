@@ -39,6 +39,7 @@ export const lightTheme = {
 		},
 
 		error: "#ff2c2c",
+		success: "green",
 		divider: "rgba(0, 0, 0, 0.38)",
 		button: "#242120",
 		background: "#efefef",
@@ -55,6 +56,7 @@ export const darkTheme = {
 			onAccentSurface: "#000000",
 		},
 		error: "#ff2c2c",
+		success: "green",
 		divider: "rgba(255, 255, 255, 0.58)",
 		button: "#efefef",
 		background: "#242120",
