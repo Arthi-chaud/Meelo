@@ -24,6 +24,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { Toast } from "toastify-react-native";
 import { getAPI_ } from "~/api";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useRootViewStyle } from "~/hooks/root-view-style";
@@ -50,10 +51,13 @@ const styles = StyleSheet.create((theme) => ({
 	errorContainer: {
 		display: "flex",
 		flexDirection: "row",
+		alignItems: "center",
 		gap: theme.gap(1),
 	},
 	errorMsg: {
+		maxWidth: "80%",
 		color: theme.colors.error,
+		textAlign: "center",
 	},
 	formContainer: {
 		display: "flex",
@@ -66,7 +70,6 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 //TODO Handle overflow w/ keyboard
-//TODO toast on error
 
 export default function AuthenticationScreen() {
 	const { t } = useTranslation();
@@ -92,16 +95,32 @@ export default function AuthenticationScreen() {
 		const instanceUrl = data.url.replace(/\/$/, "");
 		const api = getAPI_(null, instanceUrl);
 		setLoading(true);
-		api.login({ username: data.username, password: data.password })
-			.then(({ access_token }) => {
-				setAccessToken(access_token);
-				setInstanceUrl(instanceUrl);
-				router.replace("/");
+		if (formType === "signup") {
+			api.register({
+				username: data.username,
+				password: data.password,
 			})
-			.catch((e) => {
-				setErrorMessage(e.toString());
-				setLoading(false);
-			});
+				.then(() => {
+					Toast.success(t("toasts.auth.accountCreated"));
+				})
+				.catch((e) => {
+					setErrorMessage(e.message ?? e.toString());
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		} else {
+			api.login({ username: data.username, password: data.password })
+				.then(({ access_token }) => {
+					setAccessToken(access_token);
+					setInstanceUrl(instanceUrl);
+					router.replace("/");
+				})
+				.catch((e) => {
+					setErrorMessage(e.message ?? e.toString());
+					setLoading(false);
+				});
+		}
 	};
 	return (
 		<ScrollView contentContainerStyle={[styles.root, safeAreaStyle]}>

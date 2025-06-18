@@ -43,6 +43,7 @@
 		"react-native-svg": "^15.12.0",
 		"react-native-unistyles": "^3.0.0-rc.4",
 		"state": "workspace:^",
+		"toastify-react-native": "^7.2.0",
 		"type-fest": "^4.33.0",
 		"utils": "workspace:^"
 	},
