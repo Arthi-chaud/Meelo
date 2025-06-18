@@ -37,7 +37,7 @@ import ToastManager from "toastify-react-native";
 import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ToastConfigParams } from "toastify-react-native/utils/interfaces";
+import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
 import resources from "../../../../translations";
