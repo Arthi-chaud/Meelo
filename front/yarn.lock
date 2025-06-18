@@ -4655,6 +4655,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cliui@npm:^7.0.2":
+  version: 7.0.4
+  resolution: "cliui@npm:7.0.4"
+  dependencies:
+    string-width: "npm:^4.2.0"
+    strip-ansi: "npm:^6.0.0"
+    wrap-ansi: "npm:^7.0.0"
+  checksum: 10c0/6035f5daf7383470cef82b3d3db00bec70afb3423538c50394386ffbbab135e26c3689c41791f911fa71b62d13d3863c712fdd70f0fbdffd938a1e6fd09aac00
+  languageName: node
+  linkType: hard
+
 "cliui@npm:^8.0.1":
   version: 8.0.1
   resolution: "cliui@npm:8.0.1"
@@ -8016,6 +8027,7 @@ __metadata:
     react-native-svg: "npm:^15.12.0"
     react-native-unistyles: "npm:^3.0.0-rc.4"
     state: "workspace:^"
+    toastify-react-native: "npm:^7.2.0"
     type-fest: "npm:^4.33.0"
     typescript: "npm:~5.8.3"
     utils: "workspace:^"
@@ -9127,6 +9139,21 @@ __metadata:
     react-native-reanimated:
       optional: true
   checksum: 10c0/50d69618396262b3e074d6d162b03cc7d69934ff405be96aca47062290e1954be32a4ab3d8d02eb610d576c9500bad3ac19368093425c89cb92856aa4df5785f
+  languageName: node
+  linkType: hard
+
+"react-native-vector-icons@npm:*":
+  version: 10.2.0
+  resolution: "react-native-vector-icons@npm:10.2.0"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+    yargs: "npm:^16.1.1"
+  bin:
+    fa-upgrade.sh: bin/fa-upgrade.sh
+    fa5-upgrade: bin/fa5-upgrade.sh
+    fa6-upgrade: bin/fa6-upgrade.sh
+    generate-icon: bin/generate-icon.js
+  checksum: 10c0/76a7f327b40b29e567f48a49ebc3ad87b755d4e431d66fec3566dfe5e673084cee9b1663f10903a6572aab31c7bcec45100172afb1d46055dfacbbe46b92b348
   languageName: node
   linkType: hard
 
@@ -10505,6 +10532,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"toastify-react-native@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "toastify-react-native@npm:7.2.0"
+  dependencies:
+    react-native-vector-icons: "npm:*"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/469393c19db00bbe3a1132969390a9a43519e0f226bdf573c7b79b7c35359e64bd010b46786a63dda4b2546a6efb9db81d6e7d700c453e424211777d3c539a41
+  languageName: node
+  linkType: hard
+
 "toggle-selection@npm:^1.0.6":
   version: 1.0.6
   resolution: "toggle-selection@npm:1.0.6"
@@ -11177,10 +11216,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yargs-parser@npm:^20.2.2":
+  version: 20.2.9
+  resolution: "yargs-parser@npm:20.2.9"
+  checksum: 10c0/0685a8e58bbfb57fab6aefe03c6da904a59769bd803a722bb098bd5b0f29d274a1357762c7258fb487512811b8063fb5d2824a3415a0a4540598335b3b086c72
+  languageName: node
+  linkType: hard
+
 "yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
   checksum: 10c0/f84b5e48169479d2f402239c59f084cfd1c3acc197a05c59b98bab067452e6b3ea46d4dd8ba2985ba7b3d32a343d77df0debd6b343e5dae3da2aab2cdf5886b2
+  languageName: node
+  linkType: hard
+
+"yargs@npm:^16.1.1":
+  version: 16.2.0
+  resolution: "yargs@npm:16.2.0"
+  dependencies:
+    cliui: "npm:^7.0.2"
+    escalade: "npm:^3.1.1"
+    get-caller-file: "npm:^2.0.5"
+    require-directory: "npm:^2.1.1"
+    string-width: "npm:^4.2.0"
+    y18n: "npm:^5.0.5"
+    yargs-parser: "npm:^20.2.2"
+  checksum: 10c0/b1dbfefa679848442454b60053a6c95d62f2d2e21dd28def92b647587f415969173c6e99a0f3bab4f1b67ee8283bf735ebe3544013f09491186ba9e8a9a2b651
   languageName: node
   linkType: hard
 

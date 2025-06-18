@@ -33,6 +33,7 @@ import i18next from "i18next";
 import { Provider } from "jotai";
 import { useEffect, useState } from "react";
 import { initReactI18next } from "react-i18next";
+import ToastManager from "toastify-react-native";
 import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -92,6 +93,7 @@ export default function RootLayout() {
 			<Provider store={store}>
 				<Stack screenOptions={{ headerShown: false }} />
 			</Provider>
+			<ToastManager />
 		</QueryClientProvider>
 	);
 }
