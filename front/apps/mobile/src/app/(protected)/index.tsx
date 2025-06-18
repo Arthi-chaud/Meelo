@@ -17,6 +17,7 @@
  */
 
 import { MasterIcon } from "@/ui/icons";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -25,7 +26,7 @@ import { MeeloBanner } from "~/components/meelo_banner";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
-import { Text } from "~/primitives/text";
+import { Text, TextSkeleton } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
 
 const styles = StyleSheet.create((theme) => ({
@@ -44,6 +45,13 @@ const styles = StyleSheet.create((theme) => ({
 export default function Root() {
 	const { t } = useTranslation();
 	const [colorScheme, setColorScheme] = useColorScheme();
+	const [showSkeleton, setSkeleton] = useState(false);
+
+	useEffect(() => {
+		setInterval(() => {
+			setSkeleton((x) => !x);
+		}, 1000);
+	}, []);
 
 	return (
 		<ScrollView style={styles.main}>
@@ -69,11 +77,17 @@ export default function Root() {
 					"body",
 					"subtitle",
 				] as const
-			).map((s) => (
-				<Text key={s} variant={s}>
-					{s}
-				</Text>
-			))}
+			).map((s) => {
+				if (showSkeleton) {
+					return <TextSkeleton key={s} variant={s} width={2} />;
+				}
+
+				return (
+					<Text key={s} variant={s}>
+						{s}
+					</Text>
+				);
+			})}
 			<Text variant="body" color="secondary">
 				{t("browsing.sections.musicVideos")}
 			</Text>
