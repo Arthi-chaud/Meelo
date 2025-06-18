@@ -17,7 +17,11 @@
  */
 
 import type { ReactNode } from "react";
-import { Text as RNText, type TextProps as RNTextProps } from "react-native";
+import {
+	Text as RNText,
+	type TextProps as RNTextProps,
+	View,
+} from "react-native";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import type { RequireExactlyOne } from "type-fest";
 
@@ -65,6 +69,11 @@ const styles = StyleSheet.create((theme) => ({
 			},
 		},
 	},
+	skeleton: {
+		backgroundColor: "grey",
+		alignSelf: "flex-start",
+		borderRadius: theme.borderRadius,
+	},
 }));
 
 type TextProps = UnistylesVariants<typeof styles> &
@@ -83,5 +92,30 @@ export const Text = ({ content, children, ...props }: TextProps) => {
 		<RNText {...props} style={[styles.text, props.style]}>
 			{content ?? children}
 		</RNText>
+	);
+};
+
+export const TextSkeleton = (
+	props: Pick<UnistylesVariants<typeof styles>, "variant"> & {
+		// If number, represents a number of character to
+		width: `${number}%` | number;
+	},
+) => {
+	styles.useVariants({ variant: props.variant });
+	return (
+		<View
+			style={[
+				styles.skeleton,
+				{
+					width:
+						typeof props.width === "string"
+							? props.width
+							: styles.text.fontSize * (props.width / 2),
+				},
+			]}
+		>
+			{/* To ensure correct skeleton height */}
+			<Text variant={props.variant}> </Text>
+		</View>
 	);
 };
