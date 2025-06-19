@@ -17,7 +17,7 @@
  */
 
 import { MasterIcon } from "@/ui/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -45,13 +45,13 @@ const styles = StyleSheet.create((theme) => ({
 export default function Root() {
 	const { t } = useTranslation();
 	const [colorScheme, setColorScheme] = useColorScheme();
-	const [showSkeleton, setSkeleton] = useState(false);
+	const [showSkeleton, setSkeleton] = useState(true);
 
-	useEffect(() => {
-		setInterval(() => {
-			setSkeleton((x) => !x);
-		}, 1000);
-	}, []);
+	// useEffect(() => {
+	// 	setInterval(() => {
+	// 		setSkeleton((x) => !x);
+	// 	}, 1000);
+	// }, []);
 
 	return (
 		<ScrollView style={styles.main}>

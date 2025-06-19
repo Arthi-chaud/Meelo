@@ -16,13 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ReactNode } from "react";
-import {
-	Text as RNText,
-	type TextProps as RNTextProps,
-	View,
-} from "react-native";
+import { type ReactNode, useEffect } from "react";
+import { Text as RNText, type TextProps as RNTextProps } from "react-native";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withRepeat,
+	withTiming,
+	Easing,
+} from "react-native-reanimated";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import type { RequireExactlyOne } from "type-fest";
 
 const styles = StyleSheet.create((theme) => ({
@@ -70,7 +74,8 @@ const styles = StyleSheet.create((theme) => ({
 		},
 	},
 	skeleton: {
-		backgroundColor: "grey",
+		// From MUI
+		backgroundColor: theme.colors.skeleton,
 		alignSelf: "flex-start",
 		borderRadius: theme.borderRadius,
 	},
@@ -102,10 +107,29 @@ export const TextSkeleton = (
 	},
 ) => {
 	styles.useVariants({ variant: props.variant });
+	const theme = useAnimatedTheme();
+	const opacity = useSharedValue(1);
+	const pulseAnimation = useAnimatedStyle(
+		() => ({
+			opacity: opacity.value,
+		}),
+		[],
+	);
+	useEffect(() => {
+		opacity.value = withRepeat(
+			withTiming(0.4, {
+				duration: theme.value.pulse.timing,
+				easing: Easing.ease,
+			}),
+			-1,
+			true,
+		);
+	}, []);
 	return (
-		<View
+		<Animated.View
 			style={[
 				styles.skeleton,
+				pulseAnimation,
 				{
 					width:
 						typeof props.width === "string"
@@ -116,6 +140,6 @@ export const TextSkeleton = (
 		>
 			{/* To ensure correct skeleton height */}
 			<Text variant={props.variant}> </Text>
-		</View>
+		</Animated.View>
 	);
 };

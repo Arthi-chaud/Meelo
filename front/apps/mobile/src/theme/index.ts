@@ -7,6 +7,9 @@ const baseTheme = {
 		default: 14,
 		rem: (ratio: number) => 14 * ratio,
 	},
+	pulse: {
+		timing: 800,
+	},
 	borderRadius: 8, // TODO Normalise?
 	fontStyles: {
 		light: {
@@ -37,7 +40,7 @@ export const lightTheme = {
 			onAccentSurface: "#ffffff",
 			error: "#ff2c2c",
 		},
-
+		skeleton: "rgba(0, 0, 0, 0.18)",
 		error: "#ff2c2c",
 		success: "green",
 		divider: "rgba(0, 0, 0, 0.38)",
@@ -55,6 +58,7 @@ export const darkTheme = {
 			secondary: "rgba(255, 255, 255, 0.58)",
 			onAccentSurface: "#000000",
 		},
+		skeleton: "rgba(255, 255, 255, 0.13)",
 		error: "#ff2c2c",
 		success: "green",
 		divider: "rgba(255, 255, 255, 0.58)",
