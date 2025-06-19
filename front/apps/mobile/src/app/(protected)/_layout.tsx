@@ -36,6 +36,7 @@ import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
 	//TODO Blur bg of navbar
+	screen: { backgroundColor: theme.colors.background, flex: 1 },
 	navBar: {
 		paddingTop: theme.gap(1),
 		backgroundColor: theme.colors.background,
@@ -72,8 +73,10 @@ export default function ProtectedLayout() {
 	return (
 		<Tabs
 			screenOptions={{
+				headerShown: false,
 				tabBarShowLabel: false,
 				tabBarStyle: styles.navBar,
+				sceneStyle: styles.screen,
 				tabBarButton: TabButton,
 			}}
 		>
