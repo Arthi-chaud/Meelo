@@ -28,18 +28,15 @@ import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useColorScheme } from "~/hooks/color-scheme";
+import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
 
-const styles = StyleSheet.create((theme) => ({
-	main: {
-		backgroundColor: theme.colors.background,
-		flex: 1,
-	},
+const styles = StyleSheet.create(() => ({
+	main: {},
 	container: {
-		backgroundColor: theme.colors.background,
 		display: "flex",
 		alignItems: "center",
 		width: "100%",
@@ -53,6 +50,7 @@ export default function Root() {
 	const albums = useInfiniteQuery(() =>
 		getAlbums({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
 	);
+	const pageStyle = useRootViewStyle();
 	// useEffect(() => {
 	// 	const i = setInterval(() => {
 	// 		setSkeleton((x) => !x);
@@ -66,7 +64,7 @@ export default function Root() {
 	);
 
 	return (
-		<ScrollView style={styles.main}>
+		<ScrollView style={[styles.main, pageStyle]}>
 			<View style={{ flexDirection: "row" }}>
 				<Illustration illustration={firstAlbums?.at(0)?.illustration} />
 				<Illustration illustration={firstAlbums?.at(1)?.illustration} />
