@@ -55,7 +55,7 @@ const styles = StyleSheet.create((theme) => ({
 		variants: {
 			error: {
 				true: { color: theme.colors.error },
-				default: {
+				false: {
 					color: theme.colors.text.primary,
 				},
 			},
@@ -65,7 +65,7 @@ const styles = StyleSheet.create((theme) => ({
 		variants: {
 			error: {
 				true: { color: theme.colors.error },
-				default: {
+				false: {
 					color: theme.colors.text.primary,
 				},
 			},

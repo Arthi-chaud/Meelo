@@ -40,6 +40,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
+import { appThemes } from "~/theme";
 import resources from "../../../../translations";
 
 SplashScreen.preventAutoHideAsync();
@@ -95,7 +96,21 @@ export default function RootLayout() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<Provider store={store}>
-				<Stack screenOptions={{ headerShown: false }} />
+				<Stack
+					screenOptions={{
+						headerShown: false,
+						contentStyle: {
+							backgroundColor: (colorScheme === "light"
+								? appThemes.light
+								: appThemes.dark
+							).colors.background,
+							flex: 1,
+						},
+						//TODO give the status bar a background
+						statusBarStyle:
+							colorScheme === "light" ? "dark" : "light",
+					}}
+				/>
 			</Provider>
 			<ToastManager
 				theme={colorScheme}
