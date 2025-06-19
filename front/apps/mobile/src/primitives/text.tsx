@@ -17,7 +17,7 @@
  */
 
 import { type ReactNode, useEffect } from "react";
-import { Text as RNText, type TextProps as RNTextProps } from "react-native";
+import type { TextProps as RNTextProps } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -94,9 +94,9 @@ export const Text = ({ content, children, ...props }: TextProps) => {
 		color: props.color,
 	});
 	return (
-		<RNText {...props} style={[styles.text, props.style]}>
+		<Animated.Text {...props} style={[styles.text, props.style]}>
 			{content ?? children}
-		</RNText>
+		</Animated.Text>
 	);
 };
 
