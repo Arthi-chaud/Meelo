@@ -30,25 +30,28 @@ import { Redirect, Tabs } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
 	//TODO Blur bg of navbar
-	navBar: { paddingTop: theme.gap(1) },
-	tabIcon: {
-		color: theme.colors.text.primary,
+	navBar: {
+		paddingTop: theme.gap(1),
+		backgroundColor: theme.colors.background,
 	},
 }));
 
-const TabIcon = ({
-	icon: Icon_,
-	focused,
-}: { icon: Icon; focused: boolean }) => {
-	return (
-		<Icon_ variant={focused ? "Bold" : "Outline"} style={styles.tabIcon} />
+const TabIcon = ({ icon, focused }: { icon: Icon; focused: boolean }) => {
+	const Icon_ = withUnistyles(
+		icon,
+		(theme) =>
+			({
+				variant: focused ? "Bold" : "Outline",
+				color: theme.colors.text.primary,
+			}) as const,
 	);
+	return <Icon_ />;
 };
 
 const TabButton = (props: any) => <TouchableOpacity {...props} />;
