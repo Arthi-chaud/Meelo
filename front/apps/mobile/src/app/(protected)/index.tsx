@@ -16,12 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MasterIcon } from "@/ui/icons";
-import { useEffect, useState } from "react";
+import { getAlbums } from "@/api/queries";
+import { AlbumIcon, MasterIcon } from "@/ui/icons";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
+import { useInfiniteQuery } from "~/api";
+import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { MeeloBanner } from "~/components/meelo_banner";
 import { useColorScheme } from "~/hooks/color-scheme";
@@ -47,17 +50,46 @@ export default function Root() {
 	const { t } = useTranslation();
 	const [colorScheme, setColorScheme] = useColorScheme();
 	const [showSkeleton, setSkeleton] = useState(true);
-
-	useEffect(() => {
-		const i = setInterval(() => {
-			setSkeleton((x) => !x);
-		}, 3000);
-
-		return () => clearInterval(i);
-	}, []);
+	const albums = useInfiniteQuery(() =>
+		getAlbums({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
+	);
+	// useEffect(() => {
+	// 	const i = setInterval(() => {
+	// 		setSkeleton((x) => !x);
+	// 	}, 3000);
+	//
+	// 	return () => clearInterval(i);
+	// }, []);
+	const firstAlbums = useMemo(
+		() => albums.data?.pages.at(0)?.items.slice(0, 4),
+		[albums.data],
+	);
 
 	return (
 		<ScrollView style={styles.main}>
+			<View style={{ flexDirection: "row" }}>
+				<Illustration illustration={firstAlbums?.at(0)?.illustration} />
+				<Illustration illustration={firstAlbums?.at(1)?.illustration} />
+				<Illustration illustration={firstAlbums?.at(2)?.illustration} />
+
+				<Illustration
+					fallbackIcon={AlbumIcon}
+					illustration={{
+						aspectRatio: 1,
+						colors: [],
+						blurhash: "LGFFaXYk^6#M@-5c,1J5@[or[Q6.",
+						url: "/illustration/0",
+					}}
+				/>
+			</View>
+
+			<View style={{ flexDirection: "row" }}>
+				<Illustration illustration={firstAlbums?.at(3)?.illustration} />
+				<Illustration
+					fallbackIcon={AlbumIcon}
+					illustration={firstAlbums ? null : undefined}
+				/>
+			</View>
 			<View style={{ flexDirection: "row" }}>
 				<Button
 					title="Toggle"
