@@ -20,6 +20,7 @@ import type { ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const useRootViewStyle = () => {
-	const { bottom, top } = useSafeAreaInsets();
-	return { paddingTop: top, paddingBottom: bottom } satisfies ViewStyle;
+	const { top } = useSafeAreaInsets();
+
+	return { paddingTop: top } satisfies ViewStyle;
 };
