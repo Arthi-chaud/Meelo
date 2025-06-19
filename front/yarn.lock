@@ -8018,6 +8018,7 @@ __metadata:
     react-hook-form: "npm:^7.58.0"
     react-i18next: "npm:^12.2.2"
     react-native: "npm:0.79.3"
+    react-native-blurhash: "npm:^2.1.1"
     react-native-edge-to-edge: "npm:^1.6.1"
     react-native-mmkv: "npm:^3.3.0"
     react-native-nitro-modules: "npm:0.26.2"
@@ -9010,6 +9011,16 @@ __metadata:
   version: 19.1.0
   resolution: "react-is@npm:19.1.0"
   checksum: 10c0/b6c6cadd172d5d39f66d493700d137a5545c294a62ce0f8ec793d59794c97d2bed6bad227626f16bd0e90004ed7fdc8ed662a004e6edcf5d2b7ecb6e3040ea6b
+  languageName: node
+  linkType: hard
+
+"react-native-blurhash@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "react-native-blurhash@npm:2.1.1"
+  peerDependencies:
+    react: ">=16.8.1"
+    react-native: ">=0.60.0-rc.0 <1.0.x"
+  checksum: 10c0/9ffefa93bb7f8578020b274112e9d5e40b152c94a7828c45e8f7ef71a20794e021accc6dd175857e334ae4727e5bc4d5cf7cf069c9b01e454478e8e31d912336
   languageName: node
   linkType: hard
 
