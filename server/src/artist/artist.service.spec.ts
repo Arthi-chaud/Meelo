@@ -122,7 +122,7 @@ describe("Artist Service", () => {
 	describe("Get Album Artists", () => {
 		it("should return all album artists", async () => {
 			const artists = await artistService.getMany({
-				albumArtistOnly: true,
+				primaryArtistsOnly: true,
 			});
 			expect(artists.length).toBe(2);
 			expect(artists).toContainEqual(dummyRepository.artistA);
@@ -131,7 +131,7 @@ describe("Artist Service", () => {
 
 		it("should return all album artists, sorted by name", async () => {
 			const artists = await artistService.getMany(
-				{ albumArtistOnly: true },
+				{ primaryArtistsOnly: true },
 				{ sortBy: "name", order: "desc" },
 				{},
 				{},
