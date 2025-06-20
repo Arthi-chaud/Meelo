@@ -16,7 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { AlbumType } from "@/models/album";
+import type { VideoType } from "@/models/video";
+import { uncapitalize } from "@/utils/uncapitalize";
 import * as yup from "yup";
+import type { SongType } from "./song";
 
 //
 
@@ -69,3 +73,23 @@ export function union<TCast extends yup.Maybe<unknown>, C, O>(
 
 // We need this as re-hydrared dates are still strings
 export const yupdate = union(yup.string().nullable(), yup.date().nullable());
+
+export const albumTypeToTranslationKey = (
+	albumType: AlbumType,
+	plural: boolean,
+): TranslationKey =>
+	albumType === "EP"
+		? `albumType.ep${plural ? "_plural" : ""}`
+		: `albumType.${uncapitalize(albumType)}${plural ? "_plural" : ""}`;
+
+export const songTypeToTranslationKey = (
+	songType: SongType,
+	plural: boolean,
+): TranslationKey =>
+	`songType.${uncapitalize(songType)}${plural ? "_plural" : "plural"}`;
+
+export const videoTypeToTranslationKey = (
+	videoType: VideoType,
+	plural: boolean,
+): TranslationKey =>
+	`videoType.${uncapitalize(videoType)}${plural ? "_plural" : "plural"}`;

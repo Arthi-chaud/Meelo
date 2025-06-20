@@ -26,9 +26,9 @@ import {
 } from "@/api/queries";
 import { useGradientBackground } from "@/components/gradient-background";
 import { AlbumType } from "@/models/album";
+import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
 import { generateArray } from "@/utils/gen-list";
-import { uncapitalize } from "@/utils/uncapitalize";
 import { Box, Container, Divider, Grid, Stack } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
@@ -189,7 +189,7 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Fragment key={`section-${type}`}>
 							<AlbumListPageSection
 								subtitleIs="releaseYear"
-								title={`albumType.${uncapitalize(type)}_plural`}
+								title={albumTypeToTranslationKey(type, true)}
 								maxItemCount={AlbumListSize}
 								artist={artist}
 								seeMoreHref={`/artists/${artistIdentifier}/albums?type=${type}&sort=releaseDate&order=desc`}
