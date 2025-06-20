@@ -148,7 +148,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 sanitised_album_name,
                 arid=self.compilation_artist_id if not artist_name else None,
                 artist=artist_name,
-                limit=10,
+                limit=20,
             )["releases"]
             release_group_key = "release-group"
             typed_releases = [
@@ -249,6 +249,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             return AlbumType.LIVE
         if "compilation" in raw_types:
             return AlbumType.COMPILATION
+        if "ep" in raw_types:
+            return AlbumType.EP
         if "dj-mix" in raw_types:
             return AlbumType.REMIXES
         return None
