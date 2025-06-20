@@ -107,6 +107,8 @@ enum AlbumType {
     Compilation
     /// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
     Single
+    /// Extended Play, usually a short studio album. See #1042
+    EP
     /// Describe a collection of tracks coming from another project's soundtrack
     Soundtrack
     /// Describe a collection of remixed tracks from the same artist
