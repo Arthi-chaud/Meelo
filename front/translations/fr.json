@@ -197,18 +197,18 @@
 			"pathIsRequired": "Le chemin est obligatoire",
 			"pathOfLibrary": "Chemin de la bibliothèque"
 		},
-		"scrobblers": {
-			"listenbrainz": {
-				"tokenLabel": "User Token de ListenBrainz",
-				"tokenHelperText": "Récupérez le token ici: https://listenbrainz.org/settings/",
-				"tokenIsRequired": "Le Token est obligatoire",
-				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
-				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)"
-			}
-		},
 		"playlist": {
 			"allowPlaylistChanges": "Autoriser les changements",
 			"playlistIsPublic": "Permettre aux autres utilisateurs de voir la playlist"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)",
+				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
+				"tokenHelperText": "Récupérez le token ici : https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Le Token est obligatoire",
+				"tokenLabel": "User Token de ListenBrainz"
+			}
 		}
 	},
 	"home": {
@@ -216,7 +216,7 @@
 		"latestAlbums": "Dernières Sorties",
 		"mostPlayedSongs": "Les Plus Joués",
 		"newlyAddedAlbums": "Ajoutés Récemment",
-		"newlyAddedArtists": "Artists Ajoutés Récemment",
+		"newlyAddedArtists": "Artistes Ajoutés Récemment",
 		"newlyAddedReleases": "Disques Ajoutés Récemment",
 		"topGenres": "Genres populaires",
 		"topLabels": "Labels populaires"
@@ -298,11 +298,6 @@
 				"fr": "Français",
 				"ru": "Russe"
 			},
-			"scrobblers": {
-				"header": "Scrobblers",
-				"connect_scrobblers": "Associer un service",
-				"no_scrobblers_enabled": "Aucun scrobbler disponible"
-			},
 			"language": "Langue",
 			"notifications": "Notifications",
 			"notifyOnTrackChange": "Notifier quand le morceau change",
@@ -310,7 +305,12 @@
 			"permissions": "Permissions",
 			"playback": "Lecture",
 			"project": "Projet",
-			"useDarkTheme": "Utiliser le mode sombre",
+			"scrobblers": {
+				"connect_scrobblers": "Associer un service",
+				"header": "Scrobblers",
+				"no_scrobblers_enabled": "Aucun scrobbler disponible"
+			},
+			"useDarkTheme": "Utiliser le thème sombre",
 			"useSystemLanguage": "Utiliser la langue du système",
 			"useSystemTheme": "Utiliser le thème système"
 		},
@@ -342,10 +342,10 @@
 	"tasks": {
 		"clean": "Nettoyer",
 		"cleanLibraries": "Nettoyer les Bibliothèques",
-		"refresh": "Rafraichir",
-		"refreshMetadata": "Rafraichir les métadonnées",
+		"refresh": "Rafraîchir",
+		"refreshMetadata": "Rafraîchir les métadonnées",
 		"refreshMetadataForm": {
-			"forceLabel": "Force le scan si les fichiers n'ont pas changés"
+			"forceLabel": "Force le scan si les fichiers n'ont pas changé"
 		},
 		"scan": "Scanner",
 		"scanLibraries": "Scanner les Bibliothèques"
@@ -379,16 +379,16 @@
 			"started": "Mise à jour des métadonnées… (Rechargez la page pour actualiser)"
 		},
 		"releaseSetAsMaster": "Disque Promu",
-		"trackSetAsMaster": "Piste devenue Principale",
-		"tracksUpdated": "Pistes mises à jour",
 		"scrobblers": {
-			"linkingSuccessful": "Compte ListenBrainz associé!",
 			"linking": "Association en cours...",
 			"linkingListenBrainzFailed": "Echec de l'association avec ListenBrainz",
-			"unlinkingSuccessful": "Compte dissocié!",
+			"linkingSuccessful": "Compte ListenBrainz associé !",
 			"unlinking": "Dissociation...",
-			"unlinkingFailed": "Echec lors de la dissociation"
+			"unlinkingFailed": "Echec lors de la dissociation",
+			"unlinkingSuccessful": "Compte dissocié!"
 		},
+		"trackSetAsMaster": "Piste devenue Principale",
+		"tracksUpdated": "Pistes mises à jour",
 		"users": {
 			"deleted": "Compte Supprimé",
 			"deletionFail": "Echec de la suppression du compte",
