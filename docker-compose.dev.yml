@@ -73,13 +73,12 @@ services:
       scanner:
         condition: service_healthy
     volumes:
-      - ./front/apps:/app/apps
+      - ./front/apps/web/:/app/apps/web/
       - ./front/packages:/app/packages
       - ./front/translations:/app/translations
-      - ./front/assets:/app/apps/web/public
+      - ./front/assets:/app/assets
       - ./front/package.json:/app/package.json
       - ./front/tsconfig.base.json:/app/tsconfig.base.json
-      - ./front/yarn.lock:/app/yarn.lock
       - front_deps:/app/node_modules
     environment:
       # This can be commented out. see front/next.config.js

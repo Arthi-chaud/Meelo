@@ -79,7 +79,7 @@ type APIUrls = {
 
 export default class API {
 	constructor(
-		private readonly accessToken: string | null,
+		public readonly accessToken: string | null,
 		private readonly urls: APIUrls,
 		public readonly pageSize = API.DefaultPageSize,
 	) {}

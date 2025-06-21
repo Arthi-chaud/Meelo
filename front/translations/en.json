@@ -87,12 +87,14 @@
 		"auth": {
 			"username": "Username",
 			"password": "Password",
+			"instanceUrl": "Server URL",
 			"usernameIsRequired": "Username is required",
 			"passwordIsRequired": "Password is required",
+			"instanceUrlIsRequired": "Instance URL is required",
 			"usernameTooShort": "Username is too short",
 			"passwordTooShort": "Password is too short",
 			"pleaseConfirm": "Please, confirm password",
-			"passwordsAreDifferent": "Password are different",
+			"passwordsAreDifferent": "Passwords are different",
 			"confirmPasswordField": "Confirm"
 		},
 		"scrobblers": {
@@ -150,6 +152,7 @@
 		"home": "Home",
 		"search": "Search",
 		"settings": "Settings",
+		"browse": "Browse",
 		"compilations": "Compilations",
 		"musicVideos": "Music Videos",
 		"more": "More"
@@ -379,6 +382,8 @@
 	},
 	"compilationArtistLabel": "Compilation",
 	"auth": {
+		"loginButton": "Login",
+		"signupButton": "Signup",
 		"signup": "New here ? Signup",
 		"signin": "Already have an account ? Login"
 	},
