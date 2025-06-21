@@ -26,6 +26,7 @@ import { yupdate } from "./utils";
 export const AlbumType = [
 	"StudioRecording",
 	"Single",
+	"EP",
 	"LiveRecording",
 	"Compilation",
 	"Soundtrack",

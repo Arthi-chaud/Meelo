@@ -32,9 +32,9 @@ import { InfiniteSongView } from "@/components/infinite/resource/song";
 import InfiniteTrackView from "@/components/infinite/resource/track";
 import InfiniteVideoView from "@/components/infinite/resource/video";
 import SongTypeIcon from "@/components/song-type-icon";
+import { songTypeToTranslationKey } from "@/models/utils";
 import { playTrackAtom } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
-import { uncapitalize } from "@/utils/uncapitalize";
 import {
 	Box,
 	Button,
@@ -223,7 +223,10 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										/>
 										<Typography>
 											{t(
-												`songType.${uncapitalize(song.data.type)}`,
+												songTypeToTranslationKey(
+													song.data.type,
+													false,
+												),
 											)}
 										</Typography>
 									</Stack>

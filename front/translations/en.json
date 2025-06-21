@@ -277,6 +277,8 @@
 	},
 	"albumType": {
 		"studioRecording": "Studio Recording",
+		"ep": "EP",
+		"ep_plural": "EPs",
 		"studioRecording_plural": "Studio Albums",
 		"single": "Single",
 		"single_plural": "Singles",

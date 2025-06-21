@@ -22,11 +22,15 @@ import type Album from "@/models/album";
 import { AlbumType } from "@/models/album";
 import type Song from "@/models/song";
 import { SongType } from "@/models/song";
+import {
+	albumTypeToTranslationKey,
+	songTypeToTranslationKey,
+	videoTypeToTranslationKey,
+} from "@/models/utils";
 import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { store } from "@/state/store";
 import { userAtom } from "@/state/user";
-import { uncapitalize } from "@/utils/uncapitalize";
 import { Chip, Grid } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useState } from "react";
@@ -130,7 +134,7 @@ const ChangeSongType = (
 	ChangeResourceType(
 		s,
 		SongType.filter((t) => t !== "Unknown"),
-		(type) => `songType.${uncapitalize(type)}`,
+		(type) => songTypeToTranslationKey(type, false),
 		"actions.song.changeType",
 		client,
 		(newType: SongType) =>
@@ -153,7 +157,7 @@ const ChangeAlbumType = (
 	ChangeResourceType(
 		a,
 		AlbumType,
-		(type) => `albumType.${uncapitalize(type)}`,
+		(type) => albumTypeToTranslationKey(type, false),
 		"actions.album.changeType",
 		client,
 		(newType: AlbumType) =>
@@ -172,7 +176,7 @@ const ChangeVideoType = (
 	ChangeResourceType(
 		v,
 		VideoType,
-		(type) => `videoType.${uncapitalize(type)}`,
+		(type) => videoTypeToTranslationKey(type, false),
 		"actions.video.changeType",
 		client,
 		(newType: VideoType) =>

@@ -28,6 +28,7 @@ import InfiniteView from "@/components/infinite/view";
 import VideoItem from "@/components/list-item/resource/video";
 import VideoTile from "@/components/tile/resource/video";
 import type { SortingParameters } from "@/models/sorting";
+import { videoTypeToTranslationKey } from "@/models/utils";
 import {
 	VideoSortingKeys,
 	VideoType,
@@ -60,7 +61,7 @@ const InfiniteVideoView = (props: ViewProps) => {
 	});
 	const [typeFilter, typeFilterControl] = useTypeFilterControl({
 		types: VideoType,
-		translate: (s) => `videoType.${uncapitalize(s)}`,
+		translate: (s) => videoTypeToTranslationKey(s, false),
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({

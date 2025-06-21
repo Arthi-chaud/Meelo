@@ -18,8 +18,8 @@
 
 import { useQuery } from "@/api/hook";
 import { getSourceFile, getTrack } from "@/api/queries";
+import { songTypeToTranslationKey } from "@/models/utils";
 import formatDuration from "@/utils/format-duration";
-import { uncapitalize } from "@/utils/uncapitalize";
 import {
 	Skeleton,
 	Stack,
@@ -58,7 +58,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 							size={theme.typography.body1.fontSize as number}
 						/>
 						<Typography>
-							{t(`songType.${uncapitalize(songType)}`)}
+							{t(songTypeToTranslationKey(songType, false))}
 						</Typography>
 					</Stack>
 				)

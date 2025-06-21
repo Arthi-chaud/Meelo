@@ -32,11 +32,11 @@ import {
 } from "@/models/song";
 import type { SongGroupWithRelations } from "@/models/song-group";
 import type { SortingParameters } from "@/models/sorting";
+import { songTypeToTranslationKey } from "@/models/utils";
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
 import { parseQueryParam, setQueryParam } from "@/utils/query-param";
 import { getRandomNumber } from "@/utils/random";
-import { uncapitalize } from "@/utils/uncapitalize";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import InfiniteList from "../list";
@@ -127,7 +127,7 @@ export const InfiniteSongView = (props: SongViewProps) => {
 	});
 	const [types, songTypeFilterControl] = useTypeFilterControl({
 		types: SongType,
-		translate: (s) => `songType.${uncapitalize(s)}`,
+		translate: (s) => songTypeToTranslationKey(s, false),
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
@@ -205,7 +205,7 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 	});
 	const [type, songTypeFilterControl] = useTypeFilterControl({
 		types: SongType,
-		translate: (s) => `songType.${uncapitalize(s)}`,
+		translate: (s) => songTypeToTranslationKey(s, false),
 		multipleChoices: false,
 	});
 	const query: SongGroupQueryProps = {
