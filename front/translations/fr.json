@@ -1,17 +1,17 @@
 {
 	"actions": {
 		"addToPlaylist": {
-			"label": "Ajouter à une Playlist",
+			"label": "Ajouter à une playlist",
 			"modalTitle": "Choisissez une playlist"
 		},
 		"album": {
-			"changeType": "Changer le Type de l'album",
-			"goToAlbum": "Voir l'Album"
+			"changeType": "Changer le type de l'album",
+			"goToAlbum": "Voir l'album"
 		},
-		"archive": "Archiver",
+		"archive": "Télécharger archive zip",
 		"artist": {
-			"seeAlbums": "Voir les Albums",
-			"seeSongs": "Voir les Morceaux"
+			"seeAlbums": "Voir les albums",
+			"seeSongs": "Voir les morceaux"
 		},
 		"changeIllutration": "Changer l'illustration",
 		"create": "Créer",
@@ -29,17 +29,17 @@
 		"goToArtist": "Voir l'Artiste",
 		"goToSettingsPage": "Accéder aux réglages",
 		"library": {
-			"create": "Créer une Bibliothèque",
-			"delete": "Supprimer la Bibliothèque",
-			"deletionWarning": "Vous êtes sur le point de supprimer une bibliothèque. Il sera impossible de revenir en arrière"
+			"create": "Créer une bibliothèque",
+			"delete": "Supprimer la bibliothèque",
+			"deletionWarning": "Vous êtes sur le point de supprimer une bibliothèque. Cela ne pourra pas être annulé."
 		},
-		"logout": "Se Déconnecter",
+		"logout": "Se déconnecter",
 		"new": "Nouveau",
 		"playback": {
 			"play": "Écouter",
-			"playAfter": "Lire Après",
-			"playAll": "Tout Jouer",
-			"playNext": "Lire Ensuite",
+			"playAfter": "Lire après",
+			"playAll": "Tout jouer",
+			"playNext": "Lire ensuite",
 			"shuffle": "Aléatoire"
 		},
 		"release": {
@@ -54,7 +54,7 @@
 				"modalTitle": "Choisissez une chanson",
 				"warningBeforeMerging": "Toutes les pistes seront réassignées à ce nouveau morceau. L'ancien morceau sera supprimé. Vos fichiers ne seront pas modifiés ou supprimés"
 			},
-			"seeLyrics": "Voir les Paroles",
+			"seeLyrics": "Voir les paroles",
 			"seeOtherVersions": "Voir les versions",
 			"seeRelatedTracks": "Voir les pistes",
 			"seeSongInfo": "Infos sur le morceau"
@@ -81,6 +81,8 @@
 	"albumType": {
 		"compilation": "Compilation",
 		"compilation_plural": "Compilations",
+		"ep": "EP",
+		"ep_plural": "EP",
 		"liveRecording": "Album Live",
 		"liveRecording_plural": "Albums Live",
 		"remixAlbum": "Album de Remixes",
@@ -92,9 +94,7 @@
 		"studioRecording": "Album Studio",
 		"studioRecording_plural": "Albums",
 		"videoAlbum": "Collection de Vidéos",
-		"videoAlbum_plural": "Albums Vidéos",
-		"ep": "EP",
-		"ep_plural": "EP"
+		"videoAlbum_plural": "Albums Vidéos"
 	},
 	"artist": {
 		"appearsOn": "Apparaît sur",
@@ -183,7 +183,7 @@
 			"passwordTooShort": "Le mot de passe est trop court",
 			"passwordsAreDifferent": "Les mots de passes sont différents",
 			"pleaseConfirm": "Confirmez le mot de passe",
-			"username": "Nom d'Utilisateur",
+			"username": "Nom d'utilisateur",
 			"usernameIsRequired": "Un nom d'utilisateur est attendu",
 			"usernameTooShort": "Le nom d'utilisateur est trop court"
 		},
@@ -213,9 +213,9 @@
 	},
 	"home": {
 		"featuredAlbums": "En Vedette",
-		"latestAlbums": "Dernières Sorties",
+		"latestAlbums": "Dernières sorties",
 		"mostPlayedSongs": "Les Plus Joués",
-		"newlyAddedAlbums": "Ajoutés Récemment",
+		"newlyAddedAlbums": "Ajoutés récemment",
 		"newlyAddedArtists": "Artistes Ajoutés Récemment",
 		"newlyAddedReleases": "Disques Ajoutés Récemment",
 		"topGenres": "Genres populaires",
@@ -248,7 +248,7 @@
 		"playlist": "Playlist",
 		"playlist_plural": "Playlists",
 		"song": "Morceau",
-		"song_plural": "Morceaux",
+		"song_plural": "Chansons",
 		"track_plural": "Pistes",
 		"user_plural": "Comptes",
 		"versions": "Versions",
@@ -296,6 +296,8 @@
 			"lang": {
 				"en": "Anglais",
 				"fr": "Français",
+				"id": "Indonésien",
+				"it": "Italien",
 				"ru": "Russe"
 			},
 			"language": "Langue",
