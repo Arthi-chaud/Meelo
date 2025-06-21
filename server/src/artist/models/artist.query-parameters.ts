@@ -57,7 +57,7 @@ namespace ArtistQueryParameters {
 			name: SearchStringInput;
 			artists: ArtistQueryParameters.WhereInput[];
 			genre: Filter<GenreQueryParameters.WhereInput>;
-			albumArtistOnly: boolean;
+			primaryArtistsOnly: boolean;
 			album: Filter<AlbumQueryParameters.WhereInput>;
 			label: Filter<LabelQueryParameters.WhereInput>;
 		}>

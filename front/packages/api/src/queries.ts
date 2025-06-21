@@ -103,7 +103,7 @@ export const getArtists = <I extends ArtistInclude | never = never>(
 	return _mkSimplePaginatedQuery({
 		route: "/artists",
 		filter: {
-			albumArtistOnly: filter.album ? undefined : "true",
+			primaryArtistsOnly: filter.album ? undefined : "true",
 			...filter,
 			library: formatOr(filter.library),
 		},
