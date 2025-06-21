@@ -3436,9 +3436,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:^1.8.3":
-  version: 1.8.3
-  resolution: "@shopify/flash-list@npm:1.8.3"
+"@shopify/flash-list@npm:v2.0.0-alpha.20":
+  version: 2.0.0-alpha.20
+  resolution: "@shopify/flash-list@npm:2.0.0-alpha.20"
   dependencies:
     recyclerlistview: "npm:4.2.3"
     tslib: "npm:2.8.1"
@@ -3446,7 +3446,7 @@ __metadata:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/0900250ce45157d144e3fef4d1cd8c5dfb03495ecb66da1f512697a6834f4eee7bf0755a3772b3c131135784757e5b36566ed365ea0890d9c10ad872885ef650
+  checksum: 10c0/4acf9b493ac5c461a7afa5c9efae37b440a570b5a57e5fb7dac0beb29c28e663f961acffff8d0b3611dd5d7e7bf7c3d0d0fc496e800f66a10d4eec5a794e3567
   languageName: node
   linkType: hard
 
@@ -8009,7 +8009,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.25.2"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
-    "@shopify/flash-list": "npm:^1.8.3"
+    "@shopify/flash-list": "npm:v2.0.0-alpha.20"
     "@tanstack/react-query": "npm:^5.77.0"
     "@types/react": "npm:~19.0.10"
     api: "workspace:^"

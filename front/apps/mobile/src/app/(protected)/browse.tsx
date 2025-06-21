@@ -17,72 +17,24 @@
  */
 
 import { getAlbums } from "@/api/queries";
-import { FlashList } from "@shopify/flash-list";
-import { View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
-import { useInfiniteQuery } from "~/api";
-import { Illustration } from "~/components/illustration";
+import { InfiniteGrid } from "~/components/infinite/grid";
+import { AlbumTile } from "~/components/tile/resource/album";
 import { useRootViewStyle } from "~/hooks/root-view-style";
-import { Text } from "~/primitives/text";
 
-// const styles = StyleSheet.create({
-// 	flat_list: {
-// 		gap: 16,
-// 	},
-// 	item: {
-// 		flex: 1,
-// 		padding: 16,
-// 		borderRadius: 8,
-// 		alignItems: "center",
-// 		justifyContent: "center",
-// 	},
-// });
+//TODO when page fetched, the item on the last line is resized + rerendered
+//TODO Performance
+//TODO Tap header toscroll to top
 
 export default function BrowseView() {
 	const rootStyle = useRootViewStyle();
-
-	const albums = useInfiniteQuery(() =>
-		getAlbums({}, { sortBy: "addDate", order: "desc" }, [
-			"illustration",
-			"artist",
-		]),
-	);
 	return (
-		<View style={[rootStyle, { flex: 1 }]}>
-			<FlashList
-				data={albums.items}
-				numColumns={3}
-				keyExtractor={(item) => item.id.toString()}
-				onEndReached={() => albums.fetchNextPage()}
-				renderItem={(album) => (
-					<View style={{ flex: 1, borderWidth: 1 }}>
-						<Illustration illustration={album.item.illustration} />
-						<View
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-							}}
-						>
-							<Text variant="h6" numberOfLines={2}>
-								{album.item.name}
-							</Text>
-							<Text
-								variant="body"
-								style={{
-									flex: 1,
-									height: "100%",
-									display: "flex",
-									justifyContent: "flex-end",
-									alignItems: "flex-end",
-								}}
-							>
-								{album.item.artist?.name}
-							</Text>
-						</View>
-					</View>
-				)}
-			/>
-		</View>
+		<InfiniteGrid
+			containerStyle={rootStyle}
+			query={getAlbums({}, { sortBy: "name", order: "asc" }, [
+				"artist",
+				"illustration",
+			])}
+			render={(album) => <AlbumTile album={album} />}
+		/>
 	);
 }
