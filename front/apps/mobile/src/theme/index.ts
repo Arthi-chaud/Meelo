@@ -1,6 +1,5 @@
 import { Appearance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { UnistylesRuntime } from "react-native-unistyles";
 const baseTheme = {
 	gap: (n: number) => n * 8,
 	// TODO Use font size from device
