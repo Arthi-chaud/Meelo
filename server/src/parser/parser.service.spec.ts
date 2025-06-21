@@ -718,7 +718,7 @@ describe("Parser Service", () => {
 					"Challengers: Original Score",
 				],
 			],
-			[AlbumType.EP, "Twist - EP"],
+			[AlbumType.EP, ["Twist - EP"]],
 			[AlbumType.Single, ["Twist - Single", "Falling (Remixes)"]],
 		] as const;
 		for (const [expectedAlbumType, albumNames] of scenarios) {
