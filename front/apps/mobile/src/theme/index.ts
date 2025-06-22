@@ -7,8 +7,21 @@ const baseTheme = {
 		default: 14,
 		rem: (ratio: number) => 14 * ratio,
 	},
-	pulse: {
-		timing: 800,
+	animations: {
+		fades: {
+			blurhash: 100,
+		},
+		pressable: {
+			scaleOnPress: 0.98,
+			damping: 15,
+			stiffness: 200,
+		},
+		skeleton: {
+			minOpacity: 0.4,
+			pulse: {
+				duration: 800,
+			},
+		},
 	},
 	borderRadius: 8, // TODO Normalise?
 	fontStyles: {
