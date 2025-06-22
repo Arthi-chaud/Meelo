@@ -47,6 +47,8 @@ const Illustration = yup
 
 type Illustration = yup.InferType<typeof Illustration>;
 
+export type IllustrationQuality = "low" | "medium" | "high" | "original";
+
 export type IllustratedResource = Resource & {
 	illustration: Illustration | null;
 };
