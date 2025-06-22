@@ -66,11 +66,21 @@ export default function Root() {
 	return (
 		<ScrollView style={[styles.main, pageStyle]}>
 			<View style={{ flexDirection: "row" }}>
-				<Illustration illustration={firstAlbums?.at(0)?.illustration} />
-				<Illustration illustration={firstAlbums?.at(1)?.illustration} />
-				<Illustration illustration={firstAlbums?.at(2)?.illustration} />
+				<Illustration
+					illustration={firstAlbums?.at(0)?.illustration}
+					quality="low"
+				/>
+				<Illustration
+					illustration={firstAlbums?.at(1)?.illustration}
+					quality="low"
+				/>
+				<Illustration
+					illustration={firstAlbums?.at(2)?.illustration}
+					quality="low"
+				/>
 
 				<Illustration
+					quality="medium"
 					fallbackIcon={AlbumIcon}
 					illustration={{
 						aspectRatio: 1,
@@ -82,8 +92,12 @@ export default function Root() {
 			</View>
 
 			<View style={{ flexDirection: "row" }}>
-				<Illustration illustration={firstAlbums?.at(3)?.illustration} />
 				<Illustration
+					quality="original"
+					illustration={firstAlbums?.at(3)?.illustration}
+				/>
+				<Illustration
+					quality="original"
 					fallbackIcon={AlbumIcon}
 					illustration={firstAlbums ? null : undefined}
 				/>

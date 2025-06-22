@@ -61,6 +61,7 @@ export const Tile = ({
 				<Illustration
 					illustration={illustration}
 					{...props.illustrationProps}
+					quality="medium"
 				/>
 			</View>
 			<View style={[styles.textColumn]}>
