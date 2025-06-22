@@ -22,6 +22,9 @@ import id from "./id.json";
 import it from "./it.json";
 import ru from "./ru.json";
 
+export const Languages = ["en", "fr", "ru", "id", "it"] as const;
+export type Language = keyof typeof Languages;
+
 export default Object.entries({ en, fr, ru, id, it }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
