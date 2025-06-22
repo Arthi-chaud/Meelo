@@ -18,6 +18,7 @@
 
 import type { AlbumType } from "@/models/album";
 import { ResourceNotFound } from "@/models/exceptions";
+import type { IllustrationQuality } from "@/models/illustration";
 import Library from "@/models/library";
 import type { PaginationParameters } from "@/models/pagination";
 import Playlist, {
@@ -601,8 +602,13 @@ export default class API {
 	 * @param imageURL
 	 * @returns the correct, rerouted URL
 	 */
-	getIllustrationURL(imageURL: string): string {
-		return `${this.urls.illustration}${imageURL}`;
+	getIllustrationURL(imageURL: string, quality: IllustrationQuality): string {
+		const url = `${this.urls.illustration}${imageURL}`;
+		const qualityQuery =
+			quality === "original"
+				? ""
+				: `${url.includes("?") ? "&" : "?"}quality=${quality}`;
+		return `${url}${qualityQuery}`;
 	}
 
 	getDirectStreamURL(fileId: number): string {
