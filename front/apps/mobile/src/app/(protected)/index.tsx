@@ -34,8 +34,8 @@ import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
 
-const styles = StyleSheet.create(() => ({
-	main: {},
+const styles = StyleSheet.create((theme) => ({
+	main: { paddingHorizontal: theme.gap(1) },
 	container: {
 		display: "flex",
 		alignItems: "center",
