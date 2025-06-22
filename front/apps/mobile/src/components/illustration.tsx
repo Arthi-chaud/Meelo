@@ -17,6 +17,7 @@
  */
 
 import type IllustrationModel from "@/models/illustration";
+import type { IllustrationQuality } from "@/models/illustration";
 import type { Icon } from "@/ui/icons";
 import { Image } from "expo-image";
 import { useEffect, useMemo, useState } from "react";
@@ -35,6 +36,7 @@ import { useAPI } from "~/api";
 type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: Icon;
+	quality: IllustrationQuality;
 	variant?: "fill" | "circle";
 };
 
@@ -88,6 +90,7 @@ const styles = StyleSheet.create((theme) => ({
 export const Illustration = ({
 	illustration,
 	fallbackIcon,
+	quality,
 	variant,
 }: Props) => {
 	const theme = useAnimatedTheme();
@@ -197,6 +200,7 @@ export const Illustration = ({
 									},
 									uri: api.getIllustrationURL(
 										illustration.url,
+										quality,
 									),
 								}}
 							/>
