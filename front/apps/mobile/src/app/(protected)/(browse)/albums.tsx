@@ -34,7 +34,12 @@ export default function AlbumBrowseView() {
 				"artist",
 				"illustration",
 			])}
-			render={(album) => <AlbumTile album={album} />}
+			render={(album) => (
+				<AlbumTile
+					album={album}
+					illustrationProps={{ simpleColorPlaceholder: true }}
+				/>
+			)}
 		/>
 	);
 }

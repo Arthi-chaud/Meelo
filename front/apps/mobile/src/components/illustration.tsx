@@ -38,51 +38,11 @@ type Props = {
 	fallbackIcon?: Icon;
 	quality: IllustrationQuality;
 	variant?: "fill" | "circle";
+	// If true, the blurhash will not be ecoded/displayed.
+	// Instead it will use the color from the illustration model as a place holder
+	// To enhance performance in infinite lists
+	simpleColorPlaceholder?: true;
 };
-
-const styles = StyleSheet.create((theme) => ({
-	outerContainer: {
-		aspectRatio: 1,
-		overflow: "hidden",
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "flex-end",
-	},
-	innerContainer: {
-		backgroundColor: theme.colors.skeleton,
-		borderRadius: theme.borderRadius,
-		variants: {
-			imageType: {
-				tall: { height: "100%", width: undefined },
-				wide: { height: undefined, width: "100%" },
-			},
-			shape: {
-				circle: { borderRadius: 99999, overflow: "hidden" },
-				default: {},
-			},
-		},
-	},
-	blurhash: {
-		backgroundColor: theme.colors.skeleton,
-	},
-	slot: {
-		width: "100%",
-		height: "100%",
-		position: "absolute",
-		bottom: 0,
-		overflow: "hidden",
-		borderRadius: theme.borderRadius,
-	},
-	slotContent: {
-		flex: 1,
-	},
-	fallbackContainer: {
-		flex: 1,
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-	},
-}));
 
 // TODO Make tall images fit container
 // TODO use image size preset
@@ -92,6 +52,7 @@ export const Illustration = ({
 	fallbackIcon,
 	quality,
 	variant,
+	simpleColorPlaceholder,
 }: Props) => {
 	const theme = useAnimatedTheme();
 	const api = useAPI();
@@ -157,15 +118,19 @@ export const Illustration = ({
 		<View style={styles.outerContainer}>
 			<View
 				style={[
-					styles.innerContainer,
 					{
 						aspectRatio: innerAspectRatio,
 					},
+					styles.innerContainer(
+						simpleColorPlaceholder
+							? illustration?.colors.at(0)
+							: undefined,
+					),
 				]}
 			>
 				{illustration && imageStatus !== "error" && (
 					<>
-						{imageStatus !== "done" && (
+						{!simpleColorPlaceholder && imageStatus !== "done" && (
 							<Animated.View
 								exiting={FadeOut}
 								style={[styles.slot]}
@@ -222,3 +187,47 @@ export const Illustration = ({
 		</View>
 	);
 };
+
+const styles = StyleSheet.create((theme) => ({
+	outerContainer: {
+		aspectRatio: 1,
+		overflow: "hidden",
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "flex-end",
+	},
+	innerContainer: (illustrationColor: string | undefined) => ({
+		backgroundColor: illustrationColor ?? theme.colors.skeleton,
+		borderRadius: theme.borderRadius,
+		variants: {
+			imageType: {
+				tall: { height: "100%", width: undefined },
+				wide: { height: undefined, width: "100%" },
+			},
+			shape: {
+				circle: { borderRadius: 99999, overflow: "hidden" },
+				default: {},
+			},
+		},
+	}),
+	blurhash: {
+		backgroundColor: theme.colors.skeleton,
+	},
+	slot: {
+		width: "100%",
+		height: "100%",
+		position: "absolute",
+		bottom: 0,
+		overflow: "hidden",
+		borderRadius: theme.borderRadius,
+	},
+	slotContent: {
+		flex: 1,
+	},
+	fallbackContainer: {
+		flex: 1,
+		display: "flex",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+}));
