@@ -8,8 +8,10 @@ import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 
 const styles = StyleSheet.create((theme) => ({
-	rootStyle: { flex: 1, paddingHorizontal: theme.gap(1) },
-	itemContainer: { flex: 1, gap: theme.gap(0.5) },
+	rootStyle: { flex: 1, marginHorizontal: theme.gap(1) },
+	itemContainer: (columnCount: number) => ({
+		width: `${100 / columnCount}%`,
+	}),
 }));
 
 type Props<T, T1> = {
@@ -25,20 +27,14 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 	const queryRes = useInfiniteQuery(() => props.query);
 	const itemList = useMemo(() => {
 		const itemCount = queryRes.items?.length ?? 0;
-		let trailingItems: (null | undefined)[] = [];
+		let trailingSkeletons = 0;
 		if (queryRes.isFetching && !itemCount) {
-			trailingItems = generateArray(columnCount, undefined);
+			trailingSkeletons = columnCount;
 		} else if (queryRes.isFetchingNextPage) {
-			trailingItems = generateArray(
-				columnCount - (itemCount % columnCount) || columnCount,
-				undefined,
-			);
-		} else {
-			const emptyPlaceholderCount =
-				columnCount - (itemCount % columnCount);
-			trailingItems = generateArray(emptyPlaceholderCount, null);
+			trailingSkeletons =
+				columnCount - (itemCount % columnCount) || columnCount;
 		}
-		return [...(queryRes.items ?? []), ...trailingItems];
+		return generateArray(itemCount + trailingSkeletons, null);
 	}, [
 		columnCount,
 		queryRes.items,
@@ -51,17 +47,18 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 				data={itemList}
 				numColumns={columnCount}
 				horizontal={false}
-				keyExtractor={(item, idx) =>
-					item?.id?.toString() ?? `skeleton-${idx}`
-				}
+				keyExtractor={(_, idx) => {
+					const item = queryRes.items?.at(idx);
+					return item?.id.toString() ?? `skeleton-${idx}`;
+				}}
 				refreshing={queryRes.isRefetching}
 				onRefresh={() => queryRes.refetch()}
 				onEndReached={() => queryRes.fetchNextPage()}
-				renderItem={({ item }) => {
-					//TODO Optimise, avoid rerender at every page
+				renderItem={({ index }) => {
+					const item = queryRes.items?.at(index);
 					return (
-						<View style={styles.itemContainer}>
-							{item === null ? undefined : props.render(item)}
+						<View style={styles.itemContainer(columnCount)}>
+							{props.render(item)}
 						</View>
 					);
 				}}
