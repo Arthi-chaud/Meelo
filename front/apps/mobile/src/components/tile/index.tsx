@@ -35,7 +35,7 @@ type Props = {
 	illustration: IllustrationModel | null | undefined;
 	illustrationProps?: Omit<
 		ComponentProps<typeof Illustration>,
-		"illustration"
+		"illustration" | "quality"
 	>;
 	title: string | undefined;
 	subtitle: string | undefined | null;
