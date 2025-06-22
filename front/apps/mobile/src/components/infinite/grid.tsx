@@ -58,6 +58,7 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 				onRefresh={() => queryRes.refetch()}
 				onEndReached={() => queryRes.fetchNextPage()}
 				renderItem={({ item }) => {
+					//TODO Optimise, avoid rerender at every page
 					return (
 						<View style={styles.itemContainer}>
 							{item === null ? undefined : props.render(item)}

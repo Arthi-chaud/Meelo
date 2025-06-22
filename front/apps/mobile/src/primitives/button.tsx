@@ -37,6 +37,7 @@ import {
 	type UnistylesVariants,
 	withUnistyles,
 } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {
 	labelProps?: TextProps;
@@ -55,10 +56,11 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 // - The button is in a row
 // - The button is align to the center (?)
 export const Button = (props: ButtonProps) => {
+	const theme = useAnimatedTheme();
 	const scale = useSharedValue<number>(1);
 	const Leading = withUnistyles(props.leadingIcon ?? View);
 	const handlePress = useCallback(() => {
-		scale.value = 0.98;
+		scale.value = theme.value.animations.pressable.scaleOnPress;
 	}, []);
 	const handleRelease = useCallback(() => {
 		scale.value = 1;
@@ -67,8 +69,8 @@ export const Button = (props: ButtonProps) => {
 		transform: [
 			{
 				scale: withSpring(scale.value, {
-					damping: 15,
-					stiffness: 200,
+					damping: theme.value.animations.pressable.damping,
+					stiffness: theme.value.animations.pressable.stiffness,
 				}),
 			},
 		],

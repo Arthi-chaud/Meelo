@@ -76,7 +76,6 @@ const styles = StyleSheet.create((theme) => ({
 		},
 	},
 	skeleton: {
-		// From MUI
 		backgroundColor: theme.colors.skeleton,
 		alignSelf: "flex-start",
 		borderRadius: theme.borderRadius,
@@ -119,8 +118,8 @@ export const TextSkeleton = (
 	);
 	useEffect(() => {
 		opacity.value = withRepeat(
-			withTiming(0.4, {
-				duration: theme.value.pulse.timing,
+			withTiming(theme.value.animations.skeleton.minOpacity, {
+				duration: theme.value.animations.skeleton.pulse.duration,
 				easing: Easing.ease,
 			}),
 			-1,

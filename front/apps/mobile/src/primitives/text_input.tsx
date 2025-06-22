@@ -84,10 +84,10 @@ export const TextInput = ({
 		props.value === undefined || !props.value.length,
 	);
 	const animatedTheme = useAnimatedTheme();
+	const springConfig = { damping: 100, stiffness: 500 };
 
 	const labelStyle = useAnimatedStyle(() => {
 		const labelIsRaised = isFocused.value || !isEmpty.value;
-		const springConfig = { damping: 100, stiffness: 500 };
 		return {
 			//TODO use theme.gap
 			top: withSpring(labelIsRaised ? -14 : 16, springConfig),
@@ -107,10 +107,7 @@ export const TextInput = ({
 	}, [error, animatedTheme]);
 
 	const containerStyle = useAnimatedStyle(() => ({
-		borderWidth: withSpring(isFocused.value ? 3 : 1, {
-			damping: 100,
-			stiffness: 500,
-		}),
+		borderWidth: withSpring(isFocused.value ? 3 : 1, springConfig),
 	}));
 	styles.useVariants({ error: !!error });
 	return (

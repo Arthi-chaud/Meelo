@@ -29,6 +29,7 @@ import Animated, {
 	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { useAPI } from "~/api";
 
 type Props = {
@@ -59,6 +60,9 @@ const styles = StyleSheet.create((theme) => ({
 			},
 		},
 	},
+	blurhash: {
+		backgroundColor: theme.colors.skeleton,
+	},
 	slot: {
 		width: "100%",
 		height: "100%",
@@ -86,6 +90,7 @@ export const Illustration = ({
 	fallbackIcon,
 	variant,
 }: Props) => {
+	const theme = useAnimatedTheme();
 	const api = useAPI();
 	const innerAspectRatio = useMemo(
 		() =>
@@ -140,7 +145,9 @@ export const Illustration = ({
 	}, [illustration]);
 	useEffect(() => {
 		if (blurhashLoaded) {
-			blurhashOpacity.value = withTiming(1, { duration: 100 });
+			blurhashOpacity.value = withTiming(1, {
+				duration: theme.value.animations.fades.blurhash,
+			});
 		}
 	}, [blurhashLoaded]);
 	return (
@@ -162,7 +169,11 @@ export const Illustration = ({
 							>
 								<Blurhash
 									decodeAsync
-									style={[blurhashFadeIn, styles.slotContent]}
+									style={[
+										blurhashFadeIn,
+										styles.slotContent,
+										styles.blurhash,
+									]}
 									onLoadEnd={() => setBlurhashLoaded(true)}
 									blurhash={illustration.blurhash}
 									decodeWidth={16}
