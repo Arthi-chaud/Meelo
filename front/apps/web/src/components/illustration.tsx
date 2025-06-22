@@ -17,6 +17,7 @@
  */
 
 import type IllustrationModel from "@/models/illustration";
+import type { IllustrationQuality } from "@/models/illustration";
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
@@ -25,8 +26,6 @@ import { useAPI } from "~/api";
 import { isSSR } from "~/utils/is-ssr";
 import Blurhash from "./blurhash";
 import Fade from "./fade";
-
-type ImageQuality = "low" | "medium" | "high" | "original";
 
 type IllustrationProps = {
 	/**
@@ -43,7 +42,7 @@ type IllustrationProps = {
 	/**
 	 * Quality preset, in which to dl the image.
 	 */
-	quality: ImageQuality;
+	quality: IllustrationQuality;
 
 	imgProps?: ImageProps["style"];
 } & RequireExactlyOne<{
@@ -215,14 +214,7 @@ const Illustration = (props: IllustrationProps) => {
 								transition: `opacity ${theme.transitions.duration.enteringScreen}ms ${theme.transitions.easing.easeIn}`,
 								...props.imgProps,
 							}}
-							src={
-								api.getIllustrationURL(url) +
-								(props.quality === "original"
-									? ""
-									: `${
-											url.includes("?") ? "&" : "?"
-										}quality=${props.quality}`)
-							}
+							src={api.getIllustrationURL(url, props.quality)}
 						/>
 					)}
 				</Box>
