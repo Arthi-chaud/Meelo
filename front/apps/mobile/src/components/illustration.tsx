@@ -23,6 +23,7 @@ import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Blurhash } from "react-native-blurhash";
 import Animated, {
+	FadeOut,
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
@@ -33,21 +34,42 @@ import { useAPI } from "~/api";
 type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: Icon;
+	variant?: "fill" | "circle";
 };
 
 const styles = StyleSheet.create((theme) => ({
 	outerContainer: {
 		aspectRatio: 1,
+		overflow: "hidden",
 		flex: 1,
+		alignItems: "center",
 		justifyContent: "flex-end",
 	},
 	innerContainer: {
 		backgroundColor: theme.colors.skeleton,
 		borderRadius: theme.borderRadius,
-		overflow: "hidden",
+		variants: {
+			imageType: {
+				tall: { height: "100%", width: undefined },
+				wide: { height: undefined, width: "100%" },
+			},
+			shape: {
+				circle: { borderRadius: 99999, overflow: "hidden" },
+				default: {},
+			},
+		},
 	},
-	slot: { width: "100%", height: "100%", position: "absolute", top: 0 },
-	slotContent: { flex: 1 },
+	slot: {
+		width: "100%",
+		height: "100%",
+		position: "absolute",
+		bottom: 0,
+		overflow: "hidden",
+		borderRadius: theme.borderRadius,
+	},
+	slotContent: {
+		flex: 1,
+	},
 	fallbackContainer: {
 		flex: 1,
 		display: "flex",
@@ -56,13 +78,26 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-export const Illustration = ({ illustration, fallbackIcon }: Props) => {
+// TODO Make tall images fit container
+// TODO use image size preset
+
+export const Illustration = ({
+	illustration,
+	fallbackIcon,
+	variant,
+}: Props) => {
 	const api = useAPI();
 	const innerAspectRatio = useMemo(
-		() => illustration?.aspectRatio ?? 1,
+		() =>
+			variant === "fill" || variant === "circle"
+				? 1
+				: (illustration?.aspectRatio ?? 1),
 		[illustration],
 	);
-
+	styles.useVariants({
+		imageType: innerAspectRatio > 1 ? "wide" : "tall",
+		shape: variant === "circle" ? "circle" : undefined,
+	});
 	const [imageStatus, setImageStatus] = useState<
 		"done" | "loading" | "error"
 	>("loading");
@@ -73,6 +108,8 @@ export const Illustration = ({ illustration, fallbackIcon }: Props) => {
 
 	const [blurhashLoaded, setBlurhashLoaded] = useState(false);
 	const blurhashOpacity = useSharedValue(0);
+	//Note: we only set the opacity to 1
+	//We rely on the existing animation to handle the fadeout
 	const blurhashFadeIn = useAnimatedStyle(() => ({
 		opacity: blurhashOpacity.value,
 	}));
@@ -91,11 +128,9 @@ export const Illustration = ({ illustration, fallbackIcon }: Props) => {
 
 	useEffect(() => {
 		if (imageStatus === "done") {
-			imageOpacity.value = withTiming(1, { duration: 500 });
-			blurhashOpacity.value = withTiming(0, { duration: 500 });
+			imageOpacity.value = withTiming(1);
 		} else if (imageStatus === "error") {
-			fallbackOpacity.value = withTiming(1, { duration: 500 });
-			blurhashOpacity.value = withTiming(0, { duration: 500 });
+			fallbackOpacity.value = withTiming(1);
 		}
 	}, [imageStatus]);
 	useEffect(() => {
@@ -113,25 +148,33 @@ export const Illustration = ({ illustration, fallbackIcon }: Props) => {
 			<View
 				style={[
 					styles.innerContainer,
-					{ aspectRatio: innerAspectRatio },
+					{
+						aspectRatio: innerAspectRatio,
+					},
 				]}
 			>
 				{illustration && imageStatus !== "error" && (
 					<>
-						<Animated.View style={[blurhashFadeIn, styles.slot]}>
-							<Blurhash
-								decodeAsync
-								style={styles.slotContent}
-								onLoadEnd={() => setBlurhashLoaded(true)}
-								blurhash={illustration.blurhash}
-								decodeWidth={16}
-								decodeHeight={16}
-							/>
-						</Animated.View>
+						{imageStatus !== "done" && (
+							<Animated.View
+								exiting={FadeOut}
+								style={[styles.slot]}
+							>
+								<Blurhash
+									decodeAsync
+									style={[blurhashFadeIn, styles.slotContent]}
+									onLoadEnd={() => setBlurhashLoaded(true)}
+									blurhash={illustration.blurhash}
+									decodeWidth={16}
+									decodeHeight={16}
+								/>
+							</Animated.View>
+						)}
 
 						<Animated.View style={[imageFadeIn, styles.slot]}>
 							<Image
-								style={styles.slotContent}
+								style={[styles.slotContent]}
+								contentFit="cover"
 								decodeFormat="rgb"
 								onDisplay={() => setImageStatus("done")}
 								onError={() => {

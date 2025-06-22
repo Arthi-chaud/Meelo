@@ -12,6 +12,7 @@ export const AlbumTile = ({ album }: Props) => {
 		<Tile
 			illustration={album?.illustration}
 			title={album?.name}
+			href={`/releases/${album?.masterId}`}
 			subtitle={
 				album === undefined
 					? undefined
