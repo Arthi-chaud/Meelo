@@ -21,8 +21,6 @@ import type { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireExactlyOne } from "type-fest";
 
-// TODO Vertical divider
-
 const styles = StyleSheet.create((theme) => ({
 	container: {
 		variants: {

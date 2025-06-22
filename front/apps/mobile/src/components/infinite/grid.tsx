@@ -8,7 +8,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 
 const styles = StyleSheet.create((theme) => ({
-	rootStyle: { flex: 1 },
+	rootStyle: { flex: 1, paddingHorizontal: theme.gap(1) },
 	itemContainer: { flex: 1, gap: theme.gap(0.5) },
 }));
 
@@ -39,7 +39,12 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 			trailingItems = generateArray(emptyPlaceholderCount, null);
 		}
 		return [...(queryRes.items ?? []), ...trailingItems];
-	}, [queryRes.items, queryRes.isFetching, queryRes.isFetchingNextPage]);
+	}, [
+		columnCount,
+		queryRes.items,
+		queryRes.isFetching,
+		queryRes.isFetchingNextPage,
+	]);
 	return (
 		<View style={[styles.rootStyle, props.containerStyle]}>
 			<FlatList
@@ -49,6 +54,8 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 				keyExtractor={(item, idx) =>
 					item?.id?.toString() ?? `skeleton-${idx}`
 				}
+				refreshing={queryRes.isRefetching}
+				onRefresh={() => queryRes.refetch()}
 				onEndReached={() => queryRes.fetchNextPage()}
 				renderItem={({ item }) => {
 					return (

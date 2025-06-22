@@ -1,6 +1,9 @@
 import type IllustrationModel from "@/models/illustration";
-import { View, type ViewStyle } from "react-native";
+import { type Href, useRouter } from "expo-router";
+import type { ComponentProps } from "react";
+import { Pressable, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import type { RequireExactlyOne } from "type-fest";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 
@@ -9,13 +12,19 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		padding: theme.gap(0.5),
 	},
+	imageContainer: {},
 	textColumn: {
 		display: "flex",
 		flexDirection: "column",
-		justifyContent: "space-between",
-		padding: theme.gap(0.5),
-		paddingBottom: theme.gap(0.25),
-		gap: theme.gap(0.25),
+		paddingHorizontal: theme.gap(0.5),
+		paddingVertical: theme.gap(1),
+		gap: theme.gap(0.5),
+		variants: {
+			hasSubtitle: {
+				true: { alignItems: "flex-start" },
+				false: { alignItems: "center" },
+			},
+		},
 	},
 }));
 
@@ -24,30 +33,52 @@ const styles = StyleSheet.create((theme) => ({
 
 type Props = {
 	illustration: IllustrationModel | null | undefined;
+	illustrationProps?: Omit<
+		ComponentProps<typeof Illustration>,
+		"illustration"
+	>;
 	title: string | undefined;
-	subtitle: string | undefined;
+	subtitle: string | undefined | null;
 	containerStyle?: ViewStyle;
-};
+} & RequireExactlyOne<{ href: Href; onPress: () => void }>;
 
-export const Tile = ({ illustration, title, subtitle, ...props }: Props) => {
+export const Tile = ({
+	illustration,
+	title,
+	subtitle,
+	href,
+	onPress,
+	...props
+}: Props) => {
+	styles.useVariants({ hasSubtitle: subtitle !== null });
+	const router = useRouter();
 	return (
-		<View style={[styles.container, props.containerStyle]}>
-			<Illustration illustration={illustration} />
-			<View style={styles.textColumn}>
+		<Pressable
+			onPress={() => (href ? router.push(href) : onPress())}
+			style={[styles.container, props.containerStyle]}
+		>
+			<View>
+				<Illustration
+					illustration={illustration}
+					{...props.illustrationProps}
+				/>
+			</View>
+			<View style={[styles.textColumn]}>
 				<LoadableText
 					variant="h6"
 					numberOfLines={1}
 					skeletonWidth={10}
 					content={title}
 				/>
-				<LoadableText
-					variant="body"
-					style={{}}
-					skeletonWidth={8}
-					numberOfLines={1}
-					content={subtitle}
-				/>
+				{subtitle !== null && (
+					<LoadableText
+						variant="body"
+						skeletonWidth={8}
+						numberOfLines={1}
+						content={subtitle}
+					/>
+				)}
 			</View>
-		</View>
+		</Pressable>
 	);
 };

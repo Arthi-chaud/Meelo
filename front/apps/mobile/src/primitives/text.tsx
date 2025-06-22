@@ -60,10 +60,12 @@ const styles = StyleSheet.create((theme) => ({
 				},
 				h6: {
 					fontSize: theme.fontSize.rem(1.125),
+					lineHeight: theme.fontSize.rem(1.25),
 					...theme.fontStyles.medium,
 				},
 				body: {
 					fontSize: theme.fontSize.rem(1),
+					lineHeight: theme.fontSize.rem(1.125),
 					...theme.fontStyles.regular,
 				},
 				subtitle: {

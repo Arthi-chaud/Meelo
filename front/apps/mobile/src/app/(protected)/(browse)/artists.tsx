@@ -16,25 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAlbums } from "@/api/queries";
+import { getArtists } from "@/api/queries";
 import { InfiniteGrid } from "~/components/infinite/grid";
-import { AlbumTile } from "~/components/tile/resource/album";
+import { ArtistTile } from "~/components/tile/resource/artist";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 
-//TODO when page fetched, the item on the last line is resized + rerendered
-//TODO Performance
-//TODO Tap header toscroll to top
-
-export default function BrowseView() {
+export default function ArtistBrowseView() {
 	const rootStyle = useRootViewStyle();
 	return (
 		<InfiniteGrid
 			containerStyle={rootStyle}
-			query={getAlbums({}, { sortBy: "name", order: "asc" }, [
-				"artist",
+			query={getArtists({}, { sortBy: "name", order: "asc" }, [
 				"illustration",
 			])}
-			render={(album) => <AlbumTile album={album} />}
+			render={(artist) => <ArtistTile artist={artist} />}
 		/>
 	);
 }

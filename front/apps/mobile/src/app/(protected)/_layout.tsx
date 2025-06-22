@@ -90,7 +90,7 @@ export default function ProtectedLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="browse"
+				name="(browse)"
 				options={{
 					title: t("nav.browse"),
 					tabBarIcon: ({ focused }) => (
