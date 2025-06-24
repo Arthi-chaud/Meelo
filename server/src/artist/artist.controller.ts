@@ -46,9 +46,9 @@ class Selector {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description:
-			"If true, only artists that have at least one album will be returned",
+			"If true, only artists that have at least one album will be returned or whose songs are standalone. It will not return artists that only appear on compilations or ones that are only featuring artists",
 	})
-	albumArtistOnly?: boolean;
+	primaryArtistsOnly?: boolean;
 
 	@IsOptional()
 	@TransformFilter(GenreService, {

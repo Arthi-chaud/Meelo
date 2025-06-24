@@ -34,6 +34,10 @@ func execScan(library api.Library, c config.Config, w *Worker) error {
 	}
 	pathsNotRegistered := []string{}
 	for _, fileInDir := range filesInDir {
+		if strings.HasPrefix(path.Base(fileInDir), ".") {
+			// Ignore hidden files
+			continue
+		}
 		if internal.Contains(registeredPaths, fileInDir) {
 			// File is already in library
 			continue

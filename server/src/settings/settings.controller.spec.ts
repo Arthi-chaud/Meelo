@@ -45,6 +45,7 @@ describe("Settings Controller", () => {
 			.expect(200)
 			.expect({
 				allowAnonymous: false,
+				enableUserRegistration: true,
 			});
 	});
 });

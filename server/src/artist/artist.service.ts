@@ -236,30 +236,36 @@ export default class ArtistService extends SearchableRepositoryService {
 			});
 		} else if (where.library) {
 			query.push({
-				albums: {
-					some: {
-						releases: {
-							some: ReleaseService.formatManyWhereInput({
-								library: where.library,
-							}),
+				OR: [
+					{
+						albums: {
+							some: {
+								releases: {
+									some: ReleaseService.formatManyWhereInput({
+										library: where.library,
+									}),
+								},
+							},
 						},
 					},
-				},
-				songs: {
-					some: {
-						tracks: {
+					{
+						songs: {
 							some: {
-								song: {
-									tracks: {
-										some: TrackService.formatManyWhereInput(
-											{ library: where.library },
-										),
+								tracks: {
+									some: {
+										song: {
+											tracks: {
+												some: TrackService.formatManyWhereInput(
+													{ library: where.library },
+												),
+											},
+										},
 									},
 								},
 							},
 						},
 					},
-				},
+				],
 			});
 		}
 		if (where.genre) {
@@ -364,9 +370,23 @@ export default class ArtistService extends SearchableRepositoryService {
 				],
 			});
 		}
-		if (where.albumArtistOnly) {
+		if (where.primaryArtistsOnly) {
 			query.push({
-				NOT: { albums: { none: {} } },
+				OR: [
+					{
+						NOT: { albums: { none: {} } },
+					},
+					{
+						videos: {
+							some: { tracks: { some: { releaseId: null } } },
+						},
+					},
+					{
+						songs: {
+							some: { tracks: { some: { releaseId: null } } },
+						},
+					},
+				],
 			});
 		}
 

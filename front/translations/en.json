@@ -169,7 +169,9 @@
 			"lang": {
 				"en": "English",
 				"fr": "French",
-				"ru": "Russian"
+				"ru": "Russian",
+				"it": "Italian",
+				"id": "Indonesian"
 			},
 			"scrobblers": {
 				"header": "Scrobblers",
@@ -275,6 +277,8 @@
 	},
 	"albumType": {
 		"studioRecording": "Studio Recording",
+		"ep": "EP",
+		"ep_plural": "EPs",
 		"studioRecording_plural": "Studio Albums",
 		"single": "Single",
 		"single_plural": "Singles",

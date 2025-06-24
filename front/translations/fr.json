@@ -92,7 +92,9 @@
 		"studioRecording": "Album Studio",
 		"studioRecording_plural": "Albums",
 		"videoAlbum": "Collection de Vidéos",
-		"videoAlbum_plural": "Albums Vidéos"
+		"videoAlbum_plural": "Albums Vidéos",
+		"ep": "EP",
+		"ep_plural": "EP"
 	},
 	"artist": {
 		"appearsOn": "Apparaît sur",

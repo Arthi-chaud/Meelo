@@ -53,6 +53,7 @@ import {
 } from "@/models/release";
 import { ScrobblersStatus } from "@/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "@/models/search";
+import { Settings } from "@/models/settings";
 import {
 	type SongInclude,
 	type SongSortingKeys,
@@ -102,7 +103,7 @@ export const getArtists = <I extends ArtistInclude | never = never>(
 	return _mkSimplePaginatedQuery({
 		route: "/artists",
 		filter: {
-			albumArtistOnly: filter.album ? undefined : "true",
+			primaryArtistsOnly: filter.album ? undefined : "true",
 			...filter,
 			library: formatOr(filter.library),
 		},
@@ -562,6 +563,11 @@ export const getScrobblerStatus = (): Query<ScrobblersStatus> => {
 		route: "/scrobblers",
 		validator: ScrobblersStatus,
 	});
+};
+
+/// Settings
+export const getSettings = (): Query<Settings> => {
+	return _mkSimpleQuery({ route: "/settings", validator: Settings });
 };
 
 export const _mkSimpleQuery = <T>(

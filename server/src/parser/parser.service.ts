@@ -514,11 +514,11 @@ export default class ParserService {
 		) {
 			return AlbumType.LiveRecording;
 		}
-		if (
-			albumName.endsWith("- single") ||
-			albumName.endsWith("- ep") ||
-			albumName.endsWith("(remixes)")
-		) {
+
+		if (albumName.endsWith("- ep")) {
+			return AlbumType.EP;
+		}
+		if (albumName.endsWith("- single") || albumName.endsWith("(remixes)")) {
 			return AlbumType.Single;
 		}
 		if (

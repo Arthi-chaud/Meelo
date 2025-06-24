@@ -107,7 +107,7 @@ describe("Artist Controller", () => {
 		});
 		it("should get only the album artists", () => {
 			return request(app.getHttpServer())
-				.get("/artists?albumArtistOnly=true")
+				.get("/artists?primaryArtistsOnly=true")
 				.expect(200)
 				.expect((res) => {
 					const artists: Artist[] = res.body.items;
@@ -176,7 +176,7 @@ describe("Artist Controller", () => {
 		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/artists?albumArtistOnly=true&library=${dummyRepository.library1.id}`,
+					`/artists?primaryArtistsOnly=true&library=${dummyRepository.library1.id}`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -206,7 +206,7 @@ describe("Artist Controller", () => {
 		it("should return every artists (1 expected)", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/artists?albumArtistOnly=true&library=${dummyRepository.library2.id}`,
+					`/artists?primaryArtistsOnly=true&library=${dummyRepository.library2.id}`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -224,7 +224,7 @@ describe("Artist Controller", () => {
 		it("should return every artists (from library's slug)", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/artists?albumArtistOnly=true&library=${dummyRepository.library1.slug}`,
+					`/artists?primaryArtistsOnly=true&library=${dummyRepository.library1.slug}`,
 				)
 				.expect(200)
 				.expect((res) => {

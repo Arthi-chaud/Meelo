@@ -46,6 +46,7 @@ class TestMusicbrainz(unittest.TestCase):
             ("Nova Tunes 01", None, "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
             # Test when is not actually various artist, but has type 'compilation'
             ("Hotel Costes, Vol. 4", None, "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
+            ("Hotel Costes, Volume 4", None, "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
             ("Hotel Costes: Best Of...", None, "16b9cdb4-1219-3bde-b538-b33fbf5d0626"),
             # Test when is not actually various artist, but has type 'Soundtrack'
             (
@@ -160,6 +161,12 @@ class TestMusicbrainz(unittest.TestCase):
             ("35f99662-c0e7-3ddc-a321-ad2da346cb83", AlbumType.COMPILATION),
             # Britney Spears - Can you handle mine
             ("8795e66f-3746-3892-b160-917647350d15", AlbumType.COMPILATION),
+            # Lady Gaga - Fame Monster
+            ("20b4c8b3-e922-44a3-90e8-fa00acad8ed4", AlbumType.EP),
+            # Britney Spears - Chaotic
+            ("e19ae891-315c-45ed-a643-eba4f52e8554", AlbumType.EP),
+            # Britney Spears - In the zone (album, not EP)
+            ("add6cf16-f4c1-3d50-9b28-633b35ca8189", AlbumType.STUDIO),
         ]
 
         provider: MusicBrainzProvider = (

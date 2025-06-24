@@ -31,7 +31,7 @@ import {
 	type AlbumWithRelations,
 } from "@/models/album";
 import type { SortingParameters } from "@/models/sorting";
-import { uncapitalize } from "@/utils/uncapitalize";
+import { albumTypeToTranslationKey } from "@/models/utils";
 
 type QueryProps = {
 	types?: AlbumType[];
@@ -54,7 +54,7 @@ const InfiniteAlbumView = (props: ViewProps) => {
 	});
 	const [typeFilter, typeFilterControl] = useTypeFilterControl({
 		types: AlbumType,
-		translate: (s) => `albumType.${uncapitalize(s)}`,
+		translate: (s) => albumTypeToTranslationKey(s, false),
 		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({

@@ -16,17 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import PrismaModule from "src/prisma/prisma.module";
-import SettingsModule from "src/settings/settings.module";
-import { UserResponseBuilder } from "./models/user.response";
-import UserController from "./user.controller";
-import UserService from "./user.service";
+import * as yup from "yup";
 
-@Module({
-	imports: [PrismaModule, SettingsModule],
-	providers: [UserService, UserResponseBuilder],
-	controllers: [UserController],
-	exports: [UserService, UserResponseBuilder],
-})
-export default class UserModule {}
+export const Settings = yup.object({
+	enableUserRegistration: yup.boolean().required(),
+	allowAnonymous: yup.boolean().required(),
+});
+
+export type Settings = yup.InferType<typeof Settings>;
