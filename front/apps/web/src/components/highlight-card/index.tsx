@@ -126,7 +126,7 @@ const HighlightCard = (props: HighlightCardProps) => {
 						</Box>
 						<Box
 							sx={{
-								overflowY: "scroll",
+								overflowY: "auto",
 								overflowX: "clip",
 								flexGrow: 1,
 								marginRight: -2,

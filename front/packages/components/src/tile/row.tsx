@@ -45,6 +45,9 @@ const TileRow = (props: TileRowProps) => {
 				width: "100%",
 				scrollSnapType: "x",
 				paddingTop: 1,
+				"&::-webkit-scrollbar-thumb": {
+					backgroundColor: 'transparent',
+				},
 			}}
 			direction="row"
 		>
