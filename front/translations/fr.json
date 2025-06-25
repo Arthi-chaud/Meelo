@@ -1,17 +1,17 @@
 {
 	"actions": {
 		"addToPlaylist": {
-			"label": "Ajouter à une Playlist",
+			"label": "Ajouter à une playlist",
 			"modalTitle": "Choisissez une playlist"
 		},
 		"album": {
-			"changeType": "Changer le Type de l'album",
-			"goToAlbum": "Voir l'Album"
+			"changeType": "Changer le type de l'album",
+			"goToAlbum": "Voir l'album"
 		},
-		"archive": "Archiver",
+		"archive": "Télécharger",
 		"artist": {
-			"seeAlbums": "Voir les Albums",
-			"seeSongs": "Voir les Morceaux"
+			"seeAlbums": "Voir les albums",
+			"seeSongs": "Voir les morceaux"
 		},
 		"changeIllutration": "Changer l'illustration",
 		"create": "Créer",
@@ -29,17 +29,17 @@
 		"goToArtist": "Voir l'Artiste",
 		"goToSettingsPage": "Accéder aux réglages",
 		"library": {
-			"create": "Créer une Bibliothèque",
-			"delete": "Supprimer la Bibliothèque",
-			"deletionWarning": "Vous êtes sur le point de supprimer une bibliothèque. Il sera impossible de revenir en arrière"
+			"create": "Créer une bibliothèque",
+			"delete": "Supprimer la bibliothèque",
+			"deletionWarning": "Vous êtes sur le point de supprimer une bibliothèque. Cela ne pourra pas être annulé."
 		},
-		"logout": "Se Déconnecter",
+		"logout": "Se déconnecter",
 		"new": "Nouveau",
 		"playback": {
 			"play": "Écouter",
-			"playAfter": "Lire Après",
-			"playAll": "Tout Jouer",
-			"playNext": "Lire Ensuite",
+			"playAfter": "Lire après",
+			"playAll": "Tout jouer",
+			"playNext": "Lire ensuite",
 			"shuffle": "Aléatoire"
 		},
 		"release": {
@@ -54,7 +54,7 @@
 				"modalTitle": "Choisissez une chanson",
 				"warningBeforeMerging": "Toutes les pistes seront réassignées à ce nouveau morceau. L'ancien morceau sera supprimé. Vos fichiers ne seront pas modifiés ou supprimés"
 			},
-			"seeLyrics": "Voir les Paroles",
+			"seeLyrics": "Voir les paroles",
 			"seeOtherVersions": "Voir les versions",
 			"seeRelatedTracks": "Voir les pistes",
 			"seeSongInfo": "Infos sur le morceau"
@@ -81,6 +81,8 @@
 	"albumType": {
 		"compilation": "Compilation",
 		"compilation_plural": "Compilations",
+		"ep": "EP",
+		"ep_plural": "EP",
 		"liveRecording": "Album Live",
 		"liveRecording_plural": "Albums Live",
 		"remixAlbum": "Album de Remixes",
@@ -92,9 +94,7 @@
 		"studioRecording": "Album Studio",
 		"studioRecording_plural": "Albums",
 		"videoAlbum": "Collection de Vidéos",
-		"videoAlbum_plural": "Albums Vidéos",
-		"ep": "EP",
-		"ep_plural": "EP"
+		"videoAlbum_plural": "Albums Vidéos"
 	},
 	"artist": {
 		"appearsOn": "Apparaît sur",
@@ -183,7 +183,7 @@
 			"passwordTooShort": "Le mot de passe est trop court",
 			"passwordsAreDifferent": "Les mots de passes sont différents",
 			"pleaseConfirm": "Confirmez le mot de passe",
-			"username": "Nom d'Utilisateur",
+			"username": "Nom d'utilisateur",
 			"usernameIsRequired": "Un nom d'utilisateur est attendu",
 			"usernameTooShort": "Le nom d'utilisateur est trop court"
 		},
@@ -197,26 +197,26 @@
 			"pathIsRequired": "Le chemin est obligatoire",
 			"pathOfLibrary": "Chemin de la bibliothèque"
 		},
-		"scrobblers": {
-			"listenbrainz": {
-				"tokenLabel": "User Token de ListenBrainz",
-				"tokenHelperText": "Récupérez le token ici: https://listenbrainz.org/settings/",
-				"tokenIsRequired": "Le Token est obligatoire",
-				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
-				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)"
-			}
-		},
 		"playlist": {
 			"allowPlaylistChanges": "Autoriser les changements",
 			"playlistIsPublic": "Permettre aux autres utilisateurs de voir la playlist"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Laissez vide si vous utilisez l'instance publique (https://api.listenbrainz.org)",
+				"instanceUrlLabel": "URL de l'API de l'instance ListenBrainz",
+				"tokenHelperText": "Récupérez le token ici : https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Le Token est obligatoire",
+				"tokenLabel": "User Token de ListenBrainz"
+			}
 		}
 	},
 	"home": {
 		"featuredAlbums": "En Vedette",
-		"latestAlbums": "Dernières Sorties",
+		"latestAlbums": "Dernières sorties",
 		"mostPlayedSongs": "Les Plus Joués",
-		"newlyAddedAlbums": "Ajoutés Récemment",
-		"newlyAddedArtists": "Artists Ajoutés Récemment",
+		"newlyAddedAlbums": "Ajoutés récemment",
+		"newlyAddedArtists": "Artistes Ajoutés Récemment",
 		"newlyAddedReleases": "Disques Ajoutés Récemment",
 		"topGenres": "Genres populaires",
 		"topLabels": "Labels populaires"
@@ -228,7 +228,7 @@
 		"modalTitle": "Raccourcis Clavier",
 		"openClosePlayer": "Ouvrir / Fermer le lecteur",
 		"openModalShortcutDescription": "Ouvrir / Fermer cette modale",
-		"playPauseWhenExpanded": "Pauser / Jouer (Quand le lecteur est ouvert)"
+		"playPauseWhenExpanded": "Lecture / Pause (Quand le lecteur est ouvert)"
 	},
 	"misc": {
 		"loading": "Chargement",
@@ -296,12 +296,9 @@
 			"lang": {
 				"en": "Anglais",
 				"fr": "Français",
+				"id": "Indonésien",
+				"it": "Italien",
 				"ru": "Russe"
-			},
-			"scrobblers": {
-				"header": "Scrobblers",
-				"connect_scrobblers": "Associer un service",
-				"no_scrobblers_enabled": "Aucun scrobbler disponible"
 			},
 			"language": "Langue",
 			"notifications": "Notifications",
@@ -310,7 +307,12 @@
 			"permissions": "Permissions",
 			"playback": "Lecture",
 			"project": "Projet",
-			"useDarkTheme": "Utiliser le mode sombre",
+			"scrobblers": {
+				"connect_scrobblers": "Associer un service",
+				"header": "Scrobblers",
+				"no_scrobblers_enabled": "Aucun scrobbler disponible"
+			},
+			"useDarkTheme": "Utiliser le thème sombre",
 			"useSystemLanguage": "Utiliser la langue du système",
 			"useSystemTheme": "Utiliser le thème système"
 		},
@@ -342,10 +344,10 @@
 	"tasks": {
 		"clean": "Nettoyer",
 		"cleanLibraries": "Nettoyer les Bibliothèques",
-		"refresh": "Rafraichir",
-		"refreshMetadata": "Rafraichir les métadonnées",
+		"refresh": "Rafraîchir",
+		"refreshMetadata": "Rafraîchir les métadonnées",
 		"refreshMetadataForm": {
-			"forceLabel": "Force le scan si les fichiers n'ont pas changés"
+			"forceLabel": "Force le scan si les fichiers n'ont pas changé"
 		},
 		"scan": "Scanner",
 		"scanLibraries": "Scanner les Bibliothèques"
@@ -379,16 +381,16 @@
 			"started": "Mise à jour des métadonnées… (Rechargez la page pour actualiser)"
 		},
 		"releaseSetAsMaster": "Disque Promu",
-		"trackSetAsMaster": "Piste devenue Principale",
-		"tracksUpdated": "Pistes mises à jour",
 		"scrobblers": {
-			"linkingSuccessful": "Compte ListenBrainz associé!",
 			"linking": "Association en cours...",
 			"linkingListenBrainzFailed": "Echec de l'association avec ListenBrainz",
-			"unlinkingSuccessful": "Compte dissocié!",
+			"linkingSuccessful": "Compte ListenBrainz associé !",
 			"unlinking": "Dissociation...",
-			"unlinkingFailed": "Echec lors de la dissociation"
+			"unlinkingFailed": "Echec lors de la dissociation",
+			"unlinkingSuccessful": "Compte dissocié!"
 		},
+		"trackSetAsMaster": "Piste devenue Principale",
+		"tracksUpdated": "Pistes mises à jour",
 		"users": {
 			"deleted": "Compte Supprimé",
 			"deletionFail": "Echec de la suppression du compte",

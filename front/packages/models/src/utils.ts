@@ -92,4 +92,4 @@ export const videoTypeToTranslationKey = (
 	videoType: VideoType,
 	plural: boolean,
 ): TranslationKey =>
-	`videoType.${uncapitalize(videoType)}${plural ? "_plural" : "plural"}`;
+	`videoType.${uncapitalize(videoType)}${plural ? "_plural" : ""}`;
