@@ -86,10 +86,10 @@ export const songTypeToTranslationKey = (
 	songType: SongType,
 	plural: boolean,
 ): TranslationKey =>
-	`songType.${uncapitalize(songType)}${plural ? "_plural" : "plural"}`;
+	`songType.${uncapitalize(songType)}${plural ? "_plural" : ""}`;
 
 export const videoTypeToTranslationKey = (
 	videoType: VideoType,
 	plural: boolean,
 ): TranslationKey =>
-	`videoType.${uncapitalize(videoType)}${plural ? "_plural" : "plural"}`;
+	`videoType.${uncapitalize(videoType)}${plural ? "_plural" : ""}`;
