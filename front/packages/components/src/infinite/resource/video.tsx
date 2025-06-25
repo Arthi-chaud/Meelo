@@ -36,7 +36,6 @@ import {
 } from "@/models/video";
 import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
-import { uncapitalize } from "@/utils/uncapitalize";
 
 type QueryProps = {
 	types?: VideoType[];

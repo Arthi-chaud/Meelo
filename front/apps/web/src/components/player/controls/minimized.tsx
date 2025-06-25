@@ -70,10 +70,7 @@ const ProgressBar = ({
 	}, [progress]);
 
 	useEffect(() => {
-		const targetProgress =
-			!duration
-				? 0
-				: (100 * progressState) / duration;
+		const targetProgress = !duration ? 0 : (100 * progressState) / duration;
 
 		if (barRef.current) {
 			barRef.current.style.width = `${targetProgress}%`;
@@ -83,7 +80,7 @@ const ProgressBar = ({
 	useEffect(() => {
 		const current = progress?.current ?? 0;
 		setProgress(current);
-	}, [progress?.current])
+	}, [progress?.current]);
 
 	if (duration) {
 		return (
@@ -100,7 +97,7 @@ const ProgressBar = ({
 				}}
 			/>
 		);
-	};
+	}
 
 	return null;
 };
