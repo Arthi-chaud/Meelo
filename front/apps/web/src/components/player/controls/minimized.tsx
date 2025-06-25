@@ -30,7 +30,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAccentColor } from "~/utils/accent-color";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 import {
@@ -58,34 +58,51 @@ const ProgressBar = ({
 		accentColorHook?.light,
 		accentColorHook?.dark,
 	);
+	const barRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		const cb = () => {
-			setProgress(
-				!duration
-					? 0
-					: (100 * (progress?.current ?? 0)) / (duration ?? 1),
-			);
-		};
-		const tm = setInterval(cb, 200);
-		return () => {
-			clearInterval(tm);
-		};
-	});
+		const interval = setInterval(() => {
+			const current = progress?.current ?? 0;
+			setProgress(current);
+		}, 300);
 
-	return (
-		<Box
-			sx={{
-				...boxProps,
-				borderRadius: theme.shape.borderRadius,
-				borderTop: "3px solid",
-				...accentColor,
-				width: `${progressState}%`,
-				position: "absolute",
-				transition: "width .2s ease-in-out",
-			}}
-		/>
-	);
+		return () => clearInterval(interval);
+	}, [progress]);
+
+	useEffect(() => {
+		const targetProgress =
+			!duration
+				? 0
+				: (100 * progressState) / duration;
+
+		if (barRef.current) {
+			barRef.current.style.width = `${targetProgress}%`;
+		}
+	}, [progressState, duration]);
+
+	useEffect(() => {
+		const current = progress?.current ?? 0;
+		setProgress(current);
+	}, [progress?.current])
+
+	if (duration) {
+		return (
+			<Box
+				ref={barRef}
+				sx={{
+					...boxProps,
+					borderRadius: theme.shape.borderRadius,
+					borderTop: "3px solid",
+					...accentColor,
+					width: "0px",
+					position: "absolute",
+					transition: "width .3s linear",
+				}}
+			/>
+		);
+	};
+
+	return null;
 };
 
 export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
