@@ -268,7 +268,7 @@ export const getVideo = <I extends VideoInclude | never = never>(
 /// Releases
 
 export const getReleases = <I extends ReleaseInclude | never = never>(
-	filter: { album?: Identifier },
+	filter: { album?: Identifier; isMaster?: boolean },
 	sort?: SortingParameters<typeof ReleaseSortingKeys>,
 	include?: I[],
 ): InfiniteQuery<ReleaseWithRelations<I>> => {
@@ -613,7 +613,7 @@ export const _mkSimplePaginatedQuery = <T>(
 		include?: string[];
 		filter?: Record<
 			string,
-			undefined | string | number | (string | number)[]
+			undefined | string | number | boolean | (string | number)[]
 		>;
 		sort?: SortingParameters<any>;
 		service?: Service;
