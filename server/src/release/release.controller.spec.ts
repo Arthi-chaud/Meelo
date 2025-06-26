@@ -125,6 +125,39 @@ describe("Release Controller", () => {
 				});
 		});
 
+		it("should return master releases", () => {
+			return request(app.getHttpServer())
+				.get("/releases?isMaster=true&sortBy=name")
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(3);
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_1),
+					);
+					expect(releases[1]).toStrictEqual(
+						expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+					);
+					expect(releases[2]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseB1_1),
+					);
+				});
+		});
+
+		it("should return non-master releases ", () => {
+			return request(app.getHttpServer())
+				.get("/releases?isMaster=false")
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(1);
+					expect(releases[0]).toStrictEqual(
+						expectedReleaseResponse(dummyRepository.releaseA1_2),
+					);
+				});
+		});
 		it("should return some releases (w/ pagination)", () => {
 			return request(app.getHttpServer())
 				.get("/releases?take=1&skip=2")

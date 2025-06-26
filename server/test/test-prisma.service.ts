@@ -210,6 +210,18 @@ export default class TestPrismaService extends PrismaService {
 				},
 			],
 		});
+		this.albumA1 = await this.album.update({
+			where: { id: this.albumA1.id },
+			data: { masterId: this.releaseA1_1.id },
+		});
+		this.albumB1 = await this.album.update({
+			where: { id: this.albumB1.id },
+			data: { masterId: this.releaseB1_1.id },
+		});
+		this.compilationAlbumA = await this.album.update({
+			where: { id: this.compilationAlbumA.id },
+			data: { masterId: this.compilationReleaseA1.id },
+		});
 		const [songGroupA1, songGroupA2, songGroupB, songGroupC] =
 			await this.songGroup.createManyAndReturn({
 				data: [
