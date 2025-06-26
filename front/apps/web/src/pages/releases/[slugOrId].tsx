@@ -164,9 +164,11 @@ const relatedAlbumsQuery = (albumId: number) =>
 		"illustration",
 	]);
 const relatedReleasesQuery = (albumId: number) =>
-	getReleases({ album: albumId }, { sortBy: "releaseDate" }, [
-		"illustration",
-	]);
+	getReleases(
+		{ album: albumId, isMaster: false },
+		{ sortBy: "releaseDate" },
+		["illustration"],
+	);
 const relatedPlaylistsQuery = (albumId: number) =>
 	getPlaylists({ album: albumId }, undefined, ["illustration"]);
 
@@ -818,17 +820,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					/>
 				</RelatedContentSection>
 				<RelatedContentSection
-					display={(relatedReleases.items?.length ?? 0) > 1}
+					display={(relatedReleases.items?.length ?? 0) > 0}
 					title={t("album.otherAlbumReleases")}
 				>
 					<TileRow
 						tiles={
-							relatedReleases.items
-								?.filter(
-									(relatedRelease) =>
-										relatedRelease.id !== release.data?.id,
-								)
-								.map((otherRelease, otherReleaseIndex) => (
+							relatedReleases.items?.map(
+								(otherRelease, otherReleaseIndex) => (
 									<ReleaseTile
 										key={otherReleaseIndex}
 										release={
@@ -840,7 +838,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												: undefined
 										}
 									/>
-								)) ?? []
+								),
+							) ?? []
 						}
 					/>
 				</RelatedContentSection>
