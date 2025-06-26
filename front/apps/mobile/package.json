@@ -36,6 +36,7 @@
 		"react-native": "0.79.3",
 		"react-native-blurhash": "^2.1.1",
 		"react-native-edge-to-edge": "^1.6.1",
+		"react-native-fast-image": "^8.6.3",
 		"react-native-mmkv": "^3.3.0",
 		"react-native-nitro-modules": "0.26.2",
 		"react-native-reanimated": "^3.17.3",

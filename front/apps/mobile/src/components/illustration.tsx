@@ -19,10 +19,11 @@
 import type IllustrationModel from "@/models/illustration";
 import type { IllustrationQuality } from "@/models/illustration";
 import type { Icon } from "@/ui/icons";
-import { Image } from "expo-image";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Blurhash } from "react-native-blurhash";
+// import { Image } from "expo-image";
+import Image from "react-native-fast-image";
 import Animated, {
 	FadeOut,
 	useAnimatedStyle,
@@ -94,6 +95,14 @@ export const Illustration = ({
 	const fallbackFadeIn = useAnimatedStyle(() => ({
 		opacity: fallbackOpacity.value,
 	}));
+	//Attempt at recycling
+	//TODO Finish
+	useEffect(() => {
+		fallbackOpacity.value = 0;
+		blurhashOpacity.value = 0;
+		imageOpacity.value = 0;
+		setImageStatus("loading");
+	}, [illustration]);
 
 	useEffect(() => {
 		if (imageStatus === "done") {
@@ -153,9 +162,8 @@ export const Illustration = ({
 						<Animated.View style={[imageFadeIn, styles.slot]}>
 							<Image
 								style={[styles.slotContent]}
-								contentFit="cover"
-								decodeFormat="rgb"
-								onDisplay={() => setImageStatus("done")}
+								onLoad={() => setImageStatus("done")}
+								resizeMode="cover"
 								onError={() => {
 									setImageStatus("error");
 								}}
