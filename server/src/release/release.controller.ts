@@ -26,7 +26,12 @@ import {
 	Res,
 	forwardRef,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+} from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import type { Response as ExpressResponse } from "express";
 import AlbumService from "src/album/album.service";
@@ -43,11 +48,19 @@ import Response, { ResponseType } from "src/response/response.decorator";
 import SongQueryParameters from "src/song/models/song.query-params";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
+import { IsBoolean } from "src/utils/is-boolean";
 import ReleaseQueryParameters from "./models/release.query-parameters";
 import { ReleaseResponseBuilder } from "./models/release.response";
 import ReleaseService from "./release.service";
 
 class Selector {
+	@IsOptional()
+	@IsBoolean()
+	@ApiPropertyOptional({
+		description:
+			"If true, will only return master releases. If false, will only return non-master releases",
+	})
+	isMaster?: boolean;
 	@IsOptional()
 	@TransformFilter(AlbumService, {
 		description: "Filter releases by albums",

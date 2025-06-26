@@ -187,6 +187,17 @@ export default class ReleaseService {
 			},
 		];
 
+		if (where.isMaster === true) {
+			query.push({
+				NOT: {
+					masterOf: null,
+				},
+			});
+		} else if (where.isMaster === false) {
+			query.push({
+				masterOf: null,
+			});
+		}
 		if (where.releases) {
 			query.push({
 				OR: where.releases.map((release) =>

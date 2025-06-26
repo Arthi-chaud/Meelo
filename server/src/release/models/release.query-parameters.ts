@@ -67,6 +67,7 @@ namespace ReleaseQueryParameters {
 	export type ManyWhereInput = Partial<{
 		name: SearchStringInput;
 		album: Filter<AlbumQueryParameters.WhereInput>;
+		isMaster: boolean;
 		library: Filter<LibraryQueryParameters.WhereInput>;
 		label: Filter<LabelQueryParameters.WhereInput>;
 		releases: ReleaseQueryParameters.WhereInput[];
