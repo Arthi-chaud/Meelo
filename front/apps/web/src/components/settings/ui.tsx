@@ -148,7 +148,9 @@ const UISettings = () => {
 								value={language}
 								style={{ borderRadius: 0 }}
 							>
-								{t(`settings.ui.lang.${language}`)}
+								{t(`settings.ui.lang.${language}`, {
+									lng: language,
+								})}
 							</MenuItem>
 						))}
 					</Select>
