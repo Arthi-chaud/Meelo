@@ -48,7 +48,8 @@ export const LyricsComponent = ({
 		<Box
 			sx={{
 				overflowY: "scroll",
-				marginLeft: 2,
+				marginLeft: 1,
+				paddingY: 2,
 				paddingRight: 3,
 				alignSelf: "center",
 			}}
@@ -144,7 +145,15 @@ const SyncedLyricsComponent = ({
 		};
 	}, [playerIsExpanded, syncedLyricsWithNext]);
 	return (
-		<Box sx={{ height: "100%", width: "100%", overflow: "hidden" }}>
+		<Box
+			sx={{
+				height: "100%",
+				width: "100%",
+				overflow: "hidden",
+				paddingY: 3,
+				paddingLeft: 1,
+			}}
+		>
 			<Stack spacing={4}>
 				{syncedLyricsWithNext?.map((entry, i) => (
 					<Typography
