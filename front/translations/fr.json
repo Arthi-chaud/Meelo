@@ -223,7 +223,7 @@
 	},
 	"keyboardBindings": {
 		"closePlayer": "Fermer le lecteur",
-		"goToSearchPage": "Rechercher",
+		"goToSearchPage": "Aller à la page de Recherche",
 		"goToSettingsPage": "Accéder aux réglages",
 		"modalTitle": "Raccourcis Clavier",
 		"openClosePlayer": "Ouvrir / Fermer le lecteur",
