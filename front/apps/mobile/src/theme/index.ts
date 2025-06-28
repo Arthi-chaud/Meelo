@@ -1,5 +1,6 @@
 import { Appearance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+
 const baseTheme = {
 	gap: (n: number) => n * 8,
 	// TODO Use font size from device
@@ -7,6 +8,18 @@ const baseTheme = {
 		default: 14,
 		rem: (ratio: number) => 14 * ratio,
 	},
+	layout: {
+		grid: {
+			columnCount: {
+				xs: 3,
+				sm: 4,
+				md: 5,
+				lg: 6,
+				xl: 8,
+			} satisfies Record<keyof typeof breakpoints, number>,
+		},
+	},
+
 	animations: {
 		fades: {
 			blurhash: 100,
@@ -80,30 +93,20 @@ export const darkTheme = {
 	},
 };
 
+// Note: Values are taken from the Unistyles doc
+// They are close enough to MUI's
 export const breakpoints = {
 	xs: 0,
-	sm: 300,
-	md: 500,
-	lg: 800,
+	sm: 576,
+	md: 768,
+	lg: 992,
 	xl: 1200,
-};
+} as const;
 
 export const appThemes = {
 	light: { ...lightTheme, op: darkTheme },
 	dark: { ...darkTheme, op: lightTheme },
 };
-
-StyleSheet.configure({
-	themes: appThemes,
-	breakpoints,
-	settings: {
-		// TODO Use local storage
-		initialTheme: () => {
-			const ap = Appearance.getColorScheme();
-			return ap ?? "light";
-		},
-	},
-});
 
 type AppThemes = typeof appThemes;
 type AppBreakpoints = typeof breakpoints;
@@ -112,3 +115,15 @@ declare module "react-native-unistyles" {
 	export interface UnistylesThemes extends AppThemes {}
 	export interface UnistylesBreakpoints extends AppBreakpoints {}
 }
+
+StyleSheet.configure({
+	themes: appThemes,
+	breakpoints: breakpoints,
+	settings: {
+		// TODO Use local storage
+		initialTheme: () => {
+			const ap = Appearance.getColorScheme();
+			return ap ?? "light";
+		},
+	},
+});
