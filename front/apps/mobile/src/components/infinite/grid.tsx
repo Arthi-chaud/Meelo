@@ -12,6 +12,9 @@ import "theme";
 //TODO The breakpoint's type from rt does not seem to use the type defined in the theme
 //It should be typesafe
 
+//TODO when page fetched, the item on the last line is resized + rerendered
+//TODO Performance
+
 const styles = StyleSheet.create((theme, rt) => ({
 	rootStyle: { flex: 1, marginHorizontal: theme.gap(1) },
 	listStyle: { maxWidth: breakpoints.xl, width: "100%" },

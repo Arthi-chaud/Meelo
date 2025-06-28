@@ -38,7 +38,7 @@ type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: Icon;
 	quality: IllustrationQuality;
-	variant?: "fill" | "circle";
+	variant?: "fill" | "circle" | "center";
 	// If true, the blurhash will not be ecoded/displayed.
 	// Instead it will use the color from the illustration model as a place holder
 	// To enhance performance in infinite lists
@@ -67,6 +67,7 @@ export const Illustration = ({
 	styles.useVariants({
 		imageType: innerAspectRatio > 1 ? "wide" : "tall",
 		shape: variant === "circle" ? "circle" : undefined,
+		align: variant === "center" ? "center" : "bottom",
 	});
 	const [imageStatus, setImageStatus] = useState<
 		"done" | "loading" | "error"
@@ -202,7 +203,14 @@ const styles = StyleSheet.create((theme) => ({
 		overflow: "hidden",
 		flex: 1,
 		alignItems: "center",
-		justifyContent: "flex-end",
+		variants: {
+			align: {
+				center: { justifyContent: "center" },
+				bottom: {
+					justifyContent: "flex-end",
+				},
+			},
+		},
 	},
 	innerContainer: (illustrationColor: string | undefined) => ({
 		backgroundColor: illustrationColor ?? theme.colors.skeleton,
