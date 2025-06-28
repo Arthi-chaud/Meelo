@@ -8,6 +8,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { breakpoints } from "~/theme";
 import "theme";
+import { Divider } from "~/primitives/divider";
 
 const styles = StyleSheet.create((theme) => ({
 	rootStyle: { flex: 1, marginHorizontal: theme.gap(1) },
@@ -21,7 +22,7 @@ type Props<T, T1> = {
 	render: (item: T1 | undefined) => React.ReactElement;
 };
 
-export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
+export const InfiniteList = <T extends Resource, T1 extends Resource>(
 	props: Props<T, T1>,
 ) => {
 	const queryRes = useInfiniteQuery(() => props.query);
@@ -58,6 +59,7 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 					return (
 						<View style={styles.itemContainer}>
 							{props.render(item)}
+							<Divider h withInsets />
 						</View>
 					);
 				}}
