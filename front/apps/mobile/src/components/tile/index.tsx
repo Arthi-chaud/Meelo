@@ -9,10 +9,13 @@ import { LoadableText } from "~/components/loadable_text";
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
-		flex: 1,
 		padding: theme.gap(0.5),
+		height: "auto",
+		width: "100%",
 	},
-	imageContainer: {},
+	imageContainer: {
+		aspectRatio: 1,
+	},
 	textColumn: {
 		display: "flex",
 		flexDirection: "column",
@@ -28,8 +31,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-// TODO: Href/onClick
-// Illustration: Button animation
+// TODO  Button animation
 
 type Props = {
 	illustration: IllustrationModel | null | undefined;
@@ -57,7 +59,7 @@ export const Tile = ({
 			onPress={() => (href ? router.push(href) : onPress())}
 			style={[styles.container, props.containerStyle]}
 		>
-			<View>
+			<View style={styles.imageContainer}>
 				<Illustration
 					illustration={illustration}
 					{...props.illustrationProps}
