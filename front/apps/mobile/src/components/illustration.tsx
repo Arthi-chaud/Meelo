@@ -45,9 +45,6 @@ type Props = {
 	simpleColorPlaceholder?: true;
 };
 
-// TODO Make tall images fit container
-// TODO use image size preset
-
 export const Illustration = ({
 	illustration,
 	fallbackIcon,

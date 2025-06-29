@@ -38,7 +38,7 @@ export const InfiniteGrid = <T extends Resource, T1 extends Resource>(
 		const itemCount = queryRes.items?.length ?? 0;
 		let trailingSkeletons = 0;
 		if (queryRes.isFetching && !itemCount) {
-			trailingSkeletons = 1;
+			trailingSkeletons = 2;
 		} else if (queryRes.isFetchingNextPage) {
 			trailingSkeletons = 1;
 		}
