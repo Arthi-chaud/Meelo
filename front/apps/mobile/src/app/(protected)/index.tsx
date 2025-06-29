@@ -16,158 +16,80 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAlbums } from "@/api/queries";
-import { AlbumIcon, MasterIcon } from "@/ui/icons";
-import { useMemo, useState } from "react";
+import { getAlbums, getArtists } from "@/api/queries";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { Toast } from "toastify-react-native";
-import { useInfiniteQuery } from "~/api";
-import { Illustration } from "~/components/illustration";
-import { LoadableText } from "~/components/loadable_text";
-import { MeeloBanner } from "~/components/meelo_banner";
-import { useColorScheme } from "~/hooks/color-scheme";
+import { InfiniteRow } from "~/components/infinite/row";
+import { AlbumTile } from "~/components/tile/resource/album";
+import { ArtistTile } from "~/components/tile/resource/artist";
 import { useRootViewStyle } from "~/hooks/root-view-style";
-import { Button } from "~/primitives/button";
-import { Divider } from "~/primitives/divider";
-import { Text } from "~/primitives/text";
-import { TextInput } from "~/primitives/text_input";
 
 const styles = StyleSheet.create((theme) => ({
-	main: { paddingHorizontal: theme.gap(1) },
-	container: {
-		display: "flex",
-		alignItems: "center",
-		width: "100%",
+	main: {},
+	section: {
+		paddingBottom: theme.gap(2),
 	},
 }));
 
+//TODO Page header?
+
 export default function Root() {
+	const newlyAddedAlbums = getAlbums(
+		{},
+		{ sortBy: "addDate", order: "desc" },
+		["illustration", "artist"],
+	);
+
+	const newlyAddedArtists = getArtists(
+		{},
+		{ sortBy: "addDate", order: "desc" },
+		["illustration"],
+	);
+
+	const latestAlbums = getAlbums(
+		{},
+		{ sortBy: "releaseDate", order: "desc" },
+		["illustration", "artist"],
+	);
 	const { t } = useTranslation();
-	const [colorScheme, setColorScheme] = useColorScheme();
-	const [showSkeleton, setSkeleton] = useState(true);
-	const albums = useInfiniteQuery(() =>
-		getAlbums({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
-	);
 	const pageStyle = useRootViewStyle();
-	// useEffect(() => {
-	// 	const i = setInterval(() => {
-	// 		setSkeleton((x) => !x);
-	// 	}, 3000);
-	//
-	// 	return () => clearInterval(i);
-	// }, []);
-	const firstAlbums = useMemo(
-		() => albums.data?.pages.at(0)?.items.slice(0, 4),
-		[albums.data],
-	);
 
 	return (
-		<ScrollView style={[styles.main, pageStyle]}>
-			<View style={{ flexDirection: "row" }}>
-				<Illustration
-					illustration={firstAlbums?.at(0)?.illustration}
-					quality="low"
-				/>
-				<Illustration
-					illustration={firstAlbums?.at(1)?.illustration}
-					quality="low"
-				/>
-				<Illustration
-					illustration={firstAlbums?.at(2)?.illustration}
-					quality="low"
-				/>
-
-				<Illustration
-					quality="medium"
-					fallbackIcon={AlbumIcon}
-					illustration={{
-						aspectRatio: 1,
-						colors: [],
-						blurhash: "LGFFaXYk^6#M@-5c,1J5@[or[Q6.",
-						url: "/illustration/0",
-					}}
-				/>
-			</View>
-
-			<View style={{ flexDirection: "row" }}>
-				<Illustration
-					quality="original"
-					illustration={firstAlbums?.at(3)?.illustration}
-				/>
-				<Illustration
-					quality="original"
-					fallbackIcon={AlbumIcon}
-					illustration={firstAlbums ? null : undefined}
-				/>
-			</View>
-			<View style={{ flexDirection: "row" }}>
-				<Button
-					title="Toggle"
-					width="fitContent"
-					onPress={() => {
-						setColorScheme(
-							colorScheme === "light" ? "dark" : "light",
-						);
-					}}
-				/>
-			</View>
-			{(
-				[
-					"h1",
-					"h2",
-					"h3",
-					"h4",
-					"h5",
-					"h6",
-					"body",
-					"subtitle",
-				] as const
-			).map((s) => {
-				return (
-					<LoadableText
-						key={s}
-						variant={s}
-						skeletonWidth={s.length}
-						content={showSkeleton ? undefined : s}
-					/>
-				);
-			})}
-			<Text variant="body" color="secondary">
-				{t("browsing.sections.musicVideos")}
-			</Text>
-			<MeeloBanner />
-			<View style={styles.container}>
-				<Button
-					onPress={() => {
-						Toast.success(t("toasts.auth.accountCreated"));
-					}}
-					width="fitContent"
-					variant="filled"
-					title={"toast"}
-				/>
-				<Button
-					onPress={() => {}}
-					width="fitContent"
-					leadingIcon={MasterIcon}
-					title={t("actions.release.setAllTracksAsMaster")}
-				/>
-				<Divider h withInsets />
-				<TextInput placeholder="Password" />
-			</View>
-			<View
-				style={{
-					flex: 1,
-					height: 300,
-					flexDirection: "row",
-					display: "flex",
+		<View style={[styles.main, pageStyle]}>
+			<InfiniteRow
+				style={styles.section}
+				header={t("home.newlyAddedAlbums")}
+				query={newlyAddedAlbums}
+				render={(album) => {
+					return <AlbumTile album={album} />;
 				}}
-			>
-				<View style={{ flex: 1 }} />
-				<Divider withInsets v />
-				<View style={{ flex: 1 }} />
-			</View>
-		</ScrollView>
+			/>
+
+			<InfiniteRow
+				style={styles.section}
+				header={t("home.newlyAddedArtists")}
+				query={newlyAddedArtists}
+				render={(artist) => {
+					return <ArtistTile artist={artist} />;
+				}}
+			/>
+			{/* TODO Featured albums */}
+
+			<InfiniteRow
+				style={styles.section}
+				header={t("home.latestAlbums")}
+				query={latestAlbums}
+				render={(album) => {
+					return <AlbumTile album={album} />;
+				}}
+			/>
+
+			{/* TODO Newly added releases*/}
+
+			{/* TODO Genres*/}
+
+			{/* TODO Most played songs*/}
+		</View>
 	);
 }
