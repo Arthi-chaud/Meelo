@@ -238,9 +238,8 @@
 	"models": {
 		"album": "Album",
 		"album_plural": "Albums",
-		"artist_0": "Artiste",
-		"artist_1": "Artistes",
-		"artist_2": "Artistes",
+		"artist": "Artiste",
+		"artist_plural": "Artistes",
 		"disc": "Disque",
 		"externalLink_plural": "Liens Externes",
 		"genre_plural": "Genres",
@@ -253,9 +252,8 @@
 		"track_plural": "Pistes",
 		"user_plural": "Comptes",
 		"versions": "Versions",
-		"video_0": "Vidéo",
-		"video_1": "Vidéos",
-		"video_2": "Vidéos"
+		"video": "Vidéo",
+		"video_plural": "Vidéos"
 	},
 	"nav": {
 		"compilations": "Compilations",
