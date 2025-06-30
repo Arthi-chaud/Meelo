@@ -23,7 +23,7 @@
 		},
 		"download": {
 			"label": "Télécharger",
-			"warning": "Il est interdit de télécharger du contenu sans en posséder l'original. Ne téléchagez pas si vous ne le posséder pas légalement."
+			"warning": "Il est interdit de télécharger du contenu sans en posséder l'original. Ne téléchargez pas si vous ne le possédez pas légalement."
 		},
 		"goBackHome": "Retour à l'accueil",
 		"goToArtist": "Voir l'Artiste",
@@ -121,21 +121,21 @@
 			"order": "Ordre",
 			"showAllSongs": "Afficher toutes les versions",
 			"sort": {
-				"addDate": "Date d'Ajout",
-				"albumCount": "Nombre d'Albums",
-				"artistName": "Nom d'Artiste",
+				"addDate": "Date d'ajout",
+				"albumCount": "Nombre d'albums",
+				"artistName": "Nom d'artiste",
 				"bitrate": "Débit",
 				"bpm": "BPM",
 				"creationDate": "Date de création",
 				"discIndex": "Index de disque",
-				"entryCount": "Nombre de Titres",
+				"entryCount": "Nombre de titres",
 				"name": "Titre",
 				"registrationDate": "Date d'ajout",
-				"releaseDate": "Date de Sortie",
-				"releaseName": "Nom de Disque",
-				"songCount": "Nombre de Titres",
+				"releaseDate": "Date de sortie",
+				"releaseName": "Nom du disque",
+				"songCount": "Nombre de titres",
 				"totalPlayCount": "Nombre total de lectures",
-				"trackCount": "Nombre de Pistes",
+				"trackCount": "Nombre de pistes",
 				"trackIndex": "Index de piste",
 				"userPlayCount": "Nombre de lectures"
 			},
@@ -223,7 +223,7 @@
 	},
 	"keyboardBindings": {
 		"closePlayer": "Fermer le lecteur",
-		"goToSearchPage": "Rechercher",
+		"goToSearchPage": "Aller à la page de Recherche",
 		"goToSettingsPage": "Accéder aux réglages",
 		"modalTitle": "Raccourcis Clavier",
 		"openClosePlayer": "Ouvrir / Fermer le lecteur",
@@ -369,7 +369,7 @@
 		"linkCopied": "Lien copié dans le presse-papier",
 		"player": {
 			"networkError": "La connexion au serveur a échoué…",
-			"playbackError": "Format non supporté par le navigateur. Piste ignorée."
+			"playbackError": "Format non supporté par le navigateur. Piste ignorée…"
 		},
 		"playlist": {
 			"itemDeletionSuccess": "Piste supprimée",
@@ -387,7 +387,7 @@
 			"linkingSuccessful": "Compte ListenBrainz associé !",
 			"unlinking": "Dissociation...",
 			"unlinkingFailed": "Echec lors de la dissociation",
-			"unlinkingSuccessful": "Compte dissocié!"
+			"unlinkingSuccessful": "Compte dissocié !"
 		},
 		"trackSetAsMaster": "Piste devenue Principale",
 		"tracksUpdated": "Pistes mises à jour",
