@@ -144,11 +144,15 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         artist_slug = to_slug(artist_name) if artist_name else None
         is_single = sanitised_album_name != album_name
         try:
-            releases = musicbrainzngs.search_releases(
-                sanitised_album_name,
-                arid=self.compilation_artist_id if not artist_name else None,
-                artist=artist_name,
-                limit=20,
+            releases = self._fetch(
+                "/release",
+                {
+                    "query": sanitised_album_name,
+                    "arid": self.compilation_artist_id if not artist_name else None,
+                    "artist": artist_name,
+                    "limit": "20",
+                    "inc": "labels",
+                },
             )["releases"]
             release_group_key = "release-group"
             typed_releases = [
