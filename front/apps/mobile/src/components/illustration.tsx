@@ -26,6 +26,7 @@ import { Blurhash } from "react-native-blurhash";
 import Image from "react-native-fast-image";
 import Animated, {
 	FadeOut,
+	ReduceMotion,
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
@@ -54,6 +55,9 @@ export const Illustration = ({
 }: Props) => {
 	const theme = useAnimatedTheme();
 	const api = useAPI();
+	const reduceMotion: ReduceMotion = simpleColorPlaceholder
+		? ReduceMotion.Always
+		: ReduceMotion.System;
 	const innerAspectRatio = useMemo(
 		() =>
 			variant === "fill" || variant === "circle"
@@ -104,20 +108,21 @@ export const Illustration = ({
 
 	useEffect(() => {
 		if (imageStatus === "done") {
-			imageOpacity.value = withTiming(1);
+			imageOpacity.value = withTiming(1, { reduceMotion });
 		} else if (imageStatus === "error") {
-			fallbackOpacity.value = withTiming(1);
+			fallbackOpacity.value = withTiming(1, { reduceMotion });
 		}
 	}, [imageStatus]);
 	useEffect(() => {
 		if (illustration === null) {
-			fallbackOpacity.value = withTiming(1);
+			fallbackOpacity.value = withTiming(1, { reduceMotion });
 		}
 	}, [illustration]);
 	useEffect(() => {
 		if (blurhashLoaded) {
 			blurhashOpacity.value = withTiming(1, {
 				duration: theme.value.animations.fades.blurhash,
+				reduceMotion,
 			});
 		}
 	}, [blurhashLoaded]);
