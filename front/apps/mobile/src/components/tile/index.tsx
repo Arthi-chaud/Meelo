@@ -12,6 +12,8 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.gap(0.5),
 		height: "auto",
 		width: "100%",
+		borderRadius: theme.borderRadius,
+		overflow: "hidden",
 	},
 	imageContainer: {
 		aspectRatio: 1,
@@ -42,7 +44,7 @@ type Props = {
 	title: string | undefined;
 	subtitle: string | undefined | null;
 	containerStyle?: ViewStyle;
-} & RequireExactlyOne<{ href: Href; onPress: () => void }>;
+} & RequireExactlyOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 export const Tile = ({
 	illustration,
@@ -56,7 +58,7 @@ export const Tile = ({
 	const router = useRouter();
 	return (
 		<Pressable
-			onPress={() => (href ? router.push(href) : onPress())}
+			onPress={() => (href ? router.push(href) : onPress?.())}
 			style={[styles.container, props.containerStyle]}
 		>
 			<View style={styles.imageContainer}>

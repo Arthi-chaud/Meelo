@@ -13,9 +13,7 @@ export const ArtistTile = ({ artist, illustrationProps }: Props) => {
 			illustration={artist?.illustration}
 			title={artist?.name}
 			subtitle={null}
-			{...(artist === undefined
-				? { onPress: () => {}, href: undefined }
-				: { href: `/artists/${artist.id}`, onPress: undefined })}
+			href={artist ? `/artists/${artist.id}` : null}
 			illustrationProps={{ ...illustrationProps, variant: "circle" }}
 		/>
 	);
