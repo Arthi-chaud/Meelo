@@ -35,6 +35,7 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 //TODO header on scroll
+//TODO when loading a row s unmounted?
 
 export default function Root() {
 	const newlyAddedAlbums = getAlbums(
