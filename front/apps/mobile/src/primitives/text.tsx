@@ -44,7 +44,7 @@ const styles = StyleSheet.create((theme) => ({
 				},
 				h2: {
 					fontSize: theme.fontSize.rem(2.25),
-					...theme.fontStyles.light,
+					...theme.fontStyles.semiBold,
 				},
 				h3: {
 					fontSize: theme.fontSize.rem(1.875),
