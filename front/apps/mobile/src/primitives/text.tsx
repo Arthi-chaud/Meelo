@@ -107,7 +107,7 @@ export const TextSkeleton = (
 		width: `${number}%` | number;
 	},
 ) => {
-	styles.useVariants({ variant: props.variant });
+	styles.useVariants({ variant: props.variant ?? "body" });
 	const theme = useAnimatedTheme();
 	const opacity = useSharedValue(1);
 	const pulseAnimation = useAnimatedStyle(
