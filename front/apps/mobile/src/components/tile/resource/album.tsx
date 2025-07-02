@@ -15,9 +15,7 @@ export const AlbumTile = ({ album, illustrationProps }: Props) => {
 			illustration={album?.illustration}
 			illustrationProps={illustrationProps}
 			title={album?.name}
-			{...(album === undefined
-				? { onPress: () => {}, href: undefined }
-				: { href: `/releases/${album?.masterId}`, onPress: undefined })}
+			href={album?.masterId ? `/releases/${album.masterId}` : null}
 			subtitle={
 				album === undefined
 					? undefined
