@@ -12,9 +12,7 @@ export const ArtistItem = ({ artist, illustrationProps }: Props) => {
 		<ListItem
 			title={artist?.name}
 			subtitle={null}
-			{...(artist === undefined
-				? { onPress: () => {}, href: undefined }
-				: { href: `/artists/${artist.id}`, onPress: undefined })}
+			href={artist ? `/artists/${artist.id}` : null}
 			illustration={artist?.illustration}
 			illustrationProps={{ ...illustrationProps, variant: "circle" }}
 		/>

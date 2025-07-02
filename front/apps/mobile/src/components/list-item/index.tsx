@@ -1,7 +1,7 @@
 import type Illustration from "@/models/illustration";
-import type { Href } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import type { ComponentProps } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireExactlyOne } from "type-fest";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
@@ -15,16 +15,22 @@ type Props = {
 		ComponentProps<typeof IllustrationComponent>,
 		"illustration" | "quality"
 	>;
-} & RequireExactlyOne<{ href: Href; onPress: () => void }>;
+} & RequireExactlyOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 export const ListItem = ({
 	title,
 	subtitle,
 	illustration,
+	href,
+	onPress,
 	...props
 }: Props) => {
+	const router = useRouter();
 	return (
-		<View style={styles.root}>
+		<Pressable
+			onPress={() => (href ? router.push(href) : onPress?.())}
+			style={[styles.root]}
+		>
 			<View style={styles.illustration}>
 				<IllustrationComponent
 					illustration={illustration}
@@ -39,17 +45,17 @@ export const ListItem = ({
 					skeletonWidth={15}
 					variant="h6"
 					numberOfLines={1}
-					style={{ flex: 1 }}
 				/>
 				{subtitle !== null && (
 					<LoadableText
 						content={subtitle}
 						skeletonWidth={10}
+						variant="body"
 						numberOfLines={1}
 					/>
 				)}
 			</View>
-		</View>
+		</Pressable>
 	);
 };
 
@@ -58,6 +64,8 @@ const styles = StyleSheet.create((theme) => ({
 		display: "flex",
 		flexDirection: "row",
 		flex: 1,
+		borderRadius: theme.borderRadius,
+		overflow: "hidden",
 		width: "100%",
 		justifyContent: "flex-start",
 		gap: theme.gap(2),

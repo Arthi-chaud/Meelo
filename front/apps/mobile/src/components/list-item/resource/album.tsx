@@ -13,10 +13,12 @@ export const AlbumItem = ({ album, illustrationProps }: Props) => {
 	return (
 		<ListItem
 			title={album?.name}
-			subtitle={album?.artist?.name ?? t("compilationArtistLabel")}
-			{...(album === undefined
-				? { onPress: () => {}, href: undefined }
-				: { href: `/releases/${album.masterId}`, onPress: undefined })}
+			subtitle={
+				album === undefined
+					? undefined
+					: (album.artist?.name ?? t("compilationArtistLabel"))
+			}
+			href={album?.masterId ? `/releases/${album.masterId}` : null}
 			illustration={album?.illustration}
 			illustrationProps={illustrationProps}
 		/>
