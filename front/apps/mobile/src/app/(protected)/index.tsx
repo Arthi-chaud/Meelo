@@ -18,21 +18,23 @@
 
 import { getAlbums, getArtists } from "@/api/queries";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { InfiniteRow } from "~/components/infinite/row";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
 import { useRootViewStyle } from "~/hooks/root-view-style";
+import { Text } from "~/primitives/text";
 
 const styles = StyleSheet.create((theme) => ({
 	main: {},
 	section: {
 		paddingBottom: theme.gap(2),
 	},
+	title: { paddingLeft: theme.gap(2) },
 }));
 
-//TODO Page header?
+//TODO header on scroll
 
 export default function Root() {
 	const newlyAddedAlbums = getAlbums(
@@ -56,7 +58,8 @@ export default function Root() {
 	const pageStyle = useRootViewStyle();
 
 	return (
-		<View style={[styles.main, pageStyle]}>
+		<ScrollView style={[styles.main, pageStyle]}>
+			<Text content={t("nav.home")} style={styles.title} variant="h2" />
 			<InfiniteRow
 				style={styles.section}
 				header={t("home.newlyAddedAlbums")}
@@ -84,12 +87,13 @@ export default function Root() {
 					return <AlbumTile album={album} />;
 				}}
 			/>
+			<View style={{ height: 1000 }} />
 
 			{/* TODO Newly added releases*/}
 
 			{/* TODO Genres*/}
 
 			{/* TODO Most played songs*/}
-		</View>
+		</ScrollView>
 	);
 }
