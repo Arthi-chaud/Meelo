@@ -1,1 +1,52 @@
-{}
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "In Playlist",
+			"modalTitle": "Wähle Playlist"
+		},
+		"album": {
+			"changeType": "Albumtyp ändern",
+			"goToAlbum": "Zum Album"
+		},
+		"archive": "Archiv",
+		"create": "Erzeuge",
+		"delete": "Lösche",
+		"deleteFromPlaylist": "Lösche aus Playlist",
+		"deleteUser": {
+			"label": "Entferne Benutzer",
+			"warning": "Ein Benutzer wird entfernt. Dies kann nicht rückgängig gemacht werden."
+		},
+		"download": {
+			"label": "Herunterladen",
+			"warning": "Das Herunterladen von geschütztem Material Dritter ist unzulässig. Bitte fahre nur fort, wenn Du Rechte an den Inhalten besitzt."
+		},
+		"goBackHome": "Zurück zum Beginn",
+		"goToArtist": "Zum Interpreten",
+		"goToSettingsPage": "Zu den Einstellungen",
+		"library": {
+			"create": "Neue Bibliothek",
+			"delete": "Lösche Bibliothek",
+			"deletionWarning": "Eine Bibliothek wird gelöscht. Dies kann nicht rückgängig gemacht werden."
+		},
+		"logout": "Ausloggen",
+		"new": "Neu",
+		"playback": {
+			"play": "Abspielen",
+			"playAfter": "Spiele als Nächstes",
+			"playAll": "Spiele Alles"
+		}
+	},
+	"album": {
+		"showOnlyExclusiveTracks": "Zeige nur exklusive Tracks"
+	},
+	"albumType": {
+		"compilation": "Compilation",
+		"compilation_plural": "Compilations",
+		"ep": "EP",
+		"ep_plural": "EPs",
+		"liveRecording": "Live-Aufnahme",
+		"liveRecording_plural": "Live Alben",
+		"remixAlbum": "Remix Album",
+		"remixAlbum_plural": "Remix Alben"
+	}
+}
