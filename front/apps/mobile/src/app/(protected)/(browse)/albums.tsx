@@ -19,15 +19,12 @@
 import { getAlbums } from "@/api/queries";
 import { InfiniteGrid } from "~/components/infinite/grid";
 import { AlbumTile } from "~/components/tile/resource/album";
-import { useRootViewStyle } from "~/hooks/root-view-style";
 
 //TODO Tap header toscroll to top
 
 export default function AlbumBrowseView() {
-	const rootStyle = useRootViewStyle();
 	return (
 		<InfiniteGrid
-			containerStyle={rootStyle}
 			query={getAlbums({}, { sortBy: "name", order: "asc" }, [
 				"artist",
 				"illustration",

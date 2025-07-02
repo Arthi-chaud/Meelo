@@ -16,8 +16,13 @@ import "theme";
 //TODO Performance
 
 const styles = StyleSheet.create((theme, rt) => ({
-	rootStyle: { flex: 1, marginHorizontal: theme.gap(1) },
-	listStyle: { maxWidth: breakpoints.xl, width: "100%" },
+	rootStyle: { flex: 1 },
+	listStyle: {
+		maxWidth: breakpoints.xl,
+		width: "100%",
+		paddingTop: theme.gap(1),
+		paddingHorizontal: theme.gap(1),
+	},
 	itemContainer: {
 		// @ts-expect-error
 		width: `${100 / theme.layout.grid.columnCount[rt.breakpoint!]}%`,
