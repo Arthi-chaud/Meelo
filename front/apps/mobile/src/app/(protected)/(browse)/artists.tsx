@@ -19,13 +19,10 @@
 import { getArtists } from "@/api/queries";
 import { InfiniteGrid } from "~/components/infinite/grid";
 import { ArtistTile } from "~/components/tile/resource/artist";
-import { useRootViewStyle } from "~/hooks/root-view-style";
 
 export default function ArtistBrowseView() {
-	const rootStyle = useRootViewStyle();
 	return (
 		<InfiniteGrid
-			containerStyle={rootStyle}
 			query={getArtists({}, { sortBy: "name", order: "asc" }, [
 				"illustration",
 			])}
