@@ -10,9 +10,16 @@ import { breakpoints } from "~/theme";
 import "theme";
 import { Divider } from "~/primitives/divider";
 
+//TODO Padding after last element
+
 const styles = StyleSheet.create((theme) => ({
-	rootStyle: { flex: 1, marginHorizontal: theme.gap(1) },
-	listStyle: { maxWidth: breakpoints.xl, width: "100%" },
+	rootStyle: { flex: 1 },
+	listStyle: {
+		maxWidth: breakpoints.xl,
+		width: "100%",
+		paddingTop: theme.gap(1),
+		paddingHorizontal: theme.gap(1),
+	},
 	itemContainer: {},
 }));
 
