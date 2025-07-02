@@ -74,8 +74,11 @@ export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 const styles = StyleSheet.create((theme, rt) => ({
 	root: { display: "flex", alignItems: "flex-start" },
 	header: {
-		marginLeft: theme.gap(2),
+		marginLeft: theme.gap(1),
+		paddingHorizontal: theme.gap(1),
 		marginBottom: theme.gap(1),
+		borderRadius: theme.borderRadius,
+		overflow: "hidden",
 	},
 	row: { gap: theme.gap(0.5) },
 	item: (itemIndex: number) => ({
