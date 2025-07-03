@@ -48,5 +48,12 @@
 		"liveRecording_plural": "Live Alben",
 		"remixAlbum": "Remix Album",
 		"remixAlbum_plural": "Remix Alben"
+	},
+	"settings": {
+		"ui": {
+			"lang": {
+				"de": "Deutsch"
+			}
+		}
 	}
 }
