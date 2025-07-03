@@ -284,7 +284,7 @@
 		"ui": {
 			"autoMode": "Thème Automatique",
 			"colorScheme": "Thème",
-			"crossfade": "Crossfade",
+			"crossfade": "Fondu enchaîné",
 			"external": {
 				"encounteredABug": "Vous avez rencontré un problème ?",
 				"enjoyingTheProject": "Vous aimez le projet ?",
