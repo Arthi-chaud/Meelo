@@ -16,13 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import de from "./de.json";
 import en from "./en.json";
 import fr from "./fr.json";
 import id from "./id.json";
 import it from "./it.json";
 import ru from "./ru.json";
 
-export default Object.entries({ en, fr, ru, id, it }).reduce(
+export default Object.entries({ en, fr, de, ru, id, it }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
 );

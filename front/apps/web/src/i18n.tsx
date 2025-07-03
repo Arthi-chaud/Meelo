@@ -26,7 +26,7 @@ import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
 import translations from "../../../translations/index";
 
-export const Languages = ["en", "fr", "ru", "it", "id"] as const;
+export const Languages = ["en", "fr", "de", "ru", "it", "id"] as const;
 export type Language = keyof typeof Languages;
 
 export const persistLanguage = (language: Language) => {
