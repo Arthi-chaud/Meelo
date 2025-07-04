@@ -393,6 +393,7 @@ const Player = () => {
 								{
 									src: api.getIllustrationURL(
 										newIllustrationURL,
+										"medium",
 									),
 								},
 							]
@@ -409,7 +410,10 @@ const Player = () => {
 					setNotification(
 						new Notification(currentTrack.track.name, {
 							icon: newIllustrationURL
-								? api.getIllustrationURL(newIllustrationURL)
+								? api.getIllustrationURL(
+										newIllustrationURL,
+										"low",
+									)
 								: "/icon-white.png",
 							body: currentTrack.artist.name,
 						}),
