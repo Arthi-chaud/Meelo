@@ -16,32 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	type ItemSize,
-	type LayoutOption,
-	LayoutOptions,
-} from "@/models/layout";
+import { useLayoutControl as useLayoutControlBase } from "@/infinite-controls/layout";
+import { type LayoutOption, LayoutOptions } from "@/models/layout";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
-
-export type LayoutControl =
-	| { layout: "list"; itemSize: never; enableToggle: false; onUpdate: never }
-	| {
-			layout: "grid";
-			itemSize: ItemSize;
-			enableToggle: false;
-			onUpdate: (p: { itemSize: ItemSize }) => void;
-	  }
-	| {
-			layout: LayoutOption;
-			enableToggle: true;
-			itemSize: ItemSize;
-			onUpdate: (p: {
-				layout: LayoutOption;
-				itemSize: ItemSize;
-			}) => void;
-	  };
 
 // Hook to get Layout data to pass to Controls
 export const useLayoutControl = ({
@@ -52,23 +30,20 @@ export const useLayoutControl = ({
 	enableToggle: boolean;
 }) => {
 	const router = useRouter();
-	// biome-ignore lint/complexity/useLiteralKeys: Clarity
-	const layoutQuery = parseQueryParam(router.query["view"], LayoutOptions);
-	const [layoutState, setLayoutState] = useState<{
-		layout: LayoutOption;
-		itemSize: ItemSize;
-	}>(() => ({
-		layout: !enableToggle ? defaultLayout : (layoutQuery ?? defaultLayout),
-		itemSize: "m",
-	}));
-	const control: LayoutControl = {
-		layout: layoutState.layout,
-		enableToggle: enableToggle as true,
-		itemSize: layoutState.itemSize,
+	return useLayoutControlBase({
+		hook: () => {
+			const router = useRouter();
+			// biome-ignore lint/complexity/useLiteralKeys: Clarity
+			const layoutQuery = parseQueryParam(
+				router.query["view"],
+				LayoutOptions,
+			);
+			return layoutQuery;
+		},
+		defaultLayout,
+		enableToggle,
 		onUpdate: (p) => {
 			setQueryParam([["view", p.layout]], router);
-			setLayoutState(p);
 		},
-	};
-	return [layoutState, control] as const;
+	});
 };
