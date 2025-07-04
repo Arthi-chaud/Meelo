@@ -178,6 +178,8 @@
 	"form": {
 		"auth": {
 			"confirmPasswordField": "Confirm",
+			"instanceUrl": "Instance URL",
+			"instanceUrlIsRequired": "Instance URL is missing",
 			"password": "Password",
 			"passwordIsRequired": "Password is required",
 			"passwordTooShort": "Password is too short",
@@ -256,6 +258,7 @@
 		"video_plural": "Videos"
 	},
 	"nav": {
+		"browse": "Browse",
 		"compilations": "Compilations",
 		"home": "Home",
 		"more": "More",
