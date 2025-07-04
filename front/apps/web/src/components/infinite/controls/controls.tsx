@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { LayoutControl } from "@/infinite-controls/layout";
 import { ItemSize } from "@/models/layout";
 import {
 	AscIcon,
@@ -43,7 +44,6 @@ import { Fragment, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type Action from "~/components/actions";
 import type { FilterControl } from "./filters/control";
-import type { LayoutControl } from "./layout";
 import type { SortControl } from "./sort";
 
 // Controls should not maintain state regarding options

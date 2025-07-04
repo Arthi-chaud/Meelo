@@ -6410,6 +6410,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"infinite-controls@workspace:packages/infinite-controls":
+  version: 0.0.0-use.local
+  resolution: "infinite-controls@workspace:packages/infinite-controls"
+  dependencies:
+    react: "npm:18.2.0"
+    typescript: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "inflight@npm:^1.0.4":
   version: 1.0.6
   resolution: "inflight@npm:1.0.6"

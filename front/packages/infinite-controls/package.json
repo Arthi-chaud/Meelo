@@ -1,0 +1,11 @@
+{
+	"name": "infinite-controls",
+	"sideEffects": false,
+	"dependencies": {
+		"react": "18.2.0"
+	},
+	"devDependencies": {
+		"typescript": "5.3.3"
+	},
+	"packageManager": "yarn@4.4.0"
+}
