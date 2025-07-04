@@ -17,9 +17,9 @@
  */
 
 import type { ParsedUrlQuery } from "node:querystring";
+import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import { type Order, Orders } from "@/models/sorting";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export type SortControl<SortingKey extends string> = {
@@ -40,19 +40,17 @@ export const useSortControl = <SortingKey extends string>({
 	translate: (s: SortingKey) => TranslationKey;
 }) => {
 	const router = useRouter();
-	const orderQuery = getOrderQuery(router);
-	const sortQuery = getSortQuery(router, sortingKeys);
-	// Note: getSortQuery does not return  null,
-	// falling back on the first key in the key list
-	const [sortState, setSortState] = useState(() => ({
-		sort: sortQuery,
-		order: orderQuery ?? "asc",
-	}));
-	const control: SortControl<SortingKey> = {
-		sortingKeys: sortingKeys,
-		selected: sortState,
-		buttonLabel: translate(sortState.sort),
-		formatItem: (t) => translate(t),
+	return useSortControlBase({
+		hook: () => {
+			const router = useRouter();
+			const order = getOrderQuery(router) ?? "asc";
+			const sort = getSortQuery(router, sortingKeys);
+			// Note: getSortQuery does not return  null,
+			// falling back on the first key in the key list
+			return { sort, order };
+		},
+		sortingKeys,
+		translate,
 		onUpdate: (p) => {
 			setQueryParam(
 				[
@@ -61,10 +59,8 @@ export const useSortControl = <SortingKey extends string>({
 				],
 				router,
 			);
-			setSortState(p);
 		},
-	};
-	return [sortState, control] as const;
+	});
 };
 
 export const getOrderQuery = (router: { query: ParsedUrlQuery }) =>
