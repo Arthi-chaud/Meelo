@@ -17,17 +17,38 @@
  */
 
 import { getArtists } from "@/api/queries";
-import { InfiniteGrid } from "~/components/infinite/grid";
+import { ArtistSortingKeys } from "@/models/artist";
+import { useLayoutControl } from "~/components/infinite/controls/layout";
+import { useSortControl } from "~/components/infinite/controls/sort";
+import { InfiniteView } from "~/components/infinite/view";
+import { ArtistItem } from "~/components/list-item/resource/artist";
 import { ArtistTile } from "~/components/tile/resource/artist";
 
 export default function ArtistBrowseView() {
+	const [{ layout, itemSize }, { onUpdate: updateLayout }] = useLayoutControl(
+		{
+			defaultLayout: "list",
+			enableToggle: true,
+		},
+	);
+	const {} = useSortControl({
+		sortingKeys: ArtistSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
+	});
 	return (
-		<InfiniteGrid
+		<InfiniteView
+			layout={layout}
 			query={getArtists({}, { sortBy: "name", order: "asc" }, [
 				"illustration",
 			])}
-			render={(artist) => (
+			renderTile={(artist) => (
 				<ArtistTile
+					artist={artist}
+					illustrationProps={{ simpleColorPlaceholder: true }}
+				/>
+			)}
+			renderItem={(artist) => (
+				<ArtistItem
 					artist={artist}
 					illustrationProps={{ simpleColorPlaceholder: true }}
 				/>

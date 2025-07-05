@@ -2,12 +2,13 @@ import type { InfiniteQuery } from "@/api/query";
 import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
 import type React from "react";
-import { useMemo } from "react";
+import { createRef, useEffect, useMemo } from "react";
 import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { breakpoints } from "~/theme";
 import "theme";
+import { useNavigation } from "expo-router";
 
 //TODO The breakpoint's type from rt does not seem to use the type defined in the theme
 //It should be typesafe
