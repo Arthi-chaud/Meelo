@@ -24,7 +24,7 @@ const config = {
 		];
 		return config;
 	},
-	transpilePackages: ["models", "api", "state", "utils", "components"],
+	transpilePackages: ["models", "api", "state", "utils", "ui"],
 	experimental: {
 		externalDir: true,
 	},

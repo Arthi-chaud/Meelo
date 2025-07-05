@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useQuery } from "@/api/hook";
 import { getAlbums, getArtists, getLabel } from "@/api/queries";
-import InfiniteAlbumView from "@/components/infinite/resource/album";
-import InfiniteArtistView from "@/components/infinite/resource/artist";
 import { Box, Skeleton, Tab, Tabs, Typography } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { useQuery } from "~/api";
 import { Head } from "~/components/head";
+import InfiniteAlbumView from "~/components/infinite/resource/album";
+import InfiniteArtistView from "~/components/infinite/resource/artist";
 import { useTabRouter } from "~/components/tab-router";
 import getSlugOrId from "~/utils/getSlugOrId";
 

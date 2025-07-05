@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useInfiniteQuery, useQuery } from "@/api/hook";
 import {
 	getAlbums,
 	getArtist,
@@ -24,7 +23,6 @@ import {
 	getSongs,
 	getVideos,
 } from "@/api/queries";
-import { useGradientBackground } from "@/components/gradient-background";
 import { AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
@@ -35,7 +33,9 @@ import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { useInfiniteQuery, useQuery } from "~/api";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import {
 	AlbumListPageSection,

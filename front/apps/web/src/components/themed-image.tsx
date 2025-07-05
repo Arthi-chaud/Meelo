@@ -30,13 +30,14 @@ const ThemedImage = ({ light, dark, ...props }: ThemedImageProps) => {
 	const _theme = useTheme();
 	const sxLightThemeImage = useThemedSxValue("display", "block", "none");
 	const sxDarkThemeImage = useThemedSxValue("display", "none", "block");
+	const isDev = process.env.NODE_ENV !== "production";
 	return (
 		<>
 			<Box sx={sxLightThemeImage}>
-				<Image src={light} {...props} />
+				<Image unoptimized={isDev} src={light} {...props} />
 			</Box>
 			<Box sx={sxDarkThemeImage}>
-				<Image src={dark} {...props} />
+				<Image unoptimized={isDev} src={dark} {...props} />
 			</Box>
 		</>
 	);
