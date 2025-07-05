@@ -18,18 +18,9 @@
 
 import type { ParsedUrlQuery } from "node:querystring";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
-import { type Order, Orders } from "@/models/sorting";
+import { Orders } from "@/models/sorting";
 import { useRouter } from "next/router";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
-
-export type SortControl<SortingKey extends string> = {
-	formatItem: (k: SortingKey) => TranslationKey;
-	// returns the label of the menu + icon
-	buttonLabel: TranslationKey;
-	sortingKeys: readonly SortingKey[];
-	selected: { sort: SortingKey; order: Order };
-	onUpdate: (p: { sort: SortingKey; order: Order }) => void;
-};
 
 // Hook to get Sorting data to pass to Controls
 export const useSortControl = <SortingKey extends string>({
