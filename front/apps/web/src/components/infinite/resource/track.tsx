@@ -21,7 +21,7 @@ import { DefaultItemSize } from "@/models/layout";
 import type { SortingParameters } from "@/models/sorting";
 import { TrackSortingKeys, type TrackWithRelations } from "@/models/track";
 import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
+import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import TrackItem from "~/components/list-item/resource/track";
@@ -41,9 +41,7 @@ type ViewProps = {
 };
 
 const InfiniteTrackView = (props: ViewProps) => {
-	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
-		multipleChoices: true,
-	});
+	const [libraryFilter, libraryFilterControl] = useLibraryFiltersControl();
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: TrackSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,

@@ -30,8 +30,10 @@ import { store } from "@/state/store";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
-import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
+import {
+	useLibraryFiltersControl,
+	useTypeFiltersControl,
+} from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
@@ -56,13 +58,10 @@ type ViewProps = {
 const InfiniteVideoView = (props: ViewProps) => {
 	const queryClient = useQueryClient();
 
-	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
-		multipleChoices: true,
-	});
-	const [typeFilter, typeFilterControl] = useTypeFilterControl({
+	const [libraryFilter, libraryFilterControl] = useLibraryFiltersControl();
+	const [typeFilter, typeFilterControl] = useTypeFiltersControl({
 		types: VideoType,
 		translate: (s) => videoTypeToTranslationKey(s, false),
-		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: VideoSortingKeys,

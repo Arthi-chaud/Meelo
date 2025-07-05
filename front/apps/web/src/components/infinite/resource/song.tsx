@@ -35,8 +35,12 @@ import { useState } from "react";
 import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
-import { useTypeFilterControl } from "~/components/infinite/controls/filters/resource-type";
+import {
+	useLibraryFilterControl,
+	useLibraryFiltersControl,
+	useTypeFiltersControl,
+} from "~/components/infinite/controls/filters";
+import { useTypeFilterControl } from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
@@ -123,13 +127,10 @@ export const InfiniteSongView = (props: SongViewProps) => {
 	} as const;
 
 	/// state
-	const [libraries, libraryFilterControl] = useLibraryFilterControl({
-		multipleChoices: true,
-	});
-	const [types, songTypeFilterControl] = useTypeFilterControl({
+	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
+	const [types, songTypeFilterControl] = useTypeFiltersControl({
 		types: SongType,
 		translate: (s) => songTypeToTranslationKey(s, false),
-		multipleChoices: true,
 	});
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: SongSortingKeys,
@@ -201,13 +202,10 @@ export const InfiniteSongGroupView = (props: SongGroupViewProps) => {
 	} as const;
 
 	/// state
-	const [libraries, libraryFilterControl] = useLibraryFilterControl({
-		multipleChoices: true,
-	});
+	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
 	const [type, songTypeFilterControl] = useTypeFilterControl({
 		types: SongType,
 		translate: (s) => songTypeToTranslationKey(s, false),
-		multipleChoices: false,
 	});
 	const query: SongGroupQueryProps = {
 		libraries: libraries,
