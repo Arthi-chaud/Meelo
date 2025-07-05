@@ -18,6 +18,7 @@
 
 import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
+import type { SortControl } from "@/infinite-controls/sort";
 import { ItemSize } from "@/models/layout";
 import {
 	AscIcon,
@@ -44,7 +45,6 @@ import { deepmerge } from "@mui/utils";
 import { Fragment, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type Action from "~/components/actions";
-import type { SortControl } from "./sort";
 
 // Controls should not maintain state regarding options
 // It should rely on the onUpdate function to update external state
