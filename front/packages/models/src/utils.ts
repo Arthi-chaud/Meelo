@@ -79,17 +79,15 @@ export const albumTypeToTranslationKey = (
 	plural: boolean,
 ): TranslationKey =>
 	albumType === "EP"
-		? `albumType.ep${plural ? "_plural" : ""}`
+		? `albumType.ep`
 		: `albumType.${uncapitalize(albumType)}${plural ? "_plural" : ""}`;
 
 export const songTypeToTranslationKey = (
 	songType: SongType,
-	plural: boolean,
-): TranslationKey =>
-	`songType.${uncapitalize(songType)}${plural ? "_plural" : ""}`;
+	_plural: false,
+): TranslationKey => `songType.${uncapitalize(songType)}`;
 
 export const videoTypeToTranslationKey = (
 	videoType: VideoType,
-	plural: boolean,
-): TranslationKey =>
-	`videoType.${uncapitalize(videoType)}${plural ? "_plural" : ""}`;
+	_plural: false,
+): TranslationKey => `videoType.${uncapitalize(videoType)}`;
