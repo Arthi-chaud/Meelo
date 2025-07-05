@@ -17,19 +17,61 @@
  */
 
 import { getAlbums } from "@/api/queries";
-import { InfiniteGrid } from "~/components/infinite/grid";
+import { AlbumSortingKeys } from "@/models/album";
+import { GridIcon, ListIcon } from "@/ui/icons";
+import { useNavigation } from "expo-router";
+import { useEffect } from "react";
+import { TouchableOpacity } from "react-native";
+import { useLayoutControl } from "~/components/infinite/controls/layout";
+import { useSortControl } from "~/components/infinite/controls/sort";
+import { InfiniteView } from "~/components/infinite/view";
+import { AlbumItem } from "~/components/list-item/resource/album";
 import { AlbumTile } from "~/components/tile/resource/album";
 
 //TODO Tap header toscroll to top
 
 export default function AlbumBrowseView() {
+	const navigation = useNavigation();
+	const [{ layout, itemSize }, { onUpdate: updateLayout }] = useLayoutControl(
+		{
+			defaultLayout: "grid",
+			enableToggle: true,
+		},
+	);
+	const {} = useSortControl({
+		sortingKeys: AlbumSortingKeys,
+		translate: (s) => `browsing.controls.sort.${s}`,
+	});
+	useEffect(() => {
+		navigation.setOptions({
+			headerRight: () => (
+				<TouchableOpacity
+					onPress={() =>
+						updateLayout({
+							layout: layout === "grid" ? "list" : "grid",
+							itemSize,
+						})
+					}
+				>
+					{layout == "grid" ? <ListIcon /> : <GridIcon />}
+				</TouchableOpacity>
+			),
+		});
+	}, [layout]);
 	return (
-		<InfiniteGrid
+		<InfiniteView
+			layout={layout}
 			query={getAlbums({}, { sortBy: "name", order: "asc" }, [
 				"artist",
 				"illustration",
 			])}
-			render={(album) => (
+			renderItem={(album) => (
+				<AlbumItem
+					album={album}
+					illustrationProps={{ simpleColorPlaceholder: true }}
+				/>
+			)}
+			renderTile={(album) => (
 				<AlbumTile
 					album={album}
 					illustrationProps={{ simpleColorPlaceholder: true }}

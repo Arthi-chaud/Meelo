@@ -21,6 +21,7 @@ export const ListItem = ({
 	title,
 	subtitle,
 	illustration,
+	illustrationProps,
 	href,
 	onPress,
 	...props
@@ -34,8 +35,8 @@ export const ListItem = ({
 			<View style={styles.illustration}>
 				<IllustrationComponent
 					illustration={illustration}
-					{...props.illustrationProps}
-					variant="center"
+					{...illustrationProps}
+					variant={illustrationProps?.variant ?? "center"}
 					quality="low"
 				/>
 			</View>
