@@ -20,7 +20,7 @@ import type { InfiniteQuery } from "@/api/query";
 import { ArtistSortingKeys, type ArtistWithRelations } from "@/models/artist";
 import type { SortingParameters } from "@/models/sorting";
 import { Controls } from "~/components/infinite/controls/controls";
-import { useLibraryFilterControl } from "~/components/infinite/controls/filters/library";
+import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
@@ -38,9 +38,7 @@ type ViewProps = {
 };
 
 const InfiniteArtistView = (props: ViewProps) => {
-	const [libraryFilter, libraryFilterControl] = useLibraryFilterControl({
-		multipleChoices: true,
-	});
+	const [libraryFilter, libraryFilterControl] = useLibraryFiltersControl();
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: ArtistSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
