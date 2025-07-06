@@ -64,6 +64,7 @@ export const PlayAfterIcon: Icon = Iconsax.MusicSquareAdd;
 export const HomeIcon: Icon = Iconsax.Home2;
 export const ExpandLessIcon: Icon = Iconsax.ArrowUp2;
 export const ExpandMoreIcon: Icon = Iconsax.ArrowDown2;
+export const BackIcon: Icon = Iconsax.ArrowLeft2;
 export const ArchiveIcon: Icon = Iconsax.ArchiveBox;
 export const DownloadIcon: Icon = Iconsax.DirectInbox;
 export const ScanIcon: Icon = Iconsax.ArrowRotateRight;

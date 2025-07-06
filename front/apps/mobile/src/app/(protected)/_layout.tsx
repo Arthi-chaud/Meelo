@@ -29,14 +29,16 @@ import { useQuery as useTanStackQuery } from "@tanstack/react-query";
 import { Redirect, Tabs } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAPI } from "~/api";
+import { BackgroundGradient } from "~/components/background-gradient";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
 	//TODO Blur bg of navbar
-	screen: { backgroundColor: theme.colors.background, flex: 1 },
+	root: { flex: 1 },
+	screen: { backgroundColor: "transparent", flex: 1 },
 	navBar: {
 		paddingTop: theme.gap(1),
 		backgroundColor: theme.colors.background,
@@ -70,52 +72,59 @@ export default function ProtectedLayout() {
 		return <Redirect href="/auth" />;
 	}
 	//TODO Proper handling of when user is loading
+	//TODO Remove warning saying that tabs should be first child
 	return (
-		<Tabs
-			screenOptions={{
-				headerShown: false,
-				tabBarShowLabel: false,
-				tabBarStyle: styles.navBar,
-				sceneStyle: styles.screen,
-				tabBarButton: TabButton,
-			}}
-		>
-			<Tabs.Screen
-				name="index"
-				options={{
-					title: t("nav.home"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={HomeIcon} focused={focused} />
-					),
+		<View style={styles.root}>
+			<BackgroundGradient />
+			<Tabs
+				screenOptions={{
+					headerShown: false,
+					tabBarShowLabel: false,
+					tabBarStyle: styles.navBar,
+					sceneStyle: styles.screen,
+					tabBarButton: TabButton,
 				}}
-			/>
-			<Tabs.Screen
-				name="(browse)"
-				options={{
-					title: t("nav.browse"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={BrowseIcon} focused={focused} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="search"
-				options={{
-					title: t("nav.search"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={SearchIcon} focused={focused} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="settings"
-				options={{
-					title: t("nav.settings"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={SettingsIcon} focused={focused} />
-					),
-				}}
-			/>
-		</Tabs>
+			>
+				<Tabs.Screen
+					name="index"
+					options={{
+						title: t("nav.home"),
+						tabBarIcon: ({ focused }) => (
+							<TabIcon icon={HomeIcon} focused={focused} />
+						),
+					}}
+				/>
+				<Tabs.Screen
+					name="(browse)"
+					options={{
+						title: t("nav.browse"),
+						tabBarIcon: ({ focused }) => (
+							<TabIcon icon={BrowseIcon} focused={focused} />
+						),
+					}}
+				/>
+				<Tabs.Screen
+					name="search"
+					options={{
+						title: t("nav.search"),
+						tabBarIcon: ({ focused }) => (
+							<TabIcon icon={SearchIcon} focused={focused} />
+						),
+					}}
+				/>
+				<Tabs.Screen
+					name="settings"
+					options={{
+						title: t("nav.settings"),
+						tabBarIcon: ({ focused }) => (
+							<TabIcon icon={SettingsIcon} focused={focused} />
+						),
+					}}
+				/>
+				<View
+					style={{ width: 10, height: 10, backgroundColor: "red" }}
+				/>
+			</Tabs>
+		</View>
 	);
 }

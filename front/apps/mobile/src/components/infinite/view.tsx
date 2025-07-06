@@ -8,8 +8,10 @@ import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { breakpoints } from "~/theme";
 import "theme";
+import type { IllustratedResource } from "@/models/illustration";
 import type { LayoutOption } from "@/models/layout";
 import { Divider } from "~/primitives/divider";
+import { useSetKeyIllustrationFromInfiniteQuery } from "../background-gradient";
 import { EmptyState } from "../empty-state";
 import { Controls } from "./controls/component";
 
@@ -64,7 +66,7 @@ type Props<T, T1, Sort extends string> = {
 
 export const InfiniteView = <
 	T extends Resource,
-	T1 extends Resource,
+	T1 extends IllustratedResource,
 	Sort extends string,
 >(
 	props: Props<T, T1, Sort>,
@@ -85,6 +87,7 @@ export const InfiniteView = <
 		];
 	}, [queryRes.items, queryRes.isFetching, queryRes.isFetchingNextPage]);
 	const ScrollView = props.layout === "list" ? FlatList : FlatGrid;
+	useSetKeyIllustrationFromInfiniteQuery(props.query);
 	return (
 		<View style={[styles.rootStyle, props.containerStyle]}>
 			<View style={styles.controls}>
