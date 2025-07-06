@@ -1,6 +1,5 @@
 import type { InfiniteQuery } from "@/api/query";
 import type Resource from "@/models/resource";
-import { generateArray } from "@/utils/gen-list";
 import type React from "react";
 import { createRef, useMemo } from "react";
 import { FlatList, TouchableOpacity, View, type ViewStyle } from "react-native";
@@ -15,8 +14,6 @@ type Props<T0, T> = {
 	render: (item: T | undefined) => React.ReactElement;
 };
 
-//TODO Focus header: border radius + width
-
 export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 	query,
 	header,
@@ -29,17 +26,15 @@ export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 
 	const itemList = useMemo(() => {
 		const itemCount = items?.length ?? 0;
-		let trailingSkeletons = 0;
 		if ((isFetching && !itemCount) || isFetchingNextPage) {
-			trailingSkeletons = 1;
+			return [...(items ?? []), undefined];
 		}
-		return generateArray(itemCount + trailingSkeletons, undefined);
+		return items ?? [undefined];
 	}, [items, isFetching, isFetchingNextPage]);
 	return (
 		<View style={[styles.root, style]}>
 			<TouchableOpacity
 				touchSoundDisabled
-				//focusable={false} // TODO Doesn't work?
 				style={styles.header}
 				onPress={() =>
 					flatListRef.current?.scrollToIndex({
@@ -60,10 +55,11 @@ export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 				data={itemList}
 				contentContainerStyle={styles.row}
 				onEndReached={() => fetchNextPage()}
-				renderItem={({ index }) => {
-					const item = items?.at(index);
+				renderItem={({ item, index }) => {
 					return (
-						<View style={[styles.item(index)]}>{render(item)}</View>
+						<View style={[styles.item(index)]}>
+							{render(item as T | undefined)}
+						</View>
 					);
 				}}
 			/>
