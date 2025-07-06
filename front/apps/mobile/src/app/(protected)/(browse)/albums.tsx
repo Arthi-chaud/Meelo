@@ -53,7 +53,7 @@ export default function AlbumBrowseView() {
 						})
 					}
 				>
-					{layout == "grid" ? <ListIcon /> : <GridIcon />}
+					{layout === "grid" ? <ListIcon /> : <GridIcon />}
 				</TouchableOpacity>
 			),
 		});
@@ -65,18 +65,19 @@ export default function AlbumBrowseView() {
 				"artist",
 				"illustration",
 			])}
-			renderItem={(album) => (
-				<AlbumItem
-					album={album}
-					illustrationProps={{ simpleColorPlaceholder: true }}
-				/>
-			)}
-			renderTile={(album) => (
-				<AlbumTile
-					album={album}
-					illustrationProps={{ simpleColorPlaceholder: true }}
-				/>
-			)}
+			render={(album) =>
+				layout === "list" ? (
+					<AlbumItem
+						album={album}
+						illustrationProps={{ simpleColorPlaceholder: true }}
+					/>
+				) : (
+					<AlbumTile
+						album={album}
+						illustrationProps={{ simpleColorPlaceholder: true }}
+					/>
+				)
+			}
 		/>
 	);
 }
