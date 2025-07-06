@@ -2,7 +2,7 @@ import type { InfiniteQuery } from "@/api/query";
 import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
 import type React from "react";
-import { useMemo } from "react";
+import { type ComponentProps, useMemo } from "react";
 import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
@@ -11,6 +11,7 @@ import "theme";
 import type { LayoutOption } from "@/models/layout";
 import { Divider } from "~/primitives/divider";
 import { EmptyState } from "../empty-state";
+import { Controls } from "./controls/component";
 
 //TODO List: Padding after last element
 //
@@ -19,13 +20,19 @@ import { EmptyState } from "../empty-state";
 //TODO Grid: when page fetched, the item on the last line is resized + rerendered
 //TODO Grid: Performance
 
+//TODO Tap header toscroll to top
+
+// TODO fix padding top when controls
+
 const styles = StyleSheet.create((theme, rt) => ({
 	rootStyle: { flex: 1 },
 	emptyState: { height: "20%", maxHeight: 200 },
+	// Note: don't know why the top of the list is not aligned with the bottom of the controls
+	controls: { paddingBottom: theme.gap(1) },
 	listStyle: {
 		maxWidth: breakpoints.xl,
 		width: "100%",
-		paddingTop: theme.gap(1),
+		paddingTop: theme.gap(1.5),
 		paddingHorizontal: theme.gap(1),
 	},
 	itemContainer: {
@@ -41,85 +48,58 @@ const styles = StyleSheet.create((theme, rt) => ({
 	},
 }));
 
-type Props<T, T1> = {
+type Props<T, T1, Sort extends string> = {
 	containerStyle?: ViewStyle;
 	query: InfiniteQuery<T, T1>;
 	layout: LayoutOption;
+	controls?: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
 	render: (item: T1 | undefined) => React.ReactElement;
 };
 
-export const InfiniteView = <T extends Resource, T1 extends Resource>(
-	props: Props<T, T1>,
+export const InfiniteView = <
+	T extends Resource,
+	T1 extends Resource,
+	Sort extends string,
+>(
+	props: Props<T, T1, Sort>,
 ) => {
 	styles.useVariants({ layout: props.layout });
 	const queryRes = useInfiniteQuery(() => props.query);
 	const firstPage = queryRes.data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = queryRes.items?.length ?? 0;
-		let trailingSkeletons = 0;
-		if (
-			(queryRes.isFetching && !itemCount) ||
-			queryRes.isFetchingNextPage
-		) {
-			trailingSkeletons = 1;
-		}
+		const trailingSkeletons =
+			(queryRes.isFetching && !itemCount) || queryRes.isFetchingNextPage
+				? 1
+				: 0;
 
 		return [
 			...(queryRes.items ?? []),
 			...generateArray(trailingSkeletons, undefined),
 		];
 	}, [queryRes.items, queryRes.isFetching, queryRes.isFetchingNextPage]);
+	const ScrollView = props.layout === "list" ? FlatList : FlatGrid;
 	return (
 		<View style={[styles.rootStyle, props.containerStyle]}>
 			{firstPage?.length === 0 ? (
 				<View style={styles.emptyState}>
 					<EmptyState />
 				</View>
-			) : props.layout === "list" ? (
-				<FlatList
-					data={itemList}
-					horizontal={false}
-					refreshing={queryRes.isRefetching}
-					style={styles.listStyle}
-					onRefresh={() => queryRes.refetch()}
-					numColumns={1}
-					onEndReached={() => queryRes.fetchNextPage()}
-					keyExtractor={(_, idx) => {
-						const item = queryRes.items?.at(idx);
-						if (!item) {
-							return `skeleton-${idx}`;
-						}
-						return `item-${item.id}`;
-					}}
-					ItemSeparatorComponent={() => <Divider h withInsets />}
-					renderItem={({ item }) => {
-						return (
-							<View style={styles.itemContainer}>
-								{props.render(item)}
-							</View>
-						);
-					}}
-				/>
 			) : (
-				<FlatGrid
+				<ScrollView
 					data={itemList}
-					horizontal={false}
 					refreshing={queryRes.isRefetching}
 					style={styles.listStyle}
 					onRefresh={() => queryRes.refetch()}
+					stickyHeaderIndices={props.controls ? [0] : undefined}
+					ListHeaderComponent={
+						props.controls ? (
+							<View style={styles.controls}>
+								<Controls {...props.controls} />
+							</View>
+						) : undefined
+					}
 					onEndReached={() => queryRes.fetchNextPage()}
-					uniProps={(theme, rt) => ({
-						keyExtractor: (_, idx) => {
-							const item = queryRes.items?.at(idx);
-							const columnCount =
-								// @ts-expect-error
-								theme.layout.grid.columnCount[rt.breakpoint!];
-							if (!item) {
-								return `skeleton-${idx}-cc:${columnCount}`;
-							}
-							return `item-${item.id}-cc:${columnCount}`;
-						},
-					})}
 					renderItem={({ item }) => {
 						return (
 							<View style={styles.itemContainer}>
@@ -127,6 +107,36 @@ export const InfiniteView = <T extends Resource, T1 extends Resource>(
 							</View>
 						);
 					}}
+					{...(props.layout === "grid"
+						? {
+								uniProps: (theme, rt) => ({
+									keyExtractor: (_, idx) => {
+										const item = queryRes.items?.at(idx);
+										const columnCount =
+											// @ts-expect-error
+											theme.layout.grid.columnCount[
+												rt.breakpoint!
+											];
+										if (!item) {
+											return `skeleton-${idx}-cc:${columnCount}`;
+										}
+										return `item-${item.id}-cc:${columnCount}`;
+									},
+								}),
+							}
+						: {
+								numColumns: 1,
+								ItemSeparatorComponent: () => (
+									<Divider h withInsets />
+								),
+								keyExtractor: (_, idx) => {
+									const item = queryRes.items?.at(idx);
+									if (!item) {
+										return `skeleton-${idx}`;
+									}
+									return `item-${item.id}`;
+								},
+							})}
 				/>
 			)}
 		</View>

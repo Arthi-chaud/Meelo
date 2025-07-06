@@ -17,7 +17,7 @@
  */
 
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
-import { type Order } from "@/models/sorting";
+import type { Order } from "@/models/sorting";
 import { useLocalSearchParams } from "expo-router";
 
 export const useSortControl = <SortingKey extends string>({
