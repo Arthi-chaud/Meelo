@@ -8,6 +8,8 @@ import { useInfiniteQuery } from "~/api";
 import { LoadableText } from "~/components/loadable_text";
 import { EmptyState } from "../empty-state";
 
+// TODO Add option to Hide section if empty query res
+
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
 	header: string;

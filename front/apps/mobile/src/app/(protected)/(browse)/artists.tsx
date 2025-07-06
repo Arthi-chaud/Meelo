@@ -35,25 +35,20 @@ export default function ArtistBrowseView() {
 		sortingKeys: ArtistSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
+
+	const Item = layout === "list" ? ArtistItem : ArtistTile;
 	return (
 		<InfiniteView
 			layout={layout}
 			query={getArtists({}, { sortBy: "name", order: "asc" }, [
 				"illustration",
 			])}
-			render={(artist) =>
-				layout === "grid" ? (
-					<ArtistTile
-						artist={artist}
-						illustrationProps={{ simpleColorPlaceholder: true }}
-					/>
-				) : (
-					<ArtistItem
-						artist={artist}
-						illustrationProps={{ simpleColorPlaceholder: true }}
-					/>
-				)
-			}
+			render={(artist) => (
+				<Item
+					artist={artist}
+					illustrationProps={{ simpleColorPlaceholder: true }}
+				/>
+			)}
 		/>
 	);
 }

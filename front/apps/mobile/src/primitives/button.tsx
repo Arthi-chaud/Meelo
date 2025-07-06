@@ -17,7 +17,6 @@
  */
 
 import type { Icon } from "@/ui/icons";
-import type { IconProps } from "iconsax-react-nativejs";
 import { useCallback } from "react";
 import {
 	Pressable,
@@ -31,7 +30,6 @@ import Animated, {
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
-import type { SvgProps } from "react-native-svg";
 import {
 	StyleSheet,
 	type UnistylesVariants,
@@ -43,13 +41,17 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 	labelProps?: TextProps;
 	buttonProps?: RNButtonProps;
 	onPress: RNButtonProps["onPress"];
-	title: RNButtonProps["title"];
 } & (
 		| {
-				leadingIconStyle?: Omit<IconProps, keyof SvgProps>;
-				leadingIcon: Icon;
+				icon?: Icon;
+				iconPosition?: "left" | "right";
+				title?: RNButtonProps["title"];
 		  }
-		| { leadingIconStyle?: never; leadingIcon?: never }
+		| {
+				icon?: never;
+				iconPosition?: never;
+				title: RNButtonProps["title"];
+		  }
 	);
 
 // Note: For the 'fitContent' variant to work, you may need to tweak the parent so that:
@@ -58,7 +60,7 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 export const Button = (props: ButtonProps) => {
 	const theme = useAnimatedTheme();
 	const scale = useSharedValue<number>(1);
-	const Leading = withUnistyles(props.leadingIcon ?? View);
+	const Leading = withUnistyles(props.icon ?? View);
 	const handlePress = useCallback(() => {
 		scale.value = theme.value.animations.pressable.scaleOnPress;
 	}, []);
@@ -89,13 +91,13 @@ export const Button = (props: ButtonProps) => {
 				onPressIn={!props.disabled ? handlePress : undefined}
 				onPressOut={!props.disabled ? handleRelease : undefined}
 			>
-				{props.leadingIcon ? (
-					<Leading
-						{...(props.leadingIconStyle as any)}
-						style={[styles.label as any, styles.icon]}
-					/>
+				{props.icon && props.iconPosition !== "right" ? (
+					<Leading style={[styles.label as any, styles.icon]} />
 				) : undefined}
-				<Text style={styles.label}>{props.title}</Text>
+				{props.title && <Text style={styles.label}>{props.title}</Text>}
+				{props.icon && props.iconPosition === "right" ? (
+					<Leading style={[styles.label as any, styles.icon]} />
+				) : undefined}
 			</Pressable>
 		</Animated.View>
 	);
@@ -139,16 +141,15 @@ const styles = StyleSheet.create((theme) => ({
 	content: {
 		paddingVertical: theme.gap(1),
 		paddingHorizontal: theme.gap(2),
-		display: "flex",
 		flexDirection: "row",
+		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		gap: theme.gap(1.5),
+		gap: theme.gap(1),
 	},
 	icon: { marginBottom: 2 },
 	label: {
 		...theme.fontStyles.medium,
-		fontSize: theme.fontSize.rem(1.5),
 		textAlign: "center",
 		variants: {
 			width: {
