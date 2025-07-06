@@ -6,6 +6,7 @@ import { FlatList, TouchableOpacity, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { LoadableText } from "~/components/loadable_text";
+import { EmptyState } from "../empty-state";
 
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
@@ -21,9 +22,10 @@ export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 	style,
 }: Props<T0, T>) => {
 	const flatListRef = createRef<FlatList<unknown>>();
-	const { items, isFetching, isFetchingNextPage, fetchNextPage } =
+	const { data, items, isFetching, isFetchingNextPage, fetchNextPage } =
 		useInfiniteQuery(() => query);
 
+	const firstPage = data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = items?.length ?? 0;
 		if ((isFetching && !itemCount) || isFetchingNextPage) {
@@ -49,26 +51,37 @@ export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 					content={items === undefined ? undefined : header}
 				/>
 			</TouchableOpacity>
-			<ResponsiveFlatList
-				horizontal
-				ref={flatListRef}
-				data={itemList}
-				contentContainerStyle={styles.row}
-				onEndReached={() => fetchNextPage()}
-				renderItem={({ item, index }) => {
-					return (
-						<View style={[styles.item(index)]}>
-							{render(item as T | undefined)}
-						</View>
-					);
-				}}
-			/>
+			{firstPage?.length !== 0 ? (
+				<ResponsiveFlatList
+					horizontal
+					ref={flatListRef}
+					data={itemList}
+					contentContainerStyle={styles.row}
+					onEndReached={() => fetchNextPage()}
+					renderItem={({ item, index }) => {
+						return (
+							<View style={[styles.item(index)]}>
+								{render(item as T | undefined)}
+							</View>
+						);
+					}}
+				/>
+			) : (
+				<View style={styles.emptyState}>
+					<EmptyState />
+				</View>
+			)}
 		</View>
 	);
 };
 
 const styles = StyleSheet.create((theme, rt) => ({
 	root: { display: "flex", alignItems: "flex-start" },
+	emptyState: {
+		aspectRatio: 2.5, // TODO this an approximate, would be nice to compute this correctly
+		borderWidth: 1,
+		width: "100%",
+	},
 	header: {
 		marginLeft: theme.gap(1),
 		paddingHorizontal: theme.gap(1),
@@ -80,7 +93,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 	item: (itemIndex: number) => ({
 		marginLeft: itemIndex === 0 ? theme.gap(1) : 0,
 		// @ts-expect-error
-		//TODO See Grid
 		width: rt.screen.width / theme.layout.grid.columnCount[rt.breakpoint!],
 	}),
 }));

@@ -10,6 +10,7 @@ import { breakpoints } from "~/theme";
 import "theme";
 import type { LayoutOption } from "@/models/layout";
 import { Divider } from "~/primitives/divider";
+import { EmptyState } from "../empty-state";
 
 //TODO List: Padding after last element
 //
@@ -20,6 +21,7 @@ import { Divider } from "~/primitives/divider";
 
 const styles = StyleSheet.create((theme, rt) => ({
 	rootStyle: { flex: 1 },
+	emptyState: { height: "20%", maxHeight: 200 },
 	listStyle: {
 		maxWidth: breakpoints.xl,
 		width: "100%",
@@ -51,6 +53,7 @@ export const InfiniteView = <T extends Resource, T1 extends Resource>(
 ) => {
 	styles.useVariants({ layout: props.layout });
 	const queryRes = useInfiniteQuery(() => props.query);
+	const firstPage = queryRes.data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = queryRes.items?.length ?? 0;
 		let trailingSkeletons = 0;
@@ -68,7 +71,11 @@ export const InfiniteView = <T extends Resource, T1 extends Resource>(
 	}, [queryRes.items, queryRes.isFetching, queryRes.isFetchingNextPage]);
 	return (
 		<View style={[styles.rootStyle, props.containerStyle]}>
-			{props.layout === "list" ? (
+			{firstPage?.length === 0 ? (
+				<View style={styles.emptyState}>
+					<EmptyState />
+				</View>
+			) : props.layout === "list" ? (
 				<FlatList
 					data={itemList}
 					horizontal={false}
@@ -84,11 +91,11 @@ export const InfiniteView = <T extends Resource, T1 extends Resource>(
 						}
 						return `item-${item.id}`;
 					}}
+					ItemSeparatorComponent={() => <Divider h withInsets />}
 					renderItem={({ item }) => {
 						return (
 							<View style={styles.itemContainer}>
 								{props.render(item)}
-								<Divider h withInsets />
 							</View>
 						);
 					}}
