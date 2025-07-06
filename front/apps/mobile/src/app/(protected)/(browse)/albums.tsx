@@ -19,6 +19,9 @@
 import { getAlbums } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -30,6 +33,19 @@ import { AlbumItem } from "~/components/list-item/resource/album";
 import { AlbumTile } from "~/components/tile/resource/album";
 
 export default function AlbumBrowseView() {
+	const { t } = useTranslation();
+	const navigation = useNavigation();
+	const { compilations } = useLocalSearchParams<{ compilations?: "true" }>();
+	//TODO there might be a better way
+	useEffect(
+		() =>
+			navigation.setOptions({
+				headerTitle: t(
+					compilations ? "nav.compilations" : "models.album_plural",
+				),
+			}),
+		[],
+	);
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
 		enableToggle: true,
@@ -53,7 +69,11 @@ export default function AlbumBrowseView() {
 				filters: [libraryFilterControl, albumTypeFilterControl],
 			}}
 			query={getAlbums(
-				{ library: libraries, type: types },
+				{
+					library: libraries,
+					type: types,
+					artist: compilations ? "compilations" : undefined,
+				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration"],
 			)}
