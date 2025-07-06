@@ -39,7 +39,8 @@ const styles = StyleSheet.create((theme) => ({
 	//TODO Blur bg of navbar
 	root: { flex: 1 },
 	screen: { backgroundColor: "transparent", flex: 1 },
-	navBar: {
+	tabBar: {
+		position: "absolute",
 		paddingTop: theme.gap(1),
 		backgroundColor: theme.colors.background,
 	},
@@ -80,7 +81,7 @@ export default function ProtectedLayout() {
 				screenOptions={{
 					headerShown: false,
 					tabBarShowLabel: false,
-					tabBarStyle: styles.navBar,
+					tabBarStyle: styles.tabBar,
 					sceneStyle: styles.screen,
 					tabBarButton: TabButton,
 				}}
