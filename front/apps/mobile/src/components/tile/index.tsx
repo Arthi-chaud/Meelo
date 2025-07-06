@@ -16,7 +16,12 @@ const styles = StyleSheet.create((theme) => ({
 		overflow: "hidden",
 	},
 	imageContainer: {
-		aspectRatio: 1,
+		variants: {
+			normalizedThumbnail: {
+				true: { aspectRatio: 16 / 9 },
+				false: { aspectRatio: 1 },
+			},
+		},
 	},
 	textColumn: {
 		display: "flex",
@@ -25,6 +30,10 @@ const styles = StyleSheet.create((theme) => ({
 		paddingVertical: theme.gap(1),
 		gap: theme.gap(0.5),
 		variants: {
+			normalizedThumbnail: {
+				true: {},
+				false: {},
+			},
 			hasSubtitle: {
 				true: { alignItems: "flex-start" },
 				false: { alignItems: "center" },
@@ -54,7 +63,11 @@ export const Tile = ({
 	onPress,
 	...props
 }: Props) => {
-	styles.useVariants({ hasSubtitle: subtitle !== null });
+	styles.useVariants({
+		hasSubtitle: subtitle !== null,
+		normalizedThumbnail:
+			props.illustrationProps?.normalizedThumbnail ?? false,
+	});
 	const router = useRouter();
 	return (
 		<Pressable

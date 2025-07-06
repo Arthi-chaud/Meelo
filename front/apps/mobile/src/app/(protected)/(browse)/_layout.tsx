@@ -55,6 +55,14 @@ export default function BrowseLayout() {
 				name="albums"
 				options={{ headerTitle: t("models.album_plural") }}
 			/>
+			<Stack.Screen
+				name="songs"
+				options={{ headerTitle: t("models.song_plural") }}
+			/>
+			<Stack.Screen
+				name="videos"
+				options={{ headerTitle: t("models.video_plural") }}
+			/>
 		</Stack>
 	);
 }

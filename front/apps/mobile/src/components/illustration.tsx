@@ -22,7 +22,6 @@ import type { Icon } from "@/ui/icons";
 import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Blurhash } from "react-native-blurhash";
-// import { Image } from "expo-image";
 import Image from "react-native-fast-image";
 import Animated, {
 	FadeOut,
@@ -39,6 +38,7 @@ type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: Icon;
 	quality: IllustrationQuality;
+	normalizedThumbnail?: true;
 	variant?: "fill" | "circle" | "center";
 	// If true, the blurhash will not be ecoded/displayed.
 	// Instead it will use the color from the illustration model as a place holder
@@ -52,6 +52,7 @@ export const Illustration = ({
 	quality,
 	variant,
 	simpleColorPlaceholder,
+	normalizedThumbnail,
 }: Props) => {
 	const theme = useAnimatedTheme();
 	const api = useAPI();
@@ -69,6 +70,7 @@ export const Illustration = ({
 		imageType: innerAspectRatio > 1 ? "wide" : "tall",
 		shape: variant === "circle" ? "circle" : undefined,
 		align: variant === "center" ? "center" : "bottom",
+		normalizedThumbnail: normalizedThumbnail ?? false,
 	});
 	const [imageStatus, setImageStatus] = useState<
 		"done" | "loading" | "error"
@@ -131,7 +133,9 @@ export const Illustration = ({
 			<View
 				style={[
 					{
-						aspectRatio: innerAspectRatio,
+						aspectRatio: normalizedThumbnail
+							? 16 / 9
+							: innerAspectRatio,
 					},
 					styles.innerContainer(
 						simpleColorPlaceholder
@@ -201,11 +205,14 @@ export const Illustration = ({
 
 const styles = StyleSheet.create((theme) => ({
 	outerContainer: {
-		aspectRatio: 1,
 		overflow: "hidden",
 		flex: 1,
 		alignItems: "center",
 		variants: {
+			normalizedThumbnail: {
+				true: { aspectRatio: 16 / 9 },
+				false: { aspectRatio: 1 },
+			},
 			align: {
 				center: { justifyContent: "center" },
 				bottom: {

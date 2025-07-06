@@ -1,4 +1,10 @@
-import { AlbumIcon, ArtistIcon, type Icon, SongIcon } from "@/ui/icons";
+import {
+	AlbumIcon,
+	ArtistIcon,
+	type Icon,
+	SongIcon,
+	VideoIcon,
+} from "@/ui/icons";
 import { type Href, useRouter } from "expo-router";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,6 +30,12 @@ const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
 		title: "models.song_plural",
 		href: "/(protected)/(browse)/songs",
 		icon: SongIcon,
+	},
+
+	{
+		title: "models.video_plural",
+		href: "/(protected)/(browse)/videos",
+		icon: VideoIcon,
 	},
 ];
 
