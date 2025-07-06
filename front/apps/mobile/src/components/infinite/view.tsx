@@ -25,14 +25,20 @@ import { Controls } from "./controls/component";
 // TODO fix padding top when controls
 
 const styles = StyleSheet.create((theme, rt) => ({
-	rootStyle: { flex: 1 },
+	rootStyle: { flex: 1, position: "relative" },
 	emptyState: { height: "20%", maxHeight: 200 },
-	// Note: don't know why the top of the list is not aligned with the bottom of the controls
-	controls: { paddingBottom: theme.gap(1) },
+	controls: {
+		paddingVertical: theme.gap(1.5),
+		position: "absolute",
+		zIndex: 1,
+		width: "100%",
+	},
 	listStyle: {
 		maxWidth: breakpoints.xl,
 		width: "100%",
-		paddingTop: theme.gap(1.5),
+		//approximate so that the list start below controls
+		//Using ListHeaderComponent for controls causes the dropdown to be misplaced
+		paddingTop: theme.gap(7.5),
 		paddingHorizontal: theme.gap(1),
 	},
 	itemContainer: {
@@ -52,7 +58,7 @@ type Props<T, T1, Sort extends string> = {
 	containerStyle?: ViewStyle;
 	query: InfiniteQuery<T, T1>;
 	layout: LayoutOption;
-	controls?: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
+	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
 	render: (item: T1 | undefined) => React.ReactElement;
 };
 
@@ -81,6 +87,9 @@ export const InfiniteView = <
 	const ScrollView = props.layout === "list" ? FlatList : FlatGrid;
 	return (
 		<View style={[styles.rootStyle, props.containerStyle]}>
+			<View style={styles.controls}>
+				<Controls {...props.controls} />
+			</View>
 			{firstPage?.length === 0 ? (
 				<View style={styles.emptyState}>
 					<EmptyState />
@@ -91,14 +100,6 @@ export const InfiniteView = <
 					refreshing={queryRes.isRefetching}
 					style={styles.listStyle}
 					onRefresh={() => queryRes.refetch()}
-					stickyHeaderIndices={props.controls ? [0] : undefined}
-					ListHeaderComponent={
-						props.controls ? (
-							<View style={styles.controls}>
-								<Controls {...props.controls} />
-							</View>
-						) : undefined
-					}
 					onEndReached={() => queryRes.fetchNextPage()}
 					renderItem={({ item }) => {
 						return (

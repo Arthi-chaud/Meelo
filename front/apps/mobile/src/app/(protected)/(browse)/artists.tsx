@@ -25,13 +25,11 @@ import { ArtistItem } from "~/components/list-item/resource/artist";
 import { ArtistTile } from "~/components/tile/resource/artist";
 
 export default function ArtistBrowseView() {
-	const [{ layout, itemSize }, { onUpdate: updateLayout }] = useLayoutControl(
-		{
-			defaultLayout: "list",
-			enableToggle: true,
-		},
-	);
-	const {} = useSortControl({
+	const [{ layout }, layoutControl] = useLayoutControl({
+		defaultLayout: "list",
+		enableToggle: true,
+	});
+	const [{ sort, order }, sortControl] = useSortControl({
 		sortingKeys: ArtistSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
@@ -40,9 +38,12 @@ export default function ArtistBrowseView() {
 	return (
 		<InfiniteView
 			layout={layout}
-			query={getArtists({}, { sortBy: "name", order: "asc" }, [
-				"illustration",
-			])}
+			controls={{ layout: layoutControl, sort: sortControl }}
+			query={getArtists(
+				{},
+				{ sortBy: sort ?? "name", order: order ?? "asc" },
+				["illustration"],
+			)}
 			render={(artist) => (
 				<Item
 					artist={artist}

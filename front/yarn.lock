@@ -3628,6 +3628,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4":
+  version: 4.17.20
+  resolution: "@types/lodash@npm:4.17.20"
+  checksum: 10c0/98cdd0faae22cbb8079a01a3bb65aa8f8c41143367486c1cbf5adc83f16c9272a2a5d2c1f541f61d0d73da543c16ee1d21cf2ef86cb93cd0cc0ac3bced6dd88f
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 20.4.2
   resolution: "@types/node@npm:20.4.2"
@@ -7449,6 +7456,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "lodash@npm:4.17.21"
+  checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
+  languageName: node
+  linkType: hard
+
 "log-symbols@npm:^2.2.0":
   version: 2.2.0
   resolution: "log-symbols@npm:2.2.0"
@@ -8005,6 +8019,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@tanstack/react-query": "npm:^5.77.0"
+    "@types/lodash": "npm:^4"
     "@types/react": "npm:~19.0.10"
     api: "workspace:^"
     expo: "npm:~53.0.9"
@@ -8023,6 +8038,7 @@ __metadata:
     iconsax-react-nativejs: "npm:^0.0.8"
     intl-pluralrules: "npm:^2.0.1"
     jotai: "npm:^2.12.5"
+    lodash: "npm:^4.17.21"
     react: "npm:19.0.0"
     react-hook-form: "npm:^7.58.0"
     react-i18next: "npm:^12.2.2"
@@ -8035,6 +8051,7 @@ __metadata:
     react-native-reanimated: "npm:^3.17.3"
     react-native-safe-area-context: "npm:^5.4.1"
     react-native-screens: "npm:~4.11.1"
+    react-native-select-dropdown: "npm:^4.0.1"
     react-native-svg: "npm:^15.12.0"
     react-native-unistyles: "npm:^3.0.0-rc.4"
     state: "workspace:^"
@@ -9139,6 +9156,13 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/88a33ba419bd571cc318e80d25eb172f5829677f2dd80dcb69cbeaa6a35ba26214e0e82af87baa375182afe41a276e8ef1a9d13b826f662f3a389982492c2879
+  languageName: node
+  linkType: hard
+
+"react-native-select-dropdown@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "react-native-select-dropdown@npm:4.0.1"
+  checksum: 10c0/1c285c52982e7a2cb765ddf5499330971f12190a206668429c29ed5d1d523f5158ff075c85bca2eb6e5d8f938855ec17a6e11e84230ec896a72aec5f25a5c9ce
   languageName: node
   linkType: hard
 
