@@ -24,7 +24,6 @@ export const ListItem = ({
 	illustrationProps,
 	href,
 	onPress,
-	...props
 }: Props) => {
 	const router = useRouter();
 	return (
