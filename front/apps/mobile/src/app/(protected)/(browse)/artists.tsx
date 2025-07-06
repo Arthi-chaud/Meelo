@@ -18,6 +18,7 @@
 
 import { getArtists } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
+import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
@@ -33,14 +34,18 @@ export default function ArtistBrowseView() {
 		sortingKeys: ArtistSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
-
+	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
 	const Item = layout === "list" ? ArtistItem : ArtistTile;
 	return (
 		<InfiniteView
 			layout={layout}
-			controls={{ layout: layoutControl, sort: sortControl }}
+			controls={{
+				layout: layoutControl,
+				sort: sortControl,
+				filters: [libraryFilterControl],
+			}}
 			query={getArtists(
-				{},
+				{ library: libraries },
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["illustration"],
 			)}

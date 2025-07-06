@@ -17,7 +17,12 @@
  */
 
 import { getAlbums } from "@/api/queries";
-import { AlbumSortingKeys } from "@/models/album";
+import { AlbumSortingKeys, AlbumType } from "@/models/album";
+import { albumTypeToTranslationKey } from "@/models/utils";
+import {
+	useLibraryFiltersControl,
+	useTypeFiltersControl,
+} from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
@@ -33,13 +38,22 @@ export default function AlbumBrowseView() {
 		sortingKeys: AlbumSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
+	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
+	const [types, albumTypeFilterControl] = useTypeFiltersControl({
+		types: AlbumType,
+		translate: (t) => albumTypeToTranslationKey(t, false),
+	});
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
 	return (
 		<InfiniteView
 			layout={layout}
-			controls={{ layout: layoutControl, sort: sortControl }}
+			controls={{
+				layout: layoutControl,
+				sort: sortControl,
+				filters: [libraryFilterControl, albumTypeFilterControl],
+			}}
 			query={getAlbums(
-				{},
+				{ library: libraries, type: types },
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration"],
 			)}

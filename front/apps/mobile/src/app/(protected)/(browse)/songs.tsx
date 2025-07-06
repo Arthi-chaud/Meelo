@@ -17,7 +17,12 @@
  */
 
 import { getSongs } from "@/api/queries";
-import { SongSortingKeys } from "@/models/song";
+import { SongSortingKeys, SongType } from "@/models/song";
+import { songTypeToTranslationKey } from "@/models/utils";
+import {
+	useLibraryFiltersControl,
+	useTypeFiltersControl,
+} from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { SongItem } from "~/components/list-item/resource/song";
@@ -27,12 +32,20 @@ export default function SongBrowseView() {
 		sortingKeys: SongSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
+	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
+	const [types, songTypeFilterControl] = useTypeFiltersControl({
+		types: SongType,
+		translate: (t) => songTypeToTranslationKey(t, false),
+	});
 	return (
 		<InfiniteView
 			layout={"list"}
-			controls={{ sort: sortControl }}
+			controls={{
+				sort: sortControl,
+				filters: [libraryFilterControl, songTypeFilterControl],
+			}}
 			query={getSongs(
-				{},
+				{ library: libraries, type: types },
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration", "featuring"],
 			)}
