@@ -12,10 +12,7 @@ export const VideoTile = ({ video, illustrationProps }: Props) => {
 	return (
 		<Tile
 			illustration={video?.illustration}
-			illustrationProps={{
-				normalizedThumbnail: true,
-				...illustrationProps,
-			}}
+			illustrationProps={illustrationProps}
 			title={video?.name}
 			onPress={() => {}} // TODO
 			subtitle={video?.artist.name}

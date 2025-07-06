@@ -60,7 +60,10 @@ export default function VideoBrowseView() {
 			render={(video) => (
 				<Item
 					video={video}
-					illustrationProps={{ simpleColorPlaceholder: true }}
+					illustrationProps={{
+						simpleColorPlaceholder: true,
+						normalizedThumbnail: true,
+					}}
 				/>
 			)}
 		/>
