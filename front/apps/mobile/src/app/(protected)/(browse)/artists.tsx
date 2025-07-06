@@ -41,18 +41,19 @@ export default function ArtistBrowseView() {
 			query={getArtists({}, { sortBy: "name", order: "asc" }, [
 				"illustration",
 			])}
-			renderTile={(artist) => (
-				<ArtistTile
-					artist={artist}
-					illustrationProps={{ simpleColorPlaceholder: true }}
-				/>
-			)}
-			renderItem={(artist) => (
-				<ArtistItem
-					artist={artist}
-					illustrationProps={{ simpleColorPlaceholder: true }}
-				/>
-			)}
+			render={(artist) =>
+				layout === "grid" ? (
+					<ArtistTile
+						artist={artist}
+						illustrationProps={{ simpleColorPlaceholder: true }}
+					/>
+				) : (
+					<ArtistItem
+						artist={artist}
+						illustrationProps={{ simpleColorPlaceholder: true }}
+					/>
+				)
+			}
 		/>
 	);
 }
