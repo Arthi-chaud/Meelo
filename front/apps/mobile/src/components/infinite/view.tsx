@@ -24,8 +24,6 @@ import { Controls } from "./controls/component";
 
 //TODO Tap header toscroll to top
 
-// TODO fix padding top when controls
-
 const styles = StyleSheet.create((theme, rt) => ({
 	rootStyle: { flex: 1, position: "relative" },
 	emptyState: { height: "20%", maxHeight: 200 },
@@ -38,11 +36,12 @@ const styles = StyleSheet.create((theme, rt) => ({
 	listStyle: {
 		maxWidth: breakpoints.xl,
 		width: "100%",
-		//approximate so that the list start below controls
-		//Using ListHeaderComponent for controls causes the dropdown to be misplaced
-		paddingTop: theme.gap(7.5), //TODO Using padding eats away the last pixels at the bottom
 		paddingHorizontal: theme.gap(1),
 	},
+
+	//approximate so that the list start below controls
+	//putting the actual controls in the ListHeaderComponent causes the dropdown to be misplaced
+	listHeader: { height: theme.gap(7.5) },
 	itemContainer: {
 		variants: {
 			layout: {
@@ -104,6 +103,9 @@ export const InfiniteView = <
 					style={styles.listStyle}
 					onRefresh={() => queryRes.refetch()}
 					onEndReached={() => queryRes.fetchNextPage()}
+					stickyHeaderIndices={[0]}
+					stickyHeaderHiddenOnScroll
+					ListHeaderComponent={<View style={styles.listHeader} />}
 					renderItem={({ item }) => {
 						return (
 							<View style={styles.itemContainer}>
