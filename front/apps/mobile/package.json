@@ -30,6 +30,7 @@
 		"iconsax-react-nativejs": "^0.0.8",
 		"intl-pluralrules": "^2.0.1",
 		"jotai": "^2.12.5",
+		"lodash": "^4.17.21",
 		"react": "19.0.0",
 		"react-hook-form": "^7.58.0",
 		"react-i18next": "^12.2.2",
@@ -42,6 +43,7 @@
 		"react-native-reanimated": "^3.17.3",
 		"react-native-safe-area-context": "^5.4.1",
 		"react-native-screens": "~4.11.1",
+		"react-native-select-dropdown": "^4.0.1",
 		"react-native-svg": "^15.12.0",
 		"react-native-unistyles": "^3.0.0-rc.4",
 		"state": "workspace:^",
@@ -54,6 +56,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.25.2",
+		"@types/lodash": "^4",
 		"@types/react": "~19.0.10",
 		"typescript": "~5.8.3"
 	},
