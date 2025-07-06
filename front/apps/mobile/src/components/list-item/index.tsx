@@ -26,6 +26,9 @@ export const ListItem = ({
 	onPress,
 }: Props) => {
 	const router = useRouter();
+	styles.useVariants({
+		normalizedThumbnail: illustrationProps?.normalizedThumbnail ?? false,
+	});
 	return (
 		<Pressable
 			onPress={() => (href ? router.push(href) : onPress?.())}
@@ -71,8 +74,21 @@ const styles = StyleSheet.create((theme) => ({
 		padding: theme.gap(1),
 	},
 	illustration: {
-		aspectRatio: 1,
-		width: 56,
+		variants: {
+			//TODO responsive width
+			normalizedThumbnail: {
+				false: {
+					aspectRatio: 1,
+					width: 56,
+				},
+				true: {
+					marginTop: theme.gap(0.5),
+					marginBottom: theme.gap(0.5),
+					aspectRatio: 16 / 9,
+					width: 80,
+				},
+			},
+		},
 	},
 	textContainer: {
 		display: "flex",
