@@ -29,6 +29,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	emptyState: { height: "20%", maxHeight: 200 },
 	controls: {
 		paddingVertical: theme.gap(1.5),
+		paddingHorizontal: theme.gap(1),
 		position: "absolute",
 		zIndex: 1,
 		width: "100%",
