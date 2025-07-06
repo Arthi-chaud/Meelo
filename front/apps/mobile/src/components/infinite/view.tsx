@@ -40,7 +40,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 		width: "100%",
 		//approximate so that the list start below controls
 		//Using ListHeaderComponent for controls causes the dropdown to be misplaced
-		paddingTop: theme.gap(7.5),
+		paddingTop: theme.gap(7.5), //TODO Using padding eats away the last pixels at the bottom
 		paddingHorizontal: theme.gap(1),
 	},
 	itemContainer: {

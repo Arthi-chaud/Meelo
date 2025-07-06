@@ -64,7 +64,6 @@ const styles = StyleSheet.create((theme) => ({
 	root: {
 		display: "flex",
 		flexDirection: "row",
-		flex: 1,
 		borderRadius: theme.borderRadius,
 		overflow: "hidden",
 		width: "100%",

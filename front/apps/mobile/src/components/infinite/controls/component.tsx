@@ -115,7 +115,7 @@ const styles = StyleSheet.create((theme) => ({
 		width: 150,
 		gap: theme.gap(2),
 	},
-	dropdownItem: {},
+	dropdownItem: { backgroundColor: theme.colors.background },
 	dropdownItemRow: {
 		display: "flex",
 		flexDirection: "row",
