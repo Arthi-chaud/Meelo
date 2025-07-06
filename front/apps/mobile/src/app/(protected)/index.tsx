@@ -20,6 +20,7 @@ import { getAlbums, getArtists } from "@/api/queries";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { useSetKeyIllustrationFromInfiniteQuery } from "~/components/background-gradient";
 import { InfiniteRow } from "~/components/infinite/row";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
@@ -57,7 +58,7 @@ export default function Root() {
 	);
 	const { t } = useTranslation();
 	const pageStyle = useRootViewStyle();
-
+	useSetKeyIllustrationFromInfiniteQuery(newlyAddedAlbums);
 	return (
 		<ScrollView style={[styles.main, pageStyle]}>
 			<Text content={t("nav.home")} style={styles.title} variant="h2" />
