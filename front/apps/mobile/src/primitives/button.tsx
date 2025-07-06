@@ -24,6 +24,7 @@ import {
 	Text,
 	type TextProps,
 	View,
+	type ViewStyle,
 } from "react-native";
 import Animated, {
 	useAnimatedStyle,
@@ -36,12 +37,16 @@ import {
 	withUnistyles,
 } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import type { RequireExactlyOne } from "type-fest";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {
 	labelProps?: TextProps;
-	buttonProps?: RNButtonProps;
-	onPress: RNButtonProps["onPress"];
-} & (
+	containerStyle?: ViewStyle;
+} & RequireExactlyOne<{
+		onPress: NonNullable<RNButtonProps["onPress"]>;
+		propagateToParent: true;
+	}> &
+	(
 		| {
 				icon?: Icon;
 				iconPosition?: "left" | "right";
@@ -82,10 +87,12 @@ export const Button = (props: ButtonProps) => {
 		variant: props.variant ?? "filled",
 		disabled: props.disabled ?? false,
 	});
+	const Container = props.propagateToParent ? View : Pressable;
 	return (
-		<Animated.View style={[styles.container, animatedStyle]}>
-			<Pressable
-				{...props.buttonProps}
+		<Animated.View
+			style={[styles.container, animatedStyle, props.containerStyle]}
+		>
+			<Container
 				style={[styles.content]}
 				onPress={!props.disabled ? props.onPress : undefined}
 				onPressIn={!props.disabled ? handlePress : undefined}
@@ -98,7 +105,7 @@ export const Button = (props: ButtonProps) => {
 				{props.icon && props.iconPosition === "right" ? (
 					<Leading style={[styles.label as any, styles.icon]} />
 				) : undefined}
-			</Pressable>
+			</Container>
 		</Animated.View>
 	);
 };
