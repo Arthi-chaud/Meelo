@@ -4,8 +4,8 @@ import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "expo-router";
-import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useMemo } from "react";
+import { atom, useAtom, useAtomValue } from "jotai";
+import { useEffect, useMemo } from "react";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 
@@ -15,9 +15,13 @@ import { useInfiniteQuery } from "~/api";
 export const keyIllustrationAtom = atom<Illustration | null>(null);
 
 export const useSetKeyIllustration = (keyItem: IllustratedResource) => {
-	const setKeyIllustration = useSetAtom(keyIllustrationAtom);
+	const [keyIllustration, setKeyIllustration] = useAtom(keyIllustrationAtom);
 	useEffect(() => {
-		if (keyItem?.illustration) setKeyIllustration(keyItem.illustration);
+		if (
+			keyItem?.illustration &&
+			keyItem.illustration.url !== keyIllustration?.url
+		)
+			setKeyIllustration(keyItem.illustration);
 	}, [keyItem]);
 };
 
@@ -28,16 +32,17 @@ export const useSetKeyIllustrationFromInfiniteQuery = <
 	query: InfiniteQuery<T, T1>,
 ) => {
 	const { data } = useInfiniteQuery(() => query);
-	const setKeyIllustration = useSetAtom(keyIllustrationAtom);
-	useFocusEffect(
-		useCallback(() => {
-			const firstItem = data?.pages
-				.at(0)
-				?.items.find((item) => item.illustration !== null);
-			if (firstItem?.illustration)
-				setKeyIllustration(firstItem.illustration);
-		}, [data]),
-	);
+	const [keyIllustration, setKeyIllustration] = useAtom(keyIllustrationAtom);
+	useFocusEffect(() => {
+		const firstItem = data?.pages
+			.at(0)
+			?.items.find((item) => item.illustration !== null);
+		if (
+			firstItem?.illustration &&
+			firstItem.illustration.url !== keyIllustration?.url
+		)
+			setKeyIllustration(firstItem.illustration);
+	});
 };
 
 export const BackgroundGradient = () => {
