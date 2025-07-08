@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
+		"@shopify/react-native-skia": "^2.1.1",
 		"@tanstack/react-query": "^5.77.0",
 		"api": "workspace:^",
 		"expo": "~53.0.9",
@@ -21,7 +22,6 @@
 		"expo-dev-client": "~5.1.8",
 		"expo-font": "~13.3.1",
 		"expo-image": "~2.2.0",
-		"expo-linear-gradient": "^14.1.5",
 		"expo-linking": "~7.1.5",
 		"expo-router": "~5.0.7",
 		"expo-splash-screen": "~0.30.8",
