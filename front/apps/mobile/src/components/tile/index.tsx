@@ -42,8 +42,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-// TODO  Button animation
-
 type Props = {
 	illustration: IllustrationModel | null | undefined;
 	illustrationProps?: Omit<
