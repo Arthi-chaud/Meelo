@@ -37,10 +37,12 @@ import ToastManager from "toastify-react-native";
 import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { BackgroundGradient } from "~/components/background-gradient";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
+import { appThemes } from "~/theme";
 import resources from "../../../../translations";
 
 SplashScreen.preventAutoHideAsync();
@@ -96,18 +98,40 @@ export default function RootLayout() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<Provider store={store}>
-				<Stack
-					screenOptions={{
-						headerShown: false,
-						contentStyle: {
-							backgroundColor: "transparent",
-							flex: 1,
-						},
-						//TODO give the status bar a background
-						statusBarStyle:
-							colorScheme === "light" ? "dark" : "light",
-					}}
-				/>
+				<KeyboardProvider>
+					<Stack
+						screenOptions={{
+							headerShown: false,
+							contentStyle: {
+								flex: 1,
+							},
+							//TODO give the status bar a background
+							statusBarStyle:
+								colorScheme === "light" ? "dark" : "light",
+						}}
+					>
+						<Stack.Screen
+							name="(protected)"
+							options={{
+								contentStyle: {
+									backgroundColor: "transparent",
+								},
+							}}
+						/>
+
+						<Stack.Screen
+							name="auth"
+							options={{
+								contentStyle: {
+									backgroundColor: (colorScheme === "dark"
+										? appThemes.dark
+										: appThemes.light
+									).colors.background,
+								},
+							}}
+						/>
+					</Stack>
+				</KeyboardProvider>
 				<BackgroundGradient />
 			</Provider>
 			<ToastManager

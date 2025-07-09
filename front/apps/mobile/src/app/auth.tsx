@@ -22,7 +22,11 @@ import { useSetAtom } from "jotai";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
+import {
+	KeyboardAwareScrollView,
+	KeyboardToolbar,
+} from "react-native-keyboard-controller";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
 import { getAPI_ } from "~/api";
@@ -34,15 +38,20 @@ import { Text } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme, rt) => ({
 	root: {
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
+		marginBottom: theme.gap(10),
 		justifyContent: "space-evenly",
 	},
+	// The padding is a bit much, but it allows making the next form field visible
+	// It would be nice to just center the focused field when the keyboard is up
+	keyboard: { paddingTop: theme.gap(20) },
 	banner: {
 		height: 300,
+		maxHeight: rt.screen.height / 4,
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "center",
@@ -69,14 +78,18 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-//TODO Handle overflow w/ keyboard
+function timeout(ms: number) {
+	return new Promise<any>((_, reject) => {
+		setTimeout(() => reject(new Error("Request timed out")), ms);
+	});
+}
 
 export default function AuthenticationScreen() {
 	const { t } = useTranslation();
 	const defaultValues = {
-		url: "http://192.168.65.1:3000",
-		username: "test",
-		password: "test1234",
+		url: "",
+		username: "",
+		password: "",
 		confirm: "",
 	};
 	const setAccessToken = useSetAtom(accessTokenAtom);
@@ -95,11 +108,15 @@ export default function AuthenticationScreen() {
 		const instanceUrl = data.url.replace(/\/$/, "");
 		const api = getAPI_(null, instanceUrl);
 		setLoading(true);
+		setErrorMessage(undefined);
 		if (formType === "signup") {
-			api.register({
-				username: data.username,
-				password: data.password,
-			})
+			Promise.race([
+				timeout(3000),
+				api.register({
+					username: data.username,
+					password: data.password,
+				}),
+			])
 				.then(() => {
 					Toast.success(t("toasts.auth.accountCreated"));
 				})
@@ -110,7 +127,13 @@ export default function AuthenticationScreen() {
 					setLoading(false);
 				});
 		} else {
-			api.login({ username: data.username, password: data.password })
+			Promise.race([
+				timeout(3000),
+				api.login({
+					username: data.username,
+					password: data.password,
+				}),
+			])
 				.then(({ access_token }) => {
 					setAccessToken(access_token);
 					setInstanceUrl(instanceUrl);
@@ -123,150 +146,169 @@ export default function AuthenticationScreen() {
 		}
 	};
 	return (
-		<ScrollView contentContainerStyle={[styles.root, safeAreaStyle]}>
-			<MeeloBanner style={styles.banner} />
-			<View style={styles.formContainer}>
-				<Controller
-					control={control}
-					name="url"
-					rules={{
-						required: {
-							value: true,
-							message: t("form.auth.instanceUrlIsRequired"),
-						},
-					}}
-					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
-							placeholder={t("form.auth.instanceUrl")}
-							textContentType="URL"
-							onBlur={onBlur}
-							onChangeText={onChange}
-							error={errors.url?.message}
-							value={value}
-						/>
-					)}
-				/>
-
-				<Controller
-					control={control}
-					name="username"
-					rules={{
-						required: {
-							value: true,
-							message: t("form.auth.usernameTooShort"),
-						},
-						minLength: {
-							value: 4,
-							message: t("form.auth.usernameTooShort"),
-						},
-					}}
-					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
-							placeholder={t("form.auth.username")}
-							textContentType="username"
-							onBlur={onBlur}
-							onChangeText={onChange}
-							value={value}
-							autoComplete={
-								formType === "login" ? "username" : undefined
-							}
-							error={errors.username?.message}
-						/>
-					)}
-				/>
-
-				<Controller
-					control={control}
-					name="password"
-					rules={{
-						required: {
-							value: true,
-							message: t("form.auth.passwordIsRequired"),
-						},
-						minLength: {
-							value: 6,
-							message: t("form.auth.passwordTooShort"),
-						},
-					}}
-					render={({ field: { onChange, onBlur, value } }) => (
-						<TextInput
-							placeholder={t("form.auth.password")}
-							textContentType={
-								formType === "login"
-									? "password"
-									: "newPassword"
-							}
-							onBlur={onBlur}
-							onChangeText={onChange}
-							value={value}
-							autoComplete={
-								formType === "login" ? "password" : undefined
-							}
-							error={errors.password?.message}
-							secureTextEntry
-						/>
-					)}
-				/>
-				{formType === "signup" && (
+		<>
+			<KeyboardAwareScrollView
+				bottomOffset={styles.keyboard.paddingTop}
+				contentContainerStyle={[styles.root, safeAreaStyle]}
+			>
+				<MeeloBanner style={styles.banner} />
+				<View style={styles.formContainer}>
 					<Controller
 						control={control}
-						name="confirm"
+						name="url"
 						rules={{
 							required: {
 								value: true,
-								message: t("form.auth.pleaseConfirm"),
+								message: t("form.auth.instanceUrlIsRequired"),
+							},
+						}}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								placeholder={t("form.auth.instanceUrl")}
+								textContentType="URL"
+								onBlur={onBlur}
+								onChangeText={onChange}
+								error={errors.url?.message}
+								value={value}
+							/>
+						)}
+					/>
+
+					<Controller
+						control={control}
+						name="username"
+						rules={{
+							required: {
+								value: true,
+								message: t("form.auth.usernameTooShort"),
+							},
+							minLength: {
+								value: 4,
+								message: t("form.auth.usernameTooShort"),
+							},
+						}}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								placeholder={t("form.auth.username")}
+								textContentType="username"
+								onBlur={onBlur}
+								onChangeText={onChange}
+								value={value}
+								autoComplete={
+									formType === "login"
+										? "username"
+										: undefined
+								}
+								error={errors.username?.message}
+							/>
+						)}
+					/>
+
+					<Controller
+						control={control}
+						name="password"
+						rules={{
+							required: {
+								value: true,
+								message: t("form.auth.passwordIsRequired"),
 							},
 							minLength: {
 								value: 6,
 								message: t("form.auth.passwordTooShort"),
 							},
-							validate: (confirmValue, form) => {
-								if (confirmValue !== form.password) {
-									return t("form.auth.passwordsAreDifferent");
-								}
-							},
 						}}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
-								placeholder={t(
-									"form.auth.confirmPasswordField",
-								)}
+								placeholder={t("form.auth.password")}
+								textContentType={
+									formType === "login"
+										? "password"
+										: "newPassword"
+								}
 								onBlur={onBlur}
 								onChangeText={onChange}
 								value={value}
-								textContentType="newPassword"
+								autoComplete={
+									formType === "login"
+										? "password"
+										: undefined
+								}
+								error={errors.password?.message}
 								secureTextEntry
-								error={errors.confirm?.message}
 							/>
 						)}
 					/>
-				)}
-				<Button
-					disabled={isLoading}
-					onPress={handleSubmit(onSubmit)}
-					title={t(
-						formType === "login"
-							? "auth.loginButton"
-							: "auth.signupButton",
+					{formType === "signup" && (
+						<Controller
+							control={control}
+							name="confirm"
+							rules={{
+								required: {
+									value: true,
+									message: t("form.auth.pleaseConfirm"),
+								},
+								minLength: {
+									value: 6,
+									message: t("form.auth.passwordTooShort"),
+								},
+								validate: (confirmValue, form) => {
+									if (confirmValue !== form.password) {
+										return t(
+											"form.auth.passwordsAreDifferent",
+										);
+									}
+								},
+							}}
+							render={({
+								field: { onChange, onBlur, value },
+							}) => (
+								<TextInput
+									placeholder={t(
+										"form.auth.confirmPasswordField",
+									)}
+									onBlur={onBlur}
+									onChangeText={onChange}
+									value={value}
+									textContentType="newPassword"
+									secureTextEntry
+									error={errors.confirm?.message}
+								/>
+							)}
+						/>
 					)}
-				/>
-				{errorMsg && (
-					<View style={styles.errorContainer}>
-						<ErrorIcon style={styles.errorMsg} />
-						<Text style={styles.errorMsg}>{errorMsg}</Text>
-					</View>
-				)}
-				<Divider h withInsets />
-				<Button
-					variant="outlined"
-					onPress={() => {
-						setFormType(formType === "login" ? "signup" : "login");
-					}}
-					title={t(
-						formType === "login" ? "auth.signup" : "auth.signin",
+					<Button
+						disabled={isLoading}
+						onPress={handleSubmit(onSubmit)}
+						title={t(
+							formType === "login"
+								? "auth.loginButton"
+								: "auth.signupButton",
+						)}
+					/>
+					{errorMsg && (
+						<View style={styles.errorContainer}>
+							<ErrorIcon style={styles.errorMsg} />
+							<Text style={styles.errorMsg}>{errorMsg}</Text>
+						</View>
 					)}
-				/>
-			</View>
-		</ScrollView>
+					<Divider h withInsets />
+					<Button
+						variant="outlined"
+						onPress={() => {
+							setFormType(
+								formType === "login" ? "signup" : "login",
+							);
+							setErrorMessage(undefined);
+						}}
+						title={t(
+							formType === "login"
+								? "auth.signup"
+								: "auth.signin",
+						)}
+					/>
+				</View>
+			</KeyboardAwareScrollView>
+			<KeyboardToolbar />
+		</>
 	);
 }
