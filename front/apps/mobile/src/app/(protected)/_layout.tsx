@@ -81,7 +81,7 @@ export default function ProtectedLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="index"
+				name="(home)/index"
 				options={{
 					title: t("nav.home"),
 					tabBarIcon: ({ focused }) => (
@@ -115,6 +115,11 @@ export default function ProtectedLayout() {
 						<TabIcon icon={SettingsIcon} focused={focused} />
 					),
 				}}
+			/>
+
+			<Tabs.Screen
+				name="(home)/artists/[id]"
+				options={{ headerTitle: "", href: null }}
 			/>
 		</Tabs>
 	);

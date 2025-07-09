@@ -3,7 +3,7 @@ import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
 import type React from "react";
 import { type ComponentProps, useMemo, useState } from "react";
-import { FlatList, View, type ViewStyle } from "react-native";
+import { FlatList, View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { breakpoints } from "~/theme";
@@ -25,7 +25,11 @@ import { Controls } from "./controls/component";
 //TODO Tap header toscroll to top
 
 const styles = StyleSheet.create((theme, rt) => ({
-	rootStyle: { flex: 1, position: "relative" },
+	rootStyle: {
+		flex: 1,
+		position: "relative",
+		height: "100%",
+	},
 	emptyState: { height: "20%", maxHeight: 200 },
 	controls: {
 		paddingVertical: theme.gap(1.5),
@@ -37,6 +41,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	listStyle: {
 		maxWidth: breakpoints.xl,
 		width: "100%",
+		flex: 1,
 		paddingHorizontal: theme.gap(1),
 	},
 
@@ -59,7 +64,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 }));
 
 type Props<T, T1, Sort extends string> = {
-	containerStyle?: ViewStyle;
 	query: InfiniteQuery<T, T1>;
 	layout: LayoutOption;
 	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
@@ -92,7 +96,7 @@ export const InfiniteView = <
 	const ScrollView = props.layout === "list" ? FlatList : FlatGrid;
 	useSetKeyIllustrationFromInfiniteQuery(props.query);
 	return (
-		<View style={[styles.rootStyle, props.containerStyle]}>
+		<View style={[styles.rootStyle]}>
 			<View
 				style={styles.controls}
 				onLayout={(e) => setControlsHeight(e.nativeEvent.layout.height)}

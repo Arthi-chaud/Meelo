@@ -19,8 +19,7 @@
 import { getAlbums } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect } from "react";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
 	useLibraryFiltersControl,
@@ -34,18 +33,7 @@ import { AlbumTile } from "~/components/tile/resource/album";
 
 export default function AlbumBrowseView() {
 	const { t } = useTranslation();
-	const navigation = useNavigation();
 	const { compilations } = useLocalSearchParams<{ compilations?: "true" }>();
-	//TODO there might be a better way
-	useEffect(
-		() =>
-			navigation.setOptions({
-				headerTitle: t(
-					compilations ? "nav.compilations" : "models.album_plural",
-				),
-			}),
-		[],
-	);
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
 		enableToggle: true,
@@ -61,28 +49,39 @@ export default function AlbumBrowseView() {
 	});
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
 	return (
-		<InfiniteView
-			layout={layout}
-			controls={{
-				layout: layoutControl,
-				sort: sortControl,
-				filters: [libraryFilterControl, albumTypeFilterControl],
-			}}
-			query={getAlbums(
-				{
-					library: libraries,
-					type: types,
-					artist: compilations ? "compilations" : undefined,
-				},
-				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration"],
-			)}
-			render={(album) => (
-				<Item
-					album={album}
-					illustrationProps={{ simpleColorPlaceholder: true }}
-				/>
-			)}
-		/>
+		<>
+			<Stack.Screen
+				options={{
+					headerTitle: t(
+						compilations
+							? "nav.compilations"
+							: "models.album_plural",
+					),
+				}}
+			/>
+			<InfiniteView
+				layout={layout}
+				controls={{
+					layout: layoutControl,
+					sort: sortControl,
+					filters: [libraryFilterControl, albumTypeFilterControl],
+				}}
+				query={getAlbums(
+					{
+						library: libraries,
+						type: types,
+						artist: compilations ? "compilations" : undefined,
+					},
+					{ sortBy: sort ?? "name", order: order ?? "asc" },
+					["artist", "illustration"],
+				)}
+				render={(album) => (
+					<Item
+						album={album}
+						illustrationProps={{ simpleColorPlaceholder: true }}
+					/>
+				)}
+			/>
+		</>
 	);
 }
