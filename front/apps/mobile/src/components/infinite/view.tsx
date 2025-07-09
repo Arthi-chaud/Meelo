@@ -2,7 +2,7 @@ import type { InfiniteQuery } from "@/api/query";
 import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
 import type React from "react";
-import { type ComponentProps, useMemo } from "react";
+import { type ComponentProps, useMemo, useState } from "react";
 import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
@@ -42,7 +42,9 @@ const styles = StyleSheet.create((theme, rt) => ({
 
 	//approximate so that the list start below controls
 	//putting the actual controls in the ListHeaderComponent causes the dropdown to be misplaced
-	listHeader: { height: theme.gap(7.5) },
+	listHeader: (controlsHeight: number | null) => ({
+		height: controlsHeight == null ? theme.gap(8.25) : controlsHeight,
+	}),
 	itemContainer: {
 		variants: {
 			layout: {
@@ -73,6 +75,7 @@ export const InfiniteView = <
 ) => {
 	styles.useVariants({ layout: props.layout });
 	const queryRes = useInfiniteQuery(() => props.query);
+	const [controlsHeight, setControlsHeight] = useState(null as number | null);
 	const firstPage = queryRes.data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = queryRes.items?.length ?? 0;
@@ -90,7 +93,10 @@ export const InfiniteView = <
 	useSetKeyIllustrationFromInfiniteQuery(props.query);
 	return (
 		<View style={[styles.rootStyle, props.containerStyle]}>
-			<View style={styles.controls}>
+			<View
+				style={styles.controls}
+				onLayout={(e) => setControlsHeight(e.nativeEvent.layout.height)}
+			>
 				<Controls {...props.controls} />
 			</View>
 			{firstPage?.length === 0 ? (
@@ -106,7 +112,9 @@ export const InfiniteView = <
 					onEndReached={() => queryRes.fetchNextPage()}
 					stickyHeaderIndices={[0]}
 					stickyHeaderHiddenOnScroll
-					ListHeaderComponent={<View style={styles.listHeader} />}
+					ListHeaderComponent={
+						<View style={styles.listHeader(controlsHeight)} />
+					}
 					renderItem={({ item }) => {
 						return (
 							<View style={styles.itemContainer}>
