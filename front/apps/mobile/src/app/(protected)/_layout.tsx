@@ -38,7 +38,6 @@ const styles = StyleSheet.create((theme) => ({
 	//TODO Blur bg of navbar
 	screen: { backgroundColor: "transparent", flex: 1 },
 	tabBar: {
-		position: "absolute",
 		paddingTop: theme.gap(1),
 		backgroundColor: theme.colors.background,
 	},
@@ -71,7 +70,6 @@ export default function ProtectedLayout() {
 		return <Redirect href="/auth" />;
 	}
 	//TODO Proper handling of when user is loading
-	//TODO Remove warning saying that tabs should be first child
 	return (
 		<Tabs
 			screenOptions={{
