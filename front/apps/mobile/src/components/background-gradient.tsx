@@ -20,6 +20,7 @@ import {
 } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
+import { accessTokenAtom } from "~/state/user";
 
 //TODO Check it looks good in dark mode
 
@@ -59,6 +60,7 @@ export const useSetKeyIllustrationFromInfiniteQuery = <
 const transitionDuration = 300;
 
 export const BackgroundGradient = () => {
+	const accessToken = useAtomValue(accessTokenAtom);
 	const keyIllustration = useAtomValue(keyIllustrationAtom);
 	const currentColor1 = useSharedValue("transparent");
 	const currentColor2 = useSharedValue("transparent");
@@ -66,6 +68,15 @@ export const BackgroundGradient = () => {
 	const currentColor4 = useSharedValue("transparent");
 	const currentColor5 = useSharedValue("transparent");
 
+	useEffect(() => {
+		if (!accessToken) {
+			currentColor1.value = "transparent";
+			currentColor2.value = "transparent";
+			currentColor3.value = "transparent";
+			currentColor4.value = "transparent";
+			currentColor5.value = "transparent";
+		}
+	}, [accessToken]);
 	useEffect(() => {
 		if (keyIllustration) {
 			currentColor1.value = withTiming(keyIllustration.colors[0], {
