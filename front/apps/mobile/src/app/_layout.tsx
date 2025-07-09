@@ -38,9 +38,9 @@ import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
+import { BackgroundGradient } from "~/components/background-gradient";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
-import { appThemes } from "~/theme";
 import resources from "../../../../translations";
 
 SplashScreen.preventAutoHideAsync();
@@ -100,10 +100,7 @@ export default function RootLayout() {
 					screenOptions={{
 						headerShown: false,
 						contentStyle: {
-							backgroundColor: (colorScheme === "light"
-								? appThemes.light
-								: appThemes.dark
-							).colors.background,
+							backgroundColor: "transparent",
 							flex: 1,
 						},
 						//TODO give the status bar a background
@@ -111,6 +108,7 @@ export default function RootLayout() {
 							colorScheme === "light" ? "dark" : "light",
 					}}
 				/>
+				<BackgroundGradient />
 			</Provider>
 			<ToastManager
 				theme={colorScheme}
