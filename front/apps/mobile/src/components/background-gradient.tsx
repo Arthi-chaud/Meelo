@@ -22,7 +22,7 @@ import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { accessTokenAtom } from "~/state/user";
 
-//TODO Check it looks good in dark mode
+//TODO make gradient darker on dark mode
 
 export const keyIllustrationAtom = atom<Illustration | null>(null);
 

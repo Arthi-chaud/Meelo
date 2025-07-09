@@ -8,26 +8,21 @@ import { useInfiniteQuery } from "~/api";
 import { LoadableText } from "~/components/loadable_text";
 import { EmptyState } from "../empty-state";
 
-// TODO Add option to Hide section if empty query res
-
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
 	header: string;
 	style?: ViewStyle;
 	render: (item: T | undefined) => React.ReactElement;
+	hideIfEmpty?: true;
 };
 
 export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 	query,
-	header,
-	render,
-	style,
+	...props
 }: Props<T0, T>) => {
-	const flatListRef = createRef<FlatList<unknown>>();
-	const { data, items, isFetching, isFetchingNextPage, fetchNextPage } =
+	const { items, isFetching, isFetchingNextPage, fetchNextPage } =
 		useInfiniteQuery(() => query);
 
-	const firstPage = data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = items?.length ?? 0;
 		if ((isFetching && !itemCount) || isFetchingNextPage) {
@@ -36,44 +31,88 @@ export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 		return items ?? [undefined];
 	}, [items, isFetching, isFetchingNextPage]);
 	return (
-		<View style={[styles.root, style]}>
-			<TouchableOpacity
-				touchSoundDisabled
-				style={styles.header}
-				onPress={() =>
-					flatListRef.current?.scrollToIndex({
-						animated: true,
-						index: 0,
-					})
-				}
-			>
-				<LoadableText
-					variant="h4"
-					skeletonWidth={header.length}
-					content={items === undefined ? undefined : header}
-				/>
-			</TouchableOpacity>
-			{firstPage?.length !== 0 ? (
-				<ResponsiveFlatList
-					horizontal
-					ref={flatListRef}
-					data={itemList}
-					contentContainerStyle={styles.row}
-					onEndReached={() => fetchNextPage()}
-					renderItem={({ item, index }) => {
-						return (
-							<View style={[styles.item(index)]}>
-								{render(item as T | undefined)}
-							</View>
-						);
-					}}
-				/>
-			) : (
-				<View style={styles.emptyState}>
-					<EmptyState />
-				</View>
-			)}
-		</View>
+		<RowBase
+			{...props}
+			items={itemList}
+			onEndReached={() => fetchNextPage()}
+		/>
+	);
+};
+
+export const Row = <T extends Resource>({
+	items,
+	...props
+}: { items: T[] | undefined } & Pick<
+	Props<T, T>,
+	"header" | "render" | "style" | "hideIfEmpty"
+>) => {
+	const itemList = useMemo(() => {
+		return items ?? [undefined];
+	}, [items]);
+
+	return <RowBase {...props} items={itemList} />;
+};
+
+type BaseProps<T> = {
+	items?: (T | undefined)[];
+	header: string;
+	style?: ViewStyle;
+	render: (item: T | undefined) => React.ReactElement;
+	onEndReached?: () => void;
+	hideIfEmpty?: true;
+};
+
+const RowBase = <T,>({
+	items,
+	header,
+	hideIfEmpty,
+	style,
+	render,
+	onEndReached,
+}: BaseProps<T>) => {
+	const flatListRef = createRef<FlatList<unknown>>();
+
+	return (
+		(!hideIfEmpty || (items && items.length > 0)) && (
+			<View style={[styles.root, style]}>
+				<TouchableOpacity
+					touchSoundDisabled
+					style={styles.header}
+					onPress={() =>
+						flatListRef.current?.scrollToIndex({
+							animated: true,
+							index: 0,
+						})
+					}
+				>
+					<LoadableText
+						variant="h4"
+						skeletonWidth={header.length}
+						content={items === undefined ? undefined : header}
+					/>
+				</TouchableOpacity>
+				{items?.length !== 0 ? (
+					<ResponsiveFlatList
+						horizontal
+						ref={flatListRef}
+						data={items}
+						onEndReached={onEndReached}
+						contentContainerStyle={styles.row}
+						renderItem={({ item, index }) => {
+							return (
+								<View style={[styles.item(index)]}>
+									{render(item as T | undefined)}
+								</View>
+							);
+						}}
+					/>
+				) : (
+					<View style={styles.emptyState}>
+						<EmptyState />
+					</View>
+				)}
+			</View>
+		)
 	);
 };
 
@@ -81,7 +120,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 	root: { display: "flex", alignItems: "flex-start" },
 	emptyState: {
 		aspectRatio: 2.5, // TODO this an approximate, would be nice to compute this correctly
-		borderWidth: 1,
 		width: "100%",
 	},
 	header: {
@@ -91,7 +129,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 		borderRadius: theme.borderRadius,
 		overflow: "hidden",
 	},
-	row: { gap: theme.gap(0.5) },
+	row: { gap: theme.gap(0.5), paddingRight: theme.gap(1) },
 	item: (itemIndex: number) => ({
 		marginLeft: itemIndex === 0 ? theme.gap(1) : 0,
 		// @ts-expect-error

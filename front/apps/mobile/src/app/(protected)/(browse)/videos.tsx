@@ -60,6 +60,7 @@ export default function VideoBrowseView() {
 			render={(video) => (
 				<Item
 					video={video}
+					subtitle="artistName"
 					illustrationProps={{
 						simpleColorPlaceholder: true,
 						normalizedThumbnail: true,
