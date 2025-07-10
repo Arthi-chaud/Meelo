@@ -46,7 +46,7 @@ func pushMetadata(fileFullPath string, m internal.Metadata, c config.Config, w *
 			}
 			err := api.PostLyrics(c, created.SongId, m.PlainLyrics, syncedLyrics)
 			if err != nil {
-				log.Fatal().Msg("Could not POST lyrics")
+				log.Error().Msg("Could not POST lyrics")
 				log.Trace().Msg(err.Error())
 			}
 		}
