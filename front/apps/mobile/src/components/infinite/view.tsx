@@ -22,7 +22,7 @@ import { Controls } from "./controls/component";
 //TODO Grid: when page fetched, the item on the last line is resized + rerendered
 //TODO Grid: Performance
 
-//TODO Tap header toscroll to top
+//TODO Button to scroll back up
 
 const styles = StyleSheet.create((theme, rt) => ({
 	rootStyle: {

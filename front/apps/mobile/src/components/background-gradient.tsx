@@ -168,7 +168,7 @@ const styles = StyleSheet.create((theme) => ({
 	canvas: {
 		position: "absolute",
 		left: 0,
-		zIndex: -1, //TODO
+		zIndex: -1,
 		right: 0,
 		top: 0,
 		flex: 1,
