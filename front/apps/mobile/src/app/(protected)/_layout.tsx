@@ -74,6 +74,7 @@ export default function ProtectedLayout() {
 	//TODO Proper handling of when user is loading
 	return (
 		<Tabs
+			initialRouteName="(home)"
 			screenOptions={{
 				headerShown: false,
 				tabBarShowLabel: false,
@@ -83,7 +84,7 @@ export default function ProtectedLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="(home)/index"
+				name="(home)"
 				options={{
 					title: t("nav.home"),
 					tabBarIcon: ({ focused }) => (
@@ -117,11 +118,6 @@ export default function ProtectedLayout() {
 						<TabIcon icon={SettingsIcon} focused={focused} />
 					),
 				}}
-			/>
-
-			<Tabs.Screen
-				name="(home)/artists/[id]"
-				options={{ headerTitle: "", href: null }}
 			/>
 		</Tabs>
 	);
