@@ -17,7 +17,7 @@
  */
 
 import type { ComponentProps } from "react";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { View } from "react-native";
 import { Text, TextSkeleton } from "~/primitives/text";
 
 type Props = Omit<ComponentProps<typeof Text>, "content" | "children"> & {
@@ -27,20 +27,14 @@ type Props = Omit<ComponentProps<typeof Text>, "content" | "children"> & {
 
 export const LoadableText = ({ content, ...props }: Props) => {
 	return (
-		<>
+		<View>
 			{content === undefined && (
-				<Animated.View entering={FadeIn} exiting={FadeOut}>
-					<TextSkeleton
-						variant={props.variant}
-						width={props.skeletonWidth}
-					/>
-				</Animated.View>
+				<TextSkeleton
+					variant={props.variant}
+					width={props.skeletonWidth}
+				/>
 			)}
-			{content !== undefined && (
-				<Animated.View entering={FadeIn} exiting={FadeOut}>
-					<Text {...props}>{content}</Text>
-				</Animated.View>
-			)}
-		</>
+			{content !== undefined && <Text {...props}>{content}</Text>}
+		</View>
 	);
 };
