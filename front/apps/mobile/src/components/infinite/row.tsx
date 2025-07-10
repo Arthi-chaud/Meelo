@@ -71,7 +71,6 @@ const RowBase = <T,>({
 	onEndReached,
 }: BaseProps<T>) => {
 	const flatListRef = createRef<FlatList<unknown>>();
-
 	return (
 		(!hideIfEmpty || (items && items.length > 0)) && (
 			<View style={[styles.root, style]}>
@@ -88,7 +87,11 @@ const RowBase = <T,>({
 					<LoadableText
 						variant="h4"
 						skeletonWidth={header.length}
-						content={items === undefined ? undefined : header}
+						content={
+							items === undefined || items.includes(undefined)
+								? undefined
+								: header
+						}
 					/>
 				</TouchableOpacity>
 				{items?.length !== 0 ? (
