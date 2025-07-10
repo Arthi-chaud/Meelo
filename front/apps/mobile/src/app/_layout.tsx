@@ -105,7 +105,7 @@ export default function RootLayout() {
 							contentStyle: {
 								flex: 1,
 							},
-							//TODO give the status bar a background
+							//TODO give the status bar a background when no header
 							statusBarStyle:
 								colorScheme === "light" ? "dark" : "light",
 						}}
