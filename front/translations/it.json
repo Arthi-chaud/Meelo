@@ -5,6 +5,7 @@
 			"modalTitle": "Seleziona una playlist"
 		},
 		"album": {
+			"changeType": "Cambia tipo di album",
 			"goToAlbum": "Vai all'album"
 		},
 		"archive": "Archivia",
@@ -49,6 +50,7 @@
 		"song": {
 			"changeType": "Cambia genere del brano",
 			"mergeSong": {
+				"label": "Unire canzoni",
 				"modalTitle": "Seleziona un brano",
 				"warningBeforeMerging": "Tutti i brani verrano reassegnati al brano selezionato, e il brano vecchio verrà cancellato. I tuoi file non verranno modificati o rimossi"
 			},
@@ -66,6 +68,73 @@
 			"changeType": "Cambia tipo di video"
 		},
 		"warningModalTitle": "Attenzione"
+	},
+	"album": {
+		"bonusTracks": "Canzoni aggiuntive",
+		"onThisAlbum": "Artista in evidenza",
+		"otherAlbumReleases": "Altri rilasci dello stesso album",
+		"relatedAlbums": "Album simili",
+		"showAllTracks": "Visualizza tutte le canzoni",
+		"showOnlyExclusiveTracks": "Visualizza solo le cazoni esclusive"
+	},
+	"albumType": {
+		"compilation_0": "Raccolta",
+		"compilation_1": "Raccolte",
+		"compilation_2": "Raccolte",
+		"ep_0": "EP",
+		"ep_1": "EPs",
+		"ep_2": "EPs",
+		"liveRecording_0": "Registrazione dal vivo",
+		"liveRecording_1": "Album dal vivo",
+		"liveRecording_2": "Album dal vivo",
+		"remixAlbum_0": "Remix",
+		"remixAlbum_1": "Remixes",
+		"remixAlbum_2": "Remixes",
+		"single_0": "Singolo",
+		"single_1": "Singoli",
+		"single_2": "Singoli",
+		"soundtrack_0": "Brano",
+		"soundtrack_1": "Album di brani",
+		"soundtrack_2": "Album di brani",
+		"studioRecording_0": "Registrazione in studio",
+		"studioRecording_1": "Album registrati in studio",
+		"studioRecording_2": "Album registrati in studio",
+		"videoAlbum_0": "Album Video",
+		"videoAlbum_1": "Album Video",
+		"videoAlbum_2": "Album Video"
+	},
+	"artist": {
+		"appearsOn": "Appare in",
+		"rareSongs": "Brani rari",
+		"topSongs": "Brani migliori",
+		"topVideos": "Video migliori"
+	},
+	"auth": {
+		"signin": "Hai già un account? Accedi",
+		"signup": "Sei nuovo? Registrati"
+	},
+	"browsing": {
+		"controls": {
+			"asc": "In ordine crescente",
+			"backToTop": "Torna in alto",
+			"changeLayout": "Cambia layout",
+			"desc": "In ordine decrescente",
+			"filter": {
+				"allLibraries": "Tutte le collezioni",
+				"allTypes": "Tutti i tipi",
+				"nTypes": "{{n}} Tipi"
+			},
+			"groupVersions": "Gruppo di versioni",
+			"order": "Ordina",
+			"showAllSongs": "Visualizza tutte le versioni",
+			"sort": {
+				"addDate": "Aggiungi una data",
+				"albumCount": "Numero di album",
+				"artistName": "Nome dell'artista",
+				"bitrate": "Bitrate",
+				"bpm": "BPM"
+			}
+		}
 	},
 	"form": {
 		"auth": {
