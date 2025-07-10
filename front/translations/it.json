@@ -139,9 +139,28 @@
 				"name": "Titolo",
 				"registrationDate": "Data di registrazione",
 				"releaseDate": "Data di rilascio",
-				"releaseName": "Nome dell’uscita"
-			}
-		}
+				"releaseName": "Nome del disco",
+				"songCount": "Numero di brani",
+				"totalPlayCount": "Numero totale di riproduzioni",
+				"trackCount": "Numero di tracce",
+				"trackIndex": "Indice traccia",
+				"userPlayCount": "Numero di riproduzioni personali"
+			},
+			"sortBy": "Ordina per"
+		},
+		"sections": {
+			"about": "Informazioni",
+			"extras": "Extras",
+			"featuredOnPlaylists": "Apparso su",
+			"livePerformances": "Concerti dal vivo",
+			"musicVideos": "Video musicali"
+		},
+		"seeAll": "Visualizza tutto"
+	},
+	"compilationArtistLabel": "Raccolta",
+	"emptyState": {
+		"default": "Non è stato trovato niente…",
+		"home": "Oh wow, è silenzioso qua.."
 	},
 	"form": {
 		"auth": {
