@@ -39,6 +39,8 @@ const styles = StyleSheet.create((theme) => ({
 	screen: { backgroundColor: "transparent", flex: 1 },
 	tabBar: {
 		paddingTop: theme.gap(1),
+		borderTopLeftRadius: theme.borderRadius,
+		borderTopRightRadius: theme.borderRadius,
 		backgroundColor: theme.colors.background,
 	},
 }));
