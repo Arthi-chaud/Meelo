@@ -160,7 +160,26 @@
 	"compilationArtistLabel": "Raccolta",
 	"emptyState": {
 		"default": "Non è stato trovato niente…",
-		"home": "Oh wow, è silenzioso qua.."
+		"home": "Oh wow, è silenzioso qua…",
+		"lyrics": "Nessun testo da cantare insieme :(",
+		"playlist": "Non ci sono canzoni in questa playlist... per ora!",
+		"playlists": "Non ci sono playlist... per ora!"
+	},
+	"errors": {
+		"errorOccured": "Oops... C'è stato un errore",
+		"oops": "Oops",
+		"pageNotFound": "Oops... Pagina non trovata"
+	},
+	"fileInfo": {
+		"bitRate": "Bit Rate",
+		"bpm": "BPM",
+		"duration": "Durata",
+		"extension": "Estensione",
+		"name": "Nome",
+		"path": "Percorso del file",
+		"registrationDate": "Data di registrazione",
+		"type": "Tipo",
+		"unknown": "Sconosciuto"
 	},
 	"form": {
 		"auth": {
@@ -205,7 +224,16 @@
 		"newlyAddedAlbums": "Ultimi album aggiunti",
 		"newlyAddedArtists": "Ultimi artisti aggiunti",
 		"newlyAddedReleases": "Ultime uscite aggiunte",
-		"topGenres": "Generi più popolari"
+		"topGenres": "Generi più popolari",
+		"topLabels": "Etichette più importanti"
+	},
+	"keyboardBindings": {
+		"closePlayer": "Chiudi player",
+		"goToSearchPage": "Vai alla pagina di ricerca",
+		"goToSettingsPage": "Vai alle Impostazioni",
+		"modalTitle": "Tasti rapidi",
+		"openClosePlayer": "Apri / Chiudi player",
+		"openModalShortcutDescription": "Apri / Chiudi questa finestra"
 	},
 	"models": {
 		"album": "Album",
