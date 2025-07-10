@@ -13,7 +13,9 @@
 			"@/state/*": ["../../../packages/state/src/*"],
 			"@/components/*": ["../../../packages/components/src/*"],
 			"@/ui/*": ["../../../packages/ui/src/*"],
-			"@/infinite-controls/*": ["../../../packages/infinite-controls/src/*"]
+			"@/infinite-controls/*": [
+				"../../../packages/infinite-controls/src/*"
+			]
 		}
 	},
 	"include": [

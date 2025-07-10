@@ -17,7 +17,7 @@
  */
 
 import { useLayoutControl as useLayoutControlBase } from "@/infinite-controls/layout";
-import { type LayoutOption } from "@/models/layout";
+import type { LayoutOption } from "@/models/layout";
 
 // Hook to get Layout data to pass to Controls
 export const useLayoutControl = ({
