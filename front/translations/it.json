@@ -132,7 +132,14 @@
 				"albumCount": "Numero di album",
 				"artistName": "Nome dell'artista",
 				"bitrate": "Bitrate",
-				"bpm": "BPM"
+				"bpm": "BPM",
+				"creationDate": "Data di creazione",
+				"discIndex": "Numero disco",
+				"entryCount": "Numero di voci",
+				"name": "Titolo",
+				"registrationDate": "Data di registrazione",
+				"releaseDate": "Data di rilascio",
+				"releaseName": "Nome dell’uscita"
 			}
 		}
 	},
