@@ -56,11 +56,11 @@ export default function Root() {
 		{ sortBy: "releaseDate", order: "desc" },
 		["illustration", "artist"],
 	);
+	const rootStyle = useRootViewStyle();
 	const { t } = useTranslation();
-	const pageStyle = useRootViewStyle();
 	useSetKeyIllustrationFromInfiniteQuery(newlyAddedAlbums);
 	return (
-		<ScrollView style={[styles.main, pageStyle]}>
+		<ScrollView style={[styles.main, rootStyle]}>
 			<Text content={t("nav.home")} style={styles.title} variant="h2" />
 			<InfiniteRow
 				style={styles.section}
