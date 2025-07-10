@@ -5551,6 +5551,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-blur@npm:^14.1.5":
+  version: 14.1.5
+  resolution: "expo-blur@npm:14.1.5"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/4ffe9014219f23d53f66bc61ea5d00b74a012d120f94a810c71cbdd34901900282a40f7d0636877cd261bc7ff8a3db20da2e0be9393b1a950b8fc677e285bf65
+  languageName: node
+  linkType: hard
+
 "expo-build-properties@npm:^0.14.6":
   version: 0.14.6
   resolution: "expo-build-properties@npm:0.14.6"
@@ -8062,6 +8073,7 @@ __metadata:
     api: "workspace:^"
     expo: "npm:~53.0.9"
     expo-asset: "npm:~11.1.5"
+    expo-blur: "npm:^14.1.5"
     expo-build-properties: "npm:^0.14.6"
     expo-constants: "npm:~17.1.6"
     expo-dev-client: "npm:~5.1.8"
