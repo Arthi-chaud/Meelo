@@ -16,14 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAlbums, getArtists } from "@/api/queries";
+import { getAlbums, getArtists, getReleases } from "@/api/queries";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useSetKeyIllustrationFromInfiniteQuery } from "~/components/background-gradient";
 import { InfiniteRow } from "~/components/infinite/row";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
+import ReleaseTile from "~/components/tile/resource/release";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Text } from "~/primitives/text";
 
@@ -36,31 +37,34 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 //TODO header on scroll
-//TODO when loading a row s unmounted?
+//
+
+const newlyAddedAlbums = getAlbums({}, { sortBy: "addDate", order: "desc" }, [
+	"illustration",
+	"artist",
+]);
+
+const newlyAddedArtists = getArtists({}, { sortBy: "addDate", order: "desc" }, [
+	"illustration",
+]);
+
+const latestAlbums = getAlbums({}, { sortBy: "releaseDate", order: "desc" }, [
+	"illustration",
+	"artist",
+]);
+
+const newlyAddedReleases = getReleases(
+	{},
+	{ sortBy: "addDate", order: "desc" },
+	["illustration"],
+);
 
 export default function Root() {
-	const newlyAddedAlbums = getAlbums(
-		{},
-		{ sortBy: "addDate", order: "desc" },
-		["illustration", "artist"],
-	);
-
-	const newlyAddedArtists = getArtists(
-		{},
-		{ sortBy: "addDate", order: "desc" },
-		["illustration"],
-	);
-
-	const latestAlbums = getAlbums(
-		{},
-		{ sortBy: "releaseDate", order: "desc" },
-		["illustration", "artist"],
-	);
 	const rootStyle = useRootViewStyle();
 	const { t } = useTranslation();
 	useSetKeyIllustrationFromInfiniteQuery(newlyAddedAlbums);
 	return (
-		<ScrollView style={[styles.main, rootStyle]}>
+		<ScrollView style={[styles.main]} contentContainerStyle={rootStyle}>
 			<Text content={t("nav.home")} style={styles.title} variant="h2" />
 			<InfiniteRow
 				style={styles.section}
@@ -89,7 +93,15 @@ export default function Root() {
 					return <AlbumTile album={album} />;
 				}}
 			/>
-			<View style={{ height: 1000 }} />
+
+			<InfiniteRow
+				style={styles.section}
+				header={t("home.newlyAddedReleases")}
+				query={newlyAddedReleases}
+				render={(release) => {
+					return <ReleaseTile release={release} />;
+				}}
+			/>
 
 			{/* TODO Newly added releases*/}
 
