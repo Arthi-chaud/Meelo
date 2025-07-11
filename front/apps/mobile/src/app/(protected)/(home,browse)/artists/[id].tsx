@@ -1,4 +1,4 @@
-import { getAlbums, getArtist, getVideos } from "@/api/queries";
+import { getAlbums, getArtist, getSongs, getVideos } from "@/api/queries";
 import { AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
@@ -11,15 +11,21 @@ import { useInfiniteQuery, useQuery } from "~/api";
 import { Illustration } from "~/components/illustration";
 import { InfiniteRow, Row } from "~/components/infinite/row";
 import { LoadableText } from "~/components/loadable_text";
+import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { VideoTile } from "~/components/tile/resource/video";
-
-//TODO Header when coming from home
 
 export default function ArtistView() {
 	const { id } = useLocalSearchParams();
 	const { t } = useTranslation();
 	const artistId = id.toString();
+	const topSongs = useInfiniteQuery(() =>
+		getSongs(
+			{ artist: artistId },
+			{ sortBy: "totalPlayCount", order: "desc" },
+			["artist", "featuring", "master", "illustration"],
+		),
+	);
 	const videos = useInfiniteQuery(() =>
 		getVideos({ artist: artistId }, { sortBy: "addDate", order: "desc" }, [
 			"artist",
@@ -45,7 +51,17 @@ export default function ArtistView() {
 			<Stack.Screen options={{ headerTitle: "", headerShown: true }} />
 			<ScrollView style={styles.root}>
 				<Header artistId={artistId} />
-				{/*TODO Song grid*/}
+				<SongGrid
+					header={t("artist.topSongs")}
+					style={styles.section}
+					songs={topSongs.data?.pages.at(0)?.items}
+					subtitle={(song) =>
+						song.artistId.toString() === artistId &&
+						song.featuring.length === 0
+							? null
+							: "artists"
+					}
+				/>
 				{AlbumType.map((albumType) => (
 					<InfiniteRow
 						hideIfEmpty

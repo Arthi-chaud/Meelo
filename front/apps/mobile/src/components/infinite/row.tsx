@@ -16,6 +16,8 @@ type Props<T0, T> = {
 	hideIfEmpty?: true;
 };
 
+//TODO Add 'see all' button
+
 export const InfiniteRow = <T0 extends Resource, T extends Resource>({
 	query,
 	...props

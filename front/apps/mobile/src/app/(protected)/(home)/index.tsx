@@ -16,12 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAlbums, getArtists, getReleases } from "@/api/queries";
+import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
 import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { useInfiniteQuery } from "~/api";
 import { useSetKeyIllustrationFromInfiniteQuery } from "~/components/background-gradient";
 import { InfiniteRow } from "~/components/infinite/row";
+import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
 import ReleaseTile from "~/components/tile/resource/release";
@@ -37,7 +39,6 @@ const styles = StyleSheet.create((theme) => ({
 }));
 
 //TODO header on scroll
-//
 
 const newlyAddedAlbums = getAlbums({}, { sortBy: "addDate", order: "desc" }, [
 	"illustration",
@@ -63,6 +64,15 @@ export default function Root() {
 	const rootStyle = useRootViewStyle();
 	const { t } = useTranslation();
 	useSetKeyIllustrationFromInfiniteQuery(newlyAddedAlbums);
+
+	const topSongs = useInfiniteQuery(() =>
+		getSongs({}, { sortBy: "userPlayCount", order: "desc" }, [
+			"artist",
+			"featuring",
+			"master",
+			"illustration",
+		]),
+	);
 	return (
 		<ScrollView style={[styles.main]} contentContainerStyle={rootStyle}>
 			<Text content={t("nav.home")} style={styles.title} variant="h2" />
@@ -103,11 +113,14 @@ export default function Root() {
 				}}
 			/>
 
-			{/* TODO Newly added releases*/}
-
 			{/* TODO Genres*/}
 
-			{/* TODO Most played songs*/}
+			<SongGrid
+				header={t("home.mostPlayedSongs")}
+				songs={topSongs.data?.pages.at(0)?.items}
+				subtitle={() => "artists"}
+				style={styles.section}
+			/>
 		</ScrollView>
 	);
 }

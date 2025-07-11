@@ -17,6 +17,8 @@ type Props = {
 	>;
 } & RequireExactlyOne<{ href: Href | null; onPress: (() => void) | null }>;
 
+//TODO Ripple or visual feedback on press
+
 export const ListItem = ({
 	title,
 	subtitle,
