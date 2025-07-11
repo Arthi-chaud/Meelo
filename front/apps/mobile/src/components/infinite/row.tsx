@@ -88,7 +88,7 @@ const RowBase = <T,>({
 						variant="h4"
 						skeletonWidth={header.length}
 						content={
-							items === undefined || items.includes(undefined)
+							items === undefined || items[0] === undefined
 								? undefined
 								: header
 						}
@@ -97,6 +97,8 @@ const RowBase = <T,>({
 				{items?.length !== 0 ? (
 					<ResponsiveFlatList
 						horizontal
+						snapToAlignment="start"
+						decelerationRate={"fast"}
 						ref={flatListRef}
 						data={items}
 						onEndReached={onEndReached}
@@ -143,4 +145,10 @@ const styles = StyleSheet.create((theme, rt) => ({
 const ResponsiveFlatList = withUnistyles(FlatList, (theme, rt) => ({
 	// @ts-expect-error
 	initialNumToRender: theme.layout.grid.columnCount[rt.breakpoint!],
+	snapToInterval:
+		// TODO The interval is not correct,
+		// the further we scroll the more the snap position is shifted to the left
+		theme.gap(0.5) +
+		// @ts-expect-error
+		rt.screen.width / theme.layout.grid.columnCount[rt.breakpoint!],
 }));
