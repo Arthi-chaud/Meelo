@@ -4,9 +4,8 @@ import type React from "react";
 import { createRef, useMemo } from "react";
 import { FlatList, TouchableOpacity, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import { useInfiniteQuery } from "~/api";
+import { EmptyState } from "~/components/empty-state";
 import { LoadableText } from "~/components/loadable_text";
-import { EmptyState } from "../empty-state";
 
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
@@ -17,30 +16,7 @@ type Props<T0, T> = {
 };
 
 //TODO Add 'see all' button
-
-export const InfiniteRow = <T0 extends Resource, T extends Resource>({
-	query,
-	...props
-}: Props<T0, T>) => {
-	const { items, isFetching, isFetchingNextPage, fetchNextPage } =
-		useInfiniteQuery(() => query);
-
-	const itemList = useMemo(() => {
-		const itemCount = items?.length ?? 0;
-		if ((isFetching && !itemCount) || isFetchingNextPage) {
-			return [...(items ?? []), undefined];
-		}
-		return items ?? [undefined];
-	}, [items, isFetching, isFetchingNextPage]);
-	return (
-		<RowBase
-			{...props}
-			items={itemList}
-			onEndReached={() => fetchNextPage()}
-		/>
-	);
-};
-
+//
 export const Row = <T extends Resource>({
 	items,
 	...props
@@ -100,7 +76,7 @@ const RowBase = <T,>({
 					<ResponsiveFlatList
 						horizontal
 						snapToAlignment="start"
-						decelerationRate={"fast"}
+						decelerationRate={"normal"}
 						ref={flatListRef}
 						data={items}
 						onEndReached={onEndReached}
@@ -154,3 +130,27 @@ const ResponsiveFlatList = withUnistyles(FlatList, (theme, rt) => ({
 		// @ts-expect-error
 		rt.screen.width / theme.layout.grid.columnCount[rt.breakpoint!],
 }));
+
+// export const InfiniteRow = <T0 extends Resource, T extends Resource>({
+// 	query,
+// 	...props
+// }: Props<T0, T>) => {
+// 	const { items, isFetching, isFetchingNextPage, fetchNextPage } =
+// 		useInfiniteQuery(() => query);
+//
+// 	const itemList = useMemo(() => {
+// 		const itemCount = items?.length ?? 0;
+// 		if ((isFetching && !itemCount) || isFetchingNextPage) {
+// 			return [...(items ?? []), undefined];
+// 		}
+// 		return items ?? [undefined];
+// 	}, [items, isFetching, isFetchingNextPage]);
+// 	return (
+// 		<RowBase
+// 			{...props}
+// 			items={itemList}
+// 			onEndReached={() => fetchNextPage()}
+// 		/>
+// 	);
+// };
+//
