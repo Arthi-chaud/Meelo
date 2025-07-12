@@ -76,12 +76,12 @@ export const SongGrid = ({
 					ref={scrollViewRef}
 					style={styles.scrollView}
 				>
-					{chunks.map((chunk, idx) => (
+					{chunks.map((chunk, chunkIdx) => (
 						<View
-							key={idx}
+							key={chunkIdx}
 							style={styles.column(
-								idx,
-								idx === chunks.length - 1,
+								chunkIdx,
+								chunkIdx === chunks.length - 1,
 							)}
 						>
 							{chunk.map((item, idx) => (
@@ -107,7 +107,7 @@ export const SongGrid = ({
 										}
 									/>
 
-									{idx !== ItemsPerColumn - 1 && (
+									{idx !== chunk.length - 1 && (
 										<Divider h withInsets />
 									)}
 								</Fragment>
