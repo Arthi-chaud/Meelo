@@ -9,8 +9,8 @@ import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { Illustration } from "~/components/illustration";
-import { InfiniteRow, Row } from "~/components/infinite/row";
 import { LoadableText } from "~/components/loadable_text";
+import { Row } from "~/components/row";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { VideoTile } from "~/components/tile/resource/video";
@@ -33,6 +33,13 @@ export default function ArtistView() {
 			"illustration",
 		]),
 	);
+	const relatedAlbums = useInfiniteQuery(() =>
+		getAlbums(
+			{ appearance: artistId },
+			{ sortBy: "releaseDate", order: "desc" },
+			["artist", "illustration"],
+		),
+	);
 	const { musicVideos, liveVideos, extras } = useMemo(() => {
 		return {
 			musicVideos: videos.items?.filter(
@@ -48,6 +55,7 @@ export default function ArtistView() {
 
 	return (
 		<>
+			{/* TODO Duplicated header when from home tab */}
 			<Stack.Screen options={{ headerTitle: "", headerShown: true }} />
 			<ScrollView style={styles.root}>
 				<Header artistId={artistId} />
@@ -63,17 +71,10 @@ export default function ArtistView() {
 					}
 				/>
 				{AlbumType.map((albumType) => (
-					<InfiniteRow
-						hideIfEmpty
+					<AlbumTypeRow
 						key={albumType}
-						style={styles.section}
-						header={t(albumTypeToTranslationKey(albumType, true))}
-						query={getAlbums(
-							{ artist: artistId, type: [albumType] },
-							{ sortBy: "releaseDate", order: "desc" },
-							["illustration", "artist"],
-						)}
-						render={(item) => <AlbumTile album={item} />}
+						artistId={artistId}
+						type={albumType}
 					/>
 				))}
 				{(
@@ -100,15 +101,11 @@ export default function ArtistView() {
 						)}
 					/>
 				))}
-				<InfiniteRow
+				<Row
 					hideIfEmpty
 					style={styles.section}
 					header={t("artist.appearsOn")}
-					query={getAlbums(
-						{ appearance: artistId },
-						{ sortBy: "releaseDate", order: "desc" },
-						["artist", "illustration"],
-					)}
+					items={relatedAlbums.items}
 					render={(album) => <AlbumTile album={album} />}
 				/>
 
@@ -118,6 +115,29 @@ export default function ArtistView() {
 		</>
 	);
 }
+
+const AlbumTypeRow = ({
+	type: albumType,
+	artistId,
+}: { type: AlbumType; artistId: string }) => {
+	const { t } = useTranslation();
+	const query = useInfiniteQuery(() =>
+		getAlbums(
+			{ artist: artistId, type: [albumType] },
+			{ sortBy: "releaseDate", order: "desc" },
+			["illustration", "artist"],
+		),
+	);
+	return (
+		<Row
+			hideIfEmpty
+			style={styles.section}
+			header={t(albumTypeToTranslationKey(albumType, true))}
+			items={query.items}
+			render={(item) => <AlbumTile album={item} />}
+		/>
+	);
+};
 
 const Header = ({ artistId }: { artistId: string }) => {
 	const { data: artist } = useQuery(() =>

@@ -21,17 +21,15 @@ import { useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
-import { useSetKeyIllustrationFromInfiniteQuery } from "~/components/background-gradient";
-import { InfiniteRow } from "~/components/infinite/row";
+import { useSetKeyIllustration } from "~/components/background-gradient";
+import { Row } from "~/components/row";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
 import ReleaseTile from "~/components/tile/resource/release";
-import { useRootViewStyle } from "~/hooks/root-view-style";
-import { Text } from "~/primitives/text";
 
 const styles = StyleSheet.create((theme) => ({
-	main: {},
+	main: { paddingTop: theme.gap(2) },
 	section: {
 		paddingBottom: theme.gap(2),
 	},
@@ -40,31 +38,29 @@ const styles = StyleSheet.create((theme) => ({
 
 //TODO header on scroll
 
-const newlyAddedAlbums = getAlbums({}, { sortBy: "addDate", order: "desc" }, [
-	"illustration",
-	"artist",
-]);
-
-const newlyAddedArtists = getArtists({}, { sortBy: "addDate", order: "desc" }, [
-	"illustration",
-]);
-
-const latestAlbums = getAlbums({}, { sortBy: "releaseDate", order: "desc" }, [
-	"illustration",
-	"artist",
-]);
-
-const newlyAddedReleases = getReleases(
-	{},
-	{ sortBy: "addDate", order: "desc" },
-	["illustration"],
-);
-
 export default function Root() {
-	const rootStyle = useRootViewStyle();
 	const { t } = useTranslation();
-	useSetKeyIllustrationFromInfiniteQuery(newlyAddedAlbums);
+	const newlyAddedAlbums = useInfiniteQuery(() =>
+		getAlbums({}, { sortBy: "addDate", order: "desc" }, [
+			"illustration",
+			"artist",
+		]),
+	);
+	const newlyAddedArtists = useInfiniteQuery(() =>
+		getArtists({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
+	);
 
+	const latestAlbums = useInfiniteQuery(() =>
+		getAlbums({}, { sortBy: "releaseDate", order: "desc" }, [
+			"illustration",
+			"artist",
+		]),
+	);
+
+	const newlyAddedReleases = useInfiniteQuery(() =>
+		getReleases({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
+	);
+	useSetKeyIllustration(newlyAddedAlbums.items?.at(0));
 	const topSongs = useInfiniteQuery(() =>
 		getSongs({}, { sortBy: "userPlayCount", order: "desc" }, [
 			"artist",
@@ -74,40 +70,39 @@ export default function Root() {
 		]),
 	);
 	return (
-		<ScrollView style={[styles.main]} contentContainerStyle={rootStyle}>
-			<Text content={t("nav.home")} style={styles.title} variant="h2" />
-			<InfiniteRow
+		<ScrollView contentContainerStyle={[styles.main]}>
+			<Row
 				style={styles.section}
 				header={t("home.newlyAddedAlbums")}
-				query={newlyAddedAlbums}
+				items={newlyAddedAlbums.items}
 				render={(album) => {
 					return <AlbumTile album={album} />;
 				}}
 			/>
 
-			<InfiniteRow
+			<Row
 				style={styles.section}
 				header={t("home.newlyAddedArtists")}
-				query={newlyAddedArtists}
+				items={newlyAddedArtists.items}
 				render={(artist) => {
 					return <ArtistTile artist={artist} />;
 				}}
 			/>
 			{/* TODO Featured albums */}
 
-			<InfiniteRow
+			<Row
 				style={styles.section}
 				header={t("home.latestAlbums")}
-				query={latestAlbums}
+				items={latestAlbums.items}
 				render={(album) => {
 					return <AlbumTile album={album} />;
 				}}
 			/>
 
-			<InfiniteRow
+			<Row
 				style={styles.section}
 				header={t("home.newlyAddedReleases")}
-				query={newlyAddedReleases}
+				items={newlyAddedReleases.items}
 				render={(release) => {
 					return <ReleaseTile release={release} />;
 				}}
