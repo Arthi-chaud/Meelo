@@ -35,15 +35,6 @@ import { useAPI } from "~/api";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
-	//TODO Blur bg of navbar
-	header: {
-		backgroundColor: theme.colors.background,
-	},
-
-	headerTitle: {
-		color: theme.colors.text.primary,
-		...theme.fontStyles.regular,
-	},
 	screen: { backgroundColor: "transparent", flex: 1 },
 	tabBar: {
 		paddingTop: theme.gap(1),
@@ -87,18 +78,13 @@ export default function ProtectedLayout() {
 				headerShown: false,
 				tabBarShowLabel: false,
 				tabBarStyle: styles.tabBar,
-				headerStyle: styles.header,
 				sceneStyle: styles.screen,
-				//TODO DRY with shared routes
-				headerTitleStyle: styles.headerTitle,
-				headerTintColor: styles.headerTitle.color,
 				tabBarButton: TabButton,
 			}}
 		>
 			<Tabs.Screen
 				name="(home)"
 				options={{
-					headerShown: false,
 					title: t("nav.home"),
 					tabBarIcon: ({ focused }) => (
 						<TabIcon icon={HomeIcon} focused={focused} />
@@ -108,7 +94,6 @@ export default function ProtectedLayout() {
 			<Tabs.Screen
 				name="(browse)"
 				options={{
-					headerShown: false,
 					title: t("nav.browse"),
 					tabBarIcon: ({ focused }) => (
 						<TabIcon icon={BrowseIcon} focused={focused} />
@@ -116,9 +101,8 @@ export default function ProtectedLayout() {
 				}}
 			/>
 			<Tabs.Screen
-				name="search"
+				name="(search)"
 				options={{
-					headerShown: true,
 					title: t("nav.search"),
 					tabBarIcon: ({ focused }) => (
 						<TabIcon icon={SearchIcon} focused={focused} />
@@ -128,7 +112,6 @@ export default function ProtectedLayout() {
 			<Tabs.Screen
 				name="settings"
 				options={{
-					headerShown: true,
 					title: t("nav.settings"),
 					tabBarIcon: ({ focused }) => (
 						<TabIcon icon={SettingsIcon} focused={focused} />
