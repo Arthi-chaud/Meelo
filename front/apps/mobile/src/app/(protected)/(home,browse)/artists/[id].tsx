@@ -15,6 +15,13 @@ import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { VideoTile } from "~/components/tile/resource/video";
 
+const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
+	getAlbums(
+		{ artist: artistId, type: [albumType] },
+		{ sortBy: "releaseDate", order: "desc" },
+		["illustration", "artist"],
+	);
+
 export default function ArtistView() {
 	const { id } = useLocalSearchParams();
 	const { t } = useTranslation();
@@ -106,7 +113,9 @@ export default function ArtistView() {
 					style={styles.section}
 					header={t("artist.appearsOn")}
 					items={relatedAlbums.items}
-					render={(album) => <AlbumTile album={album} />}
+					render={(album) => (
+						<AlbumTile album={album} subtitle="artistName" />
+					)}
 				/>
 
 				{/* TODO Rare songs*/}
@@ -117,24 +126,18 @@ export default function ArtistView() {
 }
 
 const AlbumTypeRow = ({
-	type: albumType,
+	type,
 	artistId,
 }: { type: AlbumType; artistId: string }) => {
 	const { t } = useTranslation();
-	const query = useInfiniteQuery(() =>
-		getAlbums(
-			{ artist: artistId, type: [albumType] },
-			{ sortBy: "releaseDate", order: "desc" },
-			["illustration", "artist"],
-		),
-	);
+	const query = useInfiniteQuery(() => albumTypeQuery(type, artistId));
 	return (
 		<Row
 			hideIfEmpty
 			style={styles.section}
-			header={t(albumTypeToTranslationKey(albumType, true))}
+			header={t(albumTypeToTranslationKey(type, true))}
 			items={query.items}
-			render={(item) => <AlbumTile album={item} />}
+			render={(item) => <AlbumTile album={item} subtitle="year" />}
 		/>
 	);
 };
