@@ -3,6 +3,7 @@ import { Stack, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { Icon } from "~/components/meelo";
 
 export const unstable_settings = {
 	home: {
@@ -18,6 +19,7 @@ const styles = StyleSheet.create((theme) => ({
 	header: {
 		backgroundColor: theme.colors.background,
 	},
+	icon: { marginRight: theme.gap(2) },
 	backButtonContainer: { paddingRight: theme.gap(2) },
 	headerTitle: {
 		color: theme.colors.text.primary,
@@ -70,6 +72,7 @@ export default function Layout({ segment }: { segment: string }) {
 						name="index"
 						options={{
 							headerTitle: t("nav.home"),
+							headerLeft: () => <Icon style={styles.icon} />,
 						}}
 					/>
 					{SharedRoutes.map(

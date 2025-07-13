@@ -18,29 +18,47 @@
 
 import { Image } from "expo-image";
 import type { ImageProps } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
-import { useColorScheme } from "~/hooks/color-scheme";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
 
 const styles = StyleSheet.create((_theme) => ({
 	image: {
 		flex: 1,
 		width: "100%",
 	},
+	icon: { aspectRatio: 1, height: "100%" },
 }));
 
-export const MeeloBanner = (props: Pick<ImageProps, "style">) => {
-	const [colorScheme, _] = useColorScheme();
-
-	return (
-		<Image
-			priority={"high"}
-			contentFit="contain"
-			style={[styles.image, props.style]}
-			source={
-				colorScheme === "dark"
+const BannerBase = withUnistyles(
+	Image,
+	(theme) =>
+		({
+			priority: "high",
+			contentFit: "contain",
+			source:
+				theme.name === "dark"
 					? require("../../assets/banner1_white.png")
-					: require("../../assets/banner1_black.png")
-			}
-		/>
-	);
+					: require("../../assets/banner1_black.png"),
+		}) as const,
+);
+
+export const Banner = (props: Pick<ImageProps, "style">) => {
+	return <BannerBase style={[styles.image, props.style]} />;
+};
+
+const IconBase = withUnistyles(
+	Image,
+	(theme) =>
+		({
+			priority: "high",
+			contentFit: "contain",
+			onError: (e) => console.log(e),
+			source:
+				theme.name === "light"
+					? require("../../assets/icon-black.png")
+					: require("../../assets/icon-white.png"),
+		}) as const,
+);
+
+export const Icon = (props: Pick<ImageProps, "style">) => {
+	return <IconBase style={[styles.icon, props.style]} />;
 };
