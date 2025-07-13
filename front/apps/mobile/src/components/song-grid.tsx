@@ -73,6 +73,8 @@ export const SongGrid = ({
 				</TouchableOpacity>
 				<SnappyScrollView
 					horizontal
+					snapToAlignment="start"
+					decelerationRate={"normal"}
 					ref={scrollViewRef}
 					style={styles.scrollView}
 				>
