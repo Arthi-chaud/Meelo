@@ -40,6 +40,15 @@ export default function ArtistView() {
 			["artist", "featuring", "master", "illustration"],
 		),
 	);
+
+	const rareSongs = useInfiniteQuery(() =>
+		getSongs({ rare: artistId }, { sortBy: "releaseDate", order: "desc" }, [
+			"artist",
+			"featuring",
+			"master",
+			"illustration",
+		]),
+	);
 	const videos = useInfiniteQuery(() =>
 		getVideos({ artist: artistId }, { sortBy: "addDate", order: "desc" }, [
 			"artist",
@@ -75,11 +84,14 @@ export default function ArtistView() {
 					header={t("artist.topSongs")}
 					style={styles.section}
 					songs={topSongs.data?.pages.at(0)?.items}
-					subtitle={(song) =>
-						song.artistId.toString() === artistId &&
-						song.featuring.length === 0
+					subtitle={
+						!topSongs.data
 							? null
-							: "artists"
+							: (song) =>
+									song.artistId.toString() === artistId &&
+									song.featuring.length === 0
+										? null
+										: "artists"
 					}
 				/>
 				{AlbumType.map((albumType) => (
@@ -89,6 +101,22 @@ export default function ArtistView() {
 						type={albumType}
 					/>
 				))}
+
+				<SongGrid
+					header={t("artist.rareSongs")}
+					style={styles.section}
+					songs={rareSongs.data?.pages.at(0)?.items}
+					subtitle={
+						!rareSongs.data
+							? null
+							: (song) =>
+									song.artistId.toString() === artistId &&
+									song.featuring.length === 0
+										? null
+										: "artists"
+					}
+				/>
+
 				{(
 					[
 						{ label: "musicVideos", items: musicVideos },
@@ -123,7 +151,6 @@ export default function ArtistView() {
 					)}
 				/>
 
-				{/* TODO Rare songs*/}
 				{/* TODO external metadata*/}
 			</SafeScrollView>
 		</>
