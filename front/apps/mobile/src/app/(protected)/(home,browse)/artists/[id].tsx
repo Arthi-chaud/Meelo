@@ -2,7 +2,7 @@ import { getAlbums, getArtist, getSongs, getVideos } from "@/api/queries";
 import { AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
@@ -62,8 +62,6 @@ export default function ArtistView() {
 
 	return (
 		<>
-			{/* TODO Duplicated header when from home tab */}
-			<Stack.Screen options={{ headerTitle: "", headerShown: true }} />
 			<ScrollView style={styles.root}>
 				<Header artistId={artistId} />
 				<SongGrid

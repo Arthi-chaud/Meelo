@@ -12,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { ListItem } from "~/components/list-item";
-import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Divider } from "~/primitives/divider";
 
 const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
@@ -48,9 +47,8 @@ const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
 export default function BrowseList() {
 	const router = useRouter();
 	const { t } = useTranslation();
-	const rootStyle = useRootViewStyle();
 	return (
-		<View style={[rootStyle, styles.root]}>
+		<View style={styles.root}>
 			{tabs.map(({ title, href, icon }) => (
 				<Fragment key={title}>
 					<ListItem
@@ -67,8 +65,9 @@ export default function BrowseList() {
 	);
 }
 
-const styles = StyleSheet.create(() => ({
+const styles = StyleSheet.create((theme) => ({
 	root: {
+		padding: theme.gap(0.5),
 		display: "flex",
 		height: "100%",
 		alignItems: "flex-start",
