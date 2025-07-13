@@ -1,67 +1,24 @@
 import type { InfiniteQuery } from "@/api/query";
-import type Resource from "@/models/resource";
-import { generateArray } from "@/utils/gen-list";
-import type React from "react";
-import { type ComponentProps, useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import { useInfiniteQuery } from "~/api";
-import { breakpoints } from "~/theme";
-import "theme";
 import type { IllustratedResource } from "@/models/illustration";
 import type { LayoutOption } from "@/models/layout";
+import type Resource from "@/models/resource";
+import { generateArray } from "@/utils/gen-list";
+import { FlashList } from "@shopify/flash-list";
+import type React from "react";
+import { type ComponentProps, useMemo, useState } from "react";
+import { View } from "react-native";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { useInfiniteQuery } from "~/api";
 import { Divider } from "~/primitives/divider";
+import { breakpoints } from "~/theme";
 import { useSetKeyIllustrationFromInfiniteQuery } from "../background-gradient";
 import { EmptyState } from "../empty-state";
 import { Controls } from "./controls/component";
 
-//TODO List: Padding after last element
-//
 //TODO Grid: The breakpoint's type from rt does not seem to use the type defined in the theme
 //It should be typesafe
-//TODO Grid: when page fetched, the item on the last line is resized + rerendered
-//TODO Grid: Performance
 
 //TODO Button to scroll back up
-
-const styles = StyleSheet.create((theme, rt) => ({
-	rootStyle: {
-		flex: 1,
-		position: "relative",
-		height: "100%",
-	},
-	emptyState: { height: "20%", maxHeight: 200 },
-	controls: {
-		paddingVertical: theme.gap(1.5),
-		paddingHorizontal: theme.gap(1),
-		position: "absolute",
-		zIndex: 1,
-		width: "100%",
-	},
-	listStyle: {
-		maxWidth: breakpoints.xl,
-		width: "100%",
-		flex: 1,
-		paddingHorizontal: theme.gap(1),
-	},
-
-	//approximate so that the list start below controls
-	//putting the actual controls in the ListHeaderComponent causes the dropdown to be misplaced
-	listHeader: (controlsHeight: number | null) => ({
-		height: controlsHeight == null ? theme.gap(8.25) : controlsHeight,
-	}),
-	itemContainer: {
-		variants: {
-			layout: {
-				grid: {
-					// @ts-expect-error
-					width: `${100 / theme.layout.grid.columnCount[rt.breakpoint!]}%`,
-				},
-				list: {},
-			},
-		},
-	},
-}));
 
 type Props<T, T1, Sort extends string> = {
 	query: InfiniteQuery<T, T1>;
@@ -93,7 +50,7 @@ export const InfiniteView = <
 			...generateArray(trailingSkeletons, undefined),
 		];
 	}, [queryRes.items, queryRes.isFetching, queryRes.isFetchingNextPage]);
-	const ScrollView = props.layout === "list" ? FlatList : FlatGrid;
+	const ScrollView = props.layout === "list" ? List : Grid;
 	useSetKeyIllustrationFromInfiniteQuery(props.query);
 	return (
 		<View style={[styles.rootStyle]}>
@@ -111,11 +68,10 @@ export const InfiniteView = <
 				<ScrollView
 					data={itemList}
 					refreshing={queryRes.isRefetching}
-					style={styles.listStyle}
+					contentContainerStyle={styles.scrollView}
 					onRefresh={() => queryRes.refetch()}
+					onEndReachedThreshold={0.5}
 					onEndReached={() => queryRes.fetchNextPage()}
-					stickyHeaderIndices={[0]}
-					stickyHeaderHiddenOnScroll
 					ListHeaderComponent={
 						<View style={styles.listHeader(controlsHeight)} />
 					}
@@ -144,10 +100,6 @@ export const InfiniteView = <
 								}),
 							}
 						: {
-								numColumns: 1,
-								ItemSeparatorComponent: () => (
-									<Divider h withInsets />
-								),
 								keyExtractor: (_, idx) => {
 									const item = queryRes.items?.at(idx);
 									if (!item) {
@@ -162,7 +114,52 @@ export const InfiniteView = <
 	);
 };
 
-const FlatGrid = withUnistyles(FlatList, (theme, rt) => ({
+const Grid = withUnistyles(FlashList, (theme, rt) => {
 	// @ts-expect-error
-	numColumns: theme.layout.grid.columnCount[rt.breakpoint!],
+	const colCount = theme.layout.grid.columnCount[rt.breakpoint!];
+	return {
+		estimatedItemSize: rt.screen.width / colCount,
+		numColumns: colCount,
+	};
+});
+
+const List = withUnistyles(FlashList, () => ({
+	numColumns: 1,
+	estimatedItemSize: 70, // TODO
+	ItemSeparatorComponent: () => <Divider h withInsets />,
+}));
+
+const styles = StyleSheet.create((theme) => ({
+	rootStyle: {
+		flex: 1,
+		position: "relative",
+		height: "100%",
+		maxWidth: breakpoints.xl,
+		width: "100%",
+	},
+	emptyState: { height: "20%", maxHeight: 200 },
+	controls: {
+		paddingVertical: theme.gap(1.5),
+		paddingHorizontal: theme.gap(1),
+		position: "absolute",
+		zIndex: 1,
+		width: "100%",
+	},
+	scrollView: {
+		paddingHorizontal: theme.gap(1),
+	},
+	//approximate so that the list start below controls
+	//putting the actual controls in the ListHeaderComponent causes the dropdown to be misplaced
+	listHeader: (controlsHeight: number | null) => ({
+		height: controlsHeight == null ? theme.gap(8.25) : controlsHeight,
+	}),
+	itemContainer: {
+		variants: {
+			layout: {
+				// TODO Gap between columns?
+				grid: { width: "100%" },
+				list: {},
+			},
+		},
+	},
 }));
