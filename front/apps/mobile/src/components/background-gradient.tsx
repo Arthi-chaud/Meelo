@@ -26,7 +26,7 @@ import { accessTokenAtom } from "~/state/user";
 
 export const keyIllustrationAtom = atom<Illustration | null>(null);
 
-export const useSetKeyIllustration = (keyItem: IllustratedResource) => {
+export const useSetKeyIllustration = (keyItem?: IllustratedResource) => {
 	const [keyIllustration, setKeyIllustration] = useAtom(keyIllustrationAtom);
 	useEffect(() => {
 		if (
