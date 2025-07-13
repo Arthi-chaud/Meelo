@@ -76,7 +76,7 @@ export default function Root() {
 				header={t("home.newlyAddedAlbums")}
 				items={newlyAddedAlbums.items}
 				render={(album) => {
-					return <AlbumTile album={album} />;
+					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
 			/>
 
@@ -95,7 +95,7 @@ export default function Root() {
 				header={t("home.latestAlbums")}
 				items={latestAlbums.items}
 				render={(album) => {
-					return <AlbumTile album={album} />;
+					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
 			/>
 
