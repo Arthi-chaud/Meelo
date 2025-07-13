@@ -62,52 +62,97 @@ export default function Layout({ segment }: { segment: string }) {
 		headerLeft: () => <BackButton />,
 		headerTintColor: styles.headerTitle.color,
 	};
-	if (segment === "(browse)") {
-		return (
-			<Stack screenOptions={screenOptions}>
-				<Stack.Screen
-					name="index"
-					options={{
-						headerTitle: t("nav.browse"),
-						// TODO IDK why we canGoBack when we are at the browse's index
-						headerLeft: () => <View />,
-					}}
-				/>
-				{SharedRoutes.map(
-					({ name, options: { headerTitle, ...options } }, idx) => (
-						<Stack.Screen
-							key={idx}
-							name={name}
-							options={{
-								headerTitle: headerTitle ? t(headerTitle) : "",
-								...options,
-							}}
-						/>
-					),
-				)}
-			</Stack>
-		);
-	}
-	return (
-		<Stack screenOptions={screenOptions}>
-			<Stack.Screen
-				name="index"
-				options={{
-					headerTitle: t("nav.home"),
-				}}
-			/>
-			{SharedRoutes.map(
-				({ name, options: { headerTitle, ...options } }, idx) => (
+	switch (segment) {
+		case "(home)": {
+			return (
+				<Stack screenOptions={screenOptions}>
 					<Stack.Screen
-						key={idx}
-						name={name}
+						name="index"
 						options={{
-							headerTitle: headerTitle ? t(headerTitle) : "",
-							...options,
+							headerTitle: t("nav.home"),
 						}}
 					/>
-				),
-			)}
-		</Stack>
-	);
+					{SharedRoutes.map(
+						(
+							{ name, options: { headerTitle, ...options } },
+							idx,
+						) => (
+							<Stack.Screen
+								key={idx}
+								name={name}
+								options={{
+									headerTitle: headerTitle
+										? t(headerTitle)
+										: "",
+									...options,
+								}}
+							/>
+						),
+					)}
+				</Stack>
+			);
+		}
+		case "(browse)": {
+			return (
+				<Stack screenOptions={screenOptions}>
+					<Stack.Screen
+						name="index"
+						options={{
+							headerTitle: t("nav.browse"),
+							// TODO IDK why we canGoBack when we are at the browse's index
+							headerLeft: () => <View />,
+						}}
+					/>
+					{SharedRoutes.map(
+						(
+							{ name, options: { headerTitle, ...options } },
+							idx,
+						) => (
+							<Stack.Screen
+								key={idx}
+								name={name}
+								options={{
+									headerTitle: headerTitle
+										? t(headerTitle)
+										: "",
+									...options,
+								}}
+							/>
+						),
+					)}
+				</Stack>
+			);
+		}
+		case "(search)": {
+			return (
+				<Stack screenOptions={screenOptions}>
+					<Stack.Screen
+						name="index"
+						options={{
+							headerTitle: t("nav.search"),
+							// TODO IDK why we canGoBack when we are at the browse's index
+							headerLeft: () => <View />,
+						}}
+					/>
+					{SharedRoutes.map(
+						(
+							{ name, options: { headerTitle, ...options } },
+							idx,
+						) => (
+							<Stack.Screen
+								key={idx}
+								name={name}
+								options={{
+									headerTitle: headerTitle
+										? t(headerTitle)
+										: "",
+									...options,
+								}}
+							/>
+						),
+					)}
+				</Stack>
+			);
+		}
+	}
 }

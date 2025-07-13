@@ -1,5 +1,6 @@
 import { getAlbums, getArtist, getSongs, getVideos } from "@/api/queries";
 import { AlbumType } from "@/models/album";
+import type { ArtistWithRelations } from "@/models/artist";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
@@ -8,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
+import { useSetKeyIllustration } from "~/components/background-gradient";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { Row } from "~/components/row";
@@ -26,6 +28,10 @@ export default function ArtistView() {
 	const { id } = useLocalSearchParams();
 	const { t } = useTranslation();
 	const artistId = id.toString();
+
+	const { data: artist } = useQuery(() =>
+		getArtist(artistId, ["illustration"]),
+	);
 	const topSongs = useInfiniteQuery(() =>
 		getSongs(
 			{ artist: artistId },
@@ -59,11 +65,11 @@ export default function ArtistView() {
 			),
 		};
 	}, [videos]);
-
+	useSetKeyIllustration(artist ?? undefined);
 	return (
 		<>
 			<ScrollView style={styles.root}>
-				<Header artistId={artistId} />
+				<Header artist={artist} />
 				<SongGrid
 					header={t("artist.topSongs")}
 					style={styles.section}
@@ -140,10 +146,9 @@ const AlbumTypeRow = ({
 	);
 };
 
-const Header = ({ artistId }: { artistId: string }) => {
-	const { data: artist } = useQuery(() =>
-		getArtist(artistId, ["illustration"]),
-	);
+const Header = ({
+	artist,
+}: { artist: ArtistWithRelations<"illustration"> | undefined }) => {
 	return (
 		<View style={styles.headerRoot}>
 			<View style={styles.headerAvatar}>
