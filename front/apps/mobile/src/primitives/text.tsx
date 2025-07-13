@@ -16,17 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ReactNode, useEffect } from "react";
-import type { TextProps as RNTextProps } from "react-native";
-import Animated, {
-	useAnimatedStyle,
-	useSharedValue,
-	withRepeat,
-	withTiming,
-	Easing,
-} from "react-native-reanimated";
+import type { ReactNode } from "react";
+import {
+	Text as RNText,
+	type TextProps as RNTextProps,
+	View,
+} from "react-native";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import type { RequireExactlyOne } from "type-fest";
 
 const styles = StyleSheet.create((theme) => ({
@@ -95,9 +91,9 @@ export const Text = ({ content, children, ...props }: TextProps) => {
 		color: props.color,
 	});
 	return (
-		<Animated.Text {...props} style={[styles.text, props.style]}>
+		<RNText {...props} style={[styles.text, props.style]}>
 			{content ?? children}
-		</Animated.Text>
+		</RNText>
 	);
 };
 
@@ -108,29 +104,10 @@ export const TextSkeleton = (
 	},
 ) => {
 	styles.useVariants({ variant: props.variant ?? "body" });
-	const theme = useAnimatedTheme();
-	const opacity = useSharedValue(1);
-	const pulseAnimation = useAnimatedStyle(
-		() => ({
-			opacity: opacity.value,
-		}),
-		[],
-	);
-	useEffect(() => {
-		opacity.value = withRepeat(
-			withTiming(theme.value.animations.skeleton.minOpacity, {
-				duration: theme.value.animations.skeleton.pulse.duration,
-				easing: Easing.ease,
-			}),
-			-1,
-			true,
-		);
-	}, []);
 	return (
-		<Animated.View
+		<View
 			style={[
 				styles.skeleton,
-				pulseAnimation,
 				{
 					width:
 						typeof props.width === "string"
@@ -141,6 +118,6 @@ export const TextSkeleton = (
 		>
 			{/* To ensure correct skeleton height */}
 			<Text variant={props.variant}> </Text>
-		</Animated.View>
+		</View>
 	);
 };
