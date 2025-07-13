@@ -28,13 +28,14 @@ type Props = Omit<ComponentProps<typeof Text>, "content" | "children"> & {
 export const LoadableText = ({ content, ...props }: Props) => {
 	return (
 		<View>
-			{content === undefined && (
+			{content === undefined ? (
 				<TextSkeleton
 					variant={props.variant}
 					width={props.skeletonWidth}
 				/>
+			) : (
+				<Text {...props}>{content}</Text>
 			)}
-			{content !== undefined && <Text {...props}>{content}</Text>}
 		</View>
 	);
 };
