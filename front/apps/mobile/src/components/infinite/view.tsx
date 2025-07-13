@@ -3,12 +3,13 @@ import type { IllustratedResource } from "@/models/illustration";
 import type { LayoutOption } from "@/models/layout";
 import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
-import { FlashList } from "@shopify/flash-list";
+import { type ContentStyle, FlashList } from "@shopify/flash-list";
 import type React from "react";
 import { type ComponentProps, useMemo, useState } from "react";
 import { View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
+import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Divider } from "~/primitives/divider";
 import { breakpoints } from "~/theme";
 import { useSetKeyIllustrationFromInfiniteQuery } from "../background-gradient";
@@ -25,6 +26,7 @@ type Props<T, T1, Sort extends string> = {
 	layout: LayoutOption;
 	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
 	render: (item: T1 | undefined) => React.ReactElement;
+	ignoreTabBar?: true;
 };
 
 export const InfiniteView = <
@@ -35,6 +37,7 @@ export const InfiniteView = <
 	props: Props<T, T1, Sort>,
 ) => {
 	styles.useVariants({ layout: props.layout });
+	const { paddingBottom } = useRootViewStyle();
 	const queryRes = useInfiniteQuery(() => props.query);
 	const [controlsHeight, setControlsHeight] = useState(null as number | null);
 	const firstPage = queryRes.data?.pages.at(0)?.items;
@@ -68,7 +71,9 @@ export const InfiniteView = <
 				<ScrollView
 					data={itemList}
 					refreshing={queryRes.isRefetching}
-					contentContainerStyle={styles.scrollView}
+					contentContainerStyle={
+						[styles.scrollView, { paddingBottom }] as ContentStyle
+					}
 					onRefresh={() => queryRes.refetch()}
 					onEndReachedThreshold={0.5}
 					onEndReached={() => queryRes.fetchNextPage()}

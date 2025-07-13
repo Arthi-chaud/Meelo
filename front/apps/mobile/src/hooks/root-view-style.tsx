@@ -16,11 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import type { ViewStyle } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Provides padding to avoid the tababr to mask content
 export const useRootViewStyle = () => {
-	const { top } = useSafeAreaInsets();
+	const tabBarHeight = useBottomTabBarHeight();
 
-	return { paddingTop: top } satisfies ViewStyle;
+	return { paddingBottom: tabBarHeight } satisfies ViewStyle;
 };

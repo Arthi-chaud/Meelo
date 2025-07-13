@@ -18,11 +18,11 @@
 
 import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
 import { useTranslation } from "react-i18next";
-import { ScrollView } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { Row } from "~/components/row";
+import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
@@ -70,7 +70,7 @@ export default function Root() {
 		]),
 	);
 	return (
-		<ScrollView contentContainerStyle={[styles.main]}>
+		<SafeScrollView contentContainerStyle={[styles.main]}>
 			<Row
 				style={styles.section}
 				header={t("home.newlyAddedAlbums")}
@@ -116,6 +116,6 @@ export default function Root() {
 				subtitle={() => "artists"}
 				style={styles.section}
 			/>
-		</ScrollView>
+		</SafeScrollView>
 	);
 }
