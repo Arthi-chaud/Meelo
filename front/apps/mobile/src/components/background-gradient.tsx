@@ -13,6 +13,7 @@ import {
 import { useFocusEffect } from "expo-router";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
+import { View } from "react-native";
 import {
 	useDerivedValue,
 	useSharedValue,
@@ -22,19 +23,17 @@ import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { accessTokenAtom } from "~/state/user";
 
-//TODO make gradient darker on dark mode
-
 export const keyIllustrationAtom = atom<Illustration | null>(null);
 
 export const useSetKeyIllustration = (keyItem?: IllustratedResource) => {
 	const [keyIllustration, setKeyIllustration] = useAtom(keyIllustrationAtom);
-	useEffect(() => {
+	useFocusEffect(() => {
 		if (
 			keyItem?.illustration &&
 			keyItem.illustration.url !== keyIllustration?.url
 		)
 			setKeyIllustration(keyItem.illustration);
-	}, [keyItem]);
+	});
 };
 
 export const useSetKeyIllustrationFromInfiniteQuery = <
@@ -122,27 +121,33 @@ export const BackgroundGradient = () => {
 		[],
 	);
 	return (
-		<Canvas style={styles.canvas}>
-			{generateArray(5, null).map((_, index) => {
-				const cxRatio =
-					index === 0 || index === 3 ? 0.1 : index === 4 ? 0 : 0.9;
-				const cyRatio = index < 2 ? 0.9 : index < 4 ? 0.1 : 1;
+		<View style={styles.root}>
+			<StyledCanvas style={styles.canvas}>
+				{generateArray(5, null).map((_, index) => {
+					const cxRatio =
+						index === 0 || index === 3
+							? 0.1
+							: index === 4
+								? 0
+								: 0.9;
+					const cyRatio = index < 2 ? 0.9 : index < 4 ? 0.1 : 1;
 
-				return (
-					<FullScreenRect key={index}>
-						<GradientEllipse
-							uniProps={(_, rt) => ({
-								c: vec(
-									rt.screen.width * cxRatio,
-									rt.screen.height * cyRatio,
-								),
-							})}
-							colors={gradientColors[index]}
-						/>
-					</FullScreenRect>
-				);
-			})}
-		</Canvas>
+					return (
+						<FullScreenRect key={index}>
+							<GradientEllipse
+								uniProps={(_, rt) => ({
+									c: vec(
+										rt.screen.width * cxRatio,
+										rt.screen.height * cyRatio,
+									),
+								})}
+								colors={gradientColors[index]}
+							/>
+						</FullScreenRect>
+					);
+				})}
+			</StyledCanvas>
+		</View>
 	);
 };
 
@@ -164,16 +169,20 @@ const FullScreenRect = withUnistyles(
 		}) as RectProps,
 );
 
+const StyledCanvas = withUnistyles(Canvas);
+
 const styles = StyleSheet.create((theme) => ({
-	canvas: {
+	root: {
 		position: "absolute",
 		left: 0,
 		zIndex: -1,
 		right: 0,
 		top: 0,
-		flex: 1,
-		backgroundColor: theme.colors.background,
-		opacity: theme.name === "light" ? 0.5 : 0.4,
 		height: "100%",
+		backgroundColor: theme.colors.background,
+	},
+	canvas: {
+		flex: 1,
+		opacity: theme.name === "light" ? 0.5 : 0.4,
 	},
 }));
