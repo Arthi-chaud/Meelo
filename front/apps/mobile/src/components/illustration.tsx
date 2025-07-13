@@ -23,15 +23,8 @@ import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { Blurhash } from "react-native-blurhash";
 import Image from "react-native-fast-image";
-import Animated, {
-	FadeOut,
-	ReduceMotion,
-	useAnimatedStyle,
-	useSharedValue,
-	withTiming,
-} from "react-native-reanimated";
+import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { useAPI } from "~/api";
 
 type Props = {
@@ -54,16 +47,14 @@ export const Illustration = ({
 	simpleColorPlaceholder,
 	normalizedThumbnail,
 }: Props) => {
-	const theme = useAnimatedTheme();
 	const api = useAPI();
-	const reduceMotion: ReduceMotion = simpleColorPlaceholder
-		? ReduceMotion.Always
-		: ReduceMotion.System;
 	const innerAspectRatio = useMemo(
 		() =>
-			variant === "fill" || variant === "circle"
-				? 1
-				: (illustration?.aspectRatio ?? 1),
+			normalizedThumbnail
+				? 16 / 9
+				: variant === "fill" || variant === "circle"
+					? 1
+					: (illustration?.aspectRatio ?? 1),
 		[illustration],
 	);
 	styles.useVariants({
@@ -72,20 +63,21 @@ export const Illustration = ({
 		align: variant === "center" ? "center" : "bottom",
 		normalizedThumbnail: normalizedThumbnail ?? false,
 	});
-	const [imageStatus, setImageStatus] = useState<
-		"done" | "loading" | "error"
-	>("loading");
+	const [loadStatus, setLoadStatus] = useState<"done" | "loading" | "error">(
+		"loading",
+	);
 	const imageOpacity = useSharedValue(0);
-	const imageFadeIn = useAnimatedStyle(() => ({
+	const blurhashOpacity = useSharedValue(0);
+	const fallbackOpacity = useSharedValue(0);
+
+	const imageOpacityStyle = useAnimatedStyle(() => ({
 		opacity: imageOpacity.value,
 	}));
-
-	const [blurhashLoaded, setBlurhashLoaded] = useState(false);
-	const blurhashOpacity = useSharedValue(0);
-	//Note: we only set the opacity to 1
-	//We rely on the existing animation to handle the fadeout
-	const blurhashFadeIn = useAnimatedStyle(() => ({
+	const blurhashOpacityStyle = useAnimatedStyle(() => ({
 		opacity: blurhashOpacity.value,
+	}));
+	const fallbackOpacityStyle = useAnimatedStyle(() => ({
+		opacity: fallbackOpacity.value,
 	}));
 
 	const FallbackIcon = withUnistyles(
@@ -95,47 +87,24 @@ export const Illustration = ({
 				color: theme.colors.text.secondary,
 			}) as any,
 	);
-	const fallbackOpacity = useSharedValue(0);
-	const fallbackFadeIn = useAnimatedStyle(() => ({
-		opacity: fallbackOpacity.value,
-	}));
-	//Attempt at recycling
-	//TODO Finish
 	useEffect(() => {
-		fallbackOpacity.value = 0;
+		// Whatever the new illustration props is,
+		// we need to reset the blurhash and the image
 		blurhashOpacity.value = 0;
 		imageOpacity.value = 0;
-		setImageStatus("loading");
-	}, [illustration]);
-
-	useEffect(() => {
-		if (imageStatus === "done") {
-			imageOpacity.value = withTiming(1, { reduceMotion });
-		} else if (imageStatus === "error") {
-			fallbackOpacity.value = withTiming(1, { reduceMotion });
-		}
-	}, [imageStatus]);
-	useEffect(() => {
 		if (illustration === null) {
-			fallbackOpacity.value = withTiming(1, { reduceMotion });
+			fallbackOpacity.value = 1;
+		} else {
+			fallbackOpacity.value = 0;
 		}
+		setLoadStatus("loading");
 	}, [illustration]);
-	useEffect(() => {
-		if (blurhashLoaded) {
-			blurhashOpacity.value = withTiming(1, {
-				duration: theme.value.animations.fades.blurhash,
-				reduceMotion,
-			});
-		}
-	}, [blurhashLoaded]);
 	return (
 		<View style={styles.outerContainer}>
 			<View
 				style={[
 					{
-						aspectRatio: normalizedThumbnail
-							? 16 / 9
-							: innerAspectRatio,
+						aspectRatio: innerAspectRatio,
 					},
 					styles.innerContainer(
 						simpleColorPlaceholder
@@ -144,35 +113,41 @@ export const Illustration = ({
 					),
 				]}
 			>
-				{illustration && imageStatus !== "error" && (
+				{illustration && loadStatus !== "error" && (
 					<>
-						{!simpleColorPlaceholder && imageStatus !== "done" && (
-							<Animated.View
-								exiting={FadeOut}
-								style={[styles.slot]}
-							>
+						{!simpleColorPlaceholder && loadStatus !== "done" && (
+							<View style={[styles.slot]}>
 								<Blurhash
 									decodeAsync
 									style={[
-										blurhashFadeIn,
+										blurhashOpacityStyle,
 										styles.slotContent,
 										styles.blurhash,
 									]}
-									onLoadEnd={() => setBlurhashLoaded(true)}
+									onLoadEnd={() => {
+										blurhashOpacity.value = 1;
+									}}
 									blurhash={illustration.blurhash}
 									decodeWidth={16}
 									decodeHeight={16}
 								/>
-							</Animated.View>
+							</View>
 						)}
 
-						<Animated.View style={[imageFadeIn, styles.slot]}>
+						<View style={[imageOpacityStyle, styles.slot]}>
 							<Image
 								style={[styles.slotContent]}
-								onLoad={() => setImageStatus("done")}
-								resizeMode="cover"
+								onLoad={() => {
+									imageOpacity.value = 1;
+									setLoadStatus("done");
+								}}
+								resizeMode={
+									variant === "circle" || normalizedThumbnail
+										? "cover"
+										: "contain"
+								}
 								onError={() => {
-									setImageStatus("error");
+									setLoadStatus("error");
 								}}
 								source={{
 									headers: {
@@ -184,19 +159,19 @@ export const Illustration = ({
 									),
 								}}
 							/>
-						</Animated.View>
+						</View>
 					</>
 				)}
-				{(!illustration || imageStatus === "error") && (
-					<Animated.View
+				{(!illustration || loadStatus === "error") && (
+					<View
 						style={[
-							fallbackFadeIn,
+							fallbackOpacityStyle,
 							styles.fallbackContainer,
 							styles.slot,
 						]}
 					>
 						<FallbackIcon />
-					</Animated.View>
+					</View>
 				)}
 			</View>
 		</View>
