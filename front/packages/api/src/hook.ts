@@ -23,7 +23,7 @@ import {
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import type API from ".";
 import {
 	type InfiniteQueryFn,
@@ -99,13 +99,14 @@ export const mkUseInfiniteQuery = <
 		() => toTanStackInfiniteQuery(api, query, ...queryParams),
 		[query, queryParams],
 	);
-	const { data, ...rest } = useReactInfiniteQuery(queryOpts);
-	const [items, setItems] = useState(data?.pages.at(0)?.items);
-	useEffect(() => {
-		setItems(data?.pages.flatMap((p) => p.items));
-	}, [data?.pages]);
+	const res = useReactInfiniteQuery(queryOpts);
+	//TODO Check it does not break web
+	const items = useMemo(
+		() => res.data?.pages.flatMap(({ items }) => items),
+		[res.data?.pages],
+	);
 
-	return { ...rest, data, items };
+	return { ...res, items };
 };
 
 /**
