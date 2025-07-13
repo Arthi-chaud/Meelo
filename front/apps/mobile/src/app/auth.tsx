@@ -27,11 +27,11 @@ import {
 	KeyboardAwareScrollView,
 	KeyboardToolbar,
 } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
 import { getAPI_ } from "~/api";
 import { MeeloBanner } from "~/components/meelo_banner";
-import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
@@ -98,7 +98,7 @@ export default function AuthenticationScreen() {
 	const [errorMsg, setErrorMessage] = useState<string>();
 
 	const [formType, setFormType] = useState<"login" | "signup">("login");
-	const safeAreaStyle = useRootViewStyle();
+	const safeAreaStyle = useSafeAreaInsets();
 	const {
 		control,
 		handleSubmit,

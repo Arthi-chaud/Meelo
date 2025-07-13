@@ -6,13 +6,14 @@ import { VideoTypeIsExtra } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { Row } from "~/components/row";
+import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { VideoTile } from "~/components/tile/resource/video";
@@ -68,7 +69,7 @@ export default function ArtistView() {
 	useSetKeyIllustration(artist ?? undefined);
 	return (
 		<>
-			<ScrollView style={styles.root}>
+			<SafeScrollView>
 				<Header artist={artist} />
 				<SongGrid
 					header={t("artist.topSongs")}
@@ -124,7 +125,7 @@ export default function ArtistView() {
 
 				{/* TODO Rare songs*/}
 				{/* TODO external metadata*/}
-			</ScrollView>
+			</SafeScrollView>
 		</>
 	);
 }

@@ -32,15 +32,22 @@ import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAPI } from "~/api";
+import { BlurView } from "~/components/blur-view";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
 	screen: { backgroundColor: "transparent", flex: 1 },
 	tabBar: {
+		position: "absolute",
 		paddingTop: theme.gap(1),
+		borderTopWidth: 0,
+	},
+	tabBarBackground: {
+		...StyleSheet.absoluteFillObject,
 		borderTopLeftRadius: theme.borderRadius,
 		borderTopRightRadius: theme.borderRadius,
-		backgroundColor: theme.colors.background,
+		overflow: "hidden",
+		backgroundColor: "transparent",
 	},
 }));
 
@@ -76,9 +83,12 @@ export default function ProtectedLayout() {
 			screenOptions={{
 				animation: "none",
 				headerShown: false,
+				sceneStyle: styles.screen,
 				tabBarShowLabel: false,
 				tabBarStyle: styles.tabBar,
-				sceneStyle: styles.screen,
+				tabBarBackground: () => (
+					<BlurView style={styles.tabBarBackground} />
+				),
 				tabBarButton: TabButton,
 			}}
 		>
