@@ -31,7 +31,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
 import { getAPI_ } from "~/api";
-import { MeeloBanner } from "~/components/meelo_banner";
+import { Banner } from "~/components/meelo";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
@@ -151,7 +151,7 @@ export default function AuthenticationScreen() {
 				bottomOffset={styles.keyboard.paddingTop}
 				contentContainerStyle={[styles.root, safeAreaStyle]}
 			>
-				<MeeloBanner style={styles.banner} />
+				<Banner style={styles.banner} />
 				<View style={styles.formContainer}>
 					<Controller
 						control={control}
