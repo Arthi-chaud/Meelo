@@ -1,5 +1,4 @@
 import type { SongWithRelations } from "@/models/song";
-import formatArtists from "@/utils/format-artists";
 import { generateArray } from "@/utils/gen-list";
 import { type ComponentProps, Fragment, createRef, useMemo } from "react";
 import {
@@ -11,7 +10,8 @@ import {
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { Divider } from "~/primitives/divider";
 import { breakpoints } from "~/theme";
-import { ListItem } from "./list-item";
+import type { ListItem } from "./list-item";
+import { SongItem } from "./list-item/resource/song";
 import { LoadableText } from "./loadable_text";
 
 type Song = SongWithRelations<
@@ -26,7 +26,7 @@ type Props = {
 	header: string;
 	hideIfEmpty?: true;
 	illustrationProps?: ComponentProps<typeof ListItem>["illustrationProps"];
-	subtitle?: (song: Song) => "artists" | null;
+	subtitle: null | ((song: Song) => "artists" | null);
 };
 
 const ItemsPerColumn = 4;
@@ -92,21 +92,16 @@ export const SongGrid = ({
 										item?.id.toString() ?? `skeleton-${idx}`
 									}
 								>
-									<ListItem
-										title={item?.name}
-										onPress={() => {}} // TODO
-										illustration={item?.illustration}
-										illustrationProps={illustrationProps}
+									<SongItem
+										song={item}
 										subtitle={
-											item === undefined
-												? undefined
-												: subtitle?.(item) === "artists"
-													? formatArtists(
-															item.artist,
-															item.featuring,
-														)
-													: null
+											subtitle === null
+												? null
+												: item
+													? subtitle(item)
+													: undefined
 										}
+										illustrationProps={illustrationProps}
 									/>
 
 									{idx !== chunk.length - 1 && (

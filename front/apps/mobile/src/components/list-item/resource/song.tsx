@@ -8,16 +8,21 @@ type Props = {
 		| SongWithRelations<"illustration" | "artist" | "featuring">
 		| undefined;
 	illustrationProps: ComponentProps<typeof ListItem>["illustrationProps"];
+	subtitle: "artists" | null | undefined;
 };
 
-export const SongItem = ({ song, illustrationProps }: Props) => {
+export const SongItem = ({ song, illustrationProps, subtitle }: Props) => {
 	return (
 		<ListItem
 			title={song?.name}
 			subtitle={
-				song === undefined
-					? undefined
-					: formatArtists(song.artist, song.featuring)
+				subtitle === null
+					? null
+					: song === undefined
+						? undefined
+						: subtitle === "artists"
+							? formatArtists(song.artist, song.featuring)
+							: null
 			}
 			onPress={() => {}} // TODO Launch playback
 			illustration={song?.illustration}
