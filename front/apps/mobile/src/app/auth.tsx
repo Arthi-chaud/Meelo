@@ -166,6 +166,8 @@ export default function AuthenticationScreen() {
 							<TextInput
 								placeholder={t("form.auth.instanceUrl")}
 								textContentType="URL"
+								autoCorrect={false}
+								autoCapitalize="none"
 								onBlur={onBlur}
 								onChangeText={onChange}
 								error={errors.url?.message}
@@ -191,6 +193,8 @@ export default function AuthenticationScreen() {
 							<TextInput
 								placeholder={t("form.auth.username")}
 								textContentType="username"
+								autoCorrect={false}
+								autoCapitalize="none"
 								onBlur={onBlur}
 								onChangeText={onChange}
 								value={value}
