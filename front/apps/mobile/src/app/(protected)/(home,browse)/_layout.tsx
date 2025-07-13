@@ -1,7 +1,7 @@
 import { BackIcon } from "@/ui/icons";
 import { Stack, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 
 export const unstable_settings = {
@@ -42,56 +42,72 @@ const BackButton = () => {
 	);
 };
 
+const SharedRoutes: {
+	name: string;
+	options: { headerTitle: TranslationKey | null };
+}[] = [
+	{ name: "artists/index", options: { headerTitle: "models.artist_plural" } },
+	{ name: "artists/[id]", options: { headerTitle: null } },
+	{ name: "albums/index", options: { headerTitle: "models.album_plural" } },
+	{ name: "songs/index", options: { headerTitle: "models.song_plural" } },
+	{ name: "videos/index", options: { headerTitle: "models.video_plural" } },
+];
+
 export default function Layout({ segment }: { segment: string }) {
 	const { t } = useTranslation();
+	const screenOptions = {
+		contentStyle: [styles.screen],
+		headerStyle: styles.header,
+		headerTitleStyle: styles.headerTitle,
+		headerLeft: () => <BackButton />,
+		headerTintColor: styles.headerTitle.color,
+	};
 	if (segment === "(browse)") {
 		return (
-			<Stack
-				screenOptions={{
-					contentStyle: [styles.screen],
-					headerStyle: styles.header,
-					headerTitleStyle: styles.headerTitle,
-					headerLeft: () => <BackButton />,
-					headerTintColor: styles.headerTitle.color,
-				}}
-			>
-				<Stack.Screen name="index" options={{ headerShown: false }} />
+			<Stack screenOptions={screenOptions}>
 				<Stack.Screen
-					name="artists"
-					options={{ headerTitle: t("models.artist_plural") }}
+					name="index"
+					options={{
+						headerTitle: t("nav.browse"),
+						// TODO IDK why we canGoBack when we are at the browse's index
+						headerLeft: () => <View />,
+					}}
 				/>
-				<Stack.Screen
-					name="albums"
-					options={{ headerTitle: t("models.album_plural") }}
-				/>
-				<Stack.Screen
-					name="songs"
-					options={{ headerTitle: t("models.song_plural") }}
-				/>
-				<Stack.Screen
-					name="videos"
-					options={{ headerTitle: t("models.video_plural") }}
-				/>
+				{SharedRoutes.map(
+					({ name, options: { headerTitle, ...options } }, idx) => (
+						<Stack.Screen
+							key={idx}
+							name={name}
+							options={{
+								headerTitle: headerTitle ? t(headerTitle) : "",
+								...options,
+							}}
+						/>
+					),
+				)}
 			</Stack>
 		);
 	}
 	return (
-		<Stack
-			screenOptions={{
-				contentStyle: [styles.screen],
-				headerStyle: styles.header,
-				headerTitleStyle: styles.headerTitle,
-				headerLeft: () => <BackButton />,
-				headerTintColor: styles.headerTitle.color,
-			}}
-		>
+		<Stack screenOptions={screenOptions}>
 			<Stack.Screen
 				name="index"
 				options={{
-					headerShown: false,
-					title: t("nav.home"),
+					headerTitle: t("nav.home"),
 				}}
 			/>
+			{SharedRoutes.map(
+				({ name, options: { headerTitle, ...options } }, idx) => (
+					<Stack.Screen
+						key={idx}
+						name={name}
+						options={{
+							headerTitle: headerTitle ? t(headerTitle) : "",
+							...options,
+						}}
+					/>
+				),
+			)}
 		</Stack>
 	);
 }
