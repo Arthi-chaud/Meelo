@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Icon } from "@/ui/icons";
+import type { Icon as IconType } from "@/ui/icons";
 import { useCallback } from "react";
 import {
 	Pressable,
@@ -31,13 +31,10 @@ import Animated, {
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
-import {
-	StyleSheet,
-	type UnistylesVariants,
-	withUnistyles,
-} from "react-native-unistyles";
+import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import type { RequireExactlyOne } from "type-fest";
+import { Icon } from "./icon";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {
 	labelProps?: TextProps;
@@ -48,7 +45,7 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 	}> &
 	(
 		| {
-				icon?: Icon;
+				icon?: IconType;
 				iconPosition?: "left" | "right";
 				title?: RNButtonProps["title"];
 		  }
@@ -65,7 +62,6 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 export const Button = (props: ButtonProps) => {
 	const theme = useAnimatedTheme();
 	const scale = useSharedValue<number>(1);
-	const Leading = withUnistyles(props.icon ?? View);
 	const handlePress = useCallback(() => {
 		scale.value = theme.value.animations.pressable.scaleOnPress;
 	}, []);
@@ -99,11 +95,17 @@ export const Button = (props: ButtonProps) => {
 				onPressOut={!props.disabled ? handleRelease : undefined}
 			>
 				{props.icon && props.iconPosition !== "right" ? (
-					<Leading style={[styles.label as any, styles.icon]} />
+					<Icon
+						icon={props.icon}
+						style={[styles.label as any, styles.icon]}
+					/>
 				) : undefined}
 				{props.title && <Text style={styles.label}>{props.title}</Text>}
 				{props.icon && props.iconPosition === "right" ? (
-					<Leading style={[styles.label as any, styles.icon]} />
+					<Icon
+						icon={props.icon}
+						style={[styles.label as any, styles.icon]}
+					/>
 				) : undefined}
 			</Container>
 		</Animated.View>

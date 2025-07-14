@@ -2,10 +2,11 @@ import type { InfiniteQuery } from "@/api/query";
 import type Resource from "@/models/resource";
 import type React from "react";
 import { createRef, useMemo } from "react";
-import { FlatList, TouchableOpacity, View, type ViewStyle } from "react-native";
+import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { EmptyState } from "~/components/empty-state";
 import { LoadableText } from "~/components/loadable_text";
+import { Pressable } from "~/primitives/pressable";
 
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
@@ -52,8 +53,7 @@ const RowBase = <T,>({
 	return (
 		(!hideIfEmpty || (items && items.length > 0)) && (
 			<View style={[styles.root, style]}>
-				<TouchableOpacity
-					touchSoundDisabled
+				<Pressable
 					style={styles.header}
 					onPress={() =>
 						flatListRef.current?.scrollToIndex({
@@ -71,7 +71,7 @@ const RowBase = <T,>({
 								: header
 						}
 					/>
-				</TouchableOpacity>
+				</Pressable>
 				{items?.length !== 0 ? (
 					<ResponsiveFlatList
 						horizontal
@@ -107,10 +107,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	},
 	header: {
 		marginLeft: theme.gap(1),
-		paddingHorizontal: theme.gap(1),
 		marginBottom: theme.gap(1),
-		borderRadius: theme.borderRadius,
-		overflow: "hidden",
 	},
 	row: { gap: theme.gap(0.5), paddingRight: theme.gap(1) },
 	item: (itemIndex: number) => ({

@@ -1,9 +1,11 @@
 import { BackIcon } from "@/ui/icons";
 import { Stack, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View } from "react-native";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import { Icon } from "~/components/meelo";
+import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
+import { Icon as MeeloIcon } from "~/components/meelo";
+import { Icon } from "~/primitives/icon";
+import { Pressable } from "~/primitives/pressable";
 
 export const unstable_settings = {
 	home: {
@@ -20,7 +22,7 @@ const styles = StyleSheet.create((theme) => ({
 		backgroundColor: theme.colors.background,
 	},
 	icon: { marginRight: theme.gap(2) },
-	backButtonContainer: { paddingRight: theme.gap(2) },
+	backButtonContainer: { paddingRight: theme.gap(2), paddingLeft: 0 },
 	headerTitle: {
 		color: theme.colors.text.primary,
 		...theme.fontStyles.regular,
@@ -29,17 +31,14 @@ const styles = StyleSheet.create((theme) => ({
 
 const BackButton = () => {
 	const navigator = useNavigation();
-	const Icon = withUnistyles(BackIcon, (theme) => ({
-		color: theme.colors.text.primary,
-	}));
 	return (
 		navigator.canGoBack() && (
-			<TouchableOpacity
+			<Pressable
 				style={styles.backButtonContainer}
 				onPress={() => navigator.goBack()}
 			>
-				<Icon />
-			</TouchableOpacity>
+				<Icon icon={BackIcon} />
+			</Pressable>
 		)
 	);
 };
@@ -53,6 +52,7 @@ const SharedRoutes: {
 	{ name: "albums/index", options: { headerTitle: "models.album_plural" } },
 	{ name: "songs/index", options: { headerTitle: "models.song_plural" } },
 	{ name: "videos/index", options: { headerTitle: "models.video_plural" } },
+	{ name: "releases/[id]", options: { headerTitle: null } },
 ];
 
 export default function Layout({ segment }: { segment: string }) {
@@ -72,7 +72,7 @@ export default function Layout({ segment }: { segment: string }) {
 						name="index"
 						options={{
 							headerTitle: t("nav.home"),
-							headerLeft: () => <Icon style={styles.icon} />,
+							headerLeft: () => <MeeloIcon style={styles.icon} />,
 						}}
 					/>
 					{SharedRoutes.map(
