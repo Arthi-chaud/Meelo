@@ -17,6 +17,7 @@
  */
 
 import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
@@ -69,12 +70,33 @@ export default function Root() {
 			"illustration",
 		]),
 	);
+	const sync = useCallback(
+		<T,>(q: T) => {
+			if (
+				!!newlyAddedAlbums.data &&
+				!!newlyAddedArtists.data &&
+				!!latestAlbums.data &&
+				!!topSongs.data &&
+				!!newlyAddedReleases.data
+			) {
+				return q;
+			}
+			return undefined;
+		},
+		[
+			newlyAddedAlbums.data,
+			newlyAddedArtists.data,
+			latestAlbums.data,
+			topSongs.data,
+			newlyAddedReleases.data,
+		],
+	);
 	return (
 		<SafeScrollView contentContainerStyle={[styles.main]}>
 			<Row
 				style={styles.section}
 				header={t("home.newlyAddedAlbums")}
-				items={newlyAddedAlbums.items}
+				items={sync(newlyAddedAlbums.items)}
 				render={(album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
@@ -83,7 +105,7 @@ export default function Root() {
 			<Row
 				style={styles.section}
 				header={t("home.newlyAddedArtists")}
-				items={newlyAddedArtists.items}
+				items={sync(newlyAddedArtists.items)}
 				render={(artist) => {
 					return <ArtistTile artist={artist} />;
 				}}
@@ -93,7 +115,7 @@ export default function Root() {
 			<Row
 				style={styles.section}
 				header={t("home.latestAlbums")}
-				items={latestAlbums.items}
+				items={sync(latestAlbums.items)}
 				render={(album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
@@ -102,7 +124,7 @@ export default function Root() {
 			<Row
 				style={styles.section}
 				header={t("home.newlyAddedReleases")}
-				items={newlyAddedReleases.items}
+				items={sync(newlyAddedReleases.items)}
 				render={(release) => {
 					return <ReleaseTile release={release} />;
 				}}
@@ -112,7 +134,7 @@ export default function Root() {
 
 			<SongGrid
 				header={t("home.mostPlayedSongs")}
-				songs={topSongs.data?.pages.at(0)?.items}
+				songs={sync(topSongs.data?.pages.at(0)?.items)}
 				subtitle={() => "artists"}
 				style={styles.section}
 			/>
