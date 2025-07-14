@@ -125,7 +125,9 @@ const styles = StyleSheet.create((theme, rt) => ({
 		paddingRight: isLast ? theme.gap(4) : theme.gap(1),
 		width: rt.screen.width * (!isLast ? ColumnWidthRatio : 1),
 		maxWidth: breakpoints.sm * ColumnWidthRatio,
-		marginLeft: idx === 0 ? theme.gap(1) : 0,
+		marginLeft: idx === 0 && !isLast ? theme.gap(1) : 0,
+		// Preventing single-col grids to be scrollable
+		paddingLeft: idx === 0 && isLast ? theme.gap(1) : 0,
 	}),
 }));
 
