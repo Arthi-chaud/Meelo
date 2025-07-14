@@ -1,14 +1,10 @@
 import type { SongWithRelations } from "@/models/song";
 import { generateArray } from "@/utils/gen-list";
 import { type ComponentProps, Fragment, createRef, useMemo } from "react";
-import {
-	ScrollView,
-	TouchableOpacity,
-	View,
-	type ViewStyle,
-} from "react-native";
+import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { Divider } from "~/primitives/divider";
+import { Pressable } from "~/primitives/pressable";
 import { breakpoints } from "~/theme";
 import type { ListItem } from "./list-item";
 import { SongItem } from "./list-item/resource/song";
@@ -55,8 +51,7 @@ export const SongGrid = ({
 			(!hideIfEmpty && songs.length === 0) ||
 			songs.length > 0) && (
 			<View style={[styles.root, props.style]}>
-				<TouchableOpacity
-					touchSoundDisabled
+				<Pressable
 					style={styles.header}
 					onPress={() =>
 						scrollViewRef.current?.scrollTo({
@@ -70,7 +65,7 @@ export const SongGrid = ({
 						skeletonWidth={header.length}
 						content={songs === undefined ? undefined : header}
 					/>
-				</TouchableOpacity>
+				</Pressable>
 				<SnappyScrollView
 					horizontal
 					snapToAlignment="start"
@@ -123,10 +118,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	root: { display: "flex", alignItems: "flex-start" },
 	header: {
 		marginLeft: theme.gap(1),
-		paddingHorizontal: theme.gap(1),
 		marginBottom: theme.gap(1),
-		borderRadius: theme.borderRadius,
-		overflow: "hidden",
 	},
 	scrollView: {},
 	column: (idx: number, isLast: boolean) => ({

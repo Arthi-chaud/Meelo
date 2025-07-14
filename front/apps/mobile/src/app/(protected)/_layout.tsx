@@ -21,7 +21,7 @@ import { toTanStackQuery } from "@/api/query";
 import {
 	BrowseIcon,
 	HomeIcon,
-	type Icon,
+	type Icon as IconType,
 	SearchIcon,
 	SettingsIcon,
 } from "@/ui/icons";
@@ -30,9 +30,10 @@ import { Redirect, Tabs } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
+import { Icon } from "~/primitives/icon";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme) => ({
@@ -51,18 +52,11 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-const TabIcon = ({ icon, focused }: { icon: Icon; focused: boolean }) => {
-	const Icon_ = withUnistyles(
-		icon,
-		(theme) =>
-			({
-				variant: focused ? "Bold" : "Outline",
-				color: theme.colors.text.primary,
-			}) as const,
-	);
-	return <Icon_ />;
+const TabIcon = ({ icon, focused }: { icon: IconType; focused: boolean }) => {
+	return <Icon icon={icon} variant={focused ? "Bold" : "Outline"} />;
 };
 
+// Note: if we use our pressable, there is a delay between when the button become bold and when opacity gets back to 1
 const TabButton = (props: any) => <TouchableOpacity {...props} />;
 
 export default function ProtectedLayout() {

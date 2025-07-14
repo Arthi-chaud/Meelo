@@ -8,6 +8,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
+import { Icon } from "~/primitives/icon";
 import { Text } from "~/primitives/text";
 
 //TODO Actions
@@ -30,9 +31,6 @@ export const Controls = <S extends string>({
 	filters,
 }: Props<S>) => {
 	const { t } = useTranslation();
-	const StyledCheckIcon = withUnistyles(CheckIcon, (theme) => ({
-		color: theme.colors.text.primary,
-	}));
 	const OrderIcon = withUnistyles(
 		sort?.selected.order === "desc" ? DescIcon : AscIcon,
 		(theme) => ({
@@ -70,7 +68,7 @@ export const Controls = <S extends string>({
 											? filter.selected.includes(item)
 											: filter.selected === item
 									) ? (
-										<StyledCheckIcon />
+										<Icon icon={CheckIcon} />
 									) : undefined}
 								</View>
 
