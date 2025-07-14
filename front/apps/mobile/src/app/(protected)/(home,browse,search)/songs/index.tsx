@@ -52,7 +52,7 @@ export default function SongBrowseView() {
 			render={(song) => (
 				<SongItem
 					song={song}
-					subtitle="artistName"
+					subtitle="artists"
 					illustrationProps={{ simpleColorPlaceholder: true }}
 				/>
 			)}
