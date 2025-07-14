@@ -123,13 +123,15 @@ const Grid = withUnistyles(FlashList, (theme, rt) => {
 	// @ts-expect-error
 	const colCount = theme.layout.grid.columnCount[rt.breakpoint!];
 	return {
+		onEndReachedThreshold: rt.screen.height,
 		estimatedItemSize: rt.screen.width / colCount,
 		numColumns: colCount,
 	};
 });
 
-const List = withUnistyles(FlashList, () => ({
+const List = withUnistyles(FlashList, (_, rt) => ({
 	numColumns: 1,
+	onEndReachedThreshold: rt.screen.height,
 	estimatedItemSize: 70, // TODO
 	ItemSeparatorComponent: () => <Divider h withInsets />,
 }));
