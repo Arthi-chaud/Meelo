@@ -102,6 +102,7 @@ export default function ArtistView() {
 				))}
 
 				<SongGrid
+					hideIfEmpty
 					header={t("artist.rareSongs")}
 					style={styles.section}
 					songs={rareSongs.data?.pages.at(0)?.items}
