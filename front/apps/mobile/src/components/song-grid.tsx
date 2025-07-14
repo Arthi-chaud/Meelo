@@ -54,7 +54,7 @@ export const SongGrid = ({
 		(songs === undefined ||
 			(!hideIfEmpty && songs.length === 0) ||
 			songs.length > 0) && (
-			<View style={props.style}>
+			<View style={[styles.root, props.style]}>
 				<TouchableOpacity
 					touchSoundDisabled
 					style={styles.header}
@@ -120,6 +120,7 @@ export const SongGrid = ({
 const ColumnWidthRatio = 0.9;
 
 const styles = StyleSheet.create((theme, rt) => ({
+	root: { display: "flex", alignItems: "flex-start" },
 	header: {
 		marginLeft: theme.gap(1),
 		paddingHorizontal: theme.gap(1),
