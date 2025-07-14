@@ -20,7 +20,7 @@ import type IllustrationModel from "@/models/illustration";
 import type { IllustrationQuality } from "@/models/illustration";
 import type { Icon } from "@/ui/icons";
 import { useEffect, useMemo, useState } from "react";
-import { View } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { Blurhash } from "react-native-blurhash";
 import Image from "react-native-fast-image";
 import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
@@ -37,6 +37,7 @@ type Props = {
 	// Instead it will use the color from the illustration model as a place holder
 	// To enhance performance in infinite lists
 	simpleColorPlaceholder?: true;
+	style?: ViewStyle;
 };
 
 export const Illustration = ({
@@ -46,6 +47,7 @@ export const Illustration = ({
 	variant,
 	simpleColorPlaceholder,
 	normalizedThumbnail,
+	style,
 }: Props) => {
 	const api = useAPI();
 	const innerAspectRatio = useMemo(
@@ -100,7 +102,7 @@ export const Illustration = ({
 		setLoadStatus("loading");
 	}, [illustration]);
 	return (
-		<View style={styles.outerContainer}>
+		<View style={[styles.outerContainer, style]}>
 			<View
 				style={[
 					{
