@@ -26,9 +26,8 @@ const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
 	);
 
 export default function ArtistView() {
-	const { id } = useLocalSearchParams();
+	const { id: artistId } = useLocalSearchParams<{ id: string }>();
 	const { t } = useTranslation();
-	const artistId = id.toString();
 
 	const { data: artist } = useQuery(() =>
 		getArtist(artistId, ["illustration"]),
@@ -173,6 +172,8 @@ const AlbumTypeRow = ({
 		/>
 	);
 };
+
+// TODO Handle wrap when the artist name is a single word and is larger than view
 
 const Header = ({
 	artist,
