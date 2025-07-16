@@ -82,7 +82,7 @@ import PlaylistTile from "~/components/tile/resource/playlist";
 import ReleaseTile from "~/components/tile/resource/release";
 import VideoTile from "~/components/tile/resource/video";
 import TileRow from "~/components/tile/row";
-import { useAccentColor } from "~/utils/accent-color";
+import { useAccentColor } from "@/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 

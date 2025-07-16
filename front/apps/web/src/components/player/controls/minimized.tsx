@@ -31,7 +31,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "~/api";
 import Illustration from "~/components/illustration";
-import { useAccentColor } from "~/utils/accent-color";
+import { useAccentColor } from "@/utils/accent-color";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 import {
 	PlayButton,
