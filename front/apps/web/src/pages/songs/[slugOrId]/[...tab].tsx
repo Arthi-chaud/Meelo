@@ -57,7 +57,7 @@ import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
 import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
-import { useAccentColor } from "~/utils/accent-color";
+import { useAccentColor } from "@/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 

@@ -29,7 +29,7 @@ import {
 import Link from "next/link";
 import { useMemo } from "react";
 import Illustration from "~/components/illustration";
-import { useAccentColor } from "~/utils/accent-color";
+import { useAccentColor } from "@/utils/accent-color";
 
 type HighlightCardProps = {
 	title: string | undefined;
