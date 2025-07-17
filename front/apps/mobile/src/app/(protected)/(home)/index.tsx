@@ -30,9 +30,9 @@ import { ArtistTile } from "~/components/tile/resource/artist";
 import ReleaseTile from "~/components/tile/resource/release";
 
 const styles = StyleSheet.create((theme) => ({
-	main: { paddingTop: theme.gap(2) },
-	section: {
-		paddingBottom: theme.gap(2),
+	main: { paddingTop: theme.gap(2), gap: theme.gap(2) },
+	lastSection: {
+		paddingBottom: theme.gap(1),
 	},
 	title: { paddingLeft: theme.gap(2) },
 }));
@@ -94,7 +94,6 @@ export default function Root() {
 	return (
 		<SafeScrollView contentContainerStyle={[styles.main]}>
 			<Row
-				style={styles.section}
 				header={t("home.newlyAddedAlbums")}
 				items={sync(newlyAddedAlbums.items)}
 				render={(album) => {
@@ -103,7 +102,6 @@ export default function Root() {
 			/>
 
 			<Row
-				style={styles.section}
 				header={t("home.newlyAddedArtists")}
 				items={sync(newlyAddedArtists.items)}
 				render={(artist) => {
@@ -113,7 +111,6 @@ export default function Root() {
 			{/* TODO Featured albums */}
 
 			<Row
-				style={styles.section}
 				header={t("home.latestAlbums")}
 				items={sync(latestAlbums.items)}
 				render={(album) => {
@@ -122,7 +119,6 @@ export default function Root() {
 			/>
 
 			<Row
-				style={styles.section}
 				header={t("home.newlyAddedReleases")}
 				items={sync(newlyAddedReleases.items)}
 				render={(release) => {
@@ -136,7 +132,7 @@ export default function Root() {
 				header={t("home.mostPlayedSongs")}
 				songs={sync(topSongs.data?.pages.at(0)?.items)}
 				subtitle={() => "artists"}
-				style={styles.section}
+				style={styles.lastSection}
 			/>
 		</SafeScrollView>
 	);
