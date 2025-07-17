@@ -14,13 +14,19 @@ export const SafeScrollView = (
 		contentContainerStyle?: ViewStyle[];
 	},
 ) => {
-	const rootStyle = useRootViewStyle();
+	const { paddingTop, ...rootStyle } = useRootViewStyle();
 	return (
 		<ScrollView
 			{...props}
 			contentContainerStyle={[
-				rootStyle,
 				...(props.contentContainerStyle ?? []),
+				rootStyle,
+				{
+					paddingTop: mergePaddingTop(
+						paddingTop,
+						props.contentContainerStyle,
+					),
+				},
 			]}
 		/>
 	);
@@ -32,6 +38,34 @@ export const SafeView = (
 		style?: ViewStyle[];
 	},
 ) => {
-	const rootStyle = useRootViewStyle();
-	return <View {...props} style={[rootStyle, ...(props.style ?? [])]} />;
+	const { paddingTop, ...rootStyle } = useRootViewStyle();
+	return (
+		<View
+			{...props}
+			style={[
+				...(props.style ?? []),
+				rootStyle,
+				{
+					paddingTop: mergePaddingTop(paddingTop, props.style),
+				},
+			]}
+		/>
+	);
+};
+
+const mergePaddingTop = (
+	paddingTop: number,
+	styles: ViewStyle[] | undefined,
+) => {
+	return (
+		paddingTop +
+		(styles
+			?.map(
+				(s) =>
+					((s.padding ??
+						s.paddingVertical ??
+						s.paddingTop) as number) || 0,
+			)
+			?.reduce((p, s) => p + s) ?? 0)
+	);
 };

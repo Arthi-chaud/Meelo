@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { View } from "react-native";
+import { SafeView } from "~/components/safe-view";
 import { Text } from "~/primitives/text";
 
 export default function SearchView() {
 	return (
-		<View>
+		<SafeView>
 			<Text>Search</Text>
-		</View>
+		</SafeView>
 	);
 }

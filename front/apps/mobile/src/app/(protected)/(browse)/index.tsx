@@ -9,9 +9,9 @@ import {
 import { type Href, useRouter } from "expo-router";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { ListItem } from "~/components/list-item";
+import { SafeView } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
 
 const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
@@ -48,7 +48,7 @@ export default function BrowseList() {
 	const router = useRouter();
 	const { t } = useTranslation();
 	return (
-		<View style={styles.root}>
+		<SafeView style={[styles.root]}>
 			{tabs.map(({ title, href, icon }) => (
 				<Fragment key={title}>
 					<ListItem
@@ -61,7 +61,7 @@ export default function BrowseList() {
 					<Divider h withInsets />
 				</Fragment>
 			))}
-		</View>
+		</SafeView>
 	);
 }
 

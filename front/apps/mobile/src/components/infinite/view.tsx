@@ -37,7 +37,7 @@ export const InfiniteView = <
 	props: Props<T, T1, Sort>,
 ) => {
 	styles.useVariants({ layout: props.layout });
-	const { paddingBottom } = useRootViewStyle();
+	const { paddingBottom, paddingTop } = useRootViewStyle();
 	const queryRes = useInfiniteQuery(() => props.query);
 	const [controlsHeight, setControlsHeight] = useState(null as number | null);
 	const firstPage = queryRes.data?.pages.at(0)?.items;
@@ -58,7 +58,7 @@ export const InfiniteView = <
 	return (
 		<View style={[styles.rootStyle]}>
 			<View
-				style={styles.controls}
+				style={styles.controls(paddingTop)}
 				onLayout={(e) => setControlsHeight(e.nativeEvent.layout.height)}
 			>
 				<Controls {...props.controls} />
@@ -145,13 +145,14 @@ const styles = StyleSheet.create((theme) => ({
 		width: "100%",
 	},
 	emptyState: { height: "20%", maxHeight: 200 },
-	controls: {
-		paddingVertical: theme.gap(1.5),
+	controls: (headerHeight: number) => ({
+		paddingBottom: theme.gap(1.5),
+		paddingTop: theme.gap(1.5) + headerHeight,
 		paddingHorizontal: theme.gap(1),
 		position: "absolute",
 		zIndex: 1,
 		width: "100%",
-	},
+	}),
 	scrollView: {
 		paddingHorizontal: theme.gap(1),
 	},

@@ -3,6 +3,7 @@ import { Stack, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { BlurView } from "~/components/blur-view";
 import { Icon as MeeloIcon } from "~/components/meelo";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -18,8 +19,16 @@ const styles = StyleSheet.create((theme) => ({
 		backgroundColor: "transparent",
 		flex: 1,
 	},
-	header: {
-		backgroundColor: theme.colors.background,
+	headerBgContainer: {
+		position: "absolute",
+		height: "100%",
+		width: "100%",
+		overflow: "hidden",
+		borderBottomLeftRadius: theme.borderRadius,
+		borderBottomRightRadius: theme.borderRadius,
+	},
+	headerBgContent: {
+		flex: 1,
 	},
 	icon: { marginRight: theme.gap(2) },
 	backButtonContainer: { paddingRight: theme.gap(2), paddingLeft: 0 },
@@ -59,9 +68,15 @@ export default function Layout({ segment }: { segment: string }) {
 	const { t } = useTranslation();
 	const screenOptions = {
 		contentStyle: [styles.screen],
-		headerStyle: styles.header,
+		// headerStyle: styles.header,
 		headerTitleStyle: styles.headerTitle,
 		headerLeft: () => <BackButton />,
+		headerBackground: () => (
+			<View style={styles.headerBgContainer}>
+				<BlurView style={styles.headerBgContent} />
+			</View>
+		),
+		headerTransparent: true,
 		headerTintColor: styles.headerTitle.color,
 	};
 	switch (segment) {
