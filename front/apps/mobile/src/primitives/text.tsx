@@ -41,7 +41,8 @@ const styles = StyleSheet.create((theme) => ({
 				},
 				h2: {
 					fontSize: theme.fontSize.rem(2.25),
-					lineHeight: theme.fontSize.rem(2.25),
+					lineHeight: theme.fontSize.rem(2.75),
+					overflow: "visible",
 					...theme.fontStyles.semiBold,
 				},
 				h3: {
