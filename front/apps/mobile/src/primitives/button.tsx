@@ -22,7 +22,7 @@ import {
 	Pressable,
 	type ButtonProps as RNButtonProps,
 	Text,
-	type TextProps,
+	type TextStyle,
 	View,
 	type ViewStyle,
 } from "react-native";
@@ -37,7 +37,7 @@ import type { RequireExactlyOne } from "type-fest";
 import { Icon } from "./icon";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {
-	labelProps?: TextProps;
+	labelStyle?: TextStyle;
 	containerStyle?: ViewStyle;
 } & RequireExactlyOne<{
 		onPress: NonNullable<RNButtonProps["onPress"]>;
@@ -100,7 +100,11 @@ export const Button = (props: ButtonProps) => {
 						style={[styles.label as any, styles.icon]}
 					/>
 				) : undefined}
-				{props.title && <Text style={styles.label}>{props.title}</Text>}
+				{props.title && (
+					<Text style={[styles.label, props.labelStyle]}>
+						{props.title}
+					</Text>
+				)}
 				{props.icon && props.iconPosition === "right" ? (
 					<Icon
 						icon={props.icon}
