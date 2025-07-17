@@ -19,6 +19,8 @@
 import { useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
+import { SafeScrollView } from "~/components/safe-view";
 import { Button } from "~/primitives/button";
 import { Text } from "~/primitives/text";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
@@ -28,15 +30,34 @@ export default function SettingsView() {
 	const setAccessToken = useSetAtom(accessTokenAtom);
 	const setInstanceUrl = useSetAtom(instanceUrlAtom);
 	return (
-		<View>
-			<Text>Settings</Text>
-			<Button
-				title={t("actions.logout")}
-				onPress={() => {
-					setAccessToken(null);
-					setInstanceUrl(null);
-				}}
-			/>
-		</View>
+		<SafeScrollView style={styles.root}>
+			<View style={styles.section}>
+				<Text
+					style={styles.sectionHeader}
+					variant="h4"
+					content={t("actions.logout")}
+				/>
+				<Button
+					title={t("actions.logout")}
+					containerStyle={{ alignItems: "center" }}
+					labelStyle={styles.sectionHeaderLabel}
+					onPress={() => {
+						setAccessToken(null);
+						setInstanceUrl(null);
+					}}
+				/>
+			</View>
+		</SafeScrollView>
 	);
 }
+
+const styles = StyleSheet.create((theme) => ({
+	root: { paddingHorizontal: theme.gap(1) },
+	section: {
+		paddingTop: theme.gap(1),
+		paddingBottom: theme.gap(1),
+		gap: theme.gap(1),
+	},
+	sectionHeader: { paddingLeft: theme.gap(1) },
+	sectionHeaderLabel: { flex: 1 },
+}));

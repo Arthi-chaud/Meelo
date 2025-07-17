@@ -29,15 +29,28 @@ import { useQuery as useTanStackQuery } from "@tanstack/react-query";
 import { Redirect, Tabs } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
 import { Icon } from "~/primitives/icon";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
+//TODO DRY: The header style for settings is very similar to the shared routed ones.
+
 const styles = StyleSheet.create((theme) => ({
 	screen: { backgroundColor: "transparent", flex: 1 },
+	headerTitle: {
+		color: theme.colors.text.primary,
+		...theme.fontStyles.regular,
+	},
+	headerBackgroundContainer: {
+		...StyleSheet.absoluteFillObject,
+		borderBottomLeftRadius: theme.borderRadius,
+		borderBottomRightRadius: theme.borderRadius,
+		overflow: "hidden",
+	},
+	headerBackgroundContent: { flex: 1 },
 	tabBar: {
 		position: "absolute",
 		paddingTop: theme.gap(1),
@@ -116,6 +129,14 @@ export default function ProtectedLayout() {
 			<Tabs.Screen
 				name="settings"
 				options={{
+					headerShown: true,
+					headerTransparent: true,
+					headerTitleStyle: styles.headerTitle,
+					headerBackground: () => (
+						<View style={styles.headerBackgroundContainer}>
+							<BlurView style={styles.headerBackgroundContent} />
+						</View>
+					),
 					title: t("nav.settings"),
 					tabBarIcon: ({ focused }) => (
 						<TabIcon icon={SettingsIcon} focused={focused} />
