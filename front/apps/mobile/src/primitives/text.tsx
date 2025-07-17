@@ -36,10 +36,12 @@ const styles = StyleSheet.create((theme) => ({
 			variant: {
 				h1: {
 					fontSize: theme.fontSize.rem(4),
+					lineHeight: theme.fontSize.rem(4),
 					...theme.fontStyles.light,
 				},
 				h2: {
 					fontSize: theme.fontSize.rem(2.25),
+					lineHeight: theme.fontSize.rem(2.25),
 					...theme.fontStyles.semiBold,
 				},
 				h3: {
