@@ -17,11 +17,16 @@
  */
 
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useHeaderHeight } from "@react-navigation/elements";
 import type { ViewStyle } from "react-native";
 
 // Provides padding to avoid the tababr to mask content
 export const useRootViewStyle = () => {
+	const headerHeight = useHeaderHeight();
 	const tabBarHeight = useBottomTabBarHeight();
 
-	return { paddingBottom: tabBarHeight } satisfies ViewStyle;
+	return {
+		paddingBottom: tabBarHeight,
+		paddingTop: headerHeight,
+	} satisfies ViewStyle;
 };
