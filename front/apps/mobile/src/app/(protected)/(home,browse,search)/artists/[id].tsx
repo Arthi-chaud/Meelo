@@ -1,4 +1,10 @@
-import { getAlbums, getArtist, getSongs, getVideos } from "@/api/queries";
+import {
+	getAlbums,
+	getArtist,
+	getArtistExternalMetadata,
+	getSongs,
+	getVideos,
+} from "@/api/queries";
 import { AlbumType } from "@/models/album";
 import type { ArtistWithRelations } from "@/models/artist";
 import { albumTypeToTranslationKey } from "@/models/utils";
@@ -10,6 +16,10 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import {
+	ExternalMetadataDescriptionSection,
+	ExternalMetadataSourcesSection,
+} from "~/components/external-metadata";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { Row } from "~/components/row";
@@ -61,6 +71,10 @@ export default function ArtistView() {
 			{ sortBy: "releaseDate", order: "desc" },
 			["artist", "illustration"],
 		),
+	);
+	const { data: externalMetadata } = useQuery(
+		(artistId) => getArtistExternalMetadata(artistId),
+		artistId,
 	);
 	const { musicVideos, liveVideos, extras } = useMemo(() => {
 		return {
@@ -151,6 +165,18 @@ export default function ArtistView() {
 					)}
 				/>
 
+				{externalMetadata !== null && (
+					<>
+						<ExternalMetadataDescriptionSection
+							externalMetadata={externalMetadata}
+							style={styles.section}
+						/>
+						<ExternalMetadataSourcesSection
+							externalMetadata={externalMetadata}
+							style={styles.section}
+						/>
+					</>
+				)}
 				{/* TODO external metadata*/}
 			</SafeScrollView>
 		</>
