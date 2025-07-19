@@ -10847,6 +10847,8 @@ __metadata:
   dependencies:
     iconsax-react: "npm:0.0.8"
     typescript: "npm:5.3.3"
+  peerDependencies:
+    react: "*"
   languageName: unknown
   linkType: soft
 
