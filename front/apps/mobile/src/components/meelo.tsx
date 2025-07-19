@@ -51,7 +51,6 @@ const IconBase = withUnistyles(
 		({
 			priority: "high",
 			contentFit: "contain",
-			onError: (e) => console.log(e),
 			source:
 				theme.name === "light"
 					? require("../../assets/icon-black.png")
