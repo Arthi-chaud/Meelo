@@ -4,20 +4,37 @@ import {
 	getGenres,
 	getRelease,
 } from "@/api/queries";
+import type { AlbumType } from "@/models/album";
+import type Genre from "@/models/genre";
+import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
+import {
+	useBSidesAndExtras,
+	useTracklist,
+	useVideos,
+} from "@/ui/pages/release";
+import { generateArray } from "@/utils/gen-list";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import {
+	ExternalMetadataDescriptionSection,
+	ExternalMetadataSourcesSection,
+} from "~/components/external-metadata";
+import { LoadableText } from "~/components/loadable_text";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
+import { SectionHeader } from "~/components/section-header";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
 import ReleaseTile from "~/components/tile/resource/release";
+import { VideoTile } from "~/components/tile/resource/video";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { Text } from "~/primitives/text";
 import { Header } from "./header";
 import {
 	artistsOnAlbumQuery,
@@ -28,23 +45,6 @@ import {
 	releatedVideos,
 } from "./queries";
 import { Tracklist } from "./tracklist";
-import {
-	ExternalMetadataDescriptionSection,
-	ExternalMetadataSourcesSection,
-} from "~/components/external-metadata";
-import type Genre from "@/models/genre";
-import { generateArray } from "@/utils/gen-list";
-import { LoadableText } from "~/components/loadable_text";
-import {
-	useBSidesAndExtras,
-	useTracklist,
-	useVideos,
-} from "@/ui/pages/release";
-import { Text } from "~/primitives/text";
-import type { AlbumType } from "@/models/album";
-import type { TracklistItemWithRelations } from "@/models/tracklist";
-import { VideoTile } from "~/components/tile/resource/video";
-import { SectionHeader } from "~/components/section-header";
 
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
 	const { data: release } = useQuery(() =>

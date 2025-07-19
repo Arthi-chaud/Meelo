@@ -4,6 +4,8 @@ import type { TrackWithRelations } from "@/models/track";
 import type Track from "@/models/track";
 import type TracklistType from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
+import { VideoIcon } from "@/ui/icons";
+import { formatDiscName } from "@/ui/pages/release";
 import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
@@ -14,11 +16,9 @@ import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import { LoadableText } from "~/components/loadable_text";
 import { Divider } from "~/primitives/divider";
+import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import { Icon } from "~/primitives/icon";
-import { VideoIcon } from "@/ui/icons";
-import { formatDiscName } from "@/ui/pages/release";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{

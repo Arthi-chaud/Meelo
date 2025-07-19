@@ -1,8 +1,8 @@
 import type { ComponentProps } from "react";
-import { LoadableText } from "./loadable_text";
-import { Pressable } from "~/primitives/pressable";
 import type { ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { Pressable } from "~/primitives/pressable";
+import { LoadableText } from "./loadable_text";
 
 type Props = {
 	onPress?: () => void;
