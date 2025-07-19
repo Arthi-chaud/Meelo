@@ -35,16 +35,17 @@ import type Tracklist from "@/models/tracklist";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { playTracksAtom } from "@/state/player";
 import { PlayIcon, ShuffleIcon, StarIcon } from "@/ui/icons";
-import { ParentScrollableDivId } from "@/utils/constants";
-import { getYear } from "@/utils/date";
-import formatDuration from "@/utils/format-duration";
 import {
+	formatReleaseDate,
 	useBSidesAndExtras,
 	useReleaseDate,
 	useTracklist,
 	useVideos,
-	formatReleaseDate,
 } from "@/ui/pages/release";
+import { useAccentColor } from "@/utils/accent-color";
+import { ParentScrollableDivId } from "@/utils/constants";
+import { getYear } from "@/utils/date";
+import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
 import {
 	Button,
@@ -87,7 +88,6 @@ import PlaylistTile from "~/components/tile/resource/playlist";
 import ReleaseTile from "~/components/tile/resource/release";
 import VideoTile from "~/components/tile/resource/video";
 import TileRow from "~/components/tile/row";
-import { useAccentColor } from "@/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 

@@ -17,6 +17,7 @@
  */
 
 import type IllustrationModel from "@/models/illustration";
+import { useAccentColor } from "@/utils/accent-color";
 import {
 	Box,
 	Chip,
@@ -29,7 +30,6 @@ import {
 import Link from "next/link";
 import { useMemo } from "react";
 import Illustration from "~/components/illustration";
-import { useAccentColor } from "@/utils/accent-color";
 
 type HighlightCardProps = {
 	title: string | undefined;

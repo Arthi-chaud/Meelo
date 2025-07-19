@@ -28,6 +28,7 @@ import { toTanStackQuery } from "@/api/query";
 import { songTypeToTranslationKey } from "@/models/utils";
 import { playTrackAtom } from "@/state/player";
 import { PlayIcon } from "@/ui/icons";
+import { useAccentColor } from "@/utils/accent-color";
 import { generateArray } from "@/utils/gen-list";
 import {
 	Box,
@@ -57,7 +58,6 @@ import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
 import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
-import { useAccentColor } from "@/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 
