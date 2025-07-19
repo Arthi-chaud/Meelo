@@ -4,11 +4,10 @@ import { type ComponentProps, Fragment, createRef, useMemo } from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { Divider } from "~/primitives/divider";
-import { Pressable } from "~/primitives/pressable";
 import { breakpoints } from "~/theme";
 import type { ListItem } from "./list-item";
 import { SongItem } from "./list-item/resource/song";
-import { LoadableText } from "./loadable_text";
+import { SectionHeader } from "./section-header";
 
 type Song = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
@@ -19,7 +18,7 @@ type Song = SongWithRelations<
 type Props = {
 	songs: Song[] | undefined;
 	style?: ViewStyle;
-	header: string;
+	header?: string;
 	hideIfEmpty?: true;
 	illustrationProps?: ComponentProps<typeof ListItem>["illustrationProps"];
 	subtitle: null | ((song: Song) => "artists" | null);
@@ -51,21 +50,18 @@ export const SongGrid = ({
 			(!hideIfEmpty && songs.length === 0) ||
 			songs.length > 0) && (
 			<View style={[styles.root, props.style]}>
-				<Pressable
-					style={styles.header}
-					onPress={() =>
-						scrollViewRef.current?.scrollTo({
-							x: 0,
-							animated: true,
-						})
-					}
-				>
-					<LoadableText
-						variant="h4"
+				{header && (
+					<SectionHeader
+						onPress={() =>
+							scrollViewRef.current?.scrollTo({
+								x: 0,
+								animated: true,
+							})
+						}
 						skeletonWidth={header.length}
 						content={songs === undefined ? undefined : header}
 					/>
-				</Pressable>
+				)}
 				<SnappyScrollView
 					horizontal
 					snapToAlignment="start"
@@ -116,10 +112,6 @@ const ColumnWidthRatio = 0.9;
 
 const styles = StyleSheet.create((theme, rt) => ({
 	root: { display: "flex", alignItems: "flex-start" },
-	header: {
-		marginLeft: theme.gap(1),
-		marginBottom: theme.gap(1),
-	},
 	scrollView: {},
 	column: (idx: number, isLast: boolean) => ({
 		paddingRight: isLast ? theme.gap(4) : theme.gap(1),
