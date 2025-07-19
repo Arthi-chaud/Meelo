@@ -7,9 +7,7 @@ type Props = {
 } & (
 	| {
 			subtitle: "duration";
-			video:
-				| VideoWithRelations<"artist" | "illustration" | "master">
-				| undefined;
+			video: VideoWithRelations<"illustration" | "master"> | undefined;
 	  }
 	| {
 			subtitle: "artistName";
