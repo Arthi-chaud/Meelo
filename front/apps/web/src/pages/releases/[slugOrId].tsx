@@ -31,15 +31,20 @@ import {
 	getVideos,
 } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
-import type { SongWithRelations } from "@/models/song";
 import type Tracklist from "@/models/tracklist";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
-import { VideoTypeIsExtra, type VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
 import { PlayIcon, ShuffleIcon, StarIcon } from "@/ui/icons";
 import { ParentScrollableDivId } from "@/utils/constants";
-import { getDate, getYear } from "@/utils/date";
+import { getYear } from "@/utils/date";
 import formatDuration from "@/utils/format-duration";
+import {
+	useBSidesAndExtras,
+	useReleaseDate,
+	useTracklist,
+	useVideos,
+	formatReleaseDate,
+} from "@/ui/pages/release";
 import { generateArray } from "@/utils/gen-list";
 import {
 	Button,
@@ -85,19 +90,6 @@ import TileRow from "~/components/tile/row";
 import { useAccentColor } from "@/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
-
-const formatReleaseDate = (date: Date, lang: string) => {
-	if (date.getDate() === 1 && date.getMonth() === 0) {
-		return date.getFullYear();
-	}
-	const res = Intl.DateTimeFormat(lang, {
-		month: "short",
-		year: "numeric",
-		localeMatcher: "best fit",
-	}).format(date);
-
-	return res[0].toUpperCase() + res.slice(1);
-};
 
 const releaseQuery = (releaseIdentifier: string | number) =>
 	getRelease(releaseIdentifier, ["album", "illustration", "discs", "label"]);
@@ -272,138 +264,23 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		() => relatedPlaylists.items,
 		[relatedPlaylists.items],
 	);
-	const { bSides, extras } = useMemo(
-		() =>
-			(bSidesQuery.items ?? []).reduce(
-				(prev, current) => {
-					if (["NonMusic", "Medley"].includes(current.type)) {
-						return {
-							bSides: prev.bSides,
-							extras: prev.extras.concat(current),
-						};
-					}
-					return {
-						bSides: prev.bSides.concat(current),
-						extras: prev.extras,
-					};
-				},
-				{ bSides: [], extras: [] } as Record<
-					"bSides" | "extras",
-					SongWithRelations<
-						"artist" | "featuring" | "master" | "illustration"
-					>[]
-				>,
-			),
-		[bSidesQuery.items],
-	);
-	const [isMixed, tracks, totalDuration, trackList] = useMemo(() => {
-		if (tracklistQuery.data) {
-			const discMap = tracklistQuery.data;
-			const flatTracks = Array.from(Object.values(discMap)).flat();
+	const { bSides, extras } = useBSidesAndExtras(bSidesQuery.items);
 
-			return [
-				!flatTracks.some(({ mixed }) => !mixed),
-				flatTracks,
-				flatTracks.reduce(
-					(prevDuration, track) =>
-						prevDuration + (track.duration ?? 0),
-					0,
-				),
-				discMap,
-			];
-		}
-		return [undefined, [], undefined, undefined];
-	}, [tracklistQuery.data]);
-	const { videos, liveVideos, videoExtras } = useMemo(
-		() =>
-			(albumVideos.items ?? [])
-				.map((video) => {
-					const videoIndex = tracks.findIndex(
-						(track) =>
-							(track.song ?? track.video)!.groupId ===
-							video.groupId,
-					);
-					return [
-						video,
-						videoIndex === -1 ? tracks.length : videoIndex,
-					] as const;
-				})
-
-				.sort(
-					([v1, i1], [v2, i2]) =>
-						i1 - i2 || v1.slug.localeCompare(v2.slug),
-				)
-				.map(([video, tracklistIndex], _, videosWithIndexes) => {
-					if (album.data?.type === "Single") {
-						return [video, tracklistIndex] as const;
-					}
-					const firstVideoOfSameGroup = videosWithIndexes.find(
-						([__, i]) => i === tracklistIndex,
-					)!;
-					return [
-						video,
-						firstVideoOfSameGroup[0].id === video.id
-							? tracklistIndex
-							: 10000 + tracklistIndex,
-					] as const;
-				})
-				.sort(([_, i1], [__, i2]) => i1 - i2)
-				.map(([v, _]) => v)
-				.reduce(
-					(prev, current) => {
-						if (VideoTypeIsExtra(current.type)) {
-							return {
-								videos: prev.videos,
-								liveVideos: prev.liveVideos,
-								videoExtras: prev.videoExtras.concat(current),
-							};
-						}
-						if (current.type === "Live") {
-							return {
-								videos: prev.videos,
-								liveVideos: prev.liveVideos.concat(current),
-								videoExtras: prev.videoExtras,
-							};
-						}
-						return {
-							videos: prev.videos.concat(current),
-							liveVideos: prev.liveVideos,
-							videoExtras: prev.videoExtras,
-						};
-					},
-					{
-						videos: [],
-						videoExtras: [],
-						liveVideos: [],
-					} as Record<
-						"videos" | "videoExtras" | "liveVideos",
-						VideoWithRelations<"master" | "illustration">[]
-					>,
-				),
-		[albumVideos.items, tracks],
+	const {
+		isMixed,
+		tracks,
+		totalDuration,
+		tracklist: trackList,
+	} = useTracklist(tracklistQuery.data);
+	const { videos, liveVideos, videoExtras } = useVideos(
+		albumVideos?.items,
+		album.data?.type,
+		tracks,
 	);
 	const label = useMemo(() => {
 		return release.data?.label;
 	}, [release.data]);
-	const releaseDate = useMemo(() => {
-		if (!album.data || !release.data) {
-			return undefined;
-		}
-		const albumDate = getDate(album.data.releaseDate);
-		const releaseReleaseDate = getDate(release.data.releaseDate);
-		if (releaseReleaseDate) {
-			if (
-				releaseReleaseDate.getMonth() === 0 &&
-				releaseReleaseDate.getDate() === 1 &&
-				albumDate &&
-				releaseReleaseDate.getFullYear() === albumDate.getFullYear()
-			) {
-				return albumDate;
-			}
-			return releaseReleaseDate;
-		}
-		return albumDate;
-	}, [release.data, album.data]);
+	const releaseDate = useReleaseDate(release.data, album.data);
 	const illustration = useMemo(
 		() => release.data?.illustration,
 		[release.data],
