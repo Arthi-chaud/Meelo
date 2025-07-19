@@ -10,7 +10,9 @@
 			"@/api/*": ["../../../packages/api/src/*"],
 			"@/state/*": ["../../../packages/state/src/*"],
 			"@/ui/*": ["../../../packages/ui/src/*"],
-			"@/infinite-controls/*": ["../../../packages/infinite-controls/src/*"]
+			"@/infinite-controls/*": [
+				"../../../packages/infinite-controls/src/*"
+			]
 		}
 	},
 	"include": [

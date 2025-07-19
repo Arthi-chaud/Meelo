@@ -33,8 +33,8 @@ export const useLayoutControl = ({
 	return useLayoutControlBase({
 		hook: () => {
 			const router = useRouter();
-			// biome-ignore lint/complexity/useLiteralKeys: Clarity
 			const layoutQuery = parseQueryParam(
+				// biome-ignore lint/complexity/useLiteralKeys: Clarity
 				router.query["view"],
 				LayoutOptions,
 			);

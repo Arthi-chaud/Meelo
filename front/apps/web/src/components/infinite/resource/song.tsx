@@ -36,7 +36,6 @@ import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
-	useLibraryFilterControl,
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
 } from "~/components/infinite/controls/filters";
