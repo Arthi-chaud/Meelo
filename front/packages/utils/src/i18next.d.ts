@@ -29,12 +29,3 @@ declare module "i18next" {
 		};
 	}
 }
-
-declare global {
-	// https://github.com/i18next/i18next/blob/master/typescript/t.d.ts
-	type TranslationKey = KeysBuilderWithoutReturnObjects<
-		CustomTypeOptions["resources"]["translation"]
-	>;
-
-	type Translator = (key: TranslationKey) => string;
-}

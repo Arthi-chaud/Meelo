@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAPI, useInfiniteQuery, useQuery } from "@/api/hook";
 import {
 	getGenres,
 	getSong,
@@ -26,14 +25,10 @@ import {
 	getVideos,
 } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
-import { useGradientBackground } from "@/components/gradient-background";
-import { PlayIcon } from "@/components/icons";
-import { InfiniteSongView } from "@/components/infinite/resource/song";
-import InfiniteTrackView from "@/components/infinite/resource/track";
-import InfiniteVideoView from "@/components/infinite/resource/video";
-import SongTypeIcon from "@/components/song-type-icon";
 import { songTypeToTranslationKey } from "@/models/utils";
 import { playTrackAtom } from "@/state/player";
+import { PlayIcon } from "@/ui/icons";
+import { useAccentColor } from "@/utils/accent-color";
 import { generateArray } from "@/utils/gen-list";
 import {
 	Box,
@@ -51,13 +46,18 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";
+import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
+import { InfiniteSongView } from "~/components/infinite/resource/song";
+import InfiniteTrackView from "~/components/infinite/resource/track";
+import InfiniteVideoView from "~/components/infinite/resource/video";
 import LyricsBox from "~/components/lyrics";
 import SongRelationPageHeader from "~/components/relation-page-header/resource/song";
+import SongTypeIcon from "~/components/song-type-icon";
 import { useTabRouter } from "~/components/tab-router";
-import { useAccentColor } from "~/utils/accent-color";
 import getSlugOrId from "~/utils/getSlugOrId";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
 
