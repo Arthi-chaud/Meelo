@@ -3,18 +3,18 @@ import type {
 	ArtistExternalMetadata,
 	ExternalMetadataSource,
 } from "@/models/external-metadata";
-import { StyleSheet } from "react-native-unistyles";
-import { SectionHeader } from "./section-header";
-import { useTranslation } from "react-i18next";
-import { Text } from "~/primitives/text";
-import { useMemo, useRef } from "react";
-import { Linking, ScrollView, View, type ViewStyle } from "react-native";
 import { generateArray } from "@/utils/gen-list";
-import { TextSkeleton } from "~/primitives/text";
-import { LoadableText } from "./loadable_text";
 import { Image } from "expo-image";
+import { useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Linking, ScrollView, View, type ViewStyle } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { Pressable } from "~/primitives/pressable";
+import { Text } from "~/primitives/text";
+import { TextSkeleton } from "~/primitives/text";
+import { LoadableText } from "./loadable_text";
+import { SectionHeader } from "./section-header";
 
 type Props = {
 	externalMetadata:

@@ -2,6 +2,7 @@ import { getAlbumExternalMetadata } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import type { ReleaseWithRelations } from "@/models/release";
 import { formatReleaseDate, useReleaseDate } from "@/ui/pages/release";
+import formatDuration from "@/utils/format-duration";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,6 @@ import { Rating } from "~/components/rating";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { breakpoints } from "~/theme";
-import formatDuration from "@/utils/format-duration";
 
 export const Header = ({
 	release,
