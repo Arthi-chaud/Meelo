@@ -5,12 +5,11 @@ import { createRef, useMemo } from "react";
 import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { EmptyState } from "~/components/empty-state";
-import { LoadableText } from "~/components/loadable_text";
-import { Pressable } from "~/primitives/pressable";
+import { SectionHeader } from "./section-header";
 
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
-	header: string;
+	header?: string;
 	style?: ViewStyle;
 	render: (item: T | undefined) => React.ReactElement;
 	hideIfEmpty?: true;
@@ -34,7 +33,7 @@ export const Row = <T extends Resource>({
 
 type BaseProps<T> = {
 	items?: (T | undefined)[];
-	header: string;
+	header?: string;
 	style?: ViewStyle;
 	render: (item: T | undefined) => React.ReactElement;
 	onEndReached?: () => void;
@@ -53,17 +52,14 @@ const RowBase = <T,>({
 	return (
 		(!hideIfEmpty || (items && items.length > 0)) && (
 			<View style={[styles.root, style]}>
-				<Pressable
-					style={styles.header}
-					onPress={() =>
-						flatListRef.current?.scrollToIndex({
-							animated: true,
-							index: 0,
-						})
-					}
-				>
-					<LoadableText
-						variant="h4"
+				{header && (
+					<SectionHeader
+						onPress={() =>
+							flatListRef.current?.scrollToIndex({
+								animated: true,
+								index: 0,
+							})
+						}
 						skeletonWidth={header.length}
 						content={
 							items === undefined || items[0] === undefined
@@ -71,7 +67,7 @@ const RowBase = <T,>({
 								: header
 						}
 					/>
-				</Pressable>
+				)}
 				{items?.length !== 0 ? (
 					<ResponsiveFlatList
 						horizontal
@@ -104,10 +100,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 	emptyState: {
 		aspectRatio: 2.5, // TODO this an approximate, would be nice to compute this correctly
 		width: "100%",
-	},
-	header: {
-		marginLeft: theme.gap(1),
-		marginBottom: theme.gap(1),
 	},
 	row: { gap: theme.gap(0.5), paddingRight: theme.gap(1) },
 	item: (itemIndex: number) => ({
