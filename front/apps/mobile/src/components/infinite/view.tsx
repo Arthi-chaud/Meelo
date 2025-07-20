@@ -26,7 +26,6 @@ import { Controls } from "./controls/component";
 // We need to rely on the root view style hook to get its height
 //
 // The controls (libraries, types, etc.) are positioned absolutely, with padding to avoid overlap with header
-// If the view has an optional header, we add its height to the controls' padding
 //
 // The scroll view itself has a top padding where the controls should end up being layed out in
 
@@ -50,7 +49,6 @@ export const InfiniteView = <
 	const { paddingBottom, paddingTop } = useRootViewStyle();
 	const queryRes = useInfiniteQuery(() => props.query);
 	const [controlsHeight, setControlsHeight] = useState(null as number | null);
-	const [headerHeight, setHeaderHeight] = useState(null as number | null);
 	const firstPage = queryRes.data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = queryRes.items?.length ?? 0;
@@ -69,83 +67,82 @@ export const InfiniteView = <
 	return (
 		<View style={[styles.rootStyle]}>
 			{props.header && (
-				<View
-					style={[{ marginTop: paddingTop }, styles.optionalHeader]}
-					onLayout={(e) =>
-						setHeaderHeight(e.nativeEvent.layout.height)
-					}
-				>
+				<View style={[{ paddingTop }, styles.optionalHeader]}>
 					{props.header}
 					<Divider h />
 				</View>
 			)}
-			{(headerHeight !== null || !props.header) && (
+			<View style={styles.body}>
 				<View
-					style={styles.controls(
-						(headerHeight ?? 0) + paddingTop,
-						!!props.header,
-					)}
+					style={styles.controls(props.header ? 0 : paddingTop)}
 					onLayout={(e) =>
 						setControlsHeight(e.nativeEvent.layout.height)
 					}
 				>
 					<Controls {...props.controls} />
 				</View>
-			)}
-			{firstPage?.length === 0 ? (
-				<View style={styles.emptyState}>
-					<EmptyState />
-				</View>
-			) : (
-				<ScrollView
-					data={itemList}
-					refreshing={queryRes.isRefetching}
-					contentContainerStyle={
-						[styles.scrollView, { paddingBottom }] as ContentStyle
-					}
-					onRefresh={() => queryRes.refetch()}
-					onEndReachedThreshold={0.5}
-					onEndReached={() => queryRes.fetchNextPage()}
-					ListHeaderComponent={
-						<View
-							style={styles.scrollViewTopPadding(controlsHeight)}
-						/>
-					}
-					renderItem={({ item }) => {
-						return (
-							<View style={styles.itemContainer}>
-								{props.render(item as T1 | undefined)}
-							</View>
-						);
-					}}
-					{...(props.layout === "grid"
-						? {
-								uniProps: (theme, rt) => ({
+
+				{firstPage?.length === 0 ? (
+					<View style={styles.emptyState}>
+						<EmptyState />
+					</View>
+				) : (
+					<ScrollView
+						data={itemList}
+						refreshing={queryRes.isRefetching}
+						contentContainerStyle={
+							[
+								styles.scrollView,
+								{ paddingBottom },
+							] as ContentStyle
+						}
+						onRefresh={() => queryRes.refetch()}
+						onEndReachedThreshold={0.5}
+						onEndReached={() => queryRes.fetchNextPage()}
+						ListHeaderComponent={
+							<View
+								style={styles.scrollViewTopPadding(
+									controlsHeight,
+								)}
+							/>
+						}
+						renderItem={({ item }) => {
+							return (
+								<View style={styles.itemContainer}>
+									{props.render(item as T1 | undefined)}
+								</View>
+							);
+						}}
+						{...(props.layout === "grid"
+							? {
+									uniProps: (theme, rt) => ({
+										keyExtractor: (_, idx) => {
+											const item =
+												queryRes.items?.at(idx);
+											const columnCount =
+												// @ts-expect-error
+												theme.layout.grid.columnCount[
+													rt.breakpoint!
+												];
+											if (!item) {
+												return `skeleton-${idx}-cc:${columnCount}`;
+											}
+											return `item-${item.id}-cc:${columnCount}`;
+										},
+									}),
+								}
+							: {
 									keyExtractor: (_, idx) => {
 										const item = queryRes.items?.at(idx);
-										const columnCount =
-											// @ts-expect-error
-											theme.layout.grid.columnCount[
-												rt.breakpoint!
-											];
 										if (!item) {
-											return `skeleton-${idx}-cc:${columnCount}`;
+											return `skeleton-${idx}`;
 										}
-										return `item-${item.id}-cc:${columnCount}`;
+										return `item-${item.id}`;
 									},
-								}),
-							}
-						: {
-								keyExtractor: (_, idx) => {
-									const item = queryRes.items?.at(idx);
-									if (!item) {
-										return `skeleton-${idx}`;
-									}
-									return `item-${item.id}`;
-								},
-							})}
-				/>
-			)}
+								})}
+					/>
+				)}
+			</View>
 		</View>
 	);
 };
@@ -175,12 +172,12 @@ const styles = StyleSheet.create((theme) => ({
 		maxWidth: breakpoints.xl,
 		width: "100%",
 	},
+	body: { flex: 1 },
 	optionalHeader: {},
 	emptyState: { height: "20%", maxHeight: 200 },
-	controls: (paddingTop: number, hasOptionalHeader: boolean) => ({
-		paddingBottom: hasOptionalHeader ? theme.gap(2) : theme.gap(1.5),
-		[hasOptionalHeader ? "marginTop" : "paddingTop"]:
-			theme.gap(1.5) + paddingTop,
+	controls: (paddingTop: number) => ({
+		paddingBottom: theme.gap(1.5),
+		paddingTop: theme.gap(1.5) + paddingTop,
 		paddingHorizontal: theme.gap(1),
 		position: "absolute",
 		zIndex: 1,
