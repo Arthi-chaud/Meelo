@@ -1,29 +1,58 @@
 import type { ComponentProps } from "react";
-import type { ViewStyle } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Pressable } from "~/primitives/pressable";
 import { LoadableText } from "./loadable_text";
+import { useRouter, type Href } from "expo-router";
+import { Button } from "~/primitives/button";
+import { useTranslation } from "react-i18next";
+import { MoreIcon } from "@/ui/icons";
 
 type Props = {
 	onPress?: () => void;
 	style?: ViewStyle;
+	seeMore?: Href;
 } & Omit<ComponentProps<typeof LoadableText>, "variant">;
 
-export const SectionHeader = ({ onPress, style, ...textProps }: Props) => {
+export const SectionHeader = ({
+	onPress,
+	style,
+	seeMore,
+	...textProps
+}: Props) => {
+	const { t } = useTranslation();
+	const router = useRouter();
 	return (
-		<Pressable
-			onPress={() => onPress?.()}
-			disabled={!onPress}
-			style={[styles.header, style]}
-		>
-			<LoadableText {...textProps} variant="h4" />
-		</Pressable>
+		<View style={[styles.root, style]}>
+			<Pressable onPress={() => onPress?.()} disabled={!onPress}>
+				<LoadableText {...textProps} variant="h4" />
+			</Pressable>
+			{seeMore !== undefined && (
+				<Button
+					containerStyle={styles.button(
+						textProps.content === undefined,
+					)}
+					title={t("browsing.seeAll")}
+					icon={MoreIcon}
+					iconPosition="right"
+					onPress={() => router.push(seeMore)}
+				/>
+			)}
+		</View>
 	);
 };
 
 const styles = StyleSheet.create((theme) => ({
-	header: {
-		marginLeft: theme.gap(1),
+	root: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		width: "100%",
+		paddingHorizontal: theme.gap(1),
+		paddingRight: theme.gap(2),
 		marginBottom: theme.gap(1),
 	},
+	button: (isLoading: boolean) => ({
+		opacity: isLoading ? 0 : 1,
+	}),
 }));
