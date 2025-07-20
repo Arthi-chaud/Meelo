@@ -1,8 +1,8 @@
 import type { ArtistWithRelations } from "@/models/artist";
 import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { Illustration } from "./illustration";
 import { LoadableText } from "./loadable_text";
-import { StyleSheet } from "react-native-unistyles";
 
 type Props = { artist: ArtistWithRelations<"illustration"> | undefined };
 
