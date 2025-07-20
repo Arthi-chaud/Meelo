@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAlbums } from "@/api/queries";
+import { getAlbums, getArtist } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "~/api";
+import { ArtistHeader } from "~/components/artist-header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -33,7 +35,10 @@ import { AlbumTile } from "~/components/tile/resource/album";
 
 export default function AlbumBrowseView() {
 	const { t } = useTranslation();
-	const { compilations } = useLocalSearchParams<{ compilations?: "true" }>();
+	const { compilations, artist: artistId } = useLocalSearchParams<{
+		compilations?: "true";
+		artist?: string;
+	}>();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
 		enableToggle: true,
@@ -47,6 +52,10 @@ export default function AlbumBrowseView() {
 		types: AlbumType,
 		translate: (t) => albumTypeToTranslationKey(t, false),
 	});
+	const { data: artist } = useQuery(
+		(artistId) => getArtist(artistId, ["illustration"]),
+		artistId,
+	);
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
 	return (
 		<>
@@ -61,6 +70,7 @@ export default function AlbumBrowseView() {
 			/>
 			<InfiniteView
 				layout={layout}
+				header={artistId ? <ArtistHeader artist={artist} /> : undefined}
 				controls={{
 					layout: layoutControl,
 					sort: sortControl,
@@ -70,7 +80,7 @@ export default function AlbumBrowseView() {
 					{
 						library: libraries,
 						type: types,
-						artist: compilations ? "compilations" : undefined,
+						artist: compilations ? "compilations" : artistId,
 					},
 					{ sortBy: sort ?? "name", order: order ?? "asc" },
 					["artist", "illustration"],

@@ -16,9 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getVideos } from "@/api/queries";
+import { getArtist, getVideos } from "@/api/queries";
 import { videoTypeToTranslationKey } from "@/models/utils";
 import { VideoSortingKeys, VideoType } from "@/models/video";
+import { useLocalSearchParams } from "expo-router";
+import { useMemo } from "react";
+import { useQuery } from "~/api";
+import { ArtistHeader } from "~/components/artist-header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -30,6 +34,7 @@ import { VideoItem } from "~/components/list-item/resource/video";
 import { VideoTile } from "~/components/tile/resource/video";
 
 export default function VideoBrowseView() {
+	const { artist: artistId } = useLocalSearchParams<{ artist?: string }>();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
 		enableToggle: true,
@@ -43,17 +48,25 @@ export default function VideoBrowseView() {
 		types: VideoType,
 		translate: (t) => videoTypeToTranslationKey(t, false),
 	});
-	const Item = layout === "list" ? VideoItem : VideoTile;
+	const Item = useMemo(
+		() => (layout === "list" ? VideoItem : VideoTile),
+		[layout],
+	);
+	const { data: artist } = useQuery(
+		(artistId) => getArtist(artistId, ["illustration"]),
+		artistId,
+	);
 	return (
 		<InfiniteView
 			layout={layout}
+			header={artistId ? <ArtistHeader artist={artist} /> : undefined}
 			controls={{
 				layout: layoutControl,
 				sort: sortControl,
 				filters: [libraryFilterControl, albumTypeFilterControl],
 			}}
 			query={getVideos(
-				{ library: libraries, type: types },
+				{ library: libraries, type: types, artist: artistId },
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration"],
 			)}
