@@ -16,9 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSongs } from "@/api/queries";
-import { SongSortingKeys, SongType } from "@/models/song";
+import { getArtist, getSongs } from "@/api/queries";
+import {
+	SongSortingKeys,
+	SongType,
+	type SongWithRelations,
+} from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
+import { useLocalSearchParams } from "expo-router";
+import { useCallback } from "react";
+import { useQuery } from "~/api";
+import { ArtistHeader } from "~/components/artist-header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -27,7 +35,15 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { SongItem } from "~/components/list-item/resource/song";
 
+// TODO Handle Genre filtering?
+// TODO Handle song version filtering
+// TODO song subtitle: allow it to be album
+
 export default function SongBrowseView() {
+	const { artist: artistId, rare: rareArtistId } = useLocalSearchParams<{
+		artist?: string;
+		rare?: string;
+	}>();
 	const [{ sort, order }, sortControl] = useSortControl({
 		sortingKeys: SongSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
@@ -37,22 +53,51 @@ export default function SongBrowseView() {
 		types: SongType,
 		translate: (t) => songTypeToTranslationKey(t, false),
 	});
+	const { data: artist } = useQuery(
+		(artistId) => getArtist(artistId, ["illustration"]),
+		artistId ?? rareArtistId,
+	);
+	const subtitle = useCallback(
+		(song: SongWithRelations<"featuring"> | undefined) => {
+			if (artistId === undefined && rareArtistId === undefined) {
+				return "artists";
+			}
+			if (!song || !artist) {
+				return null;
+			}
+			if (song.featuring.length > 0 || song.artistId !== artist.id) {
+				return "artists";
+			}
+			return null;
+		},
+		[artistId, rareArtistId],
+	);
 	return (
 		<InfiniteView
 			layout={"list"}
+			header={
+				(artistId ?? rareArtistId) !== undefined ? (
+					<ArtistHeader artist={artist} />
+				) : undefined
+			}
 			controls={{
 				sort: sortControl,
 				filters: [libraryFilterControl, songTypeFilterControl],
 			}}
 			query={getSongs(
-				{ library: libraries, type: types },
+				{
+					library: libraries,
+					type: types,
+					artist: artistId,
+					rare: rareArtistId,
+				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration", "featuring"],
 			)}
 			render={(song) => (
 				<SongItem
 					song={song}
-					subtitle="artists"
+					subtitle={subtitle(song)}
 					illustrationProps={{ simpleColorPlaceholder: true }}
 				/>
 			)}
