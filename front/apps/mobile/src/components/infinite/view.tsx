@@ -21,9 +21,19 @@ import { Controls } from "./controls/component";
 
 //TODO Button to scroll back up
 
+// Notes:
+// the navigation header being positioned using 'absolute'
+// We need to rely on the root view style hook to get its height
+//
+// The controls (libraries, types, etc.) are positioned absolutely, with padding to avoid overlap with header
+// If the view has an optional header, we add its height to the controls' padding
+//
+// The scroll view itself has a top padding where the controls should end up being layed out in
+
 type Props<T, T1, Sort extends string> = {
 	query: InfiniteQuery<T, T1>;
 	layout: LayoutOption;
+	header?: React.ReactElement;
 	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
 	render: (item: T1 | undefined) => React.ReactElement;
 	ignoreTabBar?: true;
@@ -40,6 +50,7 @@ export const InfiniteView = <
 	const { paddingBottom, paddingTop } = useRootViewStyle();
 	const queryRes = useInfiniteQuery(() => props.query);
 	const [controlsHeight, setControlsHeight] = useState(null as number | null);
+	const [headerHeight, setHeaderHeight] = useState(null as number | null);
 	const firstPage = queryRes.data?.pages.at(0)?.items;
 	const itemList = useMemo(() => {
 		const itemCount = queryRes.items?.length ?? 0;
@@ -57,12 +68,30 @@ export const InfiniteView = <
 	useSetKeyIllustrationFromInfiniteQuery(props.query);
 	return (
 		<View style={[styles.rootStyle]}>
-			<View
-				style={styles.controls(paddingTop)}
-				onLayout={(e) => setControlsHeight(e.nativeEvent.layout.height)}
-			>
-				<Controls {...props.controls} />
-			</View>
+			{props.header && (
+				<View
+					style={[{ marginTop: paddingTop }, styles.optionalHeader]}
+					onLayout={(e) =>
+						setHeaderHeight(e.nativeEvent.layout.height)
+					}
+				>
+					{props.header}
+					<Divider h />
+				</View>
+			)}
+			{(headerHeight !== null || !props.header) && (
+				<View
+					style={styles.controls(
+						(headerHeight ?? 0) + paddingTop,
+						!!props.header,
+					)}
+					onLayout={(e) =>
+						setControlsHeight(e.nativeEvent.layout.height)
+					}
+				>
+					<Controls {...props.controls} />
+				</View>
+			)}
 			{firstPage?.length === 0 ? (
 				<View style={styles.emptyState}>
 					<EmptyState />
@@ -78,7 +107,9 @@ export const InfiniteView = <
 					onEndReachedThreshold={0.5}
 					onEndReached={() => queryRes.fetchNextPage()}
 					ListHeaderComponent={
-						<View style={styles.listHeader(controlsHeight)} />
+						<View
+							style={styles.scrollViewTopPadding(controlsHeight)}
+						/>
 					}
 					renderItem={({ item }) => {
 						return (
@@ -144,10 +175,12 @@ const styles = StyleSheet.create((theme) => ({
 		maxWidth: breakpoints.xl,
 		width: "100%",
 	},
+	optionalHeader: {},
 	emptyState: { height: "20%", maxHeight: 200 },
-	controls: (headerHeight: number) => ({
-		paddingBottom: theme.gap(1.5),
-		paddingTop: theme.gap(1.5) + headerHeight,
+	controls: (paddingTop: number, hasOptionalHeader: boolean) => ({
+		paddingBottom: hasOptionalHeader ? theme.gap(2) : theme.gap(1.5),
+		[hasOptionalHeader ? "marginTop" : "paddingTop"]:
+			theme.gap(1.5) + paddingTop,
 		paddingHorizontal: theme.gap(1),
 		position: "absolute",
 		zIndex: 1,
@@ -158,7 +191,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	//approximate so that the list start below controls
 	//putting the actual controls in the ListHeaderComponent causes the dropdown to be misplaced
-	listHeader: (controlsHeight: number | null) => ({
+	scrollViewTopPadding: (controlsHeight: number | null) => ({
 		height: controlsHeight == null ? theme.gap(8.25) : controlsHeight,
 	}),
 	itemContainer: {
