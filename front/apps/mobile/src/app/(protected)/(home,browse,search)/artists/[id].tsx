@@ -6,22 +6,19 @@ import {
 	getVideos,
 } from "@/api/queries";
 import { AlbumType } from "@/models/album";
-import type { ArtistWithRelations } from "@/models/artist";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
+import { ArtistHeader } from "~/components/artist-header";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import {
 	ExternalMetadataDescriptionSection,
 	ExternalMetadataSourcesSection,
 } from "~/components/external-metadata";
-import { Illustration } from "~/components/illustration";
-import { LoadableText } from "~/components/loadable_text";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
@@ -92,7 +89,7 @@ export default function ArtistView() {
 	return (
 		<>
 			<SafeScrollView>
-				<Header artist={artist} />
+				<ArtistHeader artist={artist} />
 				<SongGrid
 					header={t("artist.topSongs")}
 					style={styles.section}
@@ -200,51 +197,11 @@ const AlbumTypeRow = ({
 	);
 };
 
-// TODO Handle wrap when the artist name is a single word and is larger than view
-
-const Header = ({
-	artist,
-}: { artist: ArtistWithRelations<"illustration"> | undefined }) => {
-	return (
-		<View style={styles.headerRoot}>
-			<View style={styles.headerAvatar}>
-				<Illustration
-					illustration={artist?.illustration}
-					quality="medium"
-					variant="circle"
-				/>
-			</View>
-			<View style={styles.headerText}>
-				<LoadableText
-					content={artist?.name}
-					skeletonWidth={10}
-					variant="h2"
-				/>
-			</View>
-		</View>
-	);
-};
-
 const styles = StyleSheet.create((theme) => ({
 	root: {
 		flex: 1,
 	},
 	section: {
 		paddingBottom: theme.gap(1),
-	},
-	headerRoot: {
-		width: "100%",
-		flexDirection: "row",
-		alignItems: "center",
-		padding: theme.gap(2),
-		gap: theme.gap(3),
-		display: "flex",
-	},
-	headerAvatar: {
-		flex: 1,
-	},
-
-	headerText: {
-		flex: { xs: 2, sm: 3, md: 5, xl: 12 },
 	},
 }));
