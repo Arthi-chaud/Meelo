@@ -6,14 +6,11 @@ import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { EmptyState } from "~/components/empty-state";
 import { SectionHeader } from "./section-header";
+import type { Href } from "expo-router";
 
 type Props<T0, T> = {
 	query: InfiniteQuery<T0, T>;
-	header?: string;
-	style?: ViewStyle;
-	render: (item: T | undefined) => React.ReactElement;
-	hideIfEmpty?: true;
-};
+} & Omit<BaseProps<T>, "items">;
 
 //TODO Add 'see all' button
 //
@@ -22,7 +19,7 @@ export const Row = <T extends Resource>({
 	...props
 }: { items: T[] | undefined } & Pick<
 	Props<T, T>,
-	"header" | "render" | "style" | "hideIfEmpty"
+	"header" | "render" | "style" | "hideIfEmpty" | "seeMore"
 >) => {
 	const itemList = useMemo(() => {
 		return items ?? [undefined];
@@ -35,6 +32,7 @@ type BaseProps<T> = {
 	items?: (T | undefined)[];
 	header?: string;
 	style?: ViewStyle;
+	seeMore?: Href;
 	render: (item: T | undefined) => React.ReactElement;
 	onEndReached?: () => void;
 	hideIfEmpty?: true;
@@ -47,6 +45,7 @@ const RowBase = <T,>({
 	style,
 	render,
 	onEndReached,
+	seeMore,
 }: BaseProps<T>) => {
 	const flatListRef = createRef<FlatList<unknown>>();
 	return (
@@ -54,6 +53,7 @@ const RowBase = <T,>({
 			<View style={[styles.root, style]}>
 				{header && (
 					<SectionHeader
+						seeMore={seeMore}
 						onPress={() =>
 							flatListRef.current?.scrollToIndex({
 								animated: true,
