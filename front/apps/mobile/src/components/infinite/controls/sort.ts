@@ -17,8 +17,8 @@
  */
 
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
-import type { Order } from "@/models/sorting";
 import { useLocalSearchParams } from "expo-router";
+import type { Sorting } from "~/utils/sorting";
 
 export const useSortControl = <SortingKey extends string>({
 	sortingKeys,
@@ -29,10 +29,7 @@ export const useSortControl = <SortingKey extends string>({
 }) => {
 	return useSortControlBase({
 		hook: () => {
-			let { sort, order } = useLocalSearchParams<{
-				sort?: SortingKey;
-				order?: Order;
-			}>();
+			let { sort, order } = useLocalSearchParams<Sorting<SortingKey>>();
 			sort ??= sortingKeys[0];
 			order ??= "asc";
 			return { sort, order };
