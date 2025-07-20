@@ -38,6 +38,7 @@ import { Icon } from "./icon";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {
 	labelStyle?: TextStyle;
+	size?: "normal" | "small";
 	containerStyle?: ViewStyle;
 } & RequireExactlyOne<{
 		onPress: NonNullable<RNButtonProps["onPress"]>;
@@ -79,6 +80,7 @@ export const Button = (props: ButtonProps) => {
 		],
 	}));
 	styles.useVariants({
+		size: props.size ?? "normal",
 		width: props.width ?? "fitContent",
 		variant: props.variant ?? "filled",
 		disabled: props.disabled ?? false,
@@ -152,19 +154,65 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	// Separate this to make sure the entire surface is clickable
 	content: {
-		paddingVertical: theme.gap(1),
-		paddingHorizontal: theme.gap(2),
 		flexDirection: "row",
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		gap: theme.gap(1),
+		variants: {
+			size: {
+				small: {
+					gap: theme.gap(1),
+					paddingVertical: theme.gap(0.75),
+					paddingHorizontal: theme.gap(1.25),
+				},
+				normal: {
+					gap: theme.gap(1),
+					paddingVertical: theme.gap(1),
+					paddingHorizontal: theme.gap(2),
+				},
+			},
+
+			width: {
+				fill: {},
+				fitContent: {},
+			},
+			disabled: { true: {}, default: {} },
+			variant: {
+				outlined: {},
+				filled: {},
+			},
+		},
 	},
-	icon: { marginBottom: 2 },
+	icon: {
+		marginBottom: 2,
+		variants: {
+			size: {
+				small: { size: theme.fontSize.rem(1) } as unknown as {},
+				normal: {},
+			},
+			width: {
+				fill: {},
+				fitContent: {},
+			},
+			disabled: { true: {}, default: {} },
+			variant: {
+				outlined: {},
+				filled: {},
+			},
+		},
+	},
 	label: {
 		...theme.fontStyles.medium,
 		textAlign: "center",
 		variants: {
+			size: {
+				small: {
+					fontSize: theme.fontSize.rem(0.9),
+				},
+				normal: {
+					fontSize: theme.fontSize.rem(1),
+				},
+			},
 			width: {
 				fill: {},
 				fitContent: {},

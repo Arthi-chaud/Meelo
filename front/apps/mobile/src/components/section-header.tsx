@@ -32,6 +32,7 @@ export const SectionHeader = ({
 					containerStyle={styles.button(
 						textProps.content === undefined,
 					)}
+					size="small"
 					title={t("browsing.seeAll")}
 					icon={MoreIcon}
 					iconPosition="right"
