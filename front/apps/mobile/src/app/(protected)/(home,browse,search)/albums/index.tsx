@@ -88,7 +88,7 @@ export default function AlbumBrowseView() {
 				render={(album) => (
 					<Item
 						album={album}
-						subtitle="artistName"
+						subtitle={artistId ? "year" : "artistName"}
 						illustrationProps={{ simpleColorPlaceholder: true }}
 					/>
 				)}
