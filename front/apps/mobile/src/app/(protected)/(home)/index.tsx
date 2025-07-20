@@ -17,6 +17,8 @@
  */
 
 import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
+import type { AlbumSortingKey } from "@/models/album";
+import type { ArtistSortingKey } from "@/models/artist";
 import type { SongSortingKey } from "@/models/song";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -101,6 +103,13 @@ export default function Root() {
 				render={(album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
+				seeMore={{
+					pathname: "/albums",
+					params: {
+						sort: "addDate",
+						order: "desc",
+					} satisfies Sorting<AlbumSortingKey>,
+				}}
 			/>
 
 			<Row
@@ -108,6 +117,13 @@ export default function Root() {
 				items={sync(newlyAddedArtists.items)}
 				render={(artist) => {
 					return <ArtistTile artist={artist} />;
+				}}
+				seeMore={{
+					pathname: "/artists",
+					params: {
+						sort: "addDate",
+						order: "desc",
+					} satisfies Sorting<ArtistSortingKey>,
 				}}
 			/>
 			{/* TODO Featured albums */}
@@ -117,6 +133,13 @@ export default function Root() {
 				items={sync(latestAlbums.items)}
 				render={(album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
+				}}
+				seeMore={{
+					pathname: "/albums",
+					params: {
+						sort: "releaseDate",
+						order: "desc",
+					} satisfies Sorting<AlbumSortingKey>,
 				}}
 			/>
 

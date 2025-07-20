@@ -5,7 +5,7 @@ import {
 	getSongs,
 	getVideos,
 } from "@/api/queries";
-import { AlbumType } from "@/models/album";
+import { type AlbumSortingKey, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
@@ -23,7 +23,9 @@ import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
+import type { VideoSortingKey } from "@/models/video";
 import { VideoTile } from "~/components/tile/resource/video";
+import type { Sorting } from "~/utils/sorting";
 
 const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
 	getAlbums(
@@ -155,6 +157,16 @@ export default function ArtistView() {
 								}}
 							/>
 						)}
+						seeMore={{
+							pathname: "/videos",
+							params: {
+								artist: artistId,
+								sort: "name",
+								order: "asc",
+							} satisfies Sorting<VideoSortingKey> & {
+								artist: string;
+							},
+						}}
 					/>
 				))}
 				<Row
@@ -198,6 +210,18 @@ const AlbumTypeRow = ({
 			header={t(albumTypeToTranslationKey(type, true))}
 			items={query.items}
 			render={(item) => <AlbumTile album={item} subtitle="year" />}
+			seeMore={{
+				pathname: "/albums",
+				params: {
+					artist: artistId,
+					sort: "releaseDate",
+					order: "desc",
+					type: type,
+				} satisfies Sorting<AlbumSortingKey> & {
+					type: AlbumType;
+					artist: string;
+				},
+			}}
 		/>
 	);
 };
