@@ -1,18 +1,33 @@
 import type { VideoWithRelations } from "@/models/video";
+import formatDuration from "@/utils/format-duration";
 import type { ComponentProps } from "react";
 import { ListItem } from "..";
 
 type Props = {
-	video: VideoWithRelations<"illustration" | "artist"> | undefined;
 	illustrationProps: ComponentProps<typeof ListItem>["illustrationProps"];
-	//TODO subtitle
-};
+} & (
+	| {
+			subtitle: "duration";
+			video: VideoWithRelations<"illustration" | "master"> | undefined;
+	  }
+	| {
+			subtitle: "artistName";
 
-export const VideoItem = ({ video, illustrationProps }: Props) => {
+			video: VideoWithRelations<"artist" | "illustration"> | undefined;
+	  }
+);
+
+export const VideoItem = ({ video, illustrationProps, subtitle }: Props) => {
 	return (
 		<ListItem
 			title={video?.name}
-			subtitle={video ? (video.artist?.name ?? null) : undefined}
+			subtitle={
+				subtitle === "artistName"
+					? video?.artist.name
+					: video
+						? formatDuration(video.master.duration)
+						: undefined
+			}
 			onPress={() => {}} // TODO Launch playback
 			illustration={video?.illustration}
 			illustrationProps={illustrationProps}

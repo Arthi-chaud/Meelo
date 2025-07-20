@@ -68,12 +68,12 @@ export default function VideoBrowseView() {
 			query={getVideos(
 				{ library: libraries, type: types, artist: artistId },
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration"],
+				["artist", "illustration", "master"],
 			)}
 			render={(video) => (
 				<Item
 					video={video}
-					subtitle="artistName"
+					subtitle={artistId ? "duration" : "artistName"}
 					illustrationProps={{
 						simpleColorPlaceholder: true,
 						normalizedThumbnail: true,
