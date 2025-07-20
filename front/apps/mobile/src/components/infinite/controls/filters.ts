@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Toast } from "toastify-react-native";
 import { useAPI } from "~/api";
+import { useLocalSearchParams } from "expo-router";
 
 const useLibraryFilterControl = () => {
 	const { t } = useTranslation();
@@ -67,7 +68,10 @@ const useTypeFiltersControl = <FilterKey extends string>({
 	return useTypeFiltersControlBase({
 		types: filterKeys,
 		translate,
-		hook: () => [],
+		hook: () => {
+			const { type } = useLocalSearchParams<{ type?: FilterKey }>();
+			return type ? [type] : [];
+		},
 		onUpdate: () => {},
 	});
 };
@@ -82,7 +86,10 @@ const useTypeFilterControl = <FilterKey extends string>({
 	return useTypeFilterControlBase({
 		types,
 		translate,
-		hook: () => null,
+		hook: () => {
+			const { type } = useLocalSearchParams<{ type?: FilterKey }>();
+			return type ?? null;
+		},
 		onUpdate: () => {},
 	});
 };
