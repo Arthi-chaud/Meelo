@@ -63,3 +63,4 @@ export const ArtistSortingKeys = [
 	"songCount",
 	"addDate",
 ] as const;
+export type ArtistSortingKey = (typeof ArtistSortingKeys)[number];

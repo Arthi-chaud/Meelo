@@ -84,3 +84,4 @@ export const videoTypeIsExtra = (type: VideoType) =>
 		"Documentary",
 	].includes(type);
 export const VideoSortingKeys = ["name", "artistName", "addDate"] as const;
+export type VideoSortingKey = (typeof VideoSortingKeys)[number];

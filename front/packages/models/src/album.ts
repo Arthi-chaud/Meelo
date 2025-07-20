@@ -98,3 +98,4 @@ export const AlbumSortingKeys = [
 	"releaseDate",
 	"addDate",
 ] as const;
+export type AlbumSortingKey = (typeof AlbumSortingKeys)[number];
