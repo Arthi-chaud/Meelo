@@ -93,6 +93,10 @@ export default function ArtistView() {
 				<SongGrid
 					header={t("artist.topSongs")}
 					style={styles.section}
+					seeMore={{
+						pathname: "/songs",
+						params: { artist: artistId },
+					}}
 					songs={topSongs.data?.pages.at(0)?.items}
 					subtitle={
 						!topSongs.data
@@ -115,6 +119,7 @@ export default function ArtistView() {
 				<SongGrid
 					hideIfEmpty
 					header={t("artist.rareSongs")}
+					seeMore={{ pathname: "/songs", params: { rare: artistId } }}
 					style={styles.section}
 					songs={rareSongs.data?.pages.at(0)?.items}
 					subtitle={

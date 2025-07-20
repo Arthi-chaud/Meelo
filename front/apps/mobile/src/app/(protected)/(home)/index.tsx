@@ -17,6 +17,7 @@
  */
 
 import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
+import type { SongSortingKey } from "@/models/song";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
@@ -28,6 +29,7 @@ import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
 import { ArtistTile } from "~/components/tile/resource/artist";
 import ReleaseTile from "~/components/tile/resource/release";
+import type { Sorting } from "~/utils/sorting";
 
 const styles = StyleSheet.create((theme) => ({
 	main: { paddingTop: theme.gap(2), gap: theme.gap(2) },
@@ -129,6 +131,13 @@ export default function Root() {
 			{/* TODO Genres*/}
 
 			<SongGrid
+				seeMore={{
+					pathname: "/songs",
+					params: {
+						sort: "userPlayCount",
+						order: "desc",
+					} satisfies Sorting<SongSortingKey>,
+				}}
 				header={t("home.mostPlayedSongs")}
 				songs={sync(topSongs.data?.pages.at(0)?.items)}
 				subtitle={() => "artists"}

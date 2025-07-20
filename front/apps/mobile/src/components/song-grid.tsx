@@ -8,6 +8,7 @@ import { breakpoints } from "~/theme";
 import type { ListItem } from "./list-item";
 import { SongItem } from "./list-item/resource/song";
 import { SectionHeader } from "./section-header";
+import type { Href } from "expo-router";
 
 type Song = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
@@ -18,6 +19,7 @@ type Song = SongWithRelations<
 type Props = {
 	songs: Song[] | undefined;
 	style?: ViewStyle;
+	seeMore?: Href;
 	header?: string;
 	hideIfEmpty?: true;
 	illustrationProps?: ComponentProps<typeof ListItem>["illustrationProps"];
@@ -32,6 +34,7 @@ export const SongGrid = ({
 	header,
 	illustrationProps,
 	hideIfEmpty,
+	seeMore,
 	...props
 }: Props) => {
 	const scrollViewRef = createRef<ScrollView>();
@@ -52,6 +55,7 @@ export const SongGrid = ({
 			<View style={[styles.root, props.style]}>
 				{header && (
 					<SectionHeader
+						seeMore={seeMore}
 						onPress={() =>
 							scrollViewRef.current?.scrollTo({
 								x: 0,
