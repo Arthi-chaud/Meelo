@@ -8,6 +8,7 @@ import {
 import { type AlbumSortingKey, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
+import type { VideoSortingKey } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,7 +24,6 @@ import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
 import { AlbumTile } from "~/components/tile/resource/album";
-import type { VideoSortingKey } from "@/models/video";
 import { VideoTile } from "~/components/tile/resource/video";
 import type { Sorting } from "~/utils/sorting";
 

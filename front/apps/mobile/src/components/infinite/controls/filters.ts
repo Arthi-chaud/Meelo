@@ -10,11 +10,11 @@ import {
 	useLibraryFiltersControl as useLibraryFiltersControlBase,
 } from "@/infinite-controls/filters/library";
 import { useInfiniteQuery as useReactInfiniteQuery } from "@tanstack/react-query";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Toast } from "toastify-react-native";
 import { useAPI } from "~/api";
-import { useLocalSearchParams } from "expo-router";
 
 const useLibraryFilterControl = () => {
 	const { t } = useTranslation();
