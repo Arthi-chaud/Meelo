@@ -105,3 +105,4 @@ export const SongSortingKeys = [
 	"userPlayCount",
 	"totalPlayCount",
 ] as const;
+export type SongSortingKey = (typeof SongSortingKeys)[number];
