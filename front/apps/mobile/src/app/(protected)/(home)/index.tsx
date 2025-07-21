@@ -41,8 +41,6 @@ const styles = StyleSheet.create((theme) => ({
 	title: { paddingLeft: theme.gap(2) },
 }));
 
-//TODO header on scroll
-
 export default function Root() {
 	const { t } = useTranslation();
 	const newlyAddedAlbums = useInfiniteQuery(() =>
@@ -103,13 +101,17 @@ export default function Root() {
 				render={(album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
-				seeMore={{
-					pathname: "/albums",
-					params: {
-						sort: "addDate",
-						order: "desc",
-					} satisfies Sorting<AlbumSortingKey>,
-				}}
+				seeMore={
+					newlyAddedAlbums.hasNextPage
+						? {
+								pathname: "/albums",
+								params: {
+									sort: "addDate",
+									order: "desc",
+								} satisfies Sorting<AlbumSortingKey>,
+							}
+						: undefined
+				}
 			/>
 
 			<Row
@@ -118,13 +120,17 @@ export default function Root() {
 				render={(artist) => {
 					return <ArtistTile artist={artist} />;
 				}}
-				seeMore={{
-					pathname: "/artists",
-					params: {
-						sort: "addDate",
-						order: "desc",
-					} satisfies Sorting<ArtistSortingKey>,
-				}}
+				seeMore={
+					newlyAddedArtists.hasNextPage
+						? {
+								pathname: "/artists",
+								params: {
+									sort: "addDate",
+									order: "desc",
+								} satisfies Sorting<ArtistSortingKey>,
+							}
+						: undefined
+				}
 			/>
 			{/* TODO Featured albums */}
 
@@ -134,13 +140,17 @@ export default function Root() {
 				render={(album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				}}
-				seeMore={{
-					pathname: "/albums",
-					params: {
-						sort: "releaseDate",
-						order: "desc",
-					} satisfies Sorting<AlbumSortingKey>,
-				}}
+				seeMore={
+					latestAlbums.hasNextPage
+						? {
+								pathname: "/albums",
+								params: {
+									sort: "releaseDate",
+									order: "desc",
+								} satisfies Sorting<AlbumSortingKey>,
+							}
+						: undefined
+				}
 			/>
 
 			<Row
@@ -154,13 +164,17 @@ export default function Root() {
 			{/* TODO Genres*/}
 
 			<SongGrid
-				seeMore={{
-					pathname: "/songs",
-					params: {
-						sort: "userPlayCount",
-						order: "desc",
-					} satisfies Sorting<SongSortingKey>,
-				}}
+				seeMore={
+					topSongs.hasNextPage
+						? {
+								pathname: "/songs",
+								params: {
+									sort: "userPlayCount",
+									order: "desc",
+								} satisfies Sorting<SongSortingKey>,
+							}
+						: undefined
+				}
 				header={t("home.mostPlayedSongs")}
 				songs={sync(topSongs.data?.pages.at(0)?.items)}
 				subtitle={() => "artists"}
