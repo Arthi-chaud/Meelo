@@ -34,6 +34,11 @@ const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
 		["illustration", "artist"],
 	);
 
+// Note: we show the 'seeMore' button for song grids and video rows iff there's more items than ShowSeeMoreThreshold
+// since the user may want to shuffle them through the dedicated page
+
+const ShowSeeMoreThreshold = 3;
+
 export default function ArtistView() {
 	const { id: artistId } = useLocalSearchParams<{ id: string }>();
 	const { t } = useTranslation();
@@ -95,10 +100,14 @@ export default function ArtistView() {
 				<SongGrid
 					header={t("artist.topSongs")}
 					style={styles.section}
-					seeMore={{
-						pathname: "/songs",
-						params: { artist: artistId },
-					}}
+					seeMore={
+						(topSongs.items?.length ?? 0) >= ShowSeeMoreThreshold
+							? {
+									pathname: "/songs",
+									params: { artist: artistId },
+								}
+							: undefined
+					}
 					songs={topSongs.data?.pages.at(0)?.items}
 					subtitle={
 						!topSongs.data
@@ -121,7 +130,11 @@ export default function ArtistView() {
 				<SongGrid
 					hideIfEmpty
 					header={t("artist.rareSongs")}
-					seeMore={{ pathname: "/songs", params: { rare: artistId } }}
+					seeMore={
+						(rareSongs.items?.length ?? 0) > ShowSeeMoreThreshold
+							? { pathname: "/songs", params: { rare: artistId } }
+							: undefined
+					}
 					style={styles.section}
 					songs={rareSongs.data?.pages.at(0)?.items}
 					subtitle={
@@ -157,16 +170,20 @@ export default function ArtistView() {
 								}}
 							/>
 						)}
-						seeMore={{
-							pathname: "/videos",
-							params: {
-								artist: artistId,
-								sort: "name",
-								order: "asc",
-							} satisfies Sorting<VideoSortingKey> & {
-								artist: string;
-							},
-						}}
+						seeMore={
+							(items?.length ?? 0) > ShowSeeMoreThreshold
+								? {
+										pathname: "/videos",
+										params: {
+											artist: artistId,
+											sort: "name",
+											order: "asc",
+										} satisfies Sorting<VideoSortingKey> & {
+											artist: string;
+										},
+									}
+								: undefined
+						}
 					/>
 				))}
 				<Row
@@ -210,18 +227,22 @@ const AlbumTypeRow = ({
 			header={t(albumTypeToTranslationKey(type, true))}
 			items={query.items}
 			render={(item) => <AlbumTile album={item} subtitle="year" />}
-			seeMore={{
-				pathname: "/albums",
-				params: {
-					artist: artistId,
-					sort: "releaseDate",
-					order: "desc",
-					type: type,
-				} satisfies Sorting<AlbumSortingKey> & {
-					type: AlbumType;
-					artist: string;
-				},
-			}}
+			seeMore={
+				query.hasNextPage
+					? {
+							pathname: "/albums",
+							params: {
+								artist: artistId,
+								sort: "releaseDate",
+								order: "desc",
+								type: type,
+							} satisfies Sorting<AlbumSortingKey> & {
+								type: AlbumType;
+								artist: string;
+							},
+						}
+					: undefined
+			}
 		/>
 	);
 };
