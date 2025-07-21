@@ -7,7 +7,7 @@ import { generateArray } from "@/utils/gen-list";
 import { Image } from "expo-image";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking, ScrollView, View, type ViewStyle } from "react-native";
+import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { Pressable } from "~/primitives/pressable";
@@ -15,6 +15,7 @@ import { Text } from "~/primitives/text";
 import { TextSkeleton } from "~/primitives/text";
 import { LoadableText } from "./loadable_text";
 import { SectionHeader } from "./section-header";
+import { openBrowserAsync } from "expo-web-browser";
 
 type Props = {
 	externalMetadata:
@@ -101,8 +102,7 @@ export const ExternalMetadataSourcesSection = ({
 					(source: ExternalMetadataSource | undefined, idx) => (
 						<Pressable
 							onPress={() =>
-								//TODO Use webview instead
-								source && Linking.openURL(source.url)
+								source && openBrowserAsync(source.url)
 							}
 							key={source?.providerId ?? idx}
 							style={styles.externalLink}

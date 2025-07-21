@@ -5842,6 +5842,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-web-browser@npm:^14.2.0":
+  version: 14.2.0
+  resolution: "expo-web-browser@npm:14.2.0"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10c0/82cc8ff11dd680adca3e6a39da89320ef6cb11029a2d0a941419121f83255871a9455f92401531de6c018b1a081f37d0fe52b1eb2a55fbd3854f656c4b313341
+  languageName: node
+  linkType: hard
+
 "expo@npm:~53.0.9":
   version: 53.0.10
   resolution: "expo@npm:53.0.10"
@@ -8099,6 +8109,7 @@ __metadata:
     expo-splash-screen: "npm:~0.30.8"
     expo-status-bar: "npm:~2.2.3"
     expo-system-ui: "npm:^5.0.7"
+    expo-web-browser: "npm:^14.2.0"
     i18next: "npm:^23.7.16"
     iconsax-react-nativejs: "npm:^0.0.8"
     intl-pluralrules: "npm:^2.0.1"
