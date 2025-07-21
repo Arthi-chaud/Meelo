@@ -23,8 +23,9 @@ import {
 	type SongWithRelations,
 } from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
-import { useLocalSearchParams } from "expo-router";
-import { useCallback } from "react";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "~/api";
 import { ArtistHeader } from "~/components/artist-header";
 import {
@@ -40,6 +41,8 @@ import { SongItem } from "~/components/list-item/resource/song";
 // TODO song subtitle: allow it to be album
 
 export default function SongBrowseView() {
+	const nav = useNavigation();
+	const { t } = useTranslation();
 	const { artist: artistId, rare: rareArtistId } = useLocalSearchParams<{
 		artist?: string;
 		rare?: string;
@@ -57,6 +60,11 @@ export default function SongBrowseView() {
 		(artistId) => getArtist(artistId, ["illustration"]),
 		artistId ?? rareArtistId,
 	);
+	useEffect(() => {
+		if (rareArtistId !== undefined) {
+			nav.setOptions({ headerTitle: t("artist.rareSongs") });
+		}
+	}, [rareArtistId]);
 	const subtitle = useCallback(
 		(song: SongWithRelations<"featuring"> | undefined) => {
 			if (artistId === undefined && rareArtistId === undefined) {
