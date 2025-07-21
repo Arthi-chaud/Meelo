@@ -1,4 +1,3 @@
-import type { InfiniteQuery } from "@/api/query";
 import type Resource from "@/models/resource";
 import type { Href } from "expo-router";
 import type React from "react";
@@ -8,27 +7,7 @@ import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { EmptyState } from "~/components/empty-state";
 import { SectionHeader } from "./section-header";
 
-type Props<T0, T> = {
-	query: InfiniteQuery<T0, T>;
-} & Omit<BaseProps<T>, "items">;
-
-//TODO Add 'see all' button
-//
-export const Row = <T extends Resource>({
-	items,
-	...props
-}: { items: T[] | undefined } & Pick<
-	Props<T, T>,
-	"header" | "render" | "style" | "hideIfEmpty" | "seeMore"
->) => {
-	const itemList = useMemo(() => {
-		return items ?? [undefined];
-	}, [items]);
-
-	return <RowBase {...props} items={itemList} />;
-};
-
-type BaseProps<T> = {
+type Props<T> = {
 	items?: (T | undefined)[];
 	header?: string;
 	style?: ViewStyle;
@@ -36,6 +15,14 @@ type BaseProps<T> = {
 	render: (item: T | undefined) => React.ReactElement;
 	onEndReached?: () => void;
 	hideIfEmpty?: true;
+};
+
+export const Row = <T extends Resource>({ items, ...props }: Props<T>) => {
+	const itemList = useMemo(() => {
+		return items ?? [undefined];
+	}, [items]);
+
+	return <RowBase {...props} items={itemList} />;
 };
 
 const RowBase = <T,>({
@@ -46,7 +33,7 @@ const RowBase = <T,>({
 	render,
 	onEndReached,
 	seeMore,
-}: BaseProps<T>) => {
+}: Props<T>) => {
 	const flatListRef = createRef<FlatList<unknown>>();
 	return (
 		(!hideIfEmpty || (items && items.length > 0)) && (
