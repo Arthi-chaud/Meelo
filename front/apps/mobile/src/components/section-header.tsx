@@ -12,12 +12,14 @@ type Props = {
 	onPress?: () => void;
 	style?: ViewStyle;
 	seeMore?: Href;
+	trailing?: React.ReactElement;
 } & Omit<ComponentProps<typeof LoadableText>, "variant">;
 
 export const SectionHeader = ({
 	onPress,
 	style,
 	seeMore,
+	trailing,
 	...textProps
 }: Props) => {
 	const { t } = useTranslation();
@@ -27,18 +29,19 @@ export const SectionHeader = ({
 			<Pressable onPress={() => onPress?.()} disabled={!onPress}>
 				<LoadableText {...textProps} variant="h4" />
 			</Pressable>
-			{seeMore !== undefined && (
-				<Button
-					containerStyle={styles.button(
-						textProps.content === undefined,
-					)}
-					size="small"
-					title={t("browsing.seeAll")}
-					icon={MoreIcon}
-					iconPosition="right"
-					onPress={() => router.push(seeMore)}
-				/>
-			)}
+			{trailing ||
+				(seeMore !== undefined && (
+					<Button
+						containerStyle={styles.button(
+							textProps.content === undefined,
+						)}
+						size="small"
+						title={t("browsing.seeAll")}
+						icon={MoreIcon}
+						iconPosition="right"
+						onPress={() => router.push(seeMore)}
+					/>
+				))}
 		</View>
 	);
 };

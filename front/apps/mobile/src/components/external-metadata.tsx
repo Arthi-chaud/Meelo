@@ -3,19 +3,21 @@ import type {
 	ArtistExternalMetadata,
 	ExternalMetadataSource,
 } from "@/models/external-metadata";
+import { ExpandLessIcon, ExpandMoreIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { Image } from "expo-image";
-import { useMemo, useRef } from "react";
+import { openBrowserAsync } from "expo-web-browser";
+import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
+import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { TextSkeleton } from "~/primitives/text";
 import { LoadableText } from "./loadable_text";
 import { SectionHeader } from "./section-header";
-import { openBrowserAsync } from "expo-web-browser";
 
 type Props = {
 	externalMetadata:
@@ -36,6 +38,9 @@ export const ExternalMetadataDescriptionSection = ({
 }: Props) => {
 	const { t } = useTranslation();
 	const heading = useMemo(() => t("browsing.sections.about"), [t]);
+	// If null, no need to be able to expand.
+	// If boolean, reflect whether the line clamp is enabled
+	const [isExpanded, expand] = useState<boolean | null>(null);
 	if (externalMetadata?.description === null) {
 		return null;
 	}
@@ -44,6 +49,19 @@ export const ExternalMetadataDescriptionSection = ({
 			<SectionHeader
 				skeletonWidth={heading.length}
 				content={externalMetadata === undefined ? undefined : heading}
+				trailing={
+					isExpanded !== null ? (
+						<Pressable
+							onPress={() => expand((expanded) => !expanded)}
+						>
+							<Icon
+								icon={
+									isExpanded ? ExpandLessIcon : ExpandMoreIcon
+								}
+							/>
+						</Pressable>
+					) : undefined
+				}
 			/>
 			<View style={styles.descriptionContainer}>
 				{externalMetadata?.description === undefined ? (
@@ -62,7 +80,17 @@ export const ExternalMetadataDescriptionSection = ({
 							content={externalMetadata.description}
 							variant="body"
 							style={styles.descriptionText}
-							numberOfLines={DescriptionLineCount}
+							numberOfLines={
+								isExpanded ? undefined : DescriptionLineCount
+							}
+							onTextLayout={(e) => {
+								if (
+									e.nativeEvent.lines.length >
+									DescriptionLineCount
+								) {
+									expand(false);
+								}
+							}}
 						/>
 					)
 				)}
