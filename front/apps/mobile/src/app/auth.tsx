@@ -87,7 +87,7 @@ function timeout(ms: number) {
 export default function AuthenticationScreen() {
 	const { t } = useTranslation();
 	const defaultValues = {
-		url: "",
+		url: "https://",
 		username: "",
 		password: "",
 		confirm: "",
