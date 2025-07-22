@@ -3,7 +3,7 @@ import { type Href, useRouter } from "expo-router";
 import type { ComponentProps } from "react";
 import { Pressable, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { RequireExactlyOne } from "type-fest";
+import type { RequireAtLeastOne } from "type-fest";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 
@@ -51,7 +51,7 @@ type Props = {
 	title: string | undefined;
 	subtitle: string | undefined | null;
 	containerStyle?: ViewStyle;
-} & RequireExactlyOne<{ href: Href | null; onPress: (() => void) | null }>;
+} & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 export const Tile = ({
 	illustration,
@@ -69,7 +69,12 @@ export const Tile = ({
 	const router = useRouter();
 	return (
 		<Pressable
-			onPress={() => (href ? router.push(href) : onPress?.())}
+			onPress={() => {
+				onPress?.();
+				if (href) {
+					router.push(href);
+				}
+			}}
 			style={[styles.container, props.containerStyle]}
 		>
 			<View style={styles.imageContainer}>

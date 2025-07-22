@@ -30,8 +30,8 @@ import {
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
-import { AlbumItem } from "~/components/list-item/resource/album";
-import { AlbumTile } from "~/components/tile/resource/album";
+import { AlbumItem } from "~/components/item/resource/album";
+import { AlbumTile } from "~/components/item/resource/album";
 
 export default function AlbumBrowseView() {
 	const { t } = useTranslation();

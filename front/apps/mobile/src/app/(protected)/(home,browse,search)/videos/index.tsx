@@ -30,8 +30,8 @@ import {
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
-import { VideoItem } from "~/components/list-item/resource/video";
-import { VideoTile } from "~/components/tile/resource/video";
+import { VideoItem } from "~/components/item/resource/video";
+import { VideoTile } from "~/components/item/resource/video";
 
 export default function VideoBrowseView() {
 	const { artist: artistId } = useLocalSearchParams<{ artist?: string }>();

@@ -20,11 +20,11 @@ import {
 	ExternalMetadataDescriptionSection,
 	ExternalMetadataSourcesSection,
 } from "~/components/external-metadata";
+import { AlbumTile } from "~/components/item/resource/album";
+import { VideoTile } from "~/components/item/resource/video";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
-import { AlbumTile } from "~/components/tile/resource/album";
-import { VideoTile } from "~/components/tile/resource/video";
 import type { Sorting } from "~/utils/sorting";
 
 const albumTypeQuery = (albumType: AlbumType, artistId: string) =>

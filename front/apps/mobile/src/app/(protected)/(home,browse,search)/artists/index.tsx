@@ -22,8 +22,8 @@ import { useLibraryFiltersControl } from "~/components/infinite/controls/filters
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
-import { ArtistItem } from "~/components/list-item/resource/artist";
-import { ArtistTile } from "~/components/tile/resource/artist";
+import { ArtistItem } from "~/components/item/resource/artist";
+import { ArtistTile } from "~/components/item/resource/artist";
 
 export default function ArtistBrowseView() {
 	const [{ layout }, layoutControl] = useLayoutControl({

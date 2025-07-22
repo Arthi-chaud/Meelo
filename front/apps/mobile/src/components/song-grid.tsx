@@ -4,11 +4,11 @@ import type { Href } from "expo-router";
 import { type ComponentProps, Fragment, createRef, useMemo } from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import type { ListItem } from "~/components/item/list-item";
+import { SongItem } from "~/components/item/resource/song";
+import { SectionHeader } from "~/components/section-header";
 import { Divider } from "~/primitives/divider";
 import { breakpoints } from "~/theme";
-import type { ListItem } from "./list-item";
-import { SongItem } from "./list-item/resource/song";
-import { SectionHeader } from "./section-header";
 
 type Song = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"

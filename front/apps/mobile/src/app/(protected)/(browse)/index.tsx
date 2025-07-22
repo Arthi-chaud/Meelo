@@ -10,7 +10,7 @@ import { type Href, useRouter } from "expo-router";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
-import { ListItem } from "~/components/list-item";
+import { ListItem } from "~/components/item/list-item";
 import { SafeView } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
 

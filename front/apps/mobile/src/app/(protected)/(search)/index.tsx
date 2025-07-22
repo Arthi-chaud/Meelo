@@ -32,7 +32,7 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useAPI, useQueryClient } from "~/api";
 import { InfiniteView } from "~/components/infinite/view";
-import { SearchResultItem } from "~/components/list-item/resource/search-result";
+import { SearchResultItem } from "~/components/item/resource/search-result";
 import { TextInput } from "~/primitives/text_input";
 
 //TODO Allow filtering by type (artist, album, etc.)

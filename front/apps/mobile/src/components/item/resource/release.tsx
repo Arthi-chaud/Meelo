@@ -1,7 +1,7 @@
 import type { ReleaseWithRelations } from "@/models/release";
 import { getYear } from "@/utils/date";
 import { type ComponentProps, useMemo } from "react";
-import { Tile } from "..";
+import { Tile } from "../tile";
 
 const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"illustration"> | undefined;

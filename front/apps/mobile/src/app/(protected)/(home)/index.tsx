@@ -25,12 +25,12 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import { AlbumTile } from "~/components/item/resource/album";
+import { ArtistTile } from "~/components/item/resource/artist";
+import ReleaseTile from "~/components/item/resource/release";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
-import { AlbumTile } from "~/components/tile/resource/album";
-import { ArtistTile } from "~/components/tile/resource/artist";
-import ReleaseTile from "~/components/tile/resource/release";
 import type { Sorting } from "~/utils/sorting";
 
 const styles = StyleSheet.create((theme) => ({

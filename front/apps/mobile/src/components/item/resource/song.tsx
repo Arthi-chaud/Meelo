@@ -1,7 +1,7 @@
 import type { SongWithRelations } from "@/models/song";
 import formatArtists from "@/utils/format-artists";
 import { type ComponentProps, useMemo } from "react";
-import { ListItem } from "..";
+import { ListItem } from "../list-item";
 
 type Props = {
 	song:

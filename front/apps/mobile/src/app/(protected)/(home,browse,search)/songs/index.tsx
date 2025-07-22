@@ -34,7 +34,7 @@ import {
 } from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
-import { SongItem } from "~/components/list-item/resource/song";
+import { SongItem } from "~/components/item/resource/song";
 
 // TODO Handle Genre filtering?
 // TODO Handle song version filtering
