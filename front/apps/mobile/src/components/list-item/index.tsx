@@ -3,7 +3,7 @@ import { type Href, useRouter } from "expo-router";
 import type { ComponentProps } from "react";
 import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { RequireExactlyOne } from "type-fest";
+import type { RequireAtLeastOne } from "type-fest";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
 import { LoadableText } from "../loadable_text";
 
@@ -15,7 +15,7 @@ type Props = {
 		ComponentProps<typeof IllustrationComponent>,
 		"illustration" | "quality"
 	>;
-} & RequireExactlyOne<{ href: Href | null; onPress: (() => void) | null }>;
+} & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 //TODO Ripple or visual feedback on press
 
@@ -33,7 +33,12 @@ export const ListItem = ({
 	});
 	return (
 		<Pressable
-			onPress={() => (href ? router.push(href) : onPress?.())}
+			onPress={() => {
+				onPress?.();
+				if (href) {
+					router.push(href);
+				}
+			}}
 			style={[styles.root]}
 		>
 			<View style={styles.illustration}>
