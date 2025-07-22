@@ -15,6 +15,8 @@ type Props = {
 	trailing?: React.ReactElement;
 } & Omit<ComponentProps<typeof LoadableText>, "variant">;
 
+//TODO Avoid text to be too large
+
 export const SectionHeader = ({
 	onPress,
 	style,
@@ -27,7 +29,7 @@ export const SectionHeader = ({
 	return (
 		<View style={[styles.root, style]}>
 			<Pressable onPress={() => onPress?.()} disabled={!onPress}>
-				<LoadableText {...textProps} variant="h4" />
+				<LoadableText {...textProps} variant="h4" numberOfLines={1} />
 			</Pressable>
 			{trailing ||
 				(seeMore !== undefined && (

@@ -83,7 +83,7 @@ const RowBase = <T,>({
 };
 
 const styles = StyleSheet.create((theme, rt) => ({
-	root: { display: "flex", alignItems: "flex-start" },
+	root: { display: "flex", alignItems: "flex-start", width: "100%" },
 	emptyState: {
 		aspectRatio: 2.5, // TODO this an approximate, would be nice to compute this correctly
 		width: "100%",

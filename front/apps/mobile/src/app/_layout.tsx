@@ -44,6 +44,7 @@ import { BackgroundGradient } from "~/components/background-gradient";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
+import { languagePreference } from "~/state/lang";
 import { appThemes } from "~/theme";
 import resources from "../../../../translations";
 
@@ -53,6 +54,8 @@ SplashScreen.setOptions({
 	duration: 1000,
 	fade: true,
 });
+
+//TODO Refacto to that router styling is updated when atom changes
 
 export default function RootLayout() {
 	const [loaded, error] = useFonts({
@@ -82,14 +85,13 @@ export default function RootLayout() {
 			}),
 	);
 	useEffect(() => {
-		//TODO set store with local storage values
 		i18next.use(initReactI18next).init({
 			interpolation: {
 				escapeValue: false,
 			},
 			returnEmptyString: false,
 			fallbackLng: "en",
-			lng: "en", // TODO Choose using local storage
+			lng: store.get(languagePreference),
 			resources,
 		});
 	});
