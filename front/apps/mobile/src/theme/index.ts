@@ -1,5 +1,7 @@
+import { store } from "@/state/store";
 import { Appearance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { colorSchemePreference } from "~/state/color-scheme";
 
 const baseTheme = {
 	gap: (n: number) => n * 8,
@@ -120,10 +122,12 @@ StyleSheet.configure({
 	themes: appThemes,
 	breakpoints: breakpoints,
 	settings: {
-		// TODO Use local storage
 		initialTheme: () => {
-			const ap = Appearance.getColorScheme();
-			return ap ?? "light";
+			const pref = store.get(colorSchemePreference);
+			if (pref === "system") {
+				return Appearance.getColorScheme() ?? "light";
+			}
+			return pref;
 		},
 	},
 });

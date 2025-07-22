@@ -16,31 +16,110 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSetAtom } from "jotai";
+import { CheckIcon, UncheckIcon } from "@/ui/icons";
+import { useAtom, useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { SafeScrollView } from "~/components/safe-view";
+import { SectionHeader } from "~/components/section-header";
+import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
+import { Divider } from "~/primitives/divider";
+import { Icon } from "~/primitives/icon";
+import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { colorSchemePreference } from "~/state/color-scheme";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
+
+// TODO When setting dark/light mode using settings (not the auto mode)
+// header text color is not updated
 
 export default function SettingsView() {
 	const { t } = useTranslation();
 	const setAccessToken = useSetAtom(accessTokenAtom);
 	const setInstanceUrl = useSetAtom(instanceUrlAtom);
+	const [colorSchemePref, setColorSchemePref] = useAtom(
+		colorSchemePreference,
+	);
+
+	const actualColorScheme = useColorScheme();
 	return (
 		<SafeScrollView style={styles.root}>
 			<View style={styles.section}>
-				<Text
+				<SectionHeader
 					style={styles.sectionHeader}
-					variant="h4"
+					content={t("settings.interface")}
+					skeletonWidth={0}
+				/>
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.ui.useSystemTheme")}
+						variant="h5"
+					/>
+					<Pressable
+						onPress={() => {
+							if (colorSchemePref === "system") {
+								setColorSchemePref(actualColorScheme);
+							} else {
+								setColorSchemePref("system");
+							}
+						}}
+					>
+						<Icon
+							variant={
+								colorSchemePref === "system"
+									? "Bold"
+									: "Outline"
+							}
+							icon={
+								colorSchemePref === "system"
+									? CheckIcon
+									: UncheckIcon
+							}
+						/>
+					</Pressable>
+				</View>
+
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.ui.useDarkTheme")}
+						variant="h5"
+					/>
+					<Pressable
+						disabled={colorSchemePref === "system"}
+						onPress={() => {
+							setColorSchemePref(
+								colorSchemePref === "dark" ? "light" : "dark",
+							);
+						}}
+					>
+						<Icon
+							style={
+								colorSchemePref === "system"
+									? styles.disabledCheckButton
+									: undefined
+							}
+							icon={
+								actualColorScheme === "dark"
+									? CheckIcon
+									: UncheckIcon
+							}
+						/>
+					</Pressable>
+				</View>
+			</View>
+			<Divider h />
+			<View style={styles.section}>
+				<SectionHeader
+					style={styles.sectionHeader}
 					content={t("actions.logout")}
+					skeletonWidth={0}
 				/>
 				<Button
 					title={t("actions.logout")}
 					containerStyle={{ alignItems: "center" }}
-					labelStyle={styles.sectionHeaderLabel}
+					labelStyle={styles.logoutButtonStyle}
 					onPress={() => {
 						setAccessToken(null);
 						setInstanceUrl(null);
@@ -54,10 +133,17 @@ export default function SettingsView() {
 const styles = StyleSheet.create((theme) => ({
 	root: { paddingHorizontal: theme.gap(1) },
 	section: {
-		paddingTop: theme.gap(1),
-		paddingBottom: theme.gap(1),
-		gap: theme.gap(1),
+		paddingVertical: theme.gap(1),
+		gap: theme.gap(0.5),
 	},
-	sectionHeader: { paddingLeft: theme.gap(1) },
-	sectionHeaderLabel: { flex: 1 },
+	sectionHeader: { marginLeft: -theme.gap(1) },
+	sectionRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "100%",
+		paddingBottom: theme.gap(0.5),
+		paddingHorizontal: theme.gap(1),
+	},
+	disabledCheckButton: { color: theme.colors.text.secondary },
+	logoutButtonStyle: { flex: 1 },
 }));

@@ -1,6 +1,5 @@
 import { BackIcon } from "@/ui/icons";
 import { Stack, useNavigation } from "expo-router";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -67,22 +66,20 @@ const SharedRoutes: {
 
 export default function Layout({ segment }: { segment: string }) {
 	const { t } = useTranslation();
-	const screenOptions = useMemo(
-		() => ({
-			contentStyle: [styles.screen],
-			// headerStyle: styles.header,
-			headerTitleStyle: styles.headerTitle,
-			headerLeft: () => <BackButton />,
-			headerBackground: () => (
-				<View style={styles.headerBgContainer}>
-					<BlurView style={styles.headerBgContent} />
-				</View>
-			),
-			headerTransparent: true,
-			headerTintColor: styles.headerTitle.color,
-		}),
-		[],
-	);
+	// Cant memo-ise this, we need this to be updated when theme changes
+	const screenOptions = {
+		contentStyle: [styles.screen],
+		// headerStyle: styles.header,
+		headerTitleStyle: styles.headerTitle,
+		headerLeft: () => <BackButton />,
+		headerBackground: () => (
+			<View style={styles.headerBgContainer}>
+				<BlurView style={styles.headerBgContent} />
+			</View>
+		),
+		headerTransparent: true,
+		headerTintColor: styles.headerTitle.color,
+	};
 	switch (segment) {
 		case "(home)": {
 			return (

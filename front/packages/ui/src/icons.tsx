@@ -76,6 +76,7 @@ export const StarIcon: Icon = Iconsax.Star1;
 export const MovingStarIcon: Icon = Iconsax.Star;
 export const ShareIcon: Icon = Iconsax.Share;
 export const CheckIcon: Icon = Iconsax.TickCircle;
+export const UncheckIcon: Icon = Iconsax.CloseCircle;
 export const ContextualMenuIcon: Icon = (props: IconProps) => (
 	<Iconsax.More
 		{...props}

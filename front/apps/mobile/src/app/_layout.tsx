@@ -31,17 +31,19 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import i18next from "i18next";
 import { Provider } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import ToastManager from "toastify-react-native";
 import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { UnistylesRuntime } from "react-native-unistyles";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { BackgroundGradient } from "~/components/background-gradient";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
+import { colorSchemePreference } from "~/state/color-scheme";
 import { appThemes } from "~/theme";
 import resources from "../../../../translations";
 
@@ -62,7 +64,14 @@ export default function RootLayout() {
 		Rubik_800ExtraBold,
 		Rubik_900Black,
 	});
-	const [colorScheme] = useColorScheme();
+	const colorSchemePref = store.get(colorSchemePreference);
+	const rnColorScheme = useColorScheme();
+	const actualColorScheme = useMemo(() => {
+		if (colorSchemePref === "system") {
+			return rnColorScheme ?? "light";
+		}
+		return colorSchemePref;
+	}, [rnColorScheme, colorSchemePref]);
 
 	const [queryClient] = useState(
 		() =>
@@ -98,45 +107,49 @@ export default function RootLayout() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<Provider store={store}>
-				<KeyboardProvider>
-					<Stack
-						screenOptions={{
-							animation: "none",
-							headerShown: false,
-							contentStyle: {
-								flex: 1,
-							},
-							//TODO give the status bar a background when no header
-							statusBarStyle:
-								colorScheme === "light" ? "dark" : "light",
-						}}
-					>
-						<Stack.Screen
-							name="(protected)"
-							options={{
+				<ColorSchemeProvider>
+					<KeyboardProvider>
+						<Stack
+							screenOptions={{
+								animation: "none",
+								headerShown: false,
 								contentStyle: {
-									backgroundColor: "transparent",
+									flex: 1,
 								},
+								statusBarStyle:
+									actualColorScheme === "light"
+										? "dark"
+										: "light",
 							}}
-						/>
+						>
+							<Stack.Screen
+								name="(protected)"
+								options={{
+									contentStyle: {
+										backgroundColor: "transparent",
+									},
+								}}
+							/>
 
-						<Stack.Screen
-							name="auth"
-							options={{
-								contentStyle: {
-									backgroundColor: (colorScheme === "dark"
-										? appThemes.dark
-										: appThemes.light
-									).colors.background,
-								},
-							}}
-						/>
-					</Stack>
-				</KeyboardProvider>
-				<BackgroundGradient />
+							<Stack.Screen
+								name="auth"
+								options={{
+									contentStyle: {
+										backgroundColor: (actualColorScheme ===
+										"dark"
+											? appThemes.dark
+											: appThemes.light
+										).colors.background,
+									},
+								}}
+							/>
+						</Stack>
+					</KeyboardProvider>
+					<BackgroundGradient />
+				</ColorSchemeProvider>
 			</Provider>
 			<ToastManager
-				theme={colorScheme}
+				theme={actualColorScheme}
 				custom={MeeloToast}
 				config={{
 					success: (p: ToastConfigParams) => (
@@ -150,3 +163,11 @@ export default function RootLayout() {
 		</QueryClientProvider>
 	);
 }
+
+const ColorSchemeProvider = ({ children }: any) => {
+	const colorScheme = useColorScheme();
+	useEffect(() => {
+		UnistylesRuntime.setTheme(colorScheme);
+	}, [colorScheme]);
+	return children;
+};
