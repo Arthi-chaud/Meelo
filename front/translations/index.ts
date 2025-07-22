@@ -27,3 +27,6 @@ export default Object.entries({ en, fr, de, ru, id, it }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
 );
+
+export const Languages = ["en", "fr", "de", "ru", "it", "id"] as const;
+export type Language = (typeof Languages)[number];

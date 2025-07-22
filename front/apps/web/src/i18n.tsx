@@ -28,10 +28,9 @@ import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import { type ComponentType, useMemo } from "react";
 import { I18nextProvider } from "react-i18next";
 import { isSSR } from "~/utils/is-ssr";
-import translations from "../../../translations";
+import translations, { type Language, Languages } from "../../../translations";
 
-export const Languages = ["en", "fr", "de", "ru", "it", "id"] as const;
-export type Language = keyof typeof Languages;
+export { Languages, type Language };
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();
