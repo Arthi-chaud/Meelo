@@ -21,8 +21,8 @@ import i18next from "i18next";
 import { useAtom, useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import SelectDropdown from "react-native-select-dropdown";
 import { StyleSheet } from "react-native-unistyles";
+import { Dropdown } from "~/components/dropdown";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
 import { useColorScheme } from "~/hooks/color-scheme";
@@ -34,7 +34,7 @@ import { Text } from "~/primitives/text";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
-import { type Language, Languages } from "../../../../../translations";
+import { Languages } from "../../../../../translations";
 
 // TODO When setting dark/light mode using settings (not the auto mode)
 // header text color is not updated
@@ -116,47 +116,25 @@ export default function SettingsView() {
 
 				<View style={styles.sectionRow}>
 					<Text content={t("settings.ui.language")} variant="h5" />
-					<SelectDropdown
-						data={[...Languages]}
+					<Dropdown
+						values={Languages}
+						isSelected={(item) => lng === item}
+						buttonProps={{
+							title: t(
+								`settings.ui.lang.${i18next.language as "en"}`,
+							),
+							icon: ExpandMoreIcon,
+							iconPosition: "right",
+							size: "small",
+						}}
 						onSelect={(selected) => {
 							setLng(selected);
 						}}
-						dropdownStyle={styles.dropdownContainer}
-						renderItem={(item: Language) => (
-							<View style={styles.dropdownItem}>
-								<View style={styles.dropdownItemRow}>
-									<View style={styles.dropdownItemIcon}>
-										{lng === item ? (
-											<Icon icon={CheckIcon} />
-										) : undefined}
-									</View>
-
-									<Text
-										style={styles.dropdownItemLabel}
-										content={t(`settings.ui.lang.${item}`, {
-											lng: item,
-										})}
-									/>
-								</View>
-
-								<Divider h />
-							</View>
-						)}
-						statusBarTranslucent
-						dropdownOverlayColor="transparent"
-						renderButton={() => (
-							<View>
-								<Button
-									size="small"
-									propagateToParent
-									icon={ExpandMoreIcon}
-									iconPosition="right"
-									title={t(
-										`settings.ui.lang.${i18next.language as "en"}`,
-									)}
-								/>
-							</View>
-						)}
+						formatItem={(item) =>
+							t(`settings.ui.lang.${item}`, {
+								lng: item,
+							})
+						}
 					/>
 				</View>
 			</View>
@@ -198,28 +176,4 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	disabledCheckButton: { color: theme.colors.text.secondary },
 	logoutButtonStyle: { flex: 1 },
-
-	dropdownContainer: {
-		borderRadius: theme.borderRadius,
-		width: 150,
-		gap: theme.gap(2),
-	},
-	dropdownItem: { backgroundColor: theme.colors.background },
-	dropdownItemRow: {
-		display: "flex",
-		flexDirection: "row",
-		gap: theme.gap(1),
-		padding: theme.gap(1),
-	},
-	dropdownItemIcon: {
-		flex: 1,
-		display: "flex",
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	dropdownItemLabel: {
-		flex: 5,
-		display: "flex",
-		alignItems: "flex-start",
-	},
 }));
