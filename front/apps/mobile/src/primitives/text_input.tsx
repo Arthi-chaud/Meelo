@@ -19,6 +19,7 @@
 import {
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
+	type ViewStyle,
 } from "react-native";
 import Animated, {
 	useAnimatedStyle,
@@ -28,7 +29,10 @@ import Animated, {
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
-type TextInputProps = RNTextInputProps & { error?: string };
+type TextInputProps = RNTextInputProps & {
+	error?: string;
+	containerStyle?: ViewStyle;
+};
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
@@ -77,6 +81,7 @@ export const TextInput = ({
 	placeholder,
 	style,
 	error,
+	containerStyle,
 	...props
 }: TextInputProps) => {
 	const isFocused = useSharedValue(false);
@@ -106,15 +111,19 @@ export const TextInput = ({
 		};
 	}, [error, animatedTheme]);
 
-	const containerStyle = useAnimatedStyle(() => ({
+	const animatedContainerStyle = useAnimatedStyle(() => ({
 		borderWidth: withSpring(isFocused.value ? 3 : 1, springConfig),
 	}));
 	styles.useVariants({ error: !!error });
 	return (
-		<Animated.View style={[styles.container, containerStyle]}>
-			<Animated.Text style={[styles.placeholder, labelStyle]}>
-				{placeholder}
-			</Animated.Text>
+		<Animated.View
+			style={[styles.container, animatedContainerStyle, containerStyle]}
+		>
+			{placeholder && (
+				<Animated.Text style={[styles.placeholder, labelStyle]}>
+					{placeholder}
+				</Animated.Text>
+			)}
 			<RNTextInput
 				{...props}
 				onChangeText={(t) => {
