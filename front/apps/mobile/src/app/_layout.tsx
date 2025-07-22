@@ -101,6 +101,7 @@ export default function RootLayout() {
 				<KeyboardProvider>
 					<Stack
 						screenOptions={{
+							animation: "none",
 							headerShown: false,
 							contentStyle: {
 								flex: 1,
