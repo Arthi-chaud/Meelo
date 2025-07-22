@@ -83,7 +83,12 @@ export const InfiniteView = <
 				</View>
 
 				{firstPage?.length === 0 ? (
-					<View style={styles.emptyState}>
+					<View
+						style={[
+							styles.emptyState,
+							styles.scrollViewTopPadding(controlsHeight),
+						]}
+					>
 						<EmptyState />
 					</View>
 				) : (
@@ -174,7 +179,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	body: { flex: 1 },
 	optionalHeader: {},
-	emptyState: { height: "20%", maxHeight: 200 },
+	emptyState: { height: 300 },
 	controls: (paddingTop: number) => ({
 		paddingBottom: theme.gap(1.5),
 		paddingTop: theme.gap(1.5) + paddingTop,
@@ -189,7 +194,7 @@ const styles = StyleSheet.create((theme) => ({
 	//approximate so that the list start below controls
 	//putting the actual controls in the ListHeaderComponent causes the dropdown to be misplaced
 	scrollViewTopPadding: (controlsHeight: number | null) => ({
-		height: controlsHeight == null ? theme.gap(8.25) : controlsHeight,
+		paddingTop: controlsHeight == null ? theme.gap(8.25) : controlsHeight,
 	}),
 	itemContainer: {
 		variants: {
