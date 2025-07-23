@@ -76,9 +76,9 @@ export class StreamService {
 		const fullFilePath = await this.fileService.buildFullPath(where);
 		const proxy = createProxyMiddleware({
 			router: () =>
-				`${this.transcoderUrl}/${Buffer.from(fullFilePath).toString(
-					"base64url",
-				)}/${route}`,
+				`${this.transcoderUrl}/video/${Buffer.from(
+					fullFilePath,
+				).toString("base64url")}/${route}`,
 			ignorePath: true,
 		});
 		await proxy(req, res);
