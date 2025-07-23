@@ -6489,7 +6489,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"infinite-controls@workspace:packages/infinite-controls":
+"infinite-controls@workspace:^, infinite-controls@workspace:packages/infinite-controls":
   version: 0.0.0-use.local
   resolution: "infinite-controls@workspace:packages/infinite-controls"
   dependencies:
@@ -8112,9 +8112,11 @@ __metadata:
     expo-web-browser: "npm:^14.2.0"
     i18next: "npm:^23.7.16"
     iconsax-react-nativejs: "npm:^0.0.8"
+    infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
     jotai: "npm:^2.12.5"
     lodash: "npm:^4.17.21"
+    models: "workspace:^"
     react: "npm:19.0.0"
     react-hook-form: "npm:^7.58.0"
     react-i18next: "npm:^12.2.2"
@@ -8135,11 +8137,12 @@ __metadata:
     toastify-react-native: "npm:^7.2.0"
     type-fest: "npm:^4.33.0"
     typescript: "npm:~5.8.3"
+    ui: "workspace:^"
     utils: "workspace:^"
   languageName: unknown
   linkType: soft
 
-"models@workspace:packages/models":
+"models@workspace:^, models@workspace:packages/models":
   version: 0.0.0-use.local
   resolution: "models@workspace:packages/models"
   dependencies:
@@ -10852,7 +10855,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ui@workspace:packages/ui":
+"ui@workspace:^, ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "ui@workspace:packages/ui"
   dependencies:

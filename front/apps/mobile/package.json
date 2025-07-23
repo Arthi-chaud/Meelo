@@ -32,9 +32,11 @@
 		"expo-web-browser": "^14.2.0",
 		"i18next": "^23.7.16",
 		"iconsax-react-nativejs": "^0.0.8",
+		"infinite-controls": "workspace:^",
 		"intl-pluralrules": "^2.0.1",
 		"jotai": "^2.12.5",
 		"lodash": "^4.17.21",
+		"models": "workspace:^",
 		"react": "19.0.0",
 		"react-hook-form": "^7.58.0",
 		"react-i18next": "^12.2.2",
@@ -54,6 +56,7 @@
 		"state": "workspace:^",
 		"toastify-react-native": "^7.2.0",
 		"type-fest": "^4.33.0",
+		"ui": "workspace:^",
 		"utils": "workspace:^"
 	},
 	"installConfig": {
