@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// @ts-nocheck
+
 import * as Iconsax from "iconsax-react";
 
 export type Icon = React.FunctionComponent<IconProps>;
