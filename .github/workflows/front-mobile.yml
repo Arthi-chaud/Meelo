@@ -1,0 +1,85 @@
+name: "Front (Mobile)"
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main  ]
+  release:
+    types: [ published ]
+
+defaults:
+  run:
+    working-directory: ./front/apps/mobile
+
+jobs:
+  Changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      front: ${{ steps.filter.outputs.front }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            front:
+              - 'front/apps/mobile/**'
+              - 'front/package.json'
+              - 'front/translations/**'
+              - 'front/packages/**'
+              - '.github/workflows/front-mobile.yml'
+              - '.github/actions/cache-front/**'
+  Biome:
+    needs: changes 
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
+    container: node:22-alpine3.20
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-front
+      - name: Install Dependencies
+        run: yarn workspaces focus -A
+      - name: Run Linter
+        run: yarn run -T biome ci . ../../packages
+  Build:
+    needs: changes #[ Biome ]
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' && github.ref != 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: 22.x
+      # TODO
+      # - name: Restore Dependencies
+      #   uses: ./.github/actions/cache-front
+      - name: Install Dependencies
+        run: yarn workspaces focus -A
+      # https://github.com/thomasread99/expo-workflows/blob/cd3a0efc7ff3cfa83dec9b03f7bb078d78f46b88/android/android-apk-build.yml#L19C7-L23C34
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Setup EAS 
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Build
+        run: |
+          git config --global --add safe.directory '*' 
+          eas build --platform android --profile preview --local --non-interactive
+  # TODO Publish/update on release
