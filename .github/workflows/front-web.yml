@@ -1,15 +1,15 @@
-name: "Front"
+name: "Front (Web)"
 on:
   pull_request:
-    branches: [ main, v3 ]
+    branches: [ main ]
   push:
-    branches: [ main, v3 ]
+    branches: [ main  ]
   release:
     types: [ published ]
 
 defaults:
   run:
-    working-directory: ./front
+    working-directory: ./front/apps/web
 
 jobs:
   Changes:
@@ -27,9 +27,11 @@ jobs:
           filters: |
             front:
               - 'front/apps/web/**'
+              - 'front/package.json'
+              - 'front/yarn.lock'
               - 'front/translations/**'
               - 'front/packages/**'
-              - '.github/workflows/front.yml'
+              - '.github/workflows/front-web.yml'
               - '.github/actions/cache-front/**'
               - '.github/actions/dockerize/**'
   Build:
@@ -62,7 +64,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Run Linter
-        run: yarn run biome ci .
+        run: yarn run -T biome ci . ../../packages
   Analysis:
     needs: [ Build ]
     name: "Static Analysis"
