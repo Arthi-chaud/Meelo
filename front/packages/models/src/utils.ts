@@ -79,7 +79,7 @@ export const albumTypeToTranslationKey = (
 	plural: boolean,
 ): TranslationKey =>
 	albumType === "EP"
-		? "albumType.ep"
+		? `albumType.ep${plural ? "_plural" : ""}`
 		: `albumType.${uncapitalize(albumType)}${plural ? "_plural" : ""}`;
 
 export const songTypeToTranslationKey = (
