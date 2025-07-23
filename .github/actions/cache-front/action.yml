@@ -12,5 +12,9 @@ runs:
           path: |
             ./front/node_modules
             ./front/apps/web/.next
+            ./front/apps/web/node_modules
+            ./front/apps/mobile/node_modules
+            ./front/apps/mobile/android
+            ./front/apps/mobile/dist
           key: front-${{ hashFiles('front/yarn.lock') }}
           restore-keys: front-
