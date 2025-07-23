@@ -8134,7 +8134,7 @@ __metadata:
     react-native-svg: "npm:^15.12.0"
     react-native-unistyles: "npm:^3.0.0-rc.4"
     state: "workspace:^"
-    toastify-react-native: "npm:^7.2.0"
+    toastify-react-native: "npm:^7.2.3"
     type-fest: "npm:^4.33.0"
     typescript: "npm:~5.8.3"
     ui: "workspace:^"
@@ -10705,15 +10705,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"toastify-react-native@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "toastify-react-native@npm:7.2.0"
+"toastify-react-native@npm:^7.2.3":
+  version: 7.2.3
+  resolution: "toastify-react-native@npm:7.2.3"
   dependencies:
     react-native-vector-icons: "npm:*"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/469393c19db00bbe3a1132969390a9a43519e0f226bdf573c7b79b7c35359e64bd010b46786a63dda4b2546a6efb9db81d6e7d700c453e424211777d3c539a41
+  checksum: 10c0/e689d12ea771dbe181aa8d445ce5f8c3864d5f956065bc292fb0d71e45f94cc0a882d9d37f7aa802ceab889f56977fcb2830ee8010368cf578b28695aba9b50c
   languageName: node
   linkType: hard
 
