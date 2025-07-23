@@ -36,7 +36,7 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { SongItem } from "~/components/item/resource/song";
 
-// TODO Handle Genre filtering?
+// TODO Handle Genre Query param
 // TODO Handle song version filtering
 // TODO song subtitle: allow it to be album
 

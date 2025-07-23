@@ -114,7 +114,6 @@ export const Header = ({
 						{/* TODO accent color */}
 					</View>
 				</View>
-				{/* TODO isMixed */}
 			</View>
 		</>
 	);

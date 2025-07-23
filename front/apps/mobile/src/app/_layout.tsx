@@ -55,8 +55,6 @@ SplashScreen.setOptions({
 	fade: true,
 });
 
-//TODO Refacto to that router styling is updated when atom changes
-
 export default function RootLayout() {
 	const [loaded, error] = useFonts({
 		Rubik_300Light,

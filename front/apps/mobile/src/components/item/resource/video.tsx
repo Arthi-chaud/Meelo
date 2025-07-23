@@ -28,7 +28,7 @@ export const VideoTile = (props: Props) => {
 			title={props.video?.name}
 			onPress={() => {
 				props.onPress?.();
-			}} // TODO
+			}} // TODO Launch playback
 			subtitle={formattedSubtitle}
 		/>
 	);

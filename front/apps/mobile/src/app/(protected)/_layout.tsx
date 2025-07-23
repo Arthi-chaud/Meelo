@@ -37,6 +37,8 @@ import { Icon } from "~/primitives/icon";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 //TODO DRY: The header style for settings is very similar to the shared routed ones.
+//TODO I suspect that the setting header style is not updated when theme changes because we don't use withUnistyles
+//However, the latter does not work
 
 const styles = StyleSheet.create((theme) => ({
 	screen: { backgroundColor: "transparent", flex: 1 },

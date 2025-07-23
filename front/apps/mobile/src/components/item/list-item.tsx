@@ -82,7 +82,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	illustration: {
 		variants: {
-			//TODO responsive width
 			normalizedThumbnail: {
 				false: {
 					aspectRatio: 1,

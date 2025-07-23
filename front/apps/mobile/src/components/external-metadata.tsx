@@ -27,8 +27,6 @@ type Props = {
 	style?: ViewStyle;
 };
 
-/* TODO Expand description on touch */
-
 const DescriptionLineCount = 10;
 
 // Generic section for external metadata.

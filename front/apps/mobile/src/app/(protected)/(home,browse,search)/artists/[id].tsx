@@ -208,7 +208,6 @@ export default function ArtistView() {
 						/>
 					</>
 				)}
-				{/* TODO external metadata*/}
 			</SafeScrollView>
 		</>
 	);

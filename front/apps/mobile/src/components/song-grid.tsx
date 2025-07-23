@@ -14,8 +14,6 @@ type Song = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
 >;
 
-//TODO Add 'see all' button
-
 type Props = {
 	songs: Song[] | undefined;
 	style?: ViewStyle;
@@ -128,7 +126,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 }));
 
 const SnappyScrollView = withUnistyles(ScrollView, (_, rt) => ({
-	//TODO Check
+	//TODO Check on other screen sizes
 	snapToInterval:
 		(rt.screen.width >= breakpoints.sm ? breakpoints.sm : rt.screen.width) *
 		ColumnWidthRatio,
