@@ -28,7 +28,6 @@ jobs:
             front:
               - 'front/apps/web/**'
               - 'front/package.json'
-              - 'front/yarn.lock'
               - 'front/translations/**'
               - 'front/packages/**'
               - '.github/workflows/front-web.yml'
