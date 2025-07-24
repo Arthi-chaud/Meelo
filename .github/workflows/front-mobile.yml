@@ -35,7 +35,6 @@ jobs:
   Biome:
     needs: changes 
     if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
-    container: node:22-alpine3.20
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -56,13 +55,8 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: 22.x
-      # TODO
-      # - name: Restore Dependencies
-      #   uses: ./.github/actions/cache-front
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-front
       - name: Install Dependencies
         run: yarn workspaces focus -A
       # https://github.com/thomasread99/expo-workflows/blob/cd3a0efc7ff3cfa83dec9b03f7bb078d78f46b88/android/android-apk-build.yml#L19C7-L23C34
