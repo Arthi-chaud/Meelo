@@ -5,11 +5,11 @@ import type {
 } from "@/models/external-metadata";
 import { ExpandLessIcon, ExpandMoreIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
-import { Image } from "expo-image";
 import { openBrowserAsync } from "expo-web-browser";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
+import Image from "react-native-fast-image";
 import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { Icon } from "~/primitives/icon";
@@ -135,7 +135,7 @@ export const ExternalMetadataSourcesSection = ({
 						>
 							{source ? (
 								<Image
-									contentFit="contain"
+									resizeMode="contain"
 									source={{
 										uri: source
 											? api.getIllustrationURL(

@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Image } from "expo-image";
-import type { ImageProps } from "react-native";
+import Image, {
+	type FastImageProps as ImageProps,
+} from "react-native-fast-image";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 
 const styles = StyleSheet.create((_theme) => ({
@@ -32,8 +33,8 @@ const BannerBase = withUnistyles(
 	Image,
 	(theme) =>
 		({
-			priority: "high",
-			contentFit: "contain",
+			priority: Image.priority.high,
+			resizeMode: "contain",
 			source:
 				theme.name === "dark"
 					? require("../../assets/banner1_white.png")
@@ -49,8 +50,8 @@ const IconBase = withUnistyles(
 	Image,
 	(theme) =>
 		({
-			priority: "high",
-			contentFit: "contain",
+			priority: Image.priority.high,
+			resizeMode: "contain",
 			source:
 				theme.name === "light"
 					? require("../../assets/icon-black.png")
