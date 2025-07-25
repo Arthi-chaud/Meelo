@@ -89,6 +89,8 @@ services:
   matcher:
     build:
       context: ./matcher
+      args:
+      - VERSION=dev
     restart: on-failure
     depends_on:
       server:

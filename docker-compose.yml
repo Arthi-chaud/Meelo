@@ -33,6 +33,8 @@ services:
   front:
     build:
       context: ./front
+      args:
+      - VERSION=local
     expose:
       - 3000
     depends_on:
@@ -71,6 +73,8 @@ services:
   matcher:
     build:
       context: ./matcher
+      args:
+      - VERSION=local
     restart: on-failure
     depends_on:
       server:
