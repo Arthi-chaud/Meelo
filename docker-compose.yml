@@ -3,6 +3,8 @@ services:
   server:
     build:
       context: ./server
+      args:
+      - VERSION=local
     expose:
       - 4000
     restart: on-failure

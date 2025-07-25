@@ -19,16 +19,19 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiExcludeController } from "@nestjs/swagger";
 import { Public } from "./authentication/roles/roles.decorators";
+import SettingsService from "./settings/settings.service";
 
 @ApiExcludeController()
 @Controller()
 export default class AppController {
+	constructor(private readonly settingsService: SettingsService) {}
 	@Get()
 	@Public()
 	welcome() {
 		return {
 			message:
 				"Welcome to Meelo! To know more about the API, visit '/swagger'",
+			version: this.settingsService.settingsValues.version,
 		};
 	}
 }

@@ -11,6 +11,7 @@ RUN corepack enable
 RUN yarn
 COPY ./prisma ./prisma
 RUN yarn build
+ENV VERSION=dev
 
 CMD yarn							\
 	&& yarn build					\

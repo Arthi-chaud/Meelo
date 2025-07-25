@@ -54,6 +54,7 @@ export default class SettingsService {
 				// opt-in
 				process.env.ENABLE_USER_REGISTRATION !== "0",
 			allowAnonymous: process.env.ALLOW_ANONYMOUS === "1",
+			version: process.env.VERSION || "unknown",
 		} satisfies Settings);
 		// Validation
 		const validationError = validateSync(uncheckedSettings, {

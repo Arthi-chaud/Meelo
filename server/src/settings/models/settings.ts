@@ -39,6 +39,12 @@ export default class Settings {
 	@ApiProperty()
 	@IsBoolean()
 	enableUserRegistration: boolean;
+
+	/**
+	 * Hash of the commit the service was built from, or the name of the tag
+	 */
+	@ApiProperty()
+	version: string;
 	/**
 	 * The folder where `settings.json` and metadata are stored
 	 */
