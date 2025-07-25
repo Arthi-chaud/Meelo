@@ -5,10 +5,8 @@
 		"iconsax-react": "0.0.8"
 	},
 	"devDependencies": {
+		"@types/react": "*",
 		"typescript": "5.3.3"
-	},
-	"peerDependencies": {
-		"react": "*"
 	},
 	"packageManager": "yarn@4.4.0"
 }
