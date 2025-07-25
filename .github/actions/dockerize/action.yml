@@ -32,7 +32,7 @@ runs:
     - name: Get Commit 
       shell: bash 
       if: ${{ github.event_name != 'release' }}
-      run : echo "VERSION=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})" >> $GITHUB_ENV
+      run : echo "VERSION=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})" >> $GITHUB_ENV
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
