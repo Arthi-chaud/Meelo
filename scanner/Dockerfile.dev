@@ -5,4 +5,5 @@ RUN go install github.com/swaggo/swag/cmd/swag@latest
 RUN apk update && apk upgrade && apk add ffmpeg chromaprint mailcap 
 WORKDIR /app
 
+ENV VERSION=dev
 CMD ["wgo", "-xdir", "./app/docs", "swag", "init", "-d", "app", "-o", "./app/docs", "::", "go", "run", "./app"]
