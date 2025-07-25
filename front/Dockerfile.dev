@@ -1,5 +1,7 @@
 FROM node:18-alpine3.18
 WORKDIR /app
+ENV VERSION=dev
+ENV NEXT_PUBLIC_VERSION=dev
 
 COPY ./.yarnrc.yml ./*.lock  ./
 COPY ./.yarn ./.yarn

@@ -1,6 +1,11 @@
+ARG VERSION=unknown
 # Source : https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 FROM node:18-alpine3.18 AS base
 FROM base AS builder
+ARG VERSION
+
+ENV NEXT_PUBLIC_VERSION=$VERSION
+ENV VERSION=$VERSION
 WORKDIR /app
 
 # Yarn stuff
@@ -36,8 +41,11 @@ RUN yarn build:web
 ######
 
 FROM base AS runner
+ARG VERSION
 WORKDIR /app
 
+ENV NEXT_PUBLIC_VERSION=$VERSION
+ENV VERSION=$VERSION
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs

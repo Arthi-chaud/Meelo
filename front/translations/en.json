@@ -304,6 +304,7 @@
 				"it": "Italian",
 				"ru": "Russian"
 			},
+			"versions": "Versions",
 			"language": "Language",
 			"notifications": "Notifications",
 			"notifyOnTrackChange": "Notify On Track Change",

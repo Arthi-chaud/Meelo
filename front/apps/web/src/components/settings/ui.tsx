@@ -16,7 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getScrobblerStatus } from "@/api/queries";
+import {
+	getScannerVersion,
+	getScrobblerStatus,
+	getSettings,
+} from "@/api/queries";
 import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
 import {
 	BookIcon,
@@ -46,7 +50,7 @@ import { useMutation } from "@tanstack/react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
@@ -68,8 +72,12 @@ const InputContainerStyle = {
 const RepositoryUrl = "https://github.com/Arthi-chaud/meelo";
 const LinkIconStyle = { marginBottom: -5, marginRight: 5 };
 
+const AppVersion = process.env.NEXT_PUBLIC_VERSION || "unknown";
+
 const UISettings = () => {
 	const { t, i18n } = useTranslation();
+	const apiSettings = useQuery(() => getSettings());
+	const scannerVersion = useQuery(() => getScannerVersion());
 	const colorScheme = useColorScheme();
 	const [prefersNotifs, setPrefersNotif] = useLocalStorage(
 		"allow_notifs",
@@ -200,7 +208,6 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-
 			<SectionHeader heading={t("settings.ui.scrobblers.header")} />
 			<ScrobblersSection />
 			<SectionHeader heading={t("settings.ui.keyboardBindings")} />
@@ -241,6 +248,23 @@ const UISettings = () => {
 					{t("settings.ui.external.readTheDoc")}
 				</Link>
 			</p>
+
+			<SectionHeader heading={t("settings.ui.versions")} />
+
+			<Grid container sx={{ ...SettingGroupStyle, rowGap: 2 }}>
+				{[
+					["Web App", AppVersion] as const,
+					["Server", apiSettings.data?.version] as const,
+					["Scanner", scannerVersion.data?.version] as const,
+				].map(([appName, version]) => (
+					<Fragment key={appName}>
+						<Grid size={{ xs: 11 }}>{appName}</Grid>
+						<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
+							{version ?? <Skeleton />}
+						</Grid>
+					</Fragment>
+				))}
+			</Grid>
 		</NoSsr>
 	);
 };

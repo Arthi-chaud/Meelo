@@ -566,6 +566,16 @@ export const getSettings = (): Query<Settings> => {
 	return _mkSimpleQuery({ route: "/settings", validator: Settings });
 };
 
+export const getScannerVersion = () => {
+	return _mkSimpleQuery({
+		route: "/",
+		validator: yup.object({
+			version: yup.string().required(),
+		}),
+		service: Service.Scanner,
+	});
+};
+
 export const _mkSimpleQuery = <T>(
 	arg: {
 		route: string;

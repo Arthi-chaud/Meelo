@@ -305,6 +305,7 @@
 				"it": "Italien",
 				"ru": "Russe"
 			},
+			"versions": "Versions",
 			"language": "Langue",
 			"notifications": "Notifications",
 			"notifyOnTrackChange": "Notifier quand le morceau change",
