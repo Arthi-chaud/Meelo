@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 
 type ScannerStatus struct {
 	Message string `json:"message"`
+	Version string `json:"version"`
 }
 
 type ScannerTaskStatus struct {
@@ -36,7 +38,11 @@ func logTaskAdded(task t.Task) {
 // @Success		200	{object}	ScannerStatus
 // @Router	    / [get]
 func (s *ScannerContext) Status(c echo.Context) error {
-	return c.JSON(http.StatusOK, ScannerStatus{Message: "Scanner is alive."})
+	version := os.Getenv("VERSION")
+	if version == "" {
+		version = "unknown"
+	}
+	return c.JSON(http.StatusOK, ScannerStatus{Message: "Scanner is alive.", Version: version})
 }
 
 // @Tags        Tasks

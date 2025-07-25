@@ -49,7 +49,6 @@ func setupEcho(c config.Config) *echo.Echo {
 
 	e.GET("/", s.Status)
 	e.GET("/tasks", s.Tasks)
-	e.GET("/", s.Status)
 	e.POST("/scan", s.ScanAll)
 	e.POST("/scan/:libraryId", s.Scan)
 	e.POST("/clean", s.Clean)
