@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, List
+from matcher.context import Context
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
@@ -70,7 +71,8 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
 
     def _get_client(self):
         return discogs_client.Client(
-            "Meelo Matcher/0.0.1", user_token=self.settings.api_key
+            f"Meelo Matcher/{Context.get().settings.version}",
+            user_token=self.settings.api_key,
         )
 
     def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:

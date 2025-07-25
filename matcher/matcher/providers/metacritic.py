@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
+from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
     GetAlbumFeature,
@@ -54,7 +55,9 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
         try:
             html = requests.get(
                 str(album_url),
-                headers={"User-Agent": "Meelo Matcher/0.0.1"},
+                headers={
+                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
+                },
             ).text
             soup = BeautifulSoup(html, "html.parser")
             return soup

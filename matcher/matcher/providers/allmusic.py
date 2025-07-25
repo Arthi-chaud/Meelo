@@ -3,7 +3,7 @@ import datetime
 from typing import Any
 import json
 import requests
-
+from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from ..settings import AllMusicSettings
 from .features import (
@@ -52,7 +52,9 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
         try:
             html = requests.get(
                 str(self.get_album_url_from_id(album_id)),
-                headers={"User-Agent": "Meelo Matcher/0.0.1"},
+                headers={
+                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
+                },
             ).text
             soup = BeautifulSoup(html, "html.parser")
             return soup

@@ -3,6 +3,7 @@ import logging
 import re
 from typing import Any, List
 import warnings
+from matcher.context import Context
 
 from matcher.providers.features import (
     GetAlbumGenresFeature,
@@ -109,7 +110,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             f"https://musicbrainz.org/ws/2{url}",
             params={**query, **{"fmt": "json"}},
             headers={
-                "User-Agent": "Meelo Matcher/0.0.1 ( github.com/Arthi-chaud/Meelo )"
+                "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
             },
         )
         return res.json()
