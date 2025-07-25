@@ -57,6 +57,7 @@ class LrcLibSettings(BaseProviderSettings):
 @dataclass
 class Settings:
     push_genres: bool
+    version: str
     provider_settings: list[BaseProviderSettings]
 
     def __init__(self):
@@ -66,6 +67,7 @@ class Settings:
         config_path = os.path.normpath(f"{config_dir}/settings.json")
         if not os.path.isfile(config_path):
             raise Exception("Could not find settings file")
+        self.version = os.environ.get("VERSION") or "unknown"
         with open(config_path) as file:
             logging.info("Reading settings file...")
             json_data = json.loads(file.read())
