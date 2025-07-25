@@ -6,6 +6,7 @@ import signal
 
 from pika.adapters.blocking_connection import BlockingChannel
 from matcher.bootstrap import bootstrap_context
+from matcher.context import Context
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
@@ -52,6 +53,8 @@ def main():
         queue=queue_name, durable=True, arguments={"x-max-priority": 5}
     )
     bootstrap_context()
+
+    logging.info(f"Version: {Context.get().settings.version}")
     logging.info("Ready to match!")
     channel.basic_qos(prefetch_count=1)
     channel.basic_consume(queue_name, on_message_callback=consume)
