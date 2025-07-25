@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import re
 from typing import Any, List
 import requests
+from matcher.context import Context
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.domain import SongSearchResult
@@ -39,7 +40,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
     def _fetch(self, route: str):
         return requests.get(
             "https://lrclib.net/api" + route,
-            headers={"User-Agent": "Meelo Matcher/0.0.1"},
+            headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"},
         ).json()
 
     def _search_song(

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, List
 import requests
 
+from matcher.context import Context
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumIdFromUrlFeature,
@@ -100,7 +101,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             else {**params, "access_token": self.settings.api_key},
             headers={
                 "Authorization": f"{self.settings.api_key}",
-                "User-Agent": "Meelo (Matcher), v0.0.1",
+                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
             },
         ).json()
 
