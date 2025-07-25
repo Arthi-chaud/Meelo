@@ -46,6 +46,8 @@ services:
   scanner:
     build:
       context: ./scanner
+      args: 
+      - VERSION=local
     expose:
       - 8133
     depends_on:

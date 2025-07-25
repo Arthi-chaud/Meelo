@@ -1,4 +1,7 @@
 FROM golang:1.24.1-alpine AS builder
+
+ARG VERSION=unknown
+
 RUN go install github.com/swaggo/swag/cmd/swag@latest
 WORKDIR /app
 COPY go.mod go.sum ./
@@ -17,4 +20,5 @@ RUN apk update && apk upgrade && apk add ffmpeg chromaprint mailcap
 WORKDIR /app
 COPY --from=builder /app/scanner ./
 USER $SERVICE_NAME
+ENV VERSION=$VERSION
 CMD ["./scanner"]
