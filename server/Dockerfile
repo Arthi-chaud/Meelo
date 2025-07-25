@@ -15,6 +15,7 @@ RUN yarn install --immutable
 RUN yarn run build && yarn workspaces focus --all --production
 
 FROM base as runner
+ARG VERSION=unknown
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
@@ -22,6 +23,7 @@ COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/dist ./dist
 RUN corepack enable
+ENV VERSION=$VERSION
 
 CMD yarn run prisma migrate dev --skip-generate && yarn run start:prod
 
