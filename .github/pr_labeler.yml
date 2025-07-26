@@ -17,11 +17,11 @@ Matcher:
 
 Front (Web):
 - changed-files:
-  - any-glob-to-any-file: ['front/apps/web/**']
+  - any-glob-to-any-file: ['front/apps/web/**', '.github/workflows/front-web.*']
 
 Front (Mobile):
 - changed-files:
-  - any-glob-to-any-file: ['front/apps/mobile/**']
+  - any-glob-to-any-file: ['front/apps/mobile/**', '.github/workflows/front-mobile.*']
 
 Prisma Schema:
 - changed-files:
