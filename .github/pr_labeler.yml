@@ -27,13 +27,13 @@ Prisma Schema:
 - changed-files:
   - any-glob-to-any-file: ['server/prisma/**']
 
-CI/CD:
-- changed-files:
-  - any-glob-to-any-file: ['.github/workflows/**', '.github/actions/**', '**/Dockerfile', 'docker-compose.prod.yml']
-
 Translation:
 - changed-files:
   - all-globs-to-any-file: ['front/translation/**']
+
+CI/CD:
+- changed-files:
+  - any-glob-to-any-file: ['.github/workflows/**', '.github/actions/**', '**/Dockerfile', 'docker-compose.prod.yml']
 
 DX:
 - changed-files:
