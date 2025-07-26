@@ -9,6 +9,11 @@
 			"goToAlbum": "Zum Album"
 		},
 		"archive": "Archiv",
+		"artist": {
+			"seeAlbums": "Zeige Alben",
+			"seeSongs": "Zeige Songs"
+		},
+		"changeIllutration": "Ändere Illustration",
 		"create": "Erzeuge",
 		"delete": "Lösche",
 		"deleteFromPlaylist": "Lösche aus Playlist",
@@ -33,10 +38,43 @@
 		"playback": {
 			"play": "Abspielen",
 			"playAfter": "Spiele als Nächstes",
-			"playAll": "Spiele Alles"
-		}
+			"playAll": "Spiele Alles",
+			"playNext": "Spiel als Nächstes",
+			"shuffle": "Shuffle"
+		},
+		"release": {
+			"setAllTracksAsMaster": "Bestimme alle Tracks zum Master"
+		},
+		"setAsMaster": "Beatimme zum Master",
+		"share": "Teile",
+		"song": {
+			"changeType": "Ändere Songtyp",
+			"mergeSong": {
+				"label": "Führe Songs zusammen",
+				"modalTitle": "Wähle Song",
+				"warningBeforeMerging": "Alle Tracks werden dem gewählten Song zugeordnet und der alte Song gelöscht. Dateien werden weder geändert noch gelöscht."
+			},
+			"seeLyrics": "Zeige Liedtext",
+			"seeOtherVersions": "Zeige andere Versionen",
+			"seeRelatedTracks": "Zeige verwandte Tracks",
+			"seeSongInfo": "Song Info"
+		},
+		"track": {
+			"reassignTrack": "Ordne Track neu zu",
+			"seeTrackInfo": "Track Info"
+		},
+		"update": "Update",
+		"video": {
+			"changeType": "Ändere Videotyp"
+		},
+		"warningModalTitle": "Warnung"
 	},
 	"album": {
+		"bonusTracks": "Bonus Tracks",
+		"onThisAlbum": "mit",
+		"otherAlbumReleases": "Andere Veröffentlichungen dieses Albums",
+		"relatedAlbums": "Verwandte Alben",
+		"showAllTracks": "Zeige alle Tracks",
 		"showOnlyExclusiveTracks": "Zeige nur exklusive Tracks"
 	},
 	"albumType": {
@@ -47,7 +85,39 @@
 		"liveRecording": "Live-Aufnahme",
 		"liveRecording_plural": "Live Alben",
 		"remixAlbum": "Remix Album",
-		"remixAlbum_plural": "Remix Alben"
+		"remixAlbum_plural": "Remix Alben",
+		"single": "Single",
+		"single_plural": "Singles",
+		"studioRecording": "Studioalbum",
+		"studioRecording_plural": "Studioalben",
+		"videoAlbum": "Videoalbum",
+		"videoAlbum_plural": "Videoalben"
+	},
+	"artist": {
+		"appearsOn": "auch auf",
+		"rareSongs": "Raritäten",
+		"topSongs": "Top Songs",
+		"topVideos": "Top Videos"
+	},
+	"auth": {
+		"loginButton": "Login",
+		"signin": "Schon angemeldet? Login",
+		"signup": "Neu hier? Anmelden",
+		"signupButton": "Anmelden"
+	},
+	"browsing": {
+		"controls": {
+			"asc": "aufsteigend",
+			"backToTop": "Zurück nach oben",
+			"changeLayout": "Ändere Layout",
+			"desc": "absteigend",
+			"filter": {
+				"allLibraries": "Alle Bibliotheken",
+				"allTypes": "Alle Typen",
+				"nTypes": "{{n}} Typen"
+			},
+			"groupVersions": "gruppiere Versionen"
+		}
 	},
 	"settings": {
 		"ui": {
