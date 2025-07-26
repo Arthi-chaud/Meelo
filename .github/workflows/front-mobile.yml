@@ -85,6 +85,17 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Build
         run: |
-          git config --global --add safe.directory '*' 
-          eas build --platform android --profile preview --local --non-interactive
-  # TODO Publish/update on release
+          eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: ${{ github.event_name == 'pull_request' && 'meelo-preview.apk' || 'meelo.apk' }}
+          path: front/apps/mobile/build-*.apk
+      - name: Add APK to release
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name == 'release' }}
+        with:
+          files: |
+            ./front/apps/mobile/*.apk
+
