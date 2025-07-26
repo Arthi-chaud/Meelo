@@ -31,6 +31,10 @@ CI/CD:
 - changed-files:
   - any-glob-to-any-file: ['.github/workflows/**', '.github/actions/**', '**/Dockerfile', 'docker-compose.prod.yml']
 
+Translation:
+- changed-files:
+  - all-globs-to-any-file: ['front/translation/**']
+
 DX:
 - changed-files:
   - any-glob-to-any-file: ['**/README.md']
