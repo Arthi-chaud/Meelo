@@ -1,0 +1,36 @@
+# https://github.com/marketplace/actions/labeler#usage
+Documentation:
+- changed-files:
+  - any-glob-to-any-file: ['README.md', '**/README.md']
+
+Server:
+- changed-files:
+  - any-glob-to-any-file: ['server/**', '.github/workflows/server.*', '.github/actions/cache-server/**']
+
+scanner:
+- changed-files:
+  - any-glob-to-any-file: ['scanner/**', '.github/workflows/scanner.*', '.github/actions/cache-scanner/**']
+
+Matcher:
+- changed-files:
+  - any-glob-to-any-file: ['matcher/**', '.github/workflows/matcher.*', '.github/actions/cache-matcher/**']
+
+Front (Web):
+- changed-files:
+  - any-glob-to-any-file: ['front/apps/web/**']
+
+Front (Mobile):
+- changed-files:
+  - any-glob-to-any-file: ['front/apps/mobile/**']
+
+Prisma Schema:
+- changed-files:
+  - any-glob-to-any-file: ['server/prisma/**']
+
+CI/CD:
+- changed-files:
+  - any-glob-to-any-file: ['.github/workflows/**', '.github/actions/**', '**/Dockerfile', 'docker-compose.prod.yml']
+
+DX:
+- changed-files:
+  - any-glob-to-any-file: ['**/README.md']
