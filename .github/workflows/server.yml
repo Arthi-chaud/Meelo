@@ -11,6 +11,10 @@ defaults:
   run:
     working-directory: ./server
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Changes:
     runs-on: ubuntu-latest
