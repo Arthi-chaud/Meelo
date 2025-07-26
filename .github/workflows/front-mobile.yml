@@ -70,6 +70,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+      - run: echo "APK_NAME=${{ github.event_name == 'pull_request' && 'meelo-preview.apk' || 'meelo.apk' }}" >> $GITHUB_ENV
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -89,17 +90,18 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Build
         run: |
-          eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive
+          eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: ${{ github.event_name == 'pull_request' && 'meelo-preview.apk' || 'meelo.apk' }}
-          path: front/apps/mobile/build-*.apk
+          name: ${{ env.APK_NAME }}
+          path: front/apps/mobile/${{ env.APK_NAME }}
       - name: Add APK to release
         uses: softprops/action-gh-release@v2
         if: ${{ github.event_name == 'release' }}
         with:
           files: |
-            ./front/apps/mobile/*.apk
+            ./front/apps/mobile/${{ env.APK_NAME }}
 
