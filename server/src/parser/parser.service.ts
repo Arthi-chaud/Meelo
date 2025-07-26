@@ -687,7 +687,14 @@ export default class ParserService {
 				"Mixed",
 				"Mixed Version",
 			] as const,
-			["Live", "Extended", "Instrumental", "Edit", "Video Mix"],
+			[
+				"Live",
+				"Extended",
+				"Instrumental",
+				"Edit",
+				"Video Mix",
+				"Video Remix",
+			],
 		);
 		return {
 			parsedName,

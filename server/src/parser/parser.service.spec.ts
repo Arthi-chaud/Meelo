@@ -820,6 +820,11 @@ describe("Parser Service", () => {
 			],
 			["My Song (Video Edit)", undefined, undefined],
 			["My Song (Video Mix)", undefined, undefined],
+			[
+				"Don't Tell Me (Thunderpass Video Remix)",
+				undefined,
+				{ video: false },
+			],
 			["Jump (Extended Album Version)", undefined, undefined],
 			["My Song (Album Mix)", "My Song", undefined],
 			["My Song (Music Video)", "My Song", undefined],
