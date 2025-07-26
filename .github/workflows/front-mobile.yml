@@ -32,13 +32,24 @@ jobs:
               - 'front/packages/**'
               - '.github/workflows/front-mobile.yml'
               - '.github/actions/cache-front/**'
+  # TODO Does not work, reports errors about unknown props
+  # Typecheck:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check out the repo
+  #       uses: actions/checkout@v3
+  #     - name: Restore Dependencies
+  #       uses: ./.github/actions/cache-front
+  #     - name: Install Dependencies
+  #       run: yarn workspaces focus mobile
+  #     - name: Run tsc
+  #       run: yarn workspace mobile tsc
   Biome:
-    needs: changes 
+    needs: changes
     if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -49,7 +60,7 @@ jobs:
       - name: Run Linter
         run: yarn run -T biome ci . ../../packages
   Build:
-    needs: changes #[ Biome ]
+    needs: [ Biome ]
     if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' && github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
