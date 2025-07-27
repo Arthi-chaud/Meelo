@@ -5,8 +5,6 @@ import { useMemo } from "react";
 import { ShareAction, useShareCallback } from "~/actions/share";
 import type { ContextMenuProps } from "~/components/context-menu/model";
 
-// TODO Pass illustration props so that it's rounded
-
 // We accept null so that we can easily deal with albums w/o artists
 export const useArtistContextMenu = (
 	artist: ArtistWithRelations<"illustration"> | undefined | null,
@@ -31,6 +29,7 @@ export const useArtistContextMenu = (
 		return {
 			header: {
 				illustration: artist?.illustration,
+				illustrationProps: { variant: "circle" },
 				title: artist?.name,
 				subtitle: null,
 			},
