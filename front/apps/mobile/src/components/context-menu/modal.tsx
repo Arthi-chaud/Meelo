@@ -29,8 +29,6 @@ import { BlurView } from "../blur-view";
 import { Illustration } from "../illustration";
 import { LoadableText } from "../loadable_text";
 
-//TODO For songs, add large play button
-
 // The modal will be mounted when 'content' is not null
 export const ContextMenuModal = () => {
 	const [content, setContextMenu] = useAtom(contextMenuAtom);
@@ -105,6 +103,7 @@ const ContextMenuHeader = ({ header }: { header: HeaderProps }) => {
 				<Illustration
 					illustration={header.illustration}
 					quality="low"
+					{...header.illustrationProps}
 				/>
 			</View>
 			<View style={styles.headerText}>
@@ -166,7 +165,9 @@ const styles = StyleSheet.create((theme, rt) => ({
 	handleIndicator: { marginTop: theme.gap(1) },
 	thickDivider: { height: 2 },
 	modal: {
-		padding: theme.gap(2),
+		paddingHorizontal: theme.gap(2),
+		paddingBottom: theme.gap(2),
+		paddingTop: theme.gap(1),
 		maxHeight: rt.screen.height / 2,
 		backgroundColor: "transparent",
 	},
@@ -184,6 +185,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 		gap: theme.gap(2),
 		paddingBottom: theme.gap(1.5),
 	},
-	headerIllustration: { aspectRatio: 1, width: theme.gap(7) },
+	headerIllustration: { width: theme.gap(7) },
 	headerText: { justifyContent: "space-evenly" },
 }));
