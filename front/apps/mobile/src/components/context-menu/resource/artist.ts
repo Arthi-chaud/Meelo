@@ -1,0 +1,61 @@
+import type { ArtistWithRelations } from "@/models/artist";
+import { AlbumIcon, ArtistIcon, SongIcon } from "@/ui/icons";
+import type { Href } from "expo-router";
+import { useMemo } from "react";
+import { ShareAction, useShareCallback } from "~/actions/share";
+import type { ContextMenuProps } from "~/components/context-menu/model";
+
+// TODO Pass illustration props so that it's rounded
+
+// We accept null so that we can easily deal with albums w/o artists
+export const useArtistContextMenu = (
+	artist: ArtistWithRelations<"illustration"> | undefined | null,
+): ContextMenuProps | undefined => {
+	const buildUrlAndShare = useShareCallback();
+	return useMemo(() => {
+		if (artist === null) {
+			return undefined;
+		}
+		const shareCallback = artist
+			? () => buildUrlAndShare(`/artists/${artist.id}`)
+			: undefined;
+		const artistHref: Href | undefined = artist
+			? `/artists/${artist.id}`
+			: undefined;
+		const albumHref: Href | undefined = artist
+			? `/albums?artist=${artist.id}`
+			: undefined;
+		const songHref: Href | undefined = artist
+			? `/songs?artist=${artist.id}`
+			: undefined;
+		return {
+			header: {
+				illustration: artist?.illustration,
+				title: artist?.name,
+				subtitle: null,
+			},
+			items: [
+				[
+					{
+						label: "actions.goToArtist",
+						icon: ArtistIcon,
+						href: artistHref,
+					},
+
+					{
+						label: "actions.artist.seeAlbums",
+						icon: AlbumIcon,
+						href: albumHref,
+					},
+
+					{
+						label: "actions.artist.seeSongs",
+						icon: SongIcon,
+						href: songHref,
+					},
+				],
+				shareCallback ? [ShareAction(shareCallback)] : [],
+			],
+		} satisfies ContextMenuProps;
+	}, [artist]);
+};
