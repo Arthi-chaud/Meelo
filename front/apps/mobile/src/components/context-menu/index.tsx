@@ -1,7 +1,7 @@
 import { ContextualMenuIcon } from "@/ui/icons";
 import { StyleSheet } from "react-native-unistyles";
 import { useContextMenu } from "~/hooks/context-menu";
-import type { ContextMenuProps } from "~/models/context-menu";
+import type { ContextMenuProps } from "~/components/context-menu/model";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 

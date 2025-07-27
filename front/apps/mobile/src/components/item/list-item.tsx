@@ -6,7 +6,7 @@ import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
 import { useContextMenu } from "~/hooks/context-menu";
-import type { ContextMenuProps } from "~/models/context-menu";
+import type { ContextMenuProps } from "~/components/context-menu/model";
 import { ContextMenu } from "../context-menu";
 import { LoadableText } from "../loadable_text";
 

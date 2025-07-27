@@ -7,7 +7,7 @@ import type { RequireAtLeastOne } from "type-fest";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { useContextMenu } from "~/hooks/context-menu";
-import type { ContextMenuProps } from "~/models/context-menu";
+import type { ContextMenuProps } from "~/components/context-menu/model";
 
 const styles = StyleSheet.create((theme) => ({
 	container: {

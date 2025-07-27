@@ -1,6 +1,6 @@
 import { atom, useSetAtom } from "jotai";
 import { useCallback } from "react";
-import type { ContextMenuProps } from "~/models/context-menu";
+import type { ContextMenuProps } from "~/components/context-menu/model";
 
 export const contextMenuAtom = atom<ContextMenuProps | null>();
 
