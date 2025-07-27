@@ -33,14 +33,17 @@ import i18next from "i18next";
 import { Provider } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ToastManager from "toastify-react-native";
 import "intl-pluralrules";
 import { DefaultQueryOptions } from "@/api/query";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { UnistylesRuntime } from "react-native-unistyles";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { BackgroundGradient } from "~/components/background-gradient";
+import { ContextMenuModal } from "~/components/context-menu/modal";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
@@ -105,62 +108,68 @@ export default function RootLayout() {
 	}
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<Provider store={store}>
-				<ColorSchemeProvider>
-					<KeyboardProvider>
-						<Stack
-							screenOptions={{
-								animation: "none",
-								headerShown: false,
-								contentStyle: {
-									flex: 1,
-								},
-								statusBarStyle:
-									actualColorScheme === "light"
-										? "dark"
-										: "light",
-							}}
-						>
-							<Stack.Screen
-								name="(protected)"
-								options={{
-									contentStyle: {
-										backgroundColor: "transparent",
-									},
-								}}
-							/>
+		<GestureHandlerRootView>
+			<QueryClientProvider client={queryClient}>
+				<Provider store={store}>
+					<ColorSchemeProvider>
+						<BottomSheetModalProvider>
+							<KeyboardProvider>
+								<Stack
+									screenOptions={{
+										animation: "none",
+										headerShown: false,
+										contentStyle: {
+											flex: 1,
+										},
+										statusBarStyle:
+											actualColorScheme === "light"
+												? "dark"
+												: "light",
+									}}
+								>
+									<Stack.Screen
+										name="(protected)"
+										options={{
+											contentStyle: {
+												backgroundColor: "transparent",
+											},
+										}}
+									/>
 
-							<Stack.Screen
-								name="auth"
-								options={{
-									contentStyle: {
-										backgroundColor: (actualColorScheme ===
-										"dark"
-											? appThemes.dark
-											: appThemes.light
-										).colors.background,
-									},
-								}}
-							/>
-						</Stack>
-					</KeyboardProvider>
-					<BackgroundGradient />
-				</ColorSchemeProvider>
-			</Provider>
-			<ToastManager
-				theme={actualColorScheme}
-				custom={MeeloToast}
-				config={{
-					success: (p: ToastConfigParams) => (
-						<MeeloToast {...p} variant={"success"} />
-					),
-					error: (p: ToastConfigParams) => (
-						<MeeloToast {...p} variant={"error"} />
-					),
-				}}
-			/>
-		</QueryClientProvider>
+									<Stack.Screen
+										name="auth"
+										options={{
+											contentStyle: {
+												backgroundColor:
+													(actualColorScheme ===
+													"dark"
+														? appThemes.dark
+														: appThemes.light
+													).colors.background,
+											},
+										}}
+									/>
+								</Stack>
+								<ContextMenuModal />
+							</KeyboardProvider>
+						</BottomSheetModalProvider>
+						<BackgroundGradient />
+					</ColorSchemeProvider>
+				</Provider>
+				<ToastManager
+					theme={actualColorScheme}
+					custom={MeeloToast}
+					config={{
+						success: (p: ToastConfigParams) => (
+							<MeeloToast {...p} variant={"success"} />
+						),
+						error: (p: ToastConfigParams) => (
+							<MeeloToast {...p} variant={"error"} />
+						),
+					}}
+				/>
+			</QueryClientProvider>
+		</GestureHandlerRootView>
 	);
 }
 

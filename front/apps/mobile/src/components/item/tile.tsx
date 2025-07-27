@@ -6,6 +6,8 @@ import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import { useContextMenu } from "~/hooks/context-menu";
+import type { ContextMenuProps } from "~/models/context-menu";
 
 const styles = StyleSheet.create((theme) => ({
 	container: {
@@ -51,6 +53,7 @@ type Props = {
 	title: string | undefined;
 	subtitle: string | undefined | null;
 	containerStyle?: ViewStyle;
+	contextMenu?: ContextMenuProps;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 export const Tile = ({
@@ -59,8 +62,10 @@ export const Tile = ({
 	subtitle,
 	href,
 	onPress,
+	contextMenu,
 	...props
 }: Props) => {
+	const { openContextMenu } = useContextMenu(contextMenu);
 	styles.useVariants({
 		hasSubtitle: subtitle !== null,
 		normalizedThumbnail:
@@ -75,6 +80,7 @@ export const Tile = ({
 					router.push(href);
 				}
 			}}
+			onLongPress={openContextMenu}
 			style={[styles.container, props.containerStyle]}
 		>
 			<View style={styles.imageContainer}>

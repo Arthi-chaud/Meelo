@@ -5,6 +5,9 @@ import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
+import { useContextMenu } from "~/hooks/context-menu";
+import type { ContextMenuProps } from "~/models/context-menu";
+import { ContextMenu } from "../context-menu";
 import { LoadableText } from "../loadable_text";
 
 type Props = {
@@ -15,6 +18,7 @@ type Props = {
 		ComponentProps<typeof IllustrationComponent>,
 		"illustration" | "quality"
 	>;
+	contextMenu?: ContextMenuProps;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 //TODO Ripple or visual feedback on press
@@ -25,8 +29,10 @@ export const ListItem = ({
 	illustration,
 	illustrationProps,
 	href,
+	contextMenu,
 	onPress,
 }: Props) => {
+	const { openContextMenu } = useContextMenu(contextMenu);
 	const router = useRouter();
 	styles.useVariants({
 		normalizedThumbnail: illustrationProps?.normalizedThumbnail ?? false,
@@ -39,6 +45,7 @@ export const ListItem = ({
 					router.push(href);
 				}
 			}}
+			onLongPress={openContextMenu}
 			style={[styles.root]}
 		>
 			<View style={styles.illustration}>
@@ -65,6 +72,11 @@ export const ListItem = ({
 					/>
 				)}
 			</View>
+			{contextMenu && (
+				<View style={styles.contextMenu}>
+					<ContextMenu {...contextMenu} />
+				</View>
+			)}
 		</Pressable>
 	);
 };
@@ -101,5 +113,8 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		justifyContent: "center",
 		gap: theme.gap(1),
+	},
+	contextMenu: {
+		justifyContent: "center",
 	},
 }));
