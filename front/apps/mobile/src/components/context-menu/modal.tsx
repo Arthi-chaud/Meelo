@@ -20,7 +20,7 @@ import { contextMenuAtom } from "~/hooks/context-menu";
 import type {
 	ContextMenuItem,
 	ContextMenuHeader as HeaderProps,
-} from "~/models/context-menu";
+} from "~/components/context-menu/model";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -28,6 +28,8 @@ import { Text } from "~/primitives/text";
 import { BlurView } from "../blur-view";
 import { Illustration } from "../illustration";
 import { LoadableText } from "../loadable_text";
+
+//TODO For songs, add large play button
 
 // The modal will be mounted when 'content' is not null
 export const ContextMenuModal = () => {
@@ -109,6 +111,7 @@ const ContextMenuHeader = ({ header }: { header: HeaderProps }) => {
 				<LoadableText
 					content={header.title}
 					variant="h6"
+					numberOfLines={1}
 					skeletonWidth={15}
 				/>
 
@@ -116,6 +119,7 @@ const ContextMenuHeader = ({ header }: { header: HeaderProps }) => {
 					<LoadableText
 						content={header.subtitle}
 						variant="body"
+						numberOfLines={1}
 						skeletonWidth={10}
 					/>
 				)}

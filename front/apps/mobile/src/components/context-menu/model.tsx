@@ -1,14 +1,7 @@
 import type Illustration from "@/models/illustration";
-import type { Icon as IconType } from "@/ui/icons";
-import type { Href } from "expo-router";
+import type { Action } from "~/actions";
 
-export type ContextMenuItem = {
-	icon: IconType;
-	label: TranslationKey;
-	onPress?: () => void;
-	href?: Href;
-	disabled?: boolean;
-};
+export type ContextMenuItem = Action;
 
 export type ContextMenuHeader = {
 	illustration: Illustration | null | undefined;
