@@ -186,5 +186,8 @@ const styles = StyleSheet.create((theme, rt) => ({
 		paddingBottom: theme.gap(1.5),
 	},
 	headerIllustration: { width: theme.gap(7) },
-	headerText: { justifyContent: "space-evenly" },
+	headerText: {
+		justifyContent: "space-evenly",
+		flex: 1,
+	},
 }));
