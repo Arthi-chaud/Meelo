@@ -1,1 +1,228 @@
-{}
+{
+	"actions": {
+		"addToPlaylist": {
+			"modalTitle": "Selecione a playlist"
+		},
+		"album": {
+			"changeType": "Mudar Tipo de Álbum",
+			"goToAlbum": "Ir para Álbum"
+		},
+		"archive": "Arquivar",
+		"artist": {
+			"seeAlbums": "Ver álbuns",
+			"seeSongs": "Ver Músicas"
+		},
+		"changeIllutration": "Mudar ilustração",
+		"create": "Criar",
+		"delete": "Deletar",
+		"deleteFromPlaylist": "Remover da playlist",
+		"deleteUser": {
+			"label": "Remover usuário",
+			"warning": "Você está prestes a remover um usuário. Isso é irreversível."
+		},
+		"download": {
+			"label": "Baixar"
+		},
+		"goBackHome": "Voltar para o Início",
+		"goToArtist": "Ir para o Artista",
+		"goToSettingsPage": "Ir para Configurações",
+		"library": {
+			"create": "Criar biblioteca",
+			"delete": "Remover biblioteca",
+			"deletionWarning": "Você está prestes a remover a biblioteca. Isso é irreversível"
+		},
+		"logout": "Sair",
+		"new": "Novo",
+		"playback": {
+			"play": "Reproduzir",
+			"playAfter": "Reproduzir após",
+			"playAll": "Reproduzir tudo",
+			"playNext": "Reproduzir próximo",
+			"shuffle": "Embaralhar"
+		},
+		"share": "Compartilhar",
+		"song": {
+			"changeType": "Mudar tipo da faixa",
+			"mergeSong": {
+				"label": "Mesclar faixas",
+				"modalTitle": "Selecione uma faixa",
+				"warningBeforeMerging": "Todas as faixas serão realocadas para a música selecionada, e a música antiga será removida. Seus arquivos não serão modificados nem excluídos"
+			},
+			"seeLyrics": "Ver letra",
+			"seeOtherVersions": "Ver outras versões",
+			"seeRelatedTracks": "Ver faixas relacionadas",
+			"seeSongInfo": "Informações da música"
+		},
+		"track": {
+			"reassignTrack": "Realocar faixa",
+			"seeTrackInfo": "Informações da faixa"
+		},
+		"update": "Atualizar",
+		"video": {
+			"changeType": "Mudar tipo de vídeo"
+		},
+		"warningModalTitle": "Atenção"
+	},
+	"album": {
+		"bonusTracks": "Faixas bônus",
+		"onThisAlbum": "Artistas em Destaque",
+		"otherAlbumReleases": "Outros lançamentos do mesmo álbum",
+		"relatedAlbums": "Álbuns relacionados",
+		"showAllTracks": "Ver todas as faixas",
+		"showOnlyExclusiveTracks": "Ver apenas faixas exclusivas"
+	},
+	"albumType": {
+		"compilation": "Compilação",
+		"compilation_plural": "Compilações",
+		"ep": "EP",
+		"ep_plural": "EPs",
+		"liveRecording": "Gravação ao vivo",
+		"liveRecording_plural": "Álbuns ao vivo",
+		"remixAlbum": "Álbum remix",
+		"remixAlbum_plural": "Remixagens",
+		"single": "Divulgação",
+		"single_plural": "Divulgações",
+		"soundtrack": "Trilha sonora",
+		"soundtrack_plural": "Álbuns de trilha sonora",
+		"studioRecording": "Gravação de estúdio",
+		"studioRecording_plural": "Álbuns de estúdio",
+		"videoAlbum": "Álbum de vídeo",
+		"videoAlbum_plural": "Álbuns de vídeo"
+	},
+	"artist": {
+		"appearsOn": "Aparece em",
+		"rareSongs": "Músicas raras",
+		"topSongs": "Melhores músicas",
+		"topVideos": "Melhores vídeos"
+	},
+	"auth": {
+		"loginButton": "Entrar",
+		"signin": "Já possui uma conta? Entre",
+		"signup": "Novo por aqui? Cadastre-se",
+		"signupButton": "Cadastrar"
+	},
+	"browsing": {
+		"controls": {
+			"asc": "Crescente",
+			"backToTop": "Ir para o topo",
+			"changeLayout": "Mudar modo de exibição",
+			"desc": "Decrescente",
+			"filter": {
+				"allLibraries": "Todas as bibliotecas",
+				"allTypes": "Todos os tipos",
+				"nTypes": "{{n}} Tipos"
+			},
+			"groupVersions": "Agrupar versões",
+			"order": "Ordenar",
+			"showAllSongs": "Mostrar todas as versões",
+			"sort": {
+				"addDate": "Adicionar data",
+				"albumCount": "Número de álbuns",
+				"artistName": "Nome do artista",
+				"bitrate": "Taxa de bits",
+				"bpm": "BPM",
+				"creationDate": "Data de criação",
+				"discIndex": "Índice do disco",
+				"entryCount": "Número de entradas",
+				"name": "Título",
+				"registrationDate": "Data de adição",
+				"releaseDate": "Data de lançamento",
+				"releaseName": "Nome do lançamento",
+				"songCount": "Número de músicas",
+				"totalPlayCount": "Número total de reproduções",
+				"trackCount": "Número de faixas",
+				"trackIndex": "Índice da faixa",
+				"userPlayCount": "Número de reproduções do usuário"
+			},
+			"sortBy": "Ordenar por"
+		},
+		"sections": {
+			"about": "Sobre",
+			"extras": "Extras",
+			"featuredOnPlaylists": "Em listas de reprodução",
+			"livePerformances": "Performances ao vivo",
+			"musicVideos": "Videoclipes"
+		},
+		"seeAll": "Ver tudo"
+	},
+	"compilationArtistLabel": "Compilação",
+	"emptyState": {
+		"default": "Nada encontrado aqui…",
+		"home": "Minha nossa, está tão quieto por aqui…",
+		"lyrics": "Sem letras pra cantar juntinho :(",
+		"playlist": "Não há músicas nessa lista de reprodução... ainda!",
+		"playlists": "Não há listas de reprodução... ainda!"
+	},
+	"errors": {
+		"errorOccured": "Uêpaaa... Um erro ocorreu",
+		"oops": "Uêpaaa",
+		"pageNotFound": "Uêpaa.. Página não encontrada"
+	},
+	"fileInfo": {
+		"bitRate": "Taxa de bits",
+		"bpm": "BPM",
+		"duration": "Duração",
+		"extension": "Extensão",
+		"name": "Nome",
+		"path": "Caminho",
+		"registrationDate": "Data de adição",
+		"type": "Tipo",
+		"unknown": "Desconhecido"
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "Confirmar",
+			"instanceUrl": "Endereço da instância",
+			"instanceUrlIsRequired": "Endereço da instância está vazio",
+			"password": "Senha",
+			"passwordIsRequired": "Senha é obrigatória",
+			"passwordTooShort": "Demasiadamente curta, sua senha é",
+			"passwordsAreDifferent": "Senhas diferem",
+			"pleaseConfirm": "Por favor, confirme a senha",
+			"username": "Nome de usuário",
+			"usernameIsRequired": "Nome de usuário é obrigatório",
+			"usernameTooShort": "Nome de usuário é muito curto"
+		},
+		"cancel": "Cancelar",
+		"confirm": "Confirmar",
+		"done": "Concluir",
+		"edit": "Editar",
+		"library": {
+			"nameIsRequired": "Nome é obrigatório",
+			"nameOfLibrary": "Nome da biblioteca",
+			"pathIsRequired": "Caminho é obrigatório",
+			"pathOfLibrary": "Caminho da biblioteca"
+		},
+		"playlist": {
+			"allowPlaylistChanges": "Permitir outros usuários modificarem esta lista de reprodução",
+			"playlistIsPublic": "Permitir que outros usuários vejam esta lista de reprodução"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Deixe em branco se você usa a instância pública (https://api.listenbrainz.org)",
+				"instanceUrlLabel": "URL da API ListenBrainz",
+				"tokenHelperText": "Obtenha seu token de usuário aqui: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Token é obrigatório",
+				"tokenLabel": "Insira o token ListenBrainz"
+			}
+		}
+	},
+	"home": {
+		"featuredAlbums": "Álbuns em destaque",
+		"latestAlbums": "Últimos álbuns",
+		"mostPlayedSongs": "Músicas mais reproduzidas",
+		"newlyAddedAlbums": "Álbuns recém adicionados",
+		"newlyAddedArtists": "Artistas recém adicionados",
+		"newlyAddedReleases": "Lançamentos recém adicionados",
+		"topGenres": "Gêneros populares",
+		"topLabels": "Selos populares"
+	},
+	"keyboardBindings": {
+		"closePlayer": "Fechar reprodutor",
+		"goToSearchPage": "Ir para busca",
+		"goToSettingsPage": "Ir para Configurações",
+		"modalTitle": "Atalhos de teclado",
+		"openClosePlayer": "Abrir / Fechar reprodutor",
+		"openModalShortcutDescription": "Abrir / fechar este modal"
+	}
+}
