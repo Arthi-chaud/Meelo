@@ -22,11 +22,12 @@ import fr from "./fr.json";
 import id from "./id.json";
 import it from "./it.json";
 import ru from "./ru.json";
+import pt_br from "./pt-BR.json";
 
-export default Object.entries({ en, fr, de, ru, id, it }).reduce(
+export default Object.entries({ en, fr, de, ru, id, it, pt_br }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
 );
 
-export const Languages = ["en", "fr", "de", "ru", "it", "id"] as const;
+export const Languages = ["en", "fr", "de", "ru", "it", "id", "pt_br"] as const;
 export type Language = (typeof Languages)[number];
