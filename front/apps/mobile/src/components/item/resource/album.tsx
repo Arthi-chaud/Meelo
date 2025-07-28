@@ -4,6 +4,7 @@ import { type ComponentProps, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";
+import { useAlbumContextMenu } from "~/components/context-menu/resource/album";
 
 type Props = {
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
@@ -20,6 +21,7 @@ export const AlbumItem = ({
 	formatSubtitle,
 	onPress,
 }: Props) => {
+	const contextMenu = useAlbumContextMenu(album);
 	const formattedSubtitle = useFormattedSubtitle({
 		subtitle,
 		formatSubtitle,
@@ -31,6 +33,7 @@ export const AlbumItem = ({
 			subtitle={formattedSubtitle}
 			href={album?.masterId ? `/releases/${album.masterId}` : null}
 			onPress={onPress}
+			contextMenu={contextMenu}
 			illustration={album?.illustration}
 			illustrationProps={illustrationProps}
 		/>
@@ -41,8 +44,10 @@ export const AlbumTile = ({
 	album,
 	illustrationProps,
 	subtitle,
+	onPress,
 	formatSubtitle,
 }: Props) => {
+	const contextMenu = useAlbumContextMenu(album);
 	const formattedSubtitle = useFormattedSubtitle({
 		subtitle,
 		formatSubtitle,
@@ -53,7 +58,9 @@ export const AlbumTile = ({
 			illustration={album?.illustration}
 			illustrationProps={illustrationProps}
 			title={album?.name}
+			onPress={onPress}
 			href={album?.masterId ? `/releases/${album.masterId}` : null}
+			contextMenu={contextMenu}
 			subtitle={formattedSubtitle}
 		/>
 	);
