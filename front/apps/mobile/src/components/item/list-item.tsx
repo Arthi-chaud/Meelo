@@ -1,6 +1,6 @@
 import type Illustration from "@/models/illustration";
 import { type Href, useRouter } from "expo-router";
-import type { ComponentProps } from "react";
+import { type ComponentProps, useCallback } from "react";
 import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
@@ -39,6 +39,9 @@ export const ListItem = ({
 	styles.useVariants({
 		normalizedThumbnail: illustrationProps?.normalizedThumbnail ?? false,
 	});
+	const onLongPress = useCallback(() => {
+		contextMenu && openContextMenu();
+	}, [contextMenu, openContextMenu]);
 	return (
 		<Pressable
 			onPress={() => {
@@ -47,7 +50,7 @@ export const ListItem = ({
 					router.push(href);
 				}
 			}}
-			onLongPress={openContextMenu}
+			onLongPress={onLongPress}
 			style={[styles.root]}
 		>
 			<View style={styles.illustration}>
