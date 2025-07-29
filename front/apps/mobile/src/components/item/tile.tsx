@@ -1,6 +1,6 @@
 import type IllustrationModel from "@/models/illustration";
 import { type Href, useRouter } from "expo-router";
-import type { ComponentProps } from "react";
+import { type ComponentProps, useCallback } from "react";
 import { Pressable, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
@@ -71,16 +71,20 @@ export const Tile = ({
 		normalizedThumbnail:
 			props.illustrationProps?.normalizedThumbnail ?? false,
 	});
+	const onLongPress = useCallback(() => {
+		contextMenu && openContextMenu();
+	}, [contextMenu, openContextMenu]);
+	const onShortPress = useCallback(() => {
+		onPress?.();
+		if (href) {
+			router.push(href);
+		}
+	}, [onPress, href]);
 	const router = useRouter();
 	return (
 		<Pressable
-			onPress={() => {
-				onPress?.();
-				if (href) {
-					router.push(href);
-				}
-			}}
-			onLongPress={openContextMenu}
+			onPress={onShortPress}
+			onLongPress={onLongPress}
 			style={[styles.container, props.containerStyle]}
 		>
 			<View style={styles.imageContainer}>
