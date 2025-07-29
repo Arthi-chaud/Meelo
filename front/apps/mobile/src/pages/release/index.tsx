@@ -19,6 +19,7 @@ import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import { Chip } from "~/components/chip";
 import {
 	ExternalMetadataDescriptionSection,
 	ExternalMetadataSourcesSection,
@@ -27,7 +28,6 @@ import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import ReleaseTile from "~/components/item/resource/release";
 import { VideoTile } from "~/components/item/resource/video";
-import { LoadableText } from "~/components/loadable_text";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
@@ -299,18 +299,11 @@ const GenreRow = ({
 
 			{(genres ?? generateArray(2)).map(
 				(genre: Genre | undefined, idx) => (
-					<Pressable
+					<Chip
 						onPress={() => {}} // TODO Redirect to Genre page
+						title={genre?.name}
 						key={genre?.slug ?? idx}
-						style={styles.genreButton}
-					>
-						<LoadableText
-							content={genre?.name}
-							skeletonWidth={5}
-							style={{ fontSize: 12 }}
-							variant="subtitle"
-						/>
-					</Pressable>
+					/>
 				),
 			)}
 		</ScrollView>
@@ -337,13 +330,6 @@ const styles = StyleSheet.create((theme) => ({
 	bottomSections: {
 		flex: 1,
 		alignItems: "flex-start",
-	},
-	genreButton: {
-		borderWidth: 1,
-		borderRadius: 20,
-		borderColor: theme.colors.text.secondary,
-		paddingVertical: theme.gap(0.5),
-		paddingHorizontal: theme.gap(1.5),
 	},
 	genreRow: {
 		gap: theme.gap(1.5),
