@@ -15,7 +15,7 @@ import { useModal } from "../bottom-modal-sheet";
 import { Illustration } from "../illustration";
 import { LoadableText } from "../loadable_text";
 
-export type ContextMenuItem = Action;
+export type ContextMenuItem = Action & { nestedModal?: true };
 
 export type ContextMenuHeader = {
 	illustration: IllustrationModel | null | undefined;
@@ -120,7 +120,9 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 			key={item.label}
 			style={styles.item}
 			onPress={() => {
-				dismiss();
+				if (!item.nestedModal) {
+					dismiss();
+				}
 				if (item.href) {
 					router.push(item.href);
 				}
