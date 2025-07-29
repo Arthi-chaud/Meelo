@@ -1,22 +1,23 @@
 import type { AlbumWithRelations } from "@/models/album";
-import { AlbumIcon, ArtistIcon } from "@/ui/icons";
+import { AlbumIcon, ArtistIcon, EditIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ShareAction, useShareCallback } from "~/actions/share";
+import { useChangeAlbumTypeModal } from "~/components/change-type";
 import type {
 	ContextMenuItem,
 	ContextMenuProps,
 } from "~/components/context-menu";
 
 //TODO Refresh Metadata
-//TODO change album type
 
 export const useAlbumContextMenu = (
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined,
 ) => {
 	const { t } = useTranslation();
 	const buildUrlAndShare = useShareCallback();
+	const { openChangeTypeModal } = useChangeAlbumTypeModal(album);
 	const subtitle = useMemo(() => {
 		if (!album) {
 			return undefined;
@@ -55,6 +56,14 @@ export const useAlbumContextMenu = (
 			},
 			items: [
 				goToItems,
+				[
+					{
+						label: "actions.album.changeType",
+						icon: EditIcon,
+						onPress: openChangeTypeModal,
+						nestedModal: true,
+					},
+				],
 				[ShareAction(() => buildUrlAndShare(`/albums/${album.id}`))],
 			],
 		} satisfies ContextMenuProps;
