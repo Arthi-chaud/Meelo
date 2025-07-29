@@ -1,8 +1,8 @@
 import type { ArtistWithRelations } from "@/models/artist";
 import type { ComponentProps } from "react";
+import { useArtistContextMenu } from "~/components/context-menu/resource/artist";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";
-import { useArtistContextMenu } from "~/components/context-menu/resource/artist";
 
 type Props = {
 	artist: ArtistWithRelations<"illustration"> | undefined;

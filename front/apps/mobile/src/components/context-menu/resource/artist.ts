@@ -3,7 +3,7 @@ import { AlbumIcon, ArtistIcon, SongIcon } from "@/ui/icons";
 import type { Href } from "expo-router";
 import { useMemo } from "react";
 import { ShareAction, useShareCallback } from "~/actions/share";
-import type { ContextMenuProps } from "~/components/context-menu/model";
+import type { ContextMenuProps } from "~/components/context-menu";
 
 // We accept null so that we can easily deal with albums w/o artists
 export const useArtistContextMenu = (
