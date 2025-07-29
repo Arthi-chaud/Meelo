@@ -1,8 +1,8 @@
+import { ShareIcon } from "@/ui/icons";
 import { useCallback } from "react";
 import { Share } from "react-native";
-import { useAPI } from "~/api";
 import type { Action } from "~/actions";
-import { ShareIcon } from "@/ui/icons";
+import { useAPI } from "~/api";
 
 export const useShareCallback = () => {
 	const api = useAPI();

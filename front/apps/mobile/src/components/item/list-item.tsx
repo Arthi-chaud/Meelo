@@ -4,10 +4,12 @@ import type { ComponentProps } from "react";
 import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
+import {
+	ContextMenuButton,
+	type ContextMenuProps,
+	useContextMenu,
+} from "~/components/context-menu";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
-import { useContextMenu } from "~/hooks/context-menu";
-import type { ContextMenuProps } from "~/components/context-menu/model";
-import { ContextMenu } from "../context-menu";
 import { LoadableText } from "../loadable_text";
 
 type Props = {
@@ -74,7 +76,7 @@ export const ListItem = ({
 			</View>
 			{contextMenu && (
 				<View style={styles.contextMenu}>
-					<ContextMenu {...contextMenu} />
+					<ContextMenuButton {...contextMenu} />
 				</View>
 			)}
 		</Pressable>

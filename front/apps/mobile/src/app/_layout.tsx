@@ -43,7 +43,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { UnistylesRuntime } from "react-native-unistyles";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { BackgroundGradient } from "~/components/background-gradient";
-import { ContextMenuModal } from "~/components/context-menu/modal";
+import { Modal } from "~/components/bottom-modal-sheet";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Toast as MeeloToast } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
@@ -150,7 +150,7 @@ export default function RootLayout() {
 										}}
 									/>
 								</Stack>
-								<ContextMenuModal />
+								<Modal />
 							</KeyboardProvider>
 						</BottomSheetModalProvider>
 						<BackgroundGradient />

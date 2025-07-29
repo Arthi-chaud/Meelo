@@ -4,10 +4,10 @@ import type { ComponentProps } from "react";
 import { Pressable, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
+import { useContextMenu } from "~/components/context-menu";
+import type { ContextMenuProps } from "~/components/context-menu";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
-import { useContextMenu } from "~/hooks/context-menu";
-import type { ContextMenuProps } from "~/components/context-menu/model";
 
 const styles = StyleSheet.create((theme) => ({
 	container: {

@@ -1,10 +1,13 @@
 import type { AlbumWithRelations } from "@/models/album";
-import { useMemo } from "react";
-import { ShareAction, useShareCallback } from "~/actions/share";
-import type { ContextMenuItem, ContextMenuProps } from "../model";
-import { getYear } from "@/utils/date";
-import { useTranslation } from "react-i18next";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
+import { getYear } from "@/utils/date";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { ShareAction, useShareCallback } from "~/actions/share";
+import type {
+	ContextMenuItem,
+	ContextMenuProps,
+} from "~/components/context-menu";
 
 //TODO Refresh Metadata
 //TODO change album type
