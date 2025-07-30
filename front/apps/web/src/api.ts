@@ -89,7 +89,7 @@ export const useQuery = <
 	query: QueryFn<ReturnType, Transformed, Params>,
 	...queryParams: Partial<Params>
 ) => {
-	return mkUseQuery(getAPI, query, ...queryParams);
+	return mkUseQuery(useAPI, query, ...queryParams);
 };
 
 /**
