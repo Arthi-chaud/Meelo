@@ -22,7 +22,6 @@ import { VideoSortingKeys, VideoType } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
 import { useQuery } from "~/api";
-import { ArtistHeader } from "~/components/artist-header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -32,6 +31,7 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { VideoItem } from "~/components/item/resource/video";
 import { VideoTile } from "~/components/item/resource/video";
+import { ArtistHeader } from "~/components/resource-header";
 
 export default function VideoBrowseView() {
 	const { artist: artistId } = useLocalSearchParams<{ artist?: string }>();

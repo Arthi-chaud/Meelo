@@ -14,7 +14,6 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
-import { ArtistHeader } from "~/components/artist-header";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import {
 	ExternalMetadataDescriptionSection,
@@ -22,6 +21,7 @@ import {
 } from "~/components/external-metadata";
 import { AlbumTile } from "~/components/item/resource/album";
 import { VideoTile } from "~/components/item/resource/video";
+import { ArtistHeader } from "~/components/resource-header";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";

@@ -27,7 +27,6 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "~/api";
-import { ArtistHeader } from "~/components/artist-header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -35,6 +34,7 @@ import {
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { SongItem } from "~/components/item/resource/song";
+import { ArtistHeader } from "~/components/resource-header";
 
 // TODO Handle Genre Query param
 // TODO Handle song version filtering
