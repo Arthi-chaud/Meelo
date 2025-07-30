@@ -22,7 +22,6 @@ import { albumTypeToTranslationKey } from "@/models/utils";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "~/api";
-import { ArtistHeader } from "~/components/artist-header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -32,6 +31,7 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { AlbumItem } from "~/components/item/resource/album";
 import { AlbumTile } from "~/components/item/resource/album";
+import { ArtistHeader } from "~/components/resource-header";
 
 export default function AlbumBrowseView() {
 	const { t } = useTranslation();
