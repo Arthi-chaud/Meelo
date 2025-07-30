@@ -61,6 +61,7 @@ const SharedRoutes: {
 	{ name: "albums/index", options: { headerTitle: "models.album_plural" } },
 	{ name: "songs/index", options: { headerTitle: "models.song_plural" } },
 	{ name: "videos/index", options: { headerTitle: "models.video_plural" } },
+	{ name: "songs/[id]", options: { headerTitle: null } },
 	{ name: "releases/[id]", options: { headerTitle: null } },
 ];
 

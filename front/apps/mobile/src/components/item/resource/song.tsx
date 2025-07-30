@@ -37,6 +37,7 @@ export const SongItem = ({
 		<ListItem
 			title={song?.name}
 			subtitle={formattedSubtitle}
+			href={`/songs/${song?.id}`}
 			onPress={() => {
 				onPress?.();
 			}} // TODO Launch playback
