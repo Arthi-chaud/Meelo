@@ -4,27 +4,55 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Illustration } from "./illustration";
 import { LoadableText } from "./loadable_text";
+import type { SongWithRelations } from "@/models/song";
+import formatArtists from "@/utils/format-artists";
+
+export const SongHeader = ({
+	song,
+}: {
+	song:
+		| SongWithRelations<"illustration" | "artist" | "featuring">
+		| undefined;
+}) => (
+	<ResourceHeader
+		illustration={song?.illustration}
+		title={song?.name}
+		subtitle={song ? formatArtists(song.artist, song.featuring) : undefined}
+	/>
+);
 
 export const ArtistHeader = ({
 	artist,
 }: { artist: ArtistWithRelations<"illustration"> | undefined }) => (
-	<ResourceHeader illustration={artist?.illustration} title={artist?.name} />
+	<ResourceHeader
+		illustration={artist?.illustration}
+		circleIllustration
+		title={artist?.name}
+		subtitle={null}
+	/>
 );
 
 type Props = {
 	illustration: IllustrationResource | null | undefined;
+	circleIllustration?: true;
 	title: string | undefined;
+	subtitle: string | undefined | null;
 };
 // TODO Handle wrap when the artist name is a single word and is larger than view
 
-export const ResourceHeader = ({ illustration, title }: Props) => {
+export const ResourceHeader = ({
+	illustration,
+	title,
+	circleIllustration,
+	subtitle,
+}: Props) => {
 	return (
 		<View style={styles.root}>
 			<View style={styles.avatar}>
 				<Illustration
 					illustration={illustration}
 					quality="medium"
-					variant="circle"
+					variant={circleIllustration ? "circle" : undefined}
 				/>
 			</View>
 			<View style={styles.text}>
@@ -34,6 +62,14 @@ export const ResourceHeader = ({ illustration, title }: Props) => {
 					numberOfLines={2}
 					variant="h2"
 				/>
+				{subtitle !== null && (
+					<LoadableText
+						content={subtitle}
+						skeletonWidth={10}
+						numberOfLines={1}
+						variant="h4"
+					/>
+				)}
 			</View>
 		</View>
 	);
