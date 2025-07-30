@@ -1,19 +1,19 @@
 import type { ArtistWithRelations } from "@/models/artist";
 import { AlbumIcon, ArtistIcon, SongIcon } from "@/ui/icons";
 import type { Href } from "expo-router";
-import { useMemo } from "react";
+import { useCallback } from "react";
 import { ShareAction, useShareCallback } from "~/actions/share";
-import type { ContextMenuProps } from "~/components/context-menu";
+import type {
+	ContextMenu,
+	ContextMenuBuilder,
+} from "~/components/context-menu";
 
 // We accept null so that we can easily deal with albums w/o artists
 export const useArtistContextMenu = (
 	artist: ArtistWithRelations<"illustration"> | undefined | null,
-): ContextMenuProps | undefined => {
+): ContextMenuBuilder => {
 	const buildUrlAndShare = useShareCallback();
-	return useMemo(() => {
-		if (artist === null) {
-			return undefined;
-		}
+	return useCallback(() => {
 		const shareCallback = artist
 			? () => buildUrlAndShare(`/artists/${artist.id}`)
 			: undefined;
@@ -55,6 +55,6 @@ export const useArtistContextMenu = (
 				],
 				shareCallback ? [ShareAction(shareCallback)] : [],
 			],
-		} satisfies ContextMenuProps;
+		} satisfies ContextMenu;
 	}, [artist]);
 };

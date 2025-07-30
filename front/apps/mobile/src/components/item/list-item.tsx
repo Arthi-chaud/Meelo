@@ -5,8 +5,8 @@ import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import {
+	type ContextMenuBuilder,
 	ContextMenuButton,
-	type ContextMenuProps,
 	useContextMenu,
 } from "~/components/context-menu";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
@@ -20,7 +20,7 @@ type Props = {
 		ComponentProps<typeof IllustrationComponent>,
 		"illustration" | "quality"
 	>;
-	contextMenu?: ContextMenuProps;
+	contextMenu?: ContextMenuBuilder;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 //TODO Ripple or visual feedback on press
@@ -79,7 +79,7 @@ export const ListItem = ({
 			</View>
 			{contextMenu && (
 				<View style={styles.contextMenu}>
-					<ContextMenuButton {...contextMenu} />
+					<ContextMenuButton builder={contextMenu} />
 				</View>
 			)}
 		</Pressable>
