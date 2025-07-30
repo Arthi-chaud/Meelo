@@ -1,12 +1,14 @@
 import type { ReleaseWithRelations } from "@/models/release";
 import { getYear } from "@/utils/date";
 import { type ComponentProps, useMemo } from "react";
+import { useReleaseContextMenu } from "~/components/context-menu/resource/release";
 import { Tile } from "../tile";
 
 const ReleaseTile = (props: {
 	release: ReleaseWithRelations<"illustration"> | undefined;
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 }) => {
+	const ctxMenu = useReleaseContextMenu(props.release);
 	const subtitle = useMemo(() => {
 		if (!props.release) {
 			return undefined;
@@ -30,6 +32,7 @@ const ReleaseTile = (props: {
 			subtitle={subtitle}
 			href={props.release ? `/releases/${props.release.id}` : null}
 			illustration={props.release?.illustration}
+			contextMenu={ctxMenu}
 			illustrationProps={props.illustrationProps}
 		/>
 	);
