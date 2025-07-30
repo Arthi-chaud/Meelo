@@ -3,15 +3,18 @@ import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
 import { useRouter } from "expo-router";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import type { Action } from "~/actions";
 import { ShareAction, useShareCallback } from "~/actions/share";
 import { useQueryClient } from "~/api";
-import type { ContextMenuProps } from "..";
+import type {
+	ContextMenu,
+	ContextMenuBuilder,
+} from "~/components/context-menu";
 
 export const useReleaseContextMenu = (
 	release: ReleaseWithRelations<"illustration"> | undefined,
-) => {
+): ContextMenuBuilder => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const buildUrlAndShare = useShareCallback();
@@ -40,7 +43,7 @@ export const useReleaseContextMenu = (
 			},
 		} satisfies Action;
 	}, [release]);
-	return useMemo(() => {
+	return useCallback(() => {
 		const goToRelease: Action = {
 			label: "actions.goToRelease",
 			icon: AlbumIcon,
@@ -60,6 +63,6 @@ export const useReleaseContextMenu = (
 					),
 				],
 			],
-		} satisfies ContextMenuProps;
+		} satisfies ContextMenu;
 	}, [release]);
 };

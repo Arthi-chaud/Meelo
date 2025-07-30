@@ -27,19 +27,22 @@ export type ContextMenuHeader = {
 	subtitle: string | undefined | null;
 };
 
-export type ContextMenuProps = {
+export type ContextMenuBuilder = () => ContextMenu;
+
+export type ContextMenu = {
 	items: ContextMenuItem[][];
 	header: ContextMenuHeader;
 };
 
 // Hook to open context menu
-export const useContextMenu = (props: ContextMenuProps | undefined) => {
+export const useContextMenu = (builder: ContextMenuBuilder | undefined) => {
 	const content = useCallback(() => {
-		if (!props) {
+		const ctxMenu = builder?.();
+		if (!ctxMenu) {
 			return null;
 		}
-		return <ContextMenuModal {...props} />;
-	}, [props]);
+		return <ContextMenuModal {...ctxMenu} />;
+	}, [builder]);
 	const { openModal } = useModal({
 		content,
 		onDismiss: () => {},
@@ -48,8 +51,8 @@ export const useContextMenu = (props: ContextMenuProps | undefined) => {
 };
 
 // Button that allows opening the modal
-export const ContextMenuButton = (props: ContextMenuProps) => {
-	const { openContextMenu } = useContextMenu(props);
+export const ContextMenuButton = (props: { builder: ContextMenuBuilder }) => {
+	const { openContextMenu } = useContextMenu(props.builder);
 
 	return (
 		<Pressable onPress={openContextMenu} style={styles.button}>
@@ -59,7 +62,7 @@ export const ContextMenuButton = (props: ContextMenuProps) => {
 };
 
 // The content of the context menu modal
-export const ContextMenuModal = (content: ContextMenuProps) => {
+export const ContextMenuModal = (content: ContextMenu) => {
 	return (
 		<>
 			{content && <ContextMenuHeader header={content.header} />}

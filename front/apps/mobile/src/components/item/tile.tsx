@@ -5,7 +5,7 @@ import { Pressable, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import { useContextMenu } from "~/components/context-menu";
-import type { ContextMenuProps } from "~/components/context-menu";
+import type { ContextMenuBuilder } from "~/components/context-menu";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 
@@ -53,7 +53,7 @@ type Props = {
 	title: string | undefined;
 	subtitle: string | undefined | null;
 	containerStyle?: ViewStyle;
-	contextMenu?: ContextMenuProps;
+	contextMenu?: ContextMenuBuilder;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
 export const Tile = ({

@@ -1,20 +1,21 @@
 import type { AlbumWithRelations } from "@/models/album";
 import { AlbumIcon, ArtistIcon, EditIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ShareAction, useShareCallback } from "~/actions/share";
 import { useChangeAlbumTypeModal } from "~/components/change-type";
 import type {
+	ContextMenu,
+	ContextMenuBuilder,
 	ContextMenuItem,
-	ContextMenuProps,
 } from "~/components/context-menu";
 
 //TODO Refresh Metadata
 
 export const useAlbumContextMenu = (
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined,
-) => {
+): ContextMenuBuilder => {
 	const { t } = useTranslation();
 	const buildUrlAndShare = useShareCallback();
 	const { openChangeTypeModal } = useChangeAlbumTypeModal(album);
@@ -30,22 +31,19 @@ export const useAlbumContextMenu = (
 		}
 		return artistName;
 	}, [album]);
-	return useMemo(() => {
-		if (!album) {
-			return undefined;
-		}
+	return useCallback(() => {
 		const goToItems: ContextMenuItem[] = [
 			{
 				label: "actions.album.goToAlbum",
 				icon: AlbumIcon,
-				href: `/releases/${album.masterId}`,
+				href: album ? `/releases/${album.masterId}` : undefined,
 			},
 		];
-		if (album.artistId) {
+		if (album?.artistId) {
 			goToItems.push({
 				label: "actions.goToArtist",
 				icon: ArtistIcon,
-				href: `/artists/${album.artistId}`,
+				href: album ? `/artists/${album.artistId}` : undefined,
 			});
 		}
 		return {
@@ -64,8 +62,14 @@ export const useAlbumContextMenu = (
 						nestedModal: true,
 					},
 				],
-				[ShareAction(() => buildUrlAndShare(`/albums/${album.id}`))],
+				album
+					? [
+							ShareAction(() =>
+								buildUrlAndShare(`/albums/${album.id}`),
+							),
+						]
+					: [],
 			],
-		} satisfies ContextMenuProps;
+		} satisfies ContextMenu;
 	}, [album]);
 };
