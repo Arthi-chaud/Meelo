@@ -10,6 +10,7 @@ import {
 	GoToRelease,
 	GoToSongInfo,
 	GoToSongVersions,
+	GoToSongVideos,
 	Play,
 	PlayAfter,
 	PlayNext,
@@ -55,7 +56,11 @@ export const useSongContextMenu = (
 									PlayAfter(song.masterId),
 								]
 							: [],
-						[GoToSongVersions(song.id), GoToRelatedTracks(song.id)],
+						[
+							GoToSongVersions(song.id),
+							GoToSongVideos(song.id),
+							GoToRelatedTracks(song.id),
+						],
 						user?.admin
 							? [
 									ChangeType(

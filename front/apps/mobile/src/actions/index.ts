@@ -10,6 +10,7 @@ import {
 	PlayNextIcon,
 	RelatedTracksIcon,
 	SongIcon,
+	VideoIcon,
 } from "@/ui/icons";
 import type { Href } from "expo-router";
 export type Action = {
@@ -82,6 +83,12 @@ export const GoToSongInfo = (songId: string | number): Action => ({
 	label: "actions.song.seeSongInfo",
 	href: `/songs/${songId}?tab=infos`,
 	icon: InfoIcon,
+});
+
+export const GoToSongVideos = (songId: string | number): Action => ({
+	label: "actions.song.seeRelatedVideos",
+	href: `/videos?song=${songId}`,
+	icon: VideoIcon,
 });
 export const GoToSongVersions = (songId: string | number): Action => ({
 	label: "actions.song.seeOtherVersions",
