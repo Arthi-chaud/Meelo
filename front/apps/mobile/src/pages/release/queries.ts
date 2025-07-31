@@ -15,6 +15,7 @@ export const releatedVideos = (albumId: number) =>
 		"master",
 		"illustration",
 		"artist",
+		"song",
 	]);
 
 export const relatedReleasesQuery = (albumId: number) =>

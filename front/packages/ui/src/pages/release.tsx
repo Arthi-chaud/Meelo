@@ -73,7 +73,9 @@ export const useTracklist = (
 	}, [tracklist]);
 };
 
-type VideoType = VideoWithRelations<"master" | "illustration">;
+type VideoType = VideoWithRelations<
+	"master" | "illustration" | "song" | "artist"
+>;
 
 // Splits the videos depending on their type and sorts them based on the tracklist.
 export const useVideos = (
