@@ -70,12 +70,15 @@ export const ContextMenuModal = (content: ContextMenu) => {
 				{content?.items.map((itemGroup, itemGroupIdx) => (
 					<Fragment key={itemGroupIdx}>
 						<Divider h boxProps={{ style: styles.thickDivider }} />
-						{itemGroup.map((item, idx) => (
-							<Fragment key={item.label}>
-								<ContextMenuItemComponent item={item} />
-								{idx !== itemGroup.length - 1 && <Divider h />}
-							</Fragment>
-						))}
+						{itemGroup.length > 0 &&
+							itemGroup.map((item, idx) => (
+								<Fragment key={item.label}>
+									<ContextMenuItemComponent item={item} />
+									{idx !== itemGroup.length - 1 && (
+										<Divider h />
+									)}
+								</Fragment>
+							))}
 					</Fragment>
 				))}
 			</View>
@@ -122,7 +125,11 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 		<Pressable
 			key={item.label}
 			style={styles.item}
+			disabled={item.disabled}
 			onPress={() => {
+				if (item.disabled) {
+					return;
+				}
 				if (!item.nestedModal) {
 					dismiss();
 				}
@@ -133,10 +140,17 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 			}}
 		>
 			<View style={styles.itemIcon}>
-				<Icon icon={item.icon} />
+				<Icon
+					icon={item.icon}
+					style={item.disabled ? styles.disabled : undefined}
+				/>
 			</View>
 			<View style={styles.itemLabel}>
-				<Text content={t(item.label)} variant="subtitle" />
+				<Text
+					content={t(item.label)}
+					variant="subtitle"
+					style={item.disabled ? styles.disabled : undefined}
+				/>
 			</View>
 		</Pressable>
 	);
@@ -145,6 +159,7 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 const styles = StyleSheet.create((theme) => ({
 	thickDivider: { height: theme.gap(0.33) },
 	items: {},
+	disabled: { color: theme.colors.text.secondary },
 	item: {
 		flexDirection: "row",
 		alignItems: "center",
