@@ -18,7 +18,6 @@ import { LoadableText } from "~/components/loadable_text";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
-import { Text } from "~/primitives/text";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{

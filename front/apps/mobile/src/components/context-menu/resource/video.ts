@@ -1,4 +1,5 @@
 import { getCurrentUserStatus } from "@/api/queries";
+import type { VideoWithRelations } from "@/models/video";
 import { useCallback } from "react";
 import {
 	ChangeType,
@@ -16,7 +17,6 @@ import {
 import { useQuery } from "~/api";
 import { useChangeVideoTypeModal } from "~/components/change-type";
 import type { ContextMenuBuilder } from "..";
-import type { VideoWithRelations } from "@/models/video";
 
 //TODO Track info
 
