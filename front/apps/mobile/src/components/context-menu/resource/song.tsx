@@ -6,6 +6,7 @@ import {
 	PlayAfterIcon,
 	PlayIcon,
 	PlayNextIcon,
+	RelatedTracksIcon,
 	SongIcon,
 } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
@@ -34,6 +35,12 @@ const GoToVersions = (songId: string | number): Action => ({
 	label: "actions.song.seeOtherVersions",
 	href: `/songs?versionsOf=${songId}`,
 	icon: SongIcon,
+});
+
+const GoToTracks = (songId: string | number): Action => ({
+	label: "actions.song.seeRelatedTracks",
+	href: `/tracks?song=${songId}`,
+	icon: RelatedTracksIcon,
 });
 
 const Play = (songId: string | number): Action => ({
@@ -80,7 +87,7 @@ export const useSongContextMenu = (
 						[GoToArtist(song.artistId)],
 						[GoToLyrics(song.id), GoToInfo(song.id)],
 						[PlayNext(song.id), PlayAfter(song.id)],
-						[GoToVersions(song.id)],
+						[GoToVersions(song.id), GoToTracks(song.id)],
 						user?.admin
 							? [
 									ChangeType(
