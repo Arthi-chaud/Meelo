@@ -146,16 +146,22 @@ const TrackItem = ({
 					numberOfLines={1}
 					variant="body"
 				/>
-				{track?.song !== undefined &&
+				{(track?.song ?? track?.video) !== undefined &&
 					albumArtistId !== undefined &&
-					(track.song.artistId !== albumArtistId ||
-						track.song.featuring.length > 0) && (
-						<Text
-							content={formatArtists(
-								track.song.artist,
-								track.song.featuring,
-							)}
+					((track?.song ?? track?.video)!.artistId !==
+						albumArtistId ||
+						(track?.song?.featuring.length ?? 0) > 0) && (
+						<LoadableText
+							content={
+								track?.song
+									? formatArtists(
+											track.song.artist,
+											track.song.featuring,
+										)
+									: track?.video?.artist.name
+							}
 							numberOfLines={1}
+							skeletonWidth={10}
 							color="secondary"
 							variant="body"
 						/>
