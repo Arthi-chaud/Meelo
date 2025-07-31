@@ -35,15 +35,15 @@ export const Chip = ({ title, onPress, href, filled }: Props) => {
 
 const styles = StyleSheet.create((theme) => ({
 	chip: {
-		borderWidth: 1,
 		borderRadius: theme.borderRadius * 3,
+		justifyContent: "center",
 		variants: {
 			filled: {
 				true: {
 					backgroundColor: theme.colors.text.secondary,
-					borderColor: theme.colors.text.secondary,
 				},
 				false: {
+					borderWidth: 1,
 					borderColor: theme.colors.text.secondary,
 				},
 			},
