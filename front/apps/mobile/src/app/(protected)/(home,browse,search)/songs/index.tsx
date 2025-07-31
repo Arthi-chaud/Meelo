@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getArtist, getSongs } from "@/api/queries";
+import { getArtist, getSong, getSongs } from "@/api/queries";
 import {
 	SongSortingKeys,
 	SongType,
@@ -34,7 +34,7 @@ import {
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { SongItem } from "~/components/item/resource/song";
-import { ArtistHeader } from "~/components/resource-header";
+import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
 // TODO Handle Genre Query param
 // TODO Handle song version filtering
@@ -43,9 +43,14 @@ import { ArtistHeader } from "~/components/resource-header";
 export default function SongBrowseView() {
 	const nav = useNavigation();
 	const { t } = useTranslation();
-	const { artist: artistId, rare: rareArtistId } = useLocalSearchParams<{
+	const {
+		artist: artistId,
+		rare: rareArtistId,
+		versionsOf: versionsOfSongId,
+	} = useLocalSearchParams<{
 		artist?: string;
 		rare?: string;
+		versionsOf?: string;
 	}>();
 	const [{ sort, order }, sortControl] = useSortControl({
 		sortingKeys: SongSortingKeys,
@@ -60,11 +65,18 @@ export default function SongBrowseView() {
 		(artistId) => getArtist(artistId, ["illustration"]),
 		artistId ?? rareArtistId,
 	);
+
+	const { data: song } = useQuery(
+		(songId) => getSong(songId, ["artist", "illustration", "featuring"]),
+		versionsOfSongId,
+	);
 	useEffect(() => {
 		if (rareArtistId !== undefined) {
 			nav.setOptions({ headerTitle: t("artist.rareSongs") });
+		} else if (versionsOfSongId !== undefined) {
+			nav.setOptions({ headerTitle: t("models.versions") });
 		}
-	}, [rareArtistId]);
+	}, [rareArtistId, versionsOfSongId]);
 	const subtitle = useCallback(
 		(song: SongWithRelations<"featuring"> | undefined) => {
 			if (artistId === undefined && rareArtistId === undefined) {
@@ -86,6 +98,8 @@ export default function SongBrowseView() {
 			header={
 				(artistId ?? rareArtistId) !== undefined ? (
 					<ArtistHeader artist={artist} />
+				) : versionsOfSongId !== undefined ? (
+					<SongHeader song={song} />
 				) : undefined
 			}
 			controls={{
@@ -97,6 +111,7 @@ export default function SongBrowseView() {
 					library: libraries,
 					type: types,
 					artist: artistId,
+					versionsOf: versionsOfSongId,
 					rare: rareArtistId,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
