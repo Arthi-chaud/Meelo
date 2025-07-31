@@ -1,6 +1,6 @@
+import { getCurrentUserStatus } from "@/api/queries";
 import type { SongWithRelations } from "@/models/song";
 import {
-	EditIcon,
 	InfoIcon,
 	LyricsIcon,
 	PlayAfterIcon,
@@ -12,10 +12,9 @@ import formatArtists from "@/utils/format-artists";
 import { useCallback } from "react";
 import { type Action, ChangeType, GoToArtist } from "~/actions";
 import { useShareSongAction } from "~/actions/share";
-import type { ContextMenuBuilder } from "..";
-import { useChangeSongTypeModal } from "~/components/change-type";
 import { useQuery } from "~/api";
-import { getCurrentUserStatus } from "@/api/queries";
+import { useChangeSongTypeModal } from "~/components/change-type";
+import type { ContextMenuBuilder } from "..";
 
 //TODO add to playlist
 //TODO see other tracks
