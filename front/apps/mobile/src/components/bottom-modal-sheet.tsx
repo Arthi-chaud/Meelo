@@ -66,19 +66,21 @@ const Backdrop = (props: BottomSheetBackdropProps) => {
 	);
 };
 
-const styles = StyleSheet.create((theme, rt) => ({
+const styles = StyleSheet.create((theme) => ({
 	modalBackground: {
 		...StyleSheet.absoluteFillObject,
 		borderTopLeftRadius: theme.borderRadius * 2,
 		borderTopRightRadius: theme.borderRadius * 2,
 		overflow: "hidden",
 	},
-	handleIndicator: { marginTop: theme.gap(1) },
+	handleIndicator: {
+		marginTop: theme.gap(1),
+		backgroundColor: theme.colors.text.primary,
+	},
 	modal: {
 		paddingHorizontal: theme.gap(2),
 		paddingBottom: theme.gap(2),
 		paddingTop: theme.gap(1),
-		maxHeight: rt.screen.height / 2,
 		backgroundColor: "transparent",
 	},
 }));
