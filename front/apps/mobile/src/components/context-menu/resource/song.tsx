@@ -11,14 +11,13 @@ import {
 } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import { useCallback } from "react";
-import { type Action, ChangeType, GoToArtist } from "~/actions";
+import { type Action, ChangeType, GoToArtist, GoToRelease } from "~/actions";
 import { useShareSongAction } from "~/actions/share";
-import { useQuery } from "~/api";
+import { useQuery, useQueryClient } from "~/api";
 import { useChangeSongTypeModal } from "~/components/change-type";
 import type { ContextMenuBuilder } from "..";
 
 //TODO add to playlist
-//TODO see other tracks
 //TODO Track info
 
 const GoToLyrics = (songId: string | number): Action => ({
@@ -66,10 +65,11 @@ const PlayAfter = (songId: string | number): Action => ({
 
 export const useSongContextMenu = (
 	song:
-		| SongWithRelations<"illustration" | "artist" | "featuring">
+		| SongWithRelations<"illustration" | "artist" | "featuring" | "master">
 		| undefined,
 ): ContextMenuBuilder => {
 	const ShareAction = useShareSongAction(song?.id);
+	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
 	return useCallback(() => {
@@ -84,7 +84,12 @@ export const useSongContextMenu = (
 			items: song
 				? [
 						[Play(song.id)],
-						[GoToArtist(song.artistId)],
+						song.master.releaseId
+							? [
+									GoToArtist(song.artistId),
+									GoToRelease(song.master.releaseId),
+								]
+							: [GoToArtist(song.artistId)],
 						[GoToLyrics(song.id), GoToInfo(song.id)],
 						[PlayNext(song.id), PlayAfter(song.id)],
 						[GoToVersions(song.id), GoToTracks(song.id)],
