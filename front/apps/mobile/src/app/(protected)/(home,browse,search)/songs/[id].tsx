@@ -21,7 +21,7 @@ import {
 } from "~/components/external-metadata";
 import { LoadableText } from "~/components/loadable_text";
 import { SongHeader } from "~/components/resource-header";
-import { SafeView } from "~/components/safe-view";
+import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
@@ -30,6 +30,7 @@ const tabs = ["lyrics", "infos"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function SongPage() {
+	const { paddingTop, paddingBottom } = useRootViewStyle();
 	const { id, tab: tabQuery } = useLocalSearchParams<{
 		id: string;
 		tab?: Tab;
@@ -46,7 +47,7 @@ export default function SongPage() {
 	useSetKeyIllustration(song);
 
 	return (
-		<SafeView>
+		<View style={{ paddingTop }}>
 			<View style={styles.content}>
 				<SongHeader song={song} />
 				<View style={styles.playButton}>
@@ -62,7 +63,10 @@ export default function SongPage() {
 					setCurrentTab={setCurrentTab}
 				/>
 				<Divider h withInsets />
-				<ScrollView style={[styles.content]}>
+				<ScrollView
+					style={styles.content}
+					contentContainerStyle={{ paddingBottom }}
+				>
 					{currentTab === "lyrics" && (
 						<LyricsView
 							lyrics={song?.lyrics}
@@ -72,7 +76,7 @@ export default function SongPage() {
 					{currentTab === "infos" && <InfoView song={song} />}
 				</ScrollView>
 			</View>
-		</SafeView>
+		</View>
 	);
 }
 
