@@ -1,9 +1,9 @@
 import type { AlbumWithRelations } from "@/models/album";
-import { AlbumIcon, ArtistIcon, EditIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ShareAction, useShareCallback } from "~/actions/share";
+import { ChangeType, GoToArtist, GoToRelease } from "~/actions";
+import { useShareAlbumAction } from "~/actions/share";
 import { useChangeAlbumTypeModal } from "~/components/change-type";
 import type {
 	ContextMenu,
@@ -12,14 +12,15 @@ import type {
 } from "~/components/context-menu";
 
 //TODO Refresh Metadata
+//TODO Disable changing type if not admin
 
 export const useAlbumContextMenu = (
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined,
 ): ContextMenuBuilder => {
 	const { t } = useTranslation();
-	const buildUrlAndShare = useShareCallback();
+	const ShareAction = useShareAlbumAction(album?.id);
 	const { openChangeTypeModal } = useChangeAlbumTypeModal(album);
-	const subtitle = useMemo(() => {
+	const getSubtitle = useCallback(() => {
 		if (!album) {
 			return undefined;
 		}
@@ -32,43 +33,23 @@ export const useAlbumContextMenu = (
 		return artistName;
 	}, [album]);
 	return useCallback(() => {
-		const goToItems: ContextMenuItem[] = [
-			{
-				label: "actions.album.goToAlbum",
-				icon: AlbumIcon,
-				href: album ? `/releases/${album.masterId}` : undefined,
-			},
-		];
+		const goToItems: ContextMenuItem[] = [];
+		if (album?.masterId) {
+			goToItems.push(GoToRelease(album.masterId));
+		}
 		if (album?.artistId) {
-			goToItems.push({
-				label: "actions.goToArtist",
-				icon: ArtistIcon,
-				href: album ? `/artists/${album.artistId}` : undefined,
-			});
+			goToItems.push(GoToArtist(album.artistId));
 		}
 		return {
 			header: {
 				illustration: album?.illustration,
 				title: album?.name,
-				subtitle: subtitle,
+				subtitle: getSubtitle(),
 			},
 			items: [
 				goToItems,
-				[
-					{
-						label: "actions.album.changeType",
-						icon: EditIcon,
-						onPress: openChangeTypeModal,
-						nestedModal: true,
-					},
-				],
-				album
-					? [
-							ShareAction(() =>
-								buildUrlAndShare(`/albums/${album.id}`),
-							),
-						]
-					: [],
+				[ChangeType("actions.album.changeType", openChangeTypeModal)],
+				ShareAction ? [ShareAction] : [],
 			],
 		} satisfies ContextMenu;
 	}, [album]);
