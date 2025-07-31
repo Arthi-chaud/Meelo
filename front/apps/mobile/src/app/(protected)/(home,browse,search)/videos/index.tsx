@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getArtist, getVideos } from "@/api/queries";
+import { getArtist, getSong, getVideos } from "@/api/queries";
 import { videoTypeToTranslationKey } from "@/models/utils";
 import { VideoSortingKeys, VideoType } from "@/models/video";
 import { useLocalSearchParams } from "expo-router";
@@ -31,10 +31,13 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { VideoItem } from "~/components/item/resource/video";
 import { VideoTile } from "~/components/item/resource/video";
-import { ArtistHeader } from "~/components/resource-header";
+import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
 export default function VideoBrowseView() {
-	const { artist: artistId } = useLocalSearchParams<{ artist?: string }>();
+	const { artist: artistId, song: songId } = useLocalSearchParams<{
+		artist?: string;
+		song?: string;
+	}>();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
 		enableToggle: true,
@@ -56,24 +59,39 @@ export default function VideoBrowseView() {
 		(artistId) => getArtist(artistId, ["illustration"]),
 		artistId,
 	);
+	const { data: song } = useQuery(
+		(songId) => getSong(songId, ["illustration", "artist", "featuring"]),
+		songId,
+	);
 	return (
 		<InfiniteView
 			layout={layout}
-			header={artistId ? <ArtistHeader artist={artist} /> : undefined}
+			header={
+				artistId ? (
+					<ArtistHeader artist={artist} />
+				) : songId ? (
+					<SongHeader song={song} />
+				) : undefined
+			}
 			controls={{
 				layout: layoutControl,
 				sort: sortControl,
 				filters: [libraryFilterControl, albumTypeFilterControl],
 			}}
 			query={getVideos(
-				{ library: libraries, type: types, artist: artistId },
+				{
+					library: libraries,
+					type: types,
+					artist: artistId,
+					group: song?.groupId,
+				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration", "master"],
 			)}
 			render={(video) => (
 				<Item
 					video={video}
-					subtitle={artistId ? "duration" : "artistName"}
+					subtitle={artistId || songId ? "duration" : "artistName"}
 					illustrationProps={{
 						simpleColorPlaceholder: true,
 						normalizedThumbnail: true,
