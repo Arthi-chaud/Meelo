@@ -1,9 +1,11 @@
+import { getCurrentUserStatus } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { getYear } from "@/utils/date";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { ChangeType, GoToArtist, GoToRelease } from "~/actions";
 import { useShareAlbumAction } from "~/actions/share";
+import { useQuery } from "~/api";
 import { useChangeAlbumTypeModal } from "~/components/change-type";
 import type {
 	ContextMenu,
@@ -12,11 +14,11 @@ import type {
 } from "~/components/context-menu";
 
 //TODO Refresh Metadata
-//TODO Disable changing type if not admin
 
 export const useAlbumContextMenu = (
 	album: AlbumWithRelations<"artist" | "illustration"> | undefined,
 ): ContextMenuBuilder => {
+	const { data: user } = useQuery(getCurrentUserStatus);
 	const { t } = useTranslation();
 	const ShareAction = useShareAlbumAction(album?.id);
 	const { openChangeTypeModal } = useChangeAlbumTypeModal(album);
@@ -48,7 +50,14 @@ export const useAlbumContextMenu = (
 			},
 			items: [
 				goToItems,
-				[ChangeType("actions.album.changeType", openChangeTypeModal)],
+				user?.admin
+					? [
+							ChangeType(
+								"actions.album.changeType",
+								openChangeTypeModal,
+							),
+						]
+					: [],
 				ShareAction ? [ShareAction] : [],
 			],
 		} satisfies ContextMenu;
