@@ -1,6 +1,11 @@
 import type Album from "@/models/album";
 import { AlbumType } from "@/models/album";
-import { albumTypeToTranslationKey } from "@/models/utils";
+import type Song from "@/models/song";
+import { SongType } from "@/models/song";
+import {
+	albumTypeToTranslationKey,
+	songTypeToTranslationKey,
+} from "@/models/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -42,6 +47,36 @@ export const useChangeAlbumTypeModal = (album: Album | undefined) => {
 		types: AlbumType,
 		selectedType: album?.type,
 		translate: (t) => albumTypeToTranslationKey(t, false),
+		onSelect: (t) => onSelect.mutate(t),
+	});
+
+	return { openChangeTypeModal: openModal };
+};
+
+export const useChangeSongTypeModal = (song: Song | undefined) => {
+	const api = useAPI();
+	const { client } = useQueryClient();
+
+	const onSelect = useMutation({
+		mutationFn: song
+			? (type: SongType) => {
+					return api.updateSong(song.id, { type });
+				}
+			: undefined,
+		onSuccess: () => {
+			Toast.success("Update successful!");
+			client.invalidateQueries({ queryKey: ["songs"] });
+			client.invalidateQueries({ queryKey: [song?.slug] });
+			client.invalidateQueries({ queryKey: [song?.id] });
+		},
+		onError: () => {
+			Toast.error("Update failed");
+		},
+	});
+	const { openModal } = useChangeTypeModal({
+		types: SongType,
+		selectedType: song?.type,
+		translate: (t) => songTypeToTranslationKey(t, false),
 		onSelect: (t) => onSelect.mutate(t),
 	});
 

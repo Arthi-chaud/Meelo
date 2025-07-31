@@ -1,16 +1,24 @@
 import type { SongWithRelations } from "@/models/song";
-import { InfoIcon, LyricsIcon, SongIcon } from "@/ui/icons";
+import {
+	EditIcon,
+	InfoIcon,
+	LyricsIcon,
+	PlayAfterIcon,
+	PlayIcon,
+	PlayNextIcon,
+	SongIcon,
+} from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import { useCallback } from "react";
-import { type Action, GoToArtist } from "~/actions";
+import { type Action, ChangeType, GoToArtist } from "~/actions";
 import { useShareSongAction } from "~/actions/share";
 import type { ContextMenuBuilder } from "..";
+import { useChangeSongTypeModal } from "~/components/change-type";
+import { useQuery } from "~/api";
+import { getCurrentUserStatus } from "@/api/queries";
 
-//TODO Play
-//TODO Play after/next
 //TODO add to playlist
 //TODO see other tracks
-//TODO Change type if admin
 //TODO Track info
 
 const GoToLyrics = (songId: string | number): Action => ({
@@ -29,12 +37,35 @@ const GoToVersions = (songId: string | number): Action => ({
 	icon: SongIcon,
 });
 
+const Play = (songId: string | number): Action => ({
+	label: "actions.playback.play",
+	icon: PlayIcon,
+	disabled: true,
+	onPress: () => {}, // TODO
+});
+
+const PlayNext = (songId: string | number): Action => ({
+	label: "actions.playback.playNext",
+	icon: PlayNextIcon,
+	disabled: true,
+	onPress: () => {}, // TODO
+});
+
+const PlayAfter = (songId: string | number): Action => ({
+	label: "actions.playback.playAfter",
+	icon: PlayAfterIcon,
+	disabled: true,
+	onPress: () => {}, // TODO
+});
+
 export const useSongContextMenu = (
 	song:
 		| SongWithRelations<"illustration" | "artist" | "featuring">
 		| undefined,
 ): ContextMenuBuilder => {
 	const ShareAction = useShareSongAction(song?.id);
+	const { data: user } = useQuery(getCurrentUserStatus);
+	const { openChangeTypeModal } = useChangeSongTypeModal(song);
 	return useCallback(() => {
 		return {
 			header: {
@@ -46,9 +77,19 @@ export const useSongContextMenu = (
 			},
 			items: song
 				? [
+						[Play(song.id)],
 						[GoToArtist(song.artistId)],
 						[GoToLyrics(song.id), GoToInfo(song.id)],
+						[PlayNext(song.id), PlayAfter(song.id)],
 						[GoToVersions(song.id)],
+						user?.admin
+							? [
+									ChangeType(
+										"actions.song.changeType",
+										openChangeTypeModal,
+									),
+								]
+							: [],
 						ShareAction ? [ShareAction] : [],
 					]
 				: [],
