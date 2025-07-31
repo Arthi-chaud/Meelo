@@ -132,45 +132,56 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 					skeletonWidth={10}
 				/>
 			</View>
-			<View style={styles.infoRow}>
-				<Text
-					content={`${t("models.genre_plural")}:`}
-					variant="subtitle"
-				/>
-				<ScrollView
-					horizontal
-					contentContainerStyle={styles.infoScrollable}
-				>
-					{(genres ?? generateArray(3)).map(
-						(genre: Genre | undefined, idx) => (
-							<Chip
-								key={idx}
-								title={genre?.name}
-								onPress={() => {}} // TODO
-							/>
-						),
-					)}
-				</ScrollView>
-			</View>
-			<View style={styles.infoRow}>
-				<Text
-					content={`${t("models.externalLink_plural")}:`}
-					variant="subtitle"
-				/>
-				<ScrollView
-					horizontal
-					contentContainerStyle={styles.infoScrollable}
-				>
-					{(externalMetadata?.sources ?? generateArray(3)).map(
-						(source: ExternalMetadataSource | undefined, idx) => (
-							<ExternalMetadataSourceComponent
-								source={source}
-								key={idx}
-							/>
-						),
-					)}
-				</ScrollView>
-			</View>
+			{genres === undefined ||
+				(genres.length > 0 && (
+					<View style={styles.infoRow}>
+						<Text
+							content={`${t("models.genre_plural")}:`}
+							variant="subtitle"
+						/>
+						<ScrollView
+							horizontal
+							contentContainerStyle={styles.infoScrollable}
+						>
+							{(genres ?? generateArray(3)).map(
+								(genre: Genre | undefined, idx) => (
+									<Chip
+										key={idx}
+										title={genre?.name}
+										onPress={() => {}} // TODO
+									/>
+								),
+							)}
+						</ScrollView>
+					</View>
+				))}
+			{externalMetadata === undefined ||
+				(externalMetadata && externalMetadata.sources.length > 0 && (
+					<View style={styles.infoRow}>
+						<Text
+							content={`${t("models.externalLink_plural")}:`}
+							variant="subtitle"
+						/>
+						<ScrollView
+							horizontal
+							contentContainerStyle={styles.infoScrollable}
+						>
+							{(
+								externalMetadata?.sources ?? generateArray(3)
+							).map(
+								(
+									source: ExternalMetadataSource | undefined,
+									idx,
+								) => (
+									<ExternalMetadataSourceComponent
+										source={source}
+										key={idx}
+									/>
+								),
+							)}
+						</ScrollView>
+					</View>
+				))}
 
 			{externalMetadata !== null &&
 				externalMetadata?.description !== null && (
