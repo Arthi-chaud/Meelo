@@ -60,14 +60,14 @@ export const ResourceHeader = ({
 					content={title}
 					skeletonWidth={10}
 					numberOfLines={2}
-					variant="h2"
+					variant={subtitle !== null ? "h3" : "h2"}
 				/>
 				{subtitle !== null && (
 					<LoadableText
 						content={subtitle}
 						skeletonWidth={10}
 						numberOfLines={1}
-						variant="h4"
+						variant="h5"
 					/>
 				)}
 			</View>
@@ -90,5 +90,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	text: {
 		flex: { xs: 2, sm: 3, md: 5, xl: 12 },
+		gap: theme.gap(2),
 	},
 }));
