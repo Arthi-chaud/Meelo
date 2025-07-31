@@ -2,6 +2,7 @@ import type { SongWithRelations } from "@/models/song";
 import formatArtists from "@/utils/format-artists";
 import { type ComponentProps, useMemo } from "react";
 import { ListItem } from "../list-item";
+import { useSongContextMenu } from "~/components/context-menu/resource/song";
 
 type Props = {
 	song:
@@ -20,6 +21,7 @@ export const SongItem = ({
 	formatSubtitle,
 	onPress,
 }: Props) => {
+	const contextMenu = useSongContextMenu(song);
 	const formattedSubtitle = useMemo(() => {
 		const f = formatSubtitle ?? ((e: string) => e);
 		if (subtitle === null) {
@@ -41,6 +43,7 @@ export const SongItem = ({
 			onPress={() => {
 				onPress?.();
 			}} // TODO Launch playback
+			contextMenu={contextMenu}
 			illustration={song?.illustration}
 			illustrationProps={illustrationProps}
 		/>
