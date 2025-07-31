@@ -15,7 +15,7 @@ import { useModal } from "../bottom-modal-sheet";
 import { Illustration } from "../illustration";
 import { LoadableText } from "../loadable_text";
 
-export type ContextMenuItem = Action & { nestedModal?: true };
+export type ContextMenuItem = Action & { nestedModal?: boolean };
 
 export type ContextMenuHeader = {
 	illustration: IllustrationModel | null | undefined;

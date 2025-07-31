@@ -19,3 +19,19 @@ export const ShareAction = (callback: () => void): Action => ({
 	icon: ShareIcon,
 	onPress: callback,
 });
+
+export const useShareAlbumAction = (albumId: string | number | undefined) => {
+	const c = useShareCallback();
+	if (!albumId) {
+		return undefined;
+	}
+	return ShareAction(() => c(`/albums/${albumId}`));
+};
+
+export const useShareArtistAction = (artistId: string | number | undefined) => {
+	const c = useShareCallback();
+	if (!artistId) {
+		return undefined;
+	}
+	return ShareAction(() => c(`/artists/${artistId}`));
+};

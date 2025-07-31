@@ -1,8 +1,7 @@
 import type { ArtistWithRelations } from "@/models/artist";
-import { AlbumIcon, ArtistIcon, SongIcon } from "@/ui/icons";
-import type { Href } from "expo-router";
 import { useCallback } from "react";
-import { ShareAction, useShareCallback } from "~/actions/share";
+import { GoToArtist, GoToArtistAlbums, GoToArtistSongs } from "~/actions";
+import { useShareArtistAction } from "~/actions/share";
 import type {
 	ContextMenu,
 	ContextMenuBuilder,
@@ -12,20 +11,8 @@ import type {
 export const useArtistContextMenu = (
 	artist: ArtistWithRelations<"illustration"> | undefined | null,
 ): ContextMenuBuilder => {
-	const buildUrlAndShare = useShareCallback();
+	const ShareAction = useShareArtistAction(artist?.id);
 	return useCallback(() => {
-		const shareCallback = artist
-			? () => buildUrlAndShare(`/artists/${artist.id}`)
-			: undefined;
-		const artistHref: Href | undefined = artist
-			? `/artists/${artist.id}`
-			: undefined;
-		const albumHref: Href | undefined = artist
-			? `/albums?artist=${artist.id}`
-			: undefined;
-		const songHref: Href | undefined = artist
-			? `/songs?artist=${artist.id}`
-			: undefined;
 		return {
 			header: {
 				illustration: artist?.illustration,
@@ -34,26 +21,14 @@ export const useArtistContextMenu = (
 				subtitle: null,
 			},
 			items: [
-				[
-					{
-						label: "actions.goToArtist",
-						icon: ArtistIcon,
-						href: artistHref,
-					},
-
-					{
-						label: "actions.artist.seeAlbums",
-						icon: AlbumIcon,
-						href: albumHref,
-					},
-
-					{
-						label: "actions.artist.seeSongs",
-						icon: SongIcon,
-						href: songHref,
-					},
-				],
-				shareCallback ? [ShareAction(shareCallback)] : [],
+				artist
+					? [
+							GoToArtist(artist.id),
+							GoToArtistAlbums(artist.id),
+							GoToArtistSongs(artist.id),
+						]
+					: [],
+				ShareAction ? [ShareAction] : [],
 			],
 		} satisfies ContextMenu;
 	}, [artist]);
