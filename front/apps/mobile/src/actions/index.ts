@@ -2,8 +2,8 @@ import {
 	AlbumIcon,
 	ArtistIcon,
 	EditIcon,
-	SongIcon,
 	type Icon as IconType,
+	SongIcon,
 } from "@/ui/icons";
 import type { Href } from "expo-router";
 export type Action = {
