@@ -2,6 +2,7 @@ import type {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
 	ExternalMetadataSource,
+	SongExternalMetadata,
 } from "@/models/external-metadata";
 import { ExpandLessIcon, ExpandMoreIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
@@ -23,6 +24,7 @@ type Props = {
 	externalMetadata:
 		| AlbumExternalMetadata
 		| ArtistExternalMetadata
+		| SongExternalMetadata
 		| undefined;
 	style?: ViewStyle;
 };
@@ -97,6 +99,27 @@ export const ExternalMetadataDescriptionSection = ({
 	);
 };
 
+export const ExternalMetadataDescription = ({
+	description,
+}: { description: string | undefined }) => {
+	if (description === undefined) {
+		return (
+			<>
+				{generateArray(DescriptionLineCount).map((_, idx) => (
+					<TextSkeleton key={idx} width={"100%"} variant="body" />
+				))}
+			</>
+		);
+	}
+	return (
+		<Text
+			content={description}
+			variant="body"
+			style={styles.descriptionText}
+		/>
+	);
+};
+
 // Generic section for external metadata.
 // Will render empty view if no sources
 export const ExternalMetadataSourcesSection = ({
@@ -104,7 +127,6 @@ export const ExternalMetadataSourcesSection = ({
 	style,
 }: Props) => {
 	const { t } = useTranslation();
-	const api = useAPI();
 	const heading = useMemo(() => t("models.externalLink_plural"), [t]);
 	const scrollRef = useRef<ScrollView>(null);
 	if (externalMetadata && externalMetadata.sources.length === 0) {
@@ -126,47 +148,56 @@ export const ExternalMetadataSourcesSection = ({
 			>
 				{(externalMetadata?.sources ?? generateArray(2)).map(
 					(source: ExternalMetadataSource | undefined, idx) => (
-						<Pressable
-							onPress={() =>
-								source && openBrowserAsync(source.url)
-							}
+						<ExternalMetadataSourceComponent
 							key={source?.providerId ?? idx}
-							style={styles.externalLink}
-						>
-							{source ? (
-								<Image
-									resizeMode="contain"
-									source={{
-										uri: source
-											? api.getIllustrationURL(
-													source.providerIcon,
-													"original",
-												)
-											: undefined,
-										headers: {
-											Authorization: `Bearer ${api.accessToken}`,
-										},
-									}}
-									style={styles.externalLinkIcon}
-								/>
-							) : (
-								<View
-									style={[
-										styles.externalLinkIcon,
-										styles.externalLinkIconPlaceholder,
-									]}
-								/>
-							)}
-							<LoadableText
-								content={source?.providerName}
-								variant="body"
-								skeletonWidth={10}
-							/>
-						</Pressable>
+							source={source}
+						/>
 					),
 				)}
 			</ScrollView>
 		</View>
+	);
+};
+
+export const ExternalMetadataSourceComponent = ({
+	source,
+}: { source: ExternalMetadataSource | undefined }) => {
+	const api = useAPI();
+	return (
+		<Pressable
+			onPress={() => source && openBrowserAsync(source.url)}
+			style={styles.externalLink}
+		>
+			{source ? (
+				<Image
+					resizeMode="contain"
+					source={{
+						uri: source
+							? api.getIllustrationURL(
+									source.providerIcon,
+									"original",
+								)
+							: undefined,
+						headers: {
+							Authorization: `Bearer ${api.accessToken}`,
+						},
+					}}
+					style={styles.externalLinkIcon}
+				/>
+			) : (
+				<View
+					style={[
+						styles.externalLinkIcon,
+						styles.externalLinkIconPlaceholder,
+					]}
+				/>
+			)}
+			<LoadableText
+				content={source?.providerName}
+				variant="body"
+				skeletonWidth={10}
+			/>
+		</Pressable>
 	);
 };
 
