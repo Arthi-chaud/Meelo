@@ -48,6 +48,7 @@ const Video = Resource.concat(
 		name: yup.string().required(),
 		nameSlug: yup.string().required(),
 		artistId: yup.number().required(),
+		masterId: yup.number().required().nullable(),
 		songId: yup.number().required().nullable(),
 		groupId: yup.number().required().nullable(),
 		registeredAt: yupdate.required(),
