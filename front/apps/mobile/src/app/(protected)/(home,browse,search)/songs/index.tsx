@@ -115,7 +115,7 @@ export default function SongBrowseView() {
 					rare: rareArtistId,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration", "featuring"],
+				["artist", "illustration", "featuring", "master"],
 			)}
 			render={(song) => (
 				<SongItem

@@ -6,7 +6,7 @@ import { ListItem } from "../list-item";
 
 type Props = {
 	song:
-		| SongWithRelations<"illustration" | "artist" | "featuring">
+		| SongWithRelations<"illustration" | "artist" | "featuring" | "master">
 		| undefined;
 	illustrationProps: ComponentProps<typeof ListItem>["illustrationProps"];
 	subtitle: "artists" | null | undefined;
