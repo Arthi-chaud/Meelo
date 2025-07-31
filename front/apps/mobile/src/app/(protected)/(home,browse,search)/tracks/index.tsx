@@ -38,7 +38,7 @@ export default function TracksView() {
 					library: libraries,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["illustration", "release"],
+				["illustration", "release", "song", "video"],
 			)}
 			render={(track) => (
 				<TrackItem

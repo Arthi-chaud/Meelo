@@ -93,7 +93,7 @@ const ContextMenuHeader = ({ header }: { header: ContextMenuHeader }) => {
 				<Illustration
 					illustration={header.illustration}
 					quality="low"
-					{...header.illustrationProps}
+					{...(header.illustrationProps ?? { variant: "center" })}
 				/>
 			</View>
 			<View style={styles.headerText}>
