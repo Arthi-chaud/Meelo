@@ -143,7 +143,7 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 };
 
 const styles = StyleSheet.create((theme) => ({
-	thickDivider: { height: 2 },
+	thickDivider: { height: theme.gap(0.33) },
 	items: {},
 	item: {
 		flexDirection: "row",

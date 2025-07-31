@@ -35,3 +35,11 @@ export const useShareArtistAction = (artistId: string | number | undefined) => {
 	}
 	return ShareAction(() => c(`/artists/${artistId}`));
 };
+
+export const useShareSongAction = (songId: string | number | undefined) => {
+	const c = useShareCallback();
+	if (!songId) {
+		return undefined;
+	}
+	return ShareAction(() => c(`/songs/${songId}`));
+};
