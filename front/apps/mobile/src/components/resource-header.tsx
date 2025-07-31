@@ -1,11 +1,11 @@
 import type { ArtistWithRelations } from "@/models/artist";
 import type IllustrationResource from "@/models/illustration";
+import type { SongWithRelations } from "@/models/song";
+import formatArtists from "@/utils/format-artists";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Illustration } from "./illustration";
 import { LoadableText } from "./loadable_text";
-import type { SongWithRelations } from "@/models/song";
-import formatArtists from "@/utils/format-artists";
 
 export const SongHeader = ({
 	song,

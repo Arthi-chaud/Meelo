@@ -1,10 +1,10 @@
 import type { SongWithRelations } from "@/models/song";
-import type { ContextMenuBuilder } from "..";
-import { useCallback } from "react";
-import formatArtists from "@/utils/format-artists";
-import { type Action, GoToArtist } from "~/actions";
 import { InfoIcon, LyricsIcon, SongIcon } from "@/ui/icons";
+import formatArtists from "@/utils/format-artists";
+import { useCallback } from "react";
+import { type Action, GoToArtist } from "~/actions";
 import { useShareSongAction } from "~/actions/share";
+import type { ContextMenuBuilder } from "..";
 
 //TODO Play
 //TODO Play after/next
