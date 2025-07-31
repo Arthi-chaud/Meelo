@@ -3,24 +3,19 @@ import formatDuration from "@/utils/format-duration";
 import { type ComponentProps, useMemo } from "react";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";
+import { useVideoContextMenu } from "~/components/context-menu/resource/video";
 type Props = {
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 	formatSubtitle?: (s: string) => string;
 	onPress?: () => void;
-} & (
-	| {
-			subtitle: "duration";
-			video: VideoWithRelations<"illustration" | "master"> | undefined;
-	  }
-	| {
-			subtitle: "artistName";
-
-			video: VideoWithRelations<"artist" | "illustration"> | undefined;
-	  }
-);
-
+	video:
+		| VideoWithRelations<"illustration" | "master" | "song" | "artist">
+		| undefined;
+	subtitle: "duration" | "artistName";
+};
 export const VideoTile = (props: Props) => {
 	const formattedSubtitle = useFormattedSubtitle(props);
+	const contextMenu = useVideoContextMenu(props.video);
 	return (
 		<Tile
 			illustration={props.video?.illustration}
@@ -29,6 +24,7 @@ export const VideoTile = (props: Props) => {
 			onPress={() => {
 				props.onPress?.();
 			}} // TODO Launch playback
+			contextMenu={contextMenu}
 			subtitle={formattedSubtitle}
 		/>
 	);
@@ -36,6 +32,7 @@ export const VideoTile = (props: Props) => {
 
 export const VideoItem = (props: Props) => {
 	const formattedSubtitle = useFormattedSubtitle(props);
+	const contextMenu = useVideoContextMenu(props.video);
 	return (
 		<ListItem
 			title={props.video?.name}
@@ -44,6 +41,7 @@ export const VideoItem = (props: Props) => {
 				props.onPress?.();
 			}} // TODO Launch playback
 			illustration={props.video?.illustration}
+			contextMenu={contextMenu}
 			illustrationProps={props.illustrationProps}
 		/>
 	);

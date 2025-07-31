@@ -86,7 +86,7 @@ export default function VideoBrowseView() {
 					group: song?.groupId,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration", "master"],
+				["artist", "illustration", "master", "song"],
 			)}
 			render={(video) => (
 				<Item
