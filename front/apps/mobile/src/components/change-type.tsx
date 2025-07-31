@@ -5,7 +5,10 @@ import { SongType } from "@/models/song";
 import {
 	albumTypeToTranslationKey,
 	songTypeToTranslationKey,
+	videoTypeToTranslationKey,
 } from "@/models/utils";
+import type Video from "@/models/video";
+import { VideoType } from "@/models/video";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -77,6 +80,36 @@ export const useChangeSongTypeModal = (song: Song | undefined) => {
 		types: SongType,
 		selectedType: song?.type,
 		translate: (t) => songTypeToTranslationKey(t, false),
+		onSelect: (t) => onSelect.mutate(t),
+	});
+
+	return { openChangeTypeModal: openModal };
+};
+
+export const useChangeVideoTypeModal = (video: Video | undefined) => {
+	const api = useAPI();
+	const { client } = useQueryClient();
+
+	const onSelect = useMutation({
+		mutationFn: video
+			? (type: VideoType) => {
+					return api.updateVideo(video.id, { type });
+				}
+			: undefined,
+		onSuccess: () => {
+			Toast.success("Update successful!");
+			client.invalidateQueries({ queryKey: ["videos"] });
+			client.invalidateQueries({ queryKey: [video?.slug] });
+			client.invalidateQueries({ queryKey: [video?.id] });
+		},
+		onError: () => {
+			Toast.error("Update failed");
+		},
+	});
+	const { openModal } = useChangeTypeModal({
+		types: VideoType,
+		selectedType: video?.type,
+		translate: (t) => videoTypeToTranslationKey(t, false),
 		onSelect: (t) => onSelect.mutate(t),
 	});
 

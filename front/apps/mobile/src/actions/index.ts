@@ -3,6 +3,12 @@ import {
 	ArtistIcon,
 	EditIcon,
 	type Icon as IconType,
+	InfoIcon,
+	LyricsIcon,
+	PlayAfterIcon,
+	PlayIcon,
+	PlayNextIcon,
+	RelatedTracksIcon,
 	SongIcon,
 } from "@/ui/icons";
 import type { Href } from "expo-router";
@@ -43,4 +49,48 @@ export const ChangeType = (label: TranslationKey, onPress: () => void) => ({
 	onPress,
 	nestedModal: true,
 	icon: EditIcon,
+});
+
+export const Play = (trackId: string | number): Action => ({
+	label: "actions.playback.play",
+	icon: PlayIcon,
+	disabled: true,
+	onPress: () => {}, // TODO
+});
+
+export const PlayNext = (trackId: string | number): Action => ({
+	label: "actions.playback.playNext",
+	icon: PlayNextIcon,
+	disabled: true,
+	onPress: () => {}, // TODO
+});
+
+export const PlayAfter = (trackId: string | number): Action => ({
+	label: "actions.playback.playAfter",
+	icon: PlayAfterIcon,
+	disabled: true,
+	onPress: () => {}, // TODO
+});
+
+export const GoToLyrics = (songId: string | number): Action => ({
+	label: "actions.song.seeLyrics",
+	href: `/songs/${songId}?tab=lyrics`,
+	icon: LyricsIcon,
+});
+
+export const GoToSongInfo = (songId: string | number): Action => ({
+	label: "actions.song.seeSongInfo",
+	href: `/songs/${songId}?tab=infos`,
+	icon: InfoIcon,
+});
+export const GoToSongVersions = (songId: string | number): Action => ({
+	label: "actions.song.seeOtherVersions",
+	href: `/songs?versionsOf=${songId}`,
+	icon: SongIcon,
+});
+
+export const GoToRelatedTracks = (songId: string | number): Action => ({
+	label: "actions.song.seeRelatedTracks",
+	href: `/tracks?song=${songId}`,
+	icon: RelatedTracksIcon,
 });
