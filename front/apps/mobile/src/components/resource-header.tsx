@@ -38,7 +38,6 @@ type Props = {
 	title: string | undefined;
 	subtitle: string | undefined | null;
 };
-// TODO Handle wrap when the artist name is a single word and is larger than view
 
 export const ResourceHeader = ({
 	illustration,
