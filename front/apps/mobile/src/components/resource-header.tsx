@@ -52,7 +52,7 @@ export const ResourceHeader = ({
 				<Illustration
 					illustration={illustration}
 					quality="medium"
-					variant={circleIllustration ? "circle" : undefined}
+					variant={circleIllustration ? "circle" : "center"}
 				/>
 			</View>
 			<View style={styles.text}>
