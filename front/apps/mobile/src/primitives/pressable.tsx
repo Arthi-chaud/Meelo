@@ -4,17 +4,25 @@ import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
 	onPress: () => void;
+	onLongPress?: () => void;
 	children: React.ReactNode;
 	disabled?: boolean;
 	style?: ComponentProps<typeof TouchableOpacity>["style"];
 };
 
 // Wrapper around TouchableOpacity
-export const Pressable = ({ onPress, children, style, disabled }: Props) => {
+export const Pressable = ({
+	onPress,
+	children,
+	style,
+	disabled,
+	onLongPress,
+}: Props) => {
 	return (
 		<TouchableOpacity
 			disabled={disabled}
 			touchSoundDisabled
+			onLongPress={onLongPress}
 			style={[styles.root, style]}
 			onPress={onPress}
 		>
