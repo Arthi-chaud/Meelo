@@ -8,9 +8,7 @@ type Props = {
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 	formatSubtitle?: (s: string) => string;
 	onPress?: () => void;
-	video:
-		| VideoWithRelations<"illustration" | "master" | "song" | "artist">
-		| undefined;
+	video: VideoWithRelations<"illustration" | "master" | "artist"> | undefined;
 	subtitle: "duration" | "artistName";
 };
 export const VideoTile = (props: Props) => {

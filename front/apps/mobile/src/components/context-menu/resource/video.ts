@@ -21,9 +21,7 @@ import type { ContextMenuBuilder } from "..";
 //TODO Track info
 
 export const useVideoContextMenu = (
-	video:
-		| VideoWithRelations<"illustration" | "song" | "master" | "artist">
-		| undefined,
+	video: VideoWithRelations<"illustration" | "master" | "artist"> | undefined,
 ): ContextMenuBuilder => {
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeVideoTypeModal(video);
