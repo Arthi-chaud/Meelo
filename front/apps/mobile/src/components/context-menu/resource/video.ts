@@ -31,6 +31,7 @@ export const useVideoContextMenu = (
 				title: video?.name,
 				subtitle: video?.artist.name,
 				illustration: video?.illustration,
+				illustrationProps: { normalizedThumbnail: true },
 			},
 			items: video
 				? [
