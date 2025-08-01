@@ -77,7 +77,7 @@ export const ListItem = ({
 					/>
 				)}
 			</View>
-			{contextMenu && (
+			{contextMenu && title !== undefined && (
 				<View style={styles.contextMenu}>
 					<ContextMenuButton builder={contextMenu} />
 				</View>

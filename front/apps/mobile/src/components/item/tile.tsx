@@ -84,7 +84,7 @@ export const Tile = ({
 	return (
 		<Pressable
 			onPress={onShortPress}
-			onLongPress={onLongPress}
+			onLongPress={title !== undefined ? onLongPress : undefined}
 			style={[styles.container, props.containerStyle]}
 		>
 			<View style={styles.imageContainer}>
