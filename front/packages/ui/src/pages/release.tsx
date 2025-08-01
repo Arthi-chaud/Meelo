@@ -73,19 +73,17 @@ export const useTracklist = (
 	}, [tracklist]);
 };
 
-type VideoType = VideoWithRelations<
-	"master" | "illustration" | "song" | "artist"
->;
+type VideoType = VideoWithRelations<"master" | "illustration">;
 
 // Splits the videos depending on their type and sorts them based on the tracklist.
-export const useVideos = (
-	albumVideos: VideoType[] | undefined,
+export const useVideos = <T extends VideoType>(
+	albumVideos: T[] | undefined,
 	albumType: AlbumType | undefined,
 	tracks: TrackType[],
 ): {
-	videos: VideoType[];
-	liveVideos: VideoType[];
-	videoExtras: VideoType[];
+	videos: T[];
+	liveVideos: T[];
+	videoExtras: T[];
 } => {
 	return useMemo(
 		() =>
@@ -148,10 +146,7 @@ export const useVideos = (
 						videos: [],
 						videoExtras: [],
 						liveVideos: [],
-					} as Record<
-						"videos" | "videoExtras" | "liveVideos",
-						VideoType[]
-					>,
+					} as Record<"videos" | "videoExtras" | "liveVideos", T[]>,
 				),
 		[albumVideos, tracks],
 	);
