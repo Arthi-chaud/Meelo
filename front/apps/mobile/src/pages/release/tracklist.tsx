@@ -14,6 +14,9 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
+import { ContextMenuButton, useContextMenu } from "~/components/context-menu";
+import { useSongContextMenu } from "~/components/context-menu/resource/song";
+import { useVideoContextMenu } from "~/components/context-menu/resource/video";
 import { LoadableText } from "~/components/loadable_text";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
@@ -114,10 +117,46 @@ const TrackItem = ({
 	maxTrackIndex: number;
 	albumArtistId: number | null | undefined;
 }) => {
+	//Note: Instead of using track context menu
+	//We build back songs and videos from the track
+	const songWithTrack = useMemo(() => {
+		if (!track?.song) {
+			return undefined;
+		}
+		return {
+			...track.song,
+			master: track,
+			illustration: track.illustration,
+		};
+	}, [track]);
+
+	const videoWithTrack = useMemo(() => {
+		if (!track?.video) {
+			return undefined;
+		}
+		return {
+			...track.video,
+			master: track,
+			illustration: track.illustration,
+		};
+	}, [track]);
+	const songContextMenu = useSongContextMenu(songWithTrack);
+	const videoContextMenu = useVideoContextMenu(videoWithTrack);
+	const contextMenu = useMemo(() => {
+		if (!track) {
+			return undefined;
+		}
+		if (videoWithTrack) {
+			return videoContextMenu;
+		}
+		return songContextMenu;
+	}, [songWithTrack, videoWithTrack, videoContextMenu, songContextMenu]);
+	const { openContextMenu } = useContextMenu(contextMenu);
 	return (
 		<Pressable
 			disabled={track === undefined}
 			style={styles.trackButton}
+			onLongPress={contextMenu ? openContextMenu : undefined}
 			onPress={() => {
 				/* TODO Start playback */
 			}}
@@ -173,6 +212,11 @@ const TrackItem = ({
 					color="secondary"
 				/>
 			</View>
+			{contextMenu ? (
+				<View>
+					<ContextMenuButton builder={contextMenu} />
+				</View>
+			) : undefined}
 		</Pressable>
 	);
 };
