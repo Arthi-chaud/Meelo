@@ -61,7 +61,10 @@ export default function Root() {
 	);
 
 	const newlyAddedReleases = useInfiniteQuery(() =>
-		getReleases({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
+		getReleases({}, { sortBy: "addDate", order: "desc" }, [
+			"illustration",
+			"album",
+		]),
 	);
 	useSetKeyIllustration(newlyAddedAlbums.items?.at(0));
 	const topSongs = useInfiniteQuery(() =>

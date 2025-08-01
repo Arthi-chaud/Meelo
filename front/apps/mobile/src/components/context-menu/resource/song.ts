@@ -14,6 +14,7 @@ import {
 	Play,
 	PlayAfter,
 	PlayNext,
+	SetAsMaster,
 } from "~/actions";
 import { useShareSongAction } from "~/actions/share";
 import { useQuery } from "~/api";
@@ -63,6 +64,9 @@ export const useSongContextMenu = (
 						],
 						user?.admin
 							? [
+									// ...(song.masterId !== song.master.id
+									// 	? [SetAsMaster(() => {}, false)]
+									// 	: []),
 									ChangeType(
 										"actions.song.changeType",
 										openChangeTypeModal,

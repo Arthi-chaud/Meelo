@@ -5,7 +5,7 @@ import { useReleaseContextMenu } from "~/components/context-menu/resource/releas
 import { Tile } from "../tile";
 
 const ReleaseTile = (props: {
-	release: ReleaseWithRelations<"illustration"> | undefined;
+	release: ReleaseWithRelations<"illustration" | "album"> | undefined;
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 }) => {
 	const ctxMenu = useReleaseContextMenu(props.release);

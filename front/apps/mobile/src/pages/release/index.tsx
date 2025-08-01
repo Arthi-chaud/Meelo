@@ -4,7 +4,7 @@ import {
 	getGenres,
 	getRelease,
 } from "@/api/queries";
-import type { AlbumType } from "@/models/album";
+import type Album from "@/models/album";
 import type Genre from "@/models/genre";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
@@ -14,6 +14,7 @@ import {
 	useVideos,
 } from "@/ui/pages/release";
 import { generateArray } from "@/utils/gen-list";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -48,7 +49,7 @@ import { Tracklist } from "./tracklist";
 
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
 	const { data: release } = useQuery(() =>
-		getRelease(releaseId, ["album", "illustration", "discs"]),
+		getRelease(releaseId, ["illustration", "discs"]),
 	);
 
 	const { data: album } = useQuery(
@@ -92,8 +93,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 			{/* TODO Label */}
 			<PostTracklistSections
 				releaseId={release?.id}
-				albumId={release?.albumId}
-				albumType={album?.type}
+				album={album}
 				tracks={tracks}
 				albumArtistId={album?.artistId}
 			/>
@@ -102,14 +102,12 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 }
 
 const PostTracklistSections = ({
-	albumId,
-	albumType,
+	album,
 	releaseId,
 	albumArtistId,
 	tracks,
 }: {
-	albumType: AlbumType | undefined;
-	albumId: number | undefined;
+	album: Album | undefined;
 	releaseId: number | undefined;
 	albumArtistId: number | undefined | null;
 	tracks: TracklistItemWithRelations<"artist" | "featuring">[];
@@ -117,37 +115,45 @@ const PostTracklistSections = ({
 	const { t } = useTranslation();
 	const { data: featuringArtists } = useQuery(
 		(albumId) => artistsOnAlbumQuery(albumId),
-		albumId,
+		album?.id,
 	);
 	const { items: relatedAlbums } = useInfiniteQuery(
 		(albumId) => relatedAlbumsQuery(albumId),
-		albumId,
+		album?.id,
 	);
-	const { items: relatedReleases } = useInfiniteQuery(
+	const { items: relatedReleasesItems } = useInfiniteQuery(
 		(albumId) => relatedReleasesQuery(albumId),
-		albumId,
+		album?.id,
 	);
+	const relatedReleases = useMemo(() => {
+		if (!album) {
+			return undefined;
+		}
+		return relatedReleasesItems
+			?.filter((r) => r.id !== releaseId)
+			.map((r) => ({ ...r, album }));
+	}, [relatedReleasesItems, album]);
 	const { items: bSidesItems } = useInfiniteQuery(
 		(releaseId) => releaseBSidesQuery(releaseId),
 		releaseId,
 	);
 	const { data: externalMetadata } = useQuery(
 		(albumId) => getAlbumExternalMetadata(albumId),
-		albumId,
+		album?.id,
 	);
 	const { items: videoItems } = useInfiniteQuery(
 		(albumId) => releatedVideos(albumId),
-		albumId,
+		album?.id,
 	);
 
 	const { items: genres } = useInfiniteQuery(
 		(albumId) => getGenres({ album: albumId }),
-		albumId,
+		album?.id,
 	);
 	const { bSides, extras: audioExtras } = useBSidesAndExtras(bSidesItems);
 	const { videos, liveVideos, videoExtras } = useVideos(
 		videoItems,
-		albumType,
+		album?.type,
 		tracks,
 	);
 	return (
@@ -174,7 +180,7 @@ const PostTracklistSections = ({
 				hideIfEmpty
 				style={styles.section}
 				header={t("album.otherAlbumReleases")}
-				items={relatedReleases?.filter(({ id }) => id !== releaseId)}
+				items={relatedReleases}
 				render={(release) => <ReleaseTile release={release} />}
 			/>
 			{(

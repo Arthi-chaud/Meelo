@@ -1,22 +1,25 @@
-import { getAlbum } from "@/api/queries";
+import { getAlbum, getCurrentUserStatus } from "@/api/queries";
 import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo } from "react";
 import type { Action } from "~/actions";
+import { useSetReleaseAsMaster } from "~/actions/master";
 import { ShareAction, useShareCallback } from "~/actions/share";
-import { useQueryClient } from "~/api";
+import { useQuery, useQueryClient } from "~/api";
 import type {
 	ContextMenu,
 	ContextMenuBuilder,
 } from "~/components/context-menu";
 
 export const useReleaseContextMenu = (
-	release: ReleaseWithRelations<"illustration"> | undefined,
+	release: ReleaseWithRelations<"illustration" | "album"> | undefined,
 ): ContextMenuBuilder => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
+	const { data: user } = useQuery(getCurrentUserStatus);
+	const SetAsMaster = useSetReleaseAsMaster(release, release?.album);
 	const buildUrlAndShare = useShareCallback();
 	const subtitle = useMemo(() => {
 		if (!release) {
@@ -57,6 +60,7 @@ export const useReleaseContextMenu = (
 			},
 			items: [
 				[goToRelease, goToArtist],
+				user?.admin && release ? [SetAsMaster] : [],
 				[
 					ShareAction(() =>
 						buildUrlAndShare(`/releases/${release?.id}`),
