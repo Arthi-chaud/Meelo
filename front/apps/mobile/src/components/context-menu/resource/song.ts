@@ -14,8 +14,8 @@ import {
 	Play,
 	PlayAfter,
 	PlayNext,
-	SetAsMaster,
 } from "~/actions";
+import { useSetSongTrackAsMaster } from "~/actions/master";
 import { useShareSongAction } from "~/actions/share";
 import { useQuery } from "~/api";
 import { useChangeSongTypeModal } from "~/components/change-type";
@@ -32,6 +32,7 @@ export const useSongContextMenu = (
 	const ShareAction = useShareSongAction(song?.id);
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
+	const SetAsMaster = useSetSongTrackAsMaster(song?.master, song);
 	return useCallback(() => {
 		return {
 			header: {
@@ -64,9 +65,11 @@ export const useSongContextMenu = (
 						],
 						user?.admin
 							? [
-									// ...(song.masterId !== song.master.id
-									// 	? [SetAsMaster(() => {}, false)]
-									// 	: []),
+									//Note: this happens in the tracklist when we pass the master as a release's track.
+									// Allowing this allows not having to write a context menu for release tracks
+									...(song.masterId !== song.master.id
+										? [SetAsMaster]
+										: []),
 									ChangeType(
 										"actions.song.changeType",
 										openChangeTypeModal,

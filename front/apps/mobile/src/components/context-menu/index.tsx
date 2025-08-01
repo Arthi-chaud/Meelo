@@ -72,7 +72,7 @@ export const ContextMenuModal = (content: ContextMenu) => {
 						<Divider h boxProps={{ style: styles.thickDivider }} />
 						{itemGroup.length > 0 &&
 							itemGroup.map((item, idx) => (
-								<Fragment key={item.label}>
+								<Fragment key={`${item.label}-${idx}`}>
 									<ContextMenuItemComponent item={item} />
 									{idx !== itemGroup.length - 1 && (
 										<Divider h />

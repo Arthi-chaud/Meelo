@@ -1,5 +1,7 @@
 import type Album from "@/models/album";
 import type Release from "@/models/release";
+import type Song from "@/models/song";
+import type Track from "@/models/track";
 import { MasterIcon } from "@/ui/icons";
 import { useMutation } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -39,6 +41,42 @@ export const useSetReleaseAsMaster = (
 				!release || !album || release.id === album.masterId,
 			),
 		[setAsMaster, release],
+	);
+};
+
+export const useSetSongTrackAsMaster = (
+	track: Track | undefined,
+	song: Song | undefined,
+) => {
+	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const setAsMaster = useMutation({
+		mutationFn: () =>
+			queryClient.api.updateSong(song!.id, {
+				masterTrackId: track?.id,
+			}),
+		onSuccess: () => {
+			Toast.success(t("toasts.trackSetAsMaster"));
+			queryClient.client.invalidateQueries({ queryKey: ["tracks"] });
+			queryClient.client.invalidateQueries({ queryKey: ["songs"] });
+			queryClient.client.invalidateQueries({ queryKey: ["releases"] });
+			queryClient.client.invalidateQueries({ queryKey: [song?.id] });
+			queryClient.client.invalidateQueries({ queryKey: [song?.slug] });
+			queryClient.client.invalidateQueries({
+				queryKey: [track?.id],
+			});
+			queryClient.client.invalidateQueries({
+				queryKey: [track?.releaseId],
+			});
+		},
+	});
+	return useMemo(
+		() =>
+			SetAsMaster(
+				() => setAsMaster.mutateAsync(),
+				!track || !song || track.id === song.masterId,
+			),
+		[setAsMaster, track],
 	);
 };
 
