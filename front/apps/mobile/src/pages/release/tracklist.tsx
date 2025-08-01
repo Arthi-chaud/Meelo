@@ -21,6 +21,7 @@ import { LoadableText } from "~/components/loadable_text";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { TextSkeleton } from "~/primitives/text";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -174,7 +175,9 @@ const TrackItem = ({
 						color="secondary"
 					/>
 				) : (
-					<Icon icon={VideoIcon} style={styles.trackVideoIcon} />
+					<View style={styles.trackVideoIconContainer}>
+						<Icon icon={VideoIcon} style={styles.trackVideoIcon} />
+					</View>
 				)}
 			</View>
 			<View style={styles.trackLabel}>
@@ -212,11 +215,13 @@ const TrackItem = ({
 					color="secondary"
 				/>
 			</View>
-			{contextMenu ? (
-				<View>
+			<View>
+				{contextMenu ? (
 					<ContextMenuButton builder={contextMenu} />
-				</View>
-			) : undefined}
+				) : (
+					<TextSkeleton width={4} />
+				)}
+			</View>
 		</Pressable>
 	);
 };
@@ -225,19 +230,26 @@ const UnknownDurationPlaceholderLength = formatDuration(null).length;
 
 const styles = StyleSheet.create((theme) => ({
 	root: {
-		paddingHorizontal: theme.gap(1),
 		paddingTop: theme.gap(2),
 		// To compensate the bottomPadding of 'tracks' style
 		paddingBottom: theme.gap(1),
 	},
-	discLabel: { flexDirection: "row", paddingBottom: theme.gap(1) },
+	discLabel: {
+		flexDirection: "row",
+		paddingBottom: theme.gap(1),
+		paddingHorizontal: theme.gap(1),
+	},
 	tracks: {
 		paddingBottom: theme.gap(2),
 	},
-	// TODO When single-digit track indexed, the video icon looks centered
-	// unlike the indexes
 	trackVideoIcon: {
 		color: theme.colors.text.secondary,
+		size: theme.fontSize.rem(1.5),
+	},
+	trackVideoIconContainer: {
+		// This override the gap of trackButton
+		// Allowing to make the icon appear more centered
+		marginRight: theme.gap(-1),
 	},
 	trackButton: {
 		width: "100%",
