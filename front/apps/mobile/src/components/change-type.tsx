@@ -101,6 +101,7 @@ export const useChangeVideoTypeModal = (video: Video | undefined) => {
 			client.invalidateQueries({ queryKey: ["videos"] });
 			client.invalidateQueries({ queryKey: [video?.slug] });
 			client.invalidateQueries({ queryKey: [video?.id] });
+			client.invalidateQueries({ queryKey: ["releases"] });
 		},
 		onError: () => {
 			Toast.error("Update failed");
