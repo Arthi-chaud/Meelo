@@ -87,16 +87,20 @@ export const ContextMenuModal = (content: ContextMenu) => {
 };
 
 const ContextMenuHeader = ({ header }: { header: ContextMenuHeader }) => {
+	const isThumbnail = header.illustrationProps?.normalizedThumbnail ?? false;
+	headerStyles.useVariants({
+		thumbnail: isThumbnail,
+	});
 	return (
-		<View style={styles.header}>
-			<View style={styles.headerIllustration}>
+		<View style={headerStyles.root}>
+			<View style={headerStyles.illustration}>
 				<Illustration
 					illustration={header.illustration}
-					quality="low"
+					quality={isThumbnail ? "medium" : "low"}
 					{...(header.illustrationProps ?? { variant: "center" })}
 				/>
 			</View>
-			<View style={styles.headerText}>
+			<View style={headerStyles.text}>
 				<LoadableText
 					content={header.title}
 					variant="h6"
@@ -168,21 +172,31 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	itemIcon: { aspectRatio: 1, alignItems: "center" },
 	itemLabel: { width: "100%" },
-	header: {
-		flexDirection: "row",
-		gap: theme.gap(2),
-		paddingBottom: theme.gap(1.5),
-	},
-	headerIllustration: { width: theme.gap(7) },
-	headerText: {
-		justifyContent: "space-evenly",
-		flex: 1,
-	},
-
 	button: {
 		transform: [{ rotate: "90deg" }],
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
+	},
+}));
+
+const headerStyles = StyleSheet.create((theme) => ({
+	root: {
+		flexDirection: "row",
+		gap: theme.gap(2),
+		paddingBottom: theme.gap(1.5),
+	},
+	illustration: {
+		variants: {
+			thumbnail: {
+				true: { width: theme.gap(10) },
+				false: { width: theme.gap(7) },
+			},
+		},
+	},
+
+	text: {
+		justifyContent: "space-evenly",
+		flex: 1,
 	},
 }));
