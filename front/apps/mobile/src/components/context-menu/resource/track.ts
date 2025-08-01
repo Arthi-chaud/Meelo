@@ -13,6 +13,7 @@ import {
 	PlayAfter,
 	PlayNext,
 } from "~/actions";
+import { useSetSongTrackAsMaster } from "~/actions/master";
 import { useQuery } from "~/api";
 import {
 	useChangeSongTypeModal,
@@ -30,6 +31,11 @@ export const useTrackContextMenu = (
 		useChangeSongTypeModal(track?.song ?? undefined);
 	const { openChangeTypeModal: openChangeVideoTypeModal } =
 		useChangeVideoTypeModal(track?.video ?? undefined);
+	const SetAsSongMaster = useSetSongTrackAsMaster(
+		track,
+		track?.song ?? undefined,
+	);
+
 	return useCallback(() => {
 		const songOrVideo = track?.song ?? track?.video;
 		return {
@@ -61,6 +67,7 @@ export const useTrackContextMenu = (
 							? [
 									...(track.song
 										? [
+												SetAsSongMaster,
 												ChangeType(
 													"actions.song.changeType",
 													openChangeSongTypeModal,
