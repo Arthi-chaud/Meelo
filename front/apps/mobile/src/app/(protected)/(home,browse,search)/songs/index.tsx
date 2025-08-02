@@ -37,7 +37,6 @@ import { SongItem } from "~/components/item/resource/song";
 import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
 // TODO Handle Genre Query param
-// TODO Handle song version filtering
 // TODO song subtitle: allow it to be album
 
 export default function SongBrowseView() {
