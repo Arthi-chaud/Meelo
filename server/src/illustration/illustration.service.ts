@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// biome-ignore lint/nursery/noRestrictedImports: TODO
 import * as fs from "node:fs";
 import * as dir from "node:path";
 import { Readable } from "node:stream";
@@ -38,6 +37,7 @@ import type { IllustrationDimensionsDto } from "./models/illustration-dimensions
 import type { IllustrationPath } from "./models/illustration-path.model";
 import { ImageQuality } from "./models/illustration-quality";
 import type IllustrationStats from "./models/illustration-stats";
+
 const getPalette = require("get-rgba-palette");
 
 /**
@@ -153,9 +153,9 @@ export default class IllustrationService {
 	 */
 	async streamIllustration(
 		sourceFilePath: string,
-		as: string,
+		_as: string,
 		dimensions: IllustrationDimensionsDto,
-		res: any,
+		_res: any,
 		ext = ".jpg",
 	): Promise<StreamableFile> {
 		if (!this.fileManagerService.fileExists(sourceFilePath)) {
@@ -203,7 +203,7 @@ export default class IllustrationService {
 					.then(
 						(buffer) => new StreamableFile(Readable.from(buffer)),
 					);
-			} catch (error) {
+			} catch {
 				this.logger.error(
 					`Streaming of illustration ${sourceFilePath} failed.`,
 				);

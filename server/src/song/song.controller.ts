@@ -20,13 +20,13 @@ import {
 	Body,
 	Controller,
 	Delete,
+	forwardRef,
 	Get,
 	Inject,
 	Post,
 	Put,
 	Query,
 	Req,
-	forwardRef,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { SongType, type User } from "@prisma/client";
@@ -60,9 +60,9 @@ import { formatIdentifier } from "src/repository/repository.utils";
 import Response, { ResponseType } from "src/response/response.decorator";
 import Slug from "src/slug/slug";
 import MergeSongDTO from "./models/merge-song.dto";
-import type SongGroupQueryParameters from "./models/song-group.query-params";
 import SongQueryParameters from "./models/song.query-params";
 import { SongResponseBuilder } from "./models/song.response";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
 import UpdateSongDTO from "./models/update-song.dto";
 import SongService from "./song.service";
 

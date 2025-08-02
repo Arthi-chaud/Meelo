@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// biome-ignore lint/nursery/noRestrictedImports: Not needed
 import * as fs from "node:fs";
 import path from "node:path";
 import { HttpService } from "@nestjs/axios";
@@ -24,10 +23,10 @@ import { HttpStatus, Injectable } from "@nestjs/common";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import mime from "mime";
 import { MeeloException } from "src/exceptions/meelo-exception";
-import FileManagerService from "src/file-manager/file-manager.service";
 import { SourceFileNotFoundException } from "src/file/file.exceptions";
 import FileService from "src/file/file.service";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
+import FileManagerService from "src/file-manager/file-manager.service";
 import Logger from "src/logger/logger";
 import Slug from "src/slug/slug";
 
@@ -122,12 +121,12 @@ export class StreamService {
 		});
 		// biome-ignore lint/complexity/useLiteralKeys: Headers is more like a dict than an object
 		const rangeHeader = req.headers["range"] ?? req.headers["Range"];
-		let requestedStartByte: number | undefined = undefined;
-		let requestedEndByte: number | undefined = undefined;
+		let requestedStartByte: number | undefined;
+		let requestedEndByte: number | undefined;
 
 		if (rangeHeader) {
 			res.status(HttpStatus.PARTIAL_CONTENT);
-			const bytes = /^bytes\=(\d+)\-(\d+)?$/g.exec(rangeHeader);
+			const bytes = /^bytes=(\d+)-(\d+)?$/g.exec(rangeHeader);
 
 			if (bytes) {
 				const fileSize = fs.statSync(fullFilePath).size;

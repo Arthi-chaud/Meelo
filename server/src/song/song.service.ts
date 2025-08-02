@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { AlbumType, Prisma, SongType, TrackType } from "@prisma/client";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
@@ -51,8 +51,8 @@ import Slug from "src/slug/slug";
 import TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
-import type SongGroupQueryParameters from "./models/song-group.query-params";
 import type SongQueryParameters from "./models/song.query-params";
+import type SongGroupQueryParameters from "./models/song-group.query-params";
 import {
 	SongAlreadyExistsException,
 	SongNotEmptyException,

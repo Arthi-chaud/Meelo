@@ -481,7 +481,7 @@ describe("Song Service", () => {
 					slug: new Slug(dummyRepository.artistA.name, "1234"),
 				},
 			});
-			const tmpLyrics = await lyricsService.createOrUpdate({
+			await lyricsService.createOrUpdate({
 				plain: "1234",
 				songId: tmpSong.id,
 			});

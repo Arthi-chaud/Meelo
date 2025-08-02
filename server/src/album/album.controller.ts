@@ -19,11 +19,11 @@
 import {
 	Body,
 	Controller,
+	forwardRef,
 	Get,
 	Inject,
 	Put,
 	Query,
-	forwardRef,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { AlbumType } from "@prisma/client";

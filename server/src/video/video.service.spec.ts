@@ -202,7 +202,6 @@ describe("Video Service", () => {
 				video: { is: { id: dummyRepository.videoA1.id } },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
-			// biome-ignore lint/complexity/noForEach: Test
 			videoTracks.forEach((track) => expect(track.songId).toBe(null));
 		});
 
@@ -219,7 +218,6 @@ describe("Video Service", () => {
 				video: { is: { id: dummyRepository.videoA1.id } },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
-			// biome-ignore lint/complexity/noForEach: Test
 			videoTracks.forEach((track) =>
 				expect(track.songId).toBe(dummyRepository.songA1.id),
 			);

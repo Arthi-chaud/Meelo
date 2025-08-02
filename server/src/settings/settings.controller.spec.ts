@@ -1,4 +1,3 @@
-// biome-ignore lint/nursery/noRestrictedImports: Test
 import * as fs from "node:fs";
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import ArtistModule from "src/artist/artist.module";
 import { EventsModule } from "src/events/events.module";
 import GenreModule from "src/genre/genre.module";
@@ -26,12 +26,12 @@ import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import ReleaseModule from "src/release/release.module";
 import TrackModule from "src/track/track.module";
-import { SongGroupResponseBuilder } from "./models/song-group.response";
 import { SongResponseBuilder } from "./models/song.response";
-import { SongGroupController } from "./song-group.controller";
-import SongGroupService from "./song-group.service";
+import { SongGroupResponseBuilder } from "./models/song-group.response";
 import { SongController } from "./song.controller";
 import SongService from "./song.service";
+import { SongGroupController } from "./song-group.controller";
+import SongGroupService from "./song-group.service";
 
 @Module({
 	imports: [

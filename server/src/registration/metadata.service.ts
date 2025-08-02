@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { AlbumType, TrackType } from "@prisma/client";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";

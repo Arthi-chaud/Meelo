@@ -212,7 +212,7 @@ export default class ScrobblerService {
 					},
 					data: { lastScrobblingDate: lastScrobbleDate },
 				});
-			} catch (e) {
+			} catch {
 				this.logger.error("Pushing scrobbles failed");
 			}
 		}

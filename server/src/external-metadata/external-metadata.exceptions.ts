@@ -42,7 +42,7 @@ export class ProviderNotFoundException extends NotFoundException {
 }
 
 export class ExternalMetadataNotFoundException extends NotFoundException {
-	constructor(whereInput: ExternalMetadataQueryParameters.WhereInput) {
+	constructor(_whereInput: ExternalMetadataQueryParameters.WhereInput) {
 		super("External Metadata entry not found");
 	}
 }
@@ -54,19 +54,19 @@ export class DuplicateSourcesInExternalMetadataDto extends InvalidRequestExcepti
 }
 
 export class MissingExternalMetadataResourceIdException extends InvalidRequestException {
-	constructor(data: CreateExternalMetadataDto) {
+	constructor(_data: CreateExternalMetadataDto) {
 		super("Missing Album, Artist, Song or Release ID");
 	}
 }
 
 export class ExternalMetadataResourceNotFoundException extends NotFoundException {
-	constructor(data: CreateExternalMetadataDto) {
+	constructor(_data: CreateExternalMetadataDto) {
 		super("Album, Artist, Song or Release not found");
 	}
 }
 
 export class ExternalMetadataEntryExistsException extends AlreadyExistsException {
-	constructor(data: CreateExternalMetadataDto) {
+	constructor(_data: CreateExternalMetadataDto) {
 		super("External Metadata entry already exists for this resource");
 	}
 }

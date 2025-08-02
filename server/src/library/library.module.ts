@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
-import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";

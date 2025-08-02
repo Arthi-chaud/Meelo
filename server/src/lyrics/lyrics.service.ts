@@ -16,13 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import type MeiliSearch from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
-import Logger from "src/logger/logger";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
@@ -34,7 +33,6 @@ import type LyricsQueryParameters from "./models/lyrics.query-parameters";
 
 @Injectable()
 export class LyricsService {
-	private readonly logger = new Logger(LyricsService.name);
 	constructor(
 		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
 		protected prismaService: PrismaService,

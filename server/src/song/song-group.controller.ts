@@ -21,11 +21,11 @@ import { ApiOperation, ApiTags, PickType } from "@nestjs/swagger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
+import SongQueryParameters from "./models/song.query-params";
 import SongGroupQueryParameters from "./models/song-group.query-params";
 import { SongGroupResponseBuilder } from "./models/song-group.response";
-import SongQueryParameters from "./models/song.query-params";
-import SongGroupService from "./song-group.service";
 import { Selector } from "./song.controller";
+import SongGroupService from "./song-group.service";
 
 class SongGroupSelector extends PickType(Selector, [
 	"artist",

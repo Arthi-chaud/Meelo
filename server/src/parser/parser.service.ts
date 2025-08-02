@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { AlbumType, SongType, VideoType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
@@ -700,7 +700,7 @@ export default class ParserService {
 			parsedName,
 			remastered: ext.Remaster || ext.Remastered,
 			bonus: ext["Bonus Track"],
-			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
+			// biome-ignore lint/complexity/useLiteralKeys: Clarity
 			mixed: ext["Mixed"],
 			main:
 				ext["Album Version"] || ext["Main Version"] || ext["Album Mix"],

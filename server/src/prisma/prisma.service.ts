@@ -34,7 +34,7 @@ export default class PrismaService
 		this.$extends({
 			query: {
 				album: {
-					async findMany({ model, operation, args, query }) {
+					async findMany({ args, query }) {
 						args.include = {
 							...args.include,
 							releases: {

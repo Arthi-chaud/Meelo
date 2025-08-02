@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
 import SettingsModule from "src/settings/settings.module";

@@ -17,12 +17,12 @@
  */
 
 import { HttpModule } from "@nestjs/axios";
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import { ExternalMetadataModule } from "src/external-metadata/external-metadata.module";
-import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
 import ParserModule from "src/parser/parser.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import PrismaModule from "src/prisma/prisma.module";

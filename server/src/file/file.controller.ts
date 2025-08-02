@@ -40,8 +40,8 @@ import SongService from "src/song/song.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import FileService from "./file.service";
-import FileDeletionDto from "./models/file-deletion.dto";
 import FileQueryParameters from "./models/file.query-parameters";
+import FileDeletionDto from "./models/file-deletion.dto";
 
 class Selector {
 	@IsOptional()

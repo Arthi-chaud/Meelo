@@ -30,10 +30,10 @@ import {
 
 @ValidatorConstraint({ name: "customText", async: false })
 export class IsRelative implements ValidatorConstraintInterface {
-	validate(text: string, args: ValidationArguments) {
+	validate(text: string, _args: ValidationArguments) {
 		return !path.isAbsolute(text);
 	}
-	defaultMessage(args: ValidationArguments) {
+	defaultMessage(_args: ValidationArguments) {
 		return "Path should be relative";
 	}
 }

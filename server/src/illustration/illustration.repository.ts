@@ -17,7 +17,7 @@
  */
 
 import { join } from "node:path";
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { IllustrationType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
@@ -39,9 +39,9 @@ import {
 	MissingIllustrationResourceIdException,
 } from "./illustration.exceptions";
 import IllustrationService from "./illustration.service";
+import { IllustrationResponse } from "./models/illustration.response";
 import type { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import type IllustrationStats from "./models/illustration-stats";
-import { IllustrationResponse } from "./models/illustration.response";
 
 /**
  * This service handles the paths to illustrations files and the related tables in the DB

@@ -1,17 +1,23 @@
 {
-	"extends": ["../biome.json"],
+	"root": false,
+	"extends": "//",
 	"formatter": {
-		"lineWidth": 80,
-		"ignore": ["src/prisma/models/**"]
+		"lineWidth": 80
+	},
+	"files": {
+		"includes": ["**", "!**/src/prisma/models/**", "!dist/**"]
+	},
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
 	},
 	"linter": {
 		"rules": {
 			"style": {
 				"useEnumInitializers": "off",
 				"noNonNullAssertion": "off",
-				"useImportType": "off"
-			},
-			"nursery": {
+				"useImportType": "off",
 				"noRestrictedImports": {
 					"options": {
 						"paths": {
@@ -23,7 +29,8 @@
 						}
 					}
 				}
-			}
+			},
+			"nursery": {}
 		}
 	}
 }

@@ -50,8 +50,8 @@ import {
 	VideoResponseBuilder,
 } from "src/video/models/video.response";
 import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
-import { SearchHistoryService } from "./search-history.service";
 import { getSearchResourceType } from "./search.utils";
+import { SearchHistoryService } from "./search-history.service";
 
 @ApiTags("Search")
 @Controller("search/history")
