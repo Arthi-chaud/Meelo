@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import PrismaModule from "src/prisma/prisma.module";
 import SongModule from "src/song/song.module";
 import { LyricsService } from "./lyrics.service";

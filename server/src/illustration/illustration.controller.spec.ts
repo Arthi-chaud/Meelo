@@ -1,9 +1,9 @@
 import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
+import FileModule from "src/file/file.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
-import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
@@ -14,10 +14,10 @@ import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
+
 // Import as a require to mock
-// biome-ignore lint/nursery/noRestrictedImports: Test
 const fs = require("node:fs");
-// biome-ignore lint/nursery/noRestrictedImports: Test
+
 import { createReadStream, existsSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import type { INestApplication } from "@nestjs/common";

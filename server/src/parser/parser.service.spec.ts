@@ -565,7 +565,8 @@ describe("Parser Service", () => {
 					test(songName, () =>
 						expect(parserService.getSongType(songName)).toBe(
 							expectedSongType,
-						));
+						),
+					);
 				}
 			});
 		}
@@ -647,7 +648,8 @@ describe("Parser Service", () => {
 					test(videoName, () =>
 						expect(parserService.getVideoType(videoName)).toBe(
 							expectedVideoType,
-						));
+						),
+					);
 				}
 			});
 		}
@@ -727,7 +729,8 @@ describe("Parser Service", () => {
 					test(albumName, () =>
 						expect(parserService.getAlbumType(albumName)).toBe(
 							expectedAlbumType,
-						));
+						),
+					);
 				}
 			});
 		}

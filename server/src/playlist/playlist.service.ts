@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Playlist, Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
@@ -32,8 +32,8 @@ import {
 import Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
-import type { PlaylistEntryModel } from "./models/playlist-entry.model";
 import type PlaylistQueryParameters from "./models/playlist.query-parameters";
+import type { PlaylistEntryModel } from "./models/playlist-entry.model";
 import {
 	AddSongToPlaylistFailureException,
 	PlaylistAlreadyExistsException,

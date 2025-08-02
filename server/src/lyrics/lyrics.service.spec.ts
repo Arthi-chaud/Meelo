@@ -1,7 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
-import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
 import GenreModule from "src/genre/genre.module";
 import type { Lyrics } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";

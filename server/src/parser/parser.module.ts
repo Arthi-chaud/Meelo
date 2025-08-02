@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import ArtistModule from "src/artist/artist.module";
 import ParserService from "./parser.service";
 

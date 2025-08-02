@@ -141,7 +141,6 @@ export default class PaginatedResponse<
 
 	private buildUrl(route: string, queryParameters: any) {
 		if (queryParameters.skip === 0) {
-			// biome-ignore lint/performance/noDelete: Setting it to undefined does not remove it from the query params
 			delete queryParameters.skip;
 		}
 		const builtQueryParameters = new URLSearchParams(

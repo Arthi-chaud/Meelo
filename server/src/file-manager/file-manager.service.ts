@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// biome-ignore lint/nursery/noRestrictedImports: Internal Use
 import * as fs from "node:fs";
 import { join, parse } from "node:path";
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import type { Library } from "src/prisma/models";
 import SettingsService from "src/settings/settings.service";
 import {

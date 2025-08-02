@@ -5,7 +5,7 @@ import {
 	type Artist,
 	type File,
 	type Genre,
-	Label,
+	type Label,
 	type Library,
 	type Lyrics,
 	type PlaylistEntry,
@@ -14,7 +14,7 @@ import {
 	SongType,
 	type Track,
 	TrackType,
-	User,
+	type User,
 	type Video,
 	VideoType,
 } from "@prisma/client";

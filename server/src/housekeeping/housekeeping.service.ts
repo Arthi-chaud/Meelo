@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";

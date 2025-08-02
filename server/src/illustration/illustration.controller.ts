@@ -44,10 +44,10 @@ import UserService from "src/user/user.service";
 import { NoIllustrationException } from "./illustration.exceptions";
 import IllustrationRepository from "./illustration.repository";
 import IllustrationService from "./illustration.service";
+import { IllustrationResponse } from "./models/illustration.response";
 import { IllustrationDimensionsDto } from "./models/illustration-dimensions.dto";
 import { IllustrationDownloadDto } from "./models/illustration-dl.dto";
 import IllustrationRegistrationDto from "./models/illustration-registration.dto";
-import { IllustrationResponse } from "./models/illustration.response";
 
 const Cached = () => Header("Cache-Control", `max-age=${3600 * 24}`);
 

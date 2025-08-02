@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import LibraryModule from "src/library/library.module";

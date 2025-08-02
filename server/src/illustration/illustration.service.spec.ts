@@ -1,4 +1,3 @@
-// biome-ignore lint/nursery/noRestrictedImports: Test
 import * as fs from "node:fs";
 import { HttpModule } from "@nestjs/axios";
 import type { TestingModule } from "@nestjs/testing";
@@ -53,7 +52,7 @@ describe("Illustration Service", () => {
 		albumService = module.get<AlbumService>(AlbumService);
 		dummyRepository = module.get(PrismaService);
 		getBlurhashComponentCountFromAspectRatio =
-			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
+			// biome-ignore lint/complexity/useLiteralKeys: dirty hack
 			illustrationService["getBlurhashComponentCountFromAspectRatio"];
 
 		await dummyRepository.onModuleInit();

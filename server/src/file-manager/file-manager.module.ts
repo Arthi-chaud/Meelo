@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Global, Module, forwardRef } from "@nestjs/common";
+import { forwardRef, Global, Module } from "@nestjs/common";
 import SettingsModule from "src/settings/settings.module";
 import FileManagerService from "./file-manager.service";
 

@@ -40,8 +40,8 @@ import RelationIncludeQuery from "src/relation-include/relation-include-query.de
 import { formatIdentifier } from "src/repository/repository.utils";
 import Response, { ResponseType } from "src/response/response.decorator";
 import Slug from "src/slug/slug";
-import type SongGroupQueryParameters from "src/song/models/song-group.query-params";
 import type SongQueryParameters from "src/song/models/song.query-params";
+import type SongGroupQueryParameters from "src/song/models/song-group.query-params";
 import SongService from "src/song/song.service";
 import UpdateVideoDTO from "./models/update-video.dto";
 import VideoQueryParameters from "./models/video.query-parameters";

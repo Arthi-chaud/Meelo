@@ -19,12 +19,12 @@
 import {
 	Controller,
 	DefaultValuePipe,
+	forwardRef,
 	Get,
 	Inject,
 	ParseBoolPipe,
 	Query,
 	Res,
-	forwardRef,
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";

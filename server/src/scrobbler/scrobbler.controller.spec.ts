@@ -1,3 +1,4 @@
+import { Scrobbler } from ".prisma/client";
 import {
 	HttpStatus,
 	INestApplication,
@@ -20,8 +21,6 @@ import TestPrismaService from "test/test-prisma.service";
 import { LastFMAuthUrlResponse } from "./models/lastfm.dto";
 import ScrobblersResponse from "./models/scrobblers.response";
 import ScrobblerModule from "./scrobbler.module";
-import ScrobblerService from "./scrobbler.service";
-import { Scrobbler } from ".prisma/client";
 
 @Module({
 	imports: [
@@ -44,7 +43,6 @@ describe("Song Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;
 	let accessToken: string;
-	let scrobblerService: ScrobblerService;
 
 	let module: TestingModule;
 	beforeAll(async () => {
@@ -57,7 +55,6 @@ describe("Song Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		scrobblerService = module.get(ScrobblerService);
 
 		accessToken = module.get(JwtService).sign({
 			name: dummyRepository.user1.name,

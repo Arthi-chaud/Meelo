@@ -16,8 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Delete, Post, Query, Request } from "@nestjs/common";
-import { Get } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Post,
+	Query,
+	Request,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Scrobbler, User } from "@prisma/client";
 import { Role } from "src/authentication/roles/roles.decorators";

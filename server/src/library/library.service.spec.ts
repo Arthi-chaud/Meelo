@@ -1,6 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
-import FileManagerModule from "src/file-manager/file-manager.module";
 import FileModule from "src/file/file.module";
+import FileManagerModule from "src/file-manager/file-manager.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";

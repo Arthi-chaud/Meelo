@@ -69,7 +69,6 @@ describe("Authentication Controller & Role Management", () => {
 	let app: INestApplication;
 	let dummyRepository: TestPrismaService;
 	let userService: UserService;
-	let settings: SettingsService;
 	let admin: User;
 	let user: User;
 	let adminToken: string;
@@ -89,7 +88,6 @@ describe("Authentication Controller & Role Management", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		userService = module.get(UserService);
-		settings = module.get(SettingsService);
 		await dummyRepository.onModuleInit();
 		await dummyRepository.user.deleteMany({});
 		admin = await userService.create({

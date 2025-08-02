@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/noUnusedFunctionParameters: Tests **/
 import { Module, type ModuleMetadata } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { MemoryStoredFile, NestjsFormDataModule } from "nestjs-form-data";

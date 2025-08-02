@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Inject, Query, forwardRef } from "@nestjs/common";
+import { Controller, forwardRef, Get, Inject, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";

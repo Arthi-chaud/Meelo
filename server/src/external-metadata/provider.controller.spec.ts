@@ -1,4 +1,3 @@
-// biome-ignore lint/nursery/noRestrictedImports: Test
 import { createReadStream, existsSync } from "node:fs";
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";

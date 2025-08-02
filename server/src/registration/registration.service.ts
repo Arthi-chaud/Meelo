@@ -17,7 +17,7 @@
  */
 
 import * as path from "node:path";
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import {
 	type Illustration,
 	IllustrationType,
@@ -41,8 +41,8 @@ import SettingsService from "src/settings/settings.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
 import escapeRegex from "src/utils/escape-regex";
-import type MetadataSavedResponse from "./models/metadata-saved.dto";
 import type MetadataDto from "./models/metadata.dto";
+import type MetadataSavedResponse from "./models/metadata-saved.dto";
 
 @Injectable()
 export class RegistrationService {
