@@ -1,8 +1,8 @@
-import { BackIcon } from "@/ui/icons";
 import { Stack, useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { BackIcon } from "@/ui/icons";
 import { BlurView } from "~/components/blur-view";
 import { Icon as MeeloIcon } from "~/components/meelo";
 import { Icon } from "~/primitives/icon";

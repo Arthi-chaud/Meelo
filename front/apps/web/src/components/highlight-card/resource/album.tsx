@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import type { AlbumExternalMetadata } from "@/models/external-metadata";
 import { getYear } from "@/utils/date";
-import { useTranslation } from "react-i18next";
 import HighlightCard from "~/components/highlight-card";
 
 type AlbumHighlightCardProps = {

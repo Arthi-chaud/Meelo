@@ -1,13 +1,13 @@
-import type { InfiniteQuery } from "@/api/query";
-import type { IllustratedResource } from "@/models/illustration";
-import type { LayoutOption } from "@/models/layout";
-import type Resource from "@/models/resource";
-import { generateArray } from "@/utils/gen-list";
 import { type ContentStyle, FlashList } from "@shopify/flash-list";
 import type React from "react";
 import { type ComponentProps, useMemo, useState } from "react";
 import { View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import type { InfiniteQuery } from "@/api/query";
+import type { IllustratedResource } from "@/models/illustration";
+import type { LayoutOption } from "@/models/layout";
+import type Resource from "@/models/resource";
+import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery } from "~/api";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Divider } from "~/primitives/divider";

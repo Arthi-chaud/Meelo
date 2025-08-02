@@ -17,18 +17,6 @@
  */
 
 import {
-	AlbumIcon,
-	ArtistIcon,
-	BurgerIcon,
-	CompilationIcon,
-	GenreIcon,
-	PlaylistIcon,
-	SongIcon,
-	VideoIcon,
-} from "@/ui/icons";
-import type { IconProps } from "@/ui/icons";
-import { ParentScrollableDivId } from "@/utils/constants";
-import {
 	BottomNavigationAction,
 	Box,
 	Container,
@@ -50,6 +38,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { IconProps } from "@/ui/icons";
+import {
+	AlbumIcon,
+	ArtistIcon,
+	BurgerIcon,
+	CompilationIcon,
+	GenreIcon,
+	PlaylistIcon,
+	SongIcon,
+	VideoIcon,
+} from "@/ui/icons";
+import { ParentScrollableDivId } from "@/utils/constants";
 import type Action from "~/components/actions";
 import { LogoutAction } from "~/components/actions/auth";
 import {

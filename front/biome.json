@@ -1,28 +1,21 @@
 {
-	"extends": ["../biome.json"],
+	"root": false,
+	"extends": "//",
 	"formatter": {
 		"lineWidth": 80
 	},
 	"files": {
-		"ignore": ["**/.next/**", "translations/*.json", "**/android/**"]
+		"includes": [
+			"**",
+			"!**/.next/**",
+			"!**/translations/**/*.json",
+			"!**/android/**"
+		]
 	},
 	"linter": {
 		"rules": {
 			"style": {
-				"noNonNullAssertion": "off"
-			},
-			"suspicious": {
-				"noExtraNonNullAssertion": "warn",
-				"noArrayIndexKey": "off"
-			},
-			"correctness": {
-				"useExhaustiveDependencies": "off",
-				"noUnusedVariables": "warn"
-			},
-			"complexity": {
-				"noForEach": "off"
-			},
-			"nursery": {
+				"noNonNullAssertion": "off",
 				"noRestrictedImports": {
 					"options": {
 						"paths": {
@@ -31,7 +24,25 @@
 						}
 					}
 				}
-			}
+			},
+			"performance": {
+				"noAccumulatingSpread": "off"
+			},
+			"suspicious": {
+				"noExtraNonNullAssertion": "warn",
+				"noExplicitAny": "off",
+				"noConsole": "error",
+				"noArrayIndexKey": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "off",
+				"noUnusedVariables": "warn",
+				"useHookAtTopLevel": "off"
+			},
+			"complexity": {
+				"noForEach": "off"
+			},
+			"nursery": {}
 		}
 	}
 }

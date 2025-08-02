@@ -1,9 +1,9 @@
-import { getAlbums } from "@/api/queries";
-import { AlbumSortingKeys } from "@/models/album";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAlbums } from "@/api/queries";
+import { AlbumSortingKeys } from "@/models/album";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,

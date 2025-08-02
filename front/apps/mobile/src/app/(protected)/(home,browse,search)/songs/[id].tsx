@@ -1,3 +1,8 @@
+import { useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { getGenres, getSong, getSongExternalMetadata } from "@/api/queries";
 import type { ExternalMetadataSource } from "@/models/external-metadata";
 import type Genre from "@/models/genre";
@@ -6,11 +11,6 @@ import type Song from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
 import { LyricsIcon, PlayIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
-import { useLocalSearchParams } from "expo-router";
-import { useCallback, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { Chip } from "~/components/chip";
@@ -83,7 +83,10 @@ export default function SongPage() {
 const LyricsView = ({
 	lyrics,
 	songName,
-}: { lyrics: Lyrics | undefined | null; songName: string | undefined }) => {
+}: {
+	lyrics: Lyrics | undefined | null;
+	songName: string | undefined;
+}) => {
 	const lowerSongName = songName?.toLowerCase();
 	if (lyrics === null) {
 		return (
@@ -197,7 +200,10 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 const TabComponent = ({
 	currentTab,
 	setCurrentTab,
-}: { currentTab: Tab; setCurrentTab: (t: Tab) => void }) => {
+}: {
+	currentTab: Tab;
+	setCurrentTab: (t: Tab) => void;
+}) => {
 	const { t } = useTranslation();
 	const translateTabName = useCallback((t: Tab): TranslationKey => {
 		switch (t) {

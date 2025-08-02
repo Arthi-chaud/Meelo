@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -7,11 +7,12 @@
 		"defaultBranch": "main"
 	},
 	"files": {
-		"ignore": [
-			"**/.yarn/**",
-			"**/dist/**",
-			"**/package.json",
-			"**/.expo/**"
+		"includes": [
+			"**",
+			"!**/.yarn/**",
+			"!**/dist/**",
+			"!**/package.json",
+			"!**/.expo/**"
 		]
 	},
 	"formatter": {
@@ -19,8 +20,12 @@
 		"indentStyle": "tab",
 		"indentWidth": 4
 	},
-	"organizeImports": {
-		"enabled": true
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
 	"linter": {
 		"enabled": true,

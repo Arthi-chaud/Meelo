@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { StyleSheet } from "react-native-unistyles";
 import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
 import type { AlbumSortingKey } from "@/models/album";
 import type { ArtistSortingKey } from "@/models/artist";
 import type { SongSortingKey } from "@/models/song";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { AlbumTile } from "~/components/item/resource/album";

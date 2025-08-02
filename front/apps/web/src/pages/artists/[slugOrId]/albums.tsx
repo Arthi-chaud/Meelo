@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getAlbums, getArtist } from "@/api/queries";
-import { getYear } from "@/utils/date";
 import { Box } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getAlbums, getArtist } from "@/api/queries";
+import { getYear } from "@/utils/date";
 import { useQuery } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";

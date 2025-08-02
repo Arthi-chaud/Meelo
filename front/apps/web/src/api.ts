@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { atom, useAtom } from "jotai";
 import API from "@/api";
 import {
 	mkUseInfiniteQuery,
@@ -26,7 +27,6 @@ import {
 import type { InfiniteQueryFn, QueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
 import { store } from "@/state/store";
-import { atom, useAtom } from "jotai";
 import { accessTokenAtom } from "~/state/user";
 
 const isSSR = () => typeof window === "undefined";

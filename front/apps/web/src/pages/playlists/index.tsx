@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPlaylists } from "@/api/queries";
-import { PlaylistSortingKeys } from "@/models/playlist";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getPlaylists } from "@/api/queries";
+import { PlaylistSortingKeys } from "@/models/playlist";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,

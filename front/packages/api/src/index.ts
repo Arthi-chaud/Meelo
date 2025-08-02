@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { RequireExactlyOne } from "type-fest";
+import * as yup from "yup";
 import type { AlbumType } from "@/models/album";
 import { ResourceNotFound } from "@/models/exceptions";
 import type { IllustrationQuality } from "@/models/illustration";
@@ -33,8 +35,6 @@ import { TaskResponse } from "@/models/task";
 import type { TrackType } from "@/models/track";
 import User from "@/models/user";
 import type { VideoType } from "@/models/video";
-import type { RequireExactlyOne } from "type-fest";
-import * as yup from "yup";
 
 const AuthenticationResponse = yup.object({
 	access_token: yup.string().required(),

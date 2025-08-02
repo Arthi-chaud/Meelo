@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { useConfirm } from "material-ui-confirm";
 import type API from "@/api";
 import { ArchiveIcon, DownloadIcon } from "@/ui/icons";
-import type { useConfirm } from "material-ui-confirm";
 import type Action from "./";
 
 const confirmDownloadAction = (

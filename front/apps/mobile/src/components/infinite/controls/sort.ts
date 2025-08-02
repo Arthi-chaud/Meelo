@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import { useLocalSearchParams } from "expo-router";
+import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import type { Sorting } from "~/utils/sorting";
 
 export const useSortControl = <SortingKey extends string>({

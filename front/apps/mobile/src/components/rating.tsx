@@ -1,7 +1,7 @@
-import { StarIcon } from "@/ui/icons";
-import { generateArray } from "@/utils/gen-list";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { StarIcon } from "@/ui/icons";
+import { generateArray } from "@/utils/gen-list";
 import { Icon } from "~/primitives/icon";
 import { TextSkeleton } from "~/primitives/text";
 

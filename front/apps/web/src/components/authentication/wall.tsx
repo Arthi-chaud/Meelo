@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getCurrentUserStatus } from "@/api/queries";
-import { toTanStackQuery } from "@/api/query";
 import { Box, Stack } from "@mui/material";
 import {
 	useQueryClient,
@@ -25,6 +23,8 @@ import {
 } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
+import { getCurrentUserStatus } from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
 import { getAPI_ } from "~/api";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";

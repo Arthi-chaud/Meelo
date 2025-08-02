@@ -16,10 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLibraries, getTasks } from "@/api/queries";
-import { toTanStackQuery } from "@/api/query";
-import type Library from "@/models/library";
-import { AddIcon, DeleteIcon, EditIcon } from "@/ui/icons";
 import {
 	Box,
 	Button,
@@ -36,12 +32,18 @@ import {
 	useTheme,
 } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
-import { useMutation } from "@tanstack/react-query";
-import { useQuery as useTanStackQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQuery as useTanStackQuery,
+} from "@tanstack/react-query";
 import { useConfirm } from "material-ui-confirm";
 import { type ComponentProps, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { getLibraries, getTasks } from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import type Library from "@/models/library";
+import { AddIcon, DeleteIcon, EditIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import {

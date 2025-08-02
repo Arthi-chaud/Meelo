@@ -1,8 +1,3 @@
-import type { InfiniteQuery } from "@/api/query";
-import type Illustration from "@/models/illustration";
-import type { IllustratedResource } from "@/models/illustration";
-import type Resource from "@/models/resource";
-import { generateArray } from "@/utils/gen-list";
 import {
 	Canvas,
 	RadialGradient,
@@ -20,6 +15,11 @@ import {
 	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import type { InfiniteQuery } from "@/api/query";
+import type Illustration from "@/models/illustration";
+import type { IllustratedResource } from "@/models/illustration";
+import type Resource from "@/models/resource";
+import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery } from "~/api";
 import { accessTokenAtom } from "~/state/user";
 

@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useSetAtom } from "jotai";
 import { getArtist } from "@/api/queries";
 import type { VideoWithRelations } from "@/models/video";
 import { playTrackAtom } from "@/state/player";
 import { VideoIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
-import { useSetAtom } from "jotai";
 import { useQueryClient } from "~/api";
 import VideoContextualMenu from "~/components/contextual-menu/resource/video";
 import Illustration from "~/components/illustration";

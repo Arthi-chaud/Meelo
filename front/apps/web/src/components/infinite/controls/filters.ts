@@ -16,22 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getLibraries } from "@/api/queries";
-import { toTanStackInfiniteQuery } from "@/api/query";
-import {
-	useTypeFilterControl as useTypeFilterControlBase,
-	useTypeFiltersControl as useTypeFiltersControlBase,
-} from "@/infinite-controls/filters/resource-type";
-
-import {
-	useLibraryFilterControl as useLibraryFilterControlBase,
-	useLibraryFiltersControl as useLibraryFiltersControlBase,
-} from "@/infinite-controls/filters/library";
 import { useInfiniteQuery as useReactInfiniteQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { getLibraries } from "@/api/queries";
+import { toTanStackInfiniteQuery } from "@/api/query";
+import {
+	useLibraryFilterControl as useLibraryFilterControlBase,
+	useLibraryFiltersControl as useLibraryFiltersControlBase,
+} from "@/infinite-controls/filters/library";
+import {
+	useTypeFilterControl as useTypeFilterControlBase,
+	useTypeFiltersControl as useTypeFiltersControlBase,
+} from "@/infinite-controls/filters/resource-type";
 import { useAPI } from "~/api";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 

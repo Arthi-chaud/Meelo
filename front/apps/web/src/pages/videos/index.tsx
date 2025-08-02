@@ -1,8 +1,8 @@
-import { getVideos } from "@/api/queries";
-import { VideoSortingKeys } from "@/models/video";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getVideos } from "@/api/queries";
+import { VideoSortingKeys } from "@/models/video";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,

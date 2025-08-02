@@ -16,6 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
+import type { QueryClient } from "@tanstack/react-query";
+import type { NextPageContext } from "next";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { GetPropsTypesFrom, Page } from "ssr";
 import {
 	getAlbumExternalMetadata,
 	getAlbums,
@@ -30,13 +37,6 @@ import type { AlbumExternalMetadata } from "@/models/external-metadata";
 import { EmptyStateIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { getRandomNumber } from "@/utils/random";
-import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
-import type { QueryClient } from "@tanstack/react-query";
-import type { NextPageContext } from "next";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAPI, useInfiniteQuery, useQueries, type useQuery } from "~/api";
 import { GoToSettingsAction } from "~/components/actions/link";
 import { EmptyState } from "~/components/empty-state";
@@ -101,7 +101,7 @@ const HomePageSection = <T,>(props: {
 
 	// Remove the section if its content is empty
 	if (items !== undefined && items.length === 0) {
-		return <></>;
+		return null;
 	}
 	return (
 		<Stack spacing={3}>

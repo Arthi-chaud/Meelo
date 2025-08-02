@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Grid } from "@mui/material";
 import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, MasterIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
-import { Grid } from "@mui/material";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";

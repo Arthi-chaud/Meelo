@@ -16,37 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type API from "@/api";
-import {
-	getAlbum,
-	getAlbumExternalMetadata,
-	getAlbums,
-	getArtists,
-	getGenres,
-	getPlaylists,
-	getRelease,
-	getReleaseTracklist,
-	getReleases,
-	getSongs,
-	getVideos,
-} from "@/api/queries";
-import { toTanStackQuery } from "@/api/query";
-import type Tracklist from "@/models/tracklist";
-import type { TracklistItemWithRelations } from "@/models/tracklist";
-import { playTracksAtom } from "@/state/player";
-import { PlayIcon, ShuffleIcon, StarIcon } from "@/ui/icons";
-import {
-	formatReleaseDate,
-	useBSidesAndExtras,
-	useReleaseDate,
-	useTracklist,
-	useVideos,
-} from "@/ui/pages/release";
-import { useAccentColor } from "@/utils/accent-color";
-import { ParentScrollableDivId } from "@/utils/constants";
-import { getYear } from "@/utils/date";
-import formatDuration from "@/utils/format-duration";
-import { generateArray } from "@/utils/gen-list";
 import {
 	Button,
 	Container,
@@ -68,9 +37,40 @@ import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import type API from "@/api";
+import {
+	getAlbum,
+	getAlbumExternalMetadata,
+	getAlbums,
+	getArtists,
+	getGenres,
+	getPlaylists,
+	getRelease,
+	getReleases,
+	getReleaseTracklist,
+	getSongs,
+	getVideos,
+} from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import type Tracklist from "@/models/tracklist";
+import type { TracklistItemWithRelations } from "@/models/tracklist";
+import { playTracksAtom } from "@/state/player";
+import { PlayIcon, ShuffleIcon, StarIcon } from "@/ui/icons";
+import {
+	formatReleaseDate,
+	useBSidesAndExtras,
+	useReleaseDate,
+	useTracklist,
+	useVideos,
+} from "@/ui/pages/release";
+import { useAccentColor } from "@/utils/accent-color";
+import { ParentScrollableDivId } from "@/utils/constants";
+import { getYear } from "@/utils/date";
+import formatDuration from "@/utils/format-duration";
+import { generateArray } from "@/utils/gen-list";
 import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
@@ -194,7 +194,7 @@ const prepareSSR = async (
 type RelatedContentSectionProps = {
 	display: boolean;
 	title: string | JSX.Element;
-	children: JSX.Element[] | JSX.Element;
+	children: ReactNode;
 };
 
 const RelatedContentSection = (props: RelatedContentSectionProps) => {
@@ -681,9 +681,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								{release.data?.label?.name}
 							</Link>
 						</Typography>
-					) : (
-						<></>
-					)}
+					) : null}
 				</Box>
 				<RelatedContentSection
 					display={(bSides.length ?? 0) > 0}
@@ -749,15 +747,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					display={extras.length > 0 || videoExtras.length > 0}
 					title={t("browsing.sections.extras")}
 				>
-					{extras.length > 0 ? (
+					{extras.length > 0 && (
 						<SongGrid
 							parentArtistName={albumArtist?.name}
 							songs={extras}
 						/>
-					) : (
-						<></>
 					)}
-					{videoExtras.length > 0 ? (
+					{videoExtras.length > 0 && (
 						<TileRow
 							tiles={videoExtras.map((video, videoIndex) => (
 								<VideoTile
@@ -767,8 +763,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								/>
 							))}
 						/>
-					) : (
-						<></>
 					)}
 				</RelatedContentSection>
 				<RelatedContentSection

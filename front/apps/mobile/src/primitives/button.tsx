@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Icon as IconType } from "@/ui/icons";
 import { useCallback } from "react";
 import {
 	Pressable,
@@ -34,6 +33,7 @@ import Animated, {
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import type { RequireExactlyOne } from "type-fest";
+import type { Icon as IconType } from "@/ui/icons";
 import { Icon } from "./icon";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type Album from "@/models/album";
 import type { AlbumType } from "@/models/album";
 import type { Disc } from "@/models/disc";
@@ -7,7 +8,6 @@ import type Tracklist from "@/models/tracklist";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { VideoTypeIsExtra, type VideoWithRelations } from "@/models/video";
 import { getDate } from "@/utils/date";
-import { useMemo } from "react";
 
 type SongType = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"

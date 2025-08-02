@@ -16,26 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { QueryClient } from "@/api/hook";
-import { getPlaylists } from "@/api/queries";
-import type { InfiniteQueryFn } from "@/api/query";
-import type Playlist from "@/models/playlist";
-import type {
-	CreatePlaylistDto,
-	PlaylistWithRelations,
-	UpdatePlaylistDto,
-} from "@/models/playlist";
-import { type TrackState, playAfterAtom, playNextAtom } from "@/state/player";
-import { store } from "@/state/store";
-import {
-	AddIcon,
-	AddItemToPlaylistIcon,
-	AddToPlaylistIcon,
-	DeleteIcon,
-	EditIcon,
-	PlayAfterIcon,
-	PlayNextIcon,
-} from "@/ui/icons";
 import {
 	Button,
 	Dialog,
@@ -56,6 +36,26 @@ import { useState } from "react";
 import { useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type { QueryClient } from "@/api/hook";
+import { getPlaylists } from "@/api/queries";
+import type { InfiniteQueryFn } from "@/api/query";
+import type Playlist from "@/models/playlist";
+import type {
+	CreatePlaylistDto,
+	PlaylistWithRelations,
+	UpdatePlaylistDto,
+} from "@/models/playlist";
+import { playAfterAtom, playNextAtom, type TrackState } from "@/state/player";
+import { store } from "@/state/store";
+import {
+	AddIcon,
+	AddItemToPlaylistIcon,
+	AddToPlaylistIcon,
+	DeleteIcon,
+	EditIcon,
+	PlayAfterIcon,
+	PlayNextIcon,
+} from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import Illustration from "~/components/illustration";
 import InfiniteList from "~/components/infinite/list";

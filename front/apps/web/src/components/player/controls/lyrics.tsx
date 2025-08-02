@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Lyrics, SyncedLyric } from "@/models/lyrics";
 import { Box, Stack, Typography } from "@mui/material";
 import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import type { Lyrics, SyncedLyric } from "@/models/lyrics";
 import LyricsBox from "~/components/lyrics";
 
 export const LyricsComponent = ({

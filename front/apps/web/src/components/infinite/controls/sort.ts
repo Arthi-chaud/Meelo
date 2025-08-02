@@ -17,9 +17,9 @@
  */
 
 import type { ParsedUrlQuery } from "node:querystring";
+import { useRouter } from "next/router";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import { Orders } from "@/models/sorting";
-import { useRouter } from "next/router";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 // Hook to get Sorting data to pass to Controls

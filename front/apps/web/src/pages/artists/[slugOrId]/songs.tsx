@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getArtist, getRelease, getSongGroups, getSongs } from "@/api/queries";
-import { toTanStackInfiniteQuery } from "@/api/query";
-import { SongSortingKeys } from "@/models/song";
-import type Track from "@/models/track";
 import { Box } from "@mui/material";
 import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getArtist, getRelease, getSongGroups, getSongs } from "@/api/queries";
+import { toTanStackInfiniteQuery } from "@/api/query";
+import { SongSortingKeys } from "@/models/song";
+import type Track from "@/models/track";
 import { getAPI, useQuery, useQueryClient } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";

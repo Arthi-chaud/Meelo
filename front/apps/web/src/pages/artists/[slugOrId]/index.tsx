@@ -16,6 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Box, Container, Divider, Grid, Stack } from "@mui/material";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { Fragment, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import type { GetPropsTypesFrom, Page } from "ssr";
 import {
 	getAlbums,
 	getArtist,
@@ -27,12 +33,6 @@ import { AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
 import { generateArray } from "@/utils/gen-list";
-import { Box, Container, Divider, Grid, Stack } from "@mui/material";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { Fragment, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import type { GetPropsTypesFrom, Page } from "ssr";
 import { useInfiniteQuery, useQuery } from "~/api";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import { useGradientBackground } from "~/components/gradient-background";

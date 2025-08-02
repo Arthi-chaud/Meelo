@@ -1,3 +1,7 @@
+import { useLocalSearchParams } from "expo-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbums,
 	getArtist,
@@ -7,12 +11,8 @@ import {
 } from "@/api/queries";
 import { type AlbumSortingKey, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
-import { VideoTypeIsExtra } from "@/models/video";
 import type { VideoSortingKey } from "@/models/video";
-import { useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { StyleSheet } from "react-native-unistyles";
+import { VideoTypeIsExtra } from "@/models/video";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import {
@@ -94,129 +94,130 @@ export default function ArtistView() {
 	}, [videos]);
 	useSetKeyIllustration(artist ?? undefined);
 	return (
-		<>
-			<SafeScrollView>
-				<ArtistHeader artist={artist} />
-				<SongGrid
-					header={t("artist.topSongs")}
+		<SafeScrollView>
+			<ArtistHeader artist={artist} />
+			<SongGrid
+				header={t("artist.topSongs")}
+				style={styles.section}
+				seeMore={
+					(topSongs.items?.length ?? 0) >= ShowSeeMoreThreshold
+						? {
+								pathname: "/songs",
+								params: { artist: artistId },
+							}
+						: undefined
+				}
+				songs={topSongs.data?.pages.at(0)?.items}
+				subtitle={
+					!topSongs.data
+						? null
+						: (song) =>
+								song.artistId.toString() === artistId &&
+								song.featuring.length === 0
+									? null
+									: "artists"
+				}
+			/>
+			{AlbumType.map((albumType) => (
+				<AlbumTypeRow
+					key={albumType}
+					artistId={artistId}
+					type={albumType}
+				/>
+			))}
+
+			<SongGrid
+				hideIfEmpty
+				header={t("artist.rareSongs")}
+				seeMore={
+					(rareSongs.items?.length ?? 0) > ShowSeeMoreThreshold
+						? { pathname: "/songs", params: { rare: artistId } }
+						: undefined
+				}
+				style={styles.section}
+				songs={rareSongs.data?.pages.at(0)?.items}
+				subtitle={
+					!rareSongs.data
+						? null
+						: (song) =>
+								song.artistId.toString() === artistId &&
+								song.featuring.length === 0
+									? null
+									: "artists"
+				}
+			/>
+
+			{(
+				[
+					{ label: "musicVideos", items: musicVideos },
+					{ label: "livePerformances", items: liveVideos },
+					{ label: "extras", items: extras },
+				] as const
+			).map(({ label, items }) => (
+				<Row
+					hideIfEmpty
+					key={label}
+					items={items}
 					style={styles.section}
+					header={t(`browsing.sections.${label}`)}
+					render={(item) => (
+						<VideoTile
+							video={item}
+							subtitle="duration"
+							illustrationProps={{
+								normalizedThumbnail: true,
+							}}
+						/>
+					)}
 					seeMore={
-						(topSongs.items?.length ?? 0) >= ShowSeeMoreThreshold
+						(items?.length ?? 0) > ShowSeeMoreThreshold
 							? {
-									pathname: "/songs",
-									params: { artist: artistId },
+									pathname: "/videos",
+									params: {
+										artist: artistId,
+										sort: "name",
+										order: "asc",
+									} satisfies Sorting<VideoSortingKey> & {
+										artist: string;
+									},
 								}
 							: undefined
 					}
-					songs={topSongs.data?.pages.at(0)?.items}
-					subtitle={
-						!topSongs.data
-							? null
-							: (song) =>
-									song.artistId.toString() === artistId &&
-									song.featuring.length === 0
-										? null
-										: "artists"
-					}
 				/>
-				{AlbumType.map((albumType) => (
-					<AlbumTypeRow
-						key={albumType}
-						artistId={artistId}
-						type={albumType}
-					/>
-				))}
-
-				<SongGrid
-					hideIfEmpty
-					header={t("artist.rareSongs")}
-					seeMore={
-						(rareSongs.items?.length ?? 0) > ShowSeeMoreThreshold
-							? { pathname: "/songs", params: { rare: artistId } }
-							: undefined
-					}
-					style={styles.section}
-					songs={rareSongs.data?.pages.at(0)?.items}
-					subtitle={
-						!rareSongs.data
-							? null
-							: (song) =>
-									song.artistId.toString() === artistId &&
-									song.featuring.length === 0
-										? null
-										: "artists"
-					}
-				/>
-
-				{(
-					[
-						{ label: "musicVideos", items: musicVideos },
-						{ label: "livePerformances", items: liveVideos },
-						{ label: "extras", items: extras },
-					] as const
-				).map(({ label, items }) => (
-					<Row
-						hideIfEmpty
-						key={label}
-						items={items}
-						style={styles.section}
-						header={t(`browsing.sections.${label}`)}
-						render={(item) => (
-							<VideoTile
-								video={item}
-								subtitle="duration"
-								illustrationProps={{
-									normalizedThumbnail: true,
-								}}
-							/>
-						)}
-						seeMore={
-							(items?.length ?? 0) > ShowSeeMoreThreshold
-								? {
-										pathname: "/videos",
-										params: {
-											artist: artistId,
-											sort: "name",
-											order: "asc",
-										} satisfies Sorting<VideoSortingKey> & {
-											artist: string;
-										},
-									}
-								: undefined
-						}
-					/>
-				))}
-				<Row
-					hideIfEmpty
-					style={styles.section}
-					header={t("artist.appearsOn")}
-					items={relatedAlbums.items}
-					render={(album) => (
-						<AlbumTile album={album} subtitle="artistName" />
-					)}
-				/>
-
-				{externalMetadata !== null && (
-					<>
-						<ExternalMetadataDescriptionSection
-							externalMetadata={externalMetadata}
-							style={styles.section}
-						/>
-						<ExternalMetadataSourcesSection
-							externalMetadata={externalMetadata}
-							style={styles.section}
-						/>
-					</>
+			))}
+			<Row
+				hideIfEmpty
+				style={styles.section}
+				header={t("artist.appearsOn")}
+				items={relatedAlbums.items}
+				render={(album) => (
+					<AlbumTile album={album} subtitle="artistName" />
 				)}
-			</SafeScrollView>
-		</>
+			/>
+
+			{externalMetadata !== null && (
+				<>
+					<ExternalMetadataDescriptionSection
+						externalMetadata={externalMetadata}
+						style={styles.section}
+					/>
+					<ExternalMetadataSourcesSection
+						externalMetadata={externalMetadata}
+						style={styles.section}
+					/>
+				</>
+			)}
+		</SafeScrollView>
 	);
 }
 
 const AlbumTypeRow = ({
 	type,
 	artistId,
-}: { type: AlbumType; artistId: string }) => {
+}: {
+	type: AlbumType;
+	artistId: string;
+}) => {
 	const { t } = useTranslation();
 	const query = useInfiniteQuery(() => albumTypeQuery(type, artistId));
 	return (

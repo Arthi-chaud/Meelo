@@ -18,8 +18,8 @@
 
 import { useRouter } from "next/router";
 import {
-	type DependencyList,
 	createContext,
+	type DependencyList,
 	useContext,
 	useEffect,
 	useState,
@@ -118,7 +118,10 @@ export const KeyboardBindingsProvider = (props: {
 						// biome-ignore lint/suspicious/noConsole: OK
 						console.error(
 							"Keyboard binding is probably getting duplicated.",
-							{ newBindingKey, description },
+							{
+								newBindingKey,
+								description,
+							},
 						);
 						oldBinding.description = description;
 						return { bindings: bindingsCopy };

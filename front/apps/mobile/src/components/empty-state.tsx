@@ -1,7 +1,7 @@
-import { EmptyStateIcon, type Icon } from "@/ui/icons";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { EmptyStateIcon, type Icon } from "@/ui/icons";
 import { Text } from "~/primitives/text";
 
 type Props = Partial<{ icon: Icon; text: TranslationKey }>;

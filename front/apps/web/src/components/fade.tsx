@@ -19,6 +19,7 @@
 import { Fade as MUIFade } from "@mui/material";
 import type { ComponentProps } from "react";
 import { isClientSideRendering } from "~/utils/is-ssr";
+
 /**
  * Wrapper around MUI's Fade.
  * Fade is the main animation used in the app.

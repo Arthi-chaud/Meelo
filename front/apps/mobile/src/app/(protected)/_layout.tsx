@@ -16,6 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQuery as useTanStackQuery } from "@tanstack/react-query";
+import { Redirect, Tabs } from "expo-router";
+import { useAtomValue } from "jotai";
+import { useTranslation } from "react-i18next";
+import { TouchableOpacity, View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import {
@@ -25,12 +31,6 @@ import {
 	SearchIcon,
 	SettingsIcon,
 } from "@/ui/icons";
-import { useQuery as useTanStackQuery } from "@tanstack/react-query";
-import { Redirect, Tabs } from "expo-router";
-import { useAtomValue } from "jotai";
-import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
 import { Icon } from "~/primitives/icon";

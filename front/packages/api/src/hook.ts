@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Resource from "@/models/resource";
 import {
 	useInfiniteQuery as useReactInfiniteQuery,
 	useQueries as useReactQueries,
@@ -24,6 +23,7 @@ import {
 	useQueryClient as useReactQueryClient,
 } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
+import type Resource from "@/models/resource";
 import type API from ".";
 import {
 	type InfiniteQueryFn,

@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getReleaseTracklist } from "@/api/queries";
-import type { ReleaseWithRelations } from "@/models/release";
-import { MasterIcon, UpgradeIcon } from "@/ui/icons";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { getReleaseTracklist } from "@/api/queries";
+import type { ReleaseWithRelations } from "@/models/release";
+import { MasterIcon, UpgradeIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { DownloadReleaseAction } from "~/components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";

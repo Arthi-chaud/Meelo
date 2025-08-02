@@ -1,10 +1,10 @@
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
 import type { SortControl } from "@/infinite-controls/sort";
 import { AscIcon, DescIcon, GridIcon, ListIcon } from "@/ui/icons";
-import { useTranslation } from "react-i18next";
-import { View } from "react-native";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { Dropdown } from "~/components/dropdown";
 import { Button } from "~/primitives/button";
 

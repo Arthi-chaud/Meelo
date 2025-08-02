@@ -1,6 +1,6 @@
+import { useLocalSearchParams } from "expo-router";
 import { getSong, getTracks } from "@/api/queries";
 import { TrackSortingKeys } from "@/models/track";
-import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "~/api";
 import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";

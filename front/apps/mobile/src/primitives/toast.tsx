@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CheckIcon, ErrorIcon } from "@/ui/icons";
 import { Pressable, View } from "react-native";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
+import { CheckIcon, ErrorIcon } from "@/ui/icons";
 import { Text } from "~/primitives/text";
 
 export const Toast = ({

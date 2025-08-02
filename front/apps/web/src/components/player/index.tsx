@@ -17,15 +17,6 @@
  */
 
 import {
-	type TrackState,
-	cursorAtom,
-	playPreviousTrackAtom,
-	playTracksAtom,
-	playlistAtom,
-	playlistLoadingAtom,
-	skipTrackAtom,
-} from "@/state/player";
-import {
 	Box,
 	Grow,
 	Paper,
@@ -40,6 +31,15 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
+import {
+	cursorAtom,
+	playlistAtom,
+	playlistLoadingAtom,
+	playPreviousTrackAtom,
+	playTracksAtom,
+	skipTrackAtom,
+	type TrackState,
+} from "@/state/player";
 import { useQueryClient } from "~/api";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";

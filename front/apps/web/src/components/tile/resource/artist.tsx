@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ArtistWithRelations } from "@/models/artist";
 import { Box } from "@mui/material";
+import type { ArtistWithRelations } from "@/models/artist";
 import ArtistAvatar from "~/components/artist-avatar";
 import ArtistContextualMenu from "~/components/contextual-menu/resource/artist";
 import Tile from "~/components/tile";

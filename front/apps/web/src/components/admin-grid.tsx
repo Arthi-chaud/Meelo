@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { InfiniteQueryFn } from "@/api/query";
-import type Resource from "@/models/resource";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
+import type { InfiniteQueryFn } from "@/api/query";
+import type Resource from "@/models/resource";
 import { useAPI, useInfiniteQuery } from "~/api";
 
 type AdminGridProps<DataType extends Resource> = {

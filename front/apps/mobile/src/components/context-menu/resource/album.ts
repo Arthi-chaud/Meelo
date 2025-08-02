@@ -1,8 +1,8 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { getCurrentUserStatus } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { getYear } from "@/utils/date";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import { ChangeType, GoToArtist, GoToRelease } from "~/actions";
 import { useShareAlbumAction } from "~/actions/share";
 import { useQuery } from "~/api";

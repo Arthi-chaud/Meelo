@@ -16,13 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { QueryClient } from "@tanstack/react-query";
 import { type NextRequest, NextResponse } from "next/server";
-
 import { getMasterRelease } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { store } from "@/state/store";
 import { UserAccessTokenStorageKey } from "@/utils/constants";
-import { QueryClient } from "@tanstack/react-query";
 import { getAPI_ } from "~/api";
 import { accessTokenAtom } from "~/state/user";
 

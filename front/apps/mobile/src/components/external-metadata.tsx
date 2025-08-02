@@ -1,3 +1,9 @@
+import { openBrowserAsync } from "expo-web-browser";
+import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, View, type ViewStyle } from "react-native";
+import Image from "react-native-fast-image";
+import { StyleSheet } from "react-native-unistyles";
 import type {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
@@ -6,17 +12,10 @@ import type {
 } from "@/models/external-metadata";
 import { ExpandLessIcon, ExpandMoreIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
-import { openBrowserAsync } from "expo-web-browser";
-import { useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ScrollView, View, type ViewStyle } from "react-native";
-import Image from "react-native-fast-image";
-import { StyleSheet } from "react-native-unistyles";
 import { useAPI } from "~/api";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
-import { Text } from "~/primitives/text";
-import { TextSkeleton } from "~/primitives/text";
+import { Text, TextSkeleton } from "~/primitives/text";
 import { LoadableText } from "./loadable_text";
 import { SectionHeader } from "./section-header";
 
@@ -65,6 +64,7 @@ export const ExternalMetadataDescriptionSection = ({
 			/>
 			<View style={styles.descriptionContainer}>
 				{externalMetadata?.description === undefined ? (
+					// biome-ignore lint/complexity/noUselessFragments: false positive
 					<>
 						{generateArray(DescriptionLineCount).map((_, idx) => (
 							<TextSkeleton
@@ -101,7 +101,9 @@ export const ExternalMetadataDescriptionSection = ({
 
 export const ExternalMetadataDescription = ({
 	description,
-}: { description: string | undefined }) => {
+}: {
+	description: string | undefined;
+}) => {
 	if (description === undefined) {
 		return (
 			<>
@@ -161,7 +163,9 @@ export const ExternalMetadataSourcesSection = ({
 
 export const ExternalMetadataSourceComponent = ({
 	source,
-}: { source: ExternalMetadataSource | undefined }) => {
+}: {
+	source: ExternalMetadataSource | undefined;
+}) => {
 	const api = useAPI();
 	return (
 		<Pressable

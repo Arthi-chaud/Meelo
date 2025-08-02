@@ -1,9 +1,9 @@
+import { useRouter } from "expo-router";
+import { useCallback, useMemo } from "react";
 import { getAlbum, getCurrentUserStatus } from "@/api/queries";
 import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
-import { useRouter } from "expo-router";
-import { useCallback, useMemo } from "react";
 import type { Action } from "~/actions";
 import { useSetReleaseAsMaster } from "~/actions/master";
 import { ShareAction, useShareCallback } from "~/actions/share";

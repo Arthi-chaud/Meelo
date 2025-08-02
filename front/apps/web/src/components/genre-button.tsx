@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Genre from "@/models/genre";
 import { Chip, Skeleton } from "@mui/material";
 import Link from "next/link";
 import type { ComponentProps } from "react";
+import type Genre from "@/models/genre";
 
 type GenreButtonProps = {
 	genre: Pick<Genre, "name" | "slug"> | undefined;

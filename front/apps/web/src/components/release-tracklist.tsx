@@ -16,22 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Artist from "@/models/artist";
-import type { ReleaseWithRelations } from "@/models/release";
-import type { SongWithRelations } from "@/models/song";
-import type { TrackWithRelations } from "@/models/track";
-import type Tracklist from "@/models/tracklist";
-import type { VideoWithRelations } from "@/models/video";
-import {
-	type TrackState,
-	cursorAtom,
-	playTracksAtom,
-	playlistAtom,
-} from "@/state/player";
-import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/ui/icons";
-import formatArtists from "@/utils/format-artists";
-import formatDuration from "@/utils/format-duration";
-import { generateArray } from "@/utils/gen-list";
 import {
 	Box,
 	Divider,
@@ -51,6 +35,22 @@ import { useAtom, useSetAtom } from "jotai";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { RequireAtLeastOne } from "type-fest";
+import type Artist from "@/models/artist";
+import type { ReleaseWithRelations } from "@/models/release";
+import type { SongWithRelations } from "@/models/song";
+import type { TrackWithRelations } from "@/models/track";
+import type Tracklist from "@/models/tracklist";
+import type { VideoWithRelations } from "@/models/video";
+import {
+	cursorAtom,
+	playlistAtom,
+	playTracksAtom,
+	type TrackState,
+} from "@/state/player";
+import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/ui/icons";
+import formatArtists from "@/utils/format-artists";
+import formatDuration from "@/utils/format-duration";
+import { generateArray } from "@/utils/gen-list";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
 
 type TrackType = TrackWithRelations<"illustration"> &

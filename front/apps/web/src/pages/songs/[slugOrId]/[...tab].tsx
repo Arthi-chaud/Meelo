@@ -17,20 +17,6 @@
  */
 
 import {
-	getGenres,
-	getSong,
-	getSongExternalMetadata,
-	getSongs,
-	getTracks,
-	getVideos,
-} from "@/api/queries";
-import { toTanStackQuery } from "@/api/query";
-import { songTypeToTranslationKey } from "@/models/utils";
-import { playTrackAtom } from "@/state/player";
-import { PlayIcon } from "@/ui/icons";
-import { useAccentColor } from "@/utils/accent-color";
-import { generateArray } from "@/utils/gen-list";
-import {
 	Box,
 	Button,
 	Divider,
@@ -46,6 +32,20 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import {
+	getGenres,
+	getSong,
+	getSongExternalMetadata,
+	getSongs,
+	getTracks,
+	getVideos,
+} from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import { songTypeToTranslationKey } from "@/models/utils";
+import { playTrackAtom } from "@/state/player";
+import { PlayIcon } from "@/ui/icons";
+import { useAccentColor } from "@/utils/accent-color";
+import { generateArray } from "@/utils/gen-list";
 import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import GenreButton from "~/components/genre-button";

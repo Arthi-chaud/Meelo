@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
 import i18next from "i18next";
 import { useAtom, useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
 import { Dropdown } from "~/components/dropdown";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";

@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
-
 import { useTheme } from "@mui/material";
+import type { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
 
 /**
  * Utilitary hook that formats a themed `sx` value

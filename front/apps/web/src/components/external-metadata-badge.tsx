@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { ExternalMetadataSource } from "@/models/external-metadata";
-import { ProviderIcon } from "@/ui/icons";
 import { Box, Button, Skeleton } from "@mui/material";
 import Link from "next/link";
+import type { ExternalMetadataSource } from "@/models/external-metadata";
+import { ProviderIcon } from "@/ui/icons";
 import Illustration from "~/components//illustration";
 
 type ExternalMetadataBadgeProps = {

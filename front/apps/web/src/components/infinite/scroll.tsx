@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as IScroll from "react-infinite-scroller";
 import type { InfiniteQueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
 import { EmptyStateIcon } from "@/ui/icons";
 import { ParentScrollableDivId } from "@/utils/constants";
 import { generateArray } from "@/utils/gen-list";
-import * as IScroll from "react-infinite-scroller";
 import { useInfiniteQuery } from "~/api";
 import { EmptyState, type EmptyStateProps } from "~/components/empty-state";
 

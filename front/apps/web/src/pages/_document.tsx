@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import {
 	DocumentHeadTags,
 	type DocumentHeadTagsProps,
 	documentGetInitialProps,
 } from "@mui/material-nextjs/v14-pagesRouter";
-import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import {
 	type DocumentContext,
 	type DocumentProps,

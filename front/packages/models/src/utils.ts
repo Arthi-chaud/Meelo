@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import * as yup from "yup";
 import type { AlbumType } from "@/models/album";
 import type { VideoType } from "@/models/video";
 import { uncapitalize } from "@/utils/uncapitalize";
-import * as yup from "yup";
 import type { SongType } from "./song";
 
 //
@@ -63,7 +63,6 @@ export function union<TCast extends yup.Maybe<unknown>, C, O>(
 ): yup.MixedSchema<TCast, C, O> {
 	return yup.mixed().test({
 		name: "union",
-		message: "value did not match any schema: ${value}",
 		test(value) {
 			// The real magic
 			return schemas.some((s) => s.isValidSync(value));

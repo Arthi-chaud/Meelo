@@ -1,8 +1,8 @@
-import { getArtists } from "@/api/queries";
-import { ArtistSortingKeys } from "@/models/artist";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getArtists } from "@/api/queries";
+import { ArtistSortingKeys } from "@/models/artist";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,

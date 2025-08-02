@@ -16,19 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { FilterControl } from "@/infinite-controls/filters/control";
-import type { LayoutControl } from "@/infinite-controls/layout";
-import type { SortControl } from "@/infinite-controls/sort";
-import { ItemSize } from "@/models/layout";
-import {
-	AscIcon,
-	CheckIcon,
-	DescIcon,
-	GridIcon,
-	ListIcon,
-	MinusIcon,
-	PlusIcon,
-} from "@/ui/icons";
 import {
 	Button,
 	ButtonGroup,
@@ -44,6 +31,19 @@ import {
 import { deepmerge } from "@mui/utils";
 import { Fragment, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { FilterControl } from "@/infinite-controls/filters/control";
+import type { LayoutControl } from "@/infinite-controls/layout";
+import type { SortControl } from "@/infinite-controls/sort";
+import { ItemSize } from "@/models/layout";
+import {
+	AscIcon,
+	CheckIcon,
+	DescIcon,
+	GridIcon,
+	ListIcon,
+	MinusIcon,
+	PlusIcon,
+} from "@/ui/icons";
 import type Action from "~/components/actions";
 
 // Controls should not maintain state regarding options
@@ -101,7 +101,9 @@ export const Controls = <SortingKey extends string>(props: {
 
 const FilterMenuButton = <FilterKeys extends string>({
 	filter,
-}: { filter: FilterControl<FilterKeys> }) => {
+}: {
+	filter: FilterControl<FilterKeys>;
+}) => {
 	const { t } = useTranslation();
 	return (
 		<MenuButton
@@ -154,7 +156,9 @@ const FilterMenuButton = <FilterKeys extends string>({
 
 const SortMenuButton = <SortingKey extends string>({
 	sort,
-}: { sort: SortControl<SortingKey> }) => {
+}: {
+	sort: SortControl<SortingKey>;
+}) => {
 	const { t } = useTranslation();
 	return (
 		<MenuButton

@@ -16,10 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type API from "@/api";
-import { getUsers } from "@/api/queries";
-import type User from "@/models/user";
-import { DeleteIcon } from "@/ui/icons";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useMutation } from "@tanstack/react-query";
@@ -27,6 +23,10 @@ import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type API from "@/api";
+import { getUsers } from "@/api/queries";
+import type User from "@/models/user";
+import { DeleteIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import AdminGrid from "~/components/admin-grid";
 import { userAtom } from "~/state/user";

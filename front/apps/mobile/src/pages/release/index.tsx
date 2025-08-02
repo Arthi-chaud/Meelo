@@ -1,3 +1,7 @@
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, View, type ViewStyle } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbum,
 	getAlbumExternalMetadata,
@@ -14,10 +18,6 @@ import {
 	useVideos,
 } from "@/ui/pages/release";
 import { generateArray } from "@/utils/gen-list";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { ScrollView, View, type ViewStyle } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { Chip } from "~/components/chip";
@@ -290,7 +290,10 @@ const PostTracklistSections = ({
 const GenreRow = ({
 	genres,
 	style,
-}: { genres: Genre[] | undefined; style?: ViewStyle }) => {
+}: {
+	genres: Genre[] | undefined;
+	style?: ViewStyle;
+}) => {
 	const { t } = useTranslation();
 	if (genres?.length === 0) {
 		return null;
