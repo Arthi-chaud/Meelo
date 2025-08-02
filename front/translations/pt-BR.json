@@ -1,6 +1,7 @@
 {
 	"actions": {
 		"addToPlaylist": {
+			"label": "Adicionar a playlist",
 			"modalTitle": "Selecione a playlist"
 		},
 		"album": {
@@ -21,7 +22,8 @@
 			"warning": "Você está prestes a remover um usuário. Isso é irreversível."
 		},
 		"download": {
-			"label": "Baixar"
+			"label": "Baixar",
+			"warning": "É proibido baixar material protegido por direitos autorais que não lhe pertença. Prossiga se, e somente se, você for o proprietário do conteúdo original."
 		},
 		"goBackHome": "Voltar para o Início",
 		"goToArtist": "Ir para o Artista",
@@ -72,22 +74,30 @@
 		"showOnlyExclusiveTracks": "Ver apenas faixas exclusivas"
 	},
 	"albumType": {
-		"compilation": "Compilação",
-		"compilation_plural": "Compilações",
-		"ep": "EP",
-		"ep_plural": "EPs",
-		"liveRecording": "Gravação ao vivo",
-		"liveRecording_plural": "Álbuns ao vivo",
-		"remixAlbum": "Álbum remix",
-		"remixAlbum_plural": "Remixagens",
-		"single": "Divulgação",
-		"single_plural": "Divulgações",
-		"soundtrack": "Trilha sonora",
-		"soundtrack_plural": "Álbuns de trilha sonora",
-		"studioRecording": "Gravação de estúdio",
-		"studioRecording_plural": "Álbuns de estúdio",
-		"videoAlbum": "Álbum de vídeo",
-		"videoAlbum_plural": "Álbuns de vídeo"
+		"compilation_0": "Compilação",
+		"compilation_1": "Compilações",
+		"compilation_2": "Compilações",
+		"ep_0": "EP",
+		"ep_1": "EPs",
+		"ep_2": "EPs",
+		"liveRecording_0": "Gravação ao vivo",
+		"liveRecording_1": "Álbuns ao vivo",
+		"liveRecording_2": "Álbuns ao vivo",
+		"remixAlbum_0": "Álbum remix",
+		"remixAlbum_1": "Remixagens",
+		"remixAlbum_2": "Remixagens",
+		"single_0": "Divulgação",
+		"single_1": "Divulgações",
+		"single_2": "Divulgações",
+		"soundtrack_0": "Trilha sonora",
+		"soundtrack_1": "Álbuns de trilha sonora",
+		"soundtrack_2": "Álbuns de trilha sonora",
+		"studioRecording_0": "Gravação de estúdio",
+		"studioRecording_1": "Álbuns de estúdio",
+		"studioRecording_2": "Álbuns de estúdio",
+		"videoAlbum_0": "Álbum de vídeo",
+		"videoAlbum_1": "Álbuns de vídeo",
+		"videoAlbum_2": "Álbuns de vídeo"
 	},
 	"artist": {
 		"appearsOn": "Aparece em",
@@ -223,6 +233,201 @@
 		"goToSettingsPage": "Ir para Configurações",
 		"modalTitle": "Atalhos de teclado",
 		"openClosePlayer": "Abrir / Fechar reprodutor",
-		"openModalShortcutDescription": "Abrir / fechar este modal"
+		"openModalShortcutDescription": "Abrir / fechar este modal",
+		"playPauseWhenExpanded": "Reproduzir / Pausar (Quando o player estiver aberto)"
+	},
+	"misc": {
+		"loading": "Carregando",
+		"no": "Não",
+		"yes": "Sim"
+	},
+	"models": {
+		"album_0": "Álbum",
+		"album_1": "Álbuns",
+		"album_2": "Álbuns",
+		"artist_0": "Artista",
+		"artist_1": "Artistas",
+		"artist_2": "Artistas",
+		"disc": "Disco",
+		"externalLink_plural": "Links Externos",
+		"genre_plural": "Gêneros",
+		"library_plural": "Bibliotecas",
+		"lyrics": "Letras",
+		"playlist_0": "Lista de reprodução",
+		"playlist_1": "Listas de reprodução",
+		"playlist_2": "Listas de reprodução",
+		"song_0": "Música",
+		"song_1": "Músicas",
+		"song_2": "Músicas",
+		"track_plural": "Faixas",
+		"user_plural": "Usuários",
+		"versions": "Versões",
+		"video_0": "Vídeo",
+		"video_1": "Vídeos",
+		"video_2": "Vídeos"
+	},
+	"nav": {
+		"browse": "Navegar",
+		"compilations": "Compilações",
+		"home": "Início",
+		"more": "Mais",
+		"musicVideos": "Vídeoclipes",
+		"search": "Buscar",
+		"settings": "Configurações"
+	},
+	"player": {
+		"loadNextSongs": "Carregar próximas músicas",
+		"saveQueueAsPlaylist": "Salvar fila como lista de reprodução"
+	},
+	"search": {
+		"all": "Tudo"
+	},
+	"settings": {
+		"interface": "Interface",
+		"libraries": {
+			"nameColumn": "Nome",
+			"tasks": {
+				"current": "Atual",
+				"label": "Tarefas",
+				"none": "Nada",
+				"pending": "Pendente"
+			}
+		},
+		"ui": {
+			"autoMode": "Modo Automático",
+			"colorScheme": "Tema",
+			"crossfade": "Transição suave",
+			"external": {
+				"encounteredABug": "Você encontrou um bug?",
+				"enjoyingTheProject": "Curtiu o projeto?",
+				"openAnIssue": "Abra uma \"issue\" no GitHub!",
+				"readTheDoc": "Leia a documentação de usuário",
+				"starOnGithub": "Curta Meelo no GitHub!"
+			},
+			"keyboardBindings": "Atalhos de teclado",
+			"lang": {
+				"de": "Alemão",
+				"en": "Inglês",
+				"fr": "Francês",
+				"id": "Indonésio",
+				"it": "Italiano",
+				"pt_br": "Português (Brasil)",
+				"ru": "Russo"
+			},
+			"language": "Idioma",
+			"notifications": "Notificações",
+			"notifyOnTrackChange": "Notificar ao mudar de faixa",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Acesse a lista de atalhos de teclado digitando '?'",
+			"permissions": "Permissões",
+			"playback": "Reprodução",
+			"project": "Projeto",
+			"scrobblers": {
+				"connect_scrobblers": "Conectar Scrobblers",
+				"header": "Scrobblers",
+				"no_scrobblers_enabled": "Nenhum serviço de scrobbling disponível"
+			},
+			"useDarkTheme": "Usar tema escuro",
+			"useSystemLanguage": "Usar idioma do sistema",
+			"useSystemTheme": "Usar tema do sistema",
+			"versions": "Versões"
+		},
+		"users": {
+			"admin": "Administrador",
+			"enabled": "Ativado",
+			"nameColumn": "Nome",
+			"you": "Você"
+		}
+	},
+	"song": {
+		"infoTab": "Informações",
+		"songType": "Tipo de música"
+	},
+	"songType": {
+		"acappella": "À capela",
+		"acoustic": "Acústico",
+		"clean": "Limpar",
+		"demo": "Demonstração",
+		"edit": "Editar",
+		"instrumental": "Instrumental",
+		"live": "Ao vivo",
+		"medley": "Medley",
+		"nonMusic": "Não musical",
+		"original": "Original",
+		"remix": "Remixagem",
+		"unknown": "Desconhecido"
+	},
+	"tasks": {
+		"clean": "Limpar",
+		"cleanLibraries": "Limpar bibliotecas",
+		"refresh": "Recarregar",
+		"refreshMetadata": "Recarregar metadados",
+		"refreshMetadataForm": {
+			"forceLabel": "Forçar atualização se os arquivos não foram alterados"
+		},
+		"scan": "Escanear",
+		"scanLibraries": "Escanear bibliotecas"
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": "Parabéns! Sua conta Meelo foi criada. Agora você só precisa esperar que o administrador habilite sua conta"
+		},
+		"leaveWillStopPlaybackAlert": "Sair do site interromperá a reprodução.",
+		"library": {
+			"created": "Biblioteca criada",
+			"creationFail": "Falha ao criar biblioteca",
+			"deleted": "Biblioteca removida",
+			"deletionFail": "Falha ao remover bibliotecas",
+			"deletionRunning": "Removendo bibliotecas…",
+			"loadFail": "Bibliotecas não puderam ser carregadas",
+			"updated": "Biblioteca atualizada"
+		},
+		"linkCopied": "Link copiado para a área de transferência",
+		"player": {
+			"networkError": "Parece haver alguns problemas de rede…",
+			"playbackError": "O formato da faixa não é suportado por este navegador. Ignorando…"
+		},
+		"playlist": {
+			"itemDeletionSuccess": "Remoção bem sucedida",
+			"reorderFail": "Falha ao reordenar lista de reprodução",
+			"reorderSuccess": "Lista de reprodução reordenada!"
+		},
+		"refreshMetadata": {
+			"failed": "Uêpaa… Falha na atualização dos metadados",
+			"started": "Atualizando metadados… (Você pode precisar atualizar a página)"
+		},
+		"scrobblers": {
+			"linking": "Vinculando conta...",
+			"linkingListenBrainzFailed": "Não foi possível vincular à conta ListenBrainz",
+			"linkingSuccessful": "ListenBrainz vinculado com sucesso",
+			"unlinking": "Desvinculando conta...",
+			"unlinkingFailed": "Não foi possível desvincular o Scrobbler",
+			"unlinkingSuccessful": "Scrobbler desvinculado com sucesso"
+		},
+		"tracksUpdated": "Faixas atualizadas com sucesso",
+		"users": {
+			"deleted": "Usuário removido",
+			"deletionFail": "Falha ao remover usuário",
+			"nowAdmin": "O usuário agora é um administrador e pode executar tarefas administrativas",
+			"nowDisabled": "O usuário está desabilitado",
+			"nowEnabled": "O usuário foi ativado",
+			"nowNotAdmin": "O usuário não é mais um administrador",
+			"updateFail": "Falha ao atualizar usuário"
+		}
+	},
+	"track": {
+		"bonusTrack": "Faixa Bônus",
+		"mixed": "Misturado",
+		"remastered": "Remasterizado"
+	},
+	"videoType": {
+		"advert": "Anúncio",
+		"behindTheScenes": "Nos bastidores",
+		"documentary": "Documentário",
+		"interview": "Entrevista",
+		"live": "Ao vivo",
+		"lyricsVideo": "Vídeo com a letra",
+		"musicVideo": "Videoclipe",
+		"other": "Outro",
+		"photoGallery": "Galeria de fotos"
 	}
 }
