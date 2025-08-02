@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import { AlbumIcon } from "@/ui/icons";
-import { useTranslation } from "react-i18next";
 import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
 import Illustration from "~/components/illustration";
 import Tile from "~/components/tile";

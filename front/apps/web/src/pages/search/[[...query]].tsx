@@ -16,6 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
+import type { NextPageContext } from "next";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { GetPropsTypesFrom, Page } from "ssr";
 import {
 	getAlbums,
 	getArtists,
@@ -36,14 +44,6 @@ import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
 import { SearchIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
-import { Box, InputAdornment, Tab, Tabs, TextField } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
-import { useSetAtom } from "jotai";
-import type { NextPageContext } from "next";
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import type { GetPropsTypesFrom, Page } from "ssr";
 import { useAPI, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
 import InfiniteList from "~/components/infinite/list";
@@ -143,7 +143,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					});
 				}, 500);
 			} catch (error) {
-				// biome-ignore lint/suspicious/noConsole: <explanation>
+				// biome-ignore lint/suspicious/noConsole: debug
 				console.error(error);
 			}
 		},
@@ -291,9 +291,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								video={item.video}
 								subtitles={[
 									async (video) =>
-										`${t("models.video")} • ${formatArtists(
-											video.artist,
-										)}`,
+										`${t("models.video")} • ${formatArtists(video.artist)}`,
 								]}
 							/>
 						) : (

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { RequireExactlyOne } from "type-fest";
 import type { SongWithRelations } from "@/models/song";
 import formatArtists from "@/utils/format-artists";
-import type { RequireExactlyOne } from "type-fest";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
 import Illustration from "~/components/illustration";
 import RelationPageHeader from "~/components/relation-page-header";
@@ -42,7 +42,7 @@ const SongRelationPageHeader = ({ song }: SongRelationPageHeaderProps) => {
 			secondTitle={
 				song ? formatArtists(song.artist, song.featuring) : undefined
 			}
-			trailing={song ? <SongContextualMenu song={song} /> : <></>}
+			trailing={song ? <SongContextualMenu song={song} /> : undefined}
 		/>
 	);
 };

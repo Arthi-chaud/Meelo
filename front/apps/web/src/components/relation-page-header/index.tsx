@@ -26,58 +26,56 @@ type RelationHeaderProps = {
 };
 const RelationPageHeader = (props: RelationHeaderProps) => {
 	return (
-		<>
-			<Grid
-				container
-				spacing={2}
-				flexWrap={"nowrap"}
-				sx={{ width: "inherit", height: "auto" }}
-			>
-				<Grid size={{ xs: 4, sm: 3, md: 2, xl: 1 }} sx={{ margin: 2 }}>
-					{props.illustration}
-				</Grid>
-				<Grid size="grow">
-					<Stack
-						spacing={2}
-						sx={{ height: "100%", justifyContent: "center" }}
-					>
+		<Grid
+			container
+			spacing={2}
+			flexWrap={"nowrap"}
+			sx={{ width: "inherit", height: "auto" }}
+		>
+			<Grid size={{ xs: 4, sm: 3, md: 2, xl: 1 }} sx={{ margin: 2 }}>
+				{props.illustration}
+			</Grid>
+			<Grid size="grow">
+				<Stack
+					spacing={2}
+					sx={{ height: "100%", justifyContent: "center" }}
+				>
+					<Box>
+						<Typography
+							variant="h4"
+							sx={{
+								fontWeight: "bold",
+								WebkitLineClamp: 2,
+								display: "-webkit-box",
+								WebkitBoxOrient: "vertical",
+							}}
+						>
+							{props.title ?? <Skeleton width={"50%"} />}
+						</Typography>
+					</Box>
+					{props.secondTitle !== null && (
 						<Box>
 							<Typography
-								variant="h4"
+								variant="h5"
 								sx={{
-									fontWeight: "bold",
-									WebkitLineClamp: 2,
+									WebkitLineClamp: 3,
 									display: "-webkit-box",
 									WebkitBoxOrient: "vertical",
 								}}
 							>
-								{props.title ?? <Skeleton width={"50%"} />}
+								{props.secondTitle ?? <Skeleton />}
 							</Typography>
 						</Box>
-						{props.secondTitle !== null && (
-							<Box>
-								<Typography
-									variant="h5"
-									sx={{
-										WebkitLineClamp: 3,
-										display: "-webkit-box",
-										WebkitBoxOrient: "vertical",
-									}}
-								>
-									{props.secondTitle ?? <Skeleton />}
-								</Typography>
-							</Box>
-						)}
-					</Stack>
-				</Grid>
-				<Grid
-					size={{ xs: 2, sm: 1 }}
-					sx={{ alignItems: "center", display: "flex" }}
-				>
-					{props.trailing}
-				</Grid>
+					)}
+				</Stack>
 			</Grid>
-		</>
+			<Grid
+				size={{ xs: 2, sm: 1 }}
+				sx={{ alignItems: "center", display: "flex" }}
+			>
+				{props.trailing}
+			</Grid>
+		</Grid>
 	);
 };
 

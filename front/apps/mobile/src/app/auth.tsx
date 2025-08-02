@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ErrorIcon } from "@/ui/icons";
 import { router } from "expo-router";
 import { useSetAtom } from "jotai";
 import { useState } from "react";
@@ -30,6 +29,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
+import { ErrorIcon } from "@/ui/icons";
 import { getAPI_ } from "~/api";
 import { Banner } from "~/components/meelo";
 import { Button } from "~/primitives/button";

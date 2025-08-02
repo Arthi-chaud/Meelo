@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContextualMenuIcon } from "@/ui/icons";
 import {
 	Box,
 	Dialog,
@@ -30,6 +29,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ContextualMenuIcon } from "@/ui/icons";
 import type Action from "~/components/actions";
 
 export type ContextualMenuProps = {

@@ -1,8 +1,8 @@
-import { CheckIcon, type Icon as IconType } from "@/ui/icons";
 import { type ComponentProps, useMemo } from "react";
 import { View } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { StyleSheet } from "react-native-unistyles";
+import { CheckIcon, type Icon as IconType } from "@/ui/icons";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";

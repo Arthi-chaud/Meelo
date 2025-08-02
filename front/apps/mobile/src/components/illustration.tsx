@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type IllustrationModel from "@/models/illustration";
-import type { IllustrationQuality } from "@/models/illustration";
-import type { Icon } from "@/ui/icons";
 import { useEffect, useMemo, useState } from "react";
 import { View, type ViewStyle } from "react-native";
 import { Blurhash } from "react-native-blurhash";
 import Image from "react-native-fast-image";
 import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import type IllustrationModel from "@/models/illustration";
+import type { IllustrationQuality } from "@/models/illustration";
+import type { Icon } from "@/ui/icons";
 import { useAPI } from "~/api";
 
 type Props = {

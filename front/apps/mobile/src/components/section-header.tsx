@@ -1,9 +1,9 @@
-import { MoreIcon } from "@/ui/icons";
 import { type Href, useRouter } from "expo-router";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { MoreIcon } from "@/ui/icons";
 import { Button } from "~/primitives/button";
 import { Pressable } from "~/primitives/pressable";
 import { LoadableText } from "./loadable_text";

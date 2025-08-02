@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Box, Button, Grid } from "@mui/material";
+import type { UseQueryResult } from "@tanstack/react-query";
+import Link from "next/link";
+import { type ComponentProps, Fragment } from "react";
+import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
@@ -24,11 +29,6 @@ import type { VideoWithRelations } from "@/models/video";
 import { MoreIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
 import { generateArray } from "@/utils/gen-list";
-import { Box, Button, Grid } from "@mui/material";
-import type { UseQueryResult } from "@tanstack/react-query";
-import Link from "next/link";
-import { type ComponentProps, Fragment } from "react";
-import { useTranslation } from "react-i18next";
 import type { useInfiniteQuery } from "~/api";
 import Fade from "~/components/fade";
 import AlbumTile from "~/components/tile/resource/album";
@@ -118,7 +118,9 @@ export const AlbumListPageSection = (
 	props: Omit<
 		PageSectionProps<AlbumWithRelations<"illustration">>,
 		"child"
-	> & { subtitleIs: "artistName" | "releaseYear" },
+	> & {
+		subtitleIs: "artistName" | "releaseYear";
+	},
 ) => {
 	return (
 		<ListPageSection

@@ -1,10 +1,8 @@
-import { ResourceNotFound } from "@/models/exceptions";
-import { AppName, UserAccessTokenStorageKey } from "@/utils/constants";
 import {
+	dehydrate,
 	HydrationBoundary as Hydrate,
 	QueryClient,
 	QueryClientProvider,
-	dehydrate,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ConfirmProvider } from "material-ui-confirm";
@@ -14,12 +12,19 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import toast from "react-hot-toast";
+import { ResourceNotFound } from "@/models/exceptions";
+import { AppName, UserAccessTokenStorageKey } from "@/utils/constants";
 import AuthenticationWall from "~/components/authentication/wall";
 import Toaster from "~/components/toaster";
 import PageNotFound from "./404";
 import InternalError from "./500";
 import "core-js/actual";
 import "~/theme/styles.css";
+import type { EmotionCache } from "@emotion/react";
+import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
+import { deepmerge } from "@mui/utils";
+import { Provider } from "jotai";
+import type { Page } from "ssr";
 import { getCurrentUserStatus, getLibraries } from "@/api/queries";
 import {
 	DefaultQueryOptions,
@@ -27,11 +32,6 @@ import {
 	toTanStackQuery,
 } from "@/api/query";
 import { store } from "@/state/store";
-import type { EmotionCache } from "@emotion/react";
-import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
-import { deepmerge } from "@mui/utils";
-import { Provider } from "jotai";
-import type { Page } from "ssr";
 import { getAPI_ } from "~/api";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
 import Scaffold from "~/components/scaffold";

@@ -18,10 +18,10 @@
 
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import {
-	ThemeProvider as MUIThemeProvider,
 	createTheme,
+	ThemeProvider as MUIThemeProvider,
+	responsiveFontSizes,
 } from "@mui/material/styles";
-import { responsiveFontSizes } from "@mui/material/styles";
 import Font, { FontVariable } from "./font";
 import Styles from "./style";
 import { DarkTheme, GlobalTheme, LightTheme } from "./theme";

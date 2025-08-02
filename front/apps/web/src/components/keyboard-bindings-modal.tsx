@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CloseIcon } from "@/ui/icons";
 import {
 	Dialog,
 	DialogContent,
@@ -28,6 +27,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CloseIcon } from "@/ui/icons";
 import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,

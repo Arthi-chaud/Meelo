@@ -1,6 +1,6 @@
+import { useCallback } from "react";
 import { getCurrentUserStatus } from "@/api/queries";
 import type { VideoWithRelations } from "@/models/video";
-import { useCallback } from "react";
 import {
 	ChangeType,
 	GoToArtist,

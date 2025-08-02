@@ -16,9 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { QueryClient } from "@/api/hook";
-import { store } from "@/state/store";
-import { UpdateIllustrationIcon } from "@/ui/icons";
 import {
 	Button,
 	DialogActions,
@@ -29,6 +26,9 @@ import { useMutation } from "@tanstack/react-query";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type { QueryClient } from "@/api/hook";
+import { store } from "@/state/store";
+import { UpdateIllustrationIcon } from "@/ui/icons";
 import { userAtom } from "~/state/user";
 import type Action from "./";
 

@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { IconButton, Typography, type TypographyProps } from "@mui/material";
+import type { ComponentProps } from "react";
 import { getSong } from "@/api/queries";
 import type Artist from "@/models/artist";
 import type { TrackWithRelations } from "@/models/track";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
-import { IconButton, Typography, type TypographyProps } from "@mui/material";
-import type { ComponentProps } from "react";
 import type PlayerSlider from "./slider";
 
 export const parentSongQuery = (id: number) =>

@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Box, Button, Slide, Tooltip } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { InfiniteQueryFn } from "@/api/query";
 import type { IllustratedResource } from "@/models/illustration";
 import type { ItemSize } from "@/models/layout";
 import type Resource from "@/models/resource";
 import { GoBackTopIcon } from "@/ui/icons";
 import { ParentScrollableDivId } from "@/utils/constants";
-import { Box, Button, Slide, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import type { EmptyStateProps } from "~/components/empty-state";
 import Fade from "~/components/fade";
 import InfiniteGrid from "./grid";

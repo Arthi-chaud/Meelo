@@ -1,6 +1,6 @@
-import { ShareIcon } from "@/ui/icons";
 import { useCallback } from "react";
 import { Share } from "react-native";
+import { ShareIcon } from "@/ui/icons";
 import type { Action } from "~/actions";
 import { useAPI } from "~/api";
 

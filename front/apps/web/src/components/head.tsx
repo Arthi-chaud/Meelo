@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { AppName } from "@/utils/constants";
 import NextHead from "next/head";
+import { AppName } from "@/utils/constants";
 
 export const Head = ({
 	title,

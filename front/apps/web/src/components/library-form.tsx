@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Library from "@/models/library";
 import {
 	Button,
 	DialogActions,
@@ -26,6 +25,7 @@ import {
 } from "@mui/material";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useTranslation } from "react-i18next";
+import type Library from "@/models/library";
 
 type LibraryFormFields = Pick<Library, "name" | "path">;
 

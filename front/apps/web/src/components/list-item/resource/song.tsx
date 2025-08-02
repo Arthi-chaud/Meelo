@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useEffect, useState } from "react";
 import type { SongWithRelations } from "@/models/song";
 import type { SongGroupWithRelations } from "@/models/song-group";
 import { SongIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
-import { useEffect, useState } from "react";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";

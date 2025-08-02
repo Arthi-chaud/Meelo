@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Chip, Grid } from "@mui/material";
+import type { useConfirm } from "material-ui-confirm";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import type { QueryClient } from "@/api/hook";
 import type Album from "@/models/album";
 import { AlbumType } from "@/models/album";
@@ -30,11 +35,6 @@ import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { store } from "@/state/store";
 import { EditIcon } from "@/ui/icons";
-import { Chip, Grid } from "@mui/material";
-import type { useConfirm } from "material-ui-confirm";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
 import { userAtom } from "~/state/user";
 import type Action from "./";
 
@@ -48,24 +48,20 @@ const ResourceTypeForm = <Enum extends string>(props: {
 	const { t } = useTranslation();
 
 	return (
-		<>
-			<Grid container spacing={2} justifyContent="center">
-				{props.values.map((type) => (
-					<Grid key={type}>
-						<Chip
-							label={t(props.translate(type))}
-							variant={
-								type === currentType ? "filled" : "outlined"
-							}
-							onClick={() => {
-								setType(type);
-								props.onSelect(type);
-							}}
-						/>
-					</Grid>
-				))}
-			</Grid>
-		</>
+		<Grid container spacing={2} justifyContent="center">
+			{props.values.map((type) => (
+				<Grid key={type}>
+					<Chip
+						label={t(props.translate(type))}
+						variant={type === currentType ? "filled" : "outlined"}
+						onClick={() => {
+							setType(type);
+							props.onSelect(type);
+						}}
+					/>
+				</Grid>
+			))}
+		</Grid>
 	);
 };
 

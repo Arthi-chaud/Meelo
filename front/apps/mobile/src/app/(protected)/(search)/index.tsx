@@ -16,6 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useMutation } from "@tanstack/react-query";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { getSearchHistory, searchAll } from "@/api/queries";
 import {
 	type InfiniteQuery,
@@ -26,10 +30,6 @@ import {
 import type Illustration from "@/models/illustration";
 import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
-import { useMutation } from "@tanstack/react-query";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
 import { useAPI, useQueryClient } from "~/api";
 import { InfiniteView } from "~/components/infinite/view";
 import { SearchResultItem } from "~/components/item/resource/search-result";
@@ -74,7 +74,7 @@ export default function SearchView() {
 					});
 				}, 500);
 			} catch (error) {
-				// biome-ignore lint/suspicious/noConsole: <explanation>
+				// biome-ignore lint/suspicious/noConsole: debug
 				console.error(error);
 			}
 		},

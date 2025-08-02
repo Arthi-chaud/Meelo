@@ -1,5 +1,5 @@
-import type { IconProps, Icon as IconType } from "@/ui/icons";
 import { withUnistyles } from "react-native-unistyles";
+import type { IconProps, Icon as IconType } from "@/ui/icons";
 
 type IconStyle = { color: string; size?: number } & IconProps["style"];
 

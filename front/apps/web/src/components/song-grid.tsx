@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Grid } from "@mui/material";
+import { useSetAtom } from "jotai";
+import { useCallback } from "react";
 import type { SongWithRelations } from "@/models/song";
 import { playTracksAtom } from "@/state/player";
 import { SongIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
-import { Grid } from "@mui/material";
-import { useSetAtom } from "jotai";
-import { useCallback } from "react";
 import SongContextualMenu from "~/components/contextual-menu/resource/song";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRouter } from "next/router";
+import { useState } from "react";
 import type { QueryClient } from "@/api/hook";
 import { type InfiniteQuery, transformPage } from "@/api/query";
 import {
@@ -30,16 +32,14 @@ import { playFromInfiniteQuery } from "@/state/player";
 import { store } from "@/state/store";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
-import { useRouter } from "next/router";
-import { useState } from "react";
 import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
 	useLibraryFiltersControl,
+	useTypeFilterControl,
 	useTypeFiltersControl,
 } from "~/components/infinite/controls/filters";
-import { useTypeFilterControl } from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";

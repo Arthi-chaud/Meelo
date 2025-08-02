@@ -1,7 +1,7 @@
+import { useCallback } from "react";
 import { getCurrentUserStatus } from "@/api/queries";
 import type { SongWithRelations } from "@/models/song";
 import formatArtists from "@/utils/format-artists";
-import { useCallback } from "react";
 import {
 	ChangeType,
 	GoToArtist,

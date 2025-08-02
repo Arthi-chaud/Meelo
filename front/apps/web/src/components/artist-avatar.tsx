@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type IllustrationModel from "@/models/illustration";
-import { ArtistIcon } from "@/ui/icons";
 import { Avatar } from "@mui/material";
 import type { ComponentProps } from "react";
+import type IllustrationModel from "@/models/illustration";
+import { ArtistIcon } from "@/ui/icons";
 import Illustration from "~/components/illustration";
 
 const ArtistAvatar = (props: {

@@ -1,5 +1,5 @@
-import type { ArtistWithRelations } from "@/models/artist";
 import type { ComponentProps } from "react";
+import type { ArtistWithRelations } from "@/models/artist";
 import { useArtistContextMenu } from "~/components/context-menu/resource/artist";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";

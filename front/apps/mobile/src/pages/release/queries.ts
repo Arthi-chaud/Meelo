@@ -2,8 +2,8 @@ import type API from "@/api";
 import {
 	getAlbums,
 	getArtists,
-	getReleaseTracklist,
 	getReleases,
+	getReleaseTracklist,
 	getSongs,
 	getVideos,
 } from "@/api/queries";

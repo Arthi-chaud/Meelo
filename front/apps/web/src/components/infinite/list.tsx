@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { IllustratedResource } from "@/models/illustration";
-import type Resource from "@/models/resource";
 import { Divider, List } from "@mui/material";
 import { Fragment } from "react";
+import type { IllustratedResource } from "@/models/illustration";
+import type Resource from "@/models/resource";
 import { useGradientBackground } from "~/components/gradient-background";
 import InfiniteScroll from "./scroll";
 

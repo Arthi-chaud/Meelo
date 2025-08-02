@@ -16,12 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { QueryClient } from "@/api/hook";
-import { getSongs } from "@/api/queries";
-import type { InfiniteQueryFn } from "@/api/query";
-import type { Song, SongWithRelations } from "@/models/song";
-import type { TrackWithRelations } from "@/models/track";
-import { MergeIcon, SongIcon } from "@/ui/icons";
 import {
 	Button,
 	Dialog,
@@ -34,10 +28,16 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type { QueryClient } from "@/api/hook";
+import { getSongs } from "@/api/queries";
+import type { InfiniteQueryFn } from "@/api/query";
+import type { Song, SongWithRelations } from "@/models/song";
+import type { TrackWithRelations } from "@/models/track";
+import { MergeIcon, SongIcon } from "@/ui/icons";
 import ListItem from "~/components/list-item";
-import type Action from ".";
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/list";
+import type Action from ".";
 
 export const MergeSongAction = (
 	song: Song,

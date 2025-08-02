@@ -17,19 +17,6 @@
  */
 
 import {
-	getScannerVersion,
-	getScrobblerStatus,
-	getSettings,
-} from "@/api/queries";
-import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
-import {
-	BookIcon,
-	DeleteIcon,
-	MovingStarIcon,
-	OpenExternalIcon,
-	WarningIcon,
-} from "@/ui/icons";
-import {
 	Box,
 	Button,
 	Checkbox,
@@ -54,6 +41,19 @@ import { Fragment, useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
+import {
+	getScannerVersion,
+	getScrobblerStatus,
+	getSettings,
+} from "@/api/queries";
+import { type Scrobbler, Scrobblers } from "@/models/scrobblers";
+import {
+	BookIcon,
+	DeleteIcon,
+	MovingStarIcon,
+	OpenExternalIcon,
+	WarningIcon,
+} from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n";
@@ -361,6 +361,7 @@ const ScrobblersSection = () => {
 						<Skeleton width={"50px"} />
 					</Button>
 				) : anyScrobblersIsEnabled ? (
+					// biome-ignore lint/complexity/noUselessFragments: false positive?
 					<>
 						{Scrobblers.map(
 							(scrobbler) =>

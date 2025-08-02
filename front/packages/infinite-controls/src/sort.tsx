@@ -1,5 +1,5 @@
-import type { Order } from "@/models/sorting";
 import { useState } from "react";
+import type { Order } from "@/models/sorting";
 
 export type SortControl<SortingKey extends string> = {
 	formatItem: (k: SortingKey) => TranslationKey;

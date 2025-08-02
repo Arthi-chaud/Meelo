@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type User from "@/models/user";
-import { UserAccessTokenStorageKey } from "@/utils/constants";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { atom } from "jotai";
+import type User from "@/models/user";
+import { UserAccessTokenStorageKey } from "@/utils/constants";
 
 export const userAtom = atom<User | undefined>();
 

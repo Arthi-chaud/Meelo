@@ -1,9 +1,10 @@
+import { type ComponentProps, useMemo } from "react";
 import type { VideoWithRelations } from "@/models/video";
 import formatDuration from "@/utils/format-duration";
-import { type ComponentProps, useMemo } from "react";
 import { useVideoContextMenu } from "~/components/context-menu/resource/video";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";
+
 type Props = {
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 	formatSubtitle?: (s: string) => string;

@@ -16,10 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type IllustrationModel from "@/models/illustration";
-import { TrackIcon } from "@/ui/icons";
-import { useAccentColor } from "@/utils/accent-color";
-import formatArtists from "@/utils/format-artists";
 import {
 	Box,
 	type BoxProps,
@@ -30,6 +26,10 @@ import {
 	useTheme,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import type IllustrationModel from "@/models/illustration";
+import { TrackIcon } from "@/ui/icons";
+import { useAccentColor } from "@/utils/accent-color";
+import formatArtists from "@/utils/format-artists";
 import { useQuery } from "~/api";
 import Illustration from "~/components/illustration";
 import { useThemedSxValue } from "~/utils/themed-sx-value";
@@ -37,9 +37,9 @@ import {
 	PlayButton,
 	type PlayerControlsProps,
 	PreviousButton,
-	SkipButton,
 	parentSongQuery,
 	playerTextStyle,
+	SkipButton,
 } from "./common";
 
 const ProgressBar = ({

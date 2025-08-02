@@ -17,6 +17,26 @@
  */
 
 import {
+	Box,
+	Button,
+	Container,
+	Dialog,
+	Divider,
+	Grid,
+	IconButton,
+	Skeleton,
+	Stack,
+	Typography,
+	useTheme,
+} from "@mui/material";
+import { useAtom, useSetAtom } from "jotai";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { type LegacyRef, useCallback, useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import {
 	cursorAtom,
 	infiniteQueryAtom,
 	loadNextQueuePageAtom,
@@ -38,26 +58,6 @@ import {
 } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
-import {
-	Box,
-	Button,
-	Container,
-	Dialog,
-	Divider,
-	Grid,
-	IconButton,
-	Skeleton,
-	Stack,
-	Typography,
-	useTheme,
-} from "@mui/material";
-import { useAtom, useSetAtom } from "jotai";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { type LegacyRef, useCallback, useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "~/api";
 import { CreatePlaylistAction } from "~/components/actions/playlist";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
@@ -67,9 +67,9 @@ import {
 	PlayButton,
 	type PlayerControlsProps,
 	PreviousButton,
-	SkipButton,
 	parentSongQuery,
 	playerTextStyle,
+	SkipButton,
 } from "./common";
 import { LyricsComponent } from "./lyrics";
 import PlayerSlider from "./slider";
@@ -162,33 +162,29 @@ export const ExpandedPlayerControls = (
 					}}
 				>
 					{selectedTab !== "player" && props.track && props.artist ? (
-						<>
-							<Stack
-								sx={{
-									justifyContent: "center",
-									alignItems: "center",
-								}}
+						<Stack
+							sx={{
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<Typography
+								variant="h6"
+								sx={{ textAlign: "center" }}
 							>
-								<Typography
-									variant="h6"
-									sx={{ textAlign: "center" }}
-								>
-									{props.track.name}
-								</Typography>
-								<Typography
-									variant="body1"
-									sx={{ textAlign: "center" }}
-								>
-									{formatArtists(
-										props.artist,
-										parentSong.data?.featuring,
-									)}
-								</Typography>
-							</Stack>
-						</>
-					) : (
-						<></>
-					)}
+								{props.track.name}
+							</Typography>
+							<Typography
+								variant="body1"
+								sx={{ textAlign: "center" }}
+							>
+								{formatArtists(
+									props.artist,
+									parentSong.data?.featuring,
+								)}
+							</Typography>
+						</Stack>
+					) : undefined}
 				</Box>
 				<IconButton onClick={() => props.onExpand(false)}>
 					<CloseIcon />
@@ -224,7 +220,6 @@ export const ExpandedPlayerControls = (
 				>
 					{props.track?.type === "Video" ? (
 						// biome-ignore lint/a11y/useMediaCaption: No caption available
-						// biome-ignore lint/a11y/useKeyWithClickEvents: TODO?
 						<video
 							playsInline
 							id="videoPlayer"

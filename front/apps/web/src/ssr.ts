@@ -16,11 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
 import type { ComponentType } from "react";
-
 import type { InfiniteQuery, Query } from "@/api/query";
-import type { QueryClient } from "@tanstack/react-query";
 
 type PromiseOr<T> = T | Promise<T>;
 

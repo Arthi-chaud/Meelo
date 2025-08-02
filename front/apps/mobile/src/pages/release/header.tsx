@@ -1,13 +1,13 @@
-import { getAlbumExternalMetadata } from "@/api/queries";
-import type { AlbumWithRelations } from "@/models/album";
-import type { ReleaseWithRelations } from "@/models/release";
-import { formatReleaseDate, useReleaseDate } from "@/ui/pages/release";
-import formatDuration from "@/utils/format-duration";
 import { useRouter } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { getAlbumExternalMetadata } from "@/api/queries";
+import type { AlbumWithRelations } from "@/models/album";
+import type { ReleaseWithRelations } from "@/models/release";
+import { formatReleaseDate, useReleaseDate } from "@/ui/pages/release";
+import formatDuration from "@/utils/format-duration";
 import { useQuery } from "~/api";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";

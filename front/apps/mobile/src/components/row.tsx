@@ -1,9 +1,9 @@
-import type Resource from "@/models/resource";
 import type { Href } from "expo-router";
 import type React from "react";
 import { createRef, useMemo } from "react";
 import { FlatList, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import type Resource from "@/models/resource";
 import { EmptyState } from "~/components/empty-state";
 import { SectionHeader } from "./section-header";
 

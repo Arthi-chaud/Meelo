@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type API from "@/api";
-import { MetadataRefreshIcon } from "@/ui/icons";
 import { Button, Checkbox, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import type { ArraySlice } from "type-fest";
+import type API from "@/api";
+import { MetadataRefreshIcon } from "@/ui/icons";
 import { useAPI } from "~/api";
 import type Action from "./";
 
@@ -31,7 +31,11 @@ const RefreshMetadataActionContent = ({
 	t,
 	params,
 	close,
-}: { t: Translator; params: APIMethodParams; close: () => void }) => {
+}: {
+	t: Translator;
+	params: APIMethodParams;
+	close: () => void;
+}) => {
 	const [force, setForce] = useState(false);
 	const api = useAPI();
 

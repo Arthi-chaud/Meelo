@@ -1,5 +1,5 @@
-import type { ItemSize, LayoutOption } from "@/models/layout";
 import { useState } from "react";
+import type { ItemSize, LayoutOption } from "@/models/layout";
 
 export type LayoutControl = (
 	| {
@@ -18,10 +18,7 @@ export type LayoutControl = (
 			itemSize: ItemSize;
 	  }
 ) & {
-	onUpdate: (p: {
-		layout: LayoutOption;
-		itemSize: ItemSize;
-	}) => void;
+	onUpdate: (p: { layout: LayoutOption; itemSize: ItemSize }) => void;
 };
 
 type State = { layout: LayoutOption; itemSize: ItemSize };

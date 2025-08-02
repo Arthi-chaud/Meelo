@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useLocalSearchParams } from "expo-router";
+import { useMemo } from "react";
 import { getArtist, getSong, getVideos } from "@/api/queries";
 import { videoTypeToTranslationKey } from "@/models/utils";
 import { VideoSortingKeys, VideoType } from "@/models/video";
-import { useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
 import { useQuery } from "~/api";
 import {
 	useLibraryFiltersControl,
@@ -29,8 +29,7 @@ import {
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
-import { VideoItem } from "~/components/item/resource/video";
-import { VideoTile } from "~/components/item/resource/video";
+import { VideoItem, VideoTile } from "~/components/item/resource/video";
 import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
 export default function VideoBrowseView() {

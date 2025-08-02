@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { getArtist, getSong, getSongs } from "@/api/queries";
 import {
 	SongSortingKeys,
@@ -23,9 +26,6 @@ import {
 	type SongWithRelations,
 } from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useCallback, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useQuery } from "~/api";
 import {
 	useLibraryFiltersControl,

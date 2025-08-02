@@ -1,6 +1,6 @@
-import { store } from "@/state/store";
 import { Appearance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { store } from "@/state/store";
 import { colorSchemePreference } from "~/state/color-scheme";
 
 const baseTheme = {

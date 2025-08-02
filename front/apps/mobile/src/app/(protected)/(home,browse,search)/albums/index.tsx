@@ -16,11 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Stack, useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { getAlbums, getArtist } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useTranslation } from "react-i18next";
 import { useQuery } from "~/api";
 import {
 	useLibraryFiltersControl,
@@ -29,8 +29,7 @@ import {
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
-import { AlbumItem } from "~/components/item/resource/album";
-import { AlbumTile } from "~/components/item/resource/album";
+import { AlbumItem, AlbumTile } from "~/components/item/resource/album";
 import { ArtistHeader } from "~/components/resource-header";
 
 export default function AlbumBrowseView() {

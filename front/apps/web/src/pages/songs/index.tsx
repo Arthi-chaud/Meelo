@@ -1,8 +1,8 @@
-import { getSongGroups, getSongs } from "@/api/queries";
-import { SongSortingKeys } from "@/models/song";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
+import { getSongGroups, getSongs } from "@/api/queries";
+import { SongSortingKeys } from "@/models/song";
 import { Head } from "~/components/head";
 import {
 	getOrderQuery,

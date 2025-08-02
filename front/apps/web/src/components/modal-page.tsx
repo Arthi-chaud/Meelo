@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CloseIcon } from "@/ui/icons";
 import { Box, IconButton, Paper, Slide } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { CloseIcon } from "@/ui/icons";
 import { isClientSideRendering } from "~/utils/is-ssr";
 
 type ModalPageProps = {

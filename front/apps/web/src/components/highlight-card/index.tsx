@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type IllustrationModel from "@/models/illustration";
-import { useAccentColor } from "@/utils/accent-color";
 import {
 	Box,
 	Chip,
@@ -29,6 +27,8 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useMemo } from "react";
+import type IllustrationModel from "@/models/illustration";
+import { useAccentColor } from "@/utils/accent-color";
 import Illustration from "~/components/illustration";
 
 type HighlightCardProps = {

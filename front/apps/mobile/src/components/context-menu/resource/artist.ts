@@ -1,5 +1,5 @@
-import type { ArtistWithRelations } from "@/models/artist";
 import { useCallback } from "react";
+import type { ArtistWithRelations } from "@/models/artist";
 import { GoToArtist, GoToArtistAlbums, GoToArtistSongs } from "~/actions";
 import { useShareArtistAction } from "~/actions/share";
 import type {

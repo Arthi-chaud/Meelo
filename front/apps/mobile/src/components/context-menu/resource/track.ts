@@ -1,6 +1,6 @@
+import { useCallback } from "react";
 import { getCurrentUserStatus } from "@/api/queries";
 import type { TrackWithRelations } from "@/models/track";
-import { useCallback } from "react";
 import {
 	ChangeType,
 	GoToArtist,

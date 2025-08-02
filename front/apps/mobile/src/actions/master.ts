@@ -1,12 +1,12 @@
+import { useMutation } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Toast } from "toastify-react-native";
 import type Album from "@/models/album";
 import type Release from "@/models/release";
 import type Song from "@/models/song";
 import type Track from "@/models/track";
 import { MasterIcon } from "@/ui/icons";
-import { useMutation } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { Toast } from "toastify-react-native";
 import { useQueryClient } from "~/api";
 
 export const useSetReleaseAsMaster = (

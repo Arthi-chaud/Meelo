@@ -16,9 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getSourceFile, getTrack } from "@/api/queries";
-import { songTypeToTranslationKey } from "@/models/utils";
-import formatDuration from "@/utils/format-duration";
 import {
 	Skeleton,
 	Stack,
@@ -31,6 +28,9 @@ import {
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
+import { getSourceFile, getTrack } from "@/api/queries";
+import { songTypeToTranslationKey } from "@/models/utils";
+import formatDuration from "@/utils/format-duration";
 import { useQuery } from "~/api";
 import SongTypeIcon from "./song-type-icon";
 

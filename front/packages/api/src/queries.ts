@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { RequireExactlyOne } from "type-fest";
+import * as yup from "yup";
 import type { InfiniteQuery, Query } from "@/api/query";
 import {
 	type AlbumInclude,
@@ -78,8 +80,6 @@ import {
 	type VideoType,
 	VideoWithRelations,
 } from "@/models/video";
-import type { RequireExactlyOne } from "type-fest";
-import * as yup from "yup";
 import type API from ".";
 import { Service } from ".";
 

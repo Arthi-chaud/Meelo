@@ -1,9 +1,9 @@
-import type { SongWithRelations } from "@/models/song";
-import { generateArray } from "@/utils/gen-list";
 import type { Href } from "expo-router";
-import { type ComponentProps, Fragment, createRef, useMemo } from "react";
+import { type ComponentProps, createRef, Fragment, useMemo } from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import type { SongWithRelations } from "@/models/song";
+import { generateArray } from "@/utils/gen-list";
 import type { ListItem } from "~/components/item/list-item";
 import { SongItem } from "~/components/item/resource/song";
 import { SectionHeader } from "~/components/section-header";
