@@ -200,7 +200,8 @@ export const formatReleaseDate = (date: Date, lang: string) => {
 	if (date.getDate() === 1 && date.getMonth() === 0) {
 		return date.getFullYear().toString();
 	}
-	const res = Intl.DateTimeFormat(lang, {
+	//https://github.com/formatjs/formatjs/discussions/2440#discussioncomment-237982
+	const res = Intl.DateTimeFormat(lang.replace("_", "-"), {
 		month: "short",
 		year: "numeric",
 		localeMatcher: "best fit",
