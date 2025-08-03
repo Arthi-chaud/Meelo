@@ -27,6 +27,7 @@
 		},
 		"goBackHome": "Zurück zum Beginn",
 		"goToArtist": "Zum Interpreten",
+		"goToRelease": "",
 		"goToSettingsPage": "Zu den Einstellungen",
 		"library": {
 			"create": "Neue Bibliothek",
@@ -57,6 +58,7 @@
 			"seeLyrics": "Zeige Liedtext",
 			"seeOtherVersions": "Zeige andere Versionen",
 			"seeRelatedTracks": "Zeige verwandte Tracks",
+			"seeRelatedVideos": "",
 			"seeSongInfo": "Song Info"
 		},
 		"track": {
@@ -88,6 +90,8 @@
 		"remixAlbum_plural": "Remix Alben",
 		"single": "Single",
 		"single_plural": "Singles",
+		"soundtrack": "",
+		"soundtrack_plural": "",
 		"studioRecording": "Studioalbum",
 		"studioRecording_plural": "Studioalben",
 		"videoAlbum": "Videoalbum",
@@ -116,14 +120,309 @@
 				"allTypes": "Alle Typen",
 				"nTypes": "{{n}} Typen"
 			},
-			"groupVersions": "gruppiere Versionen"
-		}
+			"groupVersions": "gruppiere Versionen",
+			"order": "",
+			"showAllSongs": "",
+			"sort": {
+				"addDate": "",
+				"albumCount": "",
+				"artistName": "",
+				"bitrate": "",
+				"bpm": "",
+				"creationDate": "",
+				"discIndex": "",
+				"entryCount": "",
+				"name": "",
+				"registrationDate": "",
+				"releaseDate": "",
+				"releaseName": "",
+				"songCount": "",
+				"totalPlayCount": "",
+				"trackCount": "",
+				"trackIndex": "",
+				"userPlayCount": ""
+			},
+			"sortBy": ""
+		},
+		"sections": {
+			"about": "",
+			"extras": "",
+			"featuredOnPlaylists": "",
+			"livePerformances": "",
+			"musicVideos": ""
+		},
+		"seeAll": ""
 	},
-	"settings": {
-		"ui": {
-			"lang": {
-				"de": "Deutsch"
+	"compilationArtistLabel": "",
+	"emptyState": {
+		"default": "",
+		"home": "",
+		"lyrics": "",
+		"playlist": "",
+		"playlists": ""
+	},
+	"errors": {
+		"errorOccured": "",
+		"oops": "",
+		"pageNotFound": ""
+	},
+	"fileInfo": {
+		"bitRate": "",
+		"bpm": "",
+		"duration": "",
+		"extension": "",
+		"name": "",
+		"path": "",
+		"registrationDate": "",
+		"type": "",
+		"unknown": ""
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "",
+			"instanceUrl": "",
+			"instanceUrlIsRequired": "",
+			"password": "",
+			"passwordIsRequired": "",
+			"passwordTooShort": "",
+			"passwordsAreDifferent": "",
+			"pleaseConfirm": "",
+			"username": "",
+			"usernameIsRequired": "",
+			"usernameTooShort": ""
+		},
+		"cancel": "",
+		"confirm": "",
+		"done": "",
+		"edit": "",
+		"library": {
+			"nameIsRequired": "",
+			"nameOfLibrary": "",
+			"pathIsRequired": "",
+			"pathOfLibrary": ""
+		},
+		"playlist": {
+			"allowPlaylistChanges": "",
+			"playlistIsPublic": ""
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "",
+				"instanceUrlLabel": "",
+				"tokenHelperText": "",
+				"tokenIsRequired": "",
+				"tokenLabel": ""
 			}
 		}
+	},
+	"home": {
+		"featuredAlbums": "",
+		"latestAlbums": "",
+		"mostPlayedSongs": "",
+		"newlyAddedAlbums": "",
+		"newlyAddedArtists": "",
+		"newlyAddedReleases": "",
+		"topGenres": "",
+		"topLabels": ""
+	},
+	"keyboardBindings": {
+		"closePlayer": "",
+		"goToSearchPage": "",
+		"goToSettingsPage": "",
+		"modalTitle": "",
+		"openClosePlayer": "",
+		"openModalShortcutDescription": "",
+		"playPauseWhenExpanded": ""
+	},
+	"misc": {
+		"loading": "",
+		"no": "",
+		"yes": ""
+	},
+	"models": {
+		"album": "",
+		"album_plural": "",
+		"artist": "",
+		"artist_plural": "",
+		"disc": "",
+		"externalLink_plural": "",
+		"genre_plural": "",
+		"library_plural": "",
+		"lyrics": "",
+		"playlist": "",
+		"playlist_plural": "",
+		"song": "",
+		"song_plural": "",
+		"track_plural": "",
+		"user_plural": "",
+		"versions": "",
+		"video": "",
+		"video_plural": ""
+	},
+	"nav": {
+		"browse": "",
+		"compilations": "",
+		"home": "",
+		"more": "",
+		"musicVideos": "",
+		"search": "",
+		"settings": ""
+	},
+	"player": {
+		"loadNextSongs": "",
+		"saveQueueAsPlaylist": ""
+	},
+	"search": {
+		"all": ""
+	},
+	"settings": {
+		"interface": "",
+		"libraries": {
+			"nameColumn": "",
+			"tasks": {
+				"current": "",
+				"label": "",
+				"none": "",
+				"pending": ""
+			}
+		},
+		"ui": {
+			"autoMode": "",
+			"colorScheme": "",
+			"crossfade": "",
+			"external": {
+				"encounteredABug": "",
+				"enjoyingTheProject": "",
+				"openAnIssue": "",
+				"readTheDoc": "",
+				"starOnGithub": ""
+			},
+			"keyboardBindings": "",
+			"lang": {
+				"de": "Deutsch",
+				"en": "",
+				"fr": "",
+				"id": "",
+				"it": "",
+				"pt_br": "",
+				"ru": ""
+			},
+			"language": "",
+			"notifications": "",
+			"notifyOnTrackChange": "",
+			"openKeyboarBindingsModalByTypingQuestionMark": "",
+			"permissions": "",
+			"playback": "",
+			"project": "",
+			"scrobblers": {
+				"connect_scrobblers": "",
+				"header": "",
+				"no_scrobblers_enabled": ""
+			},
+			"useDarkTheme": "",
+			"useSystemLanguage": "",
+			"useSystemTheme": "",
+			"versions": ""
+		},
+		"users": {
+			"admin": "",
+			"enabled": "",
+			"nameColumn": "",
+			"you": ""
+		}
+	},
+	"song": {
+		"infoTab": "",
+		"songType": ""
+	},
+	"songType": {
+		"acappella": "",
+		"acoustic": "",
+		"clean": "",
+		"demo": "",
+		"edit": "",
+		"instrumental": "",
+		"live": "",
+		"medley": "",
+		"nonMusic": "",
+		"original": "",
+		"remix": "",
+		"unknown": ""
+	},
+	"tasks": {
+		"clean": "",
+		"cleanLibraries": "",
+		"refresh": "",
+		"refreshMetadata": "",
+		"refreshMetadataForm": {
+			"forceLabel": ""
+		},
+		"scan": "",
+		"scanLibraries": ""
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": ""
+		},
+		"leaveWillStopPlaybackAlert": "",
+		"library": {
+			"created": "",
+			"creationFail": "",
+			"deleted": "",
+			"deletionFail": "",
+			"deletionRunning": "",
+			"loadFail": "",
+			"updated": ""
+		},
+		"linkCopied": "",
+		"player": {
+			"networkError": "",
+			"playbackError": ""
+		},
+		"playlist": {
+			"itemDeletionSuccess": "",
+			"reorderFail": "",
+			"reorderSuccess": ""
+		},
+		"refreshMetadata": {
+			"failed": "",
+			"started": ""
+		},
+		"releaseSetAsMaster": "",
+		"scrobblers": {
+			"linking": "",
+			"linkingListenBrainzFailed": "",
+			"linkingSuccessful": "",
+			"unlinking": "",
+			"unlinkingFailed": "",
+			"unlinkingSuccessful": ""
+		},
+		"trackSetAsMaster": "",
+		"tracksUpdated": "",
+		"users": {
+			"deleted": "",
+			"deletionFail": "",
+			"nowAdmin": "",
+			"nowDisabled": "",
+			"nowEnabled": "",
+			"nowNotAdmin": "",
+			"updateFail": ""
+		}
+	},
+	"track": {
+		"bonusTrack": "",
+		"mixed": "",
+		"remastered": ""
+	},
+	"videoType": {
+		"advert": "",
+		"behindTheScenes": "",
+		"documentary": "",
+		"interview": "",
+		"live": "",
+		"lyricsVideo": "",
+		"musicVideo": "",
+		"other": "",
+		"photoGallery": ""
 	}
 }
