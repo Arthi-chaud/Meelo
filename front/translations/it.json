@@ -27,6 +27,7 @@
 		},
 		"goBackHome": "Torna alla pagina principale",
 		"goToArtist": "Vai all'artista",
+		"goToRelease": "",
 		"goToSettingsPage": "Vai all'impostazioni",
 		"library": {
 			"create": "Crea una libreria",
@@ -57,6 +58,7 @@
 			"seeLyrics": "Vedi il testo",
 			"seeOtherVersions": "Vedi altre versioni",
 			"seeRelatedTracks": "Vedi brani simili",
+			"seeRelatedVideos": "",
 			"seeSongInfo": "Info brano"
 		},
 		"track": {
@@ -102,8 +104,10 @@
 		"topVideos": "Video migliori"
 	},
 	"auth": {
+		"loginButton": "",
 		"signin": "Hai già un account? Accedi",
-		"signup": "Sei nuovo? Registrati"
+		"signup": "Sei nuovo? Registrati",
+		"signupButton": ""
 	},
 	"browsing": {
 		"controls": {
@@ -176,6 +180,8 @@
 	"form": {
 		"auth": {
 			"confirmPasswordField": "Conferma",
+			"instanceUrl": "",
+			"instanceUrlIsRequired": "",
 			"password": "Password",
 			"passwordIsRequired": "La password è obbligatoria",
 			"passwordTooShort": "La password è troppo corta",
@@ -225,7 +231,13 @@
 		"goToSettingsPage": "Vai alle Impostazioni",
 		"modalTitle": "Tasti rapidi",
 		"openClosePlayer": "Apri / Chiudi player",
-		"openModalShortcutDescription": "Apri / Chiudi questa finestra"
+		"openModalShortcutDescription": "Apri / Chiudi questa finestra",
+		"playPauseWhenExpanded": ""
+	},
+	"misc": {
+		"loading": "",
+		"no": "",
+		"yes": ""
 	},
 	"models": {
 		"album": "Album",
@@ -248,6 +260,7 @@
 		"video_plural": "Video"
 	},
 	"nav": {
+		"browse": "",
 		"compilations": "Compilations",
 		"home": "Pagina principale",
 		"more": "Altro",
@@ -255,16 +268,86 @@
 		"search": "Cerca",
 		"settings": "Impostazioni"
 	},
+	"player": {
+		"loadNextSongs": "",
+		"saveQueueAsPlaylist": ""
+	},
+	"search": {
+		"all": ""
+	},
 	"settings": {
 		"interface": "Interfaccia",
+		"libraries": {
+			"nameColumn": "",
+			"tasks": {
+				"current": "",
+				"label": "",
+				"none": "",
+				"pending": ""
+			}
+		},
 		"ui": {
 			"autoMode": "Modo automatico",
 			"colorScheme": "Tema",
 			"crossfade": "Transizione fluida",
+			"external": {
+				"encounteredABug": "",
+				"enjoyingTheProject": "",
+				"openAnIssue": "",
+				"readTheDoc": "",
+				"starOnGithub": ""
+			},
+			"keyboardBindings": "",
+			"lang": {
+				"de": "",
+				"en": "",
+				"fr": "",
+				"id": "",
+				"it": "",
+				"pt_br": "",
+				"ru": ""
+			},
 			"language": "Lingua",
+			"notifications": "",
+			"notifyOnTrackChange": "",
+			"openKeyboarBindingsModalByTypingQuestionMark": "",
+			"permissions": "",
+			"playback": "",
+			"project": "",
+			"scrobblers": {
+				"connect_scrobblers": "",
+				"header": "",
+				"no_scrobblers_enabled": ""
+			},
 			"useDarkTheme": "Usa il tema oscuro",
-			"useSystemTheme": "Usa il tema di sistema"
+			"useSystemLanguage": "",
+			"useSystemTheme": "Usa il tema di sistema",
+			"versions": ""
+		},
+		"users": {
+			"admin": "",
+			"enabled": "",
+			"nameColumn": "",
+			"you": ""
 		}
+	},
+	"song": {
+		"infoTab": "",
+		"songType": ""
+	},
+	"songType": {
+		"acappella": "",
+		"acoustic": "",
+		"clean": "",
+		"demo": "",
+		"edit": "",
+		"instrumental": "",
+		"live": "",
+		"medley": "",
+		"nonMusic": "",
+		"original": "",
+		"remix": "",
+		"unknown": ""
 	},
 	"tasks": {
 		"clean": "Rimuovi",
@@ -276,5 +359,70 @@
 		},
 		"scan": "Scansiona",
 		"scanLibraries": "Scansiona librerie"
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": ""
+		},
+		"leaveWillStopPlaybackAlert": "",
+		"library": {
+			"created": "",
+			"creationFail": "",
+			"deleted": "",
+			"deletionFail": "",
+			"deletionRunning": "",
+			"loadFail": "",
+			"updated": ""
+		},
+		"linkCopied": "",
+		"player": {
+			"networkError": "",
+			"playbackError": ""
+		},
+		"playlist": {
+			"itemDeletionSuccess": "",
+			"reorderFail": "",
+			"reorderSuccess": ""
+		},
+		"refreshMetadata": {
+			"failed": "",
+			"started": ""
+		},
+		"releaseSetAsMaster": "",
+		"scrobblers": {
+			"linking": "",
+			"linkingListenBrainzFailed": "",
+			"linkingSuccessful": "",
+			"unlinking": "",
+			"unlinkingFailed": "",
+			"unlinkingSuccessful": ""
+		},
+		"trackSetAsMaster": "",
+		"tracksUpdated": "",
+		"users": {
+			"deleted": "",
+			"deletionFail": "",
+			"nowAdmin": "",
+			"nowDisabled": "",
+			"nowEnabled": "",
+			"nowNotAdmin": "",
+			"updateFail": ""
+		}
+	},
+	"track": {
+		"bonusTrack": "",
+		"mixed": "",
+		"remastered": ""
+	},
+	"videoType": {
+		"advert": "",
+		"behindTheScenes": "",
+		"documentary": "",
+		"interview": "",
+		"live": "",
+		"lyricsVideo": "",
+		"musicVideo": "",
+		"other": "",
+		"photoGallery": ""
 	}
 }
