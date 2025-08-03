@@ -105,9 +105,9 @@
 	},
 	"auth": {
 		"loginButton": "Se connecter",
-		"signupButton": "Créer le compte",
 		"signin": "On s'est déjà vu ? Connectez-vous",
-		"signup": "Nouveau ici ? Inscrivez-vous"
+		"signup": "Nouveau ici ? Inscrivez-vous",
+		"signupButton": "Créer le compte"
 	},
 	"browsing": {
 		"controls": {
@@ -181,14 +181,14 @@
 		"auth": {
 			"confirmPassword": "Confirmez le mot de passe",
 			"confirmPasswordField": "Confirmer",
-			"password": "Mot de passe",
 			"instanceUrl": "URL du server",
+			"instanceUrlIsRequired": "L'URL du server est manquant",
+			"password": "Mot de passe",
 			"passwordIsRequired": "Un mot de passe est attendu",
 			"passwordTooShort": "Le mot de passe est trop court",
 			"passwordsAreDifferent": "Les mots de passes sont différents",
 			"pleaseConfirm": "Confirmez le mot de passe",
 			"username": "Nom d'utilisateur",
-			"instanceUrlIsRequired": "L'URL du server est manquant",
 			"usernameIsRequired": "Un nom d'utilisateur est attendu",
 			"usernameTooShort": "Le nom d'utilisateur est trop court"
 		},
@@ -261,9 +261,9 @@
 		"video_plural": "Vidéos"
 	},
 	"nav": {
+		"browse": "Bibliothèque",
 		"compilations": "Compilations",
 		"home": "Accueil",
-		"browse": "Bibliothèque",
 		"more": "Plus",
 		"musicVideos": "Vidéos",
 		"search": "Rechercher",
@@ -306,7 +306,6 @@
 				"it": "Italien",
 				"ru": "Russe"
 			},
-			"versions": "Versions",
 			"language": "Langue",
 			"notifications": "Notifications",
 			"notifyOnTrackChange": "Notifier quand le morceau change",
@@ -321,7 +320,8 @@
 			},
 			"useDarkTheme": "Utiliser le thème sombre",
 			"useSystemLanguage": "Utiliser la langue du système",
-			"useSystemTheme": "Utiliser le thème système"
+			"useSystemTheme": "Utiliser le thème système",
+			"versions": "Versions"
 		},
 		"users": {
 			"admin": "Administrateur",
