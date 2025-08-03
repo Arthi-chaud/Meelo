@@ -27,6 +27,7 @@
 		},
 		"goBackHome": "Вернуться на главную",
 		"goToArtist": "Перейти к исполнителю",
+		"goToRelease": "",
 		"goToSettingsPage": "Перейти к настройкам",
 		"library": {
 			"create": "Создать библиотеку",
@@ -57,6 +58,7 @@
 			"seeLyrics": "Посмотреть текст песни",
 			"seeOtherVersions": "Посмотреть другие версии",
 			"seeRelatedTracks": "Посмотреть похожие треки",
+			"seeRelatedVideos": "",
 			"seeSongInfo": "Информация о песне"
 		},
 		"track": {
@@ -80,6 +82,8 @@
 	"albumType": {
 		"compilation": "Сборник",
 		"compilation_plural": "Сборники",
+		"ep": "",
+		"ep_plural": "",
 		"liveRecording": "Живой альбом",
 		"liveRecording_plural": "Живые альбомы",
 		"remixAlbum": "Альбом ремиксов",
@@ -100,8 +104,10 @@
 		"topVideos": "Лучшие видео"
 	},
 	"auth": {
+		"loginButton": "",
 		"signin": "Уже есть аккаунт? Войти",
-		"signup": "Вы новичок? Зарегистрируйтесь"
+		"signup": "Вы новичок? Зарегистрируйтесь",
+		"signupButton": ""
 	},
 	"browsing": {
 		"controls": {
@@ -174,6 +180,8 @@
 	"form": {
 		"auth": {
 			"confirmPasswordField": "Подтверждение",
+			"instanceUrl": "",
+			"instanceUrlIsRequired": "",
 			"password": "Пароль",
 			"passwordIsRequired": "Пароль обязателен",
 			"passwordTooShort": "Пароль слишком короткий",
@@ -252,6 +260,7 @@
 		"video_plural": "Видеозаписи"
 	},
 	"nav": {
+		"browse": "",
 		"compilations": "Сборники",
 		"home": "Главная",
 		"more": "Ещё",
@@ -290,8 +299,12 @@
 			},
 			"keyboardBindings": "Горячие клавиши",
 			"lang": {
+				"de": "",
 				"en": "Английский",
 				"fr": "Французский",
+				"id": "",
+				"it": "",
+				"pt_br": "",
 				"ru": "Русский"
 			},
 			"language": "Язык",
@@ -308,7 +321,8 @@
 			},
 			"useDarkTheme": "Использовать тёмную тему",
 			"useSystemLanguage": "Использовать язык системы",
-			"useSystemTheme": "Использовать системную тему"
+			"useSystemTheme": "Использовать системную тему",
+			"versions": ""
 		},
 		"users": {
 			"admin": "Админ",
