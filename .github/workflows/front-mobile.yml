@@ -52,7 +52,9 @@ jobs:
   #       run: yarn workspace mobile tsc
   Biome:
     needs: changes
-    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
+    # Note: We don't need Biome to be run, however, since Build needs it
+    # We have no choice but to run it anyway :(
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -65,7 +67,7 @@ jobs:
         run: yarn run -T biome ci . ../../packages
   Build:
     needs: [ Biome ]
-    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' && github.ref != 'refs/heads/main' }}
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
