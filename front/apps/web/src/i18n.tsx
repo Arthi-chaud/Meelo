@@ -51,6 +51,7 @@ export const withTranslations = (
 		interpolation: {
 			escapeValue: false,
 		},
+		returnEmptyString: false,
 		fallbackLng: "en",
 	};
 
