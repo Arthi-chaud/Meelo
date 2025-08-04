@@ -124,7 +124,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
 
     # To search albums, sometimes we need to replace acronyms
     def _sanitise_acronyms(self, s: str) -> str:
-        return re.sub(r"volume", "Vol.", s, flags=re.IGNORECASE)
+        res = re.sub(r"volume", "Vol.", s, flags=re.IGNORECASE)
+        res = re.sub(r"&", "and", res)
+        return res
 
     # Album
     def _search_album(

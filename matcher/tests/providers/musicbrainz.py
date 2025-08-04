@@ -90,6 +90,17 @@ class TestMusicbrainz(unittest.TestCase):
                 "Massive Attack",
                 "751030cb-44c8-3542-8e75-42b3e4f820fa",
             ),
+            # Handle '&'
+            (
+                "Sampladelic Relics And Dancefloor Oddities",
+                "Deee-Lite",
+                "3709277b-0466-325c-a822-d919133c88ee",
+            ),
+            (
+                "Sampladelic Relics & Dancefloor Oddities",
+                "Deee-Lite",
+                "3709277b-0466-325c-a822-d919133c88ee",
+            ),
         ]
 
         provider: MusicBrainzProvider = (
