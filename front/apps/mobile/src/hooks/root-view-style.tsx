@@ -16,14 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { atom, useAtomValue } from "jotai";
 import type { ViewStyle } from "react-native";
+
+export const bottomTabBarHeightAtom = atom<number>(0);
 
 // Provides padding to avoid the tababr to mask content
 export const useRootViewStyle = () => {
 	const headerHeight = useHeaderHeight();
-	const tabBarHeight = useBottomTabBarHeight();
+	const tabBarHeight = useAtomValue(bottomTabBarHeightAtom);
 
 	return {
 		paddingBottom: tabBarHeight,

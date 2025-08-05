@@ -17,10 +17,21 @@
  */
 
 import { useQuery as useTanStackQuery } from "@tanstack/react-query";
-import { Redirect, Tabs } from "expo-router";
-import { useAtomValue } from "jotai";
-import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View } from "react-native";
+import { Redirect } from "expo-router";
+import {
+	TabList,
+	TabSlot,
+	Tabs,
+	TabTrigger,
+	type TabTriggerSlotProps,
+} from "expo-router/ui";
+import { useAtomValue, useSetAtom } from "jotai";
+import { type Ref, useCallback } from "react";
+import {
+	type GestureResponderEvent,
+	type LayoutChangeEvent,
+	View,
+} from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
@@ -33,12 +44,17 @@ import {
 } from "@/ui/icons";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
+import { bottomTabBarHeightAtom } from "~/hooks/root-view-style";
 import { Icon } from "~/primitives/icon";
+import { Pressable } from "~/primitives/pressable";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 //TODO DRY: The header style for settings is very similar to the shared routed ones.
 //TODO I suspect that the setting header style is not updated when theme changes because we don't use withUnistyles
 //However, the latter does not work
+//
+
+//TODO: Layout player
 
 const styles = StyleSheet.create((theme) => ({
 	screen: { backgroundColor: "transparent", flex: 1 },
@@ -53,10 +69,17 @@ const styles = StyleSheet.create((theme) => ({
 		overflow: "hidden",
 	},
 	headerBackgroundContent: { flex: 1 },
-	tabBar: {
+	footer: {
 		position: "absolute",
-		paddingTop: theme.gap(1),
-		borderTopWidth: 0,
+		bottom: 0,
+		width: "100%",
+	},
+	tabBar: {
+		paddingTop: theme.gap(2),
+		paddingBottom: theme.gap(4),
+		flexDirection: "row",
+		backgroundColor: "transparent",
+		justifyContent: "space-around",
 	},
 	tabBarBackground: {
 		...StyleSheet.absoluteFillObject,
@@ -65,86 +88,145 @@ const styles = StyleSheet.create((theme) => ({
 		overflow: "hidden",
 		backgroundColor: "transparent",
 	},
+	hiddenTabList: { display: "none" },
 }));
-
-const TabIcon = ({ icon, focused }: { icon: IconType; focused: boolean }) => {
-	return <Icon icon={icon} variant={focused ? "Bold" : "Outline"} />;
-};
-
-// Note: if we use our pressable, there is a delay between when the button become bold and when opacity gets back to 1
-const TabButton = (props: any) => <TouchableOpacity {...props} />;
 
 export default function ProtectedLayout() {
 	const accessToken = useAtomValue(accessTokenAtom);
 	const instanceUrl = useAtomValue(instanceUrlAtom);
+	const setBottomTabBarHeight = useSetAtom(bottomTabBarHeightAtom);
 	const api = useAPI();
 	const user = useTanStackQuery({
 		...toTanStackQuery(api, getCurrentUserStatus),
 		enabled: !!(accessToken && instanceUrl),
 	});
-	const { t } = useTranslation();
 	if (!accessToken || !instanceUrl || user.error) {
 		return <Redirect href="/auth" />;
 	}
+	const onLayout = useCallback((e: LayoutChangeEvent) => {
+		setBottomTabBarHeight(e.nativeEvent.layout.height);
+	}, []);
 	//TODO Proper handling of when user is loading
 	return (
-		<Tabs
-			screenOptions={{
-				animation: "none",
-				headerShown: false,
-				sceneStyle: styles.screen,
-				tabBarShowLabel: false,
-				tabBarStyle: styles.tabBar,
-				tabBarBackground: () => (
+		<Tabs>
+			<TabSlot style={styles.screen} />
+			<View style={styles.footer} onLayout={onLayout}>
+				{/*<View
+					style={{
+						height: 10,
+						width: "100%",
+						backgroundColor: "red",
+					}}
+				/>*/}
+				<View style={styles.tabBar}>
 					<BlurView style={styles.tabBarBackground} />
-				),
-				tabBarButton: TabButton,
-			}}
-		>
-			<Tabs.Screen
-				name="(home)"
-				options={{
-					title: t("nav.home"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={HomeIcon} focused={focused} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="(browse)"
-				options={{
-					title: t("nav.browse"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={BrowseIcon} focused={focused} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="(search)"
-				options={{
-					title: t("nav.search"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={SearchIcon} focused={focused} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="settings"
-				options={{
-					headerShown: true,
-					headerTransparent: true,
-					headerTitleStyle: styles.headerTitle,
-					headerBackground: () => (
-						<View style={styles.headerBackgroundContainer}>
-							<BlurView style={styles.headerBackgroundContent} />
-						</View>
-					),
-					title: t("nav.settings"),
-					tabBarIcon: ({ focused }) => (
-						<TabIcon icon={SettingsIcon} focused={focused} />
-					),
-				}}
-			/>
+
+					<TabTrigger name="(home)" asChild>
+						<TabButton icon={HomeIcon} />
+					</TabTrigger>
+					<TabTrigger name="(browse)" asChild>
+						<TabButton icon={BrowseIcon} />
+					</TabTrigger>
+					<TabTrigger name="(search)" asChild>
+						<TabButton icon={SearchIcon} />
+					</TabTrigger>
+					<TabTrigger name="settings" asChild>
+						<TabButton icon={SettingsIcon} />
+					</TabTrigger>
+				</View>
+				<View></View>
+			</View>
+			{/* Shrug https://docs.expo.dev/router/advanced/custom-tabs/#multiple-tab-bars */}
+			<TabList style={styles.hiddenTabList}>
+				<TabTrigger name="(home)" href="/(protected)/(home)" />
+				<TabTrigger name="(browse)" href="/(protected)/(browse)" />
+				<TabTrigger name="(search)" href="/(protected)/(search)" />
+				<TabTrigger name="settings" href="/(protected)/settings" />
+			</TabList>
 		</Tabs>
+		// <Tabs
+		// 	screenOptions={{
+		// 		animation: "none",
+		// 		headerShown: false,
+		// 		sceneStyle: styles.screen,
+		// 		tabBarShowLabel: false,
+		// 		tabBarStyle: styles.tabBar,
+		// 		tabBarBackground: () => (
+		// 			<BlurView style={styles.tabBarBackground} />
+		// 		),
+		// 		tabBarButton: TabButton,
+		// 	}}
+		// >
+		// 	<Tabs.Screen
+		// 		name="(home)"
+		// 		options={{
+		// 			title: t("nav.home"),
+		// 			tabBarIcon: ({ focused }) => (
+		// 				<TabIcon icon={HomeIcon} focused={focused} />
+		// 			),
+		// 		}}
+		// 	/>
+		// 	<Tabs.Screen
+		// 		name="(browse)"
+		// 		options={{
+		// 			title: t("nav.browse"),
+		// 			tabBarIcon: ({ focused }) => (
+		// 				<TabIcon icon={BrowseIcon} focused={focused} />
+		// 			),
+		// 		}}
+		// 	/>
+		// 	<Tabs.Screen
+		// 		name="(search)"
+		// 		options={{
+		// 			title: t("nav.search"),
+		// 			tabBarIcon: ({ focused }) => (
+		// 				<TabIcon icon={SearchIcon} focused={focused} />
+		// 			),
+		// 		}}
+		// 	/>
+		// 	<Tabs.Screen
+		// 		name="settings"
+		// 		options={{
+		// 			headerShown: true,
+		// 			headerTransparent: true,
+		// 			headerTitleStyle: styles.headerTitle,
+		// 			headerBackground: () => (
+		// 				<View style={styles.headerBackgroundContainer}>
+		// 					<BlurView style={styles.headerBackgroundContent} />
+		// 				</View>
+		// 			),
+		// 			title: t("nav.settings"),
+		// 			tabBarIcon: ({ focused }) => (
+		// 				<TabIcon icon={SettingsIcon} focused={focused} />
+		// 			),
+		// 		}}
+		// 	/>
+		// </Tabs>
+	);
+}
+
+export type TabButtonProps = TabTriggerSlotProps & {
+	icon: IconType;
+	ref?: Ref<View>;
+};
+
+export function TabButton({ icon, isFocused, ...props }: TabButtonProps) {
+	const onPress = useCallback(
+		(e: GestureResponderEvent) => {
+			props.onPress?.(e);
+		},
+		[props.onPress],
+	);
+
+	const onLongPress = useCallback(
+		(e: GestureResponderEvent) => {
+			props.onLongPress?.(e);
+		},
+		[props.onLongPress],
+	);
+	return (
+		<Pressable onPress={onPress} onLongPress={onLongPress} disabled={false}>
+			<Icon icon={icon} variant={isFocused ? "Bold" : undefined} />
+		</Pressable>
 	);
 }
