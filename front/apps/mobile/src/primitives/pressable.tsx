@@ -1,10 +1,10 @@
 import type { ComponentProps } from "react";
-import { TouchableOpacity } from "react-native";
+import { type GestureResponderEvent, TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 
 type Props = {
-	onPress: () => void;
-	onLongPress?: () => void;
+	onPress: (e: GestureResponderEvent) => void;
+	onLongPress?: (e: GestureResponderEvent) => void;
 	children: React.ReactNode;
 	disabled?: boolean;
 	style?: ComponentProps<typeof TouchableOpacity>["style"];
