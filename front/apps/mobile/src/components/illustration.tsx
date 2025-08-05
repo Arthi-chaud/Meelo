@@ -31,7 +31,7 @@ type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: Icon;
 	quality: IllustrationQuality;
-	normalizedThumbnail?: true;
+	normalizedThumbnail?: boolean;
 	variant?: "fill" | "circle" | "center";
 	// If true, the blurhash will not be ecoded/displayed.
 	// Instead it will use the color from the illustration model as a place holder
