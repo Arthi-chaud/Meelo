@@ -39,10 +39,9 @@ export const SongItem = ({
 		<ListItem
 			title={song?.name}
 			subtitle={formattedSubtitle}
-			href={`/songs/${song?.id}`}
 			onPress={() => {
 				onPress?.();
-			}} // TODO Launch playback
+			}} // TODO Mark onPress as required
 			contextMenu={contextMenu}
 			illustration={song?.illustration}
 			illustrationProps={illustrationProps}
