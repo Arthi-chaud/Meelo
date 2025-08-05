@@ -26,15 +26,17 @@ import {
 	type TabTriggerSlotProps,
 } from "expo-router/ui";
 import { useAtomValue, useSetAtom } from "jotai";
-import { type Ref, useCallback } from "react";
+import { type Ref, useCallback, useEffect, useMemo } from "react";
 import {
 	type GestureResponderEvent,
 	type LayoutChangeEvent,
 	View,
 } from "react-native";
+import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
+import { playlistAtom } from "@/state/player";
 import {
 	BrowseIcon,
 	HomeIcon,
@@ -44,6 +46,7 @@ import {
 } from "@/ui/icons";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
+import { MinimisedPlayer } from "~/components/player/minimised";
 import { bottomTabBarHeightAtom } from "~/hooks/root-view-style";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -89,9 +92,15 @@ const styles = StyleSheet.create((theme) => ({
 		backgroundColor: "transparent",
 	},
 	hiddenTabList: { display: "none" },
+	player: {
+		width: "100%",
+		paddingHorizontal: theme.gap(0.75),
+		marginBottom: theme.gap(0.75),
+	},
 }));
 
 export default function ProtectedLayout() {
+	const queue = useAtomValue(playlistAtom);
 	const accessToken = useAtomValue(accessTokenAtom);
 	const instanceUrl = useAtomValue(instanceUrlAtom);
 	const setBottomTabBarHeight = useSetAtom(bottomTabBarHeightAtom);
@@ -106,18 +115,29 @@ export default function ProtectedLayout() {
 	const onLayout = useCallback((e: LayoutChangeEvent) => {
 		setBottomTabBarHeight(e.nativeEvent.layout.height);
 	}, []);
+	const queueIsEmpty = useMemo(() => queue.length === 0, [queue]);
+	const playerPosition = useSharedValue(-1000);
+	useEffect(() => {
+		if (!queueIsEmpty) {
+			playerPosition.value = withSpring(0, {
+				stiffness: 1110,
+				damping: 510,
+			});
+		}
+	}, [queueIsEmpty]);
 	//TODO Proper handling of when user is loading
 	return (
 		<Tabs>
 			<TabSlot style={styles.screen} />
 			<View style={styles.footer} onLayout={onLayout}>
-				{/*<View
-					style={{
-						height: 10,
-						width: "100%",
-						backgroundColor: "red",
-					}}
-				/>*/}
+				<View style={styles.player}>
+					{/* TODO blur behing player, like iOS */}
+					{queueIsEmpty || (
+						<Animated.View style={{ marginBottom: playerPosition }}>
+							<MinimisedPlayer />
+						</Animated.View>
+					)}
+				</View>
 				<View style={styles.tabBar}>
 					<BlurView style={styles.tabBarBackground} />
 
@@ -134,7 +154,6 @@ export default function ProtectedLayout() {
 						<TabButton icon={SettingsIcon} />
 					</TabTrigger>
 				</View>
-				<View></View>
 			</View>
 			{/* Shrug https://docs.expo.dev/router/advanced/custom-tabs/#multiple-tab-bars */}
 			<TabList style={styles.hiddenTabList}>
@@ -144,64 +163,6 @@ export default function ProtectedLayout() {
 				<TabTrigger name="settings" href="/(protected)/settings" />
 			</TabList>
 		</Tabs>
-		// <Tabs
-		// 	screenOptions={{
-		// 		animation: "none",
-		// 		headerShown: false,
-		// 		sceneStyle: styles.screen,
-		// 		tabBarShowLabel: false,
-		// 		tabBarStyle: styles.tabBar,
-		// 		tabBarBackground: () => (
-		// 			<BlurView style={styles.tabBarBackground} />
-		// 		),
-		// 		tabBarButton: TabButton,
-		// 	}}
-		// >
-		// 	<Tabs.Screen
-		// 		name="(home)"
-		// 		options={{
-		// 			title: t("nav.home"),
-		// 			tabBarIcon: ({ focused }) => (
-		// 				<TabIcon icon={HomeIcon} focused={focused} />
-		// 			),
-		// 		}}
-		// 	/>
-		// 	<Tabs.Screen
-		// 		name="(browse)"
-		// 		options={{
-		// 			title: t("nav.browse"),
-		// 			tabBarIcon: ({ focused }) => (
-		// 				<TabIcon icon={BrowseIcon} focused={focused} />
-		// 			),
-		// 		}}
-		// 	/>
-		// 	<Tabs.Screen
-		// 		name="(search)"
-		// 		options={{
-		// 			title: t("nav.search"),
-		// 			tabBarIcon: ({ focused }) => (
-		// 				<TabIcon icon={SearchIcon} focused={focused} />
-		// 			),
-		// 		}}
-		// 	/>
-		// 	<Tabs.Screen
-		// 		name="settings"
-		// 		options={{
-		// 			headerShown: true,
-		// 			headerTransparent: true,
-		// 			headerTitleStyle: styles.headerTitle,
-		// 			headerBackground: () => (
-		// 				<View style={styles.headerBackgroundContainer}>
-		// 					<BlurView style={styles.headerBackgroundContent} />
-		// 				</View>
-		// 			),
-		// 			title: t("nav.settings"),
-		// 			tabBarIcon: ({ focused }) => (
-		// 				<TabIcon icon={SettingsIcon} focused={focused} />
-		// 			),
-		// 		}}
-		// 	/>
-		// </Tabs>
 	);
 }
 
