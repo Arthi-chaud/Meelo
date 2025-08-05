@@ -1,8 +1,16 @@
 import type { Href } from "expo-router";
-import { type ComponentProps, createRef, Fragment, useMemo } from "react";
+import { useSetAtom } from "jotai";
+import {
+	type ComponentProps,
+	createRef,
+	Fragment,
+	useCallback,
+	useMemo,
+} from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import type { SongWithRelations } from "@/models/song";
+import { playTracksAtom, type TrackState } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
 import type { ListItem } from "~/components/item/list-item";
 import { SongItem } from "~/components/item/resource/song";
@@ -35,6 +43,7 @@ export const SongGrid = ({
 	seeMore,
 	...props
 }: Props) => {
+	const playTracks = useSetAtom(playTracksAtom);
 	const scrollViewRef = createRef<ScrollView>();
 	const chunks = useMemo(() => {
 		if (songs === undefined) {
@@ -46,6 +55,21 @@ export const SongGrid = ({
 		}
 		return res;
 	}, [songs]);
+	const onItemPress = useCallback(
+		(index: number) => {
+			if (songs === undefined) {
+				return;
+			}
+			const tracks = songs.map(
+				(s): TrackState => ({
+					track: { ...s.master, illustration: s.illustration },
+					artist: s.artist,
+				}),
+			);
+			playTracks({ tracks, cursor: index });
+		},
+		[songs],
+	);
 	return (
 		(songs === undefined ||
 			(!hideIfEmpty && songs.length === 0) ||
@@ -95,6 +119,11 @@ export const SongGrid = ({
 													: undefined
 										}
 										illustrationProps={illustrationProps}
+										onPress={() =>
+											onItemPress(
+												idx + chunkIdx * ItemsPerColumn,
+											)
+										}
 									/>
 
 									{idx !== chunk.length - 1 && (
