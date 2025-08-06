@@ -8,7 +8,7 @@ import { Tile } from "../tile";
 type Props = {
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 	formatSubtitle?: (s: string) => string;
-	onPress?: () => void;
+	onPress: () => void;
 	video: VideoWithRelations<"illustration" | "master" | "artist"> | undefined;
 	subtitle: "duration" | "artistName";
 };
@@ -20,9 +20,7 @@ export const VideoTile = (props: Props) => {
 			illustration={props.video?.illustration}
 			illustrationProps={props.illustrationProps}
 			title={props.video?.name}
-			onPress={() => {
-				props.onPress?.();
-			}} // TODO Launch playback
+			onPress={props.onPress}
 			contextMenu={contextMenu}
 			subtitle={formattedSubtitle}
 		/>
@@ -36,9 +34,7 @@ export const VideoItem = (props: Props) => {
 		<ListItem
 			title={props.video?.name}
 			subtitle={formattedSubtitle}
-			onPress={() => {
-				props.onPress?.();
-			}} // TODO Launch playback
+			onPress={props.onPress}
 			illustration={props.video?.illustration}
 			contextMenu={contextMenu}
 			illustrationProps={props.illustrationProps}

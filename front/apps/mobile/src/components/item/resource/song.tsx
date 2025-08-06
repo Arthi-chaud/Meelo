@@ -11,7 +11,7 @@ type Props = {
 	illustrationProps: ComponentProps<typeof ListItem>["illustrationProps"];
 	subtitle: "artists" | null | undefined;
 	formatSubtitle?: (s: string) => string;
-	onPress?: () => void;
+	onPress: () => void;
 };
 
 export const SongItem = ({
@@ -39,9 +39,7 @@ export const SongItem = ({
 		<ListItem
 			title={song?.name}
 			subtitle={formattedSubtitle}
-			onPress={() => {
-				onPress?.();
-			}} // TODO Mark onPress as required
+			onPress={onPress}
 			contextMenu={contextMenu}
 			illustration={song?.illustration}
 			illustrationProps={illustrationProps}
