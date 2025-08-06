@@ -8,14 +8,15 @@ type Props = {
 		| TrackWithRelations<"illustration" | "release" | "song" | "video">
 		| undefined;
 	illustrationProps: ComponentProps<typeof ListItem>["illustrationProps"];
+	onPress: () => void;
 };
 
-export const TrackItem = ({ track, illustrationProps }: Props) => {
+export const TrackItem = ({ track, illustrationProps, onPress }: Props) => {
 	const contextMenu = useTrackContextMenu(track);
 	return (
 		<ListItem
 			title={track?.name}
-			onPress={() => {}}
+			onPress={onPress}
 			subtitle={track?.release?.name}
 			illustration={track?.illustration}
 			contextMenu={contextMenu}
