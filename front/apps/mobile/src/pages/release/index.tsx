@@ -1,4 +1,6 @@
-import { useMemo } from "react";
+import { useSetAtom } from "jotai";
+import { shuffle } from "lodash";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -11,6 +13,7 @@ import {
 import type Album from "@/models/album";
 import type Genre from "@/models/genre";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
+import { playTracksAtom } from "@/state/player";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import {
 	useBSidesAndExtras,
@@ -48,6 +51,7 @@ import {
 import { Tracklist } from "./tracklist";
 
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
+	const playTracks = useSetAtom(playTracksAtom);
 	const { data: release } = useQuery(() =>
 		getRelease(releaseId, ["illustration", "discs"]),
 	);
@@ -59,7 +63,27 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 	const { data: discs } = useQuery(() =>
 		releaseTracklistQuery(releaseId, false),
 	);
-	const { isMixed, tracks, totalDuration, tracklist } = useTracklist(discs);
+	const {
+		isMixed,
+		tracks: tracks_,
+		totalDuration,
+		tracklist,
+	} = useTracklist(discs);
+	const tracks = useMemo(() => {
+		return tracks_
+			.filter((t) => t !== undefined)
+			.map(({ song, video, ...track }) => ({
+				track,
+				artist: (song ?? video)!.artist,
+			}));
+	}, [tracks_]);
+	const playAlbum = useCallback(() => {
+		playTracks({ tracks });
+	}, [tracks]);
+
+	const shuffleAlbum = useCallback(() => {
+		playTracks({ tracks: shuffle(tracks) });
+	}, [tracks]);
 
 	useSetKeyIllustration(release);
 	return (
@@ -70,13 +94,14 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				album={album}
 				totalDuration={totalDuration}
 			/>
-			{/* TODO  callbacks */}
 			<View style={styles.playbackControls}>
-				<Pressable style={styles.playbackControl} onPress={() => {}}>
+				<Pressable style={styles.playbackControl} onPress={playAlbum}>
 					<Icon icon={PlayIcon} />
 				</Pressable>
-
-				<Pressable style={styles.playbackControl} onPress={() => {}}>
+				<Pressable
+					style={styles.playbackControl}
+					onPress={shuffleAlbum}
+				>
 					<Icon icon={ShuffleIcon} />
 				</Pressable>
 			</View>
@@ -94,7 +119,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 			<PostTracklistSections
 				releaseId={release?.id}
 				album={album}
-				tracks={tracks}
+				tracks={tracks_}
 				albumArtistId={album?.artistId}
 			/>
 		</SafeScrollView>
