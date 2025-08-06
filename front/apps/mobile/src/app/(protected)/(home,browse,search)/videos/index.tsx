@@ -17,11 +17,15 @@
  */
 
 import { useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
+import { useSetAtom } from "jotai";
+import { useCallback, useMemo } from "react";
 import { getArtist, getSong, getVideos } from "@/api/queries";
+import { transformPage } from "@/api/query";
 import { videoTypeToTranslationKey } from "@/models/utils";
+import type Video from "@/models/video";
 import { VideoSortingKeys, VideoType } from "@/models/video";
-import { useQuery } from "~/api";
+import { playFromInfiniteQuery } from "@/state/player";
+import { useQuery, useQueryClient } from "~/api";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -33,6 +37,8 @@ import { VideoItem, VideoTile } from "~/components/item/resource/video";
 import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
 export default function VideoBrowseView() {
+	const queryClient = useQueryClient();
+	const playTracks = useSetAtom(playFromInfiniteQuery);
 	const { artist: artistId, song: songId } = useLocalSearchParams<{
 		artist?: string;
 		song?: string;
@@ -62,6 +68,38 @@ export default function VideoBrowseView() {
 		(songId) => getSong(songId, ["illustration", "artist", "featuring"]),
 		songId,
 	);
+	const query = useMemo(
+		() =>
+			getVideos(
+				{
+					library: libraries,
+					type: types,
+					artist: artistId,
+					group: song?.groupId,
+				},
+				{ sortBy: sort ?? "name", order: order ?? "asc" },
+				["artist", "illustration", "master", "song"],
+			),
+		[libraries, types, artistId, song, sort, order],
+	);
+	const onItemPress = useCallback(
+		(index: number, videos: Video[] | undefined) => {
+			if (videos === undefined) {
+				return;
+			}
+			const afterId = index > 0 ? videos[index - 1]?.id : undefined;
+			const transformedQuery = transformPage(
+				query,
+				({ master, illustration, artist, id }) => ({
+					artist,
+					track: { ...master, illustration },
+					id,
+				}),
+			);
+			playTracks(transformedQuery, queryClient, afterId);
+		},
+		[query],
+	);
 	return (
 		<InfiniteView
 			layout={layout}
@@ -77,19 +115,11 @@ export default function VideoBrowseView() {
 				sort: sortControl,
 				filters: [libraryFilterControl, albumTypeFilterControl],
 			}}
-			query={getVideos(
-				{
-					library: libraries,
-					type: types,
-					artist: artistId,
-					group: song?.groupId,
-				},
-				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration", "master", "song"],
-			)}
-			render={(video) => (
+			query={query}
+			render={(video, idx, videos) => (
 				<Item
 					video={video}
+					onPress={() => video && onItemPress(idx, videos)}
 					subtitle={artistId || songId ? "duration" : "artistName"}
 					illustrationProps={{
 						simpleColorPlaceholder: true,
