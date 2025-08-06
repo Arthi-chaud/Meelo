@@ -17,7 +17,6 @@ import { Pressable } from "~/primitives/pressable";
 // TODO Pause state
 // TODO Progress state
 // TODO Move spring params to theme
-// TODO When isthumbnail: no gap with text
 
 export const MinimisedPlayer = () => {
 	const queue = useAtomValue(playlistAtom);
@@ -30,9 +29,6 @@ export const MinimisedPlayer = () => {
 	const isVideo = useMemo(() => {
 		return currentTrack?.track.type === "Video";
 	}, [currentTrack]);
-	illustrationStyles.useVariants({
-		isThumbnail: isVideo,
-	});
 	const onSkip = useCallback(() => {
 		skipTrack(queryClient);
 	}, [queryClient, skipTrack]);
@@ -47,7 +43,7 @@ export const MinimisedPlayer = () => {
 
 	return (
 		<View style={styles.root}>
-			<View style={illustrationStyles.root}>
+			<View style={styles.illustration}>
 				<Illustration
 					illustration={currentTrack?.track.illustration}
 					normalizedThumbnail={isVideo}
@@ -112,23 +108,14 @@ const styles = StyleSheet.create((theme) => ({
 		borderBottomEndRadius: theme.borderRadius,
 		borderTopEndRadius: theme.borderRadius,
 	},
+
+	illustration: {
+		height: theme.gap(5.5),
+	},
 	controls: {
 		flexDirection: "row",
 		gap: theme.gap(2),
 		paddingHorizontal: theme.gap(1),
 		alignItems: "center",
-	},
-}));
-
-const illustrationStyles = StyleSheet.create((theme) => ({
-	root: {
-		variants: {
-			isThumbnail: {
-				true: {
-					width: theme.gap(10),
-				},
-				false: { width: theme.gap(6) },
-			},
-		},
 	},
 }));
