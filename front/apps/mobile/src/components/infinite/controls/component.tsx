@@ -5,22 +5,22 @@ import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
 import type { SortControl } from "@/infinite-controls/sort";
 import { AscIcon, DescIcon, GridIcon, ListIcon } from "@/ui/icons";
+import type { Action } from "~/actions";
 import { Dropdown } from "~/components/dropdown";
 import { Button } from "~/primitives/button";
-
-//TODO Actions
-//TODO Height of buttons is not consistent
 
 type Props<SortingKey extends string> = {
 	layout?: LayoutControl;
 	sort?: SortControl<SortingKey>;
 	filters?: FilterControl<any>[];
+	actions?: Omit<Action, "href">[];
 };
 
 export const Controls = <S extends string>({
 	layout,
 	sort,
 	filters,
+	actions,
 }: Props<S>) => {
 	const { t } = useTranslation();
 	const OrderIcon = withUnistyles(
@@ -38,6 +38,7 @@ export const Controls = <S extends string>({
 					buttonProps={{
 						title: t(filter.buttonLabel),
 						icon: filter.buttonIcon as any,
+						size: "small",
 						iconPosition: "right",
 					}}
 					values={filter.values ?? []}
@@ -69,6 +70,7 @@ export const Controls = <S extends string>({
 					formatItem={(item) => t(sort.formatItem(item))}
 					buttonProps={{
 						title: t(sort.formatItem(sort.selected.sort)),
+						size: "small",
 						icon:
 							sort.selected.order === "asc" ? AscIcon : DescIcon,
 						iconPosition: "left",
@@ -92,6 +94,7 @@ export const Controls = <S extends string>({
 			)}
 			{layout && (
 				<Button
+					size="small"
 					icon={layout.layout === "list" ? GridIcon : ListIcon}
 					containerStyle={styles.button}
 					onPress={() => {
@@ -102,6 +105,17 @@ export const Controls = <S extends string>({
 					}}
 				/>
 			)}
+			{actions?.map((action, idx) => (
+				<Button
+					size="small"
+					key={idx}
+					icon={action.icon}
+					title={t(action.label)}
+					onPress={() => {
+						action.onPress?.();
+					}}
+				/>
+			))}
 		</View>
 	);
 };
