@@ -52,7 +52,7 @@ export const MinimisedPlayer = () => {
 					illustration={currentTrack?.track.illustration}
 					normalizedThumbnail={isVideo}
 					variant="center"
-					quality="low"
+					quality={isVideo ? "medium" : "low"}
 				/>
 			</View>
 			<View style={styles.text}>
@@ -125,8 +125,7 @@ const illustrationStyles = StyleSheet.create((theme) => ({
 		variants: {
 			isThumbnail: {
 				true: {
-					aspectRatio: 16 / 9,
-					width: 80,
+					width: theme.gap(10),
 				},
 				false: { width: theme.gap(6) },
 			},
