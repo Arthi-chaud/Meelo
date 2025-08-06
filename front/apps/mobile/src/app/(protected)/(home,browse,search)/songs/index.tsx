@@ -17,16 +17,19 @@
  */
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useCallback, useEffect } from "react";
+import { useSetAtom } from "jotai";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { getArtist, getSong, getSongs } from "@/api/queries";
-import {
+import { transformPage } from "@/api/query";
+import Song, {
 	SongSortingKeys,
 	SongType,
 	type SongWithRelations,
 } from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
-import { useQuery } from "~/api";
+import { playFromInfiniteQuery } from "@/state/player";
+import { useQuery, useQueryClient } from "~/api";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -40,6 +43,8 @@ import { ArtistHeader, SongHeader } from "~/components/resource-header";
 // TODO song subtitle: allow it to be album
 
 export default function SongBrowseView() {
+	const playTracks = useSetAtom(playFromInfiniteQuery);
+	const queryClient = useQueryClient();
 	const nav = useNavigation();
 	const { t } = useTranslation();
 	const {
@@ -91,6 +96,47 @@ export default function SongBrowseView() {
 		},
 		[artistId, rareArtistId],
 	);
+	const query = useMemo(
+		() =>
+			getSongs(
+				{
+					library: libraries,
+					type: types,
+					artist: artistId,
+					versionsOf: versionsOfSongId,
+					rare: rareArtistId,
+				},
+				{ sortBy: sort ?? "name", order: order ?? "asc" },
+				["artist", "illustration", "featuring", "master"],
+			),
+		[
+			song,
+			order,
+			libraries,
+			types,
+			artistId,
+			versionsOfSongId,
+			rareArtistId,
+		],
+	);
+	const onItemPress = useCallback(
+		(index: number, songs: Song[] | undefined) => {
+			if (songs === undefined) {
+				return;
+			}
+			const afterId = index > 0 ? songs[index - 1]?.id : undefined;
+			const transformedQuery = transformPage(
+				query,
+				({ master, illustration, artist, id }) => ({
+					artist,
+					track: { ...master, illustration },
+					id,
+				}),
+			);
+			playTracks(transformedQuery, queryClient, afterId);
+		},
+		[query],
+	);
 	return (
 		<InfiniteView
 			layout={"list"}
@@ -105,20 +151,11 @@ export default function SongBrowseView() {
 				sort: sortControl,
 				filters: [libraryFilterControl, songTypeFilterControl],
 			}}
-			query={getSongs(
-				{
-					library: libraries,
-					type: types,
-					artist: artistId,
-					versionsOf: versionsOfSongId,
-					rare: rareArtistId,
-				},
-				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration", "featuring", "master"],
-			)}
-			render={(song) => (
+			query={query}
+			render={(song, idx, songs) => (
 				<SongItem
 					song={song}
+					onPress={() => onItemPress(idx, songs)}
 					subtitle={subtitle(song)}
 					illustrationProps={{ simpleColorPlaceholder: true }}
 				/>
