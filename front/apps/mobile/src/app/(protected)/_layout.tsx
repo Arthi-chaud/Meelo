@@ -34,6 +34,7 @@ import {
 } from "react-native";
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { infiniteQueryAtom, playlistAtom } from "@/state/player";
@@ -95,7 +96,6 @@ const styles = StyleSheet.create((theme) => ({
 	player: {
 		width: "100%",
 		paddingHorizontal: theme.gap(0.75),
-		marginBottom: theme.gap(0.75),
 	},
 }));
 
@@ -122,14 +122,23 @@ export default function ProtectedLayout() {
 		() => infinitePlaylist !== null,
 		[infinitePlaylist],
 	);
+	const theme = useAnimatedTheme();
 
-	const playerPosition = useSharedValue(-1000);
+	// For the slide up animation
+	const playerMarginBottom = useSharedValue(-1000);
+	// For the padding between the tabbar and the player
+	const playerPaddingBottom = useSharedValue(0);
 	useEffect(() => {
 		if (!queueIsEmpty || queueIsInfinite) {
-			playerPosition.value = withSpring(0, {
+			const style = {
 				stiffness: 1110,
 				damping: 510,
-			});
+			};
+			playerMarginBottom.value = withSpring(0, style);
+			playerPaddingBottom.value = withSpring(
+				theme.value.gap(0.75),
+				style,
+			);
 		}
 	}, [queueIsEmpty, queueIsInfinite]);
 	//TODO Proper handling of when user is loading
@@ -140,7 +149,12 @@ export default function ProtectedLayout() {
 				<View style={styles.player}>
 					{/* TODO blur behing player, like iOS */}
 					{(!queueIsEmpty || queueIsInfinite) && (
-						<Animated.View style={{ marginBottom: playerPosition }}>
+						<Animated.View
+							style={{
+								marginBottom: playerMarginBottom,
+								paddingBottom: playerPaddingBottom,
+							}}
+						>
 							<MinimisedPlayer />
 						</Animated.View>
 					)}
