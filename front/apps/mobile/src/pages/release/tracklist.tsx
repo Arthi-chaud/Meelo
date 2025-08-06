@@ -6,11 +6,15 @@ import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
 import type { Disc } from "@/models/disc";
 import type { SongWithRelations } from "@/models/song";
-import type Track from "@/models/track";
 import type { TrackWithRelations } from "@/models/track";
 import type TracklistType from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
-import { cursorAtom, playlistAtom, playTracksAtom } from "@/state/player";
+import {
+	cursorAtom,
+	playlistAtom,
+	playTracksAtom,
+	type TrackState,
+} from "@/state/player";
 import { PlayIcon, VideoIcon } from "@/ui/icons";
 import { formatDiscName } from "@/ui/pages/release";
 import formatArtists from "@/utils/format-artists";
@@ -43,14 +47,14 @@ export const Tracklist = ({
 }: {
 	albumArtistId: number | undefined | null;
 	discs: Disc[] | undefined;
-	tracks: Track[] | undefined;
+	tracks: TrackState[] | undefined;
 	tracklist: TracklistType<TrackType | undefined> | undefined;
 }) => {
 	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const maxTrackIndex = useMemo(() => {
 		return tracks?.length
-			? Math.max(...tracks.map(({ trackIndex }) => trackIndex ?? 0))
+			? Math.max(...tracks.map(({ track }) => track.trackIndex ?? 0))
 			: 10;
 	}, [tracks]);
 	const showDiscName = useMemo(() => {
@@ -78,21 +82,15 @@ export const Tracklist = ({
 	// Will add all the other tracks to the queue
 	const playTrack = useCallback(
 		(trackId: number) => {
-			if (!tracklist) {
+			if (!tracks) {
 				return;
 			}
-			const queue = Object.values(tracklist).flatMap((disc) =>
-				disc
-					.filter((t) => t !== undefined)
-					.map(({ song, video, ...track }) => ({
-						track,
-						artist: (song ?? video)!.artist,
-					})),
+			const cursor = tracks.findIndex(
+				({ track }) => track.id === trackId,
 			);
-			const cursor = queue.findIndex(({ track }) => track.id === trackId);
-			playTracks({ tracks: queue, cursor });
+			playTracks({ tracks, cursor });
 		},
-		[tracklist],
+		[tracks],
 	);
 	return (
 		<View style={styles.root}>
