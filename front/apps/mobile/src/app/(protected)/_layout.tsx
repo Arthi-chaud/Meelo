@@ -36,7 +36,7 @@ import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
-import { playlistAtom } from "@/state/player";
+import { infiniteQueryAtom, playlistAtom } from "@/state/player";
 import {
 	BrowseIcon,
 	HomeIcon,
@@ -101,6 +101,8 @@ const styles = StyleSheet.create((theme) => ({
 
 export default function ProtectedLayout() {
 	const queue = useAtomValue(playlistAtom);
+
+	const infinitePlaylist = useAtomValue(infiniteQueryAtom);
 	const accessToken = useAtomValue(accessTokenAtom);
 	const instanceUrl = useAtomValue(instanceUrlAtom);
 	const setBottomTabBarHeight = useSetAtom(bottomTabBarHeightAtom);
@@ -116,15 +118,20 @@ export default function ProtectedLayout() {
 		setBottomTabBarHeight(e.nativeEvent.layout.height);
 	}, []);
 	const queueIsEmpty = useMemo(() => queue.length === 0, [queue]);
+	const queueIsInfinite = useMemo(
+		() => infinitePlaylist !== null,
+		[infinitePlaylist],
+	);
+
 	const playerPosition = useSharedValue(-1000);
 	useEffect(() => {
-		if (!queueIsEmpty) {
+		if (!queueIsEmpty || queueIsInfinite) {
 			playerPosition.value = withSpring(0, {
 				stiffness: 1110,
 				damping: 510,
 			});
 		}
-	}, [queueIsEmpty]);
+	}, [queueIsEmpty, queueIsInfinite]);
 	//TODO Proper handling of when user is loading
 	return (
 		<Tabs>
@@ -132,7 +139,7 @@ export default function ProtectedLayout() {
 			<View style={styles.footer} onLayout={onLayout}>
 				<View style={styles.player}>
 					{/* TODO blur behing player, like iOS */}
-					{queueIsEmpty || (
+					{(!queueIsEmpty || queueIsInfinite) && (
 						<Animated.View style={{ marginBottom: playerPosition }}>
 							<MinimisedPlayer />
 						</Animated.View>
