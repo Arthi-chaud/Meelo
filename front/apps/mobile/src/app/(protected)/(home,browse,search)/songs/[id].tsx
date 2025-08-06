@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
+import { useSetAtom } from "jotai";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
@@ -9,6 +10,7 @@ import type Genre from "@/models/genre";
 import type { Lyrics } from "@/models/lyrics";
 import type Song from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
+import { playTrackAtom, type TrackState } from "@/state/player";
 import { LyricsIcon, PlayIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
@@ -30,6 +32,7 @@ const tabs = ["lyrics", "infos"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function SongPage() {
+	const playTrack = useSetAtom(playTrackAtom);
 	const { paddingTop, paddingBottom } = useRootViewStyle();
 	const { id, tab: tabQuery } = useLocalSearchParams<{
 		id: string;
@@ -42,9 +45,25 @@ export default function SongPage() {
 		return tabQuery;
 	});
 	const { data: song } = useQuery(() =>
-		getSong(id, ["artist", "illustration", "featuring", "lyrics"]),
+		getSong(id, [
+			"artist",
+			"illustration",
+			"featuring",
+			"lyrics",
+			"master",
+		]),
 	);
 	useSetKeyIllustration(song);
+	const playButtonCallback = useCallback(() => {
+		if (!song) {
+			return;
+		}
+		const track: TrackState = {
+			track: { ...song.master, illustration: song.illustration },
+			artist: song.artist,
+		};
+		playTrack(track);
+	}, [song]);
 
 	return (
 		<View style={{ paddingTop }}>
@@ -54,7 +73,8 @@ export default function SongPage() {
 					<Button
 						title="Play"
 						icon={PlayIcon}
-						onPress={() => {}} //TODO
+						disabled={!song}
+						onPress={playButtonCallback}
 						containerStyle={styles.playButtonContent}
 					/>
 				</View>
