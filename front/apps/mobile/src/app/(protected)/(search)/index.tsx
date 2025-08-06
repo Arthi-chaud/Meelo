@@ -17,6 +17,7 @@
  */
 
 import { useMutation } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -30,6 +31,7 @@ import {
 import type Illustration from "@/models/illustration";
 import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
+import { playTrackAtom } from "@/state/player";
 import { useAPI, useQueryClient } from "~/api";
 import { InfiniteView } from "~/components/infinite/view";
 import { SearchResultItem } from "~/components/item/resource/search-result";
@@ -40,6 +42,7 @@ import { TextInput } from "~/primitives/text_input";
 export default function SearchView() {
 	const timeoutRef = useRef<number>(null);
 	const api = useAPI();
+	const playTrack = useSetAtom(playTrackAtom);
 	const queryClient = useQueryClient();
 	const [searchValue, setSearchValue] = useState("");
 	const debounceSearch = useCallback((searchValue: string) => {
@@ -79,6 +82,25 @@ export default function SearchView() {
 			}
 		},
 	});
+	const onSearchResultPress = useCallback(
+		(item: SearchResult | undefined) => {
+			if (!item) {
+				return;
+			}
+			saveSearch.mutateAsync(item);
+			if (item.song || item.video) {
+				const track = item.song ?? item.video;
+				playTrack({
+					track: {
+						...track.master,
+						illustration: track.illustration,
+					},
+					artist: track.artist,
+				});
+			}
+		},
+		[],
+	);
 
 	return (
 		<InfiniteView
@@ -102,7 +124,7 @@ export default function SearchView() {
 			render={(item) => (
 				<SearchResultItem
 					searchResult={item}
-					onPress={() => item && saveSearch.mutate(item)}
+					onPress={() => onSearchResultPress(item)}
 				/>
 			)}
 			layout="list"

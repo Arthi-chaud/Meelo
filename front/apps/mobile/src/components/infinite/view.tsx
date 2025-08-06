@@ -21,6 +21,8 @@ import { Controls } from "./controls/component";
 
 //TODO Button to scroll back up
 
+//TODO Avoid refresh component to be displayed when we tap an item in search page
+
 // Notes:
 // the navigation header being positioned using 'absolute'
 // We need to rely on the root view style hook to get its height
