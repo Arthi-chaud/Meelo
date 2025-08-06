@@ -1,4 +1,5 @@
-import { Fragment, useMemo } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { Fragment, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -9,7 +10,8 @@ import type Track from "@/models/track";
 import type { TrackWithRelations } from "@/models/track";
 import type TracklistType from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
-import { VideoIcon } from "@/ui/icons";
+import { cursorAtom, playlistAtom, playTracksAtom } from "@/state/player";
+import { PlayIcon, VideoIcon } from "@/ui/icons";
 import { formatDiscName } from "@/ui/pages/release";
 import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
@@ -33,8 +35,6 @@ const SkeletonTracklist = {
 	disc: generateArray(10, undefined),
 } satisfies TracklistType<TrackType | undefined>;
 
-//TODO 'is Playing' icon
-
 export const Tracklist = ({
 	tracklist,
 	discs,
@@ -46,6 +46,7 @@ export const Tracklist = ({
 	tracks: Track[] | undefined;
 	tracklist: TracklistType<TrackType | undefined> | undefined;
 }) => {
+	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const maxTrackIndex = useMemo(() => {
 		return tracks?.length
@@ -58,6 +59,41 @@ export const Tracklist = ({
 		}
 		return Object.keys(tracklist).length > 1;
 	}, [tracklist]);
+	const playDisc = useCallback(
+		(discIndex: string) => {
+			if (!tracklist) {
+				return;
+			}
+			const discTracks = tracklist[discIndex]
+				.filter((t) => t !== undefined)
+				.map(({ song, video, ...track }) => ({
+					track,
+					artist: (song ?? video)!.artist,
+				}));
+			playTracks({ tracks: discTracks });
+		},
+		[tracklist],
+	);
+	// Callback on tracklist item press
+	// Will add all the other tracks to the queue
+	const playTrack = useCallback(
+		(trackId: number) => {
+			if (!tracklist) {
+				return;
+			}
+			const queue = Object.values(tracklist).flatMap((disc) =>
+				disc
+					.filter((t) => t !== undefined)
+					.map(({ song, video, ...track }) => ({
+						track,
+						artist: (song ?? video)!.artist,
+					})),
+			);
+			const cursor = queue.findIndex(({ track }) => track.id === trackId);
+			playTracks({ tracks: queue, cursor });
+		},
+		[tracklist],
+	);
 	return (
 		<View style={styles.root}>
 			{Object.entries(tracklist ?? SkeletonTracklist).map(
@@ -69,7 +105,7 @@ export const Tracklist = ({
 									<Pressable
 										disabled={!tracklist}
 										onPress={() => {
-											/* TODO Play disc */
+											playDisc(discName);
 										}}
 									>
 										<LoadableText
@@ -93,6 +129,9 @@ export const Tracklist = ({
 									<Fragment key={idx}>
 										<TrackItem
 											track={track}
+											onPress={() =>
+												track && playTrack(track.id)
+											}
 											albumArtistId={albumArtistId}
 											maxTrackIndex={maxTrackIndex}
 										/>
@@ -111,13 +150,21 @@ export const Tracklist = ({
 
 const TrackItem = ({
 	track,
+	onPress,
 	maxTrackIndex,
 	albumArtistId,
 }: {
 	track: TrackType | undefined;
 	maxTrackIndex: number;
+	onPress: () => void;
 	albumArtistId: number | null | undefined;
 }) => {
+	const playlist = useAtomValue(playlistAtom);
+	const cursor = useAtomValue(cursorAtom);
+	const currentPlayingTrackId: number | null = useMemo(
+		() => playlist[cursor]?.track.id || null,
+		[playlist, cursor],
+	);
 	//Note: Instead of using track context menu
 	//We build back songs and videos from the track
 	const songWithTrack = useMemo(() => {
@@ -158,12 +205,18 @@ const TrackItem = ({
 			disabled={track === undefined}
 			style={styles.trackButton}
 			onLongPress={contextMenu ? openContextMenu : undefined}
-			onPress={() => {
-				/* TODO Start playback */
-			}}
+			onPress={onPress}
 		>
 			<View style={styles.trackIndex(maxTrackIndex)}>
-				{track?.type !== "Video" ? (
+				{track && track.id === currentPlayingTrackId ? (
+					<View style={styles.isPlayingIconContainer}>
+						<Icon icon={PlayIcon} style={styles.leadingIcon} />
+					</View>
+				) : track?.type === "Video" ? (
+					<View style={styles.trackVideoIconContainer}>
+						<Icon icon={VideoIcon} style={styles.leadingIcon} />
+					</View>
+				) : (
 					<LoadableText
 						numberOfLines={1}
 						skeletonWidth={2}
@@ -174,10 +227,6 @@ const TrackItem = ({
 						}
 						color="secondary"
 					/>
-				) : (
-					<View style={styles.trackVideoIconContainer}>
-						<Icon icon={VideoIcon} style={styles.trackVideoIcon} />
-					</View>
 				)}
 			</View>
 			<View style={styles.trackLabel}>
@@ -242,14 +291,17 @@ const styles = StyleSheet.create((theme) => ({
 	tracks: {
 		paddingBottom: theme.gap(2),
 	},
-	trackVideoIcon: {
+	leadingIcon: {
 		color: theme.colors.text.secondary,
-		size: theme.fontSize.rem(1.5),
+		size: theme.fontSize.rem(1.4),
 	},
 	trackVideoIconContainer: {
 		// This override the gap of trackButton
 		// Allowing to make the icon appear more centered
 		marginRight: theme.gap(-1),
+	},
+	isPlayingIconContainer: {
+		marginRight: theme.gap(-0.5),
 	},
 	trackButton: {
 		width: "100%",
