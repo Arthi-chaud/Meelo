@@ -25,6 +25,9 @@ import { videoTypeToTranslationKey } from "@/models/utils";
 import type Video from "@/models/video";
 import { VideoSortingKeys, VideoType } from "@/models/video";
 import { playFromInfiniteQuery } from "@/state/player";
+import { PlayIcon, ShuffleIcon } from "@/ui/icons";
+import { getRandomNumber } from "@/utils/random";
+import type { Action } from "~/actions";
 import { useQuery, useQueryClient } from "~/api";
 import {
 	useLibraryFiltersControl,
@@ -68,19 +71,33 @@ export default function VideoBrowseView() {
 		(songId) => getSong(songId, ["illustration", "artist", "featuring"]),
 		songId,
 	);
-	const query = useMemo(
-		() =>
+	const getQuery = useCallback(
+		(random?: number) =>
 			getVideos(
 				{
 					library: libraries,
 					type: types,
 					artist: artistId,
 					group: song?.groupId,
+					random,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration", "master", "song"],
 			),
 		[libraries, types, artistId, song, sort, order],
+	);
+	const query = useMemo(() => getQuery(), [getQuery]);
+	const getQueryForPlayer = useCallback(
+		(random?: number) =>
+			transformPage(
+				getQuery(random),
+				({ master, illustration, artist, id }) => ({
+					artist,
+					track: { ...master, illustration },
+					id,
+				}),
+			),
+		[getQuery],
 	);
 	const onItemPress = useCallback(
 		(index: number, videos: Video[] | undefined) => {
@@ -88,18 +105,30 @@ export default function VideoBrowseView() {
 				return;
 			}
 			const afterId = index > 0 ? videos[index - 1]?.id : undefined;
-			const transformedQuery = transformPage(
-				query,
-				({ master, illustration, artist, id }) => ({
-					artist,
-					track: { ...master, illustration },
-					id,
-				}),
-			);
-			playTracks(transformedQuery, queryClient, afterId);
+			playTracks(getQueryForPlayer(), queryClient, afterId);
 		},
 		[query],
 	);
+
+	const playAction = useMemo(() => {
+		return {
+			label: "actions.playback.playAll",
+			icon: PlayIcon,
+			onPress: () => {
+				playTracks(getQueryForPlayer(), queryClient);
+			},
+		} satisfies Action;
+	}, [getQueryForPlayer, queryClient]);
+
+	const shuffleAction = useMemo(() => {
+		return {
+			label: "actions.playback.shuffle",
+			icon: ShuffleIcon,
+			onPress: () => {
+				playTracks(getQueryForPlayer(getRandomNumber()), queryClient);
+			},
+		} satisfies Action;
+	}, [getQueryForPlayer, queryClient]);
 	return (
 		<InfiniteView
 			layout={layout}
@@ -114,6 +143,7 @@ export default function VideoBrowseView() {
 				layout: layoutControl,
 				sort: sortControl,
 				filters: [libraryFilterControl, albumTypeFilterControl],
+				actions: [playAction, shuffleAction],
 			}}
 			query={query}
 			render={(video, idx, videos) => (
