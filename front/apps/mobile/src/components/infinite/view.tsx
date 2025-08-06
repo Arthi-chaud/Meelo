@@ -34,7 +34,11 @@ type Props<T, T1, Sort extends string> = {
 	layout: LayoutOption;
 	header?: React.ReactElement;
 	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
-	render: (item: T1 | undefined) => React.ReactElement;
+	render: (
+		item: T1 | undefined,
+		index: number,
+		items: T1[] | undefined,
+	) => React.ReactElement;
 	ignoreTabBar?: true;
 };
 
@@ -111,10 +115,14 @@ export const InfiniteView = <
 								)}
 							/>
 						}
-						renderItem={({ item }) => {
+						renderItem={({ item, index }) => {
 							return (
 								<View style={styles.itemContainer}>
-									{props.render(item as T1 | undefined)}
+									{props.render(
+										item as T1 | undefined,
+										index,
+										itemList as T1[] | undefined,
+									)}
 								</View>
 							);
 						}}
