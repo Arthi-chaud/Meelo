@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
+import { useSetAtom } from "jotai";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import {
@@ -11,8 +12,9 @@ import {
 } from "@/api/queries";
 import { type AlbumSortingKey, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
-import type { VideoSortingKey } from "@/models/video";
+import type { VideoSortingKey, VideoWithRelations } from "@/models/video";
 import { VideoTypeIsExtra } from "@/models/video";
+import { playTracksAtom } from "@/state/player";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import {
@@ -40,6 +42,7 @@ const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
 const ShowSeeMoreThreshold = 3;
 
 export default function ArtistView() {
+	const playTracks = useSetAtom(playTracksAtom);
 	const { id: artistId } = useLocalSearchParams<{ id: string }>();
 	const { t } = useTranslation();
 
@@ -92,6 +95,20 @@ export default function ArtistView() {
 			),
 		};
 	}, [videos]);
+	const onVideoPress = useCallback(
+		(
+			videoId: number,
+			items: VideoWithRelations<"artist" | "master" | "illustration">[],
+		) => {
+			const tracks = items.map(({ master, illustration, artist }) => ({
+				track: { ...master, illustration },
+				artist,
+			}));
+			const cursor = items.findIndex(({ id }) => id === videoId);
+			playTracks({ tracks, cursor });
+		},
+		[],
+	);
 	useSetKeyIllustration(artist ?? undefined);
 	return (
 		<SafeScrollView>
@@ -163,6 +180,9 @@ export default function ArtistView() {
 					render={(item) => (
 						<VideoTile
 							video={item}
+							onPress={() =>
+								item && items && onVideoPress(item.id, items)
+							}
 							subtitle="duration"
 							illustrationProps={{
 								normalizedThumbnail: true,
