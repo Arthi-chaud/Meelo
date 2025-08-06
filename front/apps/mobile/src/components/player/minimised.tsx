@@ -58,11 +58,13 @@ export const MinimisedPlayer = () => {
 			<View style={styles.text}>
 				<LoadableText
 					content={currentTrack?.track.name}
+					numberOfLines={1}
 					variant="h6"
 					skeletonWidth={15}
 				/>
 				<LoadableText
 					content={currentTrack?.artist.name}
+					numberOfLines={1}
 					variant="body"
 					skeletonWidth={15}
 				/>
