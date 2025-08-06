@@ -195,7 +195,7 @@ const PostTracklistSections = ({
 			const cursor = items.findIndex(({ id }) => id === videoId);
 			playTracks({ tracks, cursor });
 		},
-		[videoItems],
+		[],
 	);
 	return (
 		<View style={styles.bottomSections}>
