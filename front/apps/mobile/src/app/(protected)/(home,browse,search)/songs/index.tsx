@@ -29,6 +29,9 @@ import Song, {
 } from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
 import { playFromInfiniteQuery } from "@/state/player";
+import { PlayIcon, ShuffleIcon } from "@/ui/icons";
+import { getRandomNumber } from "@/utils/random";
+import type { Action } from "~/actions";
 import { useQuery, useQueryClient } from "~/api";
 import {
 	useLibraryFiltersControl,
@@ -96,14 +99,15 @@ export default function SongBrowseView() {
 		},
 		[artistId, rareArtistId],
 	);
-	const query = useMemo(
-		() =>
+	const getQuery = useCallback(
+		(random?: number) =>
 			getSongs(
 				{
 					library: libraries,
 					type: types,
 					artist: artistId,
 					versionsOf: versionsOfSongId,
+					random,
 					rare: rareArtistId,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
@@ -119,24 +123,48 @@ export default function SongBrowseView() {
 			rareArtistId,
 		],
 	);
+	const query = useMemo(() => getQuery(), [getQuery]);
+	const getQueryForPlayer = useCallback(
+		(random?: number) =>
+			transformPage(
+				getQuery(random),
+				({ master, illustration, artist, id }) => ({
+					artist,
+					track: { ...master, illustration },
+					id,
+				}),
+			),
+		[query],
+	);
 	const onItemPress = useCallback(
 		(index: number, songs: Song[] | undefined) => {
 			if (songs === undefined) {
 				return;
 			}
 			const afterId = index > 0 ? songs[index - 1]?.id : undefined;
-			const transformedQuery = transformPage(
-				query,
-				({ master, illustration, artist, id }) => ({
-					artist,
-					track: { ...master, illustration },
-					id,
-				}),
-			);
-			playTracks(transformedQuery, queryClient, afterId);
+			playTracks(getQueryForPlayer(), queryClient, afterId);
 		},
 		[query],
 	);
+	const playAction = useMemo(() => {
+		return {
+			label: "actions.playback.playAll",
+			icon: PlayIcon,
+			onPress: () => {
+				playTracks(getQueryForPlayer(), queryClient);
+			},
+		} satisfies Action;
+	}, [getQueryForPlayer, queryClient]);
+
+	const shuffleAction = useMemo(() => {
+		return {
+			label: "actions.playback.shuffle",
+			icon: ShuffleIcon,
+			onPress: () => {
+				playTracks(getQueryForPlayer(getRandomNumber()), queryClient);
+			},
+		} satisfies Action;
+	}, [getQueryForPlayer, queryClient]);
 	return (
 		<InfiniteView
 			layout={"list"}
@@ -150,6 +178,7 @@ export default function SongBrowseView() {
 			controls={{
 				sort: sortControl,
 				filters: [libraryFilterControl, songTypeFilterControl],
+				actions: [playAction, shuffleAction],
 			}}
 			query={query}
 			render={(song, idx, songs) => (
