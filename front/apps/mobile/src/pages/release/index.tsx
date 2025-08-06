@@ -13,6 +13,7 @@ import {
 import type Album from "@/models/album";
 import type Genre from "@/models/genre";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
+import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import {
@@ -137,6 +138,7 @@ const PostTracklistSections = ({
 	albumArtistId: number | undefined | null;
 	tracks: TracklistItemWithRelations<"artist" | "featuring">[];
 }) => {
+	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const { data: featuringArtists } = useQuery(
 		(albumId) => artistsOnAlbumQuery(albumId),
@@ -181,6 +183,20 @@ const PostTracklistSections = ({
 		album?.type,
 		tracks,
 	);
+	const onVideoPress = useCallback(
+		(
+			videoId: number,
+			items: VideoWithRelations<"artist" | "master" | "illustration">[],
+		) => {
+			const tracks = items.map(({ master, illustration, artist }) => ({
+				track: { ...master, illustration },
+				artist,
+			}));
+			const cursor = items.findIndex(({ id }) => id === videoId);
+			playTracks({ tracks, cursor });
+		},
+		[videoItems],
+	);
 	return (
 		<View style={styles.bottomSections}>
 			<GenreRow genres={genres} style={styles.section} />
@@ -222,6 +238,9 @@ const PostTracklistSections = ({
 					style={styles.section}
 					render={(video) => (
 						<VideoTile
+							onPress={() =>
+								video && onVideoPress(video.id, items)
+							}
 							illustrationProps={{ normalizedThumbnail: true }}
 							video={video}
 							subtitle="duration"
@@ -252,6 +271,10 @@ const PostTracklistSections = ({
 							}
 							render={(video) => (
 								<VideoTile
+									onPress={() =>
+										video &&
+										onVideoPress(video.id, videoExtras)
+									}
 									illustrationProps={{
 										normalizedThumbnail: true,
 									}}
