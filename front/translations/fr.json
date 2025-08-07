@@ -1,14 +1,14 @@
 {
 	"actions": {
 		"addToPlaylist": {
-			"label": "Ajouter à une playlist",
-			"modalTitle": "Choisissez une playlist"
+			"label": "Ajouter à une liste de lecture",
+			"modalTitle": "Choisissez une liste de lecture"
 		},
 		"album": {
 			"changeType": "Changer le type de l'album",
 			"goToAlbum": "Voir l'album"
 		},
-		"archive": "Télécharger",
+		"archive": "Archiver",
 		"artist": {
 			"seeAlbums": "Voir les albums",
 			"seeSongs": "Voir les morceaux"
@@ -27,7 +27,7 @@
 		},
 		"goBackHome": "Retour à l'accueil",
 		"goToArtist": "Voir l'Artiste",
-		"goToRelease": "",
+		"goToRelease": "Aller en prodution",
 		"goToSettingsPage": "Accéder aux réglages",
 		"library": {
 			"create": "Créer une bibliothèque",
@@ -302,12 +302,12 @@
 			},
 			"keyboardBindings": "Raccourcis Clavier",
 			"lang": {
-				"de": "",
+				"de": "Allemand",
 				"en": "Anglais",
 				"fr": "Français",
 				"id": "Indonésien",
 				"it": "Italien",
-				"pt_br": "",
+				"pt_br": "Portugais (Brésil)",
 				"ru": "Russe"
 			},
 			"language": "Langue",
