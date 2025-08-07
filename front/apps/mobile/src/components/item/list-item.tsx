@@ -25,6 +25,7 @@ type Props = {
 
 //TODO Ripple or visual feedback on press
 
+// By default, blurash is disabled
 export const ListItem = ({
 	title,
 	subtitle,
@@ -55,8 +56,9 @@ export const ListItem = ({
 		>
 			<View style={styles.illustration}>
 				<IllustrationComponent
-					illustration={illustration}
 					{...illustrationProps}
+					illustration={illustration}
+					useBlurhash={illustrationProps?.useBlurhash ?? false}
 					variant={illustrationProps?.variant ?? "center"}
 					quality="low"
 				/>

@@ -20,7 +20,10 @@ export const ArtistTile = ({ artist, illustrationProps, onPress }: Props) => {
 			onPress={onPress}
 			contextMenu={ctxtMenu}
 			href={artist ? `/artists/${artist.id}` : null}
-			illustrationProps={{ ...illustrationProps, variant: "circle" }}
+			illustrationProps={{
+				...illustrationProps,
+				variant: "circle",
+			}}
 		/>
 	);
 };
@@ -35,7 +38,10 @@ export const ArtistItem = ({ artist, illustrationProps, onPress }: Props) => {
 			contextMenu={ctxtMenu}
 			onPress={onPress}
 			illustration={artist?.illustration}
-			illustrationProps={{ ...illustrationProps, variant: "circle" }}
+			illustrationProps={{
+				...illustrationProps,
+				variant: "circle",
+			}}
 		/>
 	);
 };

@@ -52,6 +52,7 @@ export const Header = ({
 						illustration={release?.illustration}
 						style={{}}
 						quality="original"
+						useBlurhash
 					/>
 				</View>
 			</View>
