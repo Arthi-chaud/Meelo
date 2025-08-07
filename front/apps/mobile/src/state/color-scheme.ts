@@ -20,6 +20,7 @@ export const colorSchemePreference = atom<
 				? (Appearance.getColorScheme() ?? "light")
 				: newColorScheme;
 		UnistylesRuntime.setTheme(actualColorScheme);
+		Appearance.setColorScheme(actualColorScheme);
 		set(_colorSchemePreference, newColorScheme);
 	},
 );
