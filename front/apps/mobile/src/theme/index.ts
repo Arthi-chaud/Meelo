@@ -24,7 +24,12 @@ const baseTheme = {
 
 	animations: {
 		fades: {
-			blurhash: 100,
+			stiffness: 430,
+			damping: 220,
+		},
+		progress: {
+			stiffness: 500,
+			damping: 100,
 		},
 		pressable: {
 			scaleOnPress: 0.98,
