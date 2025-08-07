@@ -7,9 +7,11 @@ import { TextSkeleton } from "~/primitives/text";
 
 export const Rating = ({
 	rating,
+	color,
 }: {
 	// Out of 100
 	rating: number | undefined;
+	color?: string;
 }) => {
 	return (
 		<View style={styles.root}>
@@ -18,7 +20,7 @@ export const Rating = ({
 					<Icon
 						key={idx}
 						icon={StarIcon}
-						style={styles.star(rating ?? 0, idx)}
+						style={[{ color }, styles.star(rating ?? 0, idx)]}
 					/>
 				))
 			) : (
@@ -36,9 +38,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	star: (rating: number, starIndex: number) => ({
 		size: theme.fontSize.rem(1),
-		color:
-			Math.ceil(rating / 20) >= starIndex + 1
-				? theme.colors.text.primary
-				: theme.colors.text.secondary,
+		color: theme.colors.text.primary,
+		opacity: Math.ceil(rating / 20) >= starIndex + 1 ? 1 : 0.5,
 	}),
 }));
