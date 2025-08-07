@@ -20,6 +20,7 @@ import i18next from "i18next";
 import { useAtom, useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
 import { Dropdown } from "~/components/dropdown";
@@ -36,21 +37,22 @@ import { languagePreference } from "~/state/lang";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 import { Languages } from "../../../../../translations";
 
-// TODO When setting dark/light mode using settings (not the auto mode)
-// header text color is not updated
-
 export default function SettingsView() {
 	const { t } = useTranslation();
 	const setAccessToken = useSetAtom(accessTokenAtom);
 	const setInstanceUrl = useSetAtom(instanceUrlAtom);
+	const insets = useSafeAreaInsets();
 	const [colorSchemePref, setColorSchemePref] = useAtom(
 		colorSchemePreference,
 	);
 	const [lng, setLng] = useAtom(languagePreference);
-
 	const actualColorScheme = useColorScheme();
 	return (
-		<SafeScrollView style={styles.root}>
+		<SafeScrollView style={[styles.root, { paddingTop: insets.top }]}>
+			<View style={styles.header}>
+				<Text content={t("nav.settings")} variant="h2" />
+			</View>
+			<Divider h />
 			<View style={styles.section}>
 				<SectionHeader
 					style={styles.sectionHeader}
@@ -161,6 +163,7 @@ export default function SettingsView() {
 
 const styles = StyleSheet.create((theme) => ({
 	root: { paddingHorizontal: theme.gap(1) },
+	header: { paddingHorizontal: theme.gap(1), paddingVertical: theme.gap(2) },
 	section: {
 		paddingVertical: theme.gap(1),
 		gap: theme.gap(1),
