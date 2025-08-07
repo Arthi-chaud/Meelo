@@ -1,7 +1,9 @@
 import { useCallback } from "react";
-import { getCurrentUserStatus } from "@/api/queries";
+import { getArtist, getCurrentUserStatus } from "@/api/queries";
 import type { TrackWithRelations } from "@/models/track";
+import type { TrackState } from "@/state/player";
 import {
+	type Action,
 	ChangeType,
 	GoToArtist,
 	GoToLyrics,
@@ -14,7 +16,7 @@ import {
 	PlayNext,
 } from "~/actions";
 import { useSetSongTrackAsMaster } from "~/actions/master";
-import { useQuery } from "~/api";
+import { useQuery, useQueryClient } from "~/api";
 import {
 	useChangeSongTypeModal,
 	useChangeVideoTypeModal,
@@ -26,6 +28,7 @@ export const useTrackContextMenu = (
 		| TrackWithRelations<"illustration" | "song" | "video" | "release">
 		| undefined,
 ): ContextMenuBuilder => {
+	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal: openChangeSongTypeModal } =
 		useChangeSongTypeModal(track?.song ?? undefined);
@@ -38,6 +41,13 @@ export const useTrackContextMenu = (
 
 	return useCallback(() => {
 		const songOrVideo = track?.song ?? track?.video;
+		const resolveTrackWithArtist =
+			songOrVideo && track
+				? () =>
+						queryClient
+							.fetchQuery(getArtist(songOrVideo.artistId))
+							.then((artist) => ({ artist, track }))
+				: undefined;
 		return {
 			header: {
 				title: track?.name,
@@ -46,7 +56,9 @@ export const useTrackContextMenu = (
 			},
 			items: track
 				? [
-						track.id ? [Play(track.id)] : [],
+						resolveTrackWithArtist
+							? [AttachResolver(Play, resolveTrackWithArtist)]
+							: [],
 						track.releaseId
 							? [
 									GoToArtist(songOrVideo!.artistId),
@@ -56,7 +68,18 @@ export const useTrackContextMenu = (
 						track.songId
 							? [GoToLyrics(track.id), GoToSongInfo(track.id)]
 							: [],
-						[PlayNext(track.id), PlayAfter(track.id)],
+						resolveTrackWithArtist
+							? [
+									AttachResolver(
+										PlayNext,
+										resolveTrackWithArtist,
+									),
+									AttachResolver(
+										PlayAfter,
+										resolveTrackWithArtist,
+									),
+								]
+							: [],
 						track.songId
 							? [
 									GoToSongVersions(track.songId),
@@ -90,3 +113,11 @@ export const useTrackContextMenu = (
 		};
 	}, [track]);
 };
+
+const AttachResolver = (
+	actionFn: (track: TrackState) => Action,
+	resolver: () => Promise<TrackState>,
+): Action => ({
+	...actionFn(undefined as any),
+	onPress: () => resolver().then((r) => actionFn(r).onPress?.()),
+});
