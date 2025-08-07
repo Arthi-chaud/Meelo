@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
-import { View } from "react-native";
+import { Pressable as RNPRessable, View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -21,6 +21,7 @@ import { LoadableText } from "~/components/loadable_text";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { expandPlayerAtom } from "./expanded/state";
 
 // TODO Test text overflow
 // TODO Get artist featuring
@@ -30,6 +31,7 @@ import { Pressable } from "~/primitives/pressable";
 
 export const MinimisedPlayer = () => {
 	const queue = useAtomValue(playlistAtom);
+	const expandPlayer = useSetAtom(expandPlayerAtom);
 	const queryClient = useQueryClient();
 	const cursor = useAtomValue(cursorAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
@@ -80,8 +82,10 @@ export const MinimisedPlayer = () => {
 		[firstIllustrationColor, progress],
 	);
 
+	const onPress = useCallback(() => expandPlayer(), [expandPlayer]);
+
 	return (
-		<View style={styles.root}>
+		<RNPRessable style={styles.root} onPress={onPress}>
 			<Animated.View style={[styles.background, backgroundStyle]} />
 			<View style={styles.content}>
 				<View style={styles.illustration}>
@@ -118,7 +122,7 @@ export const MinimisedPlayer = () => {
 				</View>
 			</View>
 			<Animated.View style={[styles.progessPosition, progressStyle]} />
-		</View>
+		</RNPRessable>
 	);
 };
 

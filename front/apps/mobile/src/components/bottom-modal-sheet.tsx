@@ -45,7 +45,7 @@ export const Modal = () => {
 					<BlurView style={{ flex: 1 }} />
 				</View>
 			)}
-			backdropComponent={Backdrop}
+			backdropComponent={ModalBackdrop}
 		>
 			<BottomSheetView style={styles.modal}>
 				<Content />
@@ -54,7 +54,8 @@ export const Modal = () => {
 	);
 };
 
-const Backdrop = (props: BottomSheetBackdropProps) => {
+// The expanded player uses this as well
+export const ModalBackdrop = (props: BottomSheetBackdropProps) => {
 	return (
 		<BottomSheetBackdrop
 			{...props}
