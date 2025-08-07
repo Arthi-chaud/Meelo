@@ -241,7 +241,9 @@ const PostTracklistSections = ({
 							onPress={() =>
 								video && onVideoPress(video.id, items)
 							}
-							illustrationProps={{ normalizedThumbnail: true }}
+							illustrationProps={{
+								normalizedThumbnail: true,
+							}}
 							video={video}
 							subtitle="duration"
 						/>

@@ -152,7 +152,6 @@ export default function VideoBrowseView() {
 					onPress={() => video && onItemPress(idx, videos)}
 					subtitle={artistId || songId ? "duration" : "artistName"}
 					illustrationProps={{
-						simpleColorPlaceholder: true,
 						normalizedThumbnail: true,
 					}}
 				/>

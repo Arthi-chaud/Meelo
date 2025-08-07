@@ -18,7 +18,7 @@ export const SearchResultItem = ({
 		return (
 			<SongItem
 				song={searchResult?.song}
-				illustrationProps={{ simpleColorPlaceholder: true }}
+				illustrationProps={{}}
 				subtitle="artists"
 				onPress={onPress}
 				formatSubtitle={(s) => `${t("models.song")} • ${s}`}
@@ -29,7 +29,7 @@ export const SearchResultItem = ({
 		return (
 			<AlbumItem
 				album={searchResult.album}
-				illustrationProps={{ simpleColorPlaceholder: true }}
+				illustrationProps={{}}
 				subtitle="artistName"
 				onPress={onPress}
 				formatSubtitle={(s) => `${t("models.album")} • ${s}`}
@@ -40,7 +40,7 @@ export const SearchResultItem = ({
 		return (
 			<ArtistItem
 				artist={searchResult.artist}
-				illustrationProps={{ simpleColorPlaceholder: true }}
+				illustrationProps={{}}
 				onPress={onPress}
 			/>
 		);
@@ -49,7 +49,7 @@ export const SearchResultItem = ({
 		return (
 			<VideoItem
 				video={searchResult.video}
-				illustrationProps={{ simpleColorPlaceholder: true }}
+				illustrationProps={{}}
 				onPress={onPress}
 				subtitle="artistName"
 				formatSubtitle={(s) => `${t("models.video")} • ${s}`}

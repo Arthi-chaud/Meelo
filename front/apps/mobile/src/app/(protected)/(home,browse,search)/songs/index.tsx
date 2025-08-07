@@ -186,7 +186,7 @@ export default function SongBrowseView() {
 					song={song}
 					onPress={() => onItemPress(idx, songs)}
 					subtitle={subtitle(song)}
-					illustrationProps={{ simpleColorPlaceholder: true }}
+					illustrationProps={{}}
 				/>
 			)}
 		/>

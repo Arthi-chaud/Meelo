@@ -48,12 +48,7 @@ export default function ArtistBrowseView() {
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["illustration"],
 			)}
-			render={(artist) => (
-				<Item
-					artist={artist}
-					illustrationProps={{ simpleColorPlaceholder: true }}
-				/>
-			)}
+			render={(artist) => <Item artist={artist} />}
 		/>
 	);
 }
