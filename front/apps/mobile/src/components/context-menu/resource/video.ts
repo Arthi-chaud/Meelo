@@ -26,6 +26,15 @@ export const useVideoContextMenu = (
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeVideoTypeModal(video);
 	return useCallback(() => {
+		const trackToPlay = video
+			? {
+					artist: video.artist,
+					track: {
+						...video.master,
+						illustration: video.illustration,
+					},
+				}
+			: undefined;
 		return {
 			header: {
 				title: video?.name,
@@ -35,7 +44,7 @@ export const useVideoContextMenu = (
 			},
 			items: video
 				? [
-						video.masterId ? [Play(video.masterId)] : [],
+						trackToPlay ? [Play(trackToPlay)] : [],
 						video.master.releaseId
 							? [
 									GoToArtist(video.artistId),
@@ -48,11 +57,8 @@ export const useVideoContextMenu = (
 									GoToSongInfo(video.songId),
 								]
 							: [],
-						video.masterId
-							? [
-									PlayNext(video.masterId),
-									PlayAfter(video.masterId),
-								]
+						trackToPlay
+							? [PlayNext(trackToPlay), PlayAfter(trackToPlay)]
 							: [],
 						video.songId
 							? [
