@@ -97,7 +97,10 @@ const ContextMenuHeader = ({ header }: { header: ContextMenuHeader }) => {
 				<Illustration
 					illustration={header.illustration}
 					quality={isThumbnail ? "medium" : "low"}
-					{...(header.illustrationProps ?? { variant: "center" })}
+					{...(header.illustrationProps ?? {
+						useBlurhash: true,
+						variant: "center",
+					})}
 				/>
 			</View>
 			<View style={headerStyles.text}>

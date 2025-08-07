@@ -48,6 +48,7 @@ export const MinimisedPlayer = () => {
 					illustration={currentTrack?.track.illustration}
 					normalizedThumbnail={isVideo}
 					variant="center"
+					useBlurhash
 					quality={isVideo ? "medium" : "low"}
 				/>
 			</View>

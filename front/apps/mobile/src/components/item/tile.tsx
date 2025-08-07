@@ -9,6 +9,8 @@ import { useContextMenu } from "~/components/context-menu";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 
+//TODO press effect
+
 const styles = StyleSheet.create((theme) => ({
 	container: {
 		padding: theme.gap(0.5),
@@ -56,6 +58,7 @@ type Props = {
 	contextMenu?: ContextMenuBuilder;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
 
+// By default, blurash is disabled
 export const Tile = ({
 	illustration,
 	title,
@@ -91,6 +94,7 @@ export const Tile = ({
 				<Illustration
 					illustration={illustration}
 					{...props.illustrationProps}
+					useBlurhash={props.illustrationProps?.useBlurhash ?? false}
 					quality="medium"
 				/>
 			</View>

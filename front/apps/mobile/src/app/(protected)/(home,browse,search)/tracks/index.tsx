@@ -56,7 +56,7 @@ export default function TracksView() {
 				<TrackItem
 					onPress={() => track && onItemPress(track)}
 					track={track}
-					illustrationProps={{ simpleColorPlaceholder: true }}
+					illustrationProps={{}}
 				/>
 			)}
 		/>

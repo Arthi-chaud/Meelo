@@ -54,6 +54,7 @@ export const ResourceHeader = ({
 					illustration={illustration}
 					quality="medium"
 					variant={circleIllustration ? "circle" : "center"}
+					useBlurhash
 				/>
 			</View>
 			<View style={styles.text}>

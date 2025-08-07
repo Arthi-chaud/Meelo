@@ -33,10 +33,10 @@ type Props = {
 	quality: IllustrationQuality;
 	normalizedThumbnail?: boolean;
 	variant?: "fill" | "circle" | "center";
-	// If true, the blurhash will not be ecoded/displayed.
+	// If false, the blurhash will not be ecoded/displayed.
 	// Instead it will use the color from the illustration model as a place holder
 	// To enhance performance in infinite lists
-	simpleColorPlaceholder?: true;
+	useBlurhash?: boolean;
 	style?: ViewStyle;
 };
 
@@ -45,7 +45,7 @@ export const Illustration = ({
 	fallbackIcon,
 	quality,
 	variant,
-	simpleColorPlaceholder,
+	useBlurhash,
 	normalizedThumbnail,
 	style,
 }: Props) => {
@@ -109,15 +109,13 @@ export const Illustration = ({
 						aspectRatio: innerAspectRatio,
 					},
 					styles.innerContainer(
-						simpleColorPlaceholder
-							? illustration?.colors.at(0)
-							: undefined,
+						!useBlurhash ? illustration?.colors.at(0) : undefined,
 					),
 				]}
 			>
 				{illustration && loadStatus !== "error" && (
 					<>
-						{!simpleColorPlaceholder && loadStatus !== "done" && (
+						{useBlurhash && loadStatus !== "done" && (
 							<View style={[styles.slot]}>
 								<Blurhash
 									decodeAsync
