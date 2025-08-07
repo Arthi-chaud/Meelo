@@ -1,5 +1,12 @@
 import type { Href } from "expo-router";
 import {
+	playAfterAtom,
+	playNextAtom,
+	playTrackAtom,
+	type TrackState,
+} from "@/state/player";
+import { store } from "@/state/store";
+import {
 	AlbumIcon,
 	ArtistIcon,
 	EditIcon,
@@ -52,25 +59,22 @@ export const ChangeType = (label: TranslationKey, onPress: () => void) => ({
 	icon: EditIcon,
 });
 
-export const Play = (trackId: string | number): Action => ({
+export const Play = (track: TrackState): Action => ({
 	label: "actions.playback.play",
 	icon: PlayIcon,
-	disabled: true,
-	onPress: () => {}, // TODO
+	onPress: () => store.set(playTrackAtom, track),
 });
 
-export const PlayNext = (trackId: string | number): Action => ({
+export const PlayNext = (track: TrackState): Action => ({
 	label: "actions.playback.playNext",
 	icon: PlayNextIcon,
-	disabled: true,
-	onPress: () => {}, // TODO
+	onPress: () => store.set(playNextAtom, track),
 });
 
-export const PlayAfter = (trackId: string | number): Action => ({
+export const PlayAfter = (track: TrackState): Action => ({
 	label: "actions.playback.playAfter",
 	icon: PlayAfterIcon,
-	disabled: true,
-	onPress: () => {}, // TODO
+	onPress: () => store.set(playAfterAtom, track),
 });
 
 export const GoToLyrics = (songId: string | number): Action => ({

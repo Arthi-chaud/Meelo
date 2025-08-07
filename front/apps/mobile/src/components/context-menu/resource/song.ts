@@ -34,6 +34,15 @@ export const useSongContextMenu = (
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
 	const SetAsMaster = useSetSongTrackAsMaster(song?.master, song);
 	return useCallback(() => {
+		const trackToPlay = song
+			? {
+					track: {
+						...song.master,
+						illustration: song.illustration,
+					},
+					artist: song.artist,
+				}
+			: undefined;
 		return {
 			header: {
 				title: song?.name,
@@ -44,7 +53,7 @@ export const useSongContextMenu = (
 			},
 			items: song
 				? [
-						song.masterId ? [Play(song.masterId)] : [],
+						trackToPlay ? [Play(trackToPlay)] : [],
 						song.master.releaseId
 							? [
 									GoToArtist(song.artistId),
@@ -52,11 +61,8 @@ export const useSongContextMenu = (
 								]
 							: [GoToArtist(song.artistId)],
 						[GoToLyrics(song.id), GoToSongInfo(song.id)],
-						song.masterId
-							? [
-									PlayNext(song.masterId),
-									PlayAfter(song.masterId),
-								]
+						trackToPlay
+							? [PlayNext(trackToPlay), PlayAfter(trackToPlay)]
 							: [],
 						[
 							GoToSongVersions(song.id),
