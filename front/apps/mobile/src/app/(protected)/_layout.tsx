@@ -47,6 +47,7 @@ import {
 } from "@/ui/icons";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
+import { ExpandedPlayerSlot } from "~/components/player/expanded/slot";
 import { MinimisedPlayer } from "~/components/player/minimised";
 import { bottomTabBarHeightAtom } from "~/hooks/root-view-style";
 import { Icon } from "~/primitives/icon";
@@ -56,9 +57,7 @@ import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 //TODO DRY: The header style for settings is very similar to the shared routed ones.
 //TODO I suspect that the setting header style is not updated when theme changes because we don't use withUnistyles
 //However, the latter does not work
-//
-
-//TODO: Layout player
+//TODO (Re)move header style
 
 const styles = StyleSheet.create((theme) => ({
 	screen: { backgroundColor: "transparent", flex: 1 },
@@ -159,6 +158,7 @@ export default function ProtectedLayout() {
 						</Animated.View>
 					)}
 				</View>
+				<ExpandedPlayerSlot />
 				<View style={styles.tabBar}>
 					<BlurView style={styles.tabBarBackground} />
 
