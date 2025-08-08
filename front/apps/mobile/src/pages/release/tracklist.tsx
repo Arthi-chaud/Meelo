@@ -9,12 +9,7 @@ import type { SongWithRelations } from "@/models/song";
 import type { TrackWithRelations } from "@/models/track";
 import type TracklistType from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
-import {
-	cursorAtom,
-	playlistAtom,
-	playTracksAtom,
-	type TrackState,
-} from "@/state/player";
+import { playTracksAtom, type TrackState } from "@/state/player";
 import { PlayIcon, VideoIcon } from "@/ui/icons";
 import { formatDiscName } from "@/ui/pages/release";
 import formatArtists from "@/utils/format-artists";
@@ -24,6 +19,7 @@ import { ContextMenuButton, useContextMenu } from "~/components/context-menu";
 import { useSongContextMenu } from "~/components/context-menu/resource/song";
 import { useVideoContextMenu } from "~/components/context-menu/resource/video";
 import { LoadableText } from "~/components/loadable_text";
+import { currentTrackAtom } from "~/components/player/state";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -157,12 +153,7 @@ const TrackItem = ({
 	onPress: () => void;
 	albumArtistId: number | null | undefined;
 }) => {
-	const playlist = useAtomValue(playlistAtom);
-	const cursor = useAtomValue(cursorAtom);
-	const currentPlayingTrackId: number | null = useMemo(
-		() => playlist[cursor]?.track.id || null,
-		[playlist, cursor],
-	);
+	const currentTrack = useAtomValue(currentTrackAtom);
 	//Note: Instead of using track context menu
 	//We build back songs and videos from the track
 	const songWithTrack = useMemo(() => {
@@ -206,7 +197,7 @@ const TrackItem = ({
 			onPress={onPress}
 		>
 			<View style={styles.trackIndex(maxTrackIndex)}>
-				{track && track.id === currentPlayingTrackId ? (
+				{track && track.id === currentTrack?.track.id ? (
 					<View style={styles.isPlayingIconContainer}>
 						<Icon icon={PlayIcon} style={styles.leadingIcon} />
 					</View>
