@@ -8,12 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
-import {
-	cursorAtom,
-	playlistAtom,
-	skipTrackAtom,
-	type TrackState,
-} from "@/state/player";
+import { skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { Illustration } from "~/components/illustration";
@@ -22,6 +17,8 @@ import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { expandPlayerAtom } from "./expanded/state";
+import { currentTrackAtom } from "./state";
+import { ColorBackgroundOpacity } from "./utils";
 
 // TODO Test text overflow
 // TODO Get artist featuring
@@ -30,14 +27,10 @@ import { expandPlayerAtom } from "./expanded/state";
 // TODO Move spring params to theme
 
 export const MinimisedPlayer = () => {
-	const queue = useAtomValue(playlistAtom);
 	const expandPlayer = useSetAtom(expandPlayerAtom);
 	const queryClient = useQueryClient();
-	const cursor = useAtomValue(cursorAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
-	const currentTrack: TrackState | null = useMemo(() => {
-		return queue[cursor] ?? null;
-	}, [queue, cursor]);
+	const currentTrack = useAtomValue(currentTrackAtom);
 	const isVideo = useMemo(() => {
 		return currentTrack?.track.type === "Video";
 	}, [currentTrack]);
@@ -144,8 +137,7 @@ const styles = StyleSheet.create((theme) => ({
 		...StyleSheet.absoluteFillObject,
 		width: "100%",
 		height: "100%",
-
-		opacity: 0.3,
+		opacity: ColorBackgroundOpacity,
 	},
 	text: { justifyContent: "space-evenly", flex: 1 },
 	progessPosition: {
