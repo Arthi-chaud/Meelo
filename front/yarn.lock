@@ -8158,6 +8158,7 @@ __metadata:
     react-hook-form: "npm:^7.58.0"
     react-i18next: "npm:^12.2.2"
     react-native: "npm:0.79.3"
+    react-native-awesome-slider: "npm:^2.9.0"
     react-native-blurhash: "npm:^2.1.1"
     react-native-edge-to-edge: "npm:^1.6.1"
     react-native-fast-image: "npm:^8.6.3"
@@ -9156,6 +9157,18 @@ __metadata:
   version: 19.1.0
   resolution: "react-is@npm:19.1.0"
   checksum: 10c0/b6c6cadd172d5d39f66d493700d137a5545c294a62ce0f8ec793d59794c97d2bed6bad227626f16bd0e90004ed7fdc8ed662a004e6edcf5d2b7ecb6e3040ea6b
+  languageName: node
+  linkType: hard
+
+"react-native-awesome-slider@npm:^2.9.0":
+  version: 2.9.0
+  resolution: "react-native-awesome-slider@npm:2.9.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-reanimated: ">=3.0.0"
+  checksum: 10c0/54e1ed4994f7d4cbf02f542dc2e4b8f4e3f8c88a32855ceb83a383d5dcf4ed3eff8e076c05fcc53ab38ef5196d2e0a3c18aa65e0b2f89776a4a4f632f198adc8
   languageName: node
   linkType: hard
 
