@@ -18,13 +18,11 @@ import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { expandPlayerAtom } from "./expanded/state";
 import { currentTrackAtom } from "./state";
-import { ColorBackgroundOpacity } from "./utils";
+import { ColorBackground, useFormattedArtistName } from "./utils";
 
 // TODO Test text overflow
-// TODO Get artist featuring
 // TODO Pause state
 // TODO Progress state
-// TODO Move spring params to theme
 
 export const MinimisedPlayer = () => {
 	const expandPlayer = useSetAtom(expandPlayerAtom);
@@ -39,22 +37,9 @@ export const MinimisedPlayer = () => {
 	}, [queryClient, skipTrack]);
 	const progress = currentTrack ? 50 : 0; //TODO
 	const animatedTheme = useAnimatedTheme();
-
-	/// background color
 	const firstIllustrationColor = useMemo(
 		() => currentTrack?.track.illustration?.colors.at(0) ?? undefined,
 		[currentTrack],
-	);
-	const backgroundColorSV = useSharedValue("transparent");
-	useEffect(() => {
-		backgroundColorSV.value = withSpring(
-			firstIllustrationColor ?? "transparent",
-			animatedTheme.value.animations.fades,
-		);
-	}, [firstIllustrationColor]);
-	const backgroundStyle = useAnimatedStyle(
-		() => ({ backgroundColor: backgroundColorSV.value }),
-		[firstIllustrationColor],
 	);
 
 	// Progress bar (color and width)
@@ -74,12 +59,13 @@ export const MinimisedPlayer = () => {
 		}),
 		[firstIllustrationColor, progress],
 	);
+	const formattedArtistName = useFormattedArtistName();
 
 	const onPress = useCallback(() => expandPlayer(), [expandPlayer]);
 
 	return (
 		<RNPRessable style={styles.root} onPress={onPress}>
-			<Animated.View style={[styles.background, backgroundStyle]} />
+			<ColorBackground />
 			<View style={styles.content}>
 				<View style={styles.illustration}>
 					<Illustration
@@ -98,7 +84,7 @@ export const MinimisedPlayer = () => {
 						skeletonWidth={15}
 					/>
 					<LoadableText
-						content={currentTrack?.artist.name}
+						content={formattedArtistName}
 						numberOfLines={1}
 						variant="body"
 						skeletonWidth={15}
@@ -132,12 +118,6 @@ const styles = StyleSheet.create((theme) => ({
 		gap: theme.gap(1),
 		padding: theme.gap(0.75),
 		paddingBottom: theme.gap(0.75 + 0.25),
-	},
-	background: {
-		...StyleSheet.absoluteFillObject,
-		width: "100%",
-		height: "100%",
-		opacity: ColorBackgroundOpacity,
 	},
 	text: { justifyContent: "space-evenly", flex: 1 },
 	progessPosition: {

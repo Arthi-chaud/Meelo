@@ -38,6 +38,8 @@ export const Modal = () => {
 		<BottomSheetModal
 			ref={modalRef}
 			enableDynamicSizing
+			// Note: When a ctx menu is open from the expanded player, we don't want to 'switch'
+			stackBehavior="push"
 			handleIndicatorStyle={styles.handleIndicator}
 			onDismiss={onClose}
 			backgroundComponent={() => (
