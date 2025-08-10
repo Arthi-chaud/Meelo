@@ -66,7 +66,10 @@ export const useTrackContextMenu = (
 								]
 							: [GoToArtist(songOrVideo!.artistId)],
 						track.songId
-							? [GoToLyrics(track.id), GoToSongInfo(track.id)]
+							? [
+									GoToLyrics(track.songId),
+									GoToSongInfo(track.songId),
+								]
 							: [],
 						resolveTrackWithArtist
 							? [
