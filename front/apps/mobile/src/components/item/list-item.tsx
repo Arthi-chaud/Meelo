@@ -1,8 +1,8 @@
 import { type Href, useRouter } from "expo-router";
 import { type ComponentProps, type ReactElement, useCallback } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { RequireAtLeastOne, RequireOneOrNone } from "type-fest";
+import type { RequireAtLeastOne } from "type-fest";
 import type Illustration from "@/models/illustration";
 import {
 	type ContextMenuBuilder,
@@ -10,6 +10,7 @@ import {
 	useContextMenu,
 } from "~/components/context-menu";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
+import { Pressable } from "~/primitives/pressable";
 import { LoadableText } from "../loadable_text";
 
 type Props = {
@@ -21,10 +22,18 @@ type Props = {
 		"illustration" | "quality"
 	>;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }> &
-	RequireOneOrNone<{
-		trailing?: ReactElement;
-		contextMenu?: ContextMenuBuilder;
-	}>;
+	(
+		| {
+				trailing?: ReactElement;
+				onLongPress?: () => void;
+				contextMenu?: never;
+		  }
+		| {
+				trailing?: never;
+				onLongPress?: never;
+				contextMenu?: ContextMenuBuilder;
+		  }
+	);
 
 //TODO Ripple or visual feedback on press
 
@@ -37,6 +46,7 @@ export const ListItem = ({
 	href,
 	trailing,
 	contextMenu,
+	onLongPress,
 	onPress,
 }: Props) => {
 	const { openContextMenu } = useContextMenu(contextMenu);
@@ -44,9 +54,13 @@ export const ListItem = ({
 	styles.useVariants({
 		normalizedThumbnail: illustrationProps?.normalizedThumbnail ?? false,
 	});
-	const onLongPress = useCallback(() => {
-		contextMenu && openContextMenu();
-	}, [contextMenu, openContextMenu]);
+	const onLongPressCallback = useCallback(() => {
+		if (onLongPress) {
+			onLongPress();
+		} else if (contextMenu) {
+			openContextMenu();
+		}
+	}, [onLongPress, contextMenu, openContextMenu]);
 	return (
 		<Pressable
 			onPress={() => {
@@ -55,7 +69,7 @@ export const ListItem = ({
 					router.push(href);
 				}
 			}}
-			onLongPress={onLongPress}
+			onLongPress={onLongPressCallback}
 			style={[styles.root]}
 		>
 			<View style={styles.illustration}>

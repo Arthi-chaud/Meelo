@@ -1380,7 +1380,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.16.7, @babel/preset-typescript@npm:^7.23.0":
+"@babel/preset-typescript@npm:^7.16.7, @babel/preset-typescript@npm:^7.17.12, @babel/preset-typescript@npm:^7.23.0":
   version: 7.27.1
   resolution: "@babel/preset-typescript@npm:7.27.1"
   dependencies:
@@ -8160,6 +8160,7 @@ __metadata:
     react-native: "npm:0.79.3"
     react-native-awesome-slider: "npm:^2.9.0"
     react-native-blurhash: "npm:^2.1.1"
+    react-native-draggable-flatlist: "npm:^4.0.3"
     react-native-edge-to-edge: "npm:^1.6.1"
     react-native-fast-image: "npm:^8.6.3"
     react-native-gesture-handler: "npm:^2.27.2"
@@ -9179,6 +9180,19 @@ __metadata:
     react: ">=16.8.1"
     react-native: ">=0.60.0-rc.0 <1.0.x"
   checksum: 10c0/9ffefa93bb7f8578020b274112e9d5e40b152c94a7828c45e8f7ef71a20794e021accc6dd175857e334ae4727e5bc4d5cf7cf069c9b01e454478e8e31d912336
+  languageName: node
+  linkType: hard
+
+"react-native-draggable-flatlist@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "react-native-draggable-flatlist@npm:4.0.3"
+  dependencies:
+    "@babel/preset-typescript": "npm:^7.17.12"
+  peerDependencies:
+    react-native: ">=0.64.0"
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-reanimated: ">=2.8.0"
+  checksum: 10c0/1b9bd3da36929dc21bbcd7eb63e37af52c87add06776c7f20215cb6a28499f4e03619e3751fc71e192d5b074fb1dc782a939186ca7ef281928b9c940f6239455
   languageName: node
   linkType: hard
 
