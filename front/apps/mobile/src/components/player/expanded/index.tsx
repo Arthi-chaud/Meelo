@@ -1,14 +1,19 @@
 import { BottomSheetHandle } from "@gorhom/bottom-sheet";
-import { type ReactElement, useState } from "react";
+import { useAtomValue } from "jotai";
+import { type ReactElement, useMemo, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
+import { getSong } from "@/api/queries";
 import { LyricsIcon, PlayerIcon, PlaylistIcon } from "@/ui/icons";
+import { useQuery } from "~/api";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { breakpoints } from "~/theme";
+import { currentTrackAtom } from "../state";
 import { ColorBackground } from "../utils";
+import { Lyrics } from "./lyrics";
 import { Main } from "./main";
 
 //TODO pause/play state
@@ -32,6 +37,7 @@ export const ExpandedPlayer = () => {
 			<View style={styles.content}>
 				<View style={{ width: "100%", flex: 1 }}>
 					{tab === "main" && <Main />}
+					{tab === "lyrics" && <Lyrics />}
 				</View>
 				<Footer selectedTab={tab} onTabChange={setTab} />
 			</View>
@@ -48,6 +54,19 @@ const Footer = ({
 	selectedTab: Tab;
 	onTabChange: (t: Tab) => void;
 }) => {
+	const currentTrack = useAtomValue(currentTrackAtom);
+	// If current track is video only, disable lyrics tab
+	// Note: it's the same query as the lyrics' tab
+	const { data: song } = useQuery(
+		(songId) => getSong(songId, ["lyrics"]),
+		currentTrack?.track.songId ?? undefined,
+	);
+	const lyricsTabIsDisabled = useMemo(() => {
+		const trackHasNoSong = currentTrack?.track.songId === null;
+		const trackHasLyrics = song && song.lyrics !== null;
+		return trackHasNoSong || !trackHasLyrics;
+	}, [song, currentTrack]);
+
 	return (
 		<View style={styles.footer}>
 			<Divider h />
@@ -59,9 +78,18 @@ const Footer = ({
 						["playlist", PlaylistIcon],
 					] as const
 				).map(([tab, icon]) => (
-					<Pressable onPress={() => onTabChange(tab)} key={tab}>
+					<Pressable
+						onPress={() => onTabChange(tab)}
+						key={tab}
+						disabled={tab === "lyrics" && lyricsTabIsDisabled}
+					>
 						<Icon
 							icon={icon}
+							style={
+								tab === "lyrics" && lyricsTabIsDisabled
+									? styles.disabledFooterButton
+									: undefined
+							}
 							variant={selectedTab === tab ? "Bold" : undefined}
 						/>
 					</Pressable>
@@ -91,4 +119,5 @@ const styles = StyleSheet.create((theme) => ({
 		flexDirection: "row",
 		justifyContent: "space-evenly",
 	},
+	disabledFooterButton: { color: theme.colors.text.secondary },
 }));
