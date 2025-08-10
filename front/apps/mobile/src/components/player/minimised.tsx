@@ -20,7 +20,6 @@ import { expandPlayerAtom } from "./expanded/state";
 import { currentTrackAtom } from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
 
-// TODO Test text overflow
 // TODO Pause state
 // TODO Progress state
 
@@ -92,11 +91,11 @@ export const MinimisedPlayer = () => {
 				</View>
 				<View style={styles.controls}>
 					<Pressable onPress={() => {}}>
-						<Icon icon={PauseIcon} />
+						<Icon icon={PauseIcon} style={styles.controlButton} />
 					</Pressable>
 
 					<Pressable onPress={onSkip}>
-						<Icon icon={ForwardIcon} />
+						<Icon icon={ForwardIcon} style={styles.controlButton} />
 					</Pressable>
 				</View>
 			</View>
@@ -114,10 +113,9 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	content: {
 		flexDirection: "row",
-		paddingLeft: theme.gap(1), // For consistency
 		gap: theme.gap(1),
 		padding: theme.gap(0.75),
-		paddingBottom: theme.gap(0.75 + 0.25),
+		paddingBottom: theme.gap(0.75 + 1 / 3),
 	},
 	text: { justifyContent: "space-evenly", flex: 1 },
 	progessPosition: {
@@ -133,6 +131,9 @@ const styles = StyleSheet.create((theme) => ({
 	illustration: {
 		height: theme.gap(5.5),
 	},
+	controlButton: {
+		size: theme.fontSize.rem(1.5),
+	} as {},
 	controls: {
 		flexDirection: "row",
 		gap: theme.gap(2),
