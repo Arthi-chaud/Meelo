@@ -1,8 +1,8 @@
 import { type Href, useRouter } from "expo-router";
-import { type ComponentProps, useCallback } from "react";
+import { type ComponentProps, type ReactElement, useCallback } from "react";
 import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { RequireAtLeastOne } from "type-fest";
+import type { RequireAtLeastOne, RequireOneOrNone } from "type-fest";
 import type Illustration from "@/models/illustration";
 import {
 	type ContextMenuBuilder,
@@ -20,8 +20,11 @@ type Props = {
 		ComponentProps<typeof IllustrationComponent>,
 		"illustration" | "quality"
 	>;
-	contextMenu?: ContextMenuBuilder;
-} & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }>;
+} & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }> &
+	RequireOneOrNone<{
+		trailing?: ReactElement;
+		contextMenu?: ContextMenuBuilder;
+	}>;
 
 //TODO Ripple or visual feedback on press
 
@@ -32,6 +35,7 @@ export const ListItem = ({
 	illustration,
 	illustrationProps,
 	href,
+	trailing,
 	contextMenu,
 	onPress,
 }: Props) => {
@@ -79,10 +83,14 @@ export const ListItem = ({
 					/>
 				)}
 			</View>
-			{contextMenu && title !== undefined && (
-				<View style={styles.contextMenu}>
-					<ContextMenuButton builder={contextMenu} />
-				</View>
+			{contextMenu ? (
+				title !== undefined && (
+					<View style={styles.contextMenu}>
+						<ContextMenuButton builder={contextMenu} />
+					</View>
+				)
+			) : (
+				<View style={styles.contextMenu}>{trailing}</View>
 			)}
 		</Pressable>
 	);

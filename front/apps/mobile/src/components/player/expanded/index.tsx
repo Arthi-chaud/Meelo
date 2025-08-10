@@ -15,10 +15,11 @@ import { currentTrackAtom } from "../state";
 import { ColorBackground } from "../utils";
 import { Lyrics } from "./lyrics";
 import { Main } from "./main";
+import { Queue } from "./queue";
 
 //TODO pause/play state
 
-const Tabs = ["main", "lyrics", "playlist"] as const;
+const Tabs = ["main", "lyrics", "queue"] as const;
 type Tab = (typeof Tabs)[number];
 
 export const ExpandedPlayer = () => {
@@ -38,6 +39,7 @@ export const ExpandedPlayer = () => {
 				<View style={{ width: "100%", flex: 1 }}>
 					{tab === "main" && <Main />}
 					{tab === "lyrics" && <Lyrics />}
+					{tab === "queue" && <Queue />}
 				</View>
 				<Footer selectedTab={tab} onTabChange={setTab} />
 			</View>
@@ -75,7 +77,7 @@ const Footer = ({
 					[
 						["main", PlayerIcon],
 						["lyrics", LyricsIcon],
-						["playlist", PlaylistIcon],
+						["queue", PlaylistIcon],
 					] as const
 				).map(([tab, icon]) => (
 					<Pressable
