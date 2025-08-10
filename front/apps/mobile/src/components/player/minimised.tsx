@@ -10,13 +10,16 @@ import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon } from "@/ui/icons";
-import { useQueryClient } from "~/api";
+import { useQuery, useQueryClient } from "~/api";
+import { useContextMenu } from "~/components/context-menu";
+import { useTrackContextMenu } from "~/components/context-menu/resource/track";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { expandPlayerAtom } from "./expanded/state";
+import { getTrackForContextMenu } from "./queries";
 import { currentTrackAtom } from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
 
@@ -60,10 +63,22 @@ export const MinimisedPlayer = () => {
 	);
 	const formattedArtistName = useFormattedArtistName();
 
+	const { data: track } = useQuery(
+		getTrackForContextMenu,
+		currentTrack?.track.id,
+	);
+
+	const trackContextMenu = useTrackContextMenu(track);
+	const { openContextMenu } = useContextMenu(trackContextMenu);
+
 	const onPress = useCallback(() => expandPlayer(), [expandPlayer]);
 
 	return (
-		<RNPRessable style={styles.root} onPress={onPress}>
+		<RNPRessable
+			style={styles.root}
+			onPress={onPress}
+			onLongPress={openContextMenu}
+		>
 			<ColorBackground />
 			<View style={styles.content}>
 				<View style={styles.illustration}>

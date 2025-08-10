@@ -4,7 +4,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { getArtist, getTrack } from "@/api/queries";
+import { getArtist } from "@/api/queries";
 import { skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, RewindIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
@@ -17,6 +17,7 @@ import { LoadableText } from "~/components/loadable_text";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { getTrackForContextMenu } from "../queries";
 import { currentTrackAtom } from "../state";
 import { useFormattedArtistName } from "../utils";
 import { Slider } from "./slider";
@@ -84,8 +85,7 @@ const TrackNameButton = () => {
 	const { dismiss } = useBottomSheetModal();
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const { data: track } = useQuery(
-		(trackId) =>
-			getTrack(trackId, ["song", "video", "release", "illustration"]),
+		getTrackForContextMenu,
 		currentTrack?.track.id,
 	);
 

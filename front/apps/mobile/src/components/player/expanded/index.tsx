@@ -4,13 +4,13 @@ import { type ReactElement, useMemo, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import { getSong } from "@/api/queries";
 import { LyricsIcon, PlayerIcon, PlaylistIcon } from "@/ui/icons";
 import { useQuery } from "~/api";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { breakpoints } from "~/theme";
+import { getSongWithLyrics } from "../queries";
 import { currentTrackAtom } from "../state";
 import { ColorBackground } from "../utils";
 import { Lyrics } from "./lyrics";
@@ -58,9 +58,8 @@ const Footer = ({
 }) => {
 	const currentTrack = useAtomValue(currentTrackAtom);
 	// If current track is video only, disable lyrics tab
-	// Note: it's the same query as the lyrics' tab
 	const { data: song } = useQuery(
-		(songId) => getSong(songId, ["lyrics"]),
+		getSongWithLyrics,
 		currentTrack?.track.songId ?? undefined,
 	);
 	const lyricsTabIsDisabled = useMemo(() => {
