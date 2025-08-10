@@ -1,6 +1,16 @@
-import type { ComponentProps } from "react";
-import { type GestureResponderEvent, TouchableOpacity } from "react-native";
+import { type ComponentProps, useCallback } from "react";
+import {
+	type GestureResponderEvent,
+	Pressable as P,
+	type TouchableOpacity,
+} from "react-native";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+	withSpring,
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
 type Props = {
 	onPress: (e: GestureResponderEvent) => void;
@@ -18,16 +28,31 @@ export const Pressable = ({
 	disabled,
 	onLongPress,
 }: Props) => {
+	const opacity = useSharedValue(1);
+	const animatedTheme = useAnimatedTheme();
+	const onPressStart = useCallback(() => {
+		opacity.value = withSpring(
+			0.5,
+			animatedTheme.value.animations.pressable,
+		);
+	}, []);
+	const onPressEnd = useCallback(() => {
+		opacity.value = withSpring(1, animatedTheme.value.animations.pressable);
+	}, []);
+	const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 	return (
-		<TouchableOpacity
+		<P
+			//TODO Hover
 			disabled={disabled}
-			touchSoundDisabled
-			onLongPress={onLongPress}
-			style={[styles.root, style]}
+			onPressIn={onPressStart}
+			onPressOut={onPressEnd}
 			onPress={onPress}
+			onLongPress={onLongPress}
 		>
-			{children}
-		</TouchableOpacity>
+			<Animated.View style={[styles.root, animatedStyle, style]}>
+				{children}
+			</Animated.View>
+		</P>
 	);
 };
 
