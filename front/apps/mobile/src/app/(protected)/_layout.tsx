@@ -110,9 +110,6 @@ export default function ProtectedLayout() {
 		...toTanStackQuery(api, getCurrentUserStatus),
 		enabled: !!(accessToken && instanceUrl),
 	});
-	if (!accessToken || !instanceUrl || user.error) {
-		return <Redirect href="/auth" />;
-	}
 	const onLayout = useCallback((e: LayoutChangeEvent) => {
 		setBottomTabBarHeight(e.nativeEvent.layout.height);
 	}, []);
@@ -140,6 +137,10 @@ export default function ProtectedLayout() {
 			);
 		}
 	}, [queueIsEmpty, queueIsInfinite]);
+
+	if (!accessToken || !instanceUrl || user.error) {
+		return <Redirect href="/auth" />;
+	}
 	//TODO Proper handling of when user is loading
 	return (
 		<Tabs>
