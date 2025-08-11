@@ -36,7 +36,7 @@ export const ExpandedPlayer = () => {
 			<Handle />
 			<ColorBackground />
 			<View style={styles.content}>
-				<View style={{ width: "100%", flex: 1 }}>
+				<View style={styles.tab}>
 					{tab === "main" && <Main />}
 					{tab === "lyrics" && <Lyrics />}
 					{tab === "queue" && <Queue />}
@@ -112,6 +112,10 @@ const styles = StyleSheet.create((theme) => ({
 		paddingHorizontal: theme.gap(2),
 		maxWidth: breakpoints.md,
 		alignItems: "center",
+	},
+	tab: {
+		width: "100%",
+		flex: 1,
 	},
 	footer: { width: "100%" },
 	footerButtons: {

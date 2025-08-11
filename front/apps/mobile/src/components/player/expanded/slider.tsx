@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { Slider as AwesomSlider } from "react-native-awesome-slider";
+import { Slider as AwesomeSlider } from "react-native-awesome-slider";
 import { useSharedValue } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAccentColor } from "~/hooks/accent-color";
@@ -33,7 +33,7 @@ export const Slider = () => {
 	);
 };
 
-const Slider_ = withUnistyles(AwesomSlider, (theme) => ({
+const Slider_ = withUnistyles(AwesomeSlider, (theme) => ({
 	thumbWidth: 0,
 	sliderHeight: theme.gap(1),
 	renderThumb: () => null,

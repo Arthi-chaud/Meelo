@@ -35,8 +35,6 @@ type Props = {
 		  }
 	);
 
-//TODO Ripple or visual feedback on press
-
 // By default, blurash is disabled
 export const ListItem = ({
 	title,
