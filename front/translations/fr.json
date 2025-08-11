@@ -108,7 +108,8 @@
 		"loginButton": "Se connecter",
 		"signin": "On s'est déjà vu ? Connectez-vous",
 		"signup": "Nouveau ici ? Inscrivez-vous",
-		"signupButton": "Créer le compte"
+		"signupButton": "Créer le compte",
+		"connectButton": "Se connecter au server"
 	},
 	"browsing": {
 		"controls": {

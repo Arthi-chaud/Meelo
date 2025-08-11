@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useSetAtom } from "jotai";
 import { useState } from "react";
@@ -29,6 +30,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
+import { getSettings } from "@/api/queries";
+import { toTanStackQuery } from "@/api/query";
+import type { Settings } from "@/models/settings";
 import { ErrorIcon } from "@/ui/icons";
 import { getAPI_ } from "~/api";
 import { Banner } from "~/components/meelo";
@@ -96,8 +100,9 @@ export default function AuthenticationScreen() {
 	const setInstanceUrl = useSetAtom(instanceUrlAtom);
 	const [isLoading, setLoading] = useState(false);
 	const [errorMsg, setErrorMessage] = useState<string>();
-
-	const [formType, setFormType] = useState<"login" | "signup">("login");
+	const queryClient = useQueryClient();
+	const [formType, setFormType] = useState<"url" | "login" | "signup">("url");
+	const [allowSignup, setAllowSignup] = useState(false);
 	const safeAreaStyle = useSafeAreaInsets();
 	const {
 		control,
@@ -109,7 +114,24 @@ export default function AuthenticationScreen() {
 		const api = getAPI_(null, instanceUrl);
 		setLoading(true);
 		setErrorMessage(undefined);
-		if (formType === "signup") {
+		if (formType === "url") {
+			Promise.race([
+				timeout(3000),
+				queryClient.fetchQuery(
+					toTanStackQuery(api, () => getSettings()),
+				),
+			])
+				.then(({ enableUserRegistration }: Settings) => {
+					setAllowSignup(enableUserRegistration);
+					setFormType("login");
+				})
+				.catch((e) => {
+					setErrorMessage(e.message ?? e.toString());
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		} else if (formType === "signup") {
 			Promise.race([
 				timeout(3000),
 				api.register({
@@ -169,79 +191,100 @@ export default function AuthenticationScreen() {
 								autoCorrect={false}
 								autoCapitalize="none"
 								onBlur={onBlur}
-								onChangeText={onChange}
+								onChangeText={(e) => {
+									if (formType !== "url") {
+										setFormType("url");
+									}
+									onChange(e);
+								}}
 								error={errors.url?.message}
 								value={value}
 							/>
 						)}
 					/>
 
-					<Controller
-						control={control}
-						name="username"
-						rules={{
-							required: {
-								value: true,
-								message: t("form.auth.usernameTooShort"),
-							},
-							minLength: {
-								value: 4,
-								message: t("form.auth.usernameTooShort"),
-							},
-						}}
-						render={({ field: { onChange, onBlur, value } }) => (
-							<TextInput
-								placeholder={t("form.auth.username")}
-								textContentType="username"
-								autoCorrect={false}
-								autoCapitalize="none"
-								onBlur={onBlur}
-								onChangeText={onChange}
-								value={value}
-								autoComplete={
-									formType === "login"
-										? "username"
-										: undefined
-								}
-								error={errors.username?.message}
+					{formType !== "url" && (
+						<>
+							<Controller
+								control={control}
+								name="username"
+								rules={{
+									required: {
+										value: true,
+										message: t(
+											"form.auth.usernameTooShort",
+										),
+									},
+									minLength: {
+										value: 4,
+										message: t(
+											"form.auth.usernameTooShort",
+										),
+									},
+								}}
+								render={({
+									field: { onChange, onBlur, value },
+								}) => (
+									<TextInput
+										placeholder={t("form.auth.username")}
+										textContentType="username"
+										autoCorrect={false}
+										autoCapitalize="none"
+										onBlur={onBlur}
+										onChangeText={onChange}
+										value={value}
+										autoComplete={
+											formType === "login"
+												? "username"
+												: undefined
+										}
+										error={errors.username?.message}
+									/>
+								)}
 							/>
-						)}
-					/>
 
-					<Controller
-						control={control}
-						name="password"
-						rules={{
-							required: {
-								value: true,
-								message: t("form.auth.passwordIsRequired"),
-							},
-							minLength: {
-								value: 6,
-								message: t("form.auth.passwordTooShort"),
-							},
-						}}
-						render={({ field: { onChange, onBlur, value } }) => (
-							<TextInput
-								placeholder={t("form.auth.password")}
-								textContentType={
-									formType === "login"
-										? "password"
-										: "newPassword"
-								}
-								onBlur={onBlur}
-								onChangeText={onChange}
-								value={value}
-								autoComplete={
-									formType === "login"
-										? "password"
-										: undefined
-								}
-								error={errors.password?.message}
-								secureTextEntry
+							<Controller
+								control={control}
+								name="password"
+								rules={{
+									required: {
+										value: true,
+										message: t(
+											"form.auth.passwordIsRequired",
+										),
+									},
+									minLength: {
+										value: 6,
+										message: t(
+											"form.auth.passwordTooShort",
+										),
+									},
+								}}
+								render={({
+									field: { onChange, onBlur, value },
+								}) => (
+									<TextInput
+										placeholder={t("form.auth.password")}
+										textContentType={
+											formType === "login"
+												? "password"
+												: "newPassword"
+										}
+										onBlur={onBlur}
+										onChangeText={onChange}
+										value={value}
+										autoComplete={
+											formType === "login"
+												? "password"
+												: undefined
+										}
+										error={errors.password?.message}
+										secureTextEntry
+									/>
+								)}
 							/>
-						)}
-					/>
+						</>
+					)}
 					{formType === "signup" && (
 						<Controller
 							control={control}
@@ -284,9 +327,11 @@ export default function AuthenticationScreen() {
 						disabled={isLoading}
 						onPress={handleSubmit(onSubmit)}
 						title={t(
-							formType === "login"
-								? "auth.loginButton"
-								: "auth.signupButton",
+							formType === "url"
+								? "auth.connectButton"
+								: formType === "login"
+									? "auth.loginButton"
+									: "auth.signupButton",
 						)}
 					/>
 					{errorMsg && (
@@ -295,21 +340,27 @@ export default function AuthenticationScreen() {
 							<Text style={styles.errorMsg}>{errorMsg}</Text>
 						</View>
 					)}
-					<Divider h withInsets />
-					<Button
-						variant="outlined"
-						onPress={() => {
-							setFormType(
-								formType === "login" ? "signup" : "login",
-							);
-							setErrorMessage(undefined);
-						}}
-						title={t(
-							formType === "login"
-								? "auth.signup"
-								: "auth.signin",
-						)}
-					/>
+					{allowSignup && formType !== "url" && (
+						<>
+							<Divider h withInsets />
+							<Button
+								variant="outlined"
+								onPress={() => {
+									setFormType(
+										formType === "login"
+											? "signup"
+											: "login",
+									);
+									setErrorMessage(undefined);
+								}}
+								title={t(
+									formType === "login"
+										? "auth.signup"
+										: "auth.signin",
+								)}
+							/>
+						</>
+					)}
 				</View>
 			</KeyboardAwareScrollView>
 			<KeyboardToolbar />

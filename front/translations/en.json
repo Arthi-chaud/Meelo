@@ -107,7 +107,8 @@
 		"loginButton": "Login",
 		"signupButton": "Signup",
 		"signup": "New here ? Signup",
-		"signin": "Already have an account ? Login"
+		"signin": "Already have an account ? Login",
+		"connectButton": "Connect to the server"
 	},
 	"browsing": {
 		"controls": {
