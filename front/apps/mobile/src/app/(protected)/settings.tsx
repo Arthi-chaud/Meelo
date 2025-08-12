@@ -22,7 +22,9 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
+import { emptyPlaylistAtom } from "@/state/player";
 import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
+import { useQueryClient } from "~/api";
 import { Dropdown } from "~/components/dropdown";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
@@ -38,6 +40,8 @@ import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 import { Languages } from "../../../../../translations";
 
 export default function SettingsView() {
+	const queryClient = useQueryClient();
+	const emptyPlaylist = useSetAtom(emptyPlaylistAtom);
 	const { t } = useTranslation();
 	const setAccessToken = useSetAtom(accessTokenAtom);
 	const setInstanceUrl = useSetAtom(instanceUrlAtom);
@@ -152,6 +156,8 @@ export default function SettingsView() {
 					containerStyle={{ alignItems: "center" }}
 					labelStyle={styles.logoutButtonStyle}
 					onPress={() => {
+						emptyPlaylist();
+						queryClient.client.clear();
 						setAccessToken(null);
 						setInstanceUrl(null);
 					}}
