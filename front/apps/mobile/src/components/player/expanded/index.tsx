@@ -1,9 +1,9 @@
 import { BottomSheetHandle } from "@gorhom/bottom-sheet";
 import { useAtomValue } from "jotai";
-import { type ReactElement, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { LyricsIcon, PlayerIcon, PlaylistIcon } from "@/ui/icons";
 import { useQuery } from "~/api";
 import { Divider } from "~/primitives/divider";
@@ -47,7 +47,9 @@ export const ExpandedPlayer = () => {
 	);
 };
 
-const Handle = BottomSheetHandle as unknown as () => ReactElement;
+const Handle = withUnistyles(BottomSheetHandle, (theme) => ({
+	indicatorStyle: { backgroundColor: theme.colors.text.primary },
+}));
 
 const Footer = ({
 	selectedTab,
