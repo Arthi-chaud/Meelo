@@ -110,7 +110,7 @@ const LyricsView = ({
 	const lowerSongName = songName?.toLowerCase();
 	if (lyrics === null) {
 		return (
-			<View style={[styles.emptyState, styles.tab]}>
+			<View style={styles.tab}>
 				<EmptyState icon={LyricsIcon} text="emptyState.lyrics" />
 			</View>
 		);
@@ -251,7 +251,6 @@ const styles = StyleSheet.create((theme) => ({
 	content: { height: "100%", gap: theme.gap(0) },
 	playButtonContent: { justifyContent: "center" },
 	playButton: { paddingHorizontal: theme.gap(2) },
-	emptyState: { height: 200 },
 	tabs: {
 		flexDirection: "row",
 		justifyContent: "center",

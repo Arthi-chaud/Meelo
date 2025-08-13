@@ -23,12 +23,7 @@ export const Lyrics = () => {
 			<Divider h />
 			{song?.lyrics === null || trackIsVideoOnly ? (
 				<View style={styles.emptyStateContainer}>
-					<View style={styles.emptyState}>
-						<EmptyState
-							icon={LyricsIcon}
-							text="emptyState.lyrics"
-						/>
-					</View>
+					<EmptyState icon={LyricsIcon} text="emptyState.lyrics" />
 				</View>
 			) : (
 				<BottomSheetScrollView contentContainerStyle={styles.content}>
@@ -52,5 +47,4 @@ const styles = StyleSheet.create((theme) => ({
 	root: { width: "100%", flex: 1 },
 	content: { paddingVertical: theme.gap(2), gap: theme.gap(0.5) },
 	emptyStateContainer: { flex: 1, justifyContent: "center" },
-	emptyState: { aspectRatio: 2.5 }, //TODO
 }));
