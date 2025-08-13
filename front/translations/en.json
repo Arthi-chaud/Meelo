@@ -117,6 +117,7 @@
 			"changeLayout": "Change layout",
 			"desc": "Desc",
 			"filter": {
+				"header": "Filter",
 				"allLibraries": "All Libraries",
 				"allTypes": "All Types",
 				"nTypes": "{{n}} Types"

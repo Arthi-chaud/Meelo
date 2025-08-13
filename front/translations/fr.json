@@ -118,6 +118,7 @@
 			"changeLayout": "Changer la disposition",
 			"desc": "Desc.",
 			"filter": {
+				"header": "Filtrer",
 				"allLibraries": "Toutes librairies",
 				"allTypes": "Tous Types",
 				"nTypes": "{{n}} Types"

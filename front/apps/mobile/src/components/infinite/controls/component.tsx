@@ -6,7 +6,7 @@ import type { LayoutControl } from "@/infinite-controls/layout";
 import type { SortControl } from "@/infinite-controls/sort";
 import { AscIcon, DescIcon, GridIcon, ListIcon } from "@/ui/icons";
 import type { Action } from "~/actions";
-import { Dropdown } from "~/components/dropdown";
+import { SelectModalButton } from "~/components/bottom-modal-sheet/select";
 import { Button } from "~/primitives/button";
 
 type Props<SortingKey extends string> = {
@@ -33,8 +33,10 @@ export const Controls = <S extends string>({
 	return (
 		<View style={styles.root}>
 			{filters?.map((filter, idx) => (
-				<Dropdown
+				<SelectModalButton
+					header={t("browsing.controls.filter.header")}
 					key={idx}
+					closeOnSelect
 					buttonProps={{
 						title: t(filter.buttonLabel),
 						icon: filter.buttonIcon as any,
@@ -65,7 +67,9 @@ export const Controls = <S extends string>({
 				/>
 			))}
 			{sort && (
-				<Dropdown
+				<SelectModalButton
+					header={t("browsing.controls.sortBy")}
+					closeOnSelect
 					values={sort.sortingKeys}
 					formatItem={(item) => t(sort.formatItem(item))}
 					buttonProps={{

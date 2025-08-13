@@ -2304,9 +2304,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gorhom/bottom-sheet@npm:^5.1.6":
-  version: 5.1.6
-  resolution: "@gorhom/bottom-sheet@npm:5.1.6"
+"@gorhom/bottom-sheet@npm:^5.1.8":
+  version: 5.1.8
+  resolution: "@gorhom/bottom-sheet@npm:5.1.8"
   dependencies:
     "@gorhom/portal": "npm:1.0.14"
     invariant: "npm:^2.2.4"
@@ -2316,13 +2316,13 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-gesture-handler: ">=2.16.1"
-    react-native-reanimated: ">=3.16.0"
+    react-native-reanimated: "*"
   peerDependenciesMeta:
     "@types/react":
       optional: true
     "@types/react-native":
       optional: true
-  checksum: 10c0/2f5c7e4e0a8968a567f5dcac5553b85e09850be46755bcf10a6e44843705392dd71c701b551575d8ea7c6cda8678f4a04851e926b6bfa63e82198b88568a76d8
+  checksum: 10c0/b1faa4bf495f2be814cc2477893fbe758282142b5e4a404eacabd0b76475975f17339fabce388719645a02c17ee999e86cffa26e847a40c9c38e98c5c342ee45
   languageName: node
   linkType: hard
 
@@ -8272,7 +8272,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.25.2"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
-    "@gorhom/bottom-sheet": "npm:^5.1.6"
+    "@gorhom/bottom-sheet": "npm:^5.1.8"
     "@shopify/flash-list": "npm:^1.8.3"
     "@shopify/react-native-skia": "npm:^2.1.1"
     "@tanstack/react-query": "npm:^5.77.0"
@@ -8315,7 +8315,6 @@ __metadata:
     react-native-reanimated: "npm:^3.17.3"
     react-native-safe-area-context: "npm:^5.4.1"
     react-native-screens: "npm:~4.11.1"
-    react-native-select-dropdown: "npm:^4.0.1"
     react-native-svg: "npm:^15.12.0"
     react-native-unistyles: "npm:^3.0.0-rc.4"
     state: "workspace:^"
@@ -9473,13 +9472,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/88a33ba419bd571cc318e80d25eb172f5829677f2dd80dcb69cbeaa6a35ba26214e0e82af87baa375182afe41a276e8ef1a9d13b826f662f3a389982492c2879
-  languageName: node
-  linkType: hard
-
-"react-native-select-dropdown@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "react-native-select-dropdown@npm:4.0.1"
-  checksum: 10c0/1c285c52982e7a2cb765ddf5499330971f12190a206668429c29ed5d1d523f5158ff075c85bca2eb6e5d8f938855ec17a6e11e84230ec896a72aec5f25a5c9ce
   languageName: node
   linkType: hard
 

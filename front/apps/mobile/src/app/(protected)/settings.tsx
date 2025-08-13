@@ -26,7 +26,7 @@ import { getScannerVersion, getSettings } from "@/api/queries";
 import { emptyPlaylistAtom } from "@/state/player";
 import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
-import { Dropdown } from "~/components/dropdown";
+import { SelectModalButton } from "~/components/bottom-modal-sheet/select";
 import { LoadableText } from "~/components/loadable_text";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
@@ -130,7 +130,9 @@ export default function SettingsView() {
 
 				<View style={styles.sectionRow}>
 					<Text content={t("settings.ui.language")} variant="h5" />
-					<Dropdown
+					<SelectModalButton
+						header={t("settings.ui.language")}
+						closeOnSelect
 						values={Languages}
 						isSelected={(item) => lng === item}
 						buttonProps={{
