@@ -8,7 +8,7 @@ import { atom, useAtom, useSetAtom } from "jotai";
 import { type ReactNode, useCallback, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { BlurView } from "./blur-view";
+import { BlurView } from "~/components/blur-view";
 
 type ModalAtom = { content: () => ReactNode; onDismiss: () => void };
 
