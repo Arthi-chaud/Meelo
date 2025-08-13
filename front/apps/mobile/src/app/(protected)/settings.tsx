@@ -39,6 +39,10 @@ import { languagePreference } from "~/state/lang";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 import { Languages } from "../../../../../translations";
 
+const BuildCommit =
+	process.env.EXPO_PUBLIC_BUILD_COMMIT ??
+	(process.env.NODE_ENV === "development" ? "dev" : "unknown");
+
 export default function SettingsView() {
 	const queryClient = useQueryClient();
 	const emptyPlaylist = useSetAtom(emptyPlaylistAtom);
@@ -163,6 +167,12 @@ export default function SettingsView() {
 					}}
 				/>
 			</View>
+			<View style={[styles.footer, styles.section]}>
+				<Text
+					style={styles.buildFooter}
+					content={`Build number: ${BuildCommit}`}
+				/>
+			</View>
 		</SafeScrollView>
 	);
 }
@@ -185,4 +195,11 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	disabledCheckButton: { color: theme.colors.text.secondary },
 	logoutButtonStyle: { flex: 1 },
+	footer: {
+		color: theme.colors.text.secondary,
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "center",
+	},
+	buildFooter: { color: theme.colors.text.secondary },
 }));
