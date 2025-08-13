@@ -22,10 +22,12 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
+import { getScannerVersion, getSettings } from "@/api/queries";
 import { emptyPlaylistAtom } from "@/state/player";
 import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
-import { useQueryClient } from "~/api";
+import { useQuery, useQueryClient } from "~/api";
 import { Dropdown } from "~/components/dropdown";
+import { LoadableText } from "~/components/loadable_text";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
 import { useColorScheme } from "~/hooks/color-scheme";
@@ -54,6 +56,8 @@ export default function SettingsView() {
 		colorSchemePreference,
 	);
 	const [lng, setLng] = useAtom(languagePreference);
+	const { data: apiSettings } = useQuery(getSettings);
+	const { data: scannerVersion } = useQuery(getScannerVersion);
 	const actualColorScheme = useColorScheme();
 	return (
 		<SafeScrollView style={[styles.root, { paddingTop: insets.top }]}>
@@ -167,10 +171,29 @@ export default function SettingsView() {
 					}}
 				/>
 			</View>
+			<Divider h />
 			<View style={[styles.footer, styles.section]}>
 				<Text
-					style={styles.buildFooter}
-					content={`Build number: ${BuildCommit}`}
+					style={styles.versionNumber}
+					content={`Build: ${BuildCommit}`}
+				/>
+				<LoadableText
+					style={styles.versionNumber}
+					content={
+						apiSettings
+							? `API version: ${apiSettings?.version ?? "Loading"}`
+							: undefined
+					}
+					skeletonWidth={15}
+				/>
+				<LoadableText
+					style={styles.versionNumber}
+					content={
+						scannerVersion
+							? `Scanner version: ${scannerVersion.version ?? "Loading"}`
+							: undefined
+					}
+					skeletonWidth={15}
 				/>
 			</View>
 		</SafeScrollView>
@@ -198,8 +221,8 @@ const styles = StyleSheet.create((theme) => ({
 	footer: {
 		color: theme.colors.text.secondary,
 		width: "100%",
-		flexDirection: "row",
-		justifyContent: "center",
+		alignItems: "center",
+		gap: theme.gap(2),
 	},
-	buildFooter: { color: theme.colors.text.secondary },
+	versionNumber: { color: theme.colors.text.secondary },
 }));
