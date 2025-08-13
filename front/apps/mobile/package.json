@@ -5,10 +5,9 @@
 	"private": true,
 	"sideEffects": false,
 	"scripts": {
-		"start": "expo start",
-		"android": "expo run:android",
-		"ios": "expo run:ios",
-		"web": "expo start --web"
+		"start": "APP_VARIANT=development expo start",
+		"android": "APP_VARIANT=development expo run:android",
+		"android:prebuild": "APP_VARIANT=development expo prebuild -p android"
 	},
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
