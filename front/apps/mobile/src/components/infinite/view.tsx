@@ -89,12 +89,7 @@ export const InfiniteView = <
 				</View>
 
 				{firstPage?.length === 0 ? (
-					<View
-						style={[
-							styles.emptyState,
-							styles.scrollViewTopPadding(controlsHeight),
-						]}
-					>
+					<View style={styles.emptyState}>
 						<EmptyState />
 					</View>
 				) : (
@@ -189,7 +184,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	body: { flex: 1 },
 	optionalHeader: {},
-	emptyState: { height: 300 },
+	emptyState: { height: "100%", justifyContent: "center" },
 	controls: (paddingTop: number) => ({
 		paddingBottom: theme.gap(1.5),
 		paddingTop: theme.gap(1.5) + paddingTop,

@@ -24,7 +24,8 @@ export const EmptyState = ({ icon, text }: Props) => {
 
 const styles = StyleSheet.create((theme) => ({
 	root: {
-		flex: 1,
+		width: "100%",
+		gap: theme.gap(2),
 		justifyContent: "space-evenly",
 		alignItems: "center",
 	},
