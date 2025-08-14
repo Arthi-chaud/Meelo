@@ -9,7 +9,7 @@ import { Text } from "~/primitives/text";
 import { useModal } from ".";
 
 type Props<T> = {
-	header: string;
+	header?: string;
 	values: readonly T[];
 	isSelected: (item: T) => boolean;
 	onSelect: (item: T) => void;
@@ -39,9 +39,11 @@ export const SelectBottomModalContent = <T,>({
 	);
 	return (
 		<View style={styles.root}>
-			<View style={styles.header}>
-				<Text content={header} variant="h4" />
-			</View>
+			{header && (
+				<View style={styles.header}>
+					<Text content={header} variant="h4" />
+				</View>
+			)}
 			<View style={styles.grid}>
 				{values.map((value, idx) => (
 					<Chip

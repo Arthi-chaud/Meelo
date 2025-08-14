@@ -1,8 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
 import type Album from "@/models/album";
 import { AlbumType } from "@/models/album";
@@ -17,7 +15,7 @@ import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { useAPI, useQueryClient } from "~/api";
 import { useModal } from "./bottom-modal-sheet";
-import { Chip } from "./chip";
+import { SelectBottomModalContent } from "./bottom-modal-sheet/select";
 
 type ChangeTypeModal<T extends string> = {
 	types: readonly T[];
@@ -157,26 +155,11 @@ export const ChangeTypeModal = <T extends string>({
 		setSelectedState(selectedType);
 	}, [selectedType]);
 	return (
-		<View style={styles.typesGrid}>
-			{types.map((type) => (
-				<Chip
-					filled={type === selectedTypeState}
-					key={type}
-					title={t(translate(type))}
-					onPress={() => onPress(type)}
-				/>
-			))}
-		</View>
+		<SelectBottomModalContent
+			values={types}
+			onSelect={onPress}
+			isSelected={(v) => selectedTypeState === v}
+			formatItem={(v) => t(translate(v))}
+		/>
 	);
 };
-
-const styles = StyleSheet.create((theme) => ({
-	typesGrid: {
-		padding: theme.gap(2),
-		paddingBottom: theme.gap(3),
-		flexDirection: "row",
-		gap: theme.gap(2),
-		flexWrap: "wrap",
-		justifyContent: "center",
-	},
-}));
