@@ -1,22 +1,35 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { View } from "react-native";
 import { Slider as AwesomeSlider } from "react-native-awesome-slider";
-import { useSharedValue } from "react-native-reanimated";
+import { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { useAccentColor } from "~/hooks/accent-color";
-import { currentTrackAtom } from "../state";
+import {
+	currentTrackAtom,
+	durationAtom,
+	progressAtom,
+	requestedProgressAtom,
+} from "../state";
 
 export const Slider = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
-	const progress = useSharedValue(0);
-	const minValue = useSharedValue(0);
-	const maxValue = useSharedValue(0);
+	const progress = useAtomValue(progressAtom);
+	const setProgress = useSetAtom(requestedProgressAtom);
+	const duration = useAtomValue(durationAtom);
+	const progressShared = useSharedValue(progress);
+	const minValueShared = useSharedValue(0);
+	const maxValueShared = useSharedValue(duration ?? 1);
 	const accentColor = useAccentColor(currentTrack?.track.illustration);
+	const animatedTheme = useAnimatedTheme();
 	useEffect(() => {
-		maxValue.value = currentTrack?.track.duration ?? 1;
-		progress.value = (currentTrack?.track.duration ?? 0) / 2;
-	}, [currentTrack]);
+		maxValueShared.value = duration ?? 1;
+		progressShared.value = withSpring(
+			progress,
+			animatedTheme.value.animations.progress,
+		);
+	}, [progress, duration]);
 	return (
 		<View style={styles.root}>
 			<Slider_
@@ -25,9 +38,12 @@ export const Slider = () => {
 					// Converting the accent color from rgb to rgba
 					maximumTrackTintColor: `${accentColor}30`,
 				}}
-				minimumValue={minValue}
-				progress={progress}
-				maximumValue={maxValue}
+				onSlidingComplete={(newProgress) => {
+					setProgress(newProgress);
+				}}
+				minimumValue={minValueShared}
+				progress={progressShared}
+				maximumValue={maxValueShared}
 			/>
 		</View>
 	);

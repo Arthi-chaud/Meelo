@@ -5,8 +5,9 @@ import { useCallback } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getArtist } from "@/api/queries";
-import { skipTrackAtom } from "@/state/player";
-import { ForwardIcon, PauseIcon, RewindIcon } from "@/ui/icons";
+import { playPreviousTrackAtom, skipTrackAtom } from "@/state/player";
+import { store } from "@/state/store";
+import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
 import { useQuery, useQueryClient } from "~/api";
 import { useContextMenu } from "~/components/context-menu";
@@ -18,7 +19,15 @@ import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { getTrackForContextMenu } from "../queries";
-import { currentTrackAtom } from "../state";
+import {
+	currentTrackAtom,
+	durationAtom,
+	isPlayingAtom,
+	pauseAtom,
+	playAtom,
+	progressAtom,
+	requestedProgressAtom,
+} from "../state";
 import { useFormattedArtistName } from "../utils";
 import { Slider } from "./slider";
 
@@ -29,7 +38,7 @@ export const Main = () => {
 			<View style={styles.illustration}>
 				<Illustration
 					illustration={currentTrack?.track.illustration}
-					quality="high"
+					quality="original"
 					useBlurhash
 					variant="center"
 				/>
@@ -45,17 +54,28 @@ export const Main = () => {
 };
 
 const PlayControls = () => {
+	const isPlaying = useAtomValue(isPlayingAtom);
+	const play = useSetAtom(playAtom);
+	const pause = useSetAtom(pauseAtom);
+	const requestProgress = useSetAtom(requestedProgressAtom);
 	const queryClient = useQueryClient();
 	const skipTrack = useSetAtom(skipTrackAtom);
+	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
+	const onRewind = useCallback(() => {
+		const progress = store.get(progressAtom);
+		if (progress > 5) {
+			requestProgress(0);
+		} else {
+			playPreviousTrack();
+		}
+	}, [playPreviousTrackAtom, requestProgress]);
 	return (
 		<View style={styles.playControls}>
-			{/* TODO */}
-			<Pressable onPress={() => {}}>
+			<Pressable onPress={onRewind}>
 				<Icon icon={RewindIcon} />
 			</Pressable>
-			{/* TODO */}
-			<Pressable onPress={() => {}}>
-				<Icon icon={PauseIcon} />
+			<Pressable onPress={() => (isPlaying ? pause() : play())}>
+				<Icon icon={isPlaying ? PauseIcon : PlayIcon} />
 			</Pressable>
 			<Pressable onPress={() => skipTrack(queryClient)}>
 				<Icon icon={ForwardIcon} />
@@ -66,14 +86,17 @@ const PlayControls = () => {
 
 const ProgressControls = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
-	const progress = currentTrack
-		? (currentTrack.track.duration ?? 0) / 2
-		: undefined;
+	const progress = useAtomValue(progressAtom);
+	const duration = useAtomValue(durationAtom);
 	return (
 		<View style={styles.sliderContainer}>
 			<View style={styles.sliderNumbers}>
 				<Text content={formatDuration(progress)} />
-				<Text content={formatDuration(currentTrack?.track.duration)} />
+				<Text
+					content={formatDuration(
+						duration ?? currentTrack?.track.duration,
+					)}
+				/>
 			</View>
 			<Slider />
 		</View>
