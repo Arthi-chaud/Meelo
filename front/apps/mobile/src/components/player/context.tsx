@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
 	type onProgressData,
@@ -7,7 +7,8 @@ import {
 } from "react-native-video";
 import type API from "@/api";
 import type Track from "@/models/track";
-import { useAPI } from "~/api";
+import { skipTrackAtom } from "@/state/player";
+import { useAPI, useQueryClient } from "~/api";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -19,9 +20,6 @@ import {
 } from "./state";
 
 //TODO Metadata
-//TODO On End: push to api
-//TODO On end go to next song
-//TODO Preload next track?
 //TODO when end of playlist is reached, play should start again
 
 export const PlayerContext = () => {
@@ -31,11 +29,35 @@ export const PlayerContext = () => {
 	const requestedProgress = useAtomValue(requestedProgressAtom);
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
+	const [markedAsPlayed, setMarkedAsPlayed] = useState(false);
+	const queryClient = useQueryClient();
 	const setProgress = useSetAtom(progressAtom);
+	const skipTrack = useSetAtom(skipTrackAtom);
 	const setDuration = useSetAtom(durationAtom);
 	const currentTrack = useAtomValue(currentTrackAtom);
 
+	const onProgress = useCallback(
+		(data: onProgressData) => {
+			if (!playerRef.current?.isPlaying || !currentTrack) {
+				return;
+			}
+			setProgress(data.currentTime);
+			if (markedAsPlayed || !currentTrack.track.songId) {
+				return;
+			}
+			const isMoreThanFourMinutes = data.currentTime >= 4 * 60;
+			const isPastHalfwayPoint = currentTrack.track.duration
+				? data.currentTime > currentTrack.track.duration / 2
+				: 0;
+			if (isMoreThanFourMinutes || isPastHalfwayPoint) {
+				setMarkedAsPlayed(true);
+				api.setSongAsPlayed(currentTrack.track.songId);
+			}
+		},
+		[markedAsPlayed, currentTrack, playerRef.current?.isPlaying],
+	);
 	useEffect(() => {
+		setMarkedAsPlayed(false);
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();
@@ -46,8 +68,9 @@ export const PlayerContext = () => {
 			playerRef.current = new VideoPlayer(
 				mkSource(currentTrack.track, api),
 			);
-			playerRef.current.onProgress = (data: onProgressData) => {
-				setProgress(data.currentTime);
+			playerRef.current.onProgress = onProgress;
+			playerRef.current.onEnd = () => {
+				skipTrack(queryClient);
 			};
 			playerRef.current.onLoad = (data: onLoadData) => {
 				if (!Number.isNaN(data.duration)) {
@@ -56,7 +79,6 @@ export const PlayerContext = () => {
 					setDuration(currentTrack.track.duration);
 				}
 			};
-
 			playerRef.current.volume = 1;
 			// biome-ignore lint/suspicious/noConsole: For debug
 			playerRef.current.onError = (e) => console.error(e);
@@ -74,7 +96,16 @@ export const PlayerContext = () => {
 	}, [currentTrack]);
 
 	useEffect(() => {
+		if (!playerRef.current) {
+			return;
+		}
+		playerRef.current.onProgress = onProgress;
+	}, [onProgress]);
+	useEffect(() => {
 		playerRef.current?.seekTo(requestedProgress);
+		if (requestedProgress === 0) {
+			setMarkedAsPlayed(false);
+		}
 	}, [requestedProgress]);
 
 	useEffect(() => {
