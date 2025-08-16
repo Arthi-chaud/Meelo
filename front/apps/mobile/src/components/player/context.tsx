@@ -1,5 +1,4 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { isNaN } from "lodash";
 import { useEffect, useRef } from "react";
 import {
 	type onLoadData,
@@ -16,10 +15,12 @@ import {
 	pauseAtom,
 	playAtom,
 	progressAtom,
+	requestedProgressAtom,
 } from "./state";
 
 //TODO Metadata
 //TODO On End: push to api
+//TODO On end go to next song
 //TODO Preload next track?
 //TODO when end of playlist is reached, play should start again
 
@@ -27,6 +28,7 @@ export const PlayerContext = () => {
 	const api = useAPI();
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const isPlaying = useAtomValue(isPlayingAtom);
+	const requestedProgress = useAtomValue(requestedProgressAtom);
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
 	const setProgress = useSetAtom(progressAtom);
@@ -48,7 +50,7 @@ export const PlayerContext = () => {
 				setProgress(data.currentTime);
 			};
 			playerRef.current.onLoad = (data: onLoadData) => {
-				if (!isNaN(data.duration)) {
+				if (!Number.isNaN(data.duration)) {
 					setDuration(data.duration);
 				} else {
 					setDuration(currentTrack.track.duration);
@@ -70,6 +72,10 @@ export const PlayerContext = () => {
 				});
 		}
 	}, [currentTrack]);
+
+	useEffect(() => {
+		playerRef.current?.seekTo(requestedProgress);
+	}, [requestedProgress]);
 
 	useEffect(() => {
 		if (!playerRef.current) {

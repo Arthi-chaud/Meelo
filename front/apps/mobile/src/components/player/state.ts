@@ -13,4 +13,6 @@ export const durationAtom = atom<null | number>(null);
 // Progress is in seconds
 export const progressAtom = atom(0);
 
+export const requestedProgressAtom = atom(0);
+
 const _isPlaying = atom(false);
