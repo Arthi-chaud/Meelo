@@ -7,7 +7,8 @@
 	"scripts": {
 		"start": "APP_VARIANT=development expo start",
 		"android": "APP_VARIANT=development expo run:android",
-		"android:prebuild": "APP_VARIANT=development expo prebuild -p android"
+		"android:prebuild": "APP_VARIANT=development expo prebuild -p android",
+		"ios": "expo run:ios"
 	},
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
@@ -48,12 +49,13 @@
 		"react-native-gesture-handler": "^2.27.2",
 		"react-native-keyboard-controller": "^1.17.5",
 		"react-native-mmkv": "^3.3.0",
-		"react-native-nitro-modules": "0.26.2",
+		"react-native-nitro-modules": "patch:react-native-nitro-modules@npm%3A0.27.5#~/.yarn/patches/react-native-nitro-modules-npm-0.27.5-40fe65af71.patch",
 		"react-native-reanimated": "^3.17.3",
 		"react-native-safe-area-context": "^5.4.1",
 		"react-native-screens": "~4.11.1",
 		"react-native-svg": "^15.12.0",
-		"react-native-unistyles": "^3.0.0-rc.4",
+		"react-native-unistyles": "3.0.9",
+		"react-native-video": "^7.0.0-alpha.3",
 		"state": "workspace:^",
 		"toastify-react-native": "^7.2.3",
 		"type-fest": "^4.33.0",

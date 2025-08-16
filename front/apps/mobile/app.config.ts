@@ -48,6 +48,15 @@ export const expo: ExpoConfig = {
 				],
 			},
 		],
+		[
+			// https://docs.thewidlarzgroup.com/react-native-video/docs/v6/other/expo
+			"react-native-video",
+			{
+				enableNotificationControls: true,
+				enableBackgroundAudio: true,
+				//TODO Picture in picture
+			},
+		],
 	],
 	experiments: {
 		typedRoutes: true,
