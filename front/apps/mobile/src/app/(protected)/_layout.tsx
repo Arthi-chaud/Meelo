@@ -47,6 +47,7 @@ import {
 } from "@/ui/icons";
 import { useAPI } from "~/api";
 import { BlurView } from "~/components/blur-view";
+import { PlayerContext } from "~/components/player/context";
 import { ExpandedPlayerSlot } from "~/components/player/expanded/slot";
 import { MinimisedPlayer } from "~/components/player/minimised";
 import { bottomTabBarHeightAtom } from "~/hooks/root-view-style";
@@ -160,6 +161,7 @@ export default function ProtectedLayout() {
 					)}
 				</View>
 				<ExpandedPlayerSlot />
+				<PlayerContext />
 				<View style={styles.tabBar}>
 					<BlurView style={styles.tabBarBackground} />
 
