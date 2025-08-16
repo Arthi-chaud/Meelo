@@ -9,7 +9,7 @@ import Animated, {
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { skipTrackAtom } from "@/state/player";
-import { ForwardIcon, PauseIcon } from "@/ui/icons";
+import { ForwardIcon, PauseIcon, PlayIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import { useContextMenu } from "~/components/context-menu";
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
@@ -20,11 +20,15 @@ import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { expandPlayerAtom } from "./expanded/state";
 import { getTrackForContextMenu } from "./queries";
-import { currentTrackAtom } from "./state";
+import {
+	currentTrackAtom,
+	durationAtom,
+	isPlayingAtom,
+	pauseAtom,
+	playAtom,
+	progressAtom,
+} from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
-
-// TODO Pause state
-// TODO Progress state
 
 export const MinimisedPlayer = () => {
 	const expandPlayer = useSetAtom(expandPlayerAtom);
@@ -37,30 +41,6 @@ export const MinimisedPlayer = () => {
 	const onSkip = useCallback(() => {
 		skipTrack(queryClient);
 	}, [queryClient, skipTrack]);
-	const progress = currentTrack ? 50 : 0; //TODO
-	const animatedTheme = useAnimatedTheme();
-	const firstIllustrationColor = useMemo(
-		() => currentTrack?.track.illustration?.colors.at(0) ?? undefined,
-		[currentTrack],
-	);
-
-	// Progress bar (color and width)
-	const accentColor = useAccentColor(currentTrack?.track.illustration);
-	const progressWidth = useSharedValue<`${number}%`>(`0%`);
-	useEffect(() => {
-		progressWidth.value = withSpring(
-			`${progress}%`,
-			animatedTheme.value.animations.progress,
-		);
-	}, [progress, currentTrack]);
-	const progressStyle = useAnimatedStyle(
-		() => ({
-			backgroundColor:
-				accentColor ?? animatedTheme.value.colors.text.primary,
-			width: progressWidth.value,
-		}),
-		[firstIllustrationColor, progress],
-	);
 	const formattedArtistName = useFormattedArtistName();
 
 	const { data: track } = useQuery(
@@ -105,17 +85,58 @@ export const MinimisedPlayer = () => {
 					/>
 				</View>
 				<View style={styles.controls}>
-					<Pressable onPress={() => {}}>
-						<Icon icon={PauseIcon} style={styles.controlButton} />
-					</Pressable>
-
+					<PlayButton />
 					<Pressable onPress={onSkip}>
 						<Icon icon={ForwardIcon} style={styles.controlButton} />
 					</Pressable>
 				</View>
 			</View>
-			<Animated.View style={[styles.progessPosition, progressStyle]} />
+			<ProgressBar />
 		</RNPRessable>
+	);
+};
+
+const ProgressBar = () => {
+	const currentTrack = useAtomValue(currentTrackAtom);
+	const firstIllustrationColor = useMemo(
+		() => currentTrack?.track.illustration?.colors.at(0) ?? undefined,
+		[currentTrack],
+	);
+	const progress = useAtomValue(progressAtom);
+	const duration = useAtomValue(durationAtom);
+	const animatedTheme = useAnimatedTheme();
+	// Progress bar (color and width)
+	const accentColor = useAccentColor(currentTrack?.track.illustration);
+	const progressWidth = useSharedValue<`${number}%`>(`0%`);
+	useEffect(() => {
+		progressWidth.value = withSpring(
+			`${Math.min((progress * 100) / (duration ?? 1), 100)}%`,
+			animatedTheme.value.animations.progress,
+		);
+	}, [progress, currentTrack]);
+	const progressStyle = useAnimatedStyle(
+		() => ({
+			backgroundColor:
+				accentColor ?? animatedTheme.value.colors.text.primary,
+			width: progressWidth.value,
+		}),
+		[firstIllustrationColor, progress],
+	);
+
+	return <Animated.View style={[styles.progessPosition, progressStyle]} />;
+};
+
+const PlayButton = () => {
+	const isPlaying = useAtomValue(isPlayingAtom);
+	const play = useSetAtom(playAtom);
+	const pause = useSetAtom(pauseAtom);
+	return (
+		<Pressable onPress={() => (isPlaying ? pause() : play())}>
+			<Icon
+				icon={isPlaying ? PauseIcon : PlayIcon}
+				style={styles.controlButton}
+			/>
+		</Pressable>
 	);
 };
 
