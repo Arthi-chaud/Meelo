@@ -44,7 +44,7 @@ export const SectionHeader = ({
 						title={t("browsing.seeAll")}
 						icon={MoreIcon}
 						iconPosition="right"
-						onPress={() => router.push(seeMore)}
+						onPress={() => router.navigate(seeMore)}
 					/>
 				))}
 		</View>

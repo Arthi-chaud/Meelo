@@ -56,7 +56,7 @@ export default function BrowseList() {
 						illustrationProps={{ fallbackIcon: icon }}
 						title={t(title)}
 						subtitle={null}
-						onPress={() => router.push(href)}
+						onPress={() => router.navigate(href)}
 					/>
 					<Divider h withInsets />
 				</Fragment>

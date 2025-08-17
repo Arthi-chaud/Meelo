@@ -77,13 +77,13 @@ export const Tile = ({
 	const onLongPress = useCallback(() => {
 		contextMenu && openContextMenu();
 	}, [contextMenu, openContextMenu]);
+	const router = useRouter();
 	const onShortPress = useCallback(() => {
 		onPress?.();
 		if (href) {
-			router.push(href);
+			router.navigate(href);
 		}
 	}, [onPress, href]);
-	const router = useRouter();
 	return (
 		<Pressable
 			onPress={onShortPress}
