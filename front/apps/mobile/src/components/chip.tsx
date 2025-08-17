@@ -20,7 +20,7 @@ export const Chip = ({ title, onPress, href, filled, icon }: Props) => {
 	const pressCallback = useCallback(() => {
 		onPress?.();
 		if (href) {
-			router.push(href);
+			router.navigate(href);
 		}
 	}, [onPress, href]);
 

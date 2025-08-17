@@ -64,7 +64,7 @@ export const ListItem = ({
 			onPress={() => {
 				onPress?.();
 				if (href) {
-					router.push(href);
+					router.navigate(href);
 				}
 			}}
 			onLongPress={onLongPressCallback}

@@ -69,7 +69,7 @@ export const Header = ({
 				{(!album || album.artist) && (
 					<Pressable
 						onPress={() =>
-							router.push(`/artists/${album?.artist?.id}`)
+							router.navigate(`/artists/${album?.artist?.id}`)
 						}
 					>
 						<LoadableText

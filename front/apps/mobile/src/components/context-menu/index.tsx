@@ -141,7 +141,7 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 					dismiss();
 				}
 				if (item.href) {
-					router.push(item.href);
+					router.navigate(item.href);
 				}
 				item.onPress?.();
 			}}

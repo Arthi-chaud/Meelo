@@ -124,7 +124,7 @@ const TrackNameButton = () => {
 			return;
 		}
 		dismiss();
-		router.push(`/songs/${currentTrack.track.songId}`);
+		router.navigate(`/songs/${currentTrack.track.songId}`);
 	}, [currentTrack]);
 	return (
 		<Pressable
@@ -157,7 +157,7 @@ const ArtistNameButton = () => {
 			return;
 		}
 		dismiss();
-		router.push(`/artists/${currentTrack?.artist.id}`);
+		router.navigate(`/artists/${currentTrack?.artist.id}`);
 	}, [currentTrack]);
 
 	const formattedArtistName = useFormattedArtistName();

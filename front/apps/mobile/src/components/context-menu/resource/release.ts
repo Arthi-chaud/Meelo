@@ -41,7 +41,7 @@ export const useReleaseContextMenu = (
 					.fetchQuery(getAlbum(release!.albumId))
 					.then(
 						({ artistId }) =>
-							artistId && router.push(`/artists/${artistId}`),
+							artistId && router.navigate(`/artists/${artistId}`),
 					);
 			},
 		} satisfies Action;
