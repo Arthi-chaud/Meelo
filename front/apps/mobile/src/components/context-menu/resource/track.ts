@@ -51,7 +51,7 @@ export const useTrackContextMenu = (
 		return {
 			header: {
 				title: track?.name,
-				subtitle: track?.release?.name,
+				subtitle: track?.release?.name ?? null,
 				illustration: track?.illustration,
 			},
 			items: track
