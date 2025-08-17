@@ -44,6 +44,7 @@ export const Pressable = ({
 		<P
 			//TODO Hover
 			disabled={disabled}
+			android_disableSound={true}
 			onPressIn={onPressStart}
 			onPressOut={onPressEnd}
 			onPress={onPress}
