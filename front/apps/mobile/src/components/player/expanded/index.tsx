@@ -1,6 +1,7 @@
-import { BottomSheetHandle } from "@gorhom/bottom-sheet";
+import { BottomSheetHandle, useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { useNavigation } from "expo-router";
 import { useAtomValue } from "jotai";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
@@ -16,15 +17,22 @@ import { ColorBackground } from "../utils";
 import { Lyrics } from "./lyrics";
 import { Main } from "./main";
 import { Queue } from "./queue";
-
-//TODO pause/play state
+import { ExpandedPlayerModalKey } from "./slot";
 
 const Tabs = ["main", "lyrics", "queue"] as const;
 type Tab = (typeof Tabs)[number];
 
 export const ExpandedPlayer = () => {
+	const { dismiss } = useBottomSheetModal();
 	const insets = useSafeAreaInsets();
 	const [tab, setTab] = useState<Tab>("main");
+	const navigation = useNavigation();
+
+	useEffect(() => {
+		const callback = () => dismiss(ExpandedPlayerModalKey);
+		navigation.addListener("state", callback);
+		return () => navigation.removeListener("state", callback);
+	}, []);
 
 	return (
 		<View
