@@ -1,4 +1,5 @@
 import { Stack, useNavigation } from "expo-router";
+import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -70,6 +71,8 @@ export default function Layout({ segment }: { segment: string }) {
 	const { t } = useTranslation();
 	// Cant memo-ise this, we need this to be updated when theme changes
 	const screenOptions = {
+		animation: "none", //TODO slide_from_right without flicker
+		animationTypeForReplace: "pop",
 		contentStyle: [styles.screen],
 		// headerStyle: styles.header,
 		headerTitleStyle: styles.headerTitle,
@@ -81,7 +84,7 @@ export default function Layout({ segment }: { segment: string }) {
 		),
 		headerTransparent: true,
 		headerTintColor: styles.headerTitle.color,
-	};
+	} satisfies ComponentProps<typeof Stack>["screenOptions"];
 	switch (segment) {
 		case "(home)": {
 			return (

@@ -117,6 +117,7 @@ export default function RootLayout() {
 								<Stack
 									screenOptions={{
 										animation: "none",
+										animationTypeForReplace: "pop",
 										headerShown: false,
 										contentStyle: {
 											flex: 1,
