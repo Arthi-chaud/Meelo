@@ -6,7 +6,7 @@ import { ModalBackdrop } from "~/components/bottom-modal-sheet";
 import { ExpandedPlayer } from "~/components/player/expanded";
 import { collapsePlayerAtom, playerIsExpandedAtom } from "./state";
 
-export const ExpandedPLayerModalKey = "EXPANDED-PLAYER";
+export const ExpandedPlayerModalKey = "EXPANDED-PLAYER";
 
 export const ExpandedPlayerSlot = () => {
 	const collapsePlayer = useSetAtom(collapsePlayerAtom);
@@ -21,7 +21,7 @@ export const ExpandedPlayerSlot = () => {
 	return (
 		<BottomSheetModal
 			ref={modalRef}
-			key={ExpandedPLayerModalKey}
+			name={ExpandedPlayerModalKey}
 			enableDynamicSizing={false}
 			snapPoints={["100%"]}
 			handleComponent={null}
