@@ -57,9 +57,6 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 		  }
 	);
 
-// Note: For the 'fitContent' variant to work, you may need to tweak the parent so that:
-// - The button is in a row
-// - The button is align to the center (?)
 export const Button = (props: ButtonProps) => {
 	const theme = useAnimatedTheme();
 	const scale = useSharedValue<number>(1);
