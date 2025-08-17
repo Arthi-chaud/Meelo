@@ -4,6 +4,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { VideoView } from "react-native-video";
 import { getArtist } from "@/api/queries";
 import { playPreviousTrackAtom, skipTrackAtom } from "@/state/player";
 import { store } from "@/state/store";
@@ -18,6 +19,7 @@ import { LoadableText } from "~/components/loadable_text";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
 import {
 	currentTrackAtom,
@@ -32,16 +34,10 @@ import { useFormattedArtistName } from "../utils";
 import { Slider } from "./slider";
 
 export const Main = () => {
-	const currentTrack = useAtomValue(currentTrackAtom);
 	return (
 		<>
 			<View style={styles.illustration}>
-				<Illustration
-					illustration={currentTrack?.track.illustration}
-					quality="original"
-					useBlurhash
-					variant="center"
-				/>
+				<IllustrationOrVideo />
 			</View>
 			<View style={styles.controls}>
 				<TrackNameButton />
@@ -169,6 +165,23 @@ const ArtistNameButton = () => {
 	);
 };
 
+const IllustrationOrVideo = () => {
+	const player = useAtomValue(videoPlayerAtom);
+	const currentTrack = useAtomValue(currentTrackAtom);
+
+	if (currentTrack?.track.type === "Video" && player) {
+		return <VideoView player={player} style={styles.video} />;
+	}
+	return (
+		<Illustration
+			illustration={currentTrack?.track.illustration}
+			quality="original"
+			useBlurhash
+			variant="center"
+		/>
+	);
+};
+
 const styles = StyleSheet.create((theme) => ({
 	illustration: {
 		aspectRatio: 1,
@@ -193,5 +206,9 @@ const styles = StyleSheet.create((theme) => ({
 		width: "100%",
 		flexDirection: "row",
 		justifyContent: "space-evenly",
+	},
+	video: {
+		width: "100%",
+		height: "100%",
 	},
 }));

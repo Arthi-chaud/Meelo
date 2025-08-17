@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
@@ -19,12 +19,16 @@ import {
 	requestedProgressAtom,
 } from "./state";
 
+// Should be used as a readonly handle, mainly for the VideoView component
+export const videoPlayerAtom = atom<VideoPlayer | null>(null);
+
 //TODO Metadata
 //TODO when end of playlist is reached, play should start again
 
 export const PlayerContext = () => {
 	const api = useAPI();
 	const playerRef = useRef<VideoPlayer | null>(null);
+	const setPlayer = useSetAtom(videoPlayerAtom);
 	const isPlaying = useAtomValue(isPlayingAtom);
 	const requestedProgress = useAtomValue(requestedProgressAtom);
 	const play = useSetAtom(playAtom);
@@ -84,6 +88,7 @@ export const PlayerContext = () => {
 			playerRef.current.onError = (e) => console.error(e);
 			playerRef.current.play();
 			play();
+			setPlayer(playerRef.current);
 		} else {
 			playerRef.current.pause();
 			playerRef.current
@@ -123,6 +128,7 @@ export const PlayerContext = () => {
 		return () => {
 			playerRef.current?.release();
 			playerRef.current = null;
+			setPlayer(null);
 		};
 	}, []);
 
