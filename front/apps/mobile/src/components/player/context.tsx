@@ -63,6 +63,7 @@ export const PlayerContext = () => {
 	);
 	useEffect(() => {
 		setMarkedAsPlayed(false);
+		setProgress(0);
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();

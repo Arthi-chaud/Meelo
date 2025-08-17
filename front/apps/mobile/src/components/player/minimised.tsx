@@ -110,7 +110,9 @@ const ProgressBar = () => {
 	const progressWidth = useSharedValue<`${number}%`>(`0%`);
 	useEffect(() => {
 		progressWidth.value = withSpring(
-			`${Math.min((progress * 100) / (duration ?? 1), 100)}%`,
+			currentTrack
+				? `${Math.min((progress * 100) / (duration ?? 1), 100)}%`
+				: `0%`,
 			animatedTheme.value.animations.progress,
 		);
 	}, [progress, currentTrack]);
