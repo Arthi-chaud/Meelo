@@ -7,7 +7,7 @@ import {
 } from "react-native-video";
 import type API from "@/api";
 import type Track from "@/models/track";
-import { skipTrackAtom } from "@/state/player";
+import { cursorAtom, skipTrackAtom } from "@/state/player";
 import { useAPI, useQueryClient } from "~/api";
 import {
 	currentTrackAtom,
@@ -29,6 +29,7 @@ export const PlayerContext = () => {
 	const api = useAPI();
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const setPlayer = useSetAtom(videoPlayerAtom);
+	const cursor = useAtomValue(cursorAtom);
 	const isPlaying = useAtomValue(isPlayingAtom);
 	const requestedProgress = useAtomValue(requestedProgressAtom);
 	const play = useSetAtom(playAtom);
@@ -118,6 +119,10 @@ export const PlayerContext = () => {
 			return;
 		}
 		if (isPlaying && !playerRef.current.isPlaying) {
+			if (cursor === -1) {
+				skipTrack(queryClient);
+				return;
+			}
 			playerRef.current.play();
 		} else if (!isPlaying) {
 			playerRef.current.pause();
