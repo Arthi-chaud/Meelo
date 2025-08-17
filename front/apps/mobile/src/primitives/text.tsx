@@ -94,7 +94,11 @@ export const Text = ({ content, children, ...props }: TextProps) => {
 		color: props.color,
 	});
 	return (
-		<RNText {...props} style={[styles.text, props.style]}>
+		<RNText
+			{...props}
+			style={[styles.text, props.style]}
+			android_hyphenationFrequency={"normal"}
+		>
 			{content ?? children}
 		</RNText>
 	);
