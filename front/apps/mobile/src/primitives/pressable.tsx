@@ -30,6 +30,13 @@ export const Pressable = ({
 }: Props) => {
 	const opacity = useSharedValue(1);
 	const animatedTheme = useAnimatedTheme();
+	const onPress_ = useCallback(
+		(e: GestureResponderEvent) => {
+			//https://reactnative.dev/docs/performance.html#my-touchablex-view-isnt-very-responsive
+			requestAnimationFrame(() => onPress(e));
+		},
+		[onPress],
+	);
 	const onPressStart = useCallback(() => {
 		opacity.value = withSpring(
 			0.5,
@@ -47,7 +54,7 @@ export const Pressable = ({
 			android_disableSound={true}
 			onPressIn={onPressStart}
 			onPressOut={onPressEnd}
-			onPress={onPress}
+			onPress={onPress_}
 			onLongPress={onLongPress}
 		>
 			<Animated.View style={[styles.root, animatedStyle, style]}>
