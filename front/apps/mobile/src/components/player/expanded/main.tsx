@@ -84,13 +84,21 @@ const ProgressControls = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const progress = useAtomValue(progressAtom);
 	const duration = useAtomValue(durationAtom);
+
+	//Note: the progress/duration atoms are not cleared correctly when there is not track playing
 	return (
 		<View style={styles.sliderContainer}>
 			<View style={styles.sliderNumbers}>
-				<Text content={formatDuration(progress)} />
 				<Text
 					content={formatDuration(
-						duration ?? currentTrack?.track.duration,
+						currentTrack ? progress : undefined,
+					)}
+				/>
+				<Text
+					content={formatDuration(
+						currentTrack
+							? (duration ?? currentTrack?.track.duration)
+							: undefined,
 					)}
 				/>
 			</View>
