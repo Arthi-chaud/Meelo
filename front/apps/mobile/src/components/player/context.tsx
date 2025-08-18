@@ -10,6 +10,7 @@ import type Track from "@/models/track";
 import { cursorAtom, skipTrackAtom } from "@/state/player";
 import { useAPI, useQueryClient } from "~/api";
 import {
+	bufferedAtom,
 	currentTrackAtom,
 	durationAtom,
 	isPlayingAtom,
@@ -23,13 +24,13 @@ import {
 export const videoPlayerAtom = atom<VideoPlayer | null>(null);
 
 //TODO Metadata
-//TODO when end of playlist is reached, play should start again
 
 export const PlayerContext = () => {
 	const api = useAPI();
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const setPlayer = useSetAtom(videoPlayerAtom);
 	const cursor = useAtomValue(cursorAtom);
+	const setBuffered = useSetAtom(bufferedAtom);
 	const isPlaying = useAtomValue(isPlayingAtom);
 	const requestedProgress = useAtomValue(requestedProgressAtom);
 	const play = useSetAtom(playAtom);
@@ -47,6 +48,13 @@ export const PlayerContext = () => {
 				return;
 			}
 			setProgress(data.currentTime);
+			setBuffered((b) =>
+				// The bufferDuration is the length of the current segment being played
+				// Not sure if we can get the total buffered length
+				// This is to prevent flicker when rewinding a song
+				// But change changing the song
+				Math.max(b, data.currentTime + data.bufferDuration),
+			);
 			if (markedAsPlayed || !currentTrack.track.songId) {
 				return;
 			}
@@ -64,6 +72,7 @@ export const PlayerContext = () => {
 	useEffect(() => {
 		setMarkedAsPlayed(false);
 		setProgress(0);
+		setBuffered(0);
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();

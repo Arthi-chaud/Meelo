@@ -7,6 +7,7 @@ import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { useAccentColor } from "~/hooks/accent-color";
 import {
+	bufferedAtom,
 	currentTrackAtom,
 	durationAtom,
 	progressAtom,
@@ -18,8 +19,10 @@ export const Slider = () => {
 	const progress = useAtomValue(progressAtom);
 	const setProgress = useSetAtom(requestedProgressAtom);
 	const duration = useAtomValue(durationAtom);
+	const buffered = useAtomValue(bufferedAtom);
 	const progressShared = useSharedValue(progress);
 	const minValueShared = useSharedValue(0);
+	const cacheValueShared = useSharedValue(0);
 	const maxValueShared = useSharedValue(duration ?? 1);
 	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const animatedTheme = useAnimatedTheme();
@@ -29,18 +32,24 @@ export const Slider = () => {
 			progress,
 			animatedTheme.value.animations.progress,
 		);
-	}, [progress, duration]);
+		cacheValueShared.value = withSpring(
+			buffered,
+			animatedTheme.value.animations.progress,
+		);
+	}, [progress, duration, buffered]);
 	return (
 		<View style={styles.root}>
 			<Slider_
 				theme={{
 					minimumTrackTintColor: accentColor,
 					// Converting the accent color from rgb to rgba
+					cacheTrackTintColor: `${accentColor}20`,
 					maximumTrackTintColor: `${accentColor}30`,
 				}}
 				onSlidingComplete={(newProgress) => {
 					setProgress(newProgress);
 				}}
+				cache={cacheValueShared}
 				minimumValue={minValueShared}
 				progress={progressShared}
 				maximumValue={maxValueShared}

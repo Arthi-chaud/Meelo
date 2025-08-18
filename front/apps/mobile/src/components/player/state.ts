@@ -10,6 +10,7 @@ export const pauseAtom = atom(null, (_, set) => set(_isPlaying, false));
 export const isPlayingAtom = atom((get) => get(_isPlaying));
 // Duration is in seconds
 export const durationAtom = atom<null | number>(null);
+export const bufferedAtom = atom<number>(0);
 // Progress is in seconds
 export const progressAtom = atom(0);
 
