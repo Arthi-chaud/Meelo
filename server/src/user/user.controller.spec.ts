@@ -1,9 +1,14 @@
-import type { INestApplication } from "@nestjs/common";
+import { INestApplication } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 import type { TestingModule } from "@nestjs/testing";
+import { AppProviders } from "src/app.plugins";
+import { UnauthorizedAnonymousRequestException } from "src/authentication/authentication.exception";
+import AuthenticationModule from "src/authentication/authentication.module";
 import FileModule from "src/file/file.module";
 import type { User } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import SettingsModule from "src/settings/settings.module";
 import request from "supertest";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
@@ -182,6 +187,106 @@ describe("User Controller", () => {
 					name: "use",
 				})
 				.expect(400);
+		});
+	});
+});
+
+// For password update, plugs in authentication guards
+describe("User Controller", () => {
+	let app: INestApplication;
+	let dummyRepository: TestPrismaService;
+	let userToken: string;
+
+	let module: TestingModule;
+	beforeAll(async () => {
+		module = await createTestingModule({
+			imports: [
+				PrismaModule,
+				FileModule,
+				UserModule,
+				SettingsModule,
+				AuthenticationModule,
+			],
+			providers: [PrismaService, UserService, ...AppProviders],
+		})
+			.overrideProvider(PrismaService)
+			.useClass(TestPrismaService)
+			.compile();
+		app = await SetupApp(module);
+		dummyRepository = module.get(PrismaService);
+		await dummyRepository.onModuleInit();
+		userToken = module.get(JwtService).sign({
+			name: dummyRepository.user1.name,
+			id: dummyRepository.user1.id,
+		});
+	});
+
+	afterAll(async () => {
+		await module.close();
+		await app.close();
+	});
+
+	describe("Update a user password", () => {
+		it("Should return an error: password is incorrect", () => {
+			return request(app.getHttpServer())
+				.post(`/users/me/password`)
+				.auth(userToken, { type: "bearer" })
+				.send({
+					oldPassword: "123",
+					newPassword: "MyNewPassword",
+				})
+				.expect(403);
+		});
+		it("Should return an error: new password is too short", () => {
+			return request(app.getHttpServer())
+				.post(`/users/me/password`)
+				.auth(userToken, { type: "bearer" })
+				.send({
+					oldPassword: "1234",
+					newPassword: "0",
+				})
+				.expect(400);
+		});
+		it("Should return an error: anonymous request", () => {
+			return request(app.getHttpServer())
+				.post(`/users/me/password`)
+				.send({
+					oldPassword: "",
+					newPassword: "",
+				})
+				.expect(401)
+				.expect(({ body }) =>
+					expect(body.message).toBe(
+						new UnauthorizedAnonymousRequestException().message,
+					),
+				);
+		});
+
+		it("Should update the password", async () => {
+			await request(app.getHttpServer())
+				.post(`/users/me/password`)
+				.auth(userToken, { type: "bearer" })
+				.send({
+					oldPassword: "1234",
+					newPassword: "MyNewPassword",
+				})
+				.expect(201);
+			let token = "";
+			await request(app.getHttpServer())
+				.post(`/auth/login`)
+				.send({
+					username: dummyRepository.user1.name,
+					password: "MyNewPassword",
+				})
+				.expect(201)
+				.expect(async ({ body }) => {
+					token = body.access_token;
+				});
+
+			await request(app.getHttpServer())
+				.get(`/users/me`)
+				.auth(token, { type: "bearer" })
+				.expect(200);
 		});
 	});
 });

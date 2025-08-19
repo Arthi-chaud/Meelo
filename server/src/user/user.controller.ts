@@ -41,7 +41,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import Response, { ResponseType } from "src/response/response.decorator";
 import SettingsService from "src/settings/settings.service";
 import UserCreateDTO from "./models/create-user.dto";
-import UpdateUserDTO from "./models/update-user.dto";
+import UpdateUserDTO, { UpdatePasswordDTO } from "./models/update-user.dto";
 import type UserQueryParameters from "./models/user.query-params";
 import { UserResponseBuilder } from "./models/user.response";
 import UserService from "./user.service";
@@ -62,6 +62,28 @@ export default class UserController {
 	@Response({ handler: UserResponseBuilder })
 	async getAuthenticatedUserProfile(@Request() request: Express.Request) {
 		return this.userService.get({ id: (request.user as User).id });
+	}
+
+	@ApiOperation({
+		summary: "Change the password of the authentified user",
+	})
+	@Post("me/password")
+	@Role(Roles.User)
+	async changePassword(
+		@Request() request: Express.Request,
+		@Body() { oldPassword, newPassword }: UpdatePasswordDTO,
+	) {
+		const userId = (request.user as User).id;
+
+		const { name } = await this.userService.get({ id: userId });
+		const userByCredentials = await this.userService.get({
+			byCredentials: { name, password: oldPassword },
+		});
+		await this.userService.update(
+			{ password: newPassword },
+			{ id: userByCredentials.id },
+		);
+		return { message: "Password updated" };
 	}
 
 	@ApiOperation({
