@@ -16,6 +16,8 @@ from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
 
+OVERRIDABLE_ALBUM_TYPES = [AlbumType.STUDIO, AlbumType.LIVE]
+
 
 def match_and_post_album(album_id: int, album_name: str):
     try:
@@ -27,10 +29,10 @@ def match_and_post_album(album_id: int, album_name: str):
             album.artist.name if album.artist else None,
             album.type,
         )
-        # We only care about the new album type if the previous type is Studio
+        # We only care about the new album type if the previous type is Studio or live (see #1089)
         album_type = (
             res.album_type
-            if album.type == AlbumType.STUDIO and res.album_type
+            if album.type in OVERRIDABLE_ALBUM_TYPES and res.album_type
             else album.type
         )
         old_release_date = (
@@ -80,7 +82,7 @@ def match_album(
     rating: int | None = None
     # The type is none if it needs to be found, or sth else if the API already knows it
     album_type: AlbumType | None = (
-        None if type == AlbumType.OTHER or type == AlbumType.STUDIO else type
+        None if type == AlbumType.OTHER or type in OVERRIDABLE_ALBUM_TYPES else type
     )
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
