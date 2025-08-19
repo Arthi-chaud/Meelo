@@ -158,3 +158,13 @@ class TestMatchAlbum(unittest.TestCase):
         context.settings.push_genres = True
         # Genres
         self.assertEqual(len(res.genres), 0)
+
+    def test_get_album_correct_type(self):
+        # Setup
+        context = Context.get()
+        context.settings.push_genres = False
+        res = match_album(1, "(How to Live) as Ghosts", "10 Years", AlbumType.LIVE)
+        # Teardown
+        context.settings.push_genres = True
+        print(res)
+        self.assertEqual(res.album_type, AlbumType.STUDIO)
