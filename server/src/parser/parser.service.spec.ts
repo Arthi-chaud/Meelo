@@ -659,7 +659,16 @@ describe("Parser Service", () => {
 		const scenarios = [
 			[
 				AlbumType.StudioRecording,
-				["Into the Skyline", "Celebration", "Living Room"],
+				[
+					"Into the Skyline",
+					"Celebration",
+					"Living Room",
+					// See https://github.com/Arthi-chaud/Meelo/issues/1089
+					"Alive or Just Breathing",
+					"Danger Days: The True Lives Of The Fabulous Killjoys",
+					"Outlive You All",
+					"Deliverance and Damnation",
+				],
 			],
 			[
 				AlbumType.LiveRecording,

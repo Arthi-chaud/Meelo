@@ -484,6 +484,7 @@ export default class ParserService {
 
 	getAlbumType(albumName: string): AlbumType {
 		albumName = albumName.toLowerCase();
+		const containsWord = (s: string) => albumName.split(" ").includes(s);
 		if (
 			albumName.includes("soundtrack") ||
 			albumName.includes("original score") ||
@@ -505,7 +506,8 @@ export default class ParserService {
 			return AlbumType.VideoAlbum;
 		}
 		if (
-			albumName.search(/.+(live).*/g) !== -1 ||
+			containsWord("live") ||
+			albumName.search(/\W(live)\W/g) !== -1 ||
 			albumName.includes("unplugged") ||
 			albumName.includes(" tour") ||
 			albumName.includes("live from ") ||
