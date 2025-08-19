@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, HttpStatus } from "@nestjs/common";
 import {
 	AlreadyExistsException,
 	InvalidRequestException,
+	MeeloException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
 
@@ -41,9 +42,9 @@ export class UserNotFoundFromJwtPayload extends NotFoundException {
 	}
 }
 
-export class InvalidUserCredentialsException extends ForbiddenException {
+export class InvalidUserCredentialsException extends MeeloException {
 	constructor(username: string) {
-		super(`Invalid Password for user '${username}'.`);
+		super(HttpStatus.FORBIDDEN, `Invalid Password for user '${username}'.`);
 	}
 }
 
@@ -76,7 +77,7 @@ export class InvalidUsernameException extends InvalidRequestException {
 export class InvalidPasswordException extends InvalidRequestException {
 	constructor() {
 		super(
-			"Password is invalid. Must be at least 6 chars long, without spaces",
+			"Password does not match criteria. Must be at least 6 chars long, without spaces",
 		);
 	}
 }

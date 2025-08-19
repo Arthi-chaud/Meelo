@@ -16,9 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PartialType, PickType } from "@nestjs/swagger";
+import { ApiProperty, PartialType, PickType } from "@nestjs/swagger";
+import { IsDefined, IsString } from "class-validator";
 import { User } from "src/prisma/models";
 
 export default class UpdateUserDTO extends PartialType(
 	PickType(User, ["admin", "enabled", "name"]),
 ) {}
+
+export class UpdatePasswordDTO {
+	@ApiProperty({
+		description: "The old password of the user",
+		example: "myOldPassword1234",
+	})
+	@IsString()
+	@IsDefined()
+	oldPassword: string;
+
+	@ApiProperty({
+		description: "The new password of the user",
+		example: "myNewPassword1234",
+	})
+	@IsString()
+	@IsDefined()
+	newPassword: string;
+}

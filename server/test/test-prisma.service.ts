@@ -18,6 +18,7 @@ import {
 	type Video,
 	VideoType,
 } from "@prisma/client";
+import { hashSync } from "bcrypt";
 import Logger from "src/logger/logger";
 import type { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
@@ -116,8 +117,13 @@ export default class TestPrismaService extends PrismaService {
 		});
 		[this.user1, this.user2] = await this.user.createManyAndReturn({
 			data: [
-				{ name: "user", password: "1234", admin: true, enabled: true },
-				{ name: "user2", password: "1234" },
+				{
+					name: "user",
+					password: hashSync("1234", 4),
+					admin: true,
+					enabled: true,
+				},
+				{ name: "user2", password: hashSync("1234", 4) },
 			],
 		});
 		[this.library1, this.library2] = await this.library.createManyAndReturn(
