@@ -34,6 +34,7 @@ import {
 import { store } from "@/state/store";
 import { getAPI_ } from "~/api";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
+import { ModalSlot } from "~/components/modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n";
@@ -114,6 +115,7 @@ function MyApp({
 											<Scaffold>
 												<Component {...pageProps} />
 											</Scaffold>
+											<ModalSlot />
 										</KeyboardBindingsProvider>
 									</ErrorBoundary>
 								</AuthenticationWall>
