@@ -63,6 +63,7 @@ import { CreatePlaylistAction } from "~/components/actions/playlist";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
+import { useModal } from "~/components/modal";
 import {
 	PlayButton,
 	type PlayerControlsProps,
@@ -86,7 +87,7 @@ export const ExpandedPlayerControls = (
 	const [playlist] = useAtom(playlistAtom);
 	const [cursor] = useAtom(cursorAtom);
 	const [infiniteQueueQuery] = useAtom(infiniteQueryAtom);
-	const [playlistModalIsOpen, openPlaylistModal] = useState(false);
+	const [openModal, closeModal] = useModal();
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const loadNextQueuePage = useSetAtom(loadNextQueuePageAtom);
 	const removeTrack = useSetAtom(removeTrackAtom);
@@ -608,7 +609,11 @@ export const ExpandedPlayerControls = (
 							variant="outlined"
 							onClick={() => {
 								props.onExpand(false);
-								openPlaylistModal(true);
+								openModal(() =>
+									saveAsPlaylistAction.dialog!({
+										close: closeModal,
+									}),
+								);
 							}}
 						>
 							{t("player.saveQueueAsPlaylist")}
@@ -616,15 +621,6 @@ export const ExpandedPlayerControls = (
 					)}
 				</>
 			)}
-			<Dialog
-				open={playlistModalIsOpen}
-				onClose={() => openPlaylistModal(false)}
-				fullWidth
-			>
-				{saveAsPlaylistAction.dialog!({
-					close: () => openPlaylistModal(false),
-				})}
-			</Dialog>
 			<Divider
 				variant="middle"
 				sx={{
