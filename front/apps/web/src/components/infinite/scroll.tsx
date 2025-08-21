@@ -35,6 +35,7 @@ type InfiniteScrollProps<T extends Resource, F extends Resource> = {
 	 */
 	query: InfiniteQueryFn<T, F>;
 
+	nested?: true;
 	emptyState?: EmptyStateProps;
 };
 
@@ -64,8 +65,10 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 						fetchNextPage();
 					}
 				}}
-				getScrollParent={() =>
-					document.getElementById(ParentScrollableDivId)
+				getScrollParent={
+					props.nested
+						? undefined
+						: () => document.getElementById(ParentScrollableDivId)
 				}
 				useWindow={false}
 				hasMore={hasNextPage}

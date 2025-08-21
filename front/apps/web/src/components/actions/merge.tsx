@@ -194,6 +194,7 @@ const SelectSongForm = (props: SelectSongFormProps) => {
 			<DialogTitle>{t("actions.song.mergeSong.modalTitle")}</DialogTitle>
 			<DialogContent>
 				<InfiniteList
+					nested
 					query={props.songQuery}
 					render={(item, _, index) => (
 						<ListItem
