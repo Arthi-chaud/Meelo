@@ -19,7 +19,6 @@
 import {
 	Button,
 	ButtonGroup,
-	Dialog,
 	Grid,
 	ListItemIcon,
 	Menu,
@@ -45,6 +44,7 @@ import {
 	PlusIcon,
 } from "@/ui/icons";
 import type Action from "~/components/actions";
+import { useModal } from "~/components/modal";
 
 // Controls should not maintain state regarding options
 // It should rely on the onUpdate function to update external state
@@ -253,14 +253,11 @@ const LayoutButtonGroup = ({ layout }: { layout: LayoutControl }) => {
 
 const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 	const { t } = useTranslation();
-	const [openedDialogIndex, setOpenedDialogIndex] = useState<number | null>(
-		null,
-	);
-	const closeModal = () => setOpenedDialogIndex(null);
+	const [openModal, closeModal] = useModal();
 
 	return (
 		<ButtonGroup variant="contained">
-			{actions.map((action, idx) => (
+			{actions.map((action) => (
 				<Fragment key={`action-${action.label}`}>
 					<Button
 						key={`action-${action.label}`}
@@ -271,21 +268,17 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 								return;
 							}
 							action.onClick?.();
-							action.dialog && setOpenedDialogIndex(idx);
+							if (action.dialog) {
+								openModal(() =>
+									action.dialog!({
+										close: closeModal,
+									}),
+								);
+							}
 						}}
 					>
 						{t(action.label)}
 					</Button>
-					{action.dialog && (
-						<Dialog
-							key={idx}
-							open={openedDialogIndex === idx}
-							onClose={closeModal}
-							fullWidth
-						>
-							{action.dialog?.({ close: closeModal })}
-						</Dialog>
-					)}
 				</Fragment>
 			))}
 		</ButtonGroup>
