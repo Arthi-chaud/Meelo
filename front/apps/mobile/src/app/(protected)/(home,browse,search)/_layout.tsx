@@ -1,5 +1,5 @@
 import { Stack, useNavigation } from "expo-router";
-import type { ComponentProps } from "react";
+import { type ComponentProps, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -13,44 +13,6 @@ export const unstable_settings = {
 	home: {
 		initialRouteName: "index",
 	},
-};
-
-const styles = StyleSheet.create((theme) => ({
-	screen: {
-		backgroundColor: "transparent",
-		flex: 1,
-	},
-	headerBgContainer: {
-		position: "absolute",
-		height: "100%",
-		width: "100%",
-		overflow: "hidden",
-		borderBottomLeftRadius: theme.borderRadius,
-		borderBottomRightRadius: theme.borderRadius,
-	},
-	headerBgContent: {
-		flex: 1,
-	},
-	icon: { marginRight: theme.gap(2) },
-	backButtonContainer: { paddingRight: theme.gap(2), paddingLeft: 0 },
-	headerTitle: {
-		color: theme.colors.text.primary,
-		...theme.fontStyles.regular,
-	},
-}));
-
-const BackButton = () => {
-	const navigator = useNavigation();
-	return (
-		navigator.canGoBack() && (
-			<Pressable
-				style={styles.backButtonContainer}
-				onPress={() => navigator.goBack()}
-			>
-				<Icon icon={BackIcon} />
-			</Pressable>
-		)
-	);
 };
 
 const SharedRoutes: {
@@ -85,98 +47,89 @@ export default function Layout({ segment }: { segment: string }) {
 		headerTransparent: true,
 		headerTintColor: styles.headerTitle.color,
 	} satisfies ComponentProps<typeof Stack>["screenOptions"];
-	switch (segment) {
-		case "(home)": {
-			return (
-				<Stack screenOptions={screenOptions}>
+	const screenProps = useMemo(() => {
+		switch (segment) {
+			case "(home)": {
+				return {
+					options: {
+						headerTitle: t("nav.home"),
+						headerLeft: () => <MeeloIcon style={styles.icon} />,
+					},
+				};
+			}
+			case "(browse)": {
+				return {
+					options: {
+						headerTitle: t("nav.browse"),
+						// TODO IDK why we canGoBack when we are at the browse's index
+						headerLeft: () => <View />,
+					},
+				};
+			}
+			case "(search)": {
+				return {
+					options: {
+						headerTitle: t("nav.search"),
+						// TODO IDK why we canGoBack when we are at the browse's index
+						headerLeft: () => <View />,
+					},
+				};
+			}
+		}
+	}, [segment]);
+	return (
+		<Stack screenOptions={screenOptions}>
+			<Stack.Screen name="index" {...screenProps} />
+			{SharedRoutes.map(
+				({ name, options: { headerTitle, ...options } }, idx) => (
 					<Stack.Screen
-						name="index"
+						key={idx}
+						name={name}
 						options={{
-							headerTitle: t("nav.home"),
-							headerLeft: () => <MeeloIcon style={styles.icon} />,
+							headerTitle: headerTitle ? t(headerTitle) : "",
+							...options,
 						}}
 					/>
-					{SharedRoutes.map(
-						(
-							{ name, options: { headerTitle, ...options } },
-							idx,
-						) => (
-							<Stack.Screen
-								key={idx}
-								name={name}
-								options={{
-									headerTitle: headerTitle
-										? t(headerTitle)
-										: "",
-									...options,
-								}}
-							/>
-						),
-					)}
-				</Stack>
-			);
-		}
-		case "(browse)": {
-			return (
-				<Stack screenOptions={screenOptions}>
-					<Stack.Screen
-						name="index"
-						options={{
-							headerTitle: t("nav.browse"),
-							// TODO IDK why we canGoBack when we are at the browse's index
-							headerLeft: () => <View />,
-						}}
-					/>
-					{SharedRoutes.map(
-						(
-							{ name, options: { headerTitle, ...options } },
-							idx,
-						) => (
-							<Stack.Screen
-								key={idx}
-								name={name}
-								options={{
-									headerTitle: headerTitle
-										? t(headerTitle)
-										: "",
-									...options,
-								}}
-							/>
-						),
-					)}
-				</Stack>
-			);
-		}
-		case "(search)": {
-			return (
-				<Stack screenOptions={screenOptions}>
-					<Stack.Screen
-						name="index"
-						options={{
-							headerTitle: t("nav.search"),
-							// TODO IDK why we canGoBack when we are at the browse's index
-							headerLeft: () => <View />,
-						}}
-					/>
-					{SharedRoutes.map(
-						(
-							{ name, options: { headerTitle, ...options } },
-							idx,
-						) => (
-							<Stack.Screen
-								key={idx}
-								name={name}
-								options={{
-									headerTitle: headerTitle
-										? t(headerTitle)
-										: "",
-									...options,
-								}}
-							/>
-						),
-					)}
-				</Stack>
-			);
-		}
-	}
+				),
+			)}
+		</Stack>
+	);
 }
+
+const BackButton = () => {
+	const navigator = useNavigation();
+	return (
+		navigator.canGoBack() && (
+			<Pressable
+				style={styles.backButtonContainer}
+				onPress={() => navigator.goBack()}
+			>
+				<Icon icon={BackIcon} />
+			</Pressable>
+		)
+	);
+};
+
+const styles = StyleSheet.create((theme) => ({
+	screen: {
+		backgroundColor: "transparent",
+		flex: 1,
+	},
+	headerBgContainer: {
+		position: "absolute",
+		height: "100%",
+		width: "100%",
+		overflow: "hidden",
+		borderBottomLeftRadius: theme.borderRadius,
+		borderBottomRightRadius: theme.borderRadius,
+	},
+	headerBgContent: {
+		flex: 1,
+	},
+	icon: { marginRight: theme.gap(2) },
+	backButtonContainer: { paddingRight: theme.gap(2), paddingLeft: 0 },
+	headerTitle: {
+		color: theme.colors.text.primary,
+		...theme.fontStyles.regular,
+	},
+}));
