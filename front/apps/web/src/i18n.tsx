@@ -83,7 +83,7 @@ export const withTranslations = (
 		const lng =
 			getCookie(LanguageStorageKey)?.toString() ??
 			Languages.find(
-				//@ts-ignore
+				//@ts-expect-error
 				(lang) => lang === ctx.ctx.req?.cookies[LanguageStorageKey],
 			) ??
 			ALParser.pick(
