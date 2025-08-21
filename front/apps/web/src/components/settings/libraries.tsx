@@ -56,6 +56,7 @@ import { RefreshLibraryMetadataAction } from "~/components/actions/refresh-metad
 import AdminGrid from "~/components/admin-grid";
 import LibraryForm from "~/components/library-form";
 import SectionHeader from "~/components/section-header";
+import { useModal } from "../modal";
 
 const actionButtonStyle = {
 	overflow: "hidden",
@@ -98,45 +99,35 @@ const RunTaskButton = ({
 	variant,
 }: Action & Pick<ComponentProps<typeof Button>, "variant">) => {
 	const theme = useTheme();
+	const [openModal, closeModal] = useModal();
 	const tasks = useQuery(getTasks);
 	const { t } = useTranslation();
 	const viewPortIsSmall = useMediaQuery(theme.breakpoints.up("sm"));
-	const [modalIsOpen, openModal] = useState(false);
 
 	return (
-		<>
-			<Button
-				variant={variant}
-				size="small"
-				startIcon={viewPortIsSmall && icon}
-				onClick={() => {
-					onClick?.();
-					dialog && openModal(true);
-					tasks.refetch();
-				}}
-				sx={actionButtonStyle}
-			>
-				<Box sx={{ display: { xs: "flex", sm: "none" } }}>{icon}</Box>
-				<Box sx={{ display: { xs: "none", sm: "flex" } }}>
-					{t(label)}
-				</Box>
-			</Button>
-
-			{dialog && (
-				<Dialog
-					open={modalIsOpen}
-					onClose={() => openModal(false)}
-					fullWidth
-				>
-					{dialog({
-						close: () => {
-							openModal(false);
-							tasks.refetch();
-						},
-					})}
-				</Dialog>
-			)}
-		</>
+		<Button
+			variant={variant}
+			size="small"
+			startIcon={viewPortIsSmall && icon}
+			onClick={() => {
+				onClick?.();
+				if (dialog) {
+					openModal(() =>
+						dialog({
+							close: () => {
+								closeModal();
+								tasks.refetch();
+							},
+						}),
+					);
+				}
+				tasks.refetch();
+			}}
+			sx={actionButtonStyle}
+		>
+			<Box sx={{ display: { xs: "flex", sm: "none" } }}>{icon}</Box>
+			<Box sx={{ display: { xs: "none", sm: "flex" } }}>{t(label)}</Box>
+		</Button>
 	);
 };
 
