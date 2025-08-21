@@ -18,7 +18,6 @@
 
 import {
 	Box,
-	Dialog,
 	Divider,
 	IconButton,
 	ListItemIcon,
@@ -31,6 +30,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ContextualMenuIcon } from "@/ui/icons";
 import type Action from "~/components/actions";
+import { useModal } from "../modal";
 
 export type ContextualMenuProps = {
 	actions: Action[][];
@@ -62,7 +62,7 @@ export const ContextualMenu = (props: ContextualMenuProps) => {
 				anchorEl={anchorEl}
 				open={open}
 				onClose={handleClose}
-				style={{ zIndex: 99999 }}
+				style={{ zIndex: "modal" }}
 			>
 				{props.actions
 					.filter((actionList) => actionList.length > 0)
@@ -107,19 +107,20 @@ export const ContextualMenuItem = (
 	props: Action & { onDialogClose: () => void },
 ) => {
 	const { t } = useTranslation();
-	const [modalOpen, setModalOpen] = useState(false);
+	const [openModal, closeModal] = useModal();
+
+	const close = () => {
+		closeModal();
+		props.onDialogClose();
+	};
 	const onClick = () => {
 		if (props.disabled === true) {
 			return;
 		}
 		props.onClick?.();
 		if (props.dialog) {
-			setModalOpen(true);
+			openModal(() => props.dialog!({ close }));
 		}
-	};
-	const closeModal = () => {
-		setModalOpen(false);
-		props.onDialogClose();
 	};
 	const item = (
 		<MenuItem
@@ -135,19 +136,5 @@ export const ContextualMenuItem = (
 	if (props.href && !props.disabled) {
 		return <Link href={props.href}>{item}</Link>;
 	}
-	return (
-		<>
-			{item}
-			{props.dialog && (
-				<Dialog
-					open={modalOpen}
-					onClose={closeModal}
-					fullWidth
-					sx={{ zIndex: 999999 }}
-				>
-					{props.dialog({ close: closeModal })}
-				</Dialog>
-			)}
-		</>
-	);
+	return item;
 };
