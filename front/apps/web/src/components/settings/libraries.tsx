@@ -20,7 +20,6 @@ import {
 	Box,
 	Button,
 	CircularProgress,
-	Dialog,
 	Grid,
 	IconButton,
 	List,
@@ -37,7 +36,7 @@ import {
 	useQuery as useTanStackQuery,
 } from "@tanstack/react-query";
 import { useConfirm } from "material-ui-confirm";
-import { type ComponentProps, useMemo, useState } from "react";
+import { type ComponentProps, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { getLibraries, getTasks } from "@/api/queries";
@@ -154,10 +153,7 @@ const LibrariesSettings = () => {
 		},
 	};
 	const confirm = useConfirm();
-	const [createModalOpen, setCreateModalOpen] = useState(false);
-	const [libraryEdit, setLibraryEdit] = useState<Library | undefined>(); // If set, open modal to edit library
-	const closeEditModal = () => setLibraryEdit(undefined);
-	const closeCreateModal = () => setCreateModalOpen(false);
+	const [openModal, closeModal] = useModal();
 	const deletionMutation = useMutation({
 		mutationFn: (libraryId: number) =>
 			toast
@@ -251,7 +247,22 @@ const LibrariesSettings = () => {
 				flex: 1,
 				renderCell: ({ row: library }) => {
 					return (
-						<IconButton onClick={() => setLibraryEdit(library)}>
+						<IconButton
+							onClick={() =>
+								openModal(() => (
+									<LibraryForm
+										defaultValues={library}
+										onClose={closeModal}
+										onSubmit={(fields) =>
+											editMutation.mutate({
+												...fields,
+												id: library.id,
+											})
+										}
+									/>
+								))
+							}
+						>
 							<EditIcon />
 						</IconButton>
 					);
@@ -306,7 +317,16 @@ const LibrariesSettings = () => {
 					<Button
 						variant="contained"
 						startIcon={<AddIcon />}
-						onClick={() => setCreateModalOpen(true)}
+						onClick={() =>
+							openModal(() => (
+								<LibraryForm
+									onClose={closeModal}
+									onSubmit={(fields) =>
+										createMutation.mutate(fields)
+									}
+								/>
+							))
+						}
 					>
 						{t("actions.library.create")}
 					</Button>
@@ -323,25 +343,6 @@ const LibrariesSettings = () => {
 					</Grid>
 				))}
 			</Grid>
-			<Dialog
-				open={libraryEdit !== undefined}
-				onClose={closeEditModal}
-				fullWidth
-			>
-				<LibraryForm
-					defaultValues={libraryEdit}
-					onClose={closeEditModal}
-					onSubmit={(fields) =>
-						editMutation.mutate({ ...fields, id: libraryEdit!.id })
-					}
-				/>
-			</Dialog>
-			<Dialog open={createModalOpen} onClose={closeCreateModal} fullWidth>
-				<LibraryForm
-					onClose={closeCreateModal}
-					onSubmit={(fields) => createMutation.mutate(fields)}
-				/>
-			</Dialog>
 			<AdminGrid
 				infiniteQuery={getLibraries}
 				columns={columns.map((column) => ({

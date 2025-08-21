@@ -20,7 +20,6 @@ import {
 	Box,
 	Button,
 	Checkbox,
-	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
@@ -54,9 +53,10 @@ import {
 	OpenExternalIcon,
 	WarningIcon,
 } from "@/ui/icons";
-import { useQuery, useQueryClient } from "~/api";
+import { useAPI, useQuery, useQueryClient } from "~/api";
 import SectionHeader from "~/components/section-header";
 import { type Language, Languages, persistLanguage } from "~/i18n";
+import { useModal } from "../modal";
 
 const SettingGroupStyle = {
 	paddingTop: 1,
@@ -272,9 +272,8 @@ const UISettings = () => {
 const ScrobblersSection = () => {
 	const scrobblers = useQuery(() => getScrobblerStatus());
 	const { t } = useTranslation();
-	const [listenbrainzModalIsOpen, openListenBrainzModal] = useState(false);
-	const closeModal = () => openListenBrainzModal(false);
 	const queryClient = useQueryClient();
+	const [openModal, closeModal] = useModal();
 	const api = queryClient.api;
 	const displayScrobbler = useCallback(
 		(scrobbler: Scrobbler) => {
@@ -311,37 +310,8 @@ const ScrobblersSection = () => {
 				});
 		},
 	});
-	const listenBrainzMutation = useMutation({
-		mutationFn: async (dto: typeof defaultValues) => {
-			return toast
-				.promise(
-					api.postListenBrainzToken(
-						dto.token,
-						dto.instanceUrl || null,
-					),
-					{
-						success: t("toasts.scrobblers.linkingSuccessful"),
-						loading: t("toasts.scrobblers.linking"),
-						error: t("toasts.scrobblers.linkingListenBrainzFailed"),
-					},
-				)
-				.then(() => {
-					queryClient.client.invalidateQueries({
-						queryKey: ["scrobblers"],
-					});
-				});
-		},
-	});
 	const router = useRouter();
 
-	const defaultValues = { token: "", instanceUrl: "" as string | null };
-	const { registerState, handleSubmit } = useHookForm({
-		defaultValues,
-	});
-	const onSubmit = (values: typeof defaultValues) => {
-		listenBrainzMutation.mutate(values);
-		closeModal();
-	};
 	return (
 		<Box
 			sx={{
@@ -388,8 +358,11 @@ const ScrobblersSection = () => {
 											}
 											switch (scrobbler) {
 												case "ListenBrainz":
-													openListenBrainzModal(true);
-
+													openModal(() => (
+														<ListenBrainzTokenModal
+															close={closeModal}
+														/>
+													));
 													break;
 												case "LastFM":
 													router.push(
@@ -434,63 +407,97 @@ const ScrobblersSection = () => {
 					</Typography>
 				)}
 			</Grid>
-
-			<Dialog
-				open={listenbrainzModalIsOpen}
-				onClose={closeModal}
-				fullWidth
-			>
-				<DialogTitle>ListenBrainz</DialogTitle>
-				<form
-					onSubmit={handleSubmit(onSubmit)}
-					style={{ width: "100%", height: "100%" }}
-				>
-					<DialogContent>
-						<HookTextField
-							{...registerState("token")}
-							textFieldProps={{
-								autoFocus: true,
-								fullWidth: true,
-								label: t(
-									"form.scrobblers.listenbrainz.tokenLabel",
-								),
-								helperText: t(
-									"form.scrobblers.listenbrainz.tokenHelperText",
-								),
-							}}
-							gridProps={{}}
-							rules={{
-								required: {
-									value: true,
-									message: t(
-										"form.scrobblers.listenbrainz.tokenIsRequired",
-									),
-								},
-							}}
-						/>
-
-						<HookTextField
-							{...registerState("instanceUrl")}
-							textFieldProps={{
-								fullWidth: true,
-								label: t(
-									"form.scrobblers.listenbrainz.instanceUrlLabel",
-								),
-								helperText: t(
-									"form.scrobblers.listenbrainz.instanceUrlHelperText",
-								),
-							}}
-							rules={{}}
-							gridProps={{ paddingTop: 2 }}
-						/>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={closeModal}>{t("form.cancel")}</Button>
-						<Button type="submit">{t("form.done")}</Button>
-					</DialogActions>
-				</form>
-			</Dialog>
 		</Box>
+	);
+};
+
+const ListenBrainzTokenModal = ({
+	close: closeModal,
+}: {
+	close: () => void;
+}) => {
+	const api = useAPI();
+	const queryClient = useQueryClient();
+	const { t } = useTranslation();
+	const listenBrainzMutation = useMutation({
+		mutationFn: async (dto: typeof defaultValues) => {
+			return toast
+				.promise(
+					api.postListenBrainzToken(
+						dto.token,
+						dto.instanceUrl || null,
+					),
+					{
+						success: t("toasts.scrobblers.linkingSuccessful"),
+						loading: t("toasts.scrobblers.linking"),
+						error: t("toasts.scrobblers.linkingListenBrainzFailed"),
+					},
+				)
+				.then(() => {
+					queryClient.client.invalidateQueries({
+						queryKey: ["scrobblers"],
+					});
+				});
+		},
+	});
+	const defaultValues = { token: "", instanceUrl: "" as string | null };
+	const { registerState, handleSubmit } = useHookForm({
+		defaultValues,
+	});
+	const onSubmit = (values: typeof defaultValues) => {
+		listenBrainzMutation.mutate(values);
+		closeModal();
+	};
+	return (
+		<>
+			<DialogTitle>ListenBrainz</DialogTitle>
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				style={{ width: "100%", height: "100%" }}
+			>
+				<DialogContent>
+					<HookTextField
+						{...registerState("token")}
+						textFieldProps={{
+							autoFocus: true,
+							fullWidth: true,
+							label: t("form.scrobblers.listenbrainz.tokenLabel"),
+							helperText: t(
+								"form.scrobblers.listenbrainz.tokenHelperText",
+							),
+						}}
+						gridProps={{}}
+						rules={{
+							required: {
+								value: true,
+								message: t(
+									"form.scrobblers.listenbrainz.tokenIsRequired",
+								),
+							},
+						}}
+					/>
+
+					<HookTextField
+						{...registerState("instanceUrl")}
+						textFieldProps={{
+							fullWidth: true,
+							label: t(
+								"form.scrobblers.listenbrainz.instanceUrlLabel",
+							),
+							helperText: t(
+								"form.scrobblers.listenbrainz.instanceUrlHelperText",
+							),
+						}}
+						rules={{}}
+						gridProps={{ paddingTop: 2 }}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={closeModal}>{t("form.cancel")}</Button>
+					<Button type="submit">{t("form.done")}</Button>
+				</DialogActions>
+			</form>
+		</>
 	);
 };
 
