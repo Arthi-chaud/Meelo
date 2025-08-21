@@ -140,6 +140,10 @@ export const BackgroundGradient = () => {
 										rt.screen.width * cxRatio,
 										rt.screen.height * cyRatio,
 									),
+									r: Math.max(
+										rt.screen.width,
+										rt.screen.height,
+									),
 								})}
 								colors={gradientColors[index]}
 							/>
@@ -151,12 +155,7 @@ export const BackgroundGradient = () => {
 	);
 };
 
-const GradientEllipse = withUnistyles(RadialGradient, (_, rt) => {
-	const r = Math.max(rt.screen.width, rt.screen.height) * 0.55;
-	return {
-		r,
-	};
-});
+const GradientEllipse = withUnistyles(RadialGradient);
 
 const FullScreenRect = withUnistyles(
 	Rect,
