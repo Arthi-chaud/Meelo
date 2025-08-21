@@ -17,7 +17,6 @@
  */
 
 import {
-	Dialog,
 	DialogContent,
 	DialogTitle,
 	Grid,
@@ -25,48 +24,46 @@ import {
 	List,
 	useTheme,
 } from "@mui/material";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CloseIcon } from "@/ui/icons";
 import {
 	useKeyboardBinding,
 	useKeyboardBindingContext,
 } from "~/contexts/keybindings";
+import { useModal } from "./modal";
 
 export const KeyboardBindingModal = () => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [openModal, closeModal] = useModal();
 	const { t } = useTranslation();
 	useKeyboardBinding(
 		{
 			key: "?",
 			description: "keyboardBindings.openModalShortcutDescription",
-			handler: () => setIsOpen((x) => !x),
+			handler: () =>
+				openModal(() => (
+					<>
+						<DialogTitle>
+							{t("keyboardBindings.modalTitle")}
+						</DialogTitle>
+						<IconButton
+							onClick={() => closeModal()}
+							sx={() => ({
+								position: "absolute",
+								right: 8,
+								top: 8,
+							})}
+						>
+							<CloseIcon />
+						</IconButton>
+						<DialogContent>
+							<KeyboardBindingModalContent />
+						</DialogContent>
+					</>
+				)),
 		},
 		[],
 	);
-	return (
-		<Dialog
-			open={isOpen}
-			sx={{ zIndex: "tooltip" }}
-			fullWidth
-			onClose={() => setIsOpen(false)}
-		>
-			<DialogTitle>{t("keyboardBindings.modalTitle")}</DialogTitle>
-			<IconButton
-				onClick={() => setIsOpen(false)}
-				sx={() => ({
-					position: "absolute",
-					right: 8,
-					top: 8,
-				})}
-			>
-				<CloseIcon />
-			</IconButton>
-			<DialogContent>
-				<KeyboardBindingModalContent />
-			</DialogContent>
-		</Dialog>
-	);
+	return null;
 };
 
 const KeyboardBindingModalContent = () => {
