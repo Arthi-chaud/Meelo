@@ -18,6 +18,7 @@ export const ModalSlot = () => {
 	const Content = modalContent ?? Box;
 	return (
 		<Dialog
+			sx={{ zIndex: "tooltip" }}
 			open={modalContent !== null}
 			onClose={() => setModalContent(null)}
 			fullWidth
