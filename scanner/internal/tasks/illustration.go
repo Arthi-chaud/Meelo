@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/illustration"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/vansante/go-ffprobe.v2"
 )
 
@@ -31,15 +33,11 @@ func SaveThumbnail(t ThumbnailTask, c config.Config) error {
 	}
 
 	// If we didn't get a thumbnail from the embedded illustration, extract a frame from the video
-	thumbnailPosition := int64(t.TrackDuration / 2)
-	if t.TrackDuration == 0 {
-		t.TrackDuration = 5 // this is abitrary. If the scan os path only, we do not get the duration.
-	}
-
-	thumbnailbytes, err := illustration.GetFrame(t.FilePath, thumbnailPosition)
+	thumbnailbytes, err := illustration.GetThumbnail(t.FilePath, int64(t.TrackDuration))
 	if err != nil {
 		return err
 	}
+	log.Info().Str("file", path.Base(t.FilePath)).Msg("Extracted thumbnail")
 	return api.PostIllustration(c, t.TrackId, api.Thumbnail, thumbnailbytes)
 }
 

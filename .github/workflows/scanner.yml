@@ -37,6 +37,7 @@ jobs:
               - '.github/actions/dockerize/**'
   Build:
     needs: changes
+    container: ghcr.io/hybridgroup/opencv:4.12.0
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
@@ -45,10 +46,11 @@ jobs:
       - name: Setup Go
         uses: ./.github/actions/cache-scanner
       - name: Install Dependencies and Build
-        run: go build -o scanner ./app
+        run: go build -buildvcs=false  -o scanner ./app
   Format:
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    container: ghcr.io/hybridgroup/opencv:4.12.0
     needs: [ Build ]
     steps:
       - name: Check out the repo
@@ -61,6 +63,7 @@ jobs:
           gofmt-flags: '-l'
   Tests:
     runs-on: ubuntu-latest
+    container: ghcr.io/hybridgroup/opencv:4.12.0
     needs: [ Build ]
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
     steps:
@@ -68,7 +71,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Go
         uses: ./.github/actions/cache-scanner
-      - run: sudo apt-get update -y && sudo apt-get install -y ffmpeg
+      - run: apt-get update -y && apt-get install -y ffmpeg
       - name: Install Coverage Report
         run: go install github.com/jandelgado/gcov2lcov@latest
       - name: Run tests

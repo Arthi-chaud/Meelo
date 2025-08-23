@@ -6,7 +6,7 @@ runs:
     - run: |
         cd scanner
         go install github.com/swaggo/swag/cmd/swag@latest
-        ~/go/bin/swag init -d app -o ./app/docs
+        $GOPATH/bin/swag init -d app -o ./app/docs
       shell: bash
     - uses: actions/setup-go@v5
       with:

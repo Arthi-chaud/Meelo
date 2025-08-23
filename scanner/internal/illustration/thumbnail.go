@@ -3,10 +3,14 @@ package illustration
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"path"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"github.com/u2takey/ffmpeg-go"
+	"gocv.io/x/gocv"
 )
 
 type CropDimensions struct {
@@ -16,13 +20,103 @@ type CropDimensions struct {
 	y      int
 }
 
-func GetFrame(filepath string, timestamp int64) ([]byte, error) {
+var classifier gocv.CascadeClassifier
+
+// Extract a 'good' thumbnail from a video file
+// The returned keyframes will have its black bars removed (when possible)
+//
+// A thumbnail is a keyframe that contains a face whose width is > keyframe's width.
+// We return the first keyframe that matches this criteria.
+//
+// If we can't find any faces,we naively return a fame in the middle of the video.
+// This is why we need a duration. Duration can be zero, in that case we get a frame at 5s.
+//
+// For performance reasons, we limit the search to the first 5 minutes of the video.
+func GetThumbnail(filepath string, duration int64) ([]byte, error) {
+	bytes, crops, err := GetFrameWithFace(filepath)
+	if err != nil || len(bytes) == 0 {
+		timestamp := duration / 2
+		if timestamp == 0 {
+			timestamp = 5
+		}
+		bytes, crops, err = GetFrameAtTimestamp(filepath, timestamp)
+	}
+	if err != nil {
+		return []byte{}, err
+	}
+	if crops != nil {
+		croppedThumbnail, _ := RemoveBlackBars(&bytes, crops)
+		if croppedThumbnail != nil {
+			return croppedThumbnail, nil
+		}
+	}
+	return bytes, nil
+}
+
+func GetFrameWithFace(filepath string) ([]byte, *CropDimensions, error) {
+	outDir := fmt.Sprintf("/tmp/thumbnail-%s", uuid.New().String())
+	os.Mkdir(outDir, 0700)
+
+	rawout := bytes.NewBuffer(nil)
+	filters := []string{
+		"yadif",
+		"scale='max(iw,iw*sar)':'max(ih,ih/sar)'",
+		"select=gte(pict_type\\,PICT_TYPE_I)",
+		"cropdetect",
+	}
+	ffmpeg_go.Input(filepath, ffmpeg_go.KwArgs{
+		"skip_frame": "nokey",
+		"to":         "0:05:00",
+	}).
+		Silent(true).
+		Output(path.Join(outDir, "thumbnails-%03d.jpeg"), ffmpeg_go.KwArgs{
+			"vsync":    "vfr",
+			"qscale:v": "2",
+			"format":   "image2",
+			"vcodec":   "mjpeg",
+			"vf":       strings.Join(filters, ","),
+		}).
+		WithErrorOutput(rawout).
+		Run()
+
+	if (classifier == gocv.CascadeClassifier{}) {
+		classifier = gocv.NewCascadeClassifier()
+		if !classifier.Load("./data/lbp.xml") {
+			return nil, nil, fmt.Errorf("Error reading cascade file.")
+		}
+	}
+	items, _ := os.ReadDir(outDir)
+	var bestImageBytes *[]byte = nil
+	for _, item := range items {
+		b, _ := os.ReadFile(path.Join(outDir, item.Name()))
+		img, _ := gocv.IMDecode(b, 1)
+		rects := classifier.DetectMultiScale(img)
+		if len(rects) != 1 {
+			continue
+		}
+		bestImageBytes = &b
+		break
+	}
+	os.RemoveAll(outDir)
+	if bestImageBytes == nil {
+		return nil, nil, nil
+	}
+	crops, err := ParseCropDimensions(rawout.String())
+	if err == nil {
+		return *bestImageBytes, crops, nil
+	}
+	return *bestImageBytes, nil, nil
+}
+
+func GetFrameAtTimestamp(filepath string, timestamp int64) ([]byte, *CropDimensions, error) {
+	rawout := bytes.NewBuffer(nil)
 	formattedDuration := fmt.Sprintf("%.2d:%.2d:%.2d", int(timestamp/3600), (timestamp/60)%60, timestamp%60)
 	thumbnail := bytes.NewBuffer(nil)
 	filters := []string{
 		"yadif",
 		"scale='max(iw,iw*sar)':'max(ih,ih/sar)'",
 		"select=gte(n\\,1)",
+		"cropdetect",
 	}
 
 	cmd := ffmpeg_go.Input(filepath, ffmpeg_go.KwArgs{"ss": formattedDuration}).
@@ -32,27 +126,27 @@ func GetFrame(filepath string, timestamp int64) ([]byte, error) {
 			"format":  "image2",
 			"vcodec":  "mjpeg",
 			"vf":      strings.Join(filters, ", ")}).
-		WithOutput(thumbnail)
+		WithOutput(thumbnail).
+		WithErrorOutput(rawout)
 	err := cmd.Run()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	thumbnailBytes := thumbnail.Bytes()
-	croppedThumbnail, err := RemoveBlackBars(&thumbnailBytes)
-	if croppedThumbnail != nil {
-		return croppedThumbnail.Bytes(), nil
+	crops, err := ParseCropDimensions(rawout.String())
+	if err != nil {
+		return thumbnailBytes, crops, nil
 	}
-	return thumbnailBytes, err
+	return thumbnailBytes, nil, nil
 }
 
-func RemoveBlackBars(frame *[]byte) (*bytes.Buffer, error) {
-
-	crops, err := GetCropDimensions(bytes.NewBuffer(*frame))
-	if err != nil || crops == nil {
-		return nil, err
+func RemoveBlackBars(frame *[]byte, crops *CropDimensions) ([]byte, error) {
+	if crops == nil {
+		return nil, nil
 	}
 	newFrame := bytes.NewBuffer(nil)
-	err = ffmpeg_go.Input("pipe:", ffmpeg_go.KwArgs{"format": "image2pipe"}).
+	err := ffmpeg_go.Input("pipe:", ffmpeg_go.KwArgs{"format": "image2pipe"}).
+		Silent(true).
 		Filter("crop", ffmpeg_go.Args{fmt.Sprintf("%d:%d:%d:%d", crops.width, crops.height, crops.x, crops.y)}).
 		Output("pipe:", ffmpeg_go.KwArgs{
 			"format":  "image2",
@@ -63,26 +157,10 @@ func RemoveBlackBars(frame *[]byte) (*bytes.Buffer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newFrame, err
+	return newFrame.Bytes(), err
 }
 
-func GetCropDimensions(thumbnail *bytes.Buffer) (*CropDimensions, error) {
-
-	rawout := bytes.NewBuffer(nil)
-
-	err := ffmpeg_go.Input("pipe:", ffmpeg_go.KwArgs{"f": "image2pipe", "loop": "1"}).
-		Silent(true).
-		Output("pipe:", ffmpeg_go.KwArgs{
-			"f":        "null",
-			"frames:v": "3",
-			"vf":       "cropdetect=limit=0:round=0"}).
-		WithErrorOutput(rawout).
-		WithInput(thumbnail).
-		WithOutput(rawout).Run()
-	if err != nil {
-		return nil, err
-	}
-	strout := string((*rawout).Bytes())
+func ParseCropDimensions(strout string) (*CropDimensions, error) {
 	lines := strings.Split(strout, "\n")
 	lineCount := len(lines)
 	if lineCount == 0 {
@@ -96,7 +174,7 @@ func GetCropDimensions(thumbnail *bytes.Buffer) (*CropDimensions, error) {
 			continue
 		}
 		dims := CropDimensions{}
-		_, err = fmt.Sscanf(line[cropPos+len(token):], "%d:%d:%d:%d",
+		_, err := fmt.Sscanf(line[cropPos+len(token):], "%d:%d:%d:%d",
 			&dims.width, &dims.height, &dims.x, &dims.y)
 		if err != nil {
 			log.Debug().Msg(err.Error())
