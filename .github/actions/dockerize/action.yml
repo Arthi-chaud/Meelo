@@ -19,47 +19,65 @@ inputs:
   context: 
     description: 'Directory of the Dockerfile'
     required: true
+  docker-arch: 
+    description: 'Architecture of the image to build'
+    required: false
+    default: linux/amd64
 
+# Note: ARM Build will be cancelled if publish is false
 runs:
   using: "composite"
   steps: 
+    - name: Check if ARM
+      shell: bash
+      env:
+        IS_AMD_OR_PUBLISH: ${{ inputs.docker-arch == 'linux/amd64' || inputs.publish == true || inputs.publish == 'true' }}
+      run: |
+          echo "SHOULD_RUN=${IS_AMD_OR_PUBLISH}" >> ${GITHUB_ENV}
     - name: Check out the repo
+      if: env.SHOULD_RUN == 'true'
       uses: actions/checkout@v3
-    - name: Get Tag 
+    - name: Get Tag
       shell: bash 
-      if: ${{ github.event_name == 'release' }}
+      if: ${{ env.SHOULD_RUN == 'true' && github.event_name == 'release' }}
       run : echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
     - name: Get Commit 
       shell: bash 
-      if: ${{ github.event_name != 'release' }}
+      if: ${{ env.SHOULD_RUN == 'true' && github.event_name != 'release' }}
       run : echo "VERSION=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})" >> $GITHUB_ENV
     - name: Log in to Docker Hub
+      if: env.SHOULD_RUN == 'true'
       uses: docker/login-action@v2
       with:
         username: ${{ inputs.docker-username }}
         password: ${{ inputs.docker-token }}
     - name: Log in to the GitHub Container registry
+      if: env.SHOULD_RUN == 'true'
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ inputs.github-token }}
     - name: Set up QEMU
+      if: env.SHOULD_RUN == 'true'
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
+      if: env.SHOULD_RUN == 'true'
       uses: docker/setup-buildx-action@v3
     - name: Extract metadata (tags, labels) for Docker
       id: meta
+      if: env.SHOULD_RUN == 'true'
       uses: docker/metadata-action@v4
       with:
         images: |
           arthichaud/meelo-${{ inputs.image-suffix }}
           ghcr.io/${{ github.repository }}-${{ inputs.image-suffix }}
     - name: Build and push Docker images
+      if: env.SHOULD_RUN == 'true'
       uses: docker/build-push-action@v3
       with:
         context: ${{ inputs.context }} 
-        platforms: ${{ (inputs.publish == 'true' || inputs.publish == true) && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
+        platforms: ${{ inputs.docker-arch }}
         push: ${{ inputs.publish == 'true' || inputs.publish == true }}
         cache-from: type=gha
         build-args: |
