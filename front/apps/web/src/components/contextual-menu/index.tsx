@@ -62,7 +62,7 @@ export const ContextualMenu = (props: ContextualMenuProps) => {
 				anchorEl={anchorEl}
 				open={open}
 				onClose={handleClose}
-				style={{ zIndex: "modal" }}
+				sx={{ zIndex: "tooltip" }}
 			>
 				{props.actions
 					.filter((actionList) => actionList.length > 0)
