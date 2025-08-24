@@ -91,6 +91,7 @@ func GetFrameWithFace(filepath string) ([]byte, *CropDimensions, error) {
 		b, _ := os.ReadFile(path.Join(outDir, item.Name()))
 		img, _ := gocv.IMDecode(b, 1)
 		rects := classifier.DetectMultiScale(img)
+		img.Close()
 		if len(rects) != 1 {
 			continue
 		}
