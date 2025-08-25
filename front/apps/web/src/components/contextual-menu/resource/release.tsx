@@ -27,6 +27,7 @@ import { MasterIcon, UpgradeIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { DownloadReleaseAction } from "~/components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
+import { PlayReleaseAction } from "~/components/actions/play-album";
 import { RefreshReleaseMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareReleaseAction } from "~/components/actions/share";
@@ -88,6 +89,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 	return (
 		<ContextualMenu
 			actions={[
+				[PlayReleaseAction(props.release.id, queryClient)],
 				[
 					...(props.release.album.artistId
 						? [GoToArtistAction(props.release.album.artistId)]
