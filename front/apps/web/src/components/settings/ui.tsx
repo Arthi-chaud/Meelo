@@ -37,6 +37,7 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useMemo, useState } from "react";
+import { useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
@@ -62,6 +63,8 @@ const SettingGroupStyle = {
 	paddingTop: 1,
 	paddingBottom: 2,
 	rowSpacing: 4,
+	alignItems: "center",
+	display: "flex",
 } as const;
 
 const InputContainerStyle = {
@@ -218,6 +221,9 @@ const UISettings = () => {
 					)}
 				</Grid>
 			</Grid>
+
+			<SectionHeader heading={t("settings.ui.account.header")} />
+			<AccountSection />
 			<SectionHeader heading={t("settings.ui.project")} />
 			<p>
 				<MovingStarIcon style={LinkIconStyle} />
@@ -266,6 +272,140 @@ const UISettings = () => {
 				))}
 			</Grid>
 		</NoSsr>
+	);
+};
+
+type ChangePasswordForm = Record<
+	"oldPassword" | "newPassword" | "confirm",
+	string
+>;
+const AccountSection = () => {
+	const { t } = useTranslation();
+	const [openModal, closeModal] = useModal();
+	const api = useAPI();
+	const onSubmit = useCallback(
+		({ oldPassword, newPassword }: ChangePasswordForm) => {
+			api.changePassword({
+				oldPassword,
+				newPassword,
+			})
+				.then(() => toast.success("Update successful"))
+				.catch((e) => toast.error(e.message ?? e.toString()));
+		},
+		[t, api],
+	);
+	return (
+		<Grid
+			container
+			sx={{ ...SettingGroupStyle, justifyContent: "space-between" }}
+		>
+			<Grid>{t("settings.ui.account.changePassword")}</Grid>
+			<Grid sx={InputContainerStyle}>
+				<Button
+					variant="contained"
+					onClick={() =>
+						openModal(() => (
+							<ChangePasswordModal
+								close={closeModal}
+								onSubmit={onSubmit}
+							/>
+						))
+					}
+				>
+					{t("settings.ui.account.changePassword")}
+				</Button>
+			</Grid>
+		</Grid>
+	);
+};
+
+const ChangePasswordModal = ({
+	close,
+	onSubmit,
+}: {
+	close: () => void;
+	onSubmit: (f: ChangePasswordForm) => void;
+}) => {
+	const defaultValues: ChangePasswordForm = {
+		oldPassword: "",
+		newPassword: "",
+		confirm: "",
+	};
+	const { registerState, handleSubmit, control } = useHookForm({
+		defaultValues,
+	});
+	const newPassword = useWatch({ control, name: "newPassword" });
+	const { t } = useTranslation();
+	const onSubmit_ = (values: typeof defaultValues) => {
+		onSubmit(values);
+		close();
+	};
+
+	return (
+		<>
+			<DialogTitle>{t("settings.ui.account.changePassword")}</DialogTitle>
+			<form
+				onSubmit={handleSubmit(onSubmit_)}
+				style={{ width: "100%", height: "100%" }}
+			>
+				<DialogContent>
+					<HookTextField
+						{...registerState("oldPassword")}
+						textFieldProps={{
+							autoFocus: true,
+							hidden: true,
+							type: "password",
+							fullWidth: true,
+							label: "Enter your current password",
+						}}
+						rules={{
+							required: true,
+						}}
+					/>
+					<Grid container sx={{ paddingTop: 2 }}>
+						<HookTextField
+							{...registerState("newPassword")}
+							textFieldProps={{
+								type: "password",
+								fullWidth: true,
+								label: "Enter name your new password",
+							}}
+							rules={{
+								required: true,
+							}}
+						/>
+					</Grid>
+
+					<Grid container sx={{ paddingTop: 2 }}>
+						<HookTextField
+							{...registerState("confirm")}
+							textFieldProps={{
+								type: "password",
+								fullWidth: true,
+								label: "Confirm new password",
+							}}
+							rules={{
+								required: true,
+
+								validate: (confirmValue) => {
+									if (confirmValue !== newPassword) {
+										return t(
+											"form.auth.passwordsAreDifferent",
+										);
+									}
+								},
+							}}
+						/>
+					</Grid>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={close}>{t("form.cancel")}</Button>
+					<Button type="submit" color="primary" variant="contained">
+						{t("actions.update")}
+					</Button>
+				</DialogActions>
+			</form>
+		</>
 	);
 };
 

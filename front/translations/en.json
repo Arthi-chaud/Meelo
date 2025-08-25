@@ -289,6 +289,10 @@
 			}
 		},
 		"ui": {
+			"account": {
+				"header": "Account",
+				"changePassword": "Change Password"
+			},
 			"autoMode": "Auto Mode",
 			"colorScheme": "Theme",
 			"crossfade": "Crossfade",
