@@ -22,7 +22,8 @@ import { getMasterRelease } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { useQueryClient } from "~/api";
 import { DownloadReleaseAsyncAction } from "~/components/actions/download";
-import { GoToArtistAction } from "~/components/actions/link";
+import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
+import { PlayReleaseAction } from "~/components/actions/play-album";
 import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareAlbumAction } from "~/components/actions/share";
@@ -42,6 +43,12 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 		<ContextualMenu
 			actions={[
 				[
+					...(props.album.masterId
+						? [PlayReleaseAction(props.album.masterId, queryClient)]
+						: []),
+				],
+				[
+					GoToAlbumAction(props.album.slug),
 					...(props.album.artist
 						? [GoToArtistAction(props.album.artist.slug)]
 						: []),
