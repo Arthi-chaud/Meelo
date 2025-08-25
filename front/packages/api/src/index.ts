@@ -101,6 +101,19 @@ export default class API {
 		});
 	}
 
+	async changePassword(
+		credentials: Record<"newPassword" | "oldPassword", string>,
+	): Promise<void> {
+		return this.fetch({
+			route: "/users/me/password",
+			data: credentials,
+			parameters: {},
+			method: "POST",
+			// To force JSON deserialisation and have the error message
+			customValidator: async (_v: unknown) => {},
+		});
+	}
+
 	/**
 	 * Creates a new user
 	 * @param credentials the credentails of the new user
@@ -557,13 +570,14 @@ export default class API {
 			: await response.json().catch(() => {
 					throw new Error("Error while parsing Server's response");
 				});
-
 		switch (response.status) {
 			case 401:
 				throw new Error(jsonResponse.message ?? errorMessage);
 			case 403:
 				throw new Error(
-					errorMessage ?? "Unauthorized: Only for admins",
+					errorMessage ??
+						jsonResponse?.message ??
+						"Unauthorized: Only for admins",
 				);
 			case 404:
 				throw new ResourceNotFound(
