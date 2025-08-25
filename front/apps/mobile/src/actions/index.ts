@@ -1,6 +1,10 @@
 import type { Href } from "expo-router";
+import type { QueryClient } from "@/api/hook";
+import { getReleaseTracklist } from "@/api/queries";
+import { transformPage } from "@/api/query";
 import {
 	playAfterAtom,
+	playFromInfiniteQuery,
 	playNextAtom,
 	playTrackAtom,
 	type TrackState,
@@ -76,6 +80,30 @@ export const PlayAfter = (track: TrackState): Action => ({
 	icon: PlayAfterIcon,
 	onPress: () => store.set(playAfterAtom, track),
 });
+
+export const PlayReleaseAction = (
+	releaseId: string | number,
+	queryClient: QueryClient,
+) =>
+	({
+		icon: PlayIcon,
+		label: "actions.playback.play",
+		onPress: () => {
+			const query = getReleaseTracklist(releaseId, false, [
+				"artist",
+				"illustration",
+			]);
+			store.set(
+				playFromInfiniteQuery,
+				transformPage(query, ({ song, video, ...track }) => ({
+					artist: (song ?? video)!.artist,
+					track,
+					id: track.id,
+				})),
+				queryClient,
+			);
+		},
+	}) satisfies Action;
 
 export const GoToLyrics = (songId: string | number): Action => ({
 	label: "actions.song.seeLyrics",
