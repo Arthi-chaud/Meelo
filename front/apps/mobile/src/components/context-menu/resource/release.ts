@@ -4,7 +4,7 @@ import { getAlbum, getCurrentUserStatus } from "@/api/queries";
 import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
-import type { Action } from "~/actions";
+import { type Action, PlayReleaseAction } from "~/actions";
 import { useSetReleaseAsMaster } from "~/actions/master";
 import { ShareAction, useShareCallback } from "~/actions/share";
 import { useQuery, useQueryClient } from "~/api";
@@ -59,6 +59,7 @@ export const useReleaseContextMenu = (
 				illustration: release?.illustration,
 			},
 			items: [
+				release ? [PlayReleaseAction(release.id, queryClient)] : [],
 				[goToRelease, goToArtist],
 				user?.admin && release ? [SetAsMaster] : [],
 				[

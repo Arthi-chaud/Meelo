@@ -3,9 +3,14 @@ import { useTranslation } from "react-i18next";
 import { getCurrentUserStatus } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { getYear } from "@/utils/date";
-import { ChangeType, GoToArtist, GoToRelease } from "~/actions";
+import {
+	ChangeType,
+	GoToArtist,
+	GoToRelease,
+	PlayReleaseAction,
+} from "~/actions";
 import { useShareAlbumAction } from "~/actions/share";
-import { useQuery } from "~/api";
+import { useQuery, useQueryClient } from "~/api";
 import { useChangeAlbumTypeModal } from "~/components/change-type";
 import type {
 	ContextMenu,
@@ -21,6 +26,7 @@ export const useAlbumContextMenu = (
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { t } = useTranslation();
 	const ShareAction = useShareAlbumAction(album?.id);
+	const queryClient = useQueryClient();
 	const { openChangeTypeModal } = useChangeAlbumTypeModal(album);
 	const getSubtitle = useCallback(() => {
 		if (!album) {
@@ -49,6 +55,9 @@ export const useAlbumContextMenu = (
 				subtitle: getSubtitle(),
 			},
 			items: [
+				album?.masterId
+					? [PlayReleaseAction(album.masterId, queryClient)]
+					: [],
 				goToItems,
 				user?.admin
 					? [
