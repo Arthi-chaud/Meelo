@@ -14,16 +14,16 @@ import {
 	PlayAfter,
 	PlayNext,
 } from "~/actions";
+import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery } from "~/api";
 import { useChangeVideoTypeModal } from "~/components/change-type";
 import type { ContextMenuBuilder } from "..";
-
-//TODO Track info
 
 export const useVideoContextMenu = (
 	video: VideoWithRelations<"illustration" | "master" | "artist"> | undefined,
 ): ContextMenuBuilder => {
 	const { data: user } = useQuery(getCurrentUserStatus);
+	const { openTrackInfoModal } = useTrackInfoModal(video?.master.id);
 	const { openChangeTypeModal } = useChangeVideoTypeModal(video);
 	return useCallback(() => {
 		const trackToPlay = video
@@ -60,6 +60,7 @@ export const useVideoContextMenu = (
 									GoToSongInfo(video.songId),
 								]
 							: [],
+						video.master ? [SeeTrackInfo(openTrackInfoModal)] : [],
 						trackToPlay
 							? [PlayNext(trackToPlay), PlayAfter(trackToPlay)]
 							: [],

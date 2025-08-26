@@ -16,6 +16,7 @@ import {
 	PlayNext,
 } from "~/actions";
 import { useSetSongTrackAsMaster } from "~/actions/master";
+import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery, useQueryClient } from "~/api";
 import {
 	useChangeSongTypeModal,
@@ -30,6 +31,7 @@ export const useTrackContextMenu = (
 ): ContextMenuBuilder => {
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
+	const { openTrackInfoModal } = useTrackInfoModal(track?.id);
 	const { openChangeTypeModal: openChangeSongTypeModal } =
 		useChangeSongTypeModal(track?.song ?? undefined);
 	const { openChangeTypeModal: openChangeVideoTypeModal } =
@@ -69,8 +71,9 @@ export const useTrackContextMenu = (
 							? [
 									GoToLyrics(track.songId),
 									GoToSongInfo(track.songId),
+									SeeTrackInfo(openTrackInfoModal),
 								]
-							: [],
+							: [SeeTrackInfo(openTrackInfoModal)],
 						resolveTrackWithArtist
 							? [
 									AttachResolver(

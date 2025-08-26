@@ -17,12 +17,12 @@ import {
 } from "~/actions";
 import { useSetSongTrackAsMaster } from "~/actions/master";
 import { useShareSongAction } from "~/actions/share";
+import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery } from "~/api";
 import { useChangeSongTypeModal } from "~/components/change-type";
 import type { ContextMenuBuilder } from "..";
 
 //TODO add to playlist
-//TODO Track info
 
 export const useSongContextMenu = (
 	song:
@@ -32,6 +32,7 @@ export const useSongContextMenu = (
 	const ShareAction = useShareSongAction(song?.id);
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
+	const { openTrackInfoModal } = useTrackInfoModal(song?.masterId);
 	const SetAsMaster = useSetSongTrackAsMaster(song?.master, song);
 	return useCallback(() => {
 		const trackToPlay = song
@@ -60,7 +61,13 @@ export const useSongContextMenu = (
 									GoToRelease(song.master.releaseId),
 								]
 							: [GoToArtist(song.artistId)],
-						[GoToLyrics(song.id), GoToSongInfo(song.id)],
+						[
+							GoToLyrics(song.id),
+							GoToSongInfo(song.id),
+							...(song.masterId
+								? [SeeTrackInfo(openTrackInfoModal)]
+								: []),
+						],
 						trackToPlay
 							? [PlayNext(trackToPlay), PlayAfter(trackToPlay)]
 							: [],
