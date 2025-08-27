@@ -120,16 +120,20 @@ const TrackNameButton = () => {
 	const { openContextMenu } = useContextMenu(trackContextMenu);
 
 	const onPress = useCallback(() => {
-		if (!currentTrack?.track.songId) {
-			return;
+		if (currentTrack?.track.releaseId) {
+			router.navigate(`/releases/${currentTrack.track.releaseId}`);
+			dismiss();
+		} else if (currentTrack?.track.songId) {
+			router.navigate(`/songs/${currentTrack.track.songId}`);
+			dismiss();
 		}
-		dismiss();
-		router.navigate(`/songs/${currentTrack.track.songId}`);
 	}, [currentTrack]);
 	return (
 		<Pressable
 			onPress={onPress}
-			disabled={!currentTrack?.track.songId}
+			disabled={
+				!currentTrack?.track.songId && !currentTrack?.track.releaseId
+			}
 			onLongPress={openContextMenu}
 		>
 			<LoadableText
