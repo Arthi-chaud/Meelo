@@ -1,7 +1,7 @@
 {
 	"actions": {
 		"addToPlaylist": {
-			"label": "In Playlist",
+			"label": "Zu Playlist hinzufügen",
 			"modalTitle": "Wähle Playlist"
 		},
 		"album": {
@@ -14,7 +14,7 @@
 			"seeSongs": "Zeige Songs"
 		},
 		"changeIllutration": "Ändere Illustration",
-		"create": "Erzeuge",
+		"create": "Erstellen",
 		"delete": "Lösche",
 		"deleteFromPlaylist": "Lösche aus Playlist",
 		"deleteUser": {
@@ -58,7 +58,7 @@
 			"seeLyrics": "Zeige Liedtext",
 			"seeOtherVersions": "Zeige andere Versionen",
 			"seeRelatedTracks": "Zeige verwandte Tracks",
-			"seeRelatedVideos": "",
+			"seeRelatedVideos": "Ähnliche Videos sehen",
 			"seeSongInfo": "Song Info"
 		},
 		"track": {
@@ -90,8 +90,8 @@
 		"remixAlbum_plural": "Remix Alben",
 		"single": "Single",
 		"single_plural": "Singles",
-		"soundtrack": "",
-		"soundtrack_plural": "",
+		"soundtrack": "Soundtrack",
+		"soundtrack_plural": "Soundtrack Alben",
 		"studioRecording": "Studioalbum",
 		"studioRecording_plural": "Studioalben",
 		"videoAlbum": "Videoalbum",
@@ -104,6 +104,7 @@
 		"topVideos": "Top Videos"
 	},
 	"auth": {
+		"connectButton": "Mit dem Server verbinden",
 		"loginButton": "Login",
 		"signin": "Schon angemeldet? Login",
 		"signup": "Neu hier? Anmelden",
@@ -118,311 +119,316 @@
 			"filter": {
 				"allLibraries": "Alle Bibliotheken",
 				"allTypes": "Alle Typen",
+				"header": "Filter",
 				"nTypes": "{{n}} Typen"
 			},
 			"groupVersions": "gruppiere Versionen",
-			"order": "",
-			"showAllSongs": "",
+			"order": "Reihenfolge",
+			"showAllSongs": "Alle Versionen anzeigen",
 			"sort": {
-				"addDate": "",
-				"albumCount": "",
-				"artistName": "",
-				"bitrate": "",
+				"addDate": "Datum hinzufügen",
+				"albumCount": "Albumanzahl",
+				"artistName": "Künstlername",
+				"bitrate": "Bitrate",
 				"bpm": "",
-				"creationDate": "",
+				"creationDate": "Erstellungsdatum",
 				"discIndex": "",
-				"entryCount": "",
-				"name": "",
-				"registrationDate": "",
-				"releaseDate": "",
-				"releaseName": "",
-				"songCount": "",
-				"totalPlayCount": "",
-				"trackCount": "",
-				"trackIndex": "",
-				"userPlayCount": ""
+				"entryCount": "Anzahl der Einträge",
+				"name": "Titel",
+				"registrationDate": "Registrierungsdatum",
+				"releaseDate": "Erscheinungsdatum",
+				"releaseName": "Freigabe Name",
+				"songCount": "Anzahl der Lieder",
+				"totalPlayCount": "Gesamtanzahl an Wiedergaben",
+				"trackCount": "Anzahl Titel",
+				"trackIndex": "Track Index",
+				"userPlayCount": "Persönliche Summe an Wiedergaben"
 			},
-			"sortBy": ""
+			"sortBy": "Sortieren nach"
 		},
 		"sections": {
 			"about": "",
-			"extras": "",
+			"extras": "Extras",
 			"featuredOnPlaylists": "",
-			"livePerformances": "",
-			"musicVideos": ""
+			"livePerformances": "Live Performances",
+			"musicVideos": "Musik Videos"
 		},
-		"seeAll": ""
+		"seeAll": "Alle anzeigen"
 	},
-	"compilationArtistLabel": "",
+	"compilationArtistLabel": "Zusammenstellung",
 	"emptyState": {
-		"default": "",
-		"home": "",
-		"lyrics": "",
-		"playlist": "",
-		"playlists": ""
+		"default": "Hier ist nichts zu finden…",
+		"home": "Oh wow, ist das still hier…",
+		"lyrics": "Kein Liedtext zum Mitsingen :(",
+		"playlist": "Es gibt keine Lieder in dieser Playlist... noch nicht!",
+		"playlists": "Es gibt keine Playlists... noch nicht!"
 	},
 	"errors": {
-		"errorOccured": "",
-		"oops": "",
-		"pageNotFound": ""
+		"errorOccured": "Oops... Ein Fehler ist aufgetreten",
+		"oops": "Oops",
+		"pageNotFound": "Oops... Seite nicht gefunden"
 	},
 	"fileInfo": {
-		"bitRate": "",
+		"bitRate": "Bitrate",
 		"bpm": "",
-		"duration": "",
+		"duration": "Dauer",
 		"extension": "",
-		"name": "",
-		"path": "",
+		"name": "Name",
+		"path": "Pfad",
 		"registrationDate": "",
-		"type": "",
-		"unknown": ""
+		"type": "Typ",
+		"unknown": "Unbekannt"
 	},
 	"form": {
 		"auth": {
-			"confirmPasswordField": "",
-			"instanceUrl": "",
-			"instanceUrlIsRequired": "",
-			"password": "",
-			"passwordIsRequired": "",
-			"passwordTooShort": "",
-			"passwordsAreDifferent": "",
-			"pleaseConfirm": "",
-			"username": "",
-			"usernameIsRequired": "",
-			"usernameTooShort": ""
+			"confirmPasswordField": "Bestätigen",
+			"instanceUrl": "Instanz URL",
+			"instanceUrlIsRequired": "Instanz URL fehlt",
+			"password": "Passwort",
+			"passwordIsRequired": "Passwort ist erforderlich",
+			"passwordTooShort": "Passwort ist zu kurz",
+			"passwordsAreDifferent": "Passwörter sind unterschiedlich",
+			"pleaseConfirm": "Bitte bestätige das Passwort",
+			"username": "Benutzername",
+			"usernameIsRequired": "Benutzername ist erforderlich",
+			"usernameTooShort": "Benutzername ist zu kurz"
 		},
-		"cancel": "",
-		"confirm": "",
-		"done": "",
-		"edit": "",
+		"cancel": "Abbrechen",
+		"confirm": "Bestätigen",
+		"done": "Erledigt",
+		"edit": "Bearbeiten",
 		"library": {
-			"nameIsRequired": "",
-			"nameOfLibrary": "",
-			"pathIsRequired": "",
-			"pathOfLibrary": ""
+			"nameIsRequired": "Name ist erforderlich",
+			"nameOfLibrary": "Name der Bibliothek",
+			"pathIsRequired": "Pfad ist erforderlich",
+			"pathOfLibrary": "Pfad der Bibliothek"
 		},
 		"playlist": {
-			"allowPlaylistChanges": "",
-			"playlistIsPublic": ""
+			"allowPlaylistChanges": "Erlaube anderen Nutzern diese Playlist zu aktualisieren",
+			"playlistIsPublic": "Erlaube anderen Nutzern diese Playlist zu sehen"
 		},
 		"scrobblers": {
 			"listenbrainz": {
-				"instanceUrlHelperText": "",
+				"instanceUrlHelperText": "Leer lassen um die öffentliche Instanz zu nutzen (https://api.listenbrainz.org)/",
 				"instanceUrlLabel": "",
-				"tokenHelperText": "",
-				"tokenIsRequired": "",
-				"tokenLabel": ""
+				"tokenHelperText": "Erhalte dein Benutzertoken hier: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Token ist erforderlich",
+				"tokenLabel": "ListenBrainz Benutzer Token eintragen"
 			}
 		}
 	},
 	"home": {
-		"featuredAlbums": "",
-		"latestAlbums": "",
-		"mostPlayedSongs": "",
-		"newlyAddedAlbums": "",
-		"newlyAddedArtists": "",
-		"newlyAddedReleases": "",
-		"topGenres": "",
+		"featuredAlbums": "Herausragende Alben",
+		"latestAlbums": "Neuste Alben",
+		"mostPlayedSongs": "Meistgespielte Lieder",
+		"newlyAddedAlbums": "Neu hinzugefügte Alben",
+		"newlyAddedArtists": "Neu hinzugefügte Künstler",
+		"newlyAddedReleases": "Neu hinzugefügte Veröffentlichungen",
+		"topGenres": "Top Genres",
 		"topLabels": ""
 	},
 	"keyboardBindings": {
-		"closePlayer": "",
-		"goToSearchPage": "",
-		"goToSettingsPage": "",
-		"modalTitle": "",
-		"openClosePlayer": "",
+		"closePlayer": "Player schließen",
+		"goToSearchPage": "Zur Suchseite gehen",
+		"goToSettingsPage": "Zu Einstellungen gehen",
+		"modalTitle": "Tastaturabkürzungen",
+		"openClosePlayer": "Player öffnen / schließen",
 		"openModalShortcutDescription": "",
-		"playPauseWhenExpanded": ""
+		"playPauseWhenExpanded": "Wiedergabe / Pause (Wenn Player geöffnet ist)"
 	},
 	"misc": {
-		"loading": "",
-		"no": "",
-		"yes": ""
+		"loading": "Laden",
+		"no": "Nein",
+		"yes": "Ja"
 	},
 	"models": {
-		"album": "",
-		"album_plural": "",
-		"artist": "",
-		"artist_plural": "",
+		"album": "Album",
+		"album_plural": "Alben",
+		"artist": "Künstler",
+		"artist_plural": "Künstler",
 		"disc": "",
-		"externalLink_plural": "",
-		"genre_plural": "",
-		"library_plural": "",
-		"lyrics": "",
-		"playlist": "",
+		"externalLink_plural": "Externer Link",
+		"genre_plural": "Genres",
+		"library_plural": "Bibliotheken",
+		"lyrics": "Liedtexte",
+		"playlist": "Playlist",
 		"playlist_plural": "",
-		"song": "",
-		"song_plural": "",
-		"track_plural": "",
-		"user_plural": "",
-		"versions": "",
-		"video": "",
-		"video_plural": ""
+		"song": "Lied",
+		"song_plural": "Lieder",
+		"track_plural": "Tracks",
+		"user_plural": "Benutzer",
+		"versions": "Versionen",
+		"video": "Video",
+		"video_plural": "Videos"
 	},
 	"nav": {
 		"browse": "",
-		"compilations": "",
-		"home": "",
-		"more": "",
-		"musicVideos": "",
-		"search": "",
-		"settings": ""
+		"compilations": "Zusammenstellungen",
+		"home": "Home",
+		"more": "Mehr",
+		"musicVideos": "Musik Videos",
+		"search": "Suche",
+		"settings": "Einstellungen"
 	},
 	"player": {
-		"loadNextSongs": "",
-		"saveQueueAsPlaylist": ""
+		"loadNextSongs": "Nächste Lieder laden",
+		"saveQueueAsPlaylist": "Warteschlange als Playlist speichern"
 	},
 	"search": {
-		"all": ""
+		"all": "Alle"
 	},
 	"settings": {
 		"interface": "",
 		"libraries": {
 			"nameColumn": "",
 			"tasks": {
-				"current": "",
-				"label": "",
-				"none": "",
-				"pending": ""
+				"current": "Aktuell",
+				"label": "Aufgaben",
+				"none": "Keine",
+				"pending": "Ausstehend"
 			}
 		},
 		"ui": {
-			"autoMode": "",
-			"colorScheme": "",
+			"account": {
+				"changePassword": "Passwort ändern"
+			},
+			"autoMode": "Auto-Modus",
+			"colorScheme": "Thema",
 			"crossfade": "",
 			"external": {
-				"encounteredABug": "",
-				"enjoyingTheProject": "",
-				"openAnIssue": "",
-				"readTheDoc": "",
-				"starOnGithub": ""
+				"encounteredABug": "Du bist auf einen Fehler gestoßen?",
+				"enjoyingTheProject": "Erfreust du dich an diesem Projekt?",
+				"openAnIssue": "Öffne einen Issue auf GitHub!",
+				"readTheDoc": "Lese die Benutzer Dokumentation",
+				"starOnGithub": "Sterne Meelo auf GitHub!"
 			},
-			"keyboardBindings": "",
+			"keyboardBindings": "Tastaturabkürzungen",
 			"lang": {
 				"de": "Deutsch",
-				"en": "",
-				"fr": "",
-				"id": "",
-				"it": "",
-				"pt_br": "",
-				"ru": ""
+				"en": "Englisch",
+				"fr": "Französisch",
+				"id": "Indonesisch",
+				"it": "Italienisch",
+				"pt": "Portugiesisch",
+				"pt_br": "Portugiesisch (Brasilien)",
+				"ru": "Russisch"
 			},
-			"language": "",
-			"notifications": "",
-			"notifyOnTrackChange": "",
+			"language": "Sprache",
+			"notifications": "Benachrichtigungen",
+			"notifyOnTrackChange": "Benachrichtige bei Track Änderung",
 			"openKeyboarBindingsModalByTypingQuestionMark": "",
-			"permissions": "",
-			"playback": "",
-			"project": "",
+			"permissions": "Zugriffsrechte",
+			"playback": "Wiedergabe",
+			"project": "Projekt",
 			"scrobblers": {
 				"connect_scrobblers": "",
 				"header": "",
 				"no_scrobblers_enabled": ""
 			},
-			"useDarkTheme": "",
-			"useSystemLanguage": "",
-			"useSystemTheme": "",
-			"versions": ""
+			"useDarkTheme": "Benutze Dunkelmodus",
+			"useSystemLanguage": "Verwende Systemsprache",
+			"useSystemTheme": "Verwende Systemthema",
+			"versions": "Versionen"
 		},
 		"users": {
 			"admin": "",
-			"enabled": "",
-			"nameColumn": "",
-			"you": ""
+			"enabled": "Aktiviert",
+			"nameColumn": "Name",
+			"you": "Du"
 		}
 	},
 	"song": {
-		"infoTab": "",
-		"songType": ""
+		"infoTab": "Info",
+		"songType": "Liedtyp"
 	},
 	"songType": {
 		"acappella": "",
-		"acoustic": "",
+		"acoustic": "Akustik",
 		"clean": "",
 		"demo": "",
-		"edit": "",
+		"edit": "Bearbeiten",
 		"instrumental": "",
 		"live": "",
 		"medley": "",
 		"nonMusic": "",
 		"original": "",
 		"remix": "",
-		"unknown": ""
+		"unknown": "Unbekannt"
 	},
 	"tasks": {
 		"clean": "",
 		"cleanLibraries": "",
-		"refresh": "",
-		"refreshMetadata": "",
+		"refresh": "Aktualisieren",
+		"refreshMetadata": "Metadaten aktualisieren",
 		"refreshMetadataForm": {
-			"forceLabel": ""
+			"forceLabel": "Aktualisierung erzwingen, wenn Dateien nicht geändert wurden"
 		},
 		"scan": "",
-		"scanLibraries": ""
+		"scanLibraries": "Scanne Bibliotheken"
 	},
 	"toasts": {
 		"auth": {
-			"accountCreated": ""
+			"accountCreated": "Herzlichen Glückwunsch! Dein Meelo-Account wurde erstellt. Du musst nun darauf warten, dass der Administrator deinen Account freigibt"
 		},
-		"leaveWillStopPlaybackAlert": "",
+		"leaveWillStopPlaybackAlert": "Wenn Sie die Website verlassen, wird die Wiedergabe gestoppt.",
 		"library": {
-			"created": "",
-			"creationFail": "",
-			"deleted": "",
-			"deletionFail": "",
-			"deletionRunning": "",
-			"loadFail": "",
-			"updated": ""
+			"created": "Bibliothek erstellt",
+			"creationFail": "Erstellen der Bibliothek gescheitert",
+			"deleted": "Bibliothek gelöscht",
+			"deletionFail": "Löschen der Bibliothek gescheitert",
+			"deletionRunning": "Lösche Bibliothek…",
+			"loadFail": "Bibliotheken können nicht geladen werden",
+			"updated": "Bibliothek aktualisiert"
 		},
-		"linkCopied": "",
+		"linkCopied": "Link in Zwischenablage kopiert",
 		"player": {
-			"networkError": "",
+			"networkError": "Es scheint Netzwerkprobleme zu geben…",
 			"playbackError": ""
 		},
 		"playlist": {
-			"itemDeletionSuccess": "",
-			"reorderFail": "",
-			"reorderSuccess": ""
+			"itemDeletionSuccess": "Löschen erfolgreich",
+			"reorderFail": "Playlist Umsortierung gescheitert",
+			"reorderSuccess": "Playlist umsortiert!"
 		},
 		"refreshMetadata": {
-			"failed": "",
-			"started": ""
+			"failed": "Oops... Metadaten Aktualisierung gescheitert",
+			"started": "Metadaten aktualisieren... (Eventuell musst Du die Seite neu laden)"
 		},
 		"releaseSetAsMaster": "",
 		"scrobblers": {
-			"linking": "",
-			"linkingListenBrainzFailed": "",
-			"linkingSuccessful": "",
-			"unlinking": "",
+			"linking": "Account verknüpfen...",
+			"linkingListenBrainzFailed": "Verknüpfung mit ListenBrainz Account nicht möglich",
+			"linkingSuccessful": "ListenBrainz erfolgreich verknüpft",
+			"unlinking": "Account trennen...",
 			"unlinkingFailed": "",
 			"unlinkingSuccessful": ""
 		},
 		"trackSetAsMaster": "",
-		"tracksUpdated": "",
+		"tracksUpdated": "Tracks erfolgreich aktualisiert",
 		"users": {
-			"deleted": "",
-			"deletionFail": "",
-			"nowAdmin": "",
-			"nowDisabled": "",
-			"nowEnabled": "",
-			"nowNotAdmin": "",
-			"updateFail": ""
+			"deleted": "Benutzer geschlöscht",
+			"deletionFail": "Löschen des Benutzers fehlgeschlagen",
+			"nowAdmin": "Benutzer ist jetzt Administrator und kann administrative Aufgaben ausführen",
+			"nowDisabled": "Benutzer ist jetzt deaktiviert",
+			"nowEnabled": "Benutzer ist jetzt aktiviert",
+			"nowNotAdmin": "Benutzer ist nicht mehr Administrator",
+			"updateFail": "Aktualisierung des Benutzers fehlgeschlagen"
 		}
 	},
 	"track": {
 		"bonusTrack": "",
-		"mixed": "",
+		"mixed": "Gemischt",
 		"remastered": ""
 	},
 	"videoType": {
 		"advert": "",
-		"behindTheScenes": "",
-		"documentary": "",
+		"behindTheScenes": "Hinter den Kulissen",
+		"documentary": "Dokumentation",
 		"interview": "",
 		"live": "",
-		"lyricsVideo": "",
-		"musicVideo": "",
-		"other": "",
-		"photoGallery": ""
+		"lyricsVideo": "Liedtext Video",
+		"musicVideo": "Musik Video",
+		"other": "Andere",
+		"photoGallery": "Fotogalerie"
 	}
 }
