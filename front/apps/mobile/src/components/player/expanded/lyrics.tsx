@@ -1,5 +1,4 @@
 import {
-	type BottomSheetFlatListMethods,
 	BottomSheetScrollView,
 	type BottomSheetScrollViewMethods,
 } from "@gorhom/bottom-sheet";
