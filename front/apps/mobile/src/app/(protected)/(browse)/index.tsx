@@ -7,6 +7,7 @@ import {
 	ArtistIcon,
 	CompilationIcon,
 	type Icon,
+	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
@@ -41,6 +42,12 @@ const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
 		title: "nav.compilations",
 		href: "/(protected)/(browse)/albums?compilations=true",
 		icon: CompilationIcon,
+	},
+
+	{
+		title: "models.playlist_plural",
+		href: "/(protected)/(browse)/playlists",
+		icon: PlaylistIcon,
 	},
 ];
 

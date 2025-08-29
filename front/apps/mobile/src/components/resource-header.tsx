@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { ArtistWithRelations } from "@/models/artist";
@@ -37,6 +38,7 @@ export const ArtistHeader = ({
 type Props = {
 	illustration: IllustrationResource | null | undefined;
 	circleIllustration?: true;
+	illustrationProps?: Partial<ComponentProps<typeof Illustration>>;
 	title: string | undefined;
 	subtitle: string | undefined | null;
 };
@@ -45,6 +47,7 @@ export const ResourceHeader = ({
 	illustration,
 	title,
 	circleIllustration,
+	illustrationProps,
 	subtitle,
 }: Props) => {
 	return (
@@ -52,6 +55,7 @@ export const ResourceHeader = ({
 			<View style={styles.avatar}>
 				<Illustration
 					illustration={illustration}
+					{...illustrationProps}
 					quality="medium"
 					variant={circleIllustration ? "circle" : "center"}
 					useBlurhash
