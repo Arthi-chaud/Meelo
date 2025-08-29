@@ -1,7 +1,7 @@
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { ModalBackdrop } from "~/components/bottom-modal-sheet";
 import { ExpandedPlayer } from "~/components/player/expanded";
 import { collapsePlayerAtom, playerIsExpandedAtom } from "./state";
@@ -28,12 +28,14 @@ export const ExpandedPlayerSlot = () => {
 			onDismiss={onClose}
 			backdropComponent={ModalBackdrop}
 		>
-			<BottomSheetView style={styles.modal}>
+			<UniBottomSheetView style={styles.modal}>
 				<ExpandedPlayer />
-			</BottomSheetView>
+			</UniBottomSheetView>
 		</BottomSheetModal>
 	);
 };
+
+const UniBottomSheetView = withUnistyles(BottomSheetView);
 
 // Note: most of this is copy-pasted from modal
 const styles = StyleSheet.create((theme) => ({
