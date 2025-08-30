@@ -8,6 +8,7 @@ import {
 	getAlbum,
 	getAlbumExternalMetadata,
 	getGenres,
+	getPlaylists,
 	getRelease,
 } from "@/api/queries";
 import type Album from "@/models/album";
@@ -31,6 +32,7 @@ import {
 } from "~/components/external-metadata";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
+import { PlaylistTile } from "~/components/item/resource/playlist";
 import ReleaseTile from "~/components/item/resource/release";
 import { VideoTile } from "~/components/item/resource/video";
 import { Row } from "~/components/row";
@@ -146,6 +148,12 @@ const PostTracklistSections = ({
 	);
 	const { items: relatedAlbums } = useInfiniteQuery(
 		(albumId) => relatedAlbumsQuery(albumId),
+		album?.id,
+	);
+
+	const { items: relatedPlaylists } = useInfiniteQuery(
+		(albumId) =>
+			getPlaylists({ album: albumId }, undefined, ["illustration"]),
 		album?.id,
 	);
 	const { items: relatedReleasesItems } = useInfiniteQuery(
@@ -319,8 +327,13 @@ const PostTracklistSections = ({
 				}
 				render={(artist) => <ArtistTile artist={artist} />}
 			/>
-
-			{/* TODO Featured on playlists */}
+			<Row
+				hideIfEmpty
+				style={styles.section}
+				header={t("browsing.sections.featuredOnPlaylists")}
+				items={relatedPlaylists}
+				render={(playlist) => <PlaylistTile playlist={playlist} />}
+			/>
 			{externalMetadata !== null && (
 				<>
 					<ExternalMetadataDescriptionSection
