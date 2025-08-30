@@ -12,6 +12,8 @@ type Props = {
 	subtitle: "artists" | null | undefined;
 	formatSubtitle?: (s: string) => string;
 	onPress: () => void;
+	// If set, overrides 'open context menu'
+	onLongPress?: () => void;
 };
 
 export const SongItem = ({
@@ -19,6 +21,7 @@ export const SongItem = ({
 	illustrationProps,
 	subtitle,
 	formatSubtitle,
+	onLongPress,
 	onPress,
 }: Props) => {
 	const contextMenu = useSongContextMenu(song);
@@ -40,6 +43,7 @@ export const SongItem = ({
 			title={song?.name}
 			subtitle={formattedSubtitle}
 			onPress={onPress}
+			onLongPress={onLongPress as undefined}
 			contextMenu={contextMenu}
 			illustration={song?.illustration}
 			illustrationProps={illustrationProps}

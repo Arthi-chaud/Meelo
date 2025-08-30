@@ -2,9 +2,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
 import { shuffle } from "lodash";
-import { Fragment, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
+import DraggableFlatList, {
+	ScaleDecorator,
+} from "react-native-draggable-flatlist";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getCurrentUserStatus,
@@ -13,7 +16,14 @@ import {
 } from "@/api/queries";
 import type { PlaylistEntryWithRelations } from "@/models/playlist";
 import { playTracksAtom } from "@/state/player";
-import { DeleteIcon, PlayIcon, PlaylistIcon, ShuffleIcon } from "@/ui/icons";
+import {
+	DeleteIcon,
+	DoneIcon,
+	EditIcon,
+	PlayIcon,
+	PlaylistIcon,
+	ShuffleIcon,
+} from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useAPI, useQuery, useQueryClient } from "~/api";
 import { SongItem } from "~/components/item/resource/song";
@@ -21,8 +31,6 @@ import { ResourceHeader } from "~/components/resource-header";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
-
-//TODO reorder
 
 type PlaylistEntryType = PlaylistEntryWithRelations<
 	"illustration" | "artist" | "featuring" | "master"
@@ -33,9 +41,12 @@ const playlistQuery = (playlistId: string | number) =>
 
 export default function PlaylistView() {
 	const rootStyle = useRootViewStyle();
+	const queryClient = useQueryClient();
 	const { id: playlistId } = useLocalSearchParams<{ id: string }>();
 	const playTracks = useSetAtom(playTracksAtom);
-	const { data: playlistEntries } = useQuery(() => {
+
+	// Data
+	const { data: playlistEntries, refetch: refetchEntries } = useQuery(() => {
 		const query = getPlaylistEntries(playlistId, [
 			"illustration",
 			"artist",
@@ -47,6 +58,16 @@ export default function PlaylistView() {
 			exec: (api) => () => query.exec(api)({ pageSize: 1000 }),
 		};
 	});
+	// Reorder
+	const [isReordering, setIsReordering] = useState(false);
+	const reorderEntries = useMutation({
+		mutationFn: async (entriesIds: number[]) => {
+			await queryClient.api.reorderPlaylist(playlistId, entriesIds);
+			refetchEntries();
+		},
+	});
+
+	// Playback
 	const tracksForPlayer = useMemo(
 		() =>
 			playlistEntries?.items.map((item) => ({
@@ -61,36 +82,30 @@ export default function PlaylistView() {
 		},
 		[playlistEntries],
 	);
-
 	const onShuffle = useCallback(() => {
 		playTracks({ tracks: shuffle(tracksForPlayer) });
 	}, [playlistEntries]);
 	return (
-		<ScrollView style={[styles.root, rootStyle]}>
+		<View style={[styles.root, rootStyle]}>
 			<Header
 				playlistId={playlistId}
-				{...(playlistEntries
+				{...(playlistEntries && !isReordering
 					? { onPlay: () => onItemPress(0), onShuffle: onShuffle }
 					: {})}
 			/>
 			<Divider h />
-			<View style={styles.items}>
-				{(playlistEntries?.items ?? generateArray(20)).map(
-					(item: PlaylistEntryType | undefined, idx) => (
-						<Fragment key={item?.entryId ?? `skeleton-${idx}`}>
-							<SongItem
-								song={item}
-								subtitle="artists"
-								illustrationProps={{}}
-								onPress={() => onItemPress(idx)}
-							/>
-							<Divider h />
-						</Fragment>
-					),
-				)}
-			</View>
-			<Footer playlistId={playlistId} />
-		</ScrollView>
+			<Items
+				playlistId={playlistId}
+				playlistEntries={playlistEntries?.items}
+				isReordering={isReordering}
+				startReordering={() => setIsReordering(true)}
+				onReorderingEnd={(entryIds) => {
+					setIsReordering(false);
+					reorderEntries.mutate(entryIds);
+				}}
+				onItemPress={onItemPress}
+			/>
+		</View>
 	);
 }
 
@@ -138,7 +153,81 @@ const Header = ({
 	);
 };
 
-const Footer = ({ playlistId }: { playlistId: number | string }) => {
+const Items = ({
+	playlistEntries,
+	isReordering,
+	playlistId,
+	startReordering,
+	onReorderingEnd,
+	onItemPress,
+}: {
+	onItemPress: (index: number) => void;
+	playlistId: string | number;
+	isReordering: boolean;
+	startReordering: () => void;
+	onReorderingEnd: (reorderedEntryIds: number[]) => void;
+	playlistEntries: PlaylistEntryType[] | undefined;
+}) => {
+	const reorderedIds = useRef<number[]>([]);
+	const reorder = useCallback(
+		(from: number, to: number) => {
+			[reorderedIds.current[to], reorderedIds.current[from]] = [
+				reorderedIds.current[from],
+				reorderedIds.current[to],
+			];
+		},
+		[playlistEntries],
+	);
+	useEffect(() => {
+		reorderedIds.current =
+			playlistEntries?.map(({ entryId }) => entryId) ?? [];
+	}, [isReordering, playlistEntries]);
+	return (
+		/* @ts-expect-error */
+		<DraggableFlatList
+			containerStyle={styles.itemsContainer}
+			contentContainerStyle={styles.items}
+			data={playlistEntries ?? generateArray(20)}
+			onDragEnd={({ from, to }) => reorder(from, to)}
+			keyExtractor={(item: PlaylistEntryType | undefined, idx) =>
+				item?.entryId.toString() ?? `skeleton-${idx}`
+			}
+			renderItem={({ item, drag, getIndex }) => (
+				/* @ts-expect-error */
+				<ScaleDecorator>
+					<SongItem
+						song={item}
+						subtitle="artists"
+						onLongPress={isReordering ? drag : undefined}
+						illustrationProps={{}}
+						onPress={() => onItemPress(getIndex()!)}
+					/>
+					<Divider h />
+				</ScaleDecorator>
+			)}
+			ListFooterComponent={
+				<Footer
+					playlistId={playlistId}
+					isReordering={isReordering}
+					startReorder={startReordering}
+					finishReorder={() => onReorderingEnd(reorderedIds.current)}
+				/>
+			}
+		/>
+	);
+};
+
+const Footer = ({
+	playlistId,
+	isReordering,
+	startReorder,
+	finishReorder,
+}: {
+	playlistId: number | string;
+	isReordering: boolean;
+	startReorder: () => void;
+	finishReorder: () => void;
+}) => {
 	const { t } = useTranslation();
 	const { data: playlist } = useQuery(() => playlistQuery(playlistId));
 	const { data: user } = useQuery(getCurrentUserStatus);
@@ -148,6 +237,10 @@ const Footer = ({ playlistId }: { playlistId: number | string }) => {
 	const userIsAdmin = useMemo(
 		() => playlist && user && playlist.ownerId === user.id,
 		[user, playlist],
+	);
+	const userCanEdit = useMemo(
+		() => playlist && user && (userIsAdmin || playlist.allowChanges),
+		[user, playlist, userIsAdmin],
 	);
 	const deletePlaylist = useMutation({
 		mutationFn: () =>
@@ -161,9 +254,18 @@ const Footer = ({ playlistId }: { playlistId: number | string }) => {
 
 	return (
 		<View style={styles.footer}>
+			{userCanEdit && (
+				<Button
+					size="small"
+					icon={isReordering ? DoneIcon : EditIcon}
+					title={t(isReordering ? "form.confirm" : "form.edit")}
+					onPress={isReordering ? finishReorder : startReorder}
+				/>
+			)}
 			{userIsAdmin && (
 				<Button
 					size="small"
+					disabled={isReordering}
 					icon={DeleteIcon}
 					title={t("actions.delete")}
 					onPress={() => userIsAdmin && deletePlaylist.mutate()}
@@ -174,7 +276,7 @@ const Footer = ({ playlistId }: { playlistId: number | string }) => {
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: {},
+	root: { flex: 1 },
 	playButtons: {
 		flexDirection: "row",
 		gap: theme.gap(1),
@@ -183,11 +285,13 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	playButton: { flex: 1 },
 	playButtonContent: { justifyContent: "center" },
-	items: { padding: theme.gap(1) },
+	itemsContainer: { flex: 1 },
+	items: { padding: theme.gap(1), paddingTop: 0 },
 	footer: {
 		flexDirection: "row",
 		justifyContent: "flex-end",
 		width: "100%",
-		padding: theme.gap(1),
+		gap: theme.gap(1),
+		paddingVertical: theme.gap(1),
 	},
 }));
