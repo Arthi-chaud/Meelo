@@ -1,27 +1,35 @@
-import { useLocalSearchParams } from "expo-router";
+import { useMutation } from "@tanstack/react-query";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
 import { shuffle } from "lodash";
 import { Fragment, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { getPlaylist, getPlaylistEntries } from "@/api/queries";
+import {
+	getCurrentUserStatus,
+	getPlaylist,
+	getPlaylistEntries,
+} from "@/api/queries";
 import type { PlaylistEntryWithRelations } from "@/models/playlist";
 import { playTracksAtom } from "@/state/player";
-import { PlayIcon, PlaylistIcon, ShuffleIcon } from "@/ui/icons";
+import { DeleteIcon, PlayIcon, PlaylistIcon, ShuffleIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
-import { useQuery } from "~/api";
+import { useAPI, useQuery, useQueryClient } from "~/api";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 
-//TODO reorder and delete
+//TODO reorder
 
 type PlaylistEntryType = PlaylistEntryWithRelations<
 	"illustration" | "artist" | "featuring" | "master"
 >;
+
+const playlistQuery = (playlistId: string | number) =>
+	getPlaylist(playlistId, ["illustration"]);
 
 export default function PlaylistView() {
 	const rootStyle = useRootViewStyle();
@@ -69,7 +77,7 @@ export default function PlaylistView() {
 			<View style={styles.items}>
 				{(playlistEntries?.items ?? generateArray(20)).map(
 					(item: PlaylistEntryType | undefined, idx) => (
-						<Fragment key={item?.entryId}>
+						<Fragment key={item?.entryId ?? `skeleton-${idx}`}>
 							<SongItem
 								song={item}
 								subtitle="artists"
@@ -81,6 +89,7 @@ export default function PlaylistView() {
 					),
 				)}
 			</View>
+			<Footer playlistId={playlistId} />
 		</ScrollView>
 	);
 }
@@ -95,9 +104,7 @@ const Header = ({
 	onPlay?: () => void;
 }) => {
 	const { t } = useTranslation();
-	const { data: playlist } = useQuery(() =>
-		getPlaylist(playlistId, ["illustration"]),
-	);
+	const { data: playlist } = useQuery(() => playlistQuery(playlistId));
 
 	return (
 		<>
@@ -131,6 +138,41 @@ const Header = ({
 	);
 };
 
+const Footer = ({ playlistId }: { playlistId: number | string }) => {
+	const { t } = useTranslation();
+	const { data: playlist } = useQuery(() => playlistQuery(playlistId));
+	const { data: user } = useQuery(getCurrentUserStatus);
+	const queryClient = useQueryClient();
+	const router = useRouter();
+	const api = useAPI();
+	const userIsAdmin = useMemo(
+		() => playlist && user && playlist.ownerId === user.id,
+		[user, playlist],
+	);
+	const deletePlaylist = useMutation({
+		mutationFn: () =>
+			api.deletePlaylist(playlistId).then(() => {
+				queryClient.client.invalidateQueries({
+					queryKey: ["playlists"],
+				});
+				router.dismiss();
+			}),
+	});
+
+	return (
+		<View style={styles.footer}>
+			{userIsAdmin && (
+				<Button
+					size="small"
+					icon={DeleteIcon}
+					title={t("actions.delete")}
+					onPress={() => userIsAdmin && deletePlaylist.mutate()}
+				/>
+			)}
+		</View>
+	);
+};
+
 const styles = StyleSheet.create((theme) => ({
 	root: {},
 	playButtons: {
@@ -142,4 +184,10 @@ const styles = StyleSheet.create((theme) => ({
 	playButton: { flex: 1 },
 	playButtonContent: { justifyContent: "center" },
 	items: { padding: theme.gap(1) },
+	footer: {
+		flexDirection: "row",
+		justifyContent: "flex-end",
+		width: "100%",
+		padding: theme.gap(1),
+	},
 }));
