@@ -1,13 +1,15 @@
 import { useLocalSearchParams } from "expo-router";
 import { useSetAtom } from "jotai";
 import { shuffle } from "lodash";
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getPlaylist, getPlaylistEntries } from "@/api/queries";
+import type { PlaylistEntryWithRelations } from "@/models/playlist";
 import { playTracksAtom } from "@/state/player";
 import { PlayIcon, PlaylistIcon, ShuffleIcon } from "@/ui/icons";
+import { generateArray } from "@/utils/gen-list";
 import { useQuery } from "~/api";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
@@ -16,6 +18,10 @@ import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 
 //TODO reorder and delete
+
+type PlaylistEntryType = PlaylistEntryWithRelations<
+	"illustration" | "artist" | "featuring" | "master"
+>;
 
 export default function PlaylistView() {
 	const rootStyle = useRootViewStyle();
@@ -55,20 +61,25 @@ export default function PlaylistView() {
 		<ScrollView style={[styles.root, rootStyle]}>
 			<Header
 				playlistId={playlistId}
-				onPlay={() => onItemPress(0)}
-				onShuffle={onShuffle}
+				{...(playlistEntries
+					? { onPlay: () => onItemPress(0), onShuffle: onShuffle }
+					: {})}
 			/>
 			<Divider h />
 			<View style={styles.items}>
-				{playlistEntries?.items.map((item, idx) => (
-					<SongItem
-						key={item.entryId}
-						song={item}
-						subtitle="artists"
-						illustrationProps={{}}
-						onPress={() => onItemPress(idx)}
-					/>
-				))}
+				{(playlistEntries?.items ?? generateArray(20)).map(
+					(item: PlaylistEntryType | undefined, idx) => (
+						<Fragment key={item?.entryId}>
+							<SongItem
+								song={item}
+								subtitle="artists"
+								illustrationProps={{}}
+								onPress={() => onItemPress(idx)}
+							/>
+							<Divider h />
+						</Fragment>
+					),
+				)}
 			</View>
 		</ScrollView>
 	);
@@ -80,8 +91,8 @@ const Header = ({
 	onShuffle,
 }: {
 	playlistId: number | string;
-	onShuffle: () => void;
-	onPlay: () => void;
+	onShuffle?: () => void;
+	onPlay?: () => void;
 }) => {
 	const { t } = useTranslation();
 	const { data: playlist } = useQuery(() =>
@@ -101,15 +112,17 @@ const Header = ({
 					<Button
 						title={t("actions.playback.play")}
 						icon={PlayIcon}
-						onPress={onPlay}
+						disabled={!onPlay}
+						onPress={() => onPlay?.()}
 						containerStyle={styles.playButtonContent}
 					/>
 				</View>
 				<View style={styles.playButton}>
 					<Button
 						title={t("actions.playback.shuffle")}
+						disabled={!onShuffle}
 						icon={ShuffleIcon}
-						onPress={onShuffle}
+						onPress={() => onShuffle?.()}
 						containerStyle={styles.playButtonContent}
 					/>
 				</View>
