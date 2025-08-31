@@ -19,9 +19,9 @@ import { playTracksAtom } from "@/state/player";
 import {
 	DeleteIcon,
 	DoneIcon,
-	EditIcon,
 	PlayIcon,
 	PlaylistIcon,
+	ReorderPlaylistIcon,
 	ShuffleIcon,
 } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
@@ -257,8 +257,11 @@ const Footer = ({
 			{userCanEdit && (
 				<Button
 					size="small"
-					icon={isReordering ? DoneIcon : EditIcon}
-					title={t(isReordering ? "form.confirm" : "form.edit")}
+					// @ts-expect-error
+					icon={isReordering ? DoneIcon : ReorderPlaylistIcon}
+					title={t(
+						isReordering ? "form.done" : "form.playlist.reorder",
+					)}
 					onPress={isReordering ? finishReorder : startReorder}
 				/>
 			)}

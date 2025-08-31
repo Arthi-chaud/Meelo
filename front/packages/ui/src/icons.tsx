@@ -40,6 +40,7 @@ export const VideoIcon: Icon = Iconsax.VideoSquare;
 export const RelatedTracksIcon: Icon = Iconsax.Category;
 export const CloseIcon: Icon = Iconsax.CloseCircle;
 export const EditIcon: Icon = Iconsax.Edit2;
+export const ReorderPlaylistIcon = Iconsax.ReceiptEdit;
 export const LogoutIcon: Icon = Iconsax.Logout;
 export const DarkMode: Icon = Iconsax.Sun1;
 export const ProviderIcon: Icon = Iconsax.Global;

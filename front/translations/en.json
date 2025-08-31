@@ -205,7 +205,8 @@
 		},
 		"playlist": {
 			"allowPlaylistChanges": "Allow other users to update this playlist",
-			"playlistIsPublic": "Allow other users to see this playlist"
+			"playlistIsPublic": "Allow other users to see this playlist",
+			"reorder": "Reorder"
 		},
 		"scrobblers": {
 			"listenbrainz": {
