@@ -1,12 +1,13 @@
 import { useCallback } from "react";
+import type Playlist from "@/models/playlist";
 import { AddIcon } from "@/ui/icons";
 import { useModal } from "~/components/bottom-modal-sheet";
 import { CreateUpdatePlaylistForm } from "~/components/playlist/create-update";
 import type { Action } from "..";
 
-export const useCreatePlaylistFormModal = () => {
+export const useUpdatePlaylistFormModal = (playlist?: Playlist) => {
 	const content = useCallback(() => {
-		return <CreateUpdatePlaylistForm />;
+		return <CreateUpdatePlaylistForm existingPlaylist={playlist} />;
 	}, []);
 	const { openModal } = useModal({
 		content,
@@ -14,18 +15,10 @@ export const useCreatePlaylistFormModal = () => {
 	});
 	return { openFormModal: openModal };
 };
+export const useCreatePlaylistFormModal = useUpdatePlaylistFormModal;
 
 export const CreatePlaylist = (onPress: () => void): Action => ({
 	label: "actions.new",
 	icon: AddIcon,
 	onPress,
 });
-
-// export const UpdatePlaylist = (
-// 	playlist: Playlist,
-// 	onPress: () => void,
-// ): Action => ({
-// 	label: "actions.update",
-// 	icon: AddIcon,
-// 	onPress,
-// });
