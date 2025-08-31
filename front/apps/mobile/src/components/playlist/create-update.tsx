@@ -1,6 +1,5 @@
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -23,7 +22,6 @@ export const CreateUpdatePlaylistForm = ({
 }) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
-	const router = useRouter();
 	const { dismiss } = useBottomSheetModal();
 	const defaultValues: CreatePlaylistDto = {
 		name: existingPlaylist?.name ?? "",
@@ -43,15 +41,24 @@ export const CreateUpdatePlaylistForm = ({
 	const onSubmit = useMutation({
 		mutationFn: async (data: CreatePlaylistDto) => {
 			setLoading(true);
-			return queryClient.api
-				.createPlaylist(data)
-				.then((playlist) => {
+			const action = existingPlaylist
+				? queryClient.api.updatePlaylist(existingPlaylist.id, data)
+				: queryClient.api.createPlaylist(data);
+			return action
+				.then(() => {
 					setLoading(false);
 					dismiss();
 					queryClient.client.invalidateQueries({
 						queryKey: ["playlists"],
 					});
-					router.push(`/playlists/${playlist.id}`);
+					if (existingPlaylist) {
+						queryClient.client.invalidateQueries({
+							queryKey: [
+								"playlists",
+								existingPlaylist.id.toString(),
+							],
+						});
+					}
 				})
 				.catch((e) => {
 					setLoading(false);

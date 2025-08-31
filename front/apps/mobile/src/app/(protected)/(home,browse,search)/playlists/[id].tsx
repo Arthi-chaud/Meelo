@@ -19,12 +19,14 @@ import { playTracksAtom } from "@/state/player";
 import {
 	DeleteIcon,
 	DoneIcon,
+	EditIcon,
 	PlayIcon,
 	PlaylistIcon,
 	ReorderPlaylistIcon,
 	ShuffleIcon,
 } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
+import { useUpdatePlaylistFormModal } from "~/actions/playlist/create-update";
 import { useAPI, useQuery, useQueryClient } from "~/api";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
@@ -242,6 +244,7 @@ const Footer = ({
 		() => playlist && user && (userIsAdmin || playlist.allowChanges),
 		[user, playlist, userIsAdmin],
 	);
+	const { openFormModal } = useUpdatePlaylistFormModal(playlist);
 	const deletePlaylist = useMutation({
 		mutationFn: () =>
 			api.deletePlaylist(playlistId).then(() => {
@@ -254,6 +257,14 @@ const Footer = ({
 
 	return (
 		<View style={styles.footer}>
+			{userIsAdmin && (
+				<Button
+					size="small"
+					icon={EditIcon}
+					title={t("form.edit")}
+					onPress={openFormModal}
+				/>
+			)}
 			{userCanEdit && (
 				<Button
 					size="small"
