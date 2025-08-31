@@ -47,10 +47,10 @@ import {
 	ContextualMenuIcon,
 	DoneIcon,
 	DragHandleIcon,
-	EditIcon,
 	EmptyStateIcon,
 	PlayIcon,
 	PlaylistIcon,
+	ReorderPlaylistIcon,
 	ShuffleIcon,
 	SongIcon,
 } from "@/ui/icons";
@@ -426,7 +426,9 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 					<Button
 						variant={editState ? "contained" : "outlined"}
 						color="primary"
-						startIcon={editState ? <DoneIcon /> : <EditIcon />}
+						startIcon={
+							editState ? <DoneIcon /> : <ReorderPlaylistIcon />
+						}
 						sx={{ width: "100%" }}
 						disabled={!canEditPlaylist || entries === undefined}
 						onClick={
@@ -466,7 +468,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							})
 						}
 					>
-						{t(`form.${editState ? "done" : "edit"}`)}
+						{t(editState ? "form.done" : "form.playlist.reorder")}
 					</Button>
 				</Grid>
 				<Grid>
