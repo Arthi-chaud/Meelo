@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@expo-google-fonts/rubik": "^0.3.0",
 		"@gorhom/bottom-sheet": "^5.1.8",
+		"@react-native-community/checkbox": "^0.5.20",
 		"@shopify/flash-list": "^1.8.3",
 		"@shopify/react-native-skia": "^2.1.1",
 		"@tanstack/react-query": "^5.77.0",
