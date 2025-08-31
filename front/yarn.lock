@@ -3292,6 +3292,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/checkbox@npm:^0.5.20":
+  version: 0.5.20
+  resolution: "@react-native-community/checkbox@npm:0.5.20"
+  peerDependencies:
+    react: "*"
+    react-native: ">= 0.62"
+    react-native-windows: ">=0.62"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 10c0/ee6176dfc882330fb84c871290ed1398d445c64dd689a4c311e4b1e5d6d7e1c540c9678467a0c5e57579640dc1decde322b77835cdd386976be957fb2c636287
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:0.79.5":
   version: 0.79.5
   resolution: "@react-native/assets-registry@npm:0.79.5"
@@ -8273,6 +8287,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@gorhom/bottom-sheet": "npm:^5.1.8"
+    "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:^1.8.3"
     "@shopify/react-native-skia": "npm:^2.1.1"
     "@tanstack/react-query": "npm:^5.77.0"
