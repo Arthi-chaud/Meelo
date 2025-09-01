@@ -16,6 +16,7 @@ import {
 	PlayNext,
 } from "~/actions";
 import { useSetSongTrackAsMaster } from "~/actions/master";
+import { useDeletePlaylistEntryAction } from "~/actions/playlist/delete";
 import { useShareSongAction } from "~/actions/share";
 import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery } from "~/api";
@@ -26,12 +27,17 @@ import type { ContextMenuBuilder } from "..";
 
 export const useSongContextMenu = (
 	song:
-		| SongWithRelations<"illustration" | "artist" | "featuring" | "master">
+		| (SongWithRelations<
+				"illustration" | "artist" | "featuring" | "master"
+		  > & { entryId?: number })
 		| undefined,
 ): ContextMenuBuilder => {
 	const ShareAction = useShareSongAction(song?.id);
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
+	const deletePlaylistEntryAction = useDeletePlaylistEntryAction(
+		song?.entryId,
+	);
 	const { openTrackInfoModal } = useTrackInfoModal(song?.masterId);
 	const SetAsMaster = useSetSongTrackAsMaster(song?.master, song);
 	return useCallback(() => {
@@ -89,6 +95,7 @@ export const useSongContextMenu = (
 									),
 								]
 							: [],
+						song.entryId ? [deletePlaylistEntryAction] : [],
 						ShareAction ? [ShareAction] : [],
 					]
 				: [],

@@ -27,3 +27,24 @@ export const useDeletePlaylistAction = (
 		onPress: () => deletePlaylist.mutate(),
 	};
 };
+
+export const useDeletePlaylistEntryAction = (
+	entryId: number | undefined,
+): Action => {
+	const queryClient = useQueryClient();
+	const deletePlaylistEntry = useMutation({
+		mutationFn: async () =>
+			entryId &&
+			queryClient.api.deletePlaylistEntry(entryId).then(() => {
+				queryClient.client.invalidateQueries({
+					queryKey: ["playlists"],
+				});
+			}),
+	});
+
+	return {
+		label: "actions.deleteFromPlaylist",
+		icon: DeleteIcon,
+		onPress: () => deletePlaylistEntry.mutate(),
+	};
+};
