@@ -1,17 +1,19 @@
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
-import { getPlaylistEntries } from "@/api/queries";
+import { getCurrentUserStatus, getPlaylistEntries } from "@/api/queries";
 import { transformPage } from "@/api/query";
 import type { PlaylistWithRelations } from "@/models/playlist";
 import { playFromInfiniteQuery } from "@/state/player";
 import { PlayIcon, PlaylistIcon } from "@/ui/icons";
-import { useQueryClient } from "~/api";
+import { useDeletePlaylistAction } from "~/actions/playlist/delete";
+import { useQuery, useQueryClient } from "~/api";
 import type { ContextMenu } from "..";
 
 export const usePlaylistContextMenu = (
 	playlist: PlaylistWithRelations<"illustration"> | undefined,
 ) => {
 	const queryClient = useQueryClient();
+	const { data: user } = useQuery(getCurrentUserStatus);
 	const playTracks = useSetAtom(playFromInfiniteQuery);
 	const playPlaylist = useCallback(() => {
 		if (!playlist) {
@@ -32,6 +34,7 @@ export const usePlaylistContextMenu = (
 
 		playTracks(query, queryClient);
 	}, [playlist, playTracks]);
+	const deleteAction = useDeletePlaylistAction(playlist?.id);
 	return useCallback(() => {
 		return {
 			header: {
@@ -57,6 +60,9 @@ export const usePlaylistContextMenu = (
 						onPress: playPlaylist,
 					},
 				],
+				user && playlist && user.id === playlist.ownerId
+					? [deleteAction]
+					: [],
 			],
 		} satisfies ContextMenu;
 	}, [playlist, playPlaylist]);
