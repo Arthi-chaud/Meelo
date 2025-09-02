@@ -17,7 +17,7 @@ export const useDeletePlaylistAction = (
 				queryClient.client.invalidateQueries({
 					queryKey: ["playlists"],
 				});
-				if (path.startsWith(`/playlist/`)) router.dismiss();
+				if (path.startsWith(`/playlists/`)) router.dismiss();
 			}),
 	});
 
