@@ -61,7 +61,7 @@ const IllustrationUpdateForm = (props: IllustrationUpdateFormType) => {
 						textFieldProps={{
 							autoFocus: true,
 							fullWidth: true,
-							label: "Enter URL of the new illustration",
+							label: t("form.illustration.url"),
 						}}
 						gridProps={{}}
 						rules={{
