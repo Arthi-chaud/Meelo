@@ -7,13 +7,13 @@ import type { Action } from "..";
 
 export const useUpdatePlaylistFormModal = (
 	playlist?: Playlist,
-	onCreated?: (playlist: Playlist) => void,
+	afterSave?: (playlist: Playlist) => void,
 ) => {
 	const content = useCallback(() => {
 		return (
 			<CreateUpdatePlaylistForm
 				existingPlaylist={playlist}
-				onCreated={onCreated}
+				afterSave={afterSave}
 			/>
 		);
 	}, []);

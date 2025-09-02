@@ -17,10 +17,10 @@ import { TextInput } from "~/primitives/text_input";
 
 export const CreateUpdatePlaylistForm = ({
 	existingPlaylist,
-	onCreated,
+	afterSave,
 }: {
 	existingPlaylist?: Playlist;
-	onCreated?: (playlist: Playlist) => void;
+	afterSave?: (playlist: Playlist) => void;
 }) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
@@ -49,7 +49,7 @@ export const CreateUpdatePlaylistForm = ({
 			return action
 				.then((playlist) => {
 					setLoading(false);
-					onCreated?.(playlist);
+					afterSave?.(playlist);
 					dismiss();
 					queryClient.client.invalidateQueries({
 						queryKey: ["playlists"],
@@ -140,7 +140,9 @@ export const CreateUpdatePlaylistForm = ({
 				)}
 			/>
 			<Button
-				title={t("actions.library.create")}
+				title={t(
+					existingPlaylist ? "actions.update" : "actions.create",
+				)}
 				icon={CheckIcon}
 				containerStyle={styles.saveButtonLabel}
 				disabled={isLoading}
