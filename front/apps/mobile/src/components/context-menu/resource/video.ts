@@ -14,6 +14,7 @@ import {
 	PlayAfter,
 	PlayNext,
 } from "~/actions";
+import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery } from "~/api";
 import { useChangeVideoTypeModal } from "~/components/change-type";
@@ -25,6 +26,9 @@ export const useVideoContextMenu = (
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openTrackInfoModal } = useTrackInfoModal(video?.master.id);
 	const { openChangeTypeModal } = useChangeVideoTypeModal(video);
+	const addToPlaylistAction = useAddToPlaylistAction(
+		video?.songId ?? undefined,
+	);
 	return useCallback(() => {
 		const trackToPlay = video
 			? {
@@ -64,6 +68,7 @@ export const useVideoContextMenu = (
 						trackToPlay
 							? [PlayNext(trackToPlay), PlayAfter(trackToPlay)]
 							: [],
+						video.songId ? [addToPlaylistAction] : [],
 						video.songId
 							? [
 									GoToSongVersions(video.songId),

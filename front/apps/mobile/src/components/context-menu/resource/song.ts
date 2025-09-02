@@ -15,6 +15,7 @@ import {
 	PlayAfter,
 	PlayNext,
 } from "~/actions";
+import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { useSetSongTrackAsMaster } from "~/actions/master";
 import { useDeletePlaylistEntryAction } from "~/actions/playlist/delete";
 import { useShareSongAction } from "~/actions/share";
@@ -22,8 +23,6 @@ import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery } from "~/api";
 import { useChangeSongTypeModal } from "~/components/change-type";
 import type { ContextMenuBuilder } from "..";
-
-//TODO add to playlist
 
 export const useSongContextMenu = (
 	song:
@@ -33,6 +32,7 @@ export const useSongContextMenu = (
 		| undefined,
 ): ContextMenuBuilder => {
 	const ShareAction = useShareSongAction(song?.id);
+	const addToPlaylistAction = useAddToPlaylistAction(song?.id);
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
 	const deletePlaylistEntryAction = useDeletePlaylistEntryAction(
@@ -67,6 +67,7 @@ export const useSongContextMenu = (
 									GoToRelease(song.master.releaseId),
 								]
 							: [GoToArtist(song.artistId)],
+						[addToPlaylistAction],
 						[
 							GoToLyrics(song.id),
 							GoToSongInfo(song.id),
