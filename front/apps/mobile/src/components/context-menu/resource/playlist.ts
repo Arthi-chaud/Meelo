@@ -6,6 +6,7 @@ import type { PlaylistWithRelations } from "@/models/playlist";
 import { playFromInfiniteQuery } from "@/state/player";
 import { PlayIcon, PlaylistIcon } from "@/ui/icons";
 import { useDeletePlaylistAction } from "~/actions/playlist/delete";
+import { useSharePlaylistAction } from "~/actions/share";
 import { useQuery, useQueryClient } from "~/api";
 import type { ContextMenu } from "..";
 
@@ -35,6 +36,7 @@ export const usePlaylistContextMenu = (
 		playTracks(query, queryClient);
 	}, [playlist, playTracks]);
 	const deleteAction = useDeletePlaylistAction(playlist?.id);
+	const shareAction = useSharePlaylistAction(playlist?.id);
 	return useCallback(() => {
 		return {
 			header: {
@@ -63,6 +65,7 @@ export const usePlaylistContextMenu = (
 				user && playlist && user.id === playlist.ownerId
 					? [deleteAction]
 					: [],
+				shareAction ? [shareAction] : [],
 			],
 		} satisfies ContextMenu;
 	}, [playlist, playPlaylist]);
