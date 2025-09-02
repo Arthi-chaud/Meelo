@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useSetAtom } from "jotai";
 import { shuffle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -18,7 +18,6 @@ import {
 import type { PlaylistEntryWithRelations } from "@/models/playlist";
 import { playTracksAtom } from "@/state/player";
 import {
-	DeleteIcon,
 	DoneIcon,
 	EditIcon,
 	PlayIcon,
@@ -28,6 +27,7 @@ import {
 } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useUpdatePlaylistFormModal } from "~/actions/playlist/create-update";
+import { useDeletePlaylistAction } from "~/actions/playlist/delete";
 import { useUpdateIllustrationAction } from "~/actions/update-illustration";
 import { useAPI, useQuery, useQueryClient } from "~/api";
 import { SongItem } from "~/components/item/resource/song";
@@ -236,7 +236,6 @@ const Footer = ({
 	const { data: playlist } = useQuery(() => playlistQuery(playlistId));
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const queryClient = useQueryClient();
-	const router = useRouter();
 	const api = useAPI();
 	const userIsAdmin = useMemo(
 		() => playlist && user && playlist.ownerId === user.id,
@@ -247,15 +246,7 @@ const Footer = ({
 		[user, playlist, userIsAdmin],
 	);
 	const { openFormModal } = useUpdatePlaylistFormModal(playlist);
-	const deletePlaylist = useMutation({
-		mutationFn: () =>
-			api.deletePlaylist(playlistId).then(() => {
-				queryClient.client.invalidateQueries({
-					queryKey: ["playlists"],
-				});
-				router.dismiss();
-			}),
-	});
+	const deletePlaylistAction = useDeletePlaylistAction(playlist?.id);
 	const updateIllustration = useMutation({
 		mutationFn: async (illustrationUrl: string) =>
 			playlist &&
@@ -292,6 +283,7 @@ const Footer = ({
 				{userIsAdmin && (
 					<Button
 						size="small"
+						disabled={isReordering}
 						icon={EditIcon}
 						title={t("form.edit")}
 						onPress={openFormModal}
@@ -302,6 +294,7 @@ const Footer = ({
 				{userIsAdmin && (
 					<Button
 						size="small"
+						disabled={isReordering}
 						icon={updateIllustrationAction.icon}
 						title={t(updateIllustrationAction.label)}
 						onPress={updateIllustrationAction.onPress!}
@@ -311,9 +304,11 @@ const Footer = ({
 					<Button
 						size="small"
 						disabled={isReordering}
-						icon={DeleteIcon}
-						title={t("actions.delete")}
-						onPress={() => userIsAdmin && deletePlaylist.mutate()}
+						icon={deletePlaylistAction.icon}
+						title={t(deletePlaylistAction.label)}
+						onPress={() =>
+							userIsAdmin && deletePlaylistAction.onPress?.()
+						}
 					/>
 				)}
 			</View>
