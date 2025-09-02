@@ -9,6 +9,7 @@ import DraggableFlatList, {
 	ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { StyleSheet } from "react-native-unistyles";
+import { Toast } from "toastify-react-native";
 import {
 	getCurrentUserStatus,
 	getPlaylist,
@@ -27,6 +28,7 @@ import {
 } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useUpdatePlaylistFormModal } from "~/actions/playlist/create-update";
+import { useUpdateIllustrationAction } from "~/actions/update-illustration";
 import { useAPI, useQuery, useQueryClient } from "~/api";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
@@ -254,37 +256,67 @@ const Footer = ({
 				router.dismiss();
 			}),
 	});
+	const updateIllustration = useMutation({
+		mutationFn: async (illustrationUrl: string) =>
+			playlist &&
+			api
+				.updatePlaylistIllustration(playlist.id, illustrationUrl)
+				.then(() =>
+					queryClient.client.invalidateQueries({
+						queryKey: ["playlists"],
+					}),
+				)
+				.catch(() => Toast.error("Updating illustration failed")),
+	});
+
+	const updateIllustrationAction = useUpdateIllustrationAction((url) =>
+		updateIllustration.mutate(url),
+	);
 
 	return (
 		<View style={styles.footer}>
-			{userIsAdmin && (
-				<Button
-					size="small"
-					icon={EditIcon}
-					title={t("form.edit")}
-					onPress={openFormModal}
-				/>
-			)}
-			{userCanEdit && (
-				<Button
-					size="small"
-					// @ts-expect-error
-					icon={isReordering ? DoneIcon : ReorderPlaylistIcon}
-					title={t(
-						isReordering ? "form.done" : "form.playlist.reorder",
-					)}
-					onPress={isReordering ? finishReorder : startReorder}
-				/>
-			)}
-			{userIsAdmin && (
-				<Button
-					size="small"
-					disabled={isReordering}
-					icon={DeleteIcon}
-					title={t("actions.delete")}
-					onPress={() => userIsAdmin && deletePlaylist.mutate()}
-				/>
-			)}
+			<View style={styles.footerRow}>
+				{userCanEdit && (
+					<Button
+						size="small"
+						// @ts-expect-error
+						icon={isReordering ? DoneIcon : ReorderPlaylistIcon}
+						title={t(
+							isReordering
+								? "form.done"
+								: "form.playlist.reorder",
+						)}
+						onPress={isReordering ? finishReorder : startReorder}
+					/>
+				)}
+				{userIsAdmin && (
+					<Button
+						size="small"
+						icon={EditIcon}
+						title={t("form.edit")}
+						onPress={openFormModal}
+					/>
+				)}
+			</View>
+			<View style={styles.footerRow}>
+				{userIsAdmin && (
+					<Button
+						size="small"
+						icon={updateIllustrationAction.icon}
+						title={t(updateIllustrationAction.label)}
+						onPress={updateIllustrationAction.onPress!}
+					/>
+				)}
+				{userIsAdmin && (
+					<Button
+						size="small"
+						disabled={isReordering}
+						icon={DeleteIcon}
+						title={t("actions.delete")}
+						onPress={() => userIsAdmin && deletePlaylist.mutate()}
+					/>
+				)}
+			</View>
 		</View>
 	);
 };
@@ -302,10 +334,14 @@ const styles = StyleSheet.create((theme) => ({
 	itemsContainer: { flex: 1 },
 	items: { padding: theme.gap(1), paddingTop: 0 },
 	footer: {
-		flexDirection: "row",
-		justifyContent: "flex-end",
 		width: "100%",
 		gap: theme.gap(1),
-		paddingVertical: theme.gap(1),
+		paddingVertical: theme.gap(1.5),
+	},
+	footerRow: {
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "flex-end",
+		gap: theme.gap(1),
 	},
 }));

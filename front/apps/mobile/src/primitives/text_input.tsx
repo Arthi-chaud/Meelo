@@ -120,7 +120,10 @@ export const TextInput = ({
 			style={[styles.container, animatedContainerStyle, containerStyle]}
 		>
 			{placeholder && (
-				<Animated.Text style={[styles.placeholder, labelStyle]}>
+				<Animated.Text
+					style={[styles.placeholder, labelStyle]}
+					numberOfLines={1}
+				>
 					{placeholder}
 				</Animated.Text>
 			)}
