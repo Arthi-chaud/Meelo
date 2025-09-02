@@ -389,6 +389,7 @@
 			"playbackError": "The track's format is not supported by this browser. Skipping…"
 		},
 		"playlist": {
+			"addedToPlaylist": "Song added to playlist!",
 			"itemDeletionSuccess": "Deletion Successful",
 			"reorderFail": "Playlist Reordering Failed",
 			"reorderSuccess": "Playlist Reordered!"
