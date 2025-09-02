@@ -15,6 +15,7 @@ import {
 	PlayAfter,
 	PlayNext,
 } from "~/actions";
+import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { useSetSongTrackAsMaster } from "~/actions/master";
 import { SeeTrackInfo, useTrackInfoModal } from "~/actions/track-info";
 import { useQuery, useQueryClient } from "~/api";
@@ -32,6 +33,9 @@ export const useTrackContextMenu = (
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openTrackInfoModal } = useTrackInfoModal(track?.id);
+	const addToPlaylistAction = useAddToPlaylistAction(
+		track?.songId ?? undefined,
+	);
 	const { openChangeTypeModal: openChangeSongTypeModal } =
 		useChangeSongTypeModal(track?.song ?? undefined);
 	const { openChangeTypeModal: openChangeVideoTypeModal } =
@@ -67,6 +71,7 @@ export const useTrackContextMenu = (
 									GoToRelease(track.releaseId),
 								]
 							: [GoToArtist(songOrVideo!.artistId)],
+						track.songId ? [addToPlaylistAction] : [],
 						track.songId
 							? [
 									GoToLyrics(track.songId),

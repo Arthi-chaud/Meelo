@@ -17,7 +17,7 @@ export const TrackItem = ({ track, illustrationProps, onPress }: Props) => {
 		<ListItem
 			title={track?.name}
 			onPress={onPress}
-			subtitle={track?.release?.name}
+			subtitle={track ? (track.release?.name ?? null) : undefined}
 			illustration={track?.illustration}
 			contextMenu={contextMenu}
 			illustrationProps={illustrationProps}

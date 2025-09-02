@@ -5,9 +5,17 @@ import { useModal } from "~/components/bottom-modal-sheet";
 import { CreateUpdatePlaylistForm } from "~/components/playlist/create-update";
 import type { Action } from "..";
 
-export const useUpdatePlaylistFormModal = (playlist?: Playlist) => {
+export const useUpdatePlaylistFormModal = (
+	playlist?: Playlist,
+	onCreated?: (playlist: Playlist) => void,
+) => {
 	const content = useCallback(() => {
-		return <CreateUpdatePlaylistForm existingPlaylist={playlist} />;
+		return (
+			<CreateUpdatePlaylistForm
+				existingPlaylist={playlist}
+				onCreated={onCreated}
+			/>
+		);
 	}, []);
 	const { openModal } = useModal({
 		content,

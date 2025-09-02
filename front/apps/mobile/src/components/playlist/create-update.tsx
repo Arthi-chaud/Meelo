@@ -17,8 +17,10 @@ import { TextInput } from "~/primitives/text_input";
 
 export const CreateUpdatePlaylistForm = ({
 	existingPlaylist,
+	onCreated,
 }: {
 	existingPlaylist?: Playlist;
+	onCreated?: (playlist: Playlist) => void;
 }) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
@@ -45,8 +47,9 @@ export const CreateUpdatePlaylistForm = ({
 				? queryClient.api.updatePlaylist(existingPlaylist.id, data)
 				: queryClient.api.createPlaylist(data);
 			return action
-				.then(() => {
+				.then((playlist) => {
 					setLoading(false);
+					onCreated?.(playlist);
 					dismiss();
 					queryClient.client.invalidateQueries({
 						queryKey: ["playlists"],
