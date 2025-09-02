@@ -25,7 +25,6 @@ import {
 	Divider,
 	Grid,
 } from "@mui/material";
-import { usePickersTranslations } from "@mui/x-date-pickers";
 import { useMutation } from "@tanstack/react-query";
 import type { useConfirm } from "material-ui-confirm";
 import {
