@@ -198,6 +198,9 @@
 		"confirm": "Confirm",
 		"done": "Done",
 		"edit": "Edit",
+		"illustration": {
+			"url": "Enter URL of the new illustration"
+		},
 		"library": {
 			"nameIsRequired": "Name is required",
 			"nameOfLibrary": "Name of the library",
