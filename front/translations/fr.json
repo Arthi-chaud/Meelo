@@ -390,6 +390,7 @@
 			"playbackError": "Format non supporté par le navigateur. Piste ignorée…"
 		},
 		"playlist": {
+			"addedToPlaylist": "Piste ajoutée à la playlist",
 			"itemDeletionSuccess": "Piste supprimée",
 			"reorderFail": "Echec de la mise à jour de la playlist",
 			"reorderSuccess": "Playlist mise à jour !"

@@ -25,6 +25,7 @@ import {
 	Divider,
 	Grid,
 } from "@mui/material";
+import { usePickersTranslations } from "@mui/x-date-pickers";
 import { useMutation } from "@tanstack/react-query";
 import type { useConfirm } from "material-ui-confirm";
 import {
@@ -362,12 +363,13 @@ export const AddToPlaylistAction = (
 	icon: <AddToPlaylistIcon />,
 	label: "actions.addToPlaylist.label",
 	dialog: ({ close }) => {
+		const { t } = useTranslation();
 		const mutation = useMutation({
 			mutationFn: (playlistId: number) => {
 				return queryClient.api
 					.addSongToPlaylist(songId, playlistId)
 					.then(() => {
-						toast.success("Song added to Playlist");
+						toast.success(t("toasts.playlist.addedToPlaylist"));
 						queryClient.client.invalidateQueries({
 							queryKey: ["playlist"],
 						});
