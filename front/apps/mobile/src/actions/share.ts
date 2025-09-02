@@ -28,6 +28,16 @@ export const useShareAlbumAction = (albumId: string | number | undefined) => {
 	return ShareAction(() => c(`/albums/${albumId}`));
 };
 
+export const useSharePlaylistAction = (
+	playlistId: string | number | undefined,
+) => {
+	const c = useShareCallback();
+	if (!playlistId) {
+		return undefined;
+	}
+	return ShareAction(() => c(`/playlists/${playlistId}`));
+};
+
 export const useShareArtistAction = (artistId: string | number | undefined) => {
 	const c = useShareCallback();
 	if (!artistId) {
