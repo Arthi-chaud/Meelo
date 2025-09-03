@@ -1,13 +1,10 @@
-import { Stack, useNavigation } from "expo-router";
+import { Stack } from "expo-router";
 import { type ComponentProps, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { BackIcon } from "@/ui/icons";
-import { BlurView } from "~/components/blur-view";
 import { Icon as MeeloIcon } from "~/components/meelo";
-import { Icon } from "~/primitives/icon";
-import { Pressable } from "~/primitives/pressable";
+import { BackButton, HeaderBackground } from "~/components/navigation";
 
 export const unstable_settings = {
 	home: {
@@ -45,11 +42,7 @@ export default function Layout({ segment }: { segment: string }) {
 		// headerStyle: styles.header,
 		headerTitleStyle: styles.headerTitle,
 		headerLeft: () => <BackButton />,
-		headerBackground: () => (
-			<View style={styles.headerBgContainer}>
-				<BlurView style={styles.headerBgContent} />
-			</View>
-		),
+		headerBackground: () => <HeaderBackground />,
 		headerTransparent: true,
 		headerTintColor: styles.headerTitle.color,
 	} satisfies ComponentProps<typeof Stack>["screenOptions"];
@@ -102,38 +95,12 @@ export default function Layout({ segment }: { segment: string }) {
 	);
 }
 
-const BackButton = () => {
-	const navigator = useNavigation();
-	return (
-		navigator.canGoBack() && (
-			<Pressable
-				style={styles.backButtonContainer}
-				onPress={() => navigator.goBack()}
-			>
-				<Icon icon={BackIcon} />
-			</Pressable>
-		)
-	);
-};
-
 const styles = StyleSheet.create((theme) => ({
 	screen: {
 		backgroundColor: "transparent",
 		flex: 1,
 	},
-	headerBgContainer: {
-		position: "absolute",
-		height: "100%",
-		width: "100%",
-		overflow: "hidden",
-		borderBottomLeftRadius: theme.borderRadius,
-		borderBottomRightRadius: theme.borderRadius,
-	},
-	headerBgContent: {
-		flex: 1,
-	},
 	icon: { marginRight: theme.gap(2) },
-	backButtonContainer: { paddingRight: theme.gap(2), paddingLeft: 0 },
 	headerTitle: {
 		color: theme.colors.text.primary,
 		...theme.fontStyles.regular,
