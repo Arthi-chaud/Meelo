@@ -19,6 +19,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getSearchHistory, searchAll } from "@/api/queries";
@@ -43,6 +44,7 @@ export default function SearchView() {
 	const timeoutRef = useRef<number>(null);
 	const api = useAPI();
 	const playTrack = useSetAtom(playTrackAtom);
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [searchValue, setSearchValue] = useState("");
 	const debounceSearch = useCallback((searchValue: string) => {
@@ -107,7 +109,7 @@ export default function SearchView() {
 			header={
 				<View style={styles.searchHeader}>
 					<TextInput
-						containerStyle={{ backgroundColor: "transparent" }}
+						placeholder={t("nav.search")}
 						onChangeText={debounceSearch}
 					/>
 				</View>

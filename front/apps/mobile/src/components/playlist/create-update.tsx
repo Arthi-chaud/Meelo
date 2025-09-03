@@ -13,8 +13,6 @@ import { CheckBox } from "~/primitives/checkbox";
 import { Text } from "~/primitives/text";
 import { TextInput } from "~/primitives/text_input";
 
-//TODO TextField is ugly on this background
-
 export const CreateUpdatePlaylistForm = ({
 	existingPlaylist,
 	afterSave,
@@ -82,8 +80,7 @@ export const CreateUpdatePlaylistForm = ({
 				control={control}
 				name="name"
 				rules={{
-					minLength: 1,
-					required: true,
+					required: { value: true, message: "Required" },
 				}}
 				render={({ field: { onChange, onBlur, value } }) => (
 					<TextInput
