@@ -36,7 +36,6 @@ import { PlaylistTile } from "~/components/item/resource/playlist";
 import ReleaseTile from "~/components/item/resource/release";
 import { VideoTile } from "~/components/item/resource/video";
 import { Row } from "~/components/row";
-import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
 import { SongGrid } from "~/components/song-grid";
 import { Icon } from "~/primitives/icon";
@@ -90,7 +89,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 
 	useSetKeyIllustration(release);
 	return (
-		<SafeScrollView contentContainerStyle={[styles.root]}>
+		<>
 			<Header
 				isMixed={isMixed}
 				release={release}
@@ -125,7 +124,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				tracks={tracks_}
 				albumArtistId={album?.artistId}
 			/>
-		</SafeScrollView>
+		</>
 	);
 }
 
@@ -383,7 +382,6 @@ const GenreRow = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: { paddingTop: theme.gap(3) },
 	playbackControls: {
 		display: "flex",
 		flexDirection: "row",
