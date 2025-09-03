@@ -50,7 +50,7 @@ export const Header = ({
 				<View style={styles.illustration}>
 					<Illustration
 						illustration={release?.illustration}
-						style={{}}
+						style={styles.illustrationShadow}
 						quality="original"
 						useBlurhash
 					/>
@@ -167,6 +167,10 @@ const styles = StyleSheet.create((theme) => ({
 		flexDirection: "row",
 		justifyContent: "center",
 		width: "100%",
+	},
+	illustrationShadow: {
+		borderRadius: theme.borderRadius,
+		boxShadow: theme.illustrationShadow,
 	},
 	illustration: {
 		width: "60%",
