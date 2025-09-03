@@ -93,6 +93,15 @@ const useTypeFilterControl = <FilterKey extends string>({
 	});
 };
 
+export const useSearchTypeFilterControl = <FilterKey extends string>() => {
+	return useTypeFilterControlBase({
+		types: ["all", "artist", "album", "song", "video"],
+		translate: (k) => (k === "all" ? "search.all" : `models.${k}_plural`),
+		hook: () => "all",
+		onUpdate: () => {},
+	});
+};
+
 export {
 	useTypeFiltersControl,
 	useTypeFilterControl,
