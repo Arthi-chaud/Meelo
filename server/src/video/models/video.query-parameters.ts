@@ -84,7 +84,13 @@ namespace VideoQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ["id", "name", "artistName", "addDate"] as const;
+	export const SortingKeys = [
+		"id",
+		"name",
+		"artistName",
+		"addDate",
+		"releaseDate",
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 }

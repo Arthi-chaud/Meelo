@@ -579,6 +579,45 @@ export default class VideoService extends SearchableRepositoryService {
 					{ id: "asc" },
 				);
 				break;
+			case "releaseDate":
+				sort.push(
+					{
+						song: {
+							master: {
+								release: {
+									album: {
+										releaseDate: sortingParameter.order,
+									},
+								},
+							},
+						},
+					},
+					{
+						master: {
+							release: {
+								album: {
+									releaseDate: sortingParameter.order,
+								},
+							},
+						},
+					},
+					{
+						master: {
+							release: {
+								releaseDate: sortingParameter.order,
+							},
+						},
+					},
+					{
+						nameSlug: "asc",
+					},
+					{
+						artist: {
+							slug: "asc",
+						},
+					},
+				);
+				break;
 			default:
 				sort.push({
 					[sortingParameter.sortBy ?? "id"]: sortingParameter.order,
