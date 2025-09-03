@@ -12,7 +12,6 @@ import { useQuery } from "~/api";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { Rating } from "~/components/rating";
-import { useAccentColor } from "~/hooks/accent-color";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { breakpoints } from "~/theme";
@@ -45,7 +44,6 @@ export const Header = ({
 		}
 		return release.extensions;
 	}, [release, isMixed]);
-	const accentColor = useAccentColor(release?.illustration);
 	return (
 		<>
 			<View style={styles.illustrationFrame}>
@@ -106,7 +104,6 @@ export const Header = ({
 										<Text content={"•"} color="secondary" />
 									)}
 									<Rating
-										color={accentColor}
 										rating={
 											externalMetadata?.rating ??
 											undefined
@@ -114,7 +111,6 @@ export const Header = ({
 									/>
 								</>
 							)}
-						{/* TODO accent color */}
 					</View>
 				</View>
 			</View>
