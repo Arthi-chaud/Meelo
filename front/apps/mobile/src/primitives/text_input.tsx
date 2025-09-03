@@ -19,6 +19,7 @@
 import {
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
+	View,
 	type ViewStyle,
 } from "react-native";
 import Animated, {
@@ -35,27 +36,25 @@ type TextInputProps = RNTextInputProps & {
 };
 
 const styles = StyleSheet.create((theme) => ({
+	root: {
+		marginTop: theme.gap(1),
+	},
 	container: {
 		paddingVertical: theme.gap(1),
 		paddingHorizontal: theme.gap(2),
 		borderRadius: theme.borderRadius,
 		borderWidth: 2,
-		backgroundColor: theme.colors.background,
 		variants: {
 			error: {
 				true: { borderColor: theme.colors.error },
 				false: { borderColor: theme.colors.text.primary },
 			},
 		},
-		marginTop: theme.gap(1),
 		// TODO Make sure it's responsive w/ adaptive fonts
 		width: theme.fontSize.rem(20),
 	},
-	placeholder: {
-		position: "absolute",
+	label: {
 		paddingHorizontal: theme.gap(1),
-		left: theme.gap(1.5),
-		backgroundColor: theme.colors.background,
 		variants: {
 			error: {
 				true: { color: theme.colors.error },
@@ -64,6 +63,11 @@ const styles = StyleSheet.create((theme) => ({
 				},
 			},
 		},
+	},
+	placeholder: {
+		marginLeft: theme.gap(1),
+		position: "absolute",
+		marginTop: theme.gap(2),
 	},
 	input: {
 		variants: {
@@ -91,64 +95,86 @@ export const TextInput = ({
 	const animatedTheme = useAnimatedTheme();
 	const springConfig = { damping: 100, stiffness: 500 };
 
-	const labelStyle = useAnimatedStyle(() => {
+	const innerlabelStyle = useAnimatedStyle(() => {
 		const labelIsRaised = isFocused.value || !isEmpty.value;
 		return {
-			//TODO use theme.gap
-			top: withSpring(labelIsRaised ? -14 : 16, springConfig),
+			opacity: withSpring(labelIsRaised ? 0 : 1, springConfig),
 			fontSize: 16,
 			color: withSpring(
 				error
 					? animatedTheme.value.colors.error
-					: labelIsRaised
-						? animatedTheme.value.colors.text.primary
-						: animatedTheme.value.colors.text.secondary,
+					: animatedTheme.value.colors.text.secondary,
+				springConfig,
+			),
+		};
+	}, [error, animatedTheme]);
+	const topLabelStyle = useAnimatedStyle(() => {
+		const labelIsRaised = isFocused.value || !isEmpty.value;
+		return {
+			opacity: withSpring(labelIsRaised ? 1 : 0, springConfig),
+			fontSize: 16,
+			color: withSpring(
+				error
+					? animatedTheme.value.colors.error
+					: animatedTheme.value.colors.text.primary,
 				springConfig,
 			),
 			fontFamily: isFocused.value
 				? animatedTheme.value.fontStyles.semiBold.fontFamily
 				: animatedTheme.value.fontStyles.regular.fontFamily,
 		};
-	}, [error, animatedTheme]);
+	});
 
 	const animatedContainerStyle = useAnimatedStyle(() => ({
 		borderWidth: withSpring(isFocused.value ? 3 : 1, springConfig),
 	}));
 	styles.useVariants({ error: !!error });
 	return (
-		<Animated.View
-			style={[styles.container, animatedContainerStyle, containerStyle]}
-		>
-			{placeholder && (
+		<View>
+			{(error || placeholder) && (
 				<Animated.Text
-					style={[styles.placeholder, labelStyle]}
+					style={[styles.label, topLabelStyle]}
 					numberOfLines={1}
 				>
-					{placeholder}
+					{error || placeholder}
 				</Animated.Text>
 			)}
-			<RNTextInput
-				{...props}
-				onChangeText={(t) => {
-					isEmpty.value = t.length === 0;
-					props.onChangeText?.(t);
-				}}
-				onBlur={(e) => {
-					isFocused.value = false;
-					props.onBlur?.(e);
-				}}
-				onFocus={(e) => {
-					isFocused.value = true;
-					props.onFocus?.(e);
-				}}
-				style={[styles.input, style]}
-			/>
-
-			{error && (
-				<Animated.Text style={[styles.placeholder, labelStyle]}>
-					{error}
-				</Animated.Text>
-			)}
-		</Animated.View>
+			<Animated.View
+				style={[
+					styles.container,
+					animatedContainerStyle,
+					containerStyle,
+				]}
+			>
+				{(error || placeholder) && (
+					<Animated.Text
+						style={[
+							styles.label,
+							styles.placeholder,
+							innerlabelStyle,
+						]}
+						numberOfLines={1}
+					>
+						{error || placeholder}
+					</Animated.Text>
+				)}
+				<RNTextInput
+					{...props}
+					onChangeText={(t) => {
+						isEmpty.value = t.length === 0;
+						props.onChangeText?.(t);
+					}}
+					onBlur={(e) => {
+						isFocused.value = false;
+						props.onBlur?.(e);
+					}}
+					onFocus={(e) => {
+						isFocused.value = true;
+						props.onFocus?.(e);
+					}}
+					style={[styles.input, style]}
+				/>
+			</Animated.View>
+		</View>
 	);
 };
