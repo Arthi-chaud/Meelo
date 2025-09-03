@@ -22,7 +22,14 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { getSearchHistory, searchAll } from "@/api/queries";
+import {
+	getAlbums,
+	getArtists,
+	getSearchHistory,
+	getSongs,
+	getVideos,
+	searchAll,
+} from "@/api/queries";
 import {
 	type InfiniteQuery,
 	type Query,
@@ -34,15 +41,17 @@ import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
 import { useAPI, useQueryClient } from "~/api";
+import { useSearchTypeFilterControl } from "~/components/infinite/controls/filters";
 import { InfiniteView } from "~/components/infinite/view";
 import { SearchResultItem } from "~/components/item/resource/search-result";
 import { TextInput } from "~/primitives/text_input";
 
-//TODO Allow filtering by type (artist, album, etc.)
+type SearchFilter = ReturnType<typeof useSearchTypeFilterControl>[0];
 
 export default function SearchView() {
 	const timeoutRef = useRef<number>(null);
 	const api = useAPI();
+	const [filter, filterControl] = useSearchTypeFilterControl();
 	const playTrack = useSetAtom(playTrackAtom);
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
@@ -53,13 +62,7 @@ export default function SearchView() {
 			setSearchValue(searchValue);
 		}, 500);
 	}, []);
-	const query = useMemo(() => {
-		if (searchValue.trim() === "") {
-			return searchResultQueryToResourceQuery(getSearchHistory());
-		}
-		return searchResultQueryToResourceQuery(searchAll(searchValue));
-	}, [searchValue]);
-
+	const query = useSearchQuery(searchValue, filter);
 	const saveSearch = useMutation({
 		mutationFn: async (item: SearchResult) => {
 			try {
@@ -109,6 +112,8 @@ export default function SearchView() {
 			header={
 				<View style={styles.searchHeader}>
 					<TextInput
+						autoCorrect={false}
+						autoCapitalize={"none"}
 						placeholder={t("nav.search")}
 						onChangeText={debounceSearch}
 					/>
@@ -122,7 +127,9 @@ export default function SearchView() {
 					IllustratedSearchResultWithId
 				>
 			}
-			controls={{}}
+			controls={{
+				filters: searchValue.trim() === "" ? [] : [filterControl],
+			}}
 			render={(item) => (
 				<SearchResultItem
 					searchResult={item}
@@ -139,17 +146,80 @@ type IllustratedSearchResultWithId = {
 	illustration: Illustration | null;
 } & SearchResult;
 
+const useSearchQuery = (
+	searchValue: string,
+	filter: SearchFilter,
+): InfiniteQuery<any, SearchResult> =>
+	useMemo(() => {
+		let query: InfiniteQuery<any, SearchResult>;
+		if (searchValue.trim() === "") {
+			query = searchResultQueryToResourceQuery(getSearchHistory());
+		} else {
+			switch (filter) {
+				case "artist":
+					query = transformPage(
+						getArtists({ query: searchValue }, undefined, [
+							"illustration",
+						]),
+						(artist): SearchResult => ({ artist }),
+					);
+					break;
+				case "album":
+					query = transformPage(
+						getAlbums({ query: searchValue }, undefined, [
+							"artist",
+							"illustration",
+						]),
+						(album): SearchResult => ({ album }),
+					);
+					break;
+				case "song":
+					query = transformPage(
+						getSongs({ query: searchValue }, undefined, [
+							"illustration",
+							"featuring",
+							"master",
+							"artist",
+						]),
+						(song): SearchResult => ({ song }),
+					);
+					break;
+				case "video":
+					query = transformPage(
+						getVideos({ query: searchValue }, undefined, [
+							"illustration",
+							"master",
+							"artist",
+						]),
+						(video): SearchResult => ({ video }),
+					);
+					break;
+				default:
+					query = searchResultQueryToResourceQuery(
+						searchAll(searchValue),
+					);
+					break;
+			}
+		}
+		return withStringId(query);
+	}, [searchValue, filter]);
+
+const withStringId = (q: InfiniteQuery<any, SearchResult>) =>
+	transformPage(q, (item) => ({
+		...item,
+		id: item.song
+			? `song-${item.song.id}`
+			: item.album
+				? `album-${item.album.id}`
+				: item.video
+					? `video-${item.video.id}`
+					: `artist-${item.artist.id}`,
+	}));
+
 const searchResultQueryToResourceQuery = (query: Query<SearchResult[]>) => {
 	return transformPage(toInfiniteQuery(query), (item) => {
 		return {
 			...item,
-			id: item.song
-				? `song-${item.song.id}`
-				: item.album
-					? `album-${item.album.id}`
-					: item.video
-						? `video-${item.video.id}`
-						: `artist-${item.artist.id}`,
 			illustration: (item.album ?? item.artist ?? item.song ?? item.video)
 				?.illustration,
 		};
