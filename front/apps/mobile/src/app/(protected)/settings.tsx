@@ -16,15 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { openBrowserAsync } from "expo-web-browser";
 import i18next from "i18next";
 import { useAtom, useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import { getScannerVersion, getSettings } from "@/api/queries";
+import {
+	getCurrentUserStatus,
+	getScannerVersion,
+	getSettings,
+} from "@/api/queries";
 import { emptyPlaylistAtom } from "@/state/player";
-import { CheckIcon, ExpandMoreIcon, UncheckIcon } from "@/ui/icons";
+import {
+	CheckIcon,
+	ExpandMoreIcon,
+	OpenExternalIcon,
+	UncheckIcon,
+} from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import { SelectModalButton } from "~/components/bottom-modal-sheet/select";
 import { LoadableText } from "~/components/loadable_text";
@@ -47,6 +57,7 @@ const BuildCommit =
 
 export default function SettingsView() {
 	const queryClient = useQueryClient();
+	const { data: user } = useQuery(getCurrentUserStatus);
 	const emptyPlaylist = useSetAtom(emptyPlaylistAtom);
 	const { t } = useTranslation();
 	const setAccessToken = useSetAtom(accessTokenAtom);
@@ -154,6 +165,33 @@ export default function SettingsView() {
 					/>
 				</View>
 			</View>
+
+			{user?.admin && (
+				<>
+					<Divider h />
+					<View style={styles.section}>
+						<SectionHeader
+							style={styles.sectionHeader}
+							content={t("settings.users.admin")}
+							skeletonWidth={0}
+						/>
+						<Button
+							title={t("settings.manageFromWebApp")}
+							onPress={() =>
+								openBrowserAsync(
+									queryClient.api.urls.api.replace(
+										"/api",
+										"/settings",
+									),
+								)
+							}
+							icon={OpenExternalIcon}
+							iconPosition="right"
+							containerStyle={{ justifyContent: "center" }}
+						/>
+					</View>
+				</>
+			)}
 			<Divider h />
 			<View style={styles.section}>
 				<SectionHeader
