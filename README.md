@@ -1,5 +1,5 @@
 <div align="center" style="display: flex; justify-content: center; align-items: center;">
-<img width="500" alt="485625218-45f9e62e-ba1f-4068-a8d7-fdb042989020" src="https://github.com/user-attachments/assets/8d9b147f-aad3-4cd7-898b-01e58f65dd7c" />
+<img width="500" src="https://github.com/user-attachments/assets/8d9b147f-aad3-4cd7-898b-01e58f65dd7c" />
 </div>
 
 **<div align="center">[Features](#star-features) • [Setup](#-setup) • [Screenshots](#camera-screenshots) • [Wiki](https://github.com/Arthi-chaud/Meelo/wiki)</div>**
@@ -108,4 +108,4 @@ Get ready to make the most out of you music collection!
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
 ![Docker Pulls](https://img.shields.io/docker/pulls/arthichaud/meelo-server)
 
-<img width="2560" height="830" alt="Meelo - README" src="https://github.com/user-attachments/assets/eeb8d191-aab6-48c9-93e9-cf4966af1c81" />
+<img src="https://github.com/user-attachments/assets/4e7a161f-180a-4f95-89b1-482421018a61" />
