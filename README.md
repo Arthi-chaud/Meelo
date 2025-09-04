@@ -51,7 +51,7 @@ Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/
 
 ## 🔧 Setup
 
-:point_right: To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo/wiki).
+:point_right: To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo/wiki)
 
 You'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
 
@@ -60,37 +60,26 @@ You'll need a 'clean' collection: either with embedded metadata or standard file
 
 ## :iphone: Android App
 
-> [!NOTE]  
-> Meelo now has an Android app :tada:. However, it is still in alpha and lacks some important features.
->
-> Go [here](https://github.com/Arthi-chaud/Meelo/discussions/1130) for more information.
-> You can find the known issues and the list of missing/upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22)
-> 
-> While the app is in alpha, we recommend using the web app. With its responsive design, it works perfectly on mobile devices.
+Meelo now has an Android app :tada:. However, it is still in alpha and lacks some important features.
+
+Go [here](https://github.com/Arthi-chaud/Meelo/discussions/1130) for more information.
+You can find the known issues and the list of missing/upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22)
+
+While the app is in alpha, we recommend using the web app. With its responsive design, it works perfectly on mobile devices.
+
+## :camera: Screenshots
+
+https://github.com/user-attachments/assets/48141241-25ec-4570-a4f1-696c0cdfcaaa
+
+:point_right: You can find more screenshots of the UI [here](./docs/screenshots/)
+
+>[!NOTE]
+> Some screenshots may be outdated and may not show the state of the latest version of the app. Some minor details may change (e.g. logo, spacing, etc.)
+</details>
 
 ## :desktop_computer: Live Demo
 
 We are actively working on a public demo, so that you can try out Meelo. Stay tuned...
-
-## :camera: Screenshots
-
-<details>
-  <summary>Unfold to see what the web application looks like!</summary>
-
-https://github.com/user-attachments/assets/48141241-25ec-4570-a4f1-696c0cdfcaaa
-
----
-
-![Album View 1](./assets/examples/album-top.png)
-![Album View 2](./assets/examples/album-page.png)
-![Artist Page](./assets/examples/artist-page.png)
-![Player Page](./assets/examples/player.png)
-![Release Page](./assets/examples/releases.png)
-![Synced Lyrics](./assets/examples/synced-lyrics.gif)
-
-More screenshots [here](./assets/examples/)
-
-</details>
 
 ## 🌐 Translation
 
