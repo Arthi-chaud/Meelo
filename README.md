@@ -1,10 +1,17 @@
-# <img alt="Icon" src="./front/assets/banner1-white.png" width="150px">
+<div align="center" style="display: flex; justify-content: center; align-items: center;">
+  <img width="500"  alt="3ee05d00-f8de-45d9-aa1f-2a0a9f877925" src="https://github.com/user-attachments/assets/45f9e62e-ba1f-4068-a8d7-fdb042989020" />
+</div>
 
-Welcome! Meelo is a self-hosted music server and web app. It works similarly to Plex, Jellyfin, Koel and Black Candy, but focuses on flexibility, browsing and listening experiences. Actually, Meelo is designed for music collectors. What does it mean? Scroll down to see our killer features :arrow_heading_down:
+**<div align="center">[Features](#star-features) • [Setup](#-setup) • [Screenshots](#camera-screenshots) • [Wiki](#camera-screenshots)</div>**
 
-While the software wants to be a flexible as possible, it requires a little bit of setup. However, once everything is ready, you will just have to sit back, relax, and enjoy your music. :sunglasses:
+<img width="2560" height="1011" alt="screens-1" src="https://github.com/user-attachments/assets/5cfbbe83-dd3b-4590-949f-851b5c23ad15" />
 
-![Album Page (Top)](./assets/examples/album-top.png)
+<img width="2560" height="768" alt="screens-2" src="https://github.com/user-attachments/assets/b1fa9cf6-1487-4983-9f00-3bb6ae1a2f56" />
+
+
+Welcome! Meelo is a self-hosted music server. It works similarly to Plex, Jellyfin, Koel and Black Candy, but focuses on flexibility, browsing and listening experiences. Actually, Meelo is designed for music collectors. What does it mean? Scroll down to see our killer features :arrow_heading_down:
+
+While the software aims to be a flexible as possible, it requires a little bit of setup. However, once everything is ready, you will just have to sit back, relax, and enjoy your music. :sunglasses:
 
 ## :star: Features
 
@@ -42,12 +49,21 @@ Meelo has all the basic features you might expect from a music player/server (pl
 
 Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues)
 
-## :book: How to get started
+## 🔧 Setup
 
-To use Meelo, you'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
+To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo/wiki).
 
-Meelo is shipped though Docker images. You might need to know a bit about Regexes.
-Look over [here](https://github.com/Arthi-chaud/Meelo/wiki) for setup instructions.
+You'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
+
+> [!WARNING]  
+> Meelo is shipped though Docker images. You might need to know a bit about Regexes.
+
+## :iphone: Android App
+
+> [!NOTE]  
+> Meelo now has an Android app :tada:. However, it is still in alpha and lacks some important features.
+> Go [here](https://github.com/Arthi-chaud/Meelo/discussions/1130) for more information.
+
 
 ## :desktop_computer: Live Demo
 
@@ -62,7 +78,8 @@ https://github.com/user-attachments/assets/48141241-25ec-4570-a4f1-696c0cdfcaaa
 
 ---
 
-![Album View](./assets/examples/album-page.png)
+![Album View 1](./assets/examples/album-top.png)
+![Album View 2](./assets/examples/album-page.png)
 ![Artist Page](./assets/examples/artist-page.png)
 ![Player Page](./assets/examples/player.png)
 ![Release Page](./assets/examples/releases.png)
