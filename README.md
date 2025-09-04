@@ -1,12 +1,12 @@
 <div align="center" style="display: flex; justify-content: center; align-items: center;">
-  <img width="500"  alt="3ee05d00-f8de-45d9-aa1f-2a0a9f877925" src="https://github.com/user-attachments/assets/45f9e62e-ba1f-4068-a8d7-fdb042989020" />
+<img width="500" alt="485625218-45f9e62e-ba1f-4068-a8d7-fdb042989020" src="https://github.com/user-attachments/assets/8d9b147f-aad3-4cd7-898b-01e58f65dd7c" />
 </div>
 
 **<div align="center">[Features](#star-features) • [Setup](#-setup) • [Screenshots](#camera-screenshots) • [Wiki](https://github.com/Arthi-chaud/Meelo/wiki)</div>**
 
-<img width="2560" height="1011" alt="screens-1" src="https://github.com/user-attachments/assets/5cfbbe83-dd3b-4590-949f-851b5c23ad15" />
+<img src="https://github.com/user-attachments/assets/4a489a25-3cf7-4281-a9c1-cf9d41351e69" />
 
-<img width="2560" height="768" alt="screens-2" src="https://github.com/user-attachments/assets/b1fa9cf6-1487-4983-9f00-3bb6ae1a2f56" />
+<img src="https://github.com/user-attachments/assets/7e1fe7df-638c-42f1-978d-e1cb59f91324" />
 
 
 Welcome! Meelo is a self-hosted music server. It works similarly to Plex, Jellyfin, Koel and Black Candy, but focuses on flexibility, browsing and listening experiences. Actually, Meelo is designed for music collectors. What does it mean? Scroll down to see our killer features :arrow_heading_down:
