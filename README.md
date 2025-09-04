@@ -6,8 +6,6 @@
 
 <img src="https://github.com/user-attachments/assets/4a489a25-3cf7-4281-a9c1-cf9d41351e69" />
 
-<img src="https://github.com/user-attachments/assets/7e1fe7df-638c-42f1-978d-e1cb59f91324" />
-
 
 Welcome! Meelo is a self-hosted music server. It works similarly to Plex, Jellyfin, Koel and Black Candy, but focuses on flexibility, browsing and listening experiences. Actually, Meelo is designed for music collectors. What does it mean? Scroll down to see our killer features :arrow_heading_down:
 
@@ -48,6 +46,8 @@ Meelo has all the basic features you might expect from a music player/server (pl
 - Download (synced) lyrics or get them from embedded metadata and `.lrc` files
 
 Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues)
+
+<img src="https://github.com/user-attachments/assets/7e1fe7df-638c-42f1-978d-e1cb59f91324" />
 
 ## 🔧 Setup
 
