@@ -2,7 +2,7 @@
   <img width="500"  alt="3ee05d00-f8de-45d9-aa1f-2a0a9f877925" src="https://github.com/user-attachments/assets/45f9e62e-ba1f-4068-a8d7-fdb042989020" />
 </div>
 
-**<div align="center">[Features](#star-features) • [Setup](#-setup) • [Screenshots](#camera-screenshots) • [Wiki](#camera-screenshots)</div>**
+**<div align="center">[Features](#star-features) • [Setup](#-setup) • [Screenshots](#camera-screenshots) • [Wiki](https://github.com/Arthi-chaud/Meelo/wiki)</div>**
 
 <img width="2560" height="1011" alt="screens-1" src="https://github.com/user-attachments/assets/5cfbbe83-dd3b-4590-949f-851b5c23ad15" />
 
