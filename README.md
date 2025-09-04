@@ -32,18 +32,18 @@ Meelo has all the basic features you might expect from a music player/server (pl
 - Songs have _tracks_
   - It is pretty much the same as for albums and releases
   - No duplicated songs when browsing your library!
-- Song Versions
-- Browse Songs [grouped by version](./assets/examples/song-groups.png)
+- Songs have _versions_
+  - See an example [here](./assets/examples/song-groups.png)
 - Album and Song types
   - Finding instrumental songs or live recordings has never been this simple!
-- Filter Songs that are exclusive to an album (compilations only)
+- Filter Songs that are exclusive to an album (for compilation albums only)
 - Supports all formats!
   - Thanks to transcoding and the way we parse files, any audio and video format is virtually supported
   - (Note: Transcoding is only used when the file format is not supported in the browser)
 - Flexible metadata parsing
   - Use either the embedded metadata or the file's name (or both!) to extract metadata
   - Also works with album covers!
-- Get genres, descriptions, and ratings using MusicBrainz, Genius, Wikipedia and many more providers!
+- Get genres, descriptions, and ratings using MusicBrainz, Genius, Wikipedia and many other providers!
 - Push Scrobbles to ListenBrainz and LastFM!
 - Download (synced) lyrics or get them from embedded metadata and `.lrc` files
 
@@ -51,7 +51,7 @@ Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/
 
 ## 🔧 Setup
 
-To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo/wiki).
+:point_right: To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo/wiki).
 
 You'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
 
@@ -64,8 +64,9 @@ You'll need a 'clean' collection: either with embedded metadata or standard file
 > Meelo now has an Android app :tada:. However, it is still in alpha and lacks some important features.
 >
 > Go [here](https://github.com/Arthi-chaud/Meelo/discussions/1130) for more information.
+> You can find the known issues and the list of missing/upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22)
 > 
-> We recommend using the web app. With responsive design, it works perfectly on mobile devices.
+> While the app is in alpha, we recommend using the web app. With its responsive design, it works perfectly on mobile devices.
 
 ## :desktop_computer: Live Demo
 
