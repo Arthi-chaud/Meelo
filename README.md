@@ -55,7 +55,7 @@ To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo
 
 You'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
 
-> [!WARNING]  
+> [!NOTE]  
 > Meelo is shipped though Docker images. You might need to know a bit about Regexes.
 
 ## :iphone: Android App
