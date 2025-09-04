@@ -62,8 +62,10 @@ You'll need a 'clean' collection: either with embedded metadata or standard file
 
 > [!NOTE]  
 > Meelo now has an Android app :tada:. However, it is still in alpha and lacks some important features.
+>
 > Go [here](https://github.com/Arthi-chaud/Meelo/discussions/1130) for more information.
-
+> 
+> We recommend using the web app. With responsive design, it works perfectly on mobile devices.
 
 ## :desktop_computer: Live Demo
 
