@@ -4,9 +4,14 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { type LayoutChangeEvent, View } from "react-native";
+import Animated, {
+	useAnimatedStyle,
+	withSpring,
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
-import type { SyncedLyric } from "@/models/lyrics";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import type { SyncedLyric as SyncedLyricModel } from "@/models/lyrics";
 import { store } from "@/state/store";
 import { LyricsIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
@@ -60,13 +65,17 @@ const PlainLyrics = ({ plainLyrics }: { plainLyrics: string | undefined }) => {
 	);
 };
 
-type SyncedLyricWithEnd = SyncedLyric & {
+type SyncedLyricWithEnd = SyncedLyricModel & {
 	end: number | null;
 	position?: number;
 	height?: number;
 };
 
-const SyncedLyrics = ({ syncedLyrics }: { syncedLyrics: SyncedLyric[] }) => {
+const SyncedLyrics = ({
+	syncedLyrics,
+}: {
+	syncedLyrics: SyncedLyricModel[];
+}) => {
 	const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null);
 	const [scrollViewHeight, setScrollViewHeight] = useState<number | null>(
 		null,
@@ -132,15 +141,10 @@ const SyncedLyrics = ({ syncedLyrics }: { syncedLyrics: SyncedLyric[] }) => {
 		>
 			<View style={[styles.syncedLyrics]}>
 				{syncedLyricsWithEnd.map(({ timestamp, content }) => (
-					<Text
+					<SyncedLyric
 						key={timestamp}
-						variant="h2"
-						color={
-							currentLyric?.timestamp === timestamp
-								? "primary"
-								: "secondary"
-						}
 						content={content ?? " "}
+						active={currentLyric?.timestamp === timestamp}
 						onLayout={(e) => {
 							// Need to store it in a variable
 							// to avoid access after free of e
@@ -161,6 +165,29 @@ const SyncedLyrics = ({ syncedLyrics }: { syncedLyrics: SyncedLyric[] }) => {
 				))}
 			</View>
 		</BottomSheetScrollView>
+	);
+};
+
+const SyncedLyric = ({
+	content,
+	active,
+	onLayout,
+}: {
+	content: string;
+	active: boolean;
+	onLayout: (e: LayoutChangeEvent) => void;
+}) => {
+	const theme = useAnimatedTheme();
+	const opacityOnActive = useAnimatedStyle(
+		() => ({
+			opacity: withSpring(active ? 1 : 0.4, theme.value.animations.fades),
+		}),
+		[active],
+	);
+	return (
+		<Animated.View style={opacityOnActive} onLayout={onLayout}>
+			<Text variant="h2" color="primary" content={content} />
+		</Animated.View>
 	);
 };
 
