@@ -187,7 +187,7 @@ const IllustrationOrVideo = () => {
 	return (
 		<Illustration
 			illustration={currentTrack?.track.illustration}
-			style={styles.illustrationShadow}
+			dropShadow
 			quality="original"
 			useBlurhash
 			variant="center"
@@ -200,10 +200,6 @@ const styles = StyleSheet.create((theme) => ({
 		aspectRatio: 1,
 		width: "100%",
 		alignItems: "center",
-	},
-	illustrationShadow: {
-		borderRadius: theme.borderRadius,
-		boxShadow: theme.illustrationShadow,
 	},
 	controls: {
 		flex: 1,
