@@ -30,6 +30,7 @@ import { useAPI } from "~/api";
 type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: Icon;
+	dropShadow?: boolean;
 	quality: IllustrationQuality;
 	normalizedThumbnail?: boolean;
 	variant?: "fill" | "circle" | "center";
@@ -46,6 +47,7 @@ export const Illustration = ({
 	quality,
 	variant,
 	useBlurhash,
+	dropShadow = false,
 	normalizedThumbnail,
 	style,
 }: Props) => {
@@ -60,6 +62,7 @@ export const Illustration = ({
 		[illustration],
 	);
 	styles.useVariants({
+		hasShadow: dropShadow,
 		imageType: innerAspectRatio > 1 ? "wide" : "tall",
 		shape: variant === "circle" ? "circle" : undefined,
 		align: variant === "center" ? "center" : "bottom",
@@ -111,6 +114,7 @@ export const Illustration = ({
 					styles.innerContainer(
 						!useBlurhash ? illustration?.colors.at(0) : undefined,
 					),
+					styles.shadow,
 				]}
 			>
 				{illustration && loadStatus !== "error" && (
@@ -180,7 +184,6 @@ export const Illustration = ({
 
 const styles = StyleSheet.create((theme) => ({
 	outerContainer: {
-		overflow: "hidden",
 		flex: 1,
 		alignItems: "center",
 		variants: {
@@ -223,6 +226,16 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	slotContent: {
 		flex: 1,
+	},
+	shadow: {
+		variants: {
+			hasShadow: {
+				true: {
+					boxShadow: theme.illustrationShadow,
+				},
+				false: {},
+			},
+		},
 	},
 	fallbackContainer: {
 		flex: 1,
