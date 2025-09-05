@@ -465,7 +465,11 @@ const ScrobblersSection = () => {
 				{t("settings.ui.scrobblers.connect_scrobblers")}
 			</Typography>
 
-			<Grid container columnSpacing={2}>
+			<Grid
+				container
+				columnSpacing={2}
+				sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
+			>
 				{scrobblers.data === undefined ? (
 					<Button variant="outlined">
 						<Skeleton width={"50px"} />
