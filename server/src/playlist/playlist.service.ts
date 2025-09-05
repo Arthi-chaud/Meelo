@@ -20,11 +20,13 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Playlist, Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
+import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import PrismaService from "src/prisma/prisma.service";
+import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
@@ -32,10 +34,11 @@ import {
 import Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
+import TrackService from "src/track/track.service";
 import type PlaylistQueryParameters from "./models/playlist.query-parameters";
 import type { PlaylistEntryModel } from "./models/playlist-entry.model";
 import {
-	AddSongToPlaylistFailureException,
+	AddItemToPlaylistFailureException,
 	PlaylistAlreadyExistsException,
 	PlaylistEntryNotFoundException,
 	PlaylistNotFoundException,
@@ -385,6 +388,15 @@ export default class PlaylistService {
 		await this.flatten({ id: deleted.playlistId });
 	}
 
+	async _getLastEntryIndexInPlaylist(playlistId: number) {
+		return this.prismaService.playlistEntry
+			.findFirst({
+				where: { playlistId },
+				select: { index: true },
+				orderBy: { index: "desc" },
+			})
+			.then((entry) => entry?.index ?? null);
+	}
 	/**
 	 * Add song at the end of a playlist
 	 * @param song the query parameters to find the song
@@ -401,14 +413,7 @@ export default class PlaylistService {
 		]);
 
 		this._guardCanUpdatePlaylist(p, userId);
-		const lastEntry = await this.prismaService.playlistEntry
-			.findMany({
-				where: { playlist: PlaylistService.formatWhereInput(playlist) },
-				orderBy: { index: "desc" },
-				take: 1,
-			})
-			.then((entries) => entries.at(0));
-
+		const lastEntryIndex = await this._getLastEntryIndexInPlaylist(p.id);
 		try {
 			await this.prismaService.playlistEntry.create({
 				data: {
@@ -416,12 +421,120 @@ export default class PlaylistService {
 						connect: PlaylistService.formatWhereInput(playlist),
 					},
 					song: { connect: SongService.formatWhereInput(song) },
-					index: (lastEntry?.index ?? -1) + 1,
+					index: lastEntryIndex ? lastEntryIndex + 1 : 0,
 				},
 			});
 		} catch (err) {
 			this.logger.error(err.message);
-			throw new AddSongToPlaylistFailureException();
+			throw new AddItemToPlaylistFailureException();
+		}
+	}
+
+	/**
+	 * Add release at the end of a playlist
+	 */
+	async addRelease(
+		release: ReleaseQueryParameters.WhereInput,
+		userId: number,
+		playlist: PlaylistQueryParameters.WhereInput,
+	) {
+		const p = await this.get(playlist, userId);
+
+		this._guardCanUpdatePlaylist(p, userId);
+		const lastEntryIndex = await this._getLastEntryIndexInPlaylist(p.id);
+		const songIdsToAdd = await this.prismaService.track
+			.findMany({
+				where: TrackService.formatManyWhereInput({
+					release: { is: release },
+				}),
+				select: { songId: true, video: { select: { songId: true } } },
+				orderBy: [
+					{ discIndex: { sort: "asc", nulls: "last" } },
+					{ trackIndex: { sort: "asc", nulls: "last" } },
+				],
+			})
+			.then((items) =>
+				items
+					.map((t) => t.songId ?? t.video?.songId)
+					.filter(
+						(id): id is number => id !== null && id !== undefined,
+					),
+			);
+
+		try {
+			await this.prismaService.playlistEntry.createMany({
+				data: songIdsToAdd.map((songId, index) => ({
+					playlistId: p.id,
+					songId,
+					index: lastEntryIndex ? lastEntryIndex + 1 + index : index,
+				})),
+			});
+		} catch (err) {
+			this.logger.error(err.message);
+			throw new AddItemToPlaylistFailureException();
+		}
+	}
+
+	/**
+	 * Add artist's song at the end of a playlist
+	 */
+	async addArtist(
+		artist: ArtistQueryParameters.WhereInput,
+		userId: number,
+		playlist: PlaylistQueryParameters.WhereInput,
+	) {
+		const p = await this.get(playlist, userId);
+
+		this._guardCanUpdatePlaylist(p, userId);
+		const lastEntryIndex = await this._getLastEntryIndexInPlaylist(p.id);
+		const songIdsToAdd = await this.prismaService.song.findMany({
+			where: SongService.formatManyWhereInput({ artist: { is: artist } }),
+			select: { id: true },
+			orderBy: [{ artist: { slug: "asc" } }],
+		});
+
+		try {
+			await this.prismaService.playlistEntry.createMany({
+				data: songIdsToAdd.map(({ id: songId }, index) => ({
+					playlistId: p.id,
+					songId: songId,
+					index: lastEntryIndex ? lastEntryIndex + 1 + index : index,
+				})),
+			});
+		} catch (err) {
+			this.logger.error(err.message);
+			throw new AddItemToPlaylistFailureException();
+		}
+	}
+
+	/**
+	 * Add playlist at the end of a playlist
+	 */
+	async addPlaylist(
+		sourcePlaylist: PlaylistQueryParameters.WhereInput,
+		userId: number,
+		destPlaylist: PlaylistQueryParameters.WhereInput,
+	) {
+		const [_, p] = await Promise.all([
+			this.get(sourcePlaylist, userId),
+			this.get(destPlaylist, userId),
+		]);
+
+		this._guardCanUpdatePlaylist(p, userId);
+		const lastEntryIndex = await this._getLastEntryIndexInPlaylist(p.id);
+		const songsToAdd = await this.getEntries(sourcePlaylist, userId);
+
+		try {
+			await this.prismaService.playlistEntry.createMany({
+				data: songsToAdd.map(({ id }, index) => ({
+					playlistId: p.id,
+					songId: id,
+					index: lastEntryIndex ? lastEntryIndex + 1 + index : index,
+				})),
+			});
+		} catch (err) {
+			this.logger.error(err.message);
+			throw new AddItemToPlaylistFailureException();
 		}
 	}
 
