@@ -36,6 +36,7 @@ import { useState } from "react";
 import { useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import type { AddToPlaylistPayload } from "@/api";
 import type { QueryClient } from "@/api/hook";
 import { getPlaylists } from "@/api/queries";
 import type { InfiniteQueryFn } from "@/api/query";
@@ -356,7 +357,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 };
 
 export const AddToPlaylistAction = (
-	songId: number,
+	payload: AddToPlaylistPayload,
 	queryClient: QueryClient,
 ): Action => ({
 	icon: <AddToPlaylistIcon />,
@@ -366,7 +367,7 @@ export const AddToPlaylistAction = (
 		const mutation = useMutation({
 			mutationFn: (playlistId: number) => {
 				return queryClient.api
-					.addToPlaylist({ songId }, playlistId)
+					.addToPlaylist(payload, playlistId)
 					.then(() => {
 						toast.success(t("toasts.playlist.addedToPlaylist"));
 						queryClient.client.invalidateQueries({

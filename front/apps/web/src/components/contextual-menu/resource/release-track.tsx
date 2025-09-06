@@ -69,7 +69,12 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 					PlayAfterAction(async () => props),
 				],
 				props.track.songId
-					? [AddToPlaylistAction(props.track.songId, queryClient)]
+					? [
+							AddToPlaylistAction(
+								{ songId: props.track.songId },
+								queryClient,
+							),
+						]
 					: [],
 				songSlug
 					? [

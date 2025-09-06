@@ -42,7 +42,7 @@ const AuthenticationResponse = yup.object({
 
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
-type AddToPlaylistPayload = RequireExactlyOne<
+export type AddToPlaylistPayload = RequireExactlyOne<
 	Record<"songId" | "releaseId" | "artistId" | "playlistId", number>
 >;
 

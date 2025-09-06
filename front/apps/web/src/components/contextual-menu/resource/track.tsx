@@ -103,7 +103,12 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					PlayAfterAction(getPlayNextProps),
 				],
 				props.track.songId
-					? [AddToPlaylistAction(props.track.songId, queryClient)]
+					? [
+							AddToPlaylistAction(
+								{ songId: props.track.songId },
+								queryClient,
+							),
+						]
 					: [],
 				props.track.songId
 					? [
