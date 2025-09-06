@@ -490,7 +490,7 @@ export default class PlaylistService {
 		const songIdsToAdd = await this.prismaService.song.findMany({
 			where: SongService.formatManyWhereInput({ artist: { is: artist } }),
 			select: { id: true },
-			orderBy: [{ artist: { slug: "asc" } }],
+			orderBy: [{ artist: { slug: "asc" } }, { nameSlug: "asc" }],
 		});
 
 		try {
