@@ -41,7 +41,7 @@ const ChoosePlaylistModal = ({ songId }: { songId: number }) => {
 	const addToPlaylist = useMutation({
 		mutationFn: (playlistId: number) =>
 			queryClient.api
-				.addSongToPlaylist(songId, playlistId)
+				.addToPlaylist({ songId }, playlistId)
 				.then(() => {
 					Toast.success(t("toasts.playlist.addedToPlaylist"));
 					dismiss();

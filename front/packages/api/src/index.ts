@@ -42,6 +42,10 @@ const AuthenticationResponse = yup.object({
 
 type AuthenticationResponse = yup.InferType<typeof AuthenticationResponse>;
 
+type AddToPlaylistPayload = RequireExactlyOne<
+	Record<"songId" | "releaseId" | "artistId" | "playlistId", number>
+>;
+
 type QueryParameters<Keys extends readonly string[]> = {
 	pagination?: PaginationParameters | null;
 	include?: string[];
@@ -262,15 +266,15 @@ export default class API {
 		});
 	}
 
-	async addSongToPlaylist(
-		songId: number,
+	async addToPlaylist(
+		playload: AddToPlaylistPayload,
 		playlistId: number,
 	): Promise<unknown> {
 		return this.fetch({
 			route: `/playlists/${playlistId}/entries`,
-			errorMessage: "Failed to add song to playlist",
+			errorMessage: "Failed to add to playlist",
 			parameters: {},
-			data: { songId },
+			data: playload,
 			method: "POST",
 			emptyResponse: true,
 		});

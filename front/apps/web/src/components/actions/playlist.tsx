@@ -366,7 +366,7 @@ export const AddToPlaylistAction = (
 		const mutation = useMutation({
 			mutationFn: (playlistId: number) => {
 				return queryClient.api
-					.addSongToPlaylist(songId, playlistId)
+					.addToPlaylist({ songId }, playlistId)
 					.then(() => {
 						toast.success(t("toasts.playlist.addedToPlaylist"));
 						queryClient.client.invalidateQueries({
