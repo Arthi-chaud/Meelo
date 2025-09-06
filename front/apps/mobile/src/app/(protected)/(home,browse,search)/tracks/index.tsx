@@ -24,7 +24,8 @@ export default function TracksView() {
 	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
 
 	const { data: song } = useQuery(
-		(songId) => getSong(songId, ["artist", "illustration", "featuring"]),
+		(songId) =>
+			getSong(songId, ["artist", "illustration", "featuring", "master"]),
 		songId,
 	);
 	const onItemPress = useCallback(

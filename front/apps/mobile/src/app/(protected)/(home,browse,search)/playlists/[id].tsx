@@ -30,6 +30,7 @@ import { useUpdatePlaylistFormModal } from "~/actions/playlist/create-update";
 import { useDeletePlaylistAction } from "~/actions/playlist/delete";
 import { useUpdateIllustrationAction } from "~/actions/update-illustration";
 import { useAPI, useQuery, useQueryClient } from "~/api";
+import { usePlaylistContextMenu } from "~/components/context-menu/resource/playlist";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
 import { useRootViewStyle } from "~/hooks/root-view-style";
@@ -124,7 +125,7 @@ const Header = ({
 }) => {
 	const { t } = useTranslation();
 	const { data: playlist } = useQuery(() => playlistQuery(playlistId));
-
+	const contextMenu = usePlaylistContextMenu(playlist);
 	return (
 		<>
 			<ResourceHeader
@@ -132,6 +133,7 @@ const Header = ({
 				subtitle={null}
 				illustration={playlist?.illustration}
 				illustrationProps={{ fallbackIcon: PlaylistIcon }}
+				contextMenu={contextMenu}
 			/>
 			<View style={styles.playButtons}>
 				<View style={styles.playButton}>

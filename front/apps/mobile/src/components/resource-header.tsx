@@ -5,6 +5,9 @@ import type { ArtistWithRelations } from "@/models/artist";
 import type IllustrationResource from "@/models/illustration";
 import type { SongWithRelations } from "@/models/song";
 import formatArtists from "@/utils/format-artists";
+import { type ContextMenuBuilder, ContextMenuButton } from "./context-menu";
+import { useArtistContextMenu } from "./context-menu/resource/artist";
+import { useSongContextMenu } from "./context-menu/resource/song";
 import { Illustration } from "./illustration";
 import { LoadableText } from "./loadable_text";
 
@@ -12,34 +15,45 @@ export const SongHeader = ({
 	song,
 }: {
 	song:
-		| SongWithRelations<"illustration" | "artist" | "featuring">
+		| SongWithRelations<"illustration" | "artist" | "featuring" | "master">
 		| undefined;
-}) => (
-	<ResourceHeader
-		illustration={song?.illustration}
-		title={song?.name}
-		subtitle={song ? formatArtists(song.artist, song.featuring) : undefined}
-	/>
-);
+}) => {
+	const contextMenu = useSongContextMenu(song);
+	return (
+		<ResourceHeader
+			illustration={song?.illustration}
+			title={song?.name}
+			contextMenu={contextMenu}
+			subtitle={
+				song ? formatArtists(song.artist, song.featuring) : undefined
+			}
+		/>
+	);
+};
 
 export const ArtistHeader = ({
 	artist,
 }: {
 	artist: ArtistWithRelations<"illustration"> | undefined;
-}) => (
-	<ResourceHeader
-		illustration={artist?.illustration}
-		circleIllustration
-		title={artist?.name}
-		subtitle={null}
-	/>
-);
+}) => {
+	const contextMenu = useArtistContextMenu(artist);
+	return (
+		<ResourceHeader
+			illustration={artist?.illustration}
+			circleIllustration
+			title={artist?.name}
+			subtitle={null}
+			contextMenu={contextMenu}
+		/>
+	);
+};
 
 type Props = {
 	illustration: IllustrationResource | null | undefined;
 	circleIllustration?: true;
 	illustrationProps?: Partial<ComponentProps<typeof Illustration>>;
 	title: string | undefined;
+	contextMenu?: ContextMenuBuilder;
 	subtitle: string | undefined | null;
 };
 
@@ -48,6 +62,7 @@ export const ResourceHeader = ({
 	title,
 	circleIllustration,
 	illustrationProps,
+	contextMenu,
 	subtitle,
 }: Props) => {
 	return (
@@ -77,6 +92,7 @@ export const ResourceHeader = ({
 					/>
 				)}
 			</View>
+			{contextMenu && <ContextMenuButton builder={contextMenu} />}
 		</View>
 	);
 };

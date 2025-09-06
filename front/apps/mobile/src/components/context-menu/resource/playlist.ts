@@ -1,3 +1,4 @@
+import { useRoute } from "@react-navigation/native";
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { getCurrentUserStatus, getPlaylistEntries } from "@/api/queries";
@@ -41,6 +42,7 @@ export const usePlaylistContextMenu = (
 	);
 	const deleteAction = useDeletePlaylistAction(playlist?.id);
 	const shareAction = useSharePlaylistAction(playlist?.id);
+	const { name: routeName } = useRoute();
 	return useCallback(() => {
 		return {
 			header: {
@@ -52,20 +54,22 @@ export const usePlaylistContextMenu = (
 			items: [
 				[
 					{
-						label: "actions.goToPlaylist",
-						icon: PlaylistIcon,
-						href: playlist
-							? `/playlists/${playlist.id}`
-							: undefined,
-					},
-				],
-				[
-					{
 						label: "actions.playback.play",
 						icon: PlayIcon,
 						onPress: playPlaylist,
 					},
 				],
+				routeName !== "playlists/[id]"
+					? [
+							{
+								label: "actions.goToPlaylist",
+								icon: PlaylistIcon,
+								href: playlist
+									? `/playlists/${playlist.id}`
+									: undefined,
+							},
+						]
+					: [],
 				[addToPlaylistAction],
 				user && playlist && user.id === playlist.ownerId
 					? [deleteAction]
