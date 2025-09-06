@@ -24,6 +24,7 @@ import { useQueryClient } from "~/api";
 import { DownloadReleaseAsyncAction } from "~/components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
 import { PlayReleaseAction } from "~/components/actions/play-album";
+import { AddToPlaylistAction } from "~/components/actions/playlist";
 import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareAlbumAction } from "~/components/actions/share";
@@ -53,6 +54,14 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 						? [GoToArtistAction(props.album.artist.slug)]
 						: []),
 				],
+				props.album.masterId
+					? [
+							AddToPlaylistAction(
+								{ releaseId: props.album.masterId },
+								queryClient,
+							),
+						]
+					: [],
 				[
 					ChangeAlbumType(props.album, queryClient, confirm),
 					RefreshAlbumMetadataAction(albumSlug, t),

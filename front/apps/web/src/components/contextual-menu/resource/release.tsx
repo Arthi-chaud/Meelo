@@ -28,6 +28,7 @@ import { useQueryClient } from "~/api";
 import { DownloadReleaseAction } from "~/components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
 import { PlayReleaseAction } from "~/components/actions/play-album";
+import { AddToPlaylistAction } from "~/components/actions/playlist";
 import { RefreshReleaseMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareReleaseAction } from "~/components/actions/share";
@@ -95,6 +96,14 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						? [GoToArtistAction(props.release.album.artistId)]
 						: []),
 					GoToAlbumAction(props.release.album.id),
+				],
+				[
+					AddToPlaylistAction(
+						{ releaseId: props.release.id },
+						queryClient,
+					),
+				],
+				[
 					{
 						label: "actions.setAsMaster",
 						disabled:
@@ -110,6 +119,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						onClick: () => tracksMasterMutation.mutate(),
 					},
 				],
+
 				[
 					ChangeAlbumType(props.release.album, queryClient, confirm),
 					UpdateReleaseIllustrationAction(

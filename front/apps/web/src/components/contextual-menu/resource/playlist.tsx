@@ -23,6 +23,7 @@ import { getCurrentUserStatus } from "@/api/queries";
 import type Playlist from "@/models/playlist";
 import { useQuery, useQueryClient } from "~/api";
 import {
+	AddToPlaylistAction,
 	DeletePlaylistAction,
 	UpdatePlaylistAction,
 } from "~/components/actions/playlist";
@@ -57,6 +58,12 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 							],
 						]
 					: []),
+				[
+					AddToPlaylistAction(
+						{ playlistId: props.playlist.id },
+						queryClient,
+					),
+				],
 				[SharePlaylistAction(props.playlist.slug, t)],
 				...(user?.id === props.playlist.ownerId
 					? [
