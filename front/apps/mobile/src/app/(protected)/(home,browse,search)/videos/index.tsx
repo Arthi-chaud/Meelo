@@ -68,7 +68,8 @@ export default function VideoBrowseView() {
 		artistId,
 	);
 	const { data: song } = useQuery(
-		(songId) => getSong(songId, ["illustration", "artist", "featuring"]),
+		(songId) =>
+			getSong(songId, ["illustration", "artist", "featuring", "master"]),
 		songId,
 	);
 	const getQuery = useCallback(

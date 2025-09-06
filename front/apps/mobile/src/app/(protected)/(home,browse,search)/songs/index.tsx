@@ -74,7 +74,8 @@ export default function SongBrowseView() {
 	);
 
 	const { data: song } = useQuery(
-		(songId) => getSong(songId, ["artist", "illustration", "featuring"]),
+		(songId) =>
+			getSong(songId, ["artist", "illustration", "featuring", "master"]),
 		versionsOfSongId,
 	);
 	useEffect(() => {
