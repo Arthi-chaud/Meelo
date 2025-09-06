@@ -9,6 +9,7 @@ import {
 	GoToRelease,
 	PlayReleaseAction,
 } from "~/actions";
+import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { useShareAlbumAction } from "~/actions/share";
 import { useQuery, useQueryClient } from "~/api";
 import { useChangeAlbumTypeModal } from "~/components/change-type";
@@ -40,6 +41,9 @@ export const useAlbumContextMenu = (
 		}
 		return artistName;
 	}, [album]);
+	const addToPlaylistAction = useAddToPlaylistAction(
+		album?.masterId ? { releaseId: album.masterId } : undefined,
+	);
 	return useCallback(() => {
 		const goToItems: ContextMenuItem[] = [];
 		if (album?.masterId) {
@@ -59,6 +63,7 @@ export const useAlbumContextMenu = (
 					? [PlayReleaseAction(album.masterId, queryClient)]
 					: [],
 				goToItems,
+				[addToPlaylistAction],
 				user?.admin
 					? [
 							ChangeType(

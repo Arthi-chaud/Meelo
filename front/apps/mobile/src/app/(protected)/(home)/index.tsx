@@ -178,6 +178,7 @@ export default function Root() {
 							}
 						: undefined
 				}
+				hideIfEmpty
 				header={t("home.mostPlayedSongs")}
 				songs={sync(topSongs.data?.pages.at(0)?.items)}
 				subtitle={() => "artists"}

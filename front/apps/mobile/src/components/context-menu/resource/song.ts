@@ -32,7 +32,9 @@ export const useSongContextMenu = (
 		| undefined,
 ): ContextMenuBuilder => {
 	const ShareAction = useShareSongAction(song?.id);
-	const addToPlaylistAction = useAddToPlaylistAction(song?.id);
+	const addToPlaylistAction = useAddToPlaylistAction(
+		song ? { songId: song.id } : undefined,
+	);
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openChangeTypeModal } = useChangeSongTypeModal(song);
 	const deletePlaylistEntryAction = useDeletePlaylistEntryAction(
