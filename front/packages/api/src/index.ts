@@ -267,14 +267,14 @@ export default class API {
 	}
 
 	async addToPlaylist(
-		playload: AddToPlaylistPayload,
+		payload: AddToPlaylistPayload,
 		playlistId: number,
 	): Promise<unknown> {
 		return this.fetch({
 			route: `/playlists/${playlistId}/entries`,
 			errorMessage: "Failed to add to playlist",
 			parameters: {},
-			data: playload,
+			data: payload,
 			method: "POST",
 			emptyResponse: true,
 		});

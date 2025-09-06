@@ -407,27 +407,19 @@ export default class PlaylistService {
 		userId: number,
 		playlist: PlaylistQueryParameters.WhereInput,
 	) {
-		const [_, p] = await Promise.all([
+		const [s, p] = await Promise.all([
 			this.songService.get(song),
 			this.get(playlist, userId),
 		]);
 
 		this._guardCanUpdatePlaylist(p, userId);
 		const lastEntryIndex = await this._getLastEntryIndexInPlaylist(p.id);
-		try {
-			await this.prismaService.playlistEntry.create({
-				data: {
-					playlist: {
-						connect: PlaylistService.formatWhereInput(playlist),
-					},
-					song: { connect: SongService.formatWhereInput(song) },
-					index: lastEntryIndex ? lastEntryIndex + 1 : 0,
-				},
-			});
-		} catch (err) {
-			this.logger.error(err.message);
-			throw new AddItemToPlaylistFailureException();
-		}
+
+		await this._addToPlaylist(
+			[s.id],
+			p.id,
+			lastEntryIndex ? lastEntryIndex + 1 : 0,
+		);
 	}
 
 	/**
@@ -461,18 +453,11 @@ export default class PlaylistService {
 					),
 			);
 
-		try {
-			await this.prismaService.playlistEntry.createMany({
-				data: songIdsToAdd.map((songId, index) => ({
-					playlistId: p.id,
-					songId,
-					index: lastEntryIndex ? lastEntryIndex + 1 + index : index,
-				})),
-			});
-		} catch (err) {
-			this.logger.error(err.message);
-			throw new AddItemToPlaylistFailureException();
-		}
+		await this._addToPlaylist(
+			songIdsToAdd,
+			p.id,
+			lastEntryIndex ? lastEntryIndex + 1 : 0,
+		);
 	}
 
 	/**
@@ -490,21 +475,14 @@ export default class PlaylistService {
 		const songIdsToAdd = await this.prismaService.song.findMany({
 			where: SongService.formatManyWhereInput({ artist: { is: artist } }),
 			select: { id: true },
-			orderBy: [{ artist: { slug: "asc" } }, { nameSlug: "asc" }],
+			orderBy: { nameSlug: "asc" },
 		});
 
-		try {
-			await this.prismaService.playlistEntry.createMany({
-				data: songIdsToAdd.map(({ id: songId }, index) => ({
-					playlistId: p.id,
-					songId: songId,
-					index: lastEntryIndex ? lastEntryIndex + 1 + index : index,
-				})),
-			});
-		} catch (err) {
-			this.logger.error(err.message);
-			throw new AddItemToPlaylistFailureException();
-		}
+		await this._addToPlaylist(
+			songIdsToAdd.map(({ id }) => id),
+			p.id,
+			lastEntryIndex ? lastEntryIndex + 1 : 0,
+		);
 	}
 
 	/**
@@ -524,12 +502,24 @@ export default class PlaylistService {
 		const lastEntryIndex = await this._getLastEntryIndexInPlaylist(p.id);
 		const songsToAdd = await this.getEntries(sourcePlaylist, userId);
 
+		await this._addToPlaylist(
+			songsToAdd.map(({ id }) => id),
+			p.id,
+			lastEntryIndex ? lastEntryIndex + 1 : 0,
+		);
+	}
+
+	async _addToPlaylist(
+		songIds: number[],
+		playlistId: number,
+		startIndex: number,
+	) {
 		try {
 			await this.prismaService.playlistEntry.createMany({
-				data: songsToAdd.map(({ id }, index) => ({
-					playlistId: p.id,
-					songId: id,
-					index: lastEntryIndex ? lastEntryIndex + 1 + index : index,
+				data: songIds.map((songId, index) => ({
+					playlistId: playlistId,
+					songId: songId,
+					index: startIndex + index,
 				})),
 			});
 		} catch (err) {
