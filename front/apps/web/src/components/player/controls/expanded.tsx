@@ -103,8 +103,8 @@ export const ExpandedPlayerControls = (
 			try {
 				for (const s of playlist) {
 					if (s.track.songId) {
-						await queryClient.api.addSongToPlaylist(
-							s.track.songId,
+						await queryClient.api.addToPlaylist(
+							{ songId: s.track.songId },
 							playlistId,
 						);
 					}

@@ -24,6 +24,7 @@ import {
 	GoToArtistAlbumsAction,
 	GoToArtistSongsAction,
 } from "~/components/actions/link";
+import { AddToPlaylistAction } from "~/components/actions/playlist";
 import { ShareArtistAction } from "~/components/actions/share";
 import { UpdateArtistIllustrationAction } from "~/components/actions/update-illustration";
 import { ContextualMenu } from "..";
@@ -44,6 +45,12 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 					GoToArtistAction(artistSlug),
 					GoToArtistAlbumsAction(artistSlug),
 					GoToArtistSongsAction(artistSlug),
+				],
+				[
+					AddToPlaylistAction(
+						{ artistId: props.artist.id },
+						queryClient,
+					),
 				],
 				[UpdateArtistIllustrationAction(queryClient, props.artist.id)],
 				[ShareArtistAction(artistSlug, t)],

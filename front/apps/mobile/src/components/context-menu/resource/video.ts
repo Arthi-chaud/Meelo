@@ -27,7 +27,7 @@ export const useVideoContextMenu = (
 	const { openTrackInfoModal } = useTrackInfoModal(video?.master.id);
 	const { openChangeTypeModal } = useChangeVideoTypeModal(video);
 	const addToPlaylistAction = useAddToPlaylistAction(
-		video?.songId ?? undefined,
+		video?.songId ? { songId: video.songId } : undefined,
 	);
 	return useCallback(() => {
 		const trackToPlay = video

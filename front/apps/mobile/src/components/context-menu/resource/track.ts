@@ -34,7 +34,7 @@ export const useTrackContextMenu = (
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { openTrackInfoModal } = useTrackInfoModal(track?.id);
 	const addToPlaylistAction = useAddToPlaylistAction(
-		track?.songId ?? undefined,
+		track?.songId ? { songId: track.songId } : undefined,
 	);
 	const { openChangeTypeModal: openChangeSongTypeModal } =
 		useChangeSongTypeModal(track?.song ?? undefined);

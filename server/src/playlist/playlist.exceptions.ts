@@ -48,9 +48,9 @@ export class PlaylistAlreadyExistsException extends AlreadyExistsException {
 	}
 }
 
-export class AddSongToPlaylistFailureException extends NotFoundException {
+export class AddItemToPlaylistFailureException extends NotFoundException {
 	constructor() {
-		super("Adding Song to playlist failed");
+		super("Adding item to playlist failed");
 	}
 }
 

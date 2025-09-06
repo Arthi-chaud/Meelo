@@ -86,7 +86,12 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 					PlayAfterAction(getPlayNextProps),
 				],
 				props.video.songId
-					? [AddToPlaylistAction(props.video.songId, queryClient)]
+					? [
+							AddToPlaylistAction(
+								{ songId: props.video.songId },
+								queryClient,
+							),
+						]
 					: [],
 				[
 					ChangeVideoType(props.video, queryClient, confirm),

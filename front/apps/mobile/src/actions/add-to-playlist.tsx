@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import { Toast } from "toastify-react-native";
+import type { AddToPlaylistPayload } from "@/api";
 import { getPlaylists } from "@/api/queries";
 import { AddIcon, PlaylistIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
@@ -17,12 +18,14 @@ import { Text } from "~/primitives/text";
 import { useCreatePlaylistFormModal } from "./playlist/create-update";
 
 export const useAddToPlaylistAction = (
-	songId: number | undefined,
+	payload?: AddToPlaylistPayload,
 ): ContextMenuItem => {
 	const content = useCallback(() => {
-		if (!songId) return null;
-		return <ChoosePlaylistModal songId={songId} />;
-	}, [songId]);
+		if (!payload) {
+			return null;
+		}
+		return <ChoosePlaylistModal payload={payload} />;
+	}, [payload]);
 	const { openModal } = useModal({
 		content,
 		onDismiss: () => {},
@@ -35,13 +38,17 @@ export const useAddToPlaylistAction = (
 	};
 };
 
-const ChoosePlaylistModal = ({ songId }: { songId: number }) => {
+const ChoosePlaylistModal = ({
+	payload,
+}: {
+	payload: AddToPlaylistPayload;
+}) => {
 	const { t } = useTranslation();
 	const { dismiss } = useBottomSheetModal();
 	const addToPlaylist = useMutation({
 		mutationFn: (playlistId: number) =>
 			queryClient.api
-				.addSongToPlaylist(songId, playlistId)
+				.addToPlaylist(payload, playlistId)
 				.then(() => {
 					Toast.success(t("toasts.playlist.addedToPlaylist"));
 					dismiss();

@@ -35,6 +35,7 @@ import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
+import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -211,11 +212,34 @@ export default class PlaylistController {
 		playlistEntryDTO: CreatePlaylistEntryDTO,
 		@Req() req: Express.Request,
 	) {
-		await this.playlistService.addSong(
-			{ id: playlistEntryDTO.songId },
-			this._getUserId(req)!,
-			where,
-		);
+		if (Object.entries(playlistEntryDTO).length !== 1) {
+			throw new InvalidRequestException("Expected exactly one field");
+		}
+		if (playlistEntryDTO.songId) {
+			await this.playlistService.addSong(
+				{ id: playlistEntryDTO.songId },
+				this._getUserId(req)!,
+				where,
+			);
+		} else if (playlistEntryDTO.releaseId) {
+			await this.playlistService.addRelease(
+				{ id: playlistEntryDTO.releaseId },
+				this._getUserId(req)!,
+				where,
+			);
+		} else if (playlistEntryDTO.artistId) {
+			await this.playlistService.addArtist(
+				{ id: playlistEntryDTO.artistId },
+				this._getUserId(req)!,
+				where,
+			);
+		} else if (playlistEntryDTO.playlistId) {
+			await this.playlistService.addPlaylist(
+				{ id: playlistEntryDTO.playlistId },
+				this._getUserId(req)!,
+				where,
+			);
+		}
 	}
 
 	@ApiOperation({

@@ -5,6 +5,7 @@ import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
 import { type Action, PlayReleaseAction } from "~/actions";
+import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { useSetReleaseAsMaster } from "~/actions/master";
 import { ShareAction, useShareCallback } from "~/actions/share";
 import { useQuery, useQueryClient } from "~/api";
@@ -46,6 +47,9 @@ export const useReleaseContextMenu = (
 			},
 		} satisfies Action;
 	}, [release]);
+	const addToPlaylistAction = useAddToPlaylistAction(
+		release ? { releaseId: release.id } : undefined,
+	);
 	return useCallback(() => {
 		const goToRelease: Action = {
 			label: "actions.goToRelease",
@@ -61,6 +65,7 @@ export const useReleaseContextMenu = (
 			items: [
 				release ? [PlayReleaseAction(release.id, queryClient)] : [],
 				[goToRelease, goToArtist],
+				[addToPlaylistAction],
 				user?.admin && release ? [SetAsMaster] : [],
 				[
 					ShareAction(() =>

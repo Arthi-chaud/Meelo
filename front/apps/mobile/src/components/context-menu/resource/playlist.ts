@@ -5,6 +5,7 @@ import { transformPage } from "@/api/query";
 import type { PlaylistWithRelations } from "@/models/playlist";
 import { playFromInfiniteQuery } from "@/state/player";
 import { PlayIcon, PlaylistIcon } from "@/ui/icons";
+import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { useDeletePlaylistAction } from "~/actions/playlist/delete";
 import { useSharePlaylistAction } from "~/actions/share";
 import { useQuery, useQueryClient } from "~/api";
@@ -35,6 +36,9 @@ export const usePlaylistContextMenu = (
 
 		playTracks(query, queryClient);
 	}, [playlist, playTracks]);
+	const addToPlaylistAction = useAddToPlaylistAction(
+		playlist ? { playlistId: playlist.id } : undefined,
+	);
 	const deleteAction = useDeletePlaylistAction(playlist?.id);
 	const shareAction = useSharePlaylistAction(playlist?.id);
 	return useCallback(() => {
@@ -62,6 +66,7 @@ export const usePlaylistContextMenu = (
 						onPress: playPlaylist,
 					},
 				],
+				[addToPlaylistAction],
 				user && playlist && user.id === playlist.ownerId
 					? [deleteAction]
 					: [],

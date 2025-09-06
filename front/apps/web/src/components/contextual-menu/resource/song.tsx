@@ -85,7 +85,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					PlayNextAction(getPlayNextProps),
 					PlayAfterAction(getPlayNextProps),
 				],
-				[AddToPlaylistAction(props.song.id, queryClient)],
+				[AddToPlaylistAction({ songId: props.song.id }, queryClient)],
 				[
 					GoToSongVersionAction(songSlug),
 					GoToRelatedTracksAction(songSlug),
