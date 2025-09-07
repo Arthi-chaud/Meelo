@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getArtist } from "@/api/queries";
 import { skipTrackAtom } from "@/state/player";
@@ -34,6 +34,7 @@ import { useFormattedArtistName } from "../utils";
 import { Slider } from "./slider";
 
 export const Main = () => {
+	const { rt: _rt } = useUnistyles();
 	return (
 		<>
 			<View style={styles.illustrationContainer}>
@@ -188,12 +189,13 @@ const IllustrationOrVideo = () => {
 	);
 };
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme, _rt) => ({
 	illustrationContainer: {
 		width: "100%",
 		aspectRatio: 1,
 		alignItems: "center",
 		justifyContent: "center",
+		maxHeight: "60%",
 		maxWidth: breakpoints.sm,
 	},
 	illustration: {

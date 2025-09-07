@@ -6,7 +6,6 @@ export const expo: ExpoConfig = {
 	name: IS_DEV ? "Meelo (Dev)" : "Meelo",
 	slug: "meelo",
 	version: "1.0.0",
-	orientation: "portrait",
 	icon: "./assets/icon-black.png",
 	scheme: "mobile",
 	userInterfaceStyle: "automatic",
@@ -18,6 +17,7 @@ export const expo: ExpoConfig = {
 	},
 	plugins: [
 		"expo-router",
+		"expo-screen-orientation",
 		[
 			"expo-splash-screen",
 			{

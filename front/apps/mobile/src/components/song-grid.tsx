@@ -154,7 +154,6 @@ const styles = StyleSheet.create((theme, rt) => {
 		root: { display: "flex", alignItems: "flex-start" },
 		column: (idx: number, isLast: boolean) => ({
 			paddingRight: theme.gap(1),
-
 			marginRight: isLast ? rt.screen.width * (1 - ColumnWidthRatio) : 0,
 			width: {
 				xs: width(1),

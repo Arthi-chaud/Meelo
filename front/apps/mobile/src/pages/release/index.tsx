@@ -1,5 +1,4 @@
 import { useSetAtom } from "jotai";
-import { shuffle } from "lodash";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
@@ -16,7 +15,6 @@ import type Genre from "@/models/genre";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
-import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import {
 	useBSidesAndExtras,
 	useTracklist,
@@ -38,10 +36,7 @@ import { VideoTile } from "~/components/item/resource/video";
 import { Row } from "~/components/row";
 import { SectionHeader } from "~/components/section-header";
 import { SongGrid } from "~/components/song-grid";
-import { Icon } from "~/primitives/icon";
-import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import { breakpoints } from "~/theme";
 import { Header } from "./header";
 import {
 	artistsOnAlbumQuery,
@@ -54,7 +49,6 @@ import {
 import { Tracklist } from "./tracklist";
 
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
-	const playTracks = useSetAtom(playTracksAtom);
 	const { data: release } = useQuery(() =>
 		getRelease(releaseId, ["illustration", "discs"]),
 	);
@@ -80,13 +74,6 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				artist: (song ?? video)!.artist,
 			}));
 	}, [tracks_]);
-	const playAlbum = useCallback(() => {
-		playTracks({ tracks });
-	}, [tracks]);
-
-	const shuffleAlbum = useCallback(() => {
-		playTracks({ tracks: shuffle(tracks) });
-	}, [tracks]);
 
 	useSetKeyIllustration(release);
 	return (
@@ -95,24 +82,9 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				isMixed={isMixed}
 				release={release}
 				album={album}
+				tracks={tracks}
 				totalDuration={totalDuration}
 			/>
-			<View style={styles.playbackControlsContainer}>
-				<View style={styles.playbackControls}>
-					<Pressable
-						style={styles.playbackControl}
-						onPress={playAlbum}
-					>
-						<Icon icon={PlayIcon} />
-					</Pressable>
-					<Pressable
-						style={styles.playbackControl}
-						onPress={shuffleAlbum}
-					>
-						<Icon icon={ShuffleIcon} />
-					</Pressable>
-				</View>
-			</View>
 			<Tracklist
 				// Note: We wait for the album to be loaded to avoid a shift in the tracklist
 				// if the song artist isn't the album's
@@ -388,23 +360,6 @@ const GenreRow = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
-	playbackControlsContainer: {
-		width: "100%",
-		alignItems: "center",
-	},
-	playbackControls: {
-		display: "flex",
-		flexDirection: "row",
-		justifyContent: "space-evenly",
-		maxWidth: breakpoints.sm,
-		width: "100%",
-		alignItems: "center",
-		paddingVertical: theme.gap(0.5),
-	},
-	playbackControl: {
-		// For nice hover bubbles
-		padding: theme.gap(0.5),
-	},
 	section: {
 		flex: 1,
 		paddingBottom: theme.gap(2),
