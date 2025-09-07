@@ -152,7 +152,9 @@ export const CreateUpdatePlaylistForm = ({
 const styles = StyleSheet.create((theme) => ({
 	root: {
 		padding: theme.gap(1),
-		paddingBottom: theme.gap(2),
+		paddingBottom: theme.gap(3),
+		width: "100%",
+		alignItems: "center",
 		gap: theme.gap(1),
 	},
 	saveButtonLabel: { justifyContent: "center" },
