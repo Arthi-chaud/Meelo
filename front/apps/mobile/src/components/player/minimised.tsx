@@ -9,7 +9,7 @@ import Animated, {
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { skipTrackAtom } from "@/state/player";
-import { ForwardIcon, PauseIcon, PlayIcon } from "@/ui/icons";
+import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import { useContextMenu } from "~/components/context-menu";
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
@@ -27,6 +27,7 @@ import {
 	pauseAtom,
 	playAtom,
 	progressAtom,
+	rewindTrackAtom,
 } from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
 
@@ -34,6 +35,7 @@ export const MinimisedPlayer = () => {
 	const expandPlayer = useSetAtom(expandPlayerAtom);
 	const queryClient = useQueryClient();
 	const skipTrack = useSetAtom(skipTrackAtom);
+	const rewindTrack = useSetAtom(rewindTrackAtom);
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const isVideo = useMemo(() => {
 		return currentTrack?.track.type === "Video";
@@ -41,6 +43,7 @@ export const MinimisedPlayer = () => {
 	const onSkip = useCallback(() => {
 		skipTrack(queryClient);
 	}, [queryClient, skipTrack]);
+
 	const formattedArtistName = useFormattedArtistName();
 
 	const { data: track } = useQuery(
@@ -55,6 +58,7 @@ export const MinimisedPlayer = () => {
 
 	return (
 		<RNPRessable
+			android_disableSound
 			style={styles.root}
 			onPress={onPress}
 			onLongPress={openContextMenu}
@@ -85,6 +89,12 @@ export const MinimisedPlayer = () => {
 					/>
 				</View>
 				<View style={styles.controls}>
+					<Pressable
+						onPress={rewindTrack}
+						style={styles.rewindButton}
+					>
+						<Icon icon={RewindIcon} style={styles.controlButton} />
+					</Pressable>
 					<PlayButton />
 					<Pressable onPress={onSkip}>
 						<Icon icon={ForwardIcon} style={styles.controlButton} />
@@ -172,6 +182,9 @@ const styles = StyleSheet.create((theme) => ({
 	controlButton: {
 		size: theme.fontSize.rem(1.5),
 	} as {},
+	rewindButton: {
+		display: { xs: "none", sm: "flex" },
+	},
 	controls: {
 		flexDirection: "row",
 		gap: theme.gap(2),
