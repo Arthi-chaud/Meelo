@@ -1,5 +1,10 @@
 import { atom } from "jotai";
-import { cursorAtom, playlistAtom, type TrackState } from "@/state/player";
+import {
+	cursorAtom,
+	playlistAtom,
+	playPreviousTrackAtom,
+	type TrackState,
+} from "@/state/player";
 
 export const currentTrackAtom = atom(
 	(get): TrackState | null => get(playlistAtom)[get(cursorAtom)],
@@ -14,5 +19,14 @@ export const durationAtom = atom<null | number>(null);
 export const progressAtom = atom(0);
 
 export const requestedProgressAtom = atom(0);
+
+export const rewindTrackAtom = atom(null, (get, set) => {
+	const progress = get(progressAtom);
+	if (progress > 5) {
+		set(requestedProgressAtom, 0);
+	} else {
+		set(playPreviousTrackAtom);
+	}
+});
 
 const _isPlaying = atom(false);
