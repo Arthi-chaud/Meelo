@@ -20,6 +20,7 @@ import { EmptyState } from "~/components/empty-state";
 import { LoadableText } from "~/components/loadable_text";
 import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
+import { breakpoints } from "~/theme";
 import { getSongWithLyrics } from "../queries";
 import { currentTrackAtom, progressAtom } from "../state";
 
@@ -192,7 +193,7 @@ const SyncedLyric = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: { width: "100%", flex: 1 },
+	root: { width: "100%", flex: 1, maxWidth: breakpoints.md },
 	plainLyrics: { paddingVertical: theme.gap(2), gap: theme.gap(0.5) },
 	syncedLyrics: {
 		height: "100%",

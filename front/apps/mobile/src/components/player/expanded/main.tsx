@@ -18,6 +18,7 @@ import { LoadableText } from "~/components/loadable_text";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { breakpoints } from "~/theme";
 import { videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
 import {
@@ -35,8 +36,10 @@ import { Slider } from "./slider";
 export const Main = () => {
 	return (
 		<>
-			<View style={styles.illustration}>
-				<IllustrationOrVideo />
+			<View style={styles.illustrationContainer}>
+				<View style={styles.illustration}>
+					<IllustrationOrVideo />
+				</View>
 			</View>
 			<View style={styles.controls}>
 				<TrackNameButton />
@@ -186,6 +189,13 @@ const IllustrationOrVideo = () => {
 };
 
 const styles = StyleSheet.create((theme) => ({
+	illustrationContainer: {
+		width: "100%",
+		aspectRatio: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		maxWidth: breakpoints.sm,
+	},
 	illustration: {
 		aspectRatio: 1,
 		width: "100%",
@@ -199,6 +209,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	sliderContainer: {
 		width: "100%",
+		maxWidth: breakpoints.md,
 		gap: theme.gap(1),
 	},
 	sliderNumbers: {
@@ -207,6 +218,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	playControls: {
 		width: "100%",
+		maxWidth: breakpoints.sm,
 		flexDirection: "row",
 		justifyContent: "space-evenly",
 	},
