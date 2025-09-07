@@ -20,6 +20,7 @@ import { ListItem } from "~/components/item/list-item";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { breakpoints } from "~/theme";
 
 export const Queue = () => {
 	const queryClient = useQueryClient();
@@ -115,6 +116,6 @@ const QueueItem = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: { width: "100%", flex: 1 },
+	root: { width: "100%", flex: 1, maxWidth: breakpoints.md },
 	deleteIcon: { color: theme.colors.error },
 }));
