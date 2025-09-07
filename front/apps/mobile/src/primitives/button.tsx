@@ -88,6 +88,7 @@ export const Button = (props: ButtonProps) => {
 			style={[styles.container, animatedStyle, props.containerStyle]}
 		>
 			<Container
+				android_disableSound
 				style={[styles.content]}
 				onPress={!props.disabled ? props.onPress : undefined}
 				onPressIn={!props.disabled ? handlePress : undefined}
