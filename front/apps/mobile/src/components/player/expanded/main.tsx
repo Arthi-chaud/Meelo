@@ -6,8 +6,7 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getArtist } from "@/api/queries";
-import { playPreviousTrackAtom, skipTrackAtom } from "@/state/player";
-import { store } from "@/state/store";
+import { skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
 import { useQuery, useQueryClient } from "~/api";
@@ -28,7 +27,7 @@ import {
 	pauseAtom,
 	playAtom,
 	progressAtom,
-	requestedProgressAtom,
+	rewindTrackAtom,
 } from "../state";
 import { useFormattedArtistName } from "../utils";
 import { Slider } from "./slider";
@@ -53,21 +52,12 @@ const PlayControls = () => {
 	const isPlaying = useAtomValue(isPlayingAtom);
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
-	const requestProgress = useSetAtom(requestedProgressAtom);
 	const queryClient = useQueryClient();
 	const skipTrack = useSetAtom(skipTrackAtom);
-	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
-	const onRewind = useCallback(() => {
-		const progress = store.get(progressAtom);
-		if (progress > 5) {
-			requestProgress(0);
-		} else {
-			playPreviousTrack();
-		}
-	}, [playPreviousTrackAtom, requestProgress]);
+	const rewindTrack = useSetAtom(rewindTrackAtom);
 	return (
 		<View style={styles.playControls}>
-			<Pressable onPress={onRewind}>
+			<Pressable onPress={rewindTrack}>
 				<Icon icon={RewindIcon} />
 			</Pressable>
 			<Pressable onPress={() => (isPlaying ? pause() : play())}>
