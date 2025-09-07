@@ -41,6 +41,7 @@ import { SongGrid } from "~/components/song-grid";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { breakpoints } from "~/theme";
 import { Header } from "./header";
 import {
 	artistsOnAlbumQuery,
@@ -96,16 +97,21 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				album={album}
 				totalDuration={totalDuration}
 			/>
-			<View style={styles.playbackControls}>
-				<Pressable style={styles.playbackControl} onPress={playAlbum}>
-					<Icon icon={PlayIcon} />
-				</Pressable>
-				<Pressable
-					style={styles.playbackControl}
-					onPress={shuffleAlbum}
-				>
-					<Icon icon={ShuffleIcon} />
-				</Pressable>
+			<View style={styles.playbackControlsContainer}>
+				<View style={styles.playbackControls}>
+					<Pressable
+						style={styles.playbackControl}
+						onPress={playAlbum}
+					>
+						<Icon icon={PlayIcon} />
+					</Pressable>
+					<Pressable
+						style={styles.playbackControl}
+						onPress={shuffleAlbum}
+					>
+						<Icon icon={ShuffleIcon} />
+					</Pressable>
+				</View>
 			</View>
 			<Tracklist
 				// Note: We wait for the album to be loaded to avoid a shift in the tracklist
@@ -382,10 +388,16 @@ const GenreRow = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
+	playbackControlsContainer: {
+		width: "100%",
+		alignItems: "center",
+	},
 	playbackControls: {
 		display: "flex",
 		flexDirection: "row",
 		justifyContent: "space-evenly",
+		maxWidth: breakpoints.sm,
+		width: "100%",
 		alignItems: "center",
 		paddingVertical: theme.gap(0.5),
 	},
