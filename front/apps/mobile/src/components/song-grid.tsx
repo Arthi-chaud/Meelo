@@ -6,9 +6,10 @@ import {
 	Fragment,
 	useCallback,
 	useMemo,
+	useState,
 } from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import type { SongWithRelations } from "@/models/song";
 import { playTracksAtom, type TrackState } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
@@ -16,7 +17,6 @@ import type { ListItem } from "~/components/item/list-item";
 import { SongItem } from "~/components/item/resource/song";
 import { SectionHeader } from "~/components/section-header";
 import { Divider } from "~/primitives/divider";
-import { breakpoints } from "~/theme";
 
 type Song = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
@@ -45,6 +45,7 @@ export const SongGrid = ({
 }: Props) => {
 	const playTracks = useSetAtom(playTracksAtom);
 	const scrollViewRef = createRef<ScrollView>();
+	const [columnWidth, setColumnWidth] = useState<number>();
 	const chunks = useMemo(() => {
 		if (songs === undefined) {
 			return [generateArray(ItemsPerColumn, undefined)];
@@ -88,12 +89,12 @@ export const SongGrid = ({
 						content={songs === undefined ? undefined : header}
 					/>
 				)}
-				<SnappyScrollView
+				<ScrollView
 					horizontal
 					snapToAlignment="start"
 					decelerationRate={"normal"}
+					snapToInterval={columnWidth}
 					ref={scrollViewRef}
-					style={styles.scrollView}
 				>
 					{chunks.map((chunk, chunkIdx) => (
 						<View
@@ -102,6 +103,10 @@ export const SongGrid = ({
 								chunkIdx,
 								chunkIdx === chunks.length - 1,
 							)}
+							onLayout={(e) =>
+								chunkIdx === 1 &&
+								setColumnWidth(e.nativeEvent.layout.width)
+							}
 						>
 							{chunk.map((item, idx) => (
 								<Fragment
@@ -133,7 +138,7 @@ export const SongGrid = ({
 							))}
 						</View>
 					))}
-				</SnappyScrollView>
+				</ScrollView>
 			</View>
 		)
 	);
@@ -141,22 +146,24 @@ export const SongGrid = ({
 
 const ColumnWidthRatio = 0.9;
 
-const styles = StyleSheet.create((theme, rt) => ({
-	root: { display: "flex", alignItems: "flex-start" },
-	scrollView: {},
-	column: (idx: number, isLast: boolean) => ({
-		paddingRight: isLast ? theme.gap(4) : theme.gap(1),
-		width: rt.screen.width * (!isLast ? ColumnWidthRatio : 1),
-		maxWidth: breakpoints.sm * ColumnWidthRatio,
-		marginLeft: idx === 0 && !isLast ? theme.gap(1) : 0,
-		// Preventing single-col grids to be scrollable
-		paddingLeft: idx === 0 && isLast ? theme.gap(1) : 0,
-	}),
-}));
+const styles = StyleSheet.create((theme, rt) => {
+	const width = (columnCount: number) => {
+		return rt.screen.width * (ColumnWidthRatio / columnCount);
+	};
+	return {
+		root: { display: "flex", alignItems: "flex-start" },
+		column: (idx: number, isLast: boolean) => ({
+			paddingRight: theme.gap(1),
 
-const SnappyScrollView = withUnistyles(ScrollView, (_, rt) => ({
-	//TODO Check on other screen sizes
-	snapToInterval:
-		(rt.screen.width >= breakpoints.sm ? breakpoints.sm : rt.screen.width) *
-		ColumnWidthRatio,
-}));
+			marginRight: isLast ? rt.screen.width * (1 - ColumnWidthRatio) : 0,
+			width: {
+				xs: width(1),
+				sm: width(2),
+				xl: width(3),
+			},
+			marginLeft: idx === 0 && !isLast ? theme.gap(1) : 0,
+			// Preventing single-col grids to be scrollable
+			paddingLeft: idx === 0 && isLast ? theme.gap(1) : 0,
+		}),
+	};
+});
