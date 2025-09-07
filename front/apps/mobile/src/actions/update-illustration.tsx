@@ -75,4 +75,6 @@ const UpdateIllustrationForm = ({
 	);
 };
 
-const styles = StyleSheet.create((theme) => ({ root: { gap: theme.gap(2) } }));
+const styles = StyleSheet.create((theme) => ({
+	root: { gap: theme.gap(2), width: "100%", alignItems: "center" },
+}));
