@@ -36,6 +36,7 @@ import { ResourceHeader } from "~/components/resource-header";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
+import { breakpoints } from "~/theme";
 
 type PlaylistEntryType = PlaylistEntryWithRelations<
 	"illustration" | "artist" | "featuring" | "master"
@@ -319,7 +320,7 @@ const Footer = ({
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: { flex: 1 },
+	root: { flex: 1, alignItems: "center" },
 	playButtons: {
 		flexDirection: "row",
 		gap: theme.gap(1),
@@ -328,7 +329,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	playButton: { flex: 1 },
 	playButtonContent: { justifyContent: "center" },
-	itemsContainer: { flex: 1 },
+	itemsContainer: { flex: 1, maxWidth: breakpoints.xl },
 	items: { padding: theme.gap(1), paddingTop: 0 },
 	footer: {
 		width: "100%",

@@ -38,6 +38,8 @@ import { store } from "@/state/store";
 import "intl-pluralrules";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Device from "expo-device";
+import * as ScreenOrientation from "expo-screen-orientation";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { UnistylesRuntime } from "react-native-unistyles";
 import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
@@ -99,7 +101,11 @@ export default function RootLayout() {
 
 	useEffect(() => {
 		if (loaded || error) {
-			SplashScreen.hideAsync();
+			if (Device.deviceType === Device.DeviceType.TABLET)
+				ScreenOrientation.unlockAsync().then(() =>
+					SplashScreen.hideAsync(),
+				);
+			else SplashScreen.hideAsync();
 		}
 	}, [loaded, error]);
 

@@ -107,7 +107,8 @@ const styles = StyleSheet.create((theme) => ({
 		display: "flex",
 	},
 	avatar: {
-		flex: 1,
+		width: "100%",
+		maxWidth: 150, //arbitrary
 		aspectRatio: 1,
 	},
 	text: {

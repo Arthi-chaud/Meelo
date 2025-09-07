@@ -178,11 +178,12 @@ const styles = StyleSheet.create((theme) => ({
 	rootStyle: {
 		flex: 1,
 		position: "relative",
+		alignItems: "center",
 		height: "100%",
-		maxWidth: breakpoints.xl,
 		width: "100%",
 	},
-	body: { flex: 1 },
+	// TODO it would be nice to be able to scroll using the gutters when device is larger than xl
+	body: { flex: 1, width: "100%", maxWidth: breakpoints.xl },
 	optionalHeader: {},
 	emptyState: { height: "100%", justifyContent: "center" },
 	controls: (paddingTop: number) => ({
