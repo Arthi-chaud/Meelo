@@ -142,6 +142,7 @@ const useDateAndDuration = (
 const styles = StyleSheet.create((theme) => ({
 	headerText: {
 		textAlign: "center",
+		maxWidth: breakpoints.sm,
 	},
 	headerExtensionAndStat: {
 		gap: theme.gap(0.5),
