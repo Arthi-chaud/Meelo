@@ -1,14 +1,16 @@
+import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo } from "react";
 import { getAlbum, getCurrentUserStatus } from "@/api/queries";
 import type { ReleaseWithRelations } from "@/models/release";
 import { AlbumIcon, ArtistIcon } from "@/ui/icons";
 import { getYear } from "@/utils/date";
-import { type Action, PlayReleaseAction } from "~/actions";
+import { type Action, ChangeType, PlayReleaseAction } from "~/actions";
 import { useAddToPlaylistAction } from "~/actions/add-to-playlist";
 import { useSetReleaseAsMaster } from "~/actions/master";
 import { ShareAction, useShareCallback } from "~/actions/share";
 import { useQuery, useQueryClient } from "~/api";
+import { useChangeAlbumTypeModal } from "~/components/change-type";
 import type {
 	ContextMenu,
 	ContextMenuBuilder,
@@ -21,6 +23,8 @@ export const useReleaseContextMenu = (
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const SetAsMaster = useSetReleaseAsMaster(release, release?.album);
+	const { name: routeName } = useRoute();
+	const { openChangeTypeModal } = useChangeAlbumTypeModal(release?.album);
 	const buildUrlAndShare = useShareCallback();
 	const subtitle = useMemo(() => {
 		if (!release) {
@@ -64,9 +68,19 @@ export const useReleaseContextMenu = (
 			},
 			items: [
 				release ? [PlayReleaseAction(release.id, queryClient)] : [],
-				[goToRelease, goToArtist],
+				routeName.startsWith("releases/")
+					? [goToArtist]
+					: [goToRelease, goToArtist],
 				[addToPlaylistAction],
-				user?.admin && release ? [SetAsMaster] : [],
+				user?.admin && release
+					? [
+							SetAsMaster,
+							ChangeType(
+								"actions.album.changeType",
+								openChangeTypeModal,
+							),
+						]
+					: [],
 				[
 					ShareAction(() =>
 						buildUrlAndShare(`/releases/${release?.id}`),
