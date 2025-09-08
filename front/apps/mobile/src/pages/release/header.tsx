@@ -13,6 +13,8 @@ import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { formatReleaseDate, useReleaseDate } from "@/ui/pages/release";
 import formatDuration from "@/utils/format-duration";
 import { useQuery } from "~/api";
+import { ContextMenuButton } from "~/components/context-menu";
+import { useReleaseContextMenu } from "~/components/context-menu/resource/release";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { Rating } from "~/components/rating";
@@ -36,6 +38,9 @@ export const Header = ({
 }) => {
 	const { rt: _rt } = useUnistyles();
 	const router = useRouter();
+	const contextMenu = useReleaseContextMenu(
+		release && album ? { ...release, album } : undefined,
+	);
 	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const releaseDate = useReleaseDate(release, album);
@@ -152,6 +157,7 @@ export const Header = ({
 					>
 						<Icon icon={ShuffleIcon} />
 					</Pressable>
+					<ContextMenuButton builder={contextMenu} />
 				</View>
 			</View>
 		</View>
