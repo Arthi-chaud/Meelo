@@ -18,10 +18,12 @@
 
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { View } from "react-native";
 import { getAlbums, getArtist } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
-import { useQuery } from "~/api";
+import { useInfiniteQuery, useQuery } from "~/api";
+import { Coverflow, Deceleration, Sentivity } from "~/components/coverflow";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -56,42 +58,46 @@ export default function AlbumBrowseView() {
 		artistId,
 	);
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
+	const { items } = useInfiniteQuery(() =>
+		getAlbums({}, undefined, ["artist", "illustration"]),
+	);
 	return (
-		<>
-			<Stack.Screen
-				options={{
-					headerTitle: t(
-						compilations
-							? "nav.compilations"
-							: "models.album_plural",
-					),
-				}}
-			/>
-			<InfiniteView
-				layout={layout}
-				header={artistId ? <ArtistHeader artist={artist} /> : undefined}
-				controls={{
-					layout: layoutControl,
-					sort: sortControl,
-					filters: [libraryFilterControl, albumTypeFilterControl],
-				}}
-				query={getAlbums(
-					{
-						library: libraries,
-						type: types,
-						artist: compilations ? "compilations" : artistId,
-					},
-					{ sortBy: sort ?? "name", order: order ?? "asc" },
-					["artist", "illustration"],
-				)}
-				render={(album) => (
-					<Item
-						album={album}
-						subtitle={artistId ? "year" : "artistName"}
-						illustrationProps={{}}
-					/>
-				)}
-			/>
-		</>
+		<Coverflow
+			{...{
+				initialSelection: 0,
+				onChange: () => {},
+				onPress: () => {},
+				sensitivity: Sentivity.Normal,
+				style: {
+					flex: 1,
+					justifyContent: "center",
+					alignItems: "center",
+				},
+				deceleration: Deceleration.Normal,
+				spacing: 120,
+				wingSpan: 80,
+				rotation: 50,
+				midRotation: 50,
+				perspective: 800,
+				scaleDown: 0.8,
+				scaleFurther: 0.75,
+			}}
+		>
+			{items?.map((item, idx) => (
+				<View
+					key={idx}
+					style={{
+						width: 64 * 2.5,
+						height: 90 * 2.5,
+						alignItems: "center",
+						backgroundColor: "blue",
+						borderWidth: 2,
+						borderRadius: 10,
+					}}
+				>
+					<AlbumTile album={item} subtitle="year" />
+				</View>
+			)) ?? []}
+		</Coverflow>
 	);
 }
