@@ -115,6 +115,7 @@ export default function ArtistView() {
 			<ArtistHeader artist={artist} />
 			<SongGrid
 				header={t("artist.topSongs")}
+				parentArtistId={artist?.id}
 				style={styles.section}
 				seeMore={
 					(topSongs.items?.length ?? 0) >= ShowSeeMoreThreshold
@@ -153,6 +154,7 @@ export default function ArtistView() {
 				}
 				style={styles.section}
 				songs={rareSongs.data?.pages.at(0)?.items}
+				parentArtistId={artist?.id}
 				subtitle={
 					!rareSongs.data
 						? null

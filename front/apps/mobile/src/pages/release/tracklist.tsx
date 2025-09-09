@@ -236,6 +236,9 @@ const TrackItem = ({
 									? formatArtists(
 											track.song.artist,
 											track.song.featuring,
+											albumArtistId
+												? { id: albumArtistId }
+												: undefined,
 										)
 									: track?.video?.artist.name
 							}

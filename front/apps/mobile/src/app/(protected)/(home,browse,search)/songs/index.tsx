@@ -86,19 +86,34 @@ export default function SongBrowseView() {
 		}
 	}, [rareArtistId, versionsOfSongId]);
 	const subtitle = useCallback(
-		(song: SongWithRelations<"featuring"> | undefined) => {
-			if (artistId === undefined && rareArtistId === undefined) {
+		(songItem: SongWithRelations<"featuring"> | undefined) => {
+			if (
+				artistId === undefined &&
+				versionsOfSongId === undefined &&
+				rareArtistId === undefined
+			) {
 				return "artists";
 			}
-			if (!song || !artist) {
+			if (!songItem) {
 				return null;
 			}
-			if (song.featuring.length > 0 || song.artistId !== artist.id) {
+			// If song's artist matches the main song's artist
+			// + if there is no featuring, don;t display artist name
+			if (
+				songItem.featuring.length === 0 &&
+				songItem.artistId === song?.artistId
+			) {
+				return null;
+			}
+			if (
+				songItem.featuring.length > 0 ||
+				songItem.artistId !== artist?.id
+			) {
 				return "artists";
 			}
 			return null;
 		},
-		[artistId, rareArtistId],
+		[artistId, rareArtistId, song],
 	);
 	const getQuery = useCallback(
 		(random?: number) =>
@@ -182,9 +197,10 @@ export default function SongBrowseView() {
 				actions: [playAction, shuffleAction],
 			}}
 			query={query}
-			render={(song, idx, songs) => (
+			render={(songItem, idx, songs) => (
 				<SongItem
-					song={song}
+					song={songItem}
+					parentArtistId={artist?.id ?? song?.artistId}
 					onPress={() => onItemPress(idx, songs)}
 					subtitle={subtitle(song)}
 					illustrationProps={{}}

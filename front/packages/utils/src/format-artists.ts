@@ -21,7 +21,7 @@ import type Artist from "@/models/artist";
 const formatArtists = (
 	artist: Pick<Artist, "name" | "id">,
 	featuring?: Pick<Artist, "name">[],
-	mainArtist?: Pick<Artist, "name" | "id"> | null,
+	mainArtist?: Pick<Artist, "id"> | null,
 ): string => {
 	if (!featuring || featuring.length === 0) {
 		return artist.name;
