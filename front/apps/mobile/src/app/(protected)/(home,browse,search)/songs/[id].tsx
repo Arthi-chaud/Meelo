@@ -11,7 +11,7 @@ import type { Lyrics } from "@/models/lyrics";
 import type Song from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
 import { playTrackAtom, type TrackState } from "@/state/player";
-import { LyricsIcon, PlayIcon } from "@/ui/icons";
+import { LyricsIcon, PlayIcon, SongTypeIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
@@ -26,6 +26,7 @@ import { SongHeader } from "~/components/resource-header";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
+import { Icon } from "~/primitives/icon";
 import { Text } from "~/primitives/text";
 
 const tabs = ["lyrics", "infos"] as const;
@@ -147,20 +148,27 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 	);
 	return (
 		<View style={[styles.tab, styles.info]}>
-			<View style={styles.infoRow}>
+			<View style={styles.row}>
 				<Text content={`${t("song.songType")}:`} variant="subtitle" />
-				{/*TODO Song type icon*/}
-				<LoadableText
-					content={
-						song
-							? t(songTypeToTranslationKey(song.type, false))
-							: undefined
-					}
-					skeletonWidth={10}
-				/>
+				<View style={styles.row}>
+					{song && (
+						<Icon
+							icon={SongTypeIcon(song?.type)}
+							style={styles.songTypeIcon}
+						/>
+					)}
+					<LoadableText
+						content={
+							song
+								? t(songTypeToTranslationKey(song.type, false))
+								: undefined
+						}
+						skeletonWidth={10}
+					/>
+				</View>
 			</View>
 			{(genres === undefined || genres.length > 0) && (
-				<View style={styles.infoRow}>
+				<View style={styles.row}>
 					<Text
 						content={`${t("models.genre_plural")}:`}
 						variant="subtitle"
@@ -183,7 +191,7 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 			)}
 			{(externalMetadata === undefined ||
 				(externalMetadata && externalMetadata.sources.length > 0)) && (
-				<View style={styles.infoRow}>
+				<View style={styles.row}>
 					<Text
 						content={`${t("models.externalLink_plural")}:`}
 						variant="subtitle"
@@ -261,10 +269,12 @@ const styles = StyleSheet.create((theme) => ({
 	lyric: { fontSize: theme.fontSize.rem(1.125) },
 	info: { gap: theme.gap(2) },
 	infoScrollable: { gap: theme.gap(2) },
-	infoRow: {
+	row: {
 		flexDirection: "row",
-		flex: 1,
-		gap: theme.gap(2),
 		alignItems: "center",
+		gap: theme.gap(1.5),
 	},
+	songTypeIcon: {
+		size: theme.fontSize.rem(1.5),
+	} as any,
 }));

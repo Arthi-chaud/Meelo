@@ -2,9 +2,11 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getSourceFile, getTrack } from "@/api/queries";
+import { type Icon as IconComponent, SongTypeIcon } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
 import { useQuery } from "~/api";
 import { Divider } from "~/primitives/divider";
+import { Icon } from "~/primitives/icon";
 import { Text } from "~/primitives/text";
 import { LoadableText } from "./loadable_text";
 
@@ -23,8 +25,11 @@ export const TrackInfo = ({ trackId }: { trackId: number }) => {
 			<Row label={t("fileInfo.name")} value={track?.name} />
 			<Row label={t("fileInfo.type")} value={track?.type} />
 			{track?.song !== null && (
-				// TODO Icon
-				<Row label={t("song.songType")} value={track?.song?.type} />
+				<Row
+					label={t("song.songType")}
+					value={track?.song?.type}
+					icon={SongTypeIcon(track?.song.type)}
+				/>
 			)}
 			<Row
 				label={t("track.remastered")}
@@ -76,9 +81,11 @@ export const TrackInfo = ({ trackId }: { trackId: number }) => {
 const Row = ({
 	label,
 	value,
+	icon,
 }: {
 	label: string;
 	value: string | undefined;
+	icon?: IconComponent;
 }) => {
 	return (
 		<View style={styles.rowContainer}>
@@ -87,6 +94,7 @@ const Row = ({
 					<Text content={label} variant="h6" />
 				</View>
 				<View style={styles.value}>
+					{icon && <Icon icon={icon} style={styles.icon} />}
 					<LoadableText
 						content={value}
 						variant="body"
@@ -116,5 +124,11 @@ const styles = StyleSheet.create((theme) => ({
 		maxWidth: 400,
 		justifyContent: "center",
 	},
-	value: { flex: 1, justifyContent: "center" },
+	icon: { size: theme.fontSize.rem(1.25) } as any,
+	value: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: theme.gap(1),
+	},
 }));
