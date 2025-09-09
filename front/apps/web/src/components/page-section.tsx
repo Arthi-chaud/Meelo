@@ -75,7 +75,7 @@ export const SongGridPageSection = (
 					}}
 				>
 					<SongGrid
-						parentArtistName={props.artist?.data?.name}
+						parentArtist={props.artist?.data}
 						songs={
 							items?.slice(0, props.maxItemCount) ??
 							generateArray(props.maxItemCount)

@@ -687,10 +687,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					display={(bSides.length ?? 0) > 0}
 					title={t("album.bonusTracks")}
 				>
-					<SongGrid
-						parentArtistName={albumArtist?.name}
-						songs={bSides ?? []}
-					/>
+					<SongGrid parentArtist={albumArtist} songs={bSides ?? []} />
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={(relatedReleases.items?.length ?? 0) > 1}
@@ -748,10 +745,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					title={t("browsing.sections.extras")}
 				>
 					{extras.length > 0 && (
-						<SongGrid
-							parentArtistName={albumArtist?.name}
-							songs={extras}
-						/>
+						<SongGrid parentArtist={albumArtist} songs={extras} />
 					)}
 					{videoExtras.length > 0 && (
 						<TileRow

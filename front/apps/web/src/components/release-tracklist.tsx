@@ -101,7 +101,7 @@ const ReleaseTrackList = ({
 		if (song.artistId === mainArtist?.id && !song.featuring?.length) {
 			return undefined;
 		}
-		return formatArtists(song.artist, song.featuring);
+		return formatArtists(song.artist, song.featuring, mainArtist);
 	};
 	// Note, at this point disc index is a string /shrug
 	const formatDisc = (discIndex: string) => {
