@@ -125,3 +125,32 @@ export const SongTypeDemoIcon: Icon = Iconsax.ReceiptEdit;
 export const SongTypeAcapellaIcon: Icon = Iconsax.VoiceCricle;
 export const SongTypeMedleyIcon: Icon = Iconsax.Layer;
 export const SongTypeNonMusicIcon: Icon = Iconsax.VolumeSlash;
+
+export const SongTypeIcon = (type: SongType) => {
+	switch (type) {
+		case "Original":
+			return SongTypeOriginalIcon;
+		case "Remix":
+			return SongTypeRemixIcon;
+		case "Live":
+			return SongTypeLiveIcon;
+		case "Acoustic":
+			return SongTypeAcousticIcon;
+		case "Instrumental":
+			return SongTypeInstrumentalIcon;
+		case "Edit":
+			return SongTypeEditIcon;
+		case "Clean":
+			return SongTypeCleanIcon;
+		case "Demo":
+			return SongTypeDemoIcon;
+		case "Acappella":
+			return SongTypeAcapellaIcon;
+		case "Medley":
+			return SongTypeMedleyIcon;
+		case "NonMusic":
+			return SongTypeNonMusicIcon;
+		default:
+			return SongIcon;
+	}
+};
