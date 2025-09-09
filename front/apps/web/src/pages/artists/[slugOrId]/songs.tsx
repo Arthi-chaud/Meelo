@@ -26,6 +26,7 @@ import { getArtist, getRelease, getSongGroups, getSongs } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import { SongSortingKeys } from "@/models/song";
 import type Track from "@/models/track";
+import formatArtists from "@/utils/format-artists";
 import { getAPI, useQuery, useQueryClient } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
@@ -124,7 +125,28 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							["artist", "featuring", "master", "illustration"],
 						),
 
-					subtitles: [(song) => getTrackReleaseName(song.master)],
+					subtitles: [
+						(song) =>
+							getTrackReleaseName(song.master).then(
+								(releaseName) => {
+									if (
+										song.artist.id === artist.data?.id &&
+										!song.featuring.length
+									) {
+										return releaseName;
+									}
+									const formattedArtists = formatArtists(
+										song.artist,
+										song.featuring,
+										artist.data,
+									);
+									if (releaseName !== null) {
+										return `${formattedArtists} • ${releaseName}`;
+									}
+									return formattedArtists;
+								},
+							),
+					],
 				}}
 				songGroup={
 					isRareSongsPage(router)

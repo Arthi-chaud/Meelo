@@ -191,6 +191,7 @@ const PostTracklistSections = ({
 				header={t("album.bonusTracks")}
 				// Avoid shift when bsides are loaded before main artist
 				songs={albumArtistId === undefined ? undefined : bSides}
+				parentArtistId={albumArtistId ?? undefined}
 				subtitle={
 					!bSides
 						? null

@@ -19,6 +19,7 @@
 import { Grid } from "@mui/material";
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
+import type Artist from "@/models/artist";
 import type { SongWithRelations } from "@/models/song";
 import { playTracksAtom } from "@/state/player";
 import { SongIcon } from "@/ui/icons";
@@ -32,10 +33,10 @@ type SongGridProps = {
 		| SongWithRelations<"artist" | "featuring" | "master" | "illustration">
 		| undefined
 	)[];
-	parentArtistName?: string; // To tell wheter or not we display the artists' names
+	parentArtist?: Artist | null;
 };
 
-const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
+const SongGrid = ({ songs, parentArtist }: SongGridProps) => {
 	const playTracks = useSetAtom(playTracksAtom);
 	const playSong = useCallback(
 		(index: number) => {
@@ -51,7 +52,7 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 			}));
 			playTracks({ tracks: queue, cursor: index });
 		},
-		[songs, parentArtistName],
+		[songs],
 	);
 	return (
 		<Grid container spacing={2} sx={{ display: "flex", flexGrow: 1 }}>
@@ -71,10 +72,14 @@ const SongGrid = ({ songs, parentArtistName }: SongGridProps) => {
 						title={song?.name}
 						secondTitle={
 							song
-								? parentArtistName === song.artist.name &&
+								? parentArtist?.id === song.artist.id &&
 									song.featuring.length === 0
 									? null
-									: formatArtists(song.artist, song.featuring)
+									: formatArtists(
+											song.artist,
+											song.featuring,
+											parentArtist,
+										)
 								: undefined
 						}
 						trailing={

@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useState } from "react";
+import type Artist from "@/models/artist";
 import type { SongWithRelations } from "@/models/song";
 import type { SongGroupWithRelations } from "@/models/song-group";
 import { SongIcon } from "@/ui/icons";
@@ -32,6 +33,7 @@ type SongItemProps<
 > = {
 	song: T | undefined;
 	onClick?: () => void;
+	mainArtist?: Artist | null;
 	subtitles?: ((
 		song: SongWithRelations<
 			"artist" | "featuring" | "master" | "illustration"
@@ -46,6 +48,7 @@ export const SongGroupItem = <
 >({
 	song,
 	subtitles,
+	mainArtist,
 	onClick,
 }: SongItemProps<T>) => {
 	return (
@@ -62,7 +65,7 @@ export const SongGroupItem = <
 					: [
 							async (
 								s: SongWithRelations<"artist" | "featuring">,
-							) => defaultSubtitle(s),
+							) => defaultSubtitle(s, mainArtist),
 						]),
 				...(song && (song.versionCount ?? 0) > 1
 					? [async () => `${song.versionCount} Versions`]
@@ -72,8 +75,10 @@ export const SongGroupItem = <
 	);
 };
 
-const defaultSubtitle = (s: SongWithRelations<"artist" | "featuring">) =>
-	formatArtists(s.artist, s.featuring);
+const defaultSubtitle = (
+	s: SongWithRelations<"artist" | "featuring">,
+	mainArtist: Artist | undefined | null,
+) => formatArtists(s.artist, s.featuring, mainArtist);
 
 /**
  * Item for a list of songs
@@ -88,13 +93,14 @@ const SongItem = <
 	song,
 	subtitles,
 	onClick,
+	mainArtist,
 }: SongItemProps<T>) => {
 	const artist = song?.artist;
 	const [subtitle, setSubtitle] = useState<string | null | undefined>(
 		subtitles?.length
 			? ((<br />) as unknown as string)
 			: song
-				? defaultSubtitle(song)
+				? defaultSubtitle(song, mainArtist)
 				: undefined,
 	);
 
