@@ -19,21 +19,27 @@
 import type Artist from "@/models/artist";
 
 const formatArtists = (
-	artist: Pick<Artist, "name">,
+	artist: Pick<Artist, "name" | "id">,
 	featuring?: Pick<Artist, "name">[],
+	mainArtist?: Pick<Artist, "name" | "id"> | null,
 ): string => {
 	if (!featuring || featuring.length === 0) {
 		return artist.name;
 	}
-	const [firstFeat, ...otherFeats] = featuring;
-
-	if (otherFeats.length === 0) {
-		return `${artist.name} & ${firstFeat.name}`;
+	const nameLists = (
+		mainArtist?.id === artist.id
+			? (featuring ?? [])
+			: [artist, ...featuring]
+	).map((a) => a.name);
+	const formattedString =
+		nameLists.length === 1
+			? nameLists[0]
+			: `${nameLists.slice(0, -1).join(", ")} & ${nameLists.at(-1)}`;
+	if (mainArtist?.id === artist.id) {
+		return `Feat. ${formattedString}`;
+	} else {
+		return formattedString;
 	}
-	return `${artist.name}, ${featuring
-		.map(({ name }) => name)
-		.slice(0, -1)
-		.join(", ")} & ${featuring.at(-1)?.name}`;
 };
 
 export default formatArtists;
