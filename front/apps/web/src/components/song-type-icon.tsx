@@ -18,52 +18,10 @@
 
 import type { SongType } from "@/models/song";
 import type { IconProps } from "@/ui/icons";
-import {
-	SongIcon,
-	SongTypeAcapellaIcon,
-	SongTypeAcousticIcon,
-	SongTypeCleanIcon,
-	SongTypeDemoIcon,
-	SongTypeEditIcon,
-	SongTypeInstrumentalIcon,
-	SongTypeLiveIcon,
-	SongTypeMedleyIcon,
-	SongTypeNonMusicIcon,
-	SongTypeOriginalIcon,
-	SongTypeRemixIcon,
-} from "@/ui/icons";
+import { SongTypeIcon as getSongTypeIcon } from "@/ui/icons";
 
 const SongTypeIcon = ({ type, ...props }: { type: SongType } & IconProps) => {
-	const Icon = () => {
-		switch (type) {
-			case "Original":
-				return SongTypeOriginalIcon;
-			case "Remix":
-				return SongTypeRemixIcon;
-			case "Live":
-				return SongTypeLiveIcon;
-			case "Acoustic":
-				return SongTypeAcousticIcon;
-			case "Instrumental":
-				return SongTypeInstrumentalIcon;
-			case "Edit":
-				return SongTypeEditIcon;
-			case "Clean":
-				return SongTypeCleanIcon;
-			case "Demo":
-				return SongTypeDemoIcon;
-			case "Acappella":
-				return SongTypeAcapellaIcon;
-			case "Medley":
-				return SongTypeMedleyIcon;
-			case "NonMusic":
-				return SongTypeNonMusicIcon;
-			default:
-				return SongIcon;
-		}
-	};
-
-	const IconComponent = Icon();
+	const IconComponent = getSongTypeIcon(type);
 	return <IconComponent {...props} />;
 };
 
