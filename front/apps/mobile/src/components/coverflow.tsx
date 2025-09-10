@@ -19,6 +19,7 @@ import Animated, {
 	cancelAnimation,
 	clamp,
 	interpolate,
+	runOnJS,
 	type SharedValue,
 	useAnimatedReaction,
 	useAnimatedStyle,
@@ -239,7 +240,6 @@ export const Coverflow = (props: CoverflowProps) => {
 	const [state, setState] = useState({
 		width: 0,
 		sensitivity: props.sensitivity,
-		scrollX,
 		selection: props.initialSelection,
 		children: fixChildrenOrder(props, props.initialSelection),
 	});
@@ -252,33 +252,26 @@ export const Coverflow = (props: CoverflowProps) => {
 		}));
 	}, []);
 
-	// const onScroll = useCallback(
-	// 	(value: number) => {
-	// 		scrollPos.current = value;
-	// 		const count = state.children.length;
-	// 		const newSelection = clamp(Math.round(value), 0, count - 1);
-	// 		if (newSelection !== state.selection) {
-	// 			setState((obj) => ({
-	// 				...obj,
-	// 				selection: newSelection,
-	// 				children: fixChildrenOrder(props, newSelection),
-	// 			}));
-	// 		}
-	// 	},
-	// 	[state],
-	// );
-	const onSelect = useCallback((idx: number) => {
-		if (idx === Math.round(scrollPos.current)) {
-			props.onPress?.(idx);
-		} else {
-			snapToPosition(idx);
-		}
-	}, []);
+	const onScroll = useCallback(
+		(value: number) => {
+			scrollPos.current = value;
+			const count = state.children.length;
+			const newSelection = clamp(Math.round(value), 0, count - 1);
+			if (newSelection !== state.selection) {
+				setState((obj) => ({
+					...obj,
+					selection: newSelection,
+					children: fixChildrenOrder(props, newSelection),
+				}));
+			}
+		},
+		[state],
+	);
+
 	const snapToPosition = useCallback(
 		(pos?: number) => {
 			const pos_ = pos ?? scrollPos.current;
-			const { scrollX, children } = state;
-			const count = children.length;
+			const count = Children.count(state.children);
 			const finalPos = clamp(Math.round(pos_), 0, count - 1);
 			if (finalPos !== scrollPos.current) {
 				props.onChange(finalPos);
@@ -287,12 +280,21 @@ export const Coverflow = (props: CoverflowProps) => {
 		},
 		[state],
 	);
+	const onSelect = useCallback(
+		(idx: number) => {
+			if (idx === Math.round(scrollPos.current)) {
+				props.onPress?.(idx);
+			} else {
+				snapToPosition(idx);
+			}
+		},
+		[snapToPosition],
+	);
 	const renderItem = useCallback(
 		(position: number, item: any) => {
 			if (!state.width) {
 				return null;
 			}
-			const { scrollX } = state;
 			const {
 				rotation,
 				midRotation,
@@ -323,26 +325,12 @@ export const Coverflow = (props: CoverflowProps) => {
 		[state, props, onSelect],
 	);
 	useAnimatedReaction(() => scrollX.value, () => {
-		// scrollPos.current = scrollX.value;
-		// const count = state.children.length;
-		// const newSelection = clamp(Math.round(scrollX.value), 0, count - 1);
-		// if (newSelection !== state.selection) {
-		// 	setState((obj) => ({
-		// 		...obj,
-		// 		selection: newSelection,
-		// 		children: fixChildrenOrder(props, newSelection),
-		// 	}));
-		// }
-		// onScroll(scrollX.value);
+		runOnJS(onScroll)(scrollX.value);
 	}, [state]);
 	useEffect(() => {
 		const sensitivityInt = convertSensitivity(
 			props.sensitivity ?? Sentivity.Normal,
 		);
-		const listenerId = getRandomNumber();
-		const { scrollX, sensitivity } = state;
-
-		// scrollX.addListener(listenerId, onScroll);
 
 		setPanResponder(
 			PanResponder.create({
@@ -356,6 +344,7 @@ export const Coverflow = (props: CoverflowProps) => {
 				},
 				onPanResponderTerminationRequest: () => true,
 				onPanResponderMove: (evt, gestureState) => {
+					//TODO
 					scrollX.set(-(gestureState.dx / sensitivityInt));
 				},
 				onPanResponderRelease: (evt, gestureState) => {
@@ -381,7 +370,7 @@ export const Coverflow = (props: CoverflowProps) => {
 						scrollX.value = withDecay(
 							{ velocity, deceleration },
 							() => {
-								snapToPosition();
+								runOnJS(snapToPosition)();
 							},
 						);
 					} else {
@@ -390,9 +379,6 @@ export const Coverflow = (props: CoverflowProps) => {
 				},
 			}),
 		);
-		return () => {
-			// scrollX.removeListener(listenerId);
-		};
 	}, [props]);
 	return (
 		<View

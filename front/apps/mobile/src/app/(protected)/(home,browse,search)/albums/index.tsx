@@ -24,6 +24,7 @@ import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { Coverflow, Deceleration, Sentivity } from "~/components/coverflow";
+import { Illustration } from "~/components/illustration";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -74,7 +75,7 @@ export default function AlbumBrowseView() {
 					alignItems: "center",
 				},
 				deceleration: Deceleration.Normal,
-				spacing: 120,
+				spacing: 200,
 				wingSpan: 80,
 				rotation: 50,
 				midRotation: 50,
@@ -87,7 +88,7 @@ export default function AlbumBrowseView() {
 				<View
 					key={idx}
 					style={{
-						width: 64 * 2.5,
+						width: 90 * 2.5,
 						height: 90 * 2.5,
 						alignItems: "center",
 						backgroundColor: "blue",
@@ -95,7 +96,10 @@ export default function AlbumBrowseView() {
 						borderRadius: 10,
 					}}
 				>
-					<AlbumTile album={item} subtitle="year" />
+					<Illustration
+						illustration={item.illustration}
+						quality="medium"
+					/>
 				</View>
 			)) ?? []}
 		</Coverflow>
