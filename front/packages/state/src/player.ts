@@ -27,6 +27,7 @@ import type { TrackWithRelations } from "@/models/track";
 export type TrackState = {
 	track: TrackWithRelations<"illustration">;
 	artist: Artist;
+	featuring: Artist[] | undefined; // We lazy load featuring artists
 };
 
 export type PlayerState = {
