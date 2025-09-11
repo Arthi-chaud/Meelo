@@ -180,7 +180,8 @@ export const ExpandedPlayerControls = (
 							>
 								{formatArtists(
 									props.artist,
-									parentSong.data?.featuring,
+									props.featuring ??
+										parentSong.data?.featuring,
 								)}
 							</Typography>
 						</Stack>
@@ -376,7 +377,8 @@ export const ExpandedPlayerControls = (
 										<Typography sx={{ ...playerTextStyle }}>
 											{formatArtists(
 												props.artist,
-												parentSong.data?.featuring,
+												props.featuring ??
+													parentSong.data?.featuring,
 											)}
 										</Typography>
 									</Button>
@@ -495,11 +497,10 @@ export const ExpandedPlayerControls = (
 																			.track
 																			.name
 																	}
-																	secondTitle={
-																		playlistItem
-																			.artist
-																			.name
-																	}
+																	secondTitle={formatArtists(
+																		playlistItem.artist,
+																		playlistItem.featuring,
+																	)}
 																	icon={
 																		<Box
 																			{...providedChild.dragHandleProps}

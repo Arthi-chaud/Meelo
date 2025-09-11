@@ -43,6 +43,7 @@ export type PlayerControlsProps = ComponentProps<typeof PlayerSlider> &
 		expanded: boolean;
 		onExpand: (expand: boolean) => void;
 		artist?: Artist;
+		featuring?: Artist[];
 		track?: TrackWithRelations<"illustration">;
 	};
 

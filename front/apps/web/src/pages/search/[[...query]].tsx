@@ -269,6 +269,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											illustration: item.illustration,
 										},
 										artist: item.song.artist,
+										featuring: item.song.featuring,
 									});
 									saveSearch.mutate({ songId: item.song.id });
 								}}

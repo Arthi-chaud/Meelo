@@ -45,6 +45,7 @@ const SongGrid = ({ songs, parentArtist }: SongGridProps) => {
 			}
 			const queue = songs.map((song) => ({
 				artist: song!.artist,
+				featuring: song!.featuring,
 				track: {
 					...song!.master,
 					illustration: song!.illustration,

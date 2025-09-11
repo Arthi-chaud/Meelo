@@ -105,6 +105,7 @@ export const GenreTile = ({ genre }: Props) => {
 												[
 													"master",
 													"illustration",
+													"featuring",
 													"artist",
 												],
 											),
@@ -115,6 +116,7 @@ export const GenreTile = ({ genre }: Props) => {
 														song.illustration,
 												},
 												artist: song.artist,
+												featuring: song.featuring,
 												id: song.id,
 											}),
 										),

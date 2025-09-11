@@ -49,20 +49,16 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
 	const getPlayNextProps = () =>
-		Promise.all([
-			queryClient.fetchQuery(getArtist(props.video.artistId)),
-			props.video.master.releaseId &&
-				queryClient.fetchQuery(
-					getRelease(props.video.master.releaseId),
-				),
-		]).then(([artist, release]) => ({
-			track: {
-				...props.video.master,
-				illustration: props.video.illustration,
-			},
-			artist,
-			release,
-		}));
+		queryClient
+			.fetchQuery(getArtist(props.video.artistId))
+			.then((artist) => ({
+				track: {
+					...props.video.master,
+					illustration: props.video.illustration,
+				},
+				featuring: undefined,
+				artist,
+			}));
 	const { t } = useTranslation();
 
 	return (
