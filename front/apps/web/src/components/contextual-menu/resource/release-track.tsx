@@ -65,8 +65,14 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 						]
 					: [],
 				[
-					PlayNextAction(async () => props),
-					PlayAfterAction(async () => props),
+					PlayNextAction(async () => ({
+						...props,
+						featuring: undefined,
+					})),
+					PlayAfterAction(async () => ({
+						...props,
+						featuring: undefined,
+					})),
 				],
 				props.track.songId
 					? [

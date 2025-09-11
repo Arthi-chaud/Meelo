@@ -145,6 +145,7 @@ const playVideosAction = (
 				...video.master,
 				illustration: video.illustration,
 			},
+			featuring: undefined,
 			id: video.id,
 		})),
 		queryClient,

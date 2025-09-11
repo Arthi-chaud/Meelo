@@ -75,6 +75,7 @@ const VideoTile = ({
 											...video.master,
 											illustration: video.illustration,
 										},
+										featuring: undefined,
 										artist: artist,
 									}),
 								);
