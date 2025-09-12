@@ -169,6 +169,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								illustration: song.data.illustration,
 							},
 							artist: song.data.artist,
+							featuring: song.data.featuring,
 						}))
 				}
 			>

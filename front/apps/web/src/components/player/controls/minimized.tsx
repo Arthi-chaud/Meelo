@@ -105,7 +105,11 @@ const ProgressBar = ({
 export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 	const parentSong = useQuery(
 		parentSongQuery,
-		props.track?.songId ?? undefined,
+		// The only reason we need the parent song is to get featuring artists
+		// We disable the query if we have the featuring already
+		props.featuring === undefined
+			? (props.track?.songId ?? undefined)
+			: undefined,
 	);
 	const theme = useTheme();
 	return (
@@ -212,7 +216,8 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 							{props.artist ? (
 								formatArtists(
 									props.artist,
-									parentSong.data?.featuring,
+									props.featuring ??
+										parentSong.data?.featuring,
 								)
 							) : (
 								<Skeleton

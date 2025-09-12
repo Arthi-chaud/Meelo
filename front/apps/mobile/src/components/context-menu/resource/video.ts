@@ -33,6 +33,7 @@ export const useVideoContextMenu = (
 		const trackToPlay = video
 			? {
 					artist: video.artist,
+					featuring: undefined,
 					track: {
 						...video.master,
 						illustration: video.illustration,

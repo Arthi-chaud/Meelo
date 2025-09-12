@@ -89,6 +89,7 @@ const VideoItem = <T extends VideoType>({
 					onClick?.();
 					playTrack({
 						artist,
+						featuring: undefined,
 						track: {
 							...video.master,
 							illustration: video.illustration,

@@ -102,6 +102,7 @@ export default function ArtistView() {
 		) => {
 			const tracks = items.map(({ master, illustration, artist }) => ({
 				track: { ...master, illustration },
+				featuring: undefined,
 				artist,
 			}));
 			const cursor = items.findIndex(({ id }) => id === videoId);

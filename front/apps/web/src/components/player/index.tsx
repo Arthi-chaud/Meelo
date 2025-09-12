@@ -448,6 +448,7 @@ const Player = () => {
 		expanded: expanded,
 		track: currentTrack?.track,
 		artist: currentTrack?.artist,
+		featuring: currentTrack?.featuring,
 		playing: playing ?? false,
 		playlistLoading: playlistLoading,
 		onPause: pause,

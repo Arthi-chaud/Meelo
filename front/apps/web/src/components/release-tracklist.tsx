@@ -225,7 +225,10 @@ const ReleaseTrackList = ({
 													tracks: flatTracklist.map(
 														(flatTrack) => ({
 															track: flatTrack,
-															release,
+															featuring:
+																flatTrack.song
+																	?.featuring ??
+																[],
 															artist: (flatTrack.song ??
 																flatTrack.video)!
 																.artist,
