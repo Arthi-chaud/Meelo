@@ -10,7 +10,6 @@ import {
 } from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type Artist from "@/models/artist";
 import type { SongWithRelations } from "@/models/song";
 import { playTracksAtom, type TrackState } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
@@ -67,6 +66,7 @@ export const SongGrid = ({
 			const tracks = songs.map(
 				(s): TrackState => ({
 					track: { ...s.master, illustration: s.illustration },
+					featuring: s.featuring,
 					artist: s.artist,
 				}),
 			);

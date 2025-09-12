@@ -32,7 +32,9 @@ export default function TracksView() {
 		(track: TrackWithRelations<"song" | "illustration" | "video">) =>
 			queryClient
 				.fetchQuery(getArtist((track.song ?? track.video)!.artistId))
-				.then((artist) => playTrack({ artist, track })),
+				.then((artist) =>
+					playTrack({ artist, track, featuring: undefined }),
+				),
 		[queryClient],
 	);
 	return (

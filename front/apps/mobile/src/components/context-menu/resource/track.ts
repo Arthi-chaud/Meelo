@@ -52,7 +52,11 @@ export const useTrackContextMenu = (
 				? () =>
 						queryClient
 							.fetchQuery(getArtist(songOrVideo.artistId))
-							.then((artist) => ({ artist, track }))
+							.then((artist) => ({
+								artist,
+								track,
+								featuring: undefined,
+							}))
 				: undefined;
 		return {
 			header: {

@@ -44,16 +44,18 @@ const styles = StyleSheet.create(() => ({
 export const useFormattedArtistName = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const { data: song } = useQuery(
-		(songId) => getSong(songId, ["artist", "featuring"]),
-		currentTrack?.track.songId ?? undefined,
+		(songId) => getSong(songId, ["featuring"]),
+		currentTrack?.featuring === undefined
+			? (currentTrack?.track.songId ?? undefined)
+			: undefined,
 	);
 	return useMemo(() => {
-		if (song) {
-			return formatArtists(song.artist, song.featuring);
+		if (!currentTrack) {
+			return undefined;
 		}
-		if (currentTrack) {
-			return currentTrack.artist.name;
-		}
-		return undefined;
+		return formatArtists(
+			currentTrack.artist,
+			currentTrack.featuring ?? song?.featuring,
+		);
 	}, [currentTrack, song]);
 };

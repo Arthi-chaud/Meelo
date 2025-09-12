@@ -94,6 +94,7 @@ export default function VideoBrowseView() {
 				getQuery(random),
 				({ master, illustration, artist, id }) => ({
 					artist,
+					featuring: undefined,
 					track: { ...master, illustration },
 					id,
 				}),

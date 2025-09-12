@@ -79,6 +79,7 @@ export default function PlaylistView() {
 			playlistEntries?.items.map((item) => ({
 				track: { ...item.master, illustration: item.illustration },
 				artist: item.artist,
+				featuring: item.featuring,
 			})) ?? [],
 		[playlistEntries],
 	);

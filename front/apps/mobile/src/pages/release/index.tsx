@@ -72,6 +72,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 			.map(({ song, video, ...track }) => ({
 				track,
 				artist: (song ?? video)!.artist,
+				featuring: song?.featuring ?? [],
 			}));
 	}, [tracks_]);
 
@@ -175,6 +176,7 @@ const PostTracklistSections = ({
 		) => {
 			const tracks = items.map(({ master, illustration, artist }) => ({
 				track: { ...master, illustration },
+				featuring: undefined,
 				artist,
 			}));
 			const cursor = items.findIndex(({ id }) => id === videoId);

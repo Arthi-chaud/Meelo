@@ -144,8 +144,9 @@ export default function SongBrowseView() {
 		(random?: number) =>
 			transformPage(
 				getQuery(random),
-				({ master, illustration, artist, id }) => ({
+				({ master, illustration, artist, id, featuring }) => ({
 					artist,
+					featuring,
 					track: { ...master, illustration },
 					id,
 				}),
