@@ -50,6 +50,7 @@ export const useSongContextMenu = (
 						illustration: song.illustration,
 					},
 					artist: song.artist,
+					featuring: song.featuring,
 				}
 			: undefined;
 		return {

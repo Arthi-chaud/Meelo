@@ -68,6 +68,7 @@ export const Tracklist = ({
 				.filter((t) => t !== undefined)
 				.map(({ song, video, ...track }) => ({
 					track,
+					featuring: song?.featuring ?? [],
 					artist: (song ?? video)!.artist,
 				}));
 			playTracks({ tracks: discTracks });

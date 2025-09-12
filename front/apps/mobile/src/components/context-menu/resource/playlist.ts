@@ -26,10 +26,12 @@ export const usePlaylistContextMenu = (
 			getPlaylistEntries(playlist.id, [
 				"illustration",
 				"artist",
+				"featuring",
 				"master",
 			]),
-			({ artist, master, illustration, entryId }) => ({
+			({ artist, master, illustration, featuring, entryId }) => ({
 				artist,
+				featuring,
 				track: { ...master, illustration },
 				id: entryId,
 			}),

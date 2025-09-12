@@ -100,6 +100,10 @@ export default function SearchView() {
 						...track.master,
 						illustration: track.illustration,
 					},
+					featuring: item.song
+						? item.song.featuring
+						: // the video may be one of a song that has featuring
+							undefined,
 					artist: track.artist,
 				});
 			}
