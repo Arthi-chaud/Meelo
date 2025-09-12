@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import da from "./da.json";
 import de from "./de.json";
 import en from "./en.json";
 import fr from "./fr.json";
@@ -25,7 +26,7 @@ import pt from "./pt.json";
 import pt_br from "./pt-BR.json";
 import ru from "./ru.json";
 
-export default Object.entries({ en, fr, de, ru, id, it, pt, pt_br }).reduce(
+export default Object.entries({ en, fr, de, da, ru, id, it, pt, pt_br }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
 );
@@ -34,6 +35,7 @@ export const Languages = [
 	"en",
 	"fr",
 	"de",
+	"da",
 	"ru",
 	"it",
 	"id",
