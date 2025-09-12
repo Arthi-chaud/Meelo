@@ -1,0 +1,328 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Tilføj til playliste",
+			"modalTitle": "Vælg en playliste"
+		},
+		"album": {
+			"changeType": "Skift album type",
+			"goToAlbum": "Gå til album"
+		},
+		"archive": "Arkivér",
+		"artist": {
+			"seeAlbums": "Se album",
+			"seeSongs": "Se sange"
+		},
+		"changeIllutration": "Skift illustration",
+		"create": "Opret",
+		"delete": "Slet",
+		"deleteFromPlaylist": "Fjern fra playliste",
+		"deleteUser": {
+			"label": "Slet bruger"
+		},
+		"download": {
+			"label": "Download"
+		},
+		"goBackHome": "Gå hjem",
+		"goToArtist": "Gå til artist",
+		"goToPlaylist": "Gå til playliste",
+		"goToRelease": "Gå til udgivelse",
+		"goToSettingsPage": "Gå til indstillinger",
+		"library": {
+			"create": "Opret bibliotek",
+			"delete": "Slet bibliotek"
+		},
+		"logout": "Log ud",
+		"new": "Ny",
+		"playback": {
+			"play": "Afspil",
+			"playAfter": "Afspil efter",
+			"playAll": "Afspil alle",
+			"playNext": "Afspil næste",
+			"shuffle": "Shuffle"
+		},
+		"share": "Del",
+		"song": {
+			"changeType": "Skift sang type",
+			"mergeSong": {
+				"modalTitle": "Vælg en sang"
+			},
+			"seeLyrics": "Se sangtekst",
+			"seeOtherVersions": "Se andre versioner",
+			"seeRelatedTracks": "Se relaterede sange"
+		},
+		"update": "Opdatér",
+		"video": {
+			"changeType": "Skift video type"
+		},
+		"warningModalTitle": "Advarsel"
+	},
+	"album": {
+		"bonusTracks": "Bonus sange",
+		"showAllTracks": "Vis alle sange",
+		"showOnlyExclusiveTracks": "Vis kun eksklusive sange"
+	},
+	"albumType": {
+		"compilation": "Samling",
+		"compilation_plural": "Samlinger",
+		"ep": "EP",
+		"liveRecording": "Live optagelse",
+		"liveRecording_plural": "Live album",
+		"single": "Single",
+		"single_plural": "Singler",
+		"studioRecording": "Studie optagelse",
+		"studioRecording_plural": "Studie album",
+		"videoAlbum": "Video album",
+		"videoAlbum_plural": "Video album"
+	},
+	"artist": {
+		"appearsOn": "Optræder på",
+		"rareSongs": "Sjældne sange"
+	},
+	"auth": {
+		"connectButton": "Forbind til server",
+		"loginButton": "Log ind",
+		"signin": "Har du allerede en bruger? Log ind",
+		"signup": "Er du ny her? Opret bruger",
+		"signupButton": "Opret bruger"
+	},
+	"browsing": {
+		"controls": {
+			"backToTop": "Tilbage til toppen",
+			"filter": {
+				"allLibraries": "Alle biblioteker",
+				"header": "Filter"
+			},
+			"showAllSongs": "Vis alle versioner",
+			"sort": {
+				"addDate": "Tilføj dato",
+				"artistName": "Artist navn",
+				"bitrate": "Bitrate",
+				"bpm": "Tempo",
+				"creationDate": "Oprettelsesdato",
+				"name": "Titel",
+				"registrationDate": "Registeringsdato",
+				"releaseDate": "Udgivelsesdato"
+			}
+		},
+		"sections": {
+			"about": "Om",
+			"featuredOnPlaylists": "Optræder på",
+			"livePerformances": "Live optrædelser",
+			"musicVideos": "Musikvideoer"
+		},
+		"seeAll": "Se alle"
+	},
+	"compilationArtistLabel": "Samling",
+	"emptyState": {
+		"default": "Intet at se her…",
+		"lyrics": "Ingen tekster at synge med på :(",
+		"playlist": "Der er ingen sange i denne playliste... endnu!",
+		"playlists": "Der er ingen playlister... endnu!"
+	},
+	"errors": {
+		"errorOccured": "Ups... Der opstod en fejl",
+		"oops": "Ups",
+		"pageNotFound": "Ups... Siden blev ikke fundet"
+	},
+	"fileInfo": {
+		"bitRate": "Bitrate",
+		"bpm": "Tempo",
+		"duration": "Længde",
+		"name": "Navn",
+		"path": "Sti",
+		"registrationDate": "Registeringsdato",
+		"type": "Type",
+		"unknown": "Ukendt"
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "Bekræft",
+			"password": "Adgangskode",
+			"passwordIsRequired": "Adgangskode er krævet",
+			"passwordTooShort": "Adgangskoden er for kort",
+			"pleaseConfirm": "Venligt bekræft adgangskode",
+			"username": "Brugernavn",
+			"usernameIsRequired": "Brugernavn er krævet",
+			"usernameTooShort": "Brugernavnet er for kort"
+		},
+		"cancel": "Annullér",
+		"confirm": "Bekræft",
+		"illustration": {
+			"url": "Indsæt link til den nye illustration"
+		},
+		"library": {
+			"nameIsRequired": "Navn er krævet",
+			"nameOfLibrary": "Bibliotekets navn",
+			"pathIsRequired": "Sti er krævet",
+			"pathOfLibrary": "Bibliotekets sti"
+		},
+		"playlist": {
+			"allowPlaylistChanges": "Tillad andre brugere at opdatere denne playliste",
+			"playlistIsPublic": "Tillad andre brugere at se denne playliste"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlLabel": "ListenBrainz' API link",
+				"tokenHelperText": "Hent din bruger nøgle her: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Nøgle er krævet",
+				"tokenLabel": "Indsæt ListenBrainz bruger nøgle"
+			}
+		}
+	},
+	"home": {
+		"latestAlbums": "Seneste album",
+		"mostPlayedSongs": "Mest afspillede sange"
+	},
+	"keyboardBindings": {
+		"closePlayer": "Luk afspiller",
+		"goToSearchPage": "Gå til søgning",
+		"goToSettingsPage": "Gå til indstillinger",
+		"modalTitle": "Tastaturgenveje",
+		"openClosePlayer": "Åben / Luk afspiller",
+		"playPauseWhenExpanded": "Afspil / Pause (Når afspilleren er åben)"
+	},
+	"misc": {
+		"loading": "Indlæser",
+		"no": "Nej",
+		"yes": "Ja"
+	},
+	"models": {
+		"album": "Album",
+		"album_plural": "Album",
+		"artist": "Artist",
+		"artist_plural": "Artister",
+		"externalLink_plural": "Eksterne links",
+		"library_plural": "Biblioteker",
+		"lyrics": "Sangtekster",
+		"playlist": "Playliste",
+		"playlist_plural": "Playlister",
+		"song": "Sang",
+		"song_plural": "Sange",
+		"user_plural": "Brugere",
+		"versions": "Versioner",
+		"video": "Video",
+		"video_plural": "Videoer"
+	},
+	"nav": {
+		"compilations": "Samlinger",
+		"home": "Hjem",
+		"more": "Mere",
+		"musicVideos": "Musikvideoer",
+		"search": "Søg",
+		"settings": "Indstillinger"
+	},
+	"player": {
+		"loadNextSongs": "Indlæs næste sange",
+		"saveQueueAsPlaylist": "Gem kø som playliste"
+	},
+	"search": {
+		"all": "Alle"
+	},
+	"settings": {
+		"libraries": {
+			"nameColumn": "Navn",
+			"tasks": {
+				"current": "Nuværende",
+				"label": "Opgaver",
+				"none": "Ingen",
+				"pending": "Afventer"
+			}
+		},
+		"manageFromWebApp": "Administrer biblioteker og brugere fra web-appen",
+		"ui": {
+			"account": {
+				"changePassword": "Skift adgangskode",
+				"header": "Konto"
+			},
+			"colorScheme": "Tema",
+			"external": {
+				"encounteredABug": "Opdaget en fejl?",
+				"readTheDoc": "Læs brugermanualen"
+			},
+			"keyboardBindings": "Tastaturgenveje",
+			"lang": {
+				"de": "Tysk",
+				"en": "Engelsk",
+				"fr": "Fransk",
+				"id": "Indonesien",
+				"it": "Italien",
+				"pt": "Portugisisk",
+				"pt_br": "Portugisisk (Brasilien)",
+				"ru": "Russisk"
+			},
+			"language": "Sprog",
+			"notifications": "Notifikationer",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Tilgå tastaturgenveje ved at trykke '?'",
+			"permissions": "Tilladelser",
+			"project": "Projekt",
+			"scrobblers": {
+				"connect_scrobblers": "Forbind Scrobblers",
+				"header": "Scrobblers"
+			},
+			"useSystemLanguage": "Brug system sprog",
+			"useSystemTheme": "Brug system tema",
+			"versions": "Versioner"
+		},
+		"users": {
+			"admin": "Administrator",
+			"enabled": "Aktiveret",
+			"nameColumn": "Navn",
+			"you": "Dig"
+		}
+	},
+	"song": {
+		"infoTab": "Info"
+	},
+	"songType": {
+		"acappella": "A capella",
+		"acoustic": "Akustisk",
+		"demo": "Demo",
+		"edit": "Rediger",
+		"live": "Live",
+		"original": "Original",
+		"remix": "Remix",
+		"unknown": "Ukendt"
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": "Tillykke! Din Meelo konto er blevet oprettet. Afvent venligst aktivering af brugeren af en administrator"
+		},
+		"leaveWillStopPlaybackAlert": "Afspilning stoppes hvis hjemmesiden forlades.",
+		"library": {
+			"created": "Bibliotek oprettet",
+			"creationFail": "Der opstod en fejl ved oprettelse af bibliotek",
+			"deleted": "Bibliotek slettet",
+			"deletionFail": "Der opstod en fejl ved sletning af bibliotek",
+			"deletionRunning": "Bibliotek slettes…",
+			"loadFail": "Bibliotekerne kunne ikke indlæses",
+			"updated": "Bibliotek opdateret"
+		},
+		"linkCopied": "Link kopieret til udklipsholder",
+		"player": {
+			"networkError": "Der lader til at være netværksproblemer…"
+		},
+		"refreshMetadata": {
+			"started": "Opdaterer metadata... (Genindlæsning af siden kan være nødvendig)"
+		},
+		"scrobblers": {
+			"linking": "Forbinder konto...",
+			"linkingListenBrainzFailed": "Kunne ikke forbinde ListenBrainz konto"
+		},
+		"users": {
+			"deleted": "Bruger slettet",
+			"deletionFail": "Der opstod en fejl under sletning af bruger",
+			"nowDisabled": "Brugeren er deaktiveret",
+			"nowEnabled": "Brugeren er aktiveret",
+			"nowNotAdmin": "Brugeren er ikke længere administrator",
+			"updateFail": "Der opstod en fejl under opdatering af brugeren"
+		}
+	},
+	"videoType": {
+		"documentary": "Dokumentar",
+		"live": "Live",
+		"musicVideo": "Musikvideo",
+		"other": "Andre",
+		"photoGallery": "Foto galleri"
+	}
+}
