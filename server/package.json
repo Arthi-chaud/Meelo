@@ -21,7 +21,7 @@
 		"test:cov": "yarn test --coverage"
 	},
 	"dependencies": {
-		"@nestjs/axios": "^4.0.0",
+		"@nestjs/axios": "^4.0.1",
 		"@nestjs/common": "^11.1.2",
 		"@nestjs/config": "^4.0.0",
 		"@nestjs/core": "^11.1.2",
@@ -35,7 +35,7 @@
 		"amqp-connection-manager": "^4.1.14",
 		"amqplib": "^0.10.4",
 		"archiver": "^5.3.1",
-		"axios": "^1.11.0",
+		"axios": "^1.12.1",
 		"bcrypt": "^6.0.0",
 		"blurhash": "^2.0.5",
 		"class-transformer": "^0.5.1",
