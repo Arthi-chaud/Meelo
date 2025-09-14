@@ -25,5 +25,5 @@ COPY --from=builder /app/dist ./dist
 RUN corepack enable
 ENV VERSION=$VERSION
 
-CMD yarn run prisma migrate dev --skip-generate && yarn run start:prod
+CMD ["/bin/sh", "-c", "yarn run prisma migrate dev --skip-generate && yarn run start:prod"]
 

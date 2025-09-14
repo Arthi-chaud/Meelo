@@ -1,10 +1,11 @@
-# This compose allows to build the whole project in a "production"-like environment 
+# This compose allows to build the whole project in a "production"-like environment
 services:
   server:
+    init: true
     build:
       context: ./server
       args:
-      - VERSION=local
+        - VERSION=local
     expose:
       - 4000
     restart: on-failure
@@ -34,7 +35,7 @@ services:
     build:
       context: ./front
       args:
-      - VERSION=local
+        - VERSION=local
     expose:
       - 3000
     depends_on:
@@ -50,8 +51,8 @@ services:
   scanner:
     build:
       context: ./scanner
-      args: 
-      - VERSION=local
+      args:
+        - VERSION=local
     expose:
       - 8133
     depends_on:
@@ -74,7 +75,7 @@ services:
     build:
       context: ./matcher
       args:
-      - VERSION=local
+        - VERSION=local
     restart: on-failure
     depends_on:
       server:
@@ -130,7 +131,14 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - MEILI_LOG_LEVEL=WARN
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://0.0.0.0:7700/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--spider",
+          "http://0.0.0.0:7700/health",
+        ]
       timeout: 5s
       retries: 5
   mq:
