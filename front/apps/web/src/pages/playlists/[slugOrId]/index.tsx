@@ -54,6 +54,7 @@ import {
 	ShuffleIcon,
 	SongIcon,
 } from "@/ui/icons";
+import formatArtists from "@/utils/format-artists";
 import { generateArray } from "@/utils/gen-list";
 import { getAPI, useQueries, useQuery, useQueryClient } from "~/api";
 import { DeletePlaylistAction } from "~/components/actions/playlist";
@@ -195,7 +196,9 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 type PlaylistEntryItemProps = {
 	onClick: () => void;
 	canRemoveEntry: boolean;
-	entry: PlaylistEntryWithRelations<"artist" | "illustration"> | undefined;
+	entry:
+		| PlaylistEntryWithRelations<"artist" | "illustration" | "featuring">
+		| undefined;
 };
 
 const PlaylistEntryItem = ({
@@ -221,7 +224,9 @@ const PlaylistEntryItem = ({
 				/>
 			)
 		}
-		secondTitle={entry?.artist.name}
+		secondTitle={
+			entry ? formatArtists(entry.artist, entry.featuring) : undefined
+		}
 	/>
 );
 
@@ -316,7 +321,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 			tracks: entries.map((entry) => ({
 				track: { ...entry.master, illustration: entry.illustration },
 				artist: entry.artist,
-				release: entry.release,
+				featuring: entry.featuring,
 			})),
 			cursor: fromIndex,
 		});
@@ -330,7 +335,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						illustration: entry.illustration,
 					},
 					artist: entry.artist,
-					release: entry.release,
+					featuring: entry.featuring,
 				})),
 			),
 			cursor: 0,

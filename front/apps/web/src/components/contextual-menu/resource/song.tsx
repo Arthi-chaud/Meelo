@@ -46,7 +46,7 @@ import { ShowMasterTrackFileInfoAction } from "~/components/actions/show-track-i
 import { ContextualMenu } from "..";
 
 type SongContextualMenuProps = {
-	song: SongWithRelations<"artist">;
+	song: SongWithRelations<"artist" | "featuring">;
 	onSelect?: () => void;
 	// Should be set if song is from a playlist
 	entryId?: number;
@@ -66,6 +66,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 		getMasterTrack().then((master) => ({
 			track: master,
 			artist: props.song.artist,
+			featuring: props.song.featuring,
 		}));
 
 	return (

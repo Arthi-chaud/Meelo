@@ -490,12 +490,14 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									onClick={() => {
 										if (
 											tracks &&
-											release.data &&
 											artists.data !== undefined
 										) {
 											let playlist = tracks.map(
 												(track) => ({
 													track: track,
+													featuring:
+														track.song?.featuring ??
+														[],
 													artist: artists.data.find(
 														(artist) =>
 															artist.id ===
@@ -503,7 +505,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 																track.video)!
 																.artistId,
 													)!,
-													release: release.data,
 												}),
 											);
 

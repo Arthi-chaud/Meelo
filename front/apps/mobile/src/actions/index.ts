@@ -91,6 +91,7 @@ export const PlayReleaseAction = (
 		onPress: () => {
 			const query = getReleaseTracklist(releaseId, false, [
 				"artist",
+				"featuring",
 				"illustration",
 			]);
 			store.set(
@@ -98,6 +99,7 @@ export const PlayReleaseAction = (
 				transformPage(query, ({ song, video, ...track }) => ({
 					artist: (song ?? video)!.artist,
 					track,
+					featuring: song?.featuring ?? [],
 					id: track.id,
 				})),
 				queryClient,

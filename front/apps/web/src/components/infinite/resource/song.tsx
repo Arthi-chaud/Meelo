@@ -78,6 +78,7 @@ const playSongsAction = <T extends SongModel>(
 				illustration: song.illustration,
 			},
 			artist: song.artist,
+			featuring: song.featuring,
 			id: song.id,
 		})),
 		queryClient,

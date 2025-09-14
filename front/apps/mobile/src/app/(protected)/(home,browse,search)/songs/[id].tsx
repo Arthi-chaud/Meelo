@@ -62,6 +62,7 @@ export default function SongPage() {
 		const track: TrackState = {
 			track: { ...song.master, illustration: song.illustration },
 			artist: song.artist,
+			featuring: song.featuring,
 		};
 		playTrack(track);
 	}, [song]);

@@ -62,14 +62,13 @@ const TrackItem = ({ track, onClick }: TrackItemProps) => {
 					onClick?.();
 					queryClient
 						.fetchQuery(
-							track.song
-								? getArtist(track.song.artistId)
-								: getArtist(track.video!.artistId),
+							getArtist((track.song ?? track.video)!.artistId),
 						)
 						.then((artist) => {
 							playTrack({
 								artist,
 								track,
+								featuring: undefined,
 							});
 						});
 				})

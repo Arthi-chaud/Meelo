@@ -21,7 +21,7 @@ import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { getArtist, getRelease } from "@/api/queries";
+import { getArtist } from "@/api/queries";
 import type { TrackWithRelations } from "@/models/track";
 import { MasterIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
@@ -57,17 +57,15 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 	const confirm = useConfirm();
 	const isMaster = props.track.song?.masterId === props.track.id;
 	const getPlayNextProps = () =>
-		Promise.all([
-			queryClient.fetchQuery(
+		queryClient
+			.fetchQuery(
 				getArtist((props.track.song ?? props.track.video)!.artistId),
-			),
-			props.track.releaseId &&
-				queryClient.fetchQuery(getRelease(props.track.releaseId)),
-		]).then(([artist, release]) => ({
-			track: props.track,
-			artist,
-			release,
-		}));
+			)
+			.then((artist) => ({
+				track: props.track,
+				artist,
+				featuring: undefined,
+			}));
 	const { t } = useTranslation();
 	const masterMutation = useMutation({
 		mutationFn: async () => {
