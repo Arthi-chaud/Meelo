@@ -36,7 +36,6 @@
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
-				"noUnusedVariables": "warn",
 				"useHookAtTopLevel": "off"
 			},
 			"complexity": {

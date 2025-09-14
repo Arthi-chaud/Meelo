@@ -45,7 +45,8 @@
 				"noConsole": "error"
 			},
 			"correctness": {
-				"noUnusedImports": "warn"
+				"noUnusedImports": "error",
+				"noUnusedVariables": "error"
 			}
 		}
 	},
