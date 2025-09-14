@@ -1,5 +1,5 @@
 import { useNavigation } from "expo-router";
-import { Pressable, View, type ViewStyle } from "react-native";
+import { Pressable, type ViewStyle } from "react-native";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BackIcon } from "@/ui/icons";
