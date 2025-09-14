@@ -1,6 +1,7 @@
-# This compose allows to setup the whole project in the production environment 
+# This compose allows to setup the whole project in the production environment
 services:
   server:
+    init: true
     image: arthichaud/meelo-server:${TAG:-latest}
     expose:
       - 4000
@@ -99,7 +100,14 @@ services:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - MEILI_LOG_LEVEL=WARN
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider", "http://0.0.0.0:7700/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--spider",
+          "http://0.0.0.0:7700/health",
+        ]
       timeout: 5s
       retries: 5
   transcoder:

@@ -34,6 +34,7 @@ async function bootstrap() {
 		.useGlobalInterceptors(...Plugins.buildInterceptors(app))
 		.use(...Plugins.buildHttpPlugs(app));
 	await bootstrapSwagger(app);
+	app.enableShutdownHooks();
 	await app.listen(4000);
 }
 bootstrap();
