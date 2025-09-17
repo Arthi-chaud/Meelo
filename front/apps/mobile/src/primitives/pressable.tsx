@@ -52,10 +52,10 @@ export const Pressable = ({
 			//TODO Hover
 			disabled={disabled}
 			android_disableSound={true}
-			onPressIn={onPressStart}
-			onPressOut={onPressEnd}
-			onPress={onPress_}
-			onLongPress={onLongPress}
+			onPressIn={!disabled ? onPressStart : undefined}
+			onPressOut={!disabled ? onPressEnd : undefined}
+			onPress={!disabled ? onPress_ : undefined}
+			onLongPress={!disabled ? onLongPress : undefined}
 		>
 			<Animated.View style={[styles.root, animatedStyle, style]}>
 				{children}
