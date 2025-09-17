@@ -82,21 +82,24 @@ export default function SongPage() {
 				</View>
 				<TabComponent
 					currentTab={currentTab}
+					enabled={!!song}
 					setCurrentTab={setCurrentTab}
 				/>
 				<Divider h withInsets />
-				<ScrollView
-					style={styles.content}
-					contentContainerStyle={{ paddingBottom }}
-				>
-					{currentTab === "lyrics" && (
-						<LyricsView
-							lyrics={song?.lyrics}
-							songName={song?.name}
-						/>
-					)}
-					{currentTab === "infos" && <InfoView song={song} />}
-				</ScrollView>
+				{song && (
+					<ScrollView
+						style={styles.content}
+						contentContainerStyle={{ paddingBottom }}
+					>
+						{currentTab === "lyrics" && (
+							<LyricsView
+								lyrics={song?.lyrics}
+								songName={song?.name}
+							/>
+						)}
+						{currentTab === "infos" && <InfoView song={song} />}
+					</ScrollView>
+				)}
 			</View>
 		</View>
 	);
@@ -228,9 +231,11 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 
 const TabComponent = ({
 	currentTab,
+	enabled,
 	setCurrentTab,
 }: {
 	currentTab: Tab;
+	enabled: boolean;
 	setCurrentTab: (t: Tab) => void;
 }) => {
 	const { t } = useTranslation();
@@ -246,6 +251,7 @@ const TabComponent = ({
 		<View style={styles.tabs}>
 			{tabs.map((tab) => (
 				<Chip
+					disabled={!enabled}
 					key={tab}
 					filled={tab === currentTab}
 					title={t(translateTabName(tab))}
