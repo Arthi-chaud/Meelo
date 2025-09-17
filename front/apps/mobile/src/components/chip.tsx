@@ -12,10 +12,21 @@ type Props = {
 	href?: Href;
 	icon?: IconType;
 	filled?: boolean;
+	disabled?: boolean;
 };
 
-export const Chip = ({ title, onPress, href, filled, icon }: Props) => {
-	styles.useVariants({ filled: filled ?? false });
+export const Chip = ({
+	title,
+	onPress,
+	href,
+	filled,
+	icon,
+	disabled,
+}: Props) => {
+	styles.useVariants({
+		filled: filled ?? false,
+		disabled: disabled ?? false,
+	});
 	const router = useRouter();
 	const pressCallback = useCallback(() => {
 		onPress?.();
@@ -25,7 +36,11 @@ export const Chip = ({ title, onPress, href, filled, icon }: Props) => {
 	}, [onPress, href]);
 
 	return (
-		<Pressable onPress={pressCallback} style={styles.chip}>
+		<Pressable
+			onPress={pressCallback}
+			style={styles.chip}
+			disabled={disabled}
+		>
 			{icon && <Icon icon={icon} style={styles.chipIcon} />}
 			<LoadableText
 				content={title}
@@ -45,6 +60,10 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: "center",
 		alignItems: "center",
 		variants: {
+			disabled: {
+				true: { opacity: 0.5 },
+				false: {},
+			},
 			filled: {
 				true: {
 					backgroundColor: theme.colors.text.primary,
