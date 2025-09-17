@@ -38,6 +38,7 @@ export default function Layout({ segment }: { segment: string }) {
 	const screenOptions = {
 		animation: "none", //TODO slide_from_right without flicker
 		animationTypeForReplace: "pop",
+		freezeOnBlur: true,
 		contentStyle: [styles.screen],
 		// headerStyle: styles.header,
 		headerTitleStyle: styles.headerTitle,
