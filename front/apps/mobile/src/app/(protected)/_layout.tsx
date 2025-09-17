@@ -210,7 +210,12 @@ export function TabButton({ icon, isFocused, ...props }: TabButtonProps) {
 		[props.onLongPress],
 	);
 	return (
-		<Pressable onPress={onPress} onLongPress={onLongPress} disabled={false}>
+		<Pressable
+			onPress={onPress}
+			onLongPress={onLongPress}
+			disabled={false}
+			disableRequestAnimationFrame
+		>
 			<Icon icon={icon} variant={isFocused ? "Bold" : undefined} />
 		</Pressable>
 	);

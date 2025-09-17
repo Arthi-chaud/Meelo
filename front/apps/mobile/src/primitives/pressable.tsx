@@ -17,6 +17,7 @@ type Props = {
 	onLongPress?: (e: GestureResponderEvent) => void;
 	children: React.ReactNode;
 	disabled?: boolean;
+	disableRequestAnimationFrame?: boolean;
 	style?: ComponentProps<typeof TouchableOpacity>["style"];
 };
 
@@ -27,13 +28,18 @@ export const Pressable = ({
 	style,
 	disabled,
 	onLongPress,
+	disableRequestAnimationFrame,
 }: Props) => {
 	const opacity = useSharedValue(1);
 	const animatedTheme = useAnimatedTheme();
 	const onPress_ = useCallback(
 		(e: GestureResponderEvent) => {
-			//https://reactnative.dev/docs/performance.html#my-touchablex-view-isnt-very-responsive
-			requestAnimationFrame(() => onPress(e));
+			if (disableRequestAnimationFrame) {
+				onPress(e);
+			} else {
+				//https://reactnative.dev/docs/performance.html#my-touchablex-view-isnt-very-responsive
+				requestAnimationFrame(() => onPress(e));
+			}
 		},
 		[onPress],
 	);
