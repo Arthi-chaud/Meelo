@@ -94,15 +94,19 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				tracklist={album ? (tracklist as any) : undefined} // TODO Avoid cast
 				discs={album ? release?.discs : undefined}
 			/>
-
-			{/* TODO Show only exclusive tracks */}
-			{/* TODO Label */}
-			<PostTracklistSections
-				releaseId={release?.id}
-				album={album}
-				tracks={tracks_}
-				albumArtistId={album?.artistId}
-			/>
+			{/* No need to mount this as long as the release is not loaded */}
+			{release !== undefined && (
+				<>
+					{/* TODO Show only exclusive tracks */}
+					{/* TODO Label */}
+					<PostTracklistSections
+						releaseId={release?.id}
+						album={album}
+						tracks={tracks_}
+						albumArtistId={album?.artistId}
+					/>
+				</>
+			)}
 		</>
 	);
 }

@@ -23,7 +23,6 @@ import { currentTrackAtom } from "~/components/player/state";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
-import { TextSkeleton } from "~/primitives/text";
 
 type TrackType = TrackWithRelations<"illustration"> &
 	RequireAtLeastOne<{
@@ -258,11 +257,7 @@ const TrackItem = ({
 				/>
 			</View>
 			<View>
-				{contextMenu ? (
-					<ContextMenuButton builder={contextMenu} />
-				) : (
-					<TextSkeleton width={4} />
-				)}
+				{contextMenu && <ContextMenuButton builder={contextMenu} />}
 			</View>
 		</Pressable>
 	);
