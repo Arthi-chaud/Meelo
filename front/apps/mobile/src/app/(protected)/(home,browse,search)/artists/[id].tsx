@@ -144,90 +144,99 @@ export default function ArtistView() {
 					type={albumType}
 				/>
 			))}
-
-			<SongGrid
-				hideIfEmpty
-				header={t("artist.rareSongs")}
-				seeMore={
-					(rareSongs.items?.length ?? 0) > ShowSeeMoreThreshold
-						? { pathname: "/songs", params: { rare: artistId } }
-						: undefined
-				}
-				style={styles.section}
-				songs={rareSongs.data?.pages.at(0)?.items}
-				parentArtistId={artist?.id}
-				subtitle={
-					!rareSongs.data
-						? null
-						: (song) =>
-								song.artistId.toString() === artistId &&
-								song.featuring.length === 0
-									? null
-									: "artists"
-				}
-			/>
-
-			{(
-				[
-					{ label: "musicVideos", items: musicVideos },
-					{ label: "livePerformances", items: liveVideos },
-					{ label: "extras", items: extras },
-				] as const
-			).map(({ label, items }) => (
-				<Row
-					hideIfEmpty
-					key={label}
-					items={items}
-					style={styles.section}
-					header={t(`browsing.sections.${label}`)}
-					render={(item) => (
-						<VideoTile
-							video={item}
-							onPress={() =>
-								item && items && onVideoPress(item.id, items)
-							}
-							subtitle="duration"
-							illustrationProps={{
-								normalizedThumbnail: true,
-							}}
-						/>
-					)}
-					seeMore={
-						(items?.length ?? 0) > ShowSeeMoreThreshold
-							? {
-									pathname: "/videos",
-									params: {
-										artist: artistId,
-										sort: "name",
-										order: "asc",
-									} satisfies Sorting<VideoSortingKey> & {
-										artist: string;
-									},
-								}
-							: undefined
-					}
-				/>
-			))}
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("artist.appearsOn")}
-				items={relatedAlbums.items}
-				render={(album) => (
-					<AlbumTile album={album} subtitle="artistName" />
-				)}
-			/>
-
-			{externalMetadata !== null && (
+			{artist && (
 				<>
-					<ExternalMetadataDescriptionSection
-						externalMetadata={externalMetadata}
+					<SongGrid
+						hideIfEmpty
+						header={t("artist.rareSongs")}
+						seeMore={
+							(rareSongs.items?.length ?? 0) >
+							ShowSeeMoreThreshold
+								? {
+										pathname: "/songs",
+										params: { rare: artistId },
+									}
+								: undefined
+						}
 						style={styles.section}
+						songs={rareSongs.data?.pages.at(0)?.items}
+						parentArtistId={artist?.id}
+						subtitle={
+							!rareSongs.data
+								? null
+								: (song) =>
+										song.artistId.toString() === artistId &&
+										song.featuring.length === 0
+											? null
+											: "artists"
+						}
 					/>
-					<ExternalMetadataSourcesSection
-						externalMetadata={externalMetadata}
+
+					{(
+						[
+							{ label: "musicVideos", items: musicVideos },
+							{ label: "livePerformances", items: liveVideos },
+							{ label: "extras", items: extras },
+						] as const
+					).map(({ label, items }) => (
+						<Row
+							hideIfEmpty
+							key={label}
+							items={items}
+							style={styles.section}
+							header={t(`browsing.sections.${label}`)}
+							render={(item) => (
+								<VideoTile
+									video={item}
+									onPress={() =>
+										item &&
+										items &&
+										onVideoPress(item.id, items)
+									}
+									subtitle="duration"
+									illustrationProps={{
+										normalizedThumbnail: true,
+									}}
+								/>
+							)}
+							seeMore={
+								(items?.length ?? 0) > ShowSeeMoreThreshold
+									? {
+											pathname: "/videos",
+											params: {
+												artist: artistId,
+												sort: "name",
+												order: "asc",
+											} satisfies Sorting<VideoSortingKey> & {
+												artist: string;
+											},
+										}
+									: undefined
+							}
+						/>
+					))}
+					<Row
+						hideIfEmpty
 						style={styles.section}
+						header={t("artist.appearsOn")}
+						items={relatedAlbums.items}
+						render={(album) => (
+							<AlbumTile album={album} subtitle="artistName" />
+						)}
 					/>
+
+					{externalMetadata !== null && (
+						<>
+							<ExternalMetadataDescriptionSection
+								externalMetadata={externalMetadata}
+								style={styles.section}
+							/>
+							<ExternalMetadataSourcesSection
+								externalMetadata={externalMetadata}
+								style={styles.section}
+							/>
+						</>
+					)}
 				</>
 			)}
 		</SafeScrollView>
