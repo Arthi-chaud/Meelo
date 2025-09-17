@@ -21,15 +21,16 @@ import { View, type ViewStyle } from "react-native";
 import { Blurhash } from "react-native-blurhash";
 import Image from "react-native-fast-image";
 import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import type IllustrationModel from "@/models/illustration";
 import type { IllustrationQuality } from "@/models/illustration";
-import type { Icon } from "@/ui/icons";
+import type { Icon as IconType } from "@/ui/icons";
 import { useAPI } from "~/api";
+import { Icon } from "~/primitives/icon";
 
 type Props = {
 	illustration: IllustrationModel | undefined | null;
-	fallbackIcon?: Icon;
+	fallbackIcon?: IconType;
 	dropShadow?: boolean;
 	quality: IllustrationQuality;
 	normalizedThumbnail?: boolean;
@@ -85,13 +86,6 @@ export const Illustration = ({
 		opacity: fallbackOpacity.value,
 	}));
 
-	const FallbackIcon = withUnistyles(
-		fallbackIcon ?? View,
-		(theme) =>
-			({
-				color: theme.colors.text.secondary,
-			}) as any,
-	);
 	useEffect(() => {
 		// Whatever the new illustration props is,
 		// we need to reset the blurhash and the image
@@ -174,7 +168,12 @@ export const Illustration = ({
 							styles.slot,
 						]}
 					>
-						<FallbackIcon />
+						{fallbackIcon && (
+							<Icon
+								icon={fallbackIcon}
+								style={styles.fallbackIcon}
+							/>
+						)}
 					</View>
 				)}
 			</View>
@@ -242,5 +241,8 @@ const styles = StyleSheet.create((theme) => ({
 		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
+	},
+	fallbackIcon: {
+		color: theme.colors.text.secondary,
 	},
 }));
