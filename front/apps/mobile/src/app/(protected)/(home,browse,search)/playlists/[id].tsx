@@ -214,12 +214,16 @@ const Items = ({
 				</ScaleDecorator>
 			)}
 			ListFooterComponent={
-				<Footer
-					playlistId={playlistId}
-					isReordering={isReordering}
-					startReorder={startReordering}
-					finishReorder={() => onReorderingEnd(reorderedIds.current)}
-				/>
+				playlistEntries !== undefined ? (
+					<Footer
+						playlistId={playlistId}
+						isReordering={isReordering}
+						startReorder={startReordering}
+						finishReorder={() =>
+							onReorderingEnd(reorderedIds.current)
+						}
+					/>
+				) : null
 			}
 		/>
 	);
