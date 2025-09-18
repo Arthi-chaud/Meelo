@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type Album from "@/models/album";
 import type { AlbumType } from "@/models/album";
 import type { Disc } from "@/models/disc";
@@ -40,20 +40,23 @@ export const useBSidesAndExtras = (bSides: SongType[] | undefined) => {
 
 type TrackType = TracklistItemWithRelations<"artist" | "featuring">;
 
-export const useTracklist = (
-	tracklist: Tracklist<TrackType> | undefined,
-): {
+type TracklistData = {
 	isMixed: boolean | undefined;
 	tracks: TrackType[];
 	totalDuration: number | undefined;
 	tracklist: Tracklist<TrackType> | undefined;
-} => {
-	return useMemo(() => {
+};
+
+export const useTracklist = (
+	tracklist: Tracklist<TrackType> | undefined,
+): Partial<TracklistData> => {
+	const [state, setState] = useState<TracklistData>();
+	useEffect(() => {
 		if (tracklist) {
 			const discMap = tracklist;
 			const flatTracks = Array.from(Object.values(discMap)).flat();
 
-			return {
+			setState({
 				isMixed: !flatTracks.some(({ mixed }) => !mixed),
 				tracks: flatTracks,
 				totalDuration: flatTracks.reduce(
@@ -62,15 +65,15 @@ export const useTracklist = (
 					0,
 				),
 				tracklist: discMap,
-			};
+			});
 		}
-		return {
-			isMixed: undefined,
-			tracks: [],
-			totalDuration: undefined,
-			tracklist: undefined,
-		};
 	}, [tracklist]);
+	return {
+		isMixed: state?.isMixed,
+		tracks: state?.tracks,
+		totalDuration: state?.totalDuration,
+		tracklist: state?.tracklist,
+	};
 };
 
 type VideoType = VideoWithRelations<"master" | "illustration">;
