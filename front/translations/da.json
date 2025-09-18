@@ -18,7 +18,8 @@
 		"delete": "Slet",
 		"deleteFromPlaylist": "Fjern fra playliste",
 		"deleteUser": {
-			"label": "Slet bruger"
+			"label": "Slet bruger",
+			"warning": "Du er ved at slette en bruger. Denne handling kan ikke fortrydes."
 		},
 		"download": {
 			"label": "Download"
@@ -30,7 +31,8 @@
 		"goToSettingsPage": "Gå til indstillinger",
 		"library": {
 			"create": "Opret bibliotek",
-			"delete": "Slet bibliotek"
+			"delete": "Slet bibliotek",
+			"deletionWarning": "Du er ved at slette et bibliotek. Denne handling kan ikke fortrydes"
 		},
 		"logout": "Log ud",
 		"new": "Ny",
@@ -49,7 +51,8 @@
 			},
 			"seeLyrics": "Se sangtekst",
 			"seeOtherVersions": "Se andre versioner",
-			"seeRelatedTracks": "Se relaterede sange"
+			"seeRelatedTracks": "Se relaterede sange",
+			"seeSongInfo": "Sang information"
 		},
 		"update": "Opdatér",
 		"video": {
@@ -59,6 +62,7 @@
 	},
 	"album": {
 		"bonusTracks": "Bonus sange",
+		"otherAlbumReleases": "Andre udgivelser fra samme album",
 		"showAllTracks": "Vis alle sange",
 		"showOnlyExclusiveTracks": "Vis kun eksklusive sange"
 	},
@@ -70,6 +74,8 @@
 		"liveRecording_plural": "Live album",
 		"single": "Single",
 		"single_plural": "Singler",
+		"soundtrack": "Soundtrack",
+		"soundtrack_plural": "Soundtrack album",
 		"studioRecording": "Studie optagelse",
 		"studioRecording_plural": "Studie album",
 		"videoAlbum": "Video album",
@@ -88,6 +94,7 @@
 	},
 	"browsing": {
 		"controls": {
+			"asc": "Faldende",
 			"backToTop": "Tilbage til toppen",
 			"filter": {
 				"allLibraries": "Alle biblioteker",
@@ -102,7 +109,8 @@
 				"creationDate": "Oprettelsesdato",
 				"name": "Titel",
 				"registrationDate": "Registeringsdato",
-				"releaseDate": "Udgivelsesdato"
+				"releaseDate": "Udgivelsesdato",
+				"releaseName": "Udgivelsesnavn"
 			}
 		},
 		"sections": {
@@ -242,6 +250,7 @@
 			},
 			"keyboardBindings": "Tastaturgenveje",
 			"lang": {
+				"da": "Dansk",
 				"de": "Tysk",
 				"en": "Engelsk",
 				"fr": "Fransk",
