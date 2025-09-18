@@ -67,13 +67,15 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 		tracklist,
 	} = useTracklist(discs);
 	const tracks = useMemo(() => {
-		return tracks_
-			.filter((t) => t !== undefined)
-			.map(({ song, video, ...track }) => ({
-				track,
-				artist: (song ?? video)!.artist,
-				featuring: song?.featuring ?? [],
-			}));
+		return (
+			tracks_
+				?.filter((t) => t !== undefined)
+				.map(({ song, video, ...track }) => ({
+					track,
+					artist: (song ?? video)!.artist,
+					featuring: song?.featuring ?? [],
+				})) ?? []
+		);
 	}, [tracks_]);
 
 	useSetKeyIllustration(release);
@@ -102,7 +104,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 					<PostTracklistSections
 						releaseId={release?.id}
 						album={album}
-						tracks={tracks_}
+						tracks={tracks_ ?? []}
 						albumArtistId={album?.artistId}
 					/>
 				</>

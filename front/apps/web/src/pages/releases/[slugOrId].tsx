@@ -275,7 +275,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { videos, liveVideos, videoExtras } = useVideos(
 		albumVideos?.items,
 		album.data?.type,
-		tracks,
+		tracks ?? [],
 	);
 	const label = useMemo(() => {
 		return release.data?.label;
