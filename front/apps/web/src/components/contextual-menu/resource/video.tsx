@@ -18,7 +18,7 @@
 
 import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
-import { getArtist, getRelease } from "@/api/queries";
+import { getArtist } from "@/api/queries";
 import type { VideoWithRelations } from "@/models/video";
 import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
