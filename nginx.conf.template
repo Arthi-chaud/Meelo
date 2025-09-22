@@ -16,6 +16,12 @@ server {
 	location /scanner/ {
 	    proxy_pass ${SCANNER_URL}/;
 	}
+	location = /matcher {
+	    return 302 /matcher/;
+	}
+	location /matcher/ {
+	    proxy_pass ${MATCHER_URL}/;
+	}
 	location / {
 		proxy_pass ${FRONT_URL};
 	}

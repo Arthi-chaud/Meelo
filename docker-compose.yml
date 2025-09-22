@@ -77,6 +77,8 @@ services:
       args:
         - VERSION=local
     restart: on-failure
+    expose:
+      - 6789
     depends_on:
       server:
         condition: service_healthy
@@ -169,6 +171,7 @@ services:
       - FRONT_URL=http://front:3000
       - SERVER_URL=http://server:4000
       - SCANNER_URL=http://scanner:8133
+      - MATCHER_URL=http://matcher:6789
     volumes:
       - ./nginx.conf.template:/etc/nginx/templates/meelo.conf.template:ro
 volumes:
