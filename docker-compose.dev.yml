@@ -93,6 +93,8 @@ services:
       args:
         - VERSION=dev
     restart: on-failure
+    ports:
+      - "6789:6789"
     depends_on:
       server:
         condition: service_healthy
