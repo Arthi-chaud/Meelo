@@ -10,5 +10,4 @@ COPY . .
 
 ENV VERSION=$VERSION
 
-ENTRYPOINT ["python3", "-m"]
-CMD ["matcher"]
+CMD ["fastapi", "run", "matcher", "--port", "6789"]
