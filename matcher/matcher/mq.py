@@ -1,0 +1,52 @@
+import pika
+import asyncio
+import logging
+import os
+from typing import Callable, Any
+from matcher.context import Context
+from pika.adapters.blocking_connection import BlockingChannel
+
+
+channel: BlockingChannel | None = None
+
+queue_name = "meelo"
+
+
+def connect_mq(on_message_callback: Callable[[BlockingChannel, Any, Any, Any], None]):
+    global channel
+    rabbitUrl = os.environ.get("RABBITMQ_URL")
+    if not rabbitUrl:
+        logging.error("Missing env var 'RABBITMQ_URL'")
+        exit(1)
+    connectionParams = pika.URLParameters(rabbitUrl)
+    connection = pika.BlockingConnection(connectionParams)
+    channel = connection.channel()
+    channel.queue_declare(
+        queue=queue_name, durable=True, arguments={"x-max-priority": 5}
+    )
+
+    logging.info(f"Version: {Context.get().settings.version}")
+    logging.info("Ready to match!")
+    channel.basic_qos(prefetch_count=1)
+    channel.basic_consume(queue_name, on_message_callback=on_message_callback)
+
+
+def start_consuming():
+    loop = asyncio.get_running_loop()
+    loop.run_in_executor(None, lambda: channel and channel.start_consuming())
+
+
+def stop_mq():
+    if channel is not None:
+        channel.stop_consuming()
+        channel.close()
+
+
+def get_queue_size() -> int:
+    if not channel:
+        return 0
+    res = channel.queue_declare(
+        queue=queue_name, durable=True, arguments={"x-max-priority": 5}, passive=True
+    )
+
+    return res.method.message_count

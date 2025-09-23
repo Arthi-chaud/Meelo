@@ -1,25 +1,17 @@
-from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import pika
-import os
 import logging
-from pika.adapters.asyncio_connection import AsyncioConnection
-from pika.adapters.blocking_connection import BlockingChannel
-from pika.channel import Channel
-from matcher import router
+from pydantic import BaseModel
 from matcher.bootstrap import bootstrap_context
 from matcher.context import Context
+from pika.adapters.blocking_connection import BlockingChannel
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
+from matcher.mq import connect_mq, start_consuming, stop_mq, get_queue_size
 from .models.event import Event
 
-channel: BlockingChannel | None = None
 
-queue_name = "meelo"
-
-
-def consume(ch: Channel, method, prop, body):
+def consume(ch: BlockingChannel, method, prop, body):
     event = Event.from_json(body)
     delivery_tag = method.delivery_tag
     logging.info(f"Received event: {event} (P={prop.priority})")
@@ -41,41 +33,44 @@ def consume(ch: Channel, method, prop, body):
             pass
 
 
-def on_channel_open(channel: Channel):
-    channel.queue_declare(
-        queue=queue_name, durable=True, arguments={"x-max-priority": 5}
-    )
-    channel.basic_qos(prefetch_count=1)
-    channel.basic_consume(queue_name, on_message_callback=consume)
-    bootstrap_context()
-    logging.info(f"Version: {Context.get().settings.version}")
-    logging.info("Ready to match!")
-
-
-@asynccontextmanager
-async def lifespan(_):
-    logging.basicConfig(level=logging.INFO)
-    rabbitUrl = os.environ.get("RABBITMQ_URL")
-    if not rabbitUrl:
-        logging.error("Missing env var 'RABBITMQ_URL'")
-        exit(1)
-    connectionParams = pika.URLParameters(rabbitUrl)
-    AsyncioConnection(
-        connectionParams,
-        on_open_callback=lambda conn: conn.channel(on_open_callback=on_channel_open),
-    )
-    yield
-    logging.info("Shutting Down Matcher...")
-    if channel:
-        channel.close()
-
-
 app = FastAPI(
     title="Meelo's Matcher API",
     description="The matcher is in charge of downloading external metadata (lyrics, images, genres) from providers (e.g. Genius, Wikipedia, etc.)",
     openapi_tags=[{"name": "Endpoints"}],
     swagger_ui_parameters={"syntaxHighlight": True},
-    lifespan=lifespan,
     docs_url="/swagger",
 )
-app.include_router(router.router)
+
+
+@app.on_event("startup")
+async def startup():
+    logging.basicConfig(level=logging.INFO)
+    bootstrap_context()
+    connect_mq(consume)
+    start_consuming()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    stop_mq()
+
+
+class StatusResponse(BaseModel):
+    message: str
+    version: str
+
+
+class QueueResponse(BaseModel):
+    queue_size: int
+
+
+@app.get("/", tags=["Endpoints"])
+async def status() -> StatusResponse:
+    return StatusResponse(
+        message="Matcher is alive.", version=Context.get().settings.version
+    )
+
+
+@app.get("/queue", summary="Get info on the task queue", tags=["Endpoints"])
+async def queue() -> QueueResponse:
+    return QueueResponse(queue_size=get_queue_size())
