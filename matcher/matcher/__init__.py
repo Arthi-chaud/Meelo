@@ -71,7 +71,7 @@ async def lifespan(_):
 
 
 app = FastAPI(
-    title="Meelo's Matcher Matcher APU",
+    title="Meelo's Matcher API",
     description="The matcher is in charge of downloading external metadata (lyrics, images, genres) from providers (e.g. Genius, Wikipedia, etc.)",
     openapi_tags=[{"name": "Endpoints"}],
     swagger_ui_parameters={"syntaxHighlight": True},
