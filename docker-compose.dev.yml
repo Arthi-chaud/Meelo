@@ -93,6 +93,7 @@ services:
       args:
         - VERSION=dev
     restart: on-failure
+    command: fastapi dev matcher --port 6789 --host 0.0.0.0
     ports:
       - "6789:6789"
     depends_on:
