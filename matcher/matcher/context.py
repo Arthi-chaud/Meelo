@@ -12,12 +12,20 @@ class _InternalContext:
     client: API
     settings: Settings
     providers: List[BaseProviderBoilerplate]
+    handled_items_count: int
+    pending_items_count: int
 
     def get_provider(self, cl: Type[T]) -> T | None:
         for provider in self.providers:
             if isinstance(provider, cl):
                 return provider
         return None
+
+    def increment_handled_items_count(self):
+        self.handled_items_count = self.handled_items_count + 1
+
+    def clear_handled_items_count(self):
+        self.handled_items_count = 0
 
 
 class Context:
@@ -27,7 +35,7 @@ class Context:
     def init(
         cls, client: API, settings: Settings, providers: List[BaseProviderBoilerplate]
     ):
-        cls._instance = _InternalContext(client, settings, providers)
+        cls._instance = _InternalContext(client, settings, providers, 0, 0)
 
     @classmethod
     def get(cls) -> _InternalContext:
