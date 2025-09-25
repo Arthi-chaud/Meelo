@@ -2,7 +2,7 @@ from fastapi import FastAPI
 import logging
 from pydantic import BaseModel
 from matcher.bootstrap import bootstrap_context
-from matcher.context import Context
+from matcher.context import Context, CurrentItem
 from pika.adapters.blocking_connection import BlockingChannel
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
@@ -24,6 +24,7 @@ def consume(ch: BlockingChannel, method, prop, body):
         ctx.clear_handled_items_count()
     delivery_tag = method.delivery_tag
     logging.info(f"Received event: {event} (P={prop.priority})")
+    ctx.current_item = CurrentItem(name=event.name, type=event.type, id=event.id)
     match event.type:
         case "artist":
             match_and_post_artist(event.id, event.name)
@@ -43,6 +44,7 @@ def consume(ch: BlockingChannel, method, prop, body):
         case _:
             logging.warning("No handler for event " + event.type)
             pass
+    ctx.current_item = None
 
 
 app = FastAPI(
@@ -74,6 +76,7 @@ class StatusResponse(BaseModel):
 
 class QueueResponse(BaseModel):
     handled_items: int
+    current_item: CurrentItem | None
     pending_items: int
 
 
@@ -88,5 +91,7 @@ async def status() -> StatusResponse:
 async def queue() -> QueueResponse:
     ctx = Context.get()
     return QueueResponse(
-        pending_items=ctx.pending_items_count, handled_items=ctx.handled_items_count
+        pending_items=ctx.pending_items_count,
+        handled_items=ctx.handled_items_count,
+        current_item=ctx.current_item,
     )
