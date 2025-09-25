@@ -8,12 +8,20 @@ T = TypeVar("T", bound=BaseProviderBoilerplate)
 
 
 @dataclass
+class CurrentItem:
+    name: str
+    id: int
+    type: str
+
+
+@dataclass
 class _InternalContext:
     client: API
     settings: Settings
     providers: List[BaseProviderBoilerplate]
     handled_items_count: int
     pending_items_count: int
+    current_item: CurrentItem | None = None
 
     def get_provider(self, cl: Type[T]) -> T | None:
         for provider in self.providers:
