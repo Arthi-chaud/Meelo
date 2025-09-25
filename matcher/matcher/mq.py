@@ -22,7 +22,11 @@ def connect_mq(on_message_callback: Callable[[BlockingChannel, Any, Any, Any], N
     connection = pika.BlockingConnection(connectionParams)
     channel = connection.channel()
     channel.queue_declare(
-        queue=queue_name, durable=True, arguments={"x-max-priority": 5}
+        queue=queue_name,
+        durable=True,
+        arguments={"x-max-priority": 5},
+        auto_delete=False,
+        exclusive=False,
     )
 
     logging.info(f"Version: {Context.get().settings.version}")
@@ -46,7 +50,12 @@ def get_queue_size() -> int:
     if not channel:
         return 0
     res = channel.queue_declare(
-        queue=queue_name, durable=True, arguments={"x-max-priority": 5}, passive=True
+        queue=queue_name,
+        durable=True,
+        arguments={"x-max-priority": 5},
+        passive=True,
+        auto_delete=False,
+        exclusive=False,
     )
 
     return res.method.message_count

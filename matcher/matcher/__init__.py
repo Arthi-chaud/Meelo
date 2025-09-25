@@ -7,25 +7,37 @@ from pika.adapters.blocking_connection import BlockingChannel
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
-from matcher.mq import connect_mq, start_consuming, stop_mq, get_queue_size
+from matcher.mq import (
+    connect_mq,
+    start_consuming,
+    stop_mq,
+    get_queue_size,
+)
 from .models.event import Event
 
 
 def consume(ch: BlockingChannel, method, prop, body):
     event = Event.from_json(body)
+    ctx = Context.get()
+    ctx.pending_items_count = get_queue_size()
+    if ctx.pending_items_count == 0:
+        ctx.clear_handled_items_count()
     delivery_tag = method.delivery_tag
     logging.info(f"Received event: {event} (P={prop.priority})")
     match event.type:
         case "artist":
             match_and_post_artist(event.id, event.name)
             ch.basic_ack(delivery_tag)
+            ctx.increment_handled_items_count()
             pass
         case "album":
             match_and_post_album(event.id, event.name)
+            ctx.increment_handled_items_count()
             ch.basic_ack(delivery_tag)
             pass
         case "song":
             match_and_post_song(event.id, event.name)
+            ctx.increment_handled_items_count()
             ch.basic_ack(delivery_tag)
             pass
         case _:
@@ -61,7 +73,8 @@ class StatusResponse(BaseModel):
 
 
 class QueueResponse(BaseModel):
-    queue_size: int
+    handled_items: int
+    pending_items: int
 
 
 @app.get("/", tags=["Endpoints"])
@@ -73,4 +86,7 @@ async def status() -> StatusResponse:
 
 @app.get("/queue", summary="Get info on the task queue", tags=["Endpoints"])
 async def queue() -> QueueResponse:
-    return QueueResponse(queue_size=get_queue_size())
+    ctx = Context.get()
+    return QueueResponse(
+        pending_items=ctx.pending_items_count, handled_items=ctx.handled_items_count
+    )
