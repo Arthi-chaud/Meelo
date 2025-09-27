@@ -576,6 +576,23 @@ export const getScannerVersion = () => {
 	});
 };
 
+export const getMatcherVersion = (): Query<{ version: string | null }> => {
+	const query = _mkSimpleQuery({
+		route: "/",
+		validator: yup.object({
+			version: yup.string().required(),
+		}),
+		service: Service.Matcher,
+	});
+	return {
+		...query,
+		exec: (api: API) => () =>
+			query
+				.exec(api)()
+				.catch(() => ({ version: null })),
+	};
+};
+
 export const _mkSimpleQuery = <T>(
 	arg: {
 		route: string;
@@ -590,6 +607,7 @@ export const _mkSimpleQuery = <T>(
 	}>,
 ) => {
 	const key = [
+		(arg.service ?? Service.API).toString(),
 		...arg.route.split("/").filter((t) => t.length > 0),
 		...formatIncludeKeys(arg.include),
 		...formatObject(arg.params),

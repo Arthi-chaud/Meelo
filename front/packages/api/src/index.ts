@@ -58,8 +58,9 @@ type AuthenticationInput = {
 };
 
 export enum Service {
-	API = 0,
-	Scanner = 1,
+	API = "api",
+	Scanner = "scanner",
+	Matcher = "matcher",
 }
 
 type FetchParameters<Keys extends readonly string[], ReturnType> = {
@@ -79,6 +80,7 @@ type FetchParameters<Keys extends readonly string[], ReturnType> = {
 type APIUrls = {
 	api: string;
 	scanner: string;
+	matcher: string;
 	illustration: string;
 };
 
@@ -656,7 +658,13 @@ export default class API {
 	): string {
 		const apiHost = this.urls.api;
 		const scannerHost = this.urls.scanner;
-		const host = service === Service.API ? apiHost : scannerHost;
+		const matcherHost = this.urls.matcher;
+		const host =
+			service === Service.API
+				? apiHost
+				: service === Service.Scanner
+					? scannerHost
+					: matcherHost;
 		return `${host}${route}${this.formatQueryParameters(parameters, otherParameters)}`;
 	}
 
