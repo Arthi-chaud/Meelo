@@ -48,6 +48,7 @@ export const getAPI_ = (accessToken: string | null, instanceUrl: string) => {
 		api: `${instanceUrl}/api`,
 		illustration: `${instanceUrl}/api`,
 		scanner: `${instanceUrl}/scanner`,
+		matcher: `${instanceUrl}/matcher`,
 	});
 	return api;
 };
