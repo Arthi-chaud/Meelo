@@ -219,34 +219,24 @@ export default function SettingsView() {
 					style={styles.versionNumber}
 					content={`Build: ${BuildCommit}`}
 				/>
-				<LoadableText
-					style={styles.versionNumber}
-					content={
-						apiSettings
-							? `API version: ${apiSettings?.version ?? "Loading"}`
-							: undefined
-					}
-					skeletonWidth={15}
-				/>
-				<LoadableText
-					style={styles.versionNumber}
-					content={
-						scannerVersion
-							? `Scanner version: ${scannerVersion.version ?? "Loading"}`
-							: undefined
-					}
-					skeletonWidth={15}
-				/>
-
-				<LoadableText
-					style={styles.versionNumber}
-					content={
-						scannerVersion
-							? `Matcher version: ${matcherVersion ? (matcherVersion.version ?? "Unknown") : "Loading"}`
-							: undefined
-					}
-					skeletonWidth={15}
-				/>
+				{(
+					[
+						["API", apiSettings],
+						["Scanner", scannerVersion],
+						["Matcher", matcherVersion],
+					] as const
+				).map(([serviceName, versionQuery]) => (
+					<LoadableText
+						key={serviceName}
+						style={styles.versionNumber}
+						content={
+							apiSettings
+								? `${serviceName} version: ${versionQuery ? (versionQuery.version ?? "Unknown") : "Loading"}`
+								: undefined
+						}
+						skeletonWidth={15}
+					/>
+				))}
 			</View>
 		</SafeScrollView>
 	);
