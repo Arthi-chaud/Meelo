@@ -25,6 +25,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getCurrentUserStatus,
+	getMatcherVersion,
 	getScannerVersion,
 	getSettings,
 } from "@/api/queries";
@@ -69,6 +70,7 @@ export default function SettingsView() {
 	const [lng, setLng] = useAtom(languagePreference);
 	const { data: apiSettings } = useQuery(getSettings);
 	const { data: scannerVersion } = useQuery(getScannerVersion);
+	const { data: matcherVersion } = useQuery(getMatcherVersion);
 	const actualColorScheme = useColorScheme();
 	return (
 		<SafeScrollView style={[styles.root, { paddingTop: insets.top }]}>
@@ -231,6 +233,16 @@ export default function SettingsView() {
 					content={
 						scannerVersion
 							? `Scanner version: ${scannerVersion.version ?? "Loading"}`
+							: undefined
+					}
+					skeletonWidth={15}
+				/>
+
+				<LoadableText
+					style={styles.versionNumber}
+					content={
+						scannerVersion
+							? `Matcher version: ${matcherVersion ? (matcherVersion.version ?? "Unknown") : "Loading"}`
 							: undefined
 					}
 					skeletonWidth={15}
