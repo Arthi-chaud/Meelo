@@ -44,6 +44,13 @@ if (process.env.NODE_ENV !== "production") {
 				? `${process.env.SSR_SCANNER_URL}/:path*`
 				: "/scanner/:path*",
 		},
+
+		{
+			source: "/matcher/:path*",
+			destination: process.env.SSR_MATCHER_URL
+				? `${process.env.SSR_MATCHER_URL}/:path*`
+				: "/matcher/:path*",
+		},
 	];
 }
 

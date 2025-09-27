@@ -74,6 +74,13 @@ export const getAPI_ = (accessToken: string | null) => {
 			: isDev
 				? "/scanner"
 				: (process.env.PUBLIC_SCANNER_URL ?? "/scanner"),
+		matcher: isSSR()
+			? (process.env.SSR_MATCHER_URL ??
+				process.env.PUBLIC_MATCHER_URL ??
+				"") // For retrocompatibility
+			: isDev
+				? "/matcher"
+				: (process.env.PUBLIC_MATCHER_URL ?? "/matcher"),
 	});
 	return api;
 };

@@ -42,6 +42,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
 import {
+	getMatcherVersion,
 	getScannerVersion,
 	getScrobblerStatus,
 	getSettings,
@@ -81,6 +82,7 @@ const UISettings = () => {
 	const { t, i18n } = useTranslation();
 	const apiSettings = useQuery(() => getSettings());
 	const scannerVersion = useQuery(() => getScannerVersion());
+	const matcherVersion = useQuery(() => getMatcherVersion());
 	const colorScheme = useColorScheme();
 	const [prefersNotifs, setPrefersNotif] = useLocalStorage(
 		"allow_notifs",
@@ -262,11 +264,18 @@ const UISettings = () => {
 					["Web App", AppVersion] as const,
 					["Server", apiSettings.data?.version] as const,
 					["Scanner", scannerVersion.data?.version] as const,
+					["Matcher", matcherVersion.data?.version] as const,
 				].map(([appName, version]) => (
 					<Fragment key={appName}>
 						<Grid size={{ xs: 11 }}>{appName}</Grid>
 						<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
-							{version ?? <Skeleton />}
+							{version === undefined ? (
+								<Skeleton />
+							) : version === null ? (
+								"Unknown"
+							) : (
+								version
+							)}
 						</Grid>
 					</Fragment>
 				))}
