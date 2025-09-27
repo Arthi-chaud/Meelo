@@ -87,6 +87,8 @@ services:
       - SSR_SERVER_URL=http://server:4000
       - PUBLIC_SCANNER_URL=http://localhost:8133
       - SSR_SCANNER_URL=http://scanner:8133
+      - PUBLIC_MATCHER_URL=http://localhost:6789
+      - SSR_MATCHER_URL=http://matcher:6789
   matcher:
     build:
       context: ./matcher
