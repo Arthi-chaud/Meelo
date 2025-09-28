@@ -593,6 +593,32 @@ export const getMatcherVersion = (): Query<{ version: string | null }> => {
 	};
 };
 
+export const getMatcherStatus = () => {
+	const query = _mkSimpleQuery({
+		route: "/queue",
+		validator: yup.object({
+			handled_items: yup.number().required(),
+			pending_items: yup.number().required(),
+			current_item: yup
+				.object({
+					id: yup.number().required(),
+					name: yup.string().required(),
+					type: yup.string().required(),
+				})
+				.required()
+				.nullable(),
+		}),
+		service: Service.Matcher,
+	});
+	return {
+		...query,
+		exec: (api: API) => () =>
+			query
+				.exec(api)()
+				.catch(() => null),
+	};
+};
+
 export const _mkSimpleQuery = <T>(
 	arg: {
 		route: string;
