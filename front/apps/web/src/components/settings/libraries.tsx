@@ -39,7 +39,7 @@ import { useConfirm } from "material-ui-confirm";
 import { type ComponentProps, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { getLibraries, getTasks } from "@/api/queries";
+import { getLibraries, getMatcherStatus, getTasks } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import type Library from "@/models/library";
 import { AddIcon, DeleteIcon, EditIcon } from "@/ui/icons";
@@ -84,7 +84,7 @@ const CircularProgressWithLabel = (
 					variant="caption"
 					component="div"
 					sx={{ color: "text.secondary", lineHeight: 1 }}
-				>{`${props.value}%`}</Typography>
+				>{`${Math.floor(props.value)}%`}</Typography>
 			</Box>
 		</Box>
 	);
@@ -137,6 +137,12 @@ const LibrariesSettings = () => {
 		...toTanStackQuery(api, () => getTasks()),
 		refetchInterval: 1000,
 	});
+
+	const { data: matcherQueue, refetch: refreshMatcherQueue } =
+		useTanStackQuery({
+			...toTanStackQuery(api, () => getMatcherStatus()),
+			refetchInterval: 1000,
+		});
 	const { t, i18n } = useTranslation();
 	const scanAllLibaries = {
 		...ScanAllLibrariesAction(queryClient.api),
@@ -355,7 +361,13 @@ const LibrariesSettings = () => {
 			<SectionHeader
 				heading={t("settings.libraries.tasks.label")}
 				trailing={
-					<Button onClick={() => tasks.refetch()} variant="contained">
+					<Button
+						onClick={() => {
+							tasks.refetch();
+							refreshMatcherQueue();
+						}}
+						variant="contained"
+					>
 						{t("tasks.refresh")}
 					</Button>
 				}
@@ -404,6 +416,33 @@ const LibrariesSettings = () => {
 						<ListItemText inset primary={task} />
 					</ListItem>
 				))}
+
+				<ListItem
+					secondaryAction={
+						matcherQueue &&
+						matcherQueue.handled_items !== 0 &&
+						matcherQueue.pending_items !== 0 && (
+							<CircularProgressWithLabel
+								size="35px"
+								value={
+									(100 * matcherQueue.handled_items) /
+									(matcherQueue.handled_items +
+										matcherQueue.pending_items)
+								}
+							/>
+						)
+					}
+				>
+					<ListItemText
+						primary={
+							matcherQueue !== undefined ? (
+								`Matcher: ${matcherQueue === null ? "Status unavailable" : matcherQueue.current_item === null ? "Idle" : `Processing '${matcherQueue.current_item.name}' (${matcherQueue.current_item.type})`}`
+							) : (
+								<Skeleton width={"100px"} />
+							)
+						}
+					/>
+				</ListItem>
 			</List>
 		</Box>
 	);
