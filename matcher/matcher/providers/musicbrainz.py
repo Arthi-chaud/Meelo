@@ -270,8 +270,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 },
             )
             return recording
-        except Exception as e:
-            print(e)
+        except Exception:
             pass
 
     # This method returns a recording ID
