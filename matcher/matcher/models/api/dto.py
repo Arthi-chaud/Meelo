@@ -3,7 +3,6 @@ from typing import List, Optional
 from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
 
 
-
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateAlbumDto(DataClassJsonMixin):
@@ -11,6 +10,15 @@ class UpdateAlbumDto(DataClassJsonMixin):
     release_date: Optional[str] = None
     genres: Optional[List[str]] = None
     type: Optional[str] = None
+
+
+@dataclass_json
+@dataclass
+class User(DataClassJsonMixin):
+    id: int
+    name: str
+    admin: bool
+    enabled: bool
 
 
 @dataclass_json

@@ -10,6 +10,7 @@ from matcher.models.api.dto import (
     CreateProviderDto,
     ExternalMetadataDto,
     UpdateAlbumDto,
+    User,
 )
 from matcher.models.api.page import Page
 from matcher.models.api.provider import Provider
@@ -31,8 +32,13 @@ class API:
     def ping(self) -> bool:
         return True if self._get("/") else False
 
-    def _get(self, route: str) -> requests.Response:
-        response = requests.get(f"{self._url}{route}", headers={"x-api-key": self._key})
+    def _get(self, route: str, token: str | None = None) -> requests.Response:
+        response = requests.get(
+            f"{self._url}{route}",
+            headers={"Authorization": f"Bearer {token}"}
+            if token
+            else {"x-api-key": self._key},
+        )
         if response.status_code != 200:
             logging.error("GETting API failed: ")
             raise Exception(response.content)
@@ -97,6 +103,14 @@ class API:
         response = self._get(f"/files/{file_id}")
         json = response.json()
         return File.schema().load(json)
+
+    def get_user(self, token: str) -> User | None:
+        try:
+            response = self._get("/users/me", token)
+            json = response.json()
+            return User.schema().load(json)
+        except Exception:
+            return None
 
     def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)

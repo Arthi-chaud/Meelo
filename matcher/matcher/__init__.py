@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+from typing import Annotated
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 import logging
 from pydantic import BaseModel
 from matcher.bootstrap import bootstrap_context
@@ -7,6 +10,7 @@ from pika.adapters.blocking_connection import BlockingChannel
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
+from matcher.api import User
 from matcher.mq import (
     connect_mq,
     start_consuming,
@@ -80,6 +84,43 @@ class QueueResponse(BaseModel):
     pending_items: int
 
 
+class ErrorResponse(Exception):
+    message: str
+
+    def __init__(self, msg: str):
+        self.message = msg
+
+
+@app.exception_handler(ErrorResponse)
+async def error_handler(_: Request, exc: ErrorResponse):
+    return JSONResponse({"message": exc.message}, status_code=401)
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+async def get_user(req: Request) -> User:
+    tokenHeader = req.headers.get("Auhtorization")
+    tokenCookie = req.cookies.get("access_token")
+    if tokenHeader is not None:
+        tokenHeader = tokenHeader.removesuffix("Bearer ")
+    token = tokenCookie or tokenHeader
+    if not token:
+        raise ErrorResponse("Missing token")
+    user = Context.get().client.get_user(token)
+    if user is None:
+        raise ErrorResponse("Invalid token")
+    if not user.enabled:
+        raise ErrorResponse("User is not enabled")
+    return user
+
+
+async def get_admin_user(user: Annotated[User, Depends(get_user)]) -> User:
+    if not user.admin:
+        raise ErrorResponse("User is not an admin")
+    return user
+
+
 @app.get("/", tags=["Endpoints"])
 async def status() -> StatusResponse:
     return StatusResponse(
@@ -88,7 +129,9 @@ async def status() -> StatusResponse:
 
 
 @app.get("/queue", summary="Get info on the task queue", tags=["Endpoints"])
-async def queue() -> QueueResponse:
+async def queue(
+    _: Annotated[User, Depends(get_admin_user)],
+) -> QueueResponse:
     ctx = Context.get()
     return QueueResponse(
         pending_items=ctx.pending_items_count,
