@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 import requests
+from matcher.context import Context
 
 
 @dataclass
@@ -22,7 +23,10 @@ class WikidataProvider:
         try:
             return WikidataRelations(
                 requests.get(
-                    f"https://wikidata.org/w/rest.php/wikibase/v1/entities/items/{wikidata_id}"
+                    f"https://wikidata.org/w/rest.php/wikibase/v1/entities/items/{wikidata_id}",
+                    headers={
+                        "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                    },
                 ).json()
             )
         except Exception:

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
+
+from matcher.context import Context
 from .features import (
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -57,6 +59,9 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
                     "redirects": 1,
                     "titles": unquote(article_id),
                 },
+                headers={
+                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                },
             ).json()["query"]["pages"]
             first_entity = next(iter(res))
             return res[first_entity]
@@ -88,6 +93,9 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
                     "ids": wikidata_id,
                     "sitefilter": "enwiki",
                     "format": "json",
+                },
+                headers={
+                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
                 },
             ).json()["entities"]
             first_entity = next(iter(entities))
