@@ -230,8 +230,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             ).text.replace("<br/>", "\n")
             soup = BeautifulSoup(html, "html.parser")
             return soup
-        except Exception as e:
-            print(e)
+        except Exception:
             pass
 
     def _get_song_lyrics(self, song: Any) -> str | None:
