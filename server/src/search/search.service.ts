@@ -63,7 +63,7 @@ export class SearchService {
 			.hits as MeilisearchResultType[];
 		const matchingVideosIds = meiliQueryResult.results[3]
 			.hits as MeilisearchResultType[];
-		const [artists, songs, albums, videos] = await Promise.all(
+		let [artists, songs, albums, videos] = await Promise.all(
 			[
 				[
 					// Note: I know it's ugly, but needed for correct typing
@@ -131,7 +131,12 @@ export class SearchService {
 				}));
 			}),
 		);
-
+		// TODO: this is an ugly workaround to make sorting fair in regard of artists
+		//
+		// Songs and albums are indexed using 3 fields (name, slug, name slug)
+		// Artist are only indexed with 2 fields (name and slug)
+		// Thus, when a string matches an artist and a song, the song is favoured
+		artists = artists.map((a) => ({ ...a, ranking: a.ranking + 1 }));
 		return [...artists, ...songs, ...albums, ...videos].sort(
 			(a, b) => b.ranking - a.ranking,
 		);
