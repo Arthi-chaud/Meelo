@@ -358,7 +358,7 @@ const GenreRow = ({
 			{(genres ?? generateArray(2)).map(
 				(genre: Genre | undefined, idx) => (
 					<Chip
-						onPress={() => {}} // TODO Redirect to Genre page
+						href={genre ? `/albums?genre=${genre.id}` : undefined}
 						title={genre?.name}
 						key={genre?.slug ?? idx}
 					/>
