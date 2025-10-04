@@ -217,7 +217,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	externalLinkIcon: {
 		aspectRatio: 1,
-		height: "100%",
+		height: theme.fontSize.rem(1.5),
 	},
 
 	externalLinkIconPlaceholder: {
