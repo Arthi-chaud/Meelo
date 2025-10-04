@@ -18,19 +18,30 @@
 
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { ScrollView } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { getAlbums, getArtists, getReleases, getSongs } from "@/api/queries";
+import {
+	getAlbums,
+	getArtists,
+	getGenres,
+	getReleases,
+	getSongs,
+} from "@/api/queries";
 import type { AlbumSortingKey } from "@/models/album";
 import type { ArtistSortingKey } from "@/models/artist";
+import type Genre from "@/models/genre";
 import type { SongSortingKey } from "@/models/song";
+import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
+import { GenreChip } from "~/components/item/resource/genre";
 import ReleaseTile from "~/components/item/resource/release";
 import { Row } from "~/components/row";
 import { SafeScrollView } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
+import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
 const styles = StyleSheet.create((theme) => ({
@@ -39,6 +50,12 @@ const styles = StyleSheet.create((theme) => ({
 		paddingBottom: theme.gap(1),
 	},
 	title: { paddingLeft: theme.gap(2) },
+	genreRow: {
+		gap: theme.gap(1),
+		alignItems: "center",
+		paddingLeft: theme.gap(2),
+		marginBottom: theme.gap(1),
+	},
 }));
 
 export default function Root() {
@@ -66,6 +83,11 @@ export default function Root() {
 			"album",
 		]),
 	);
+
+	const topGenres = useInfiniteQuery(() =>
+		getGenres({}, { sortBy: "songCount", order: "desc" }),
+	);
+
 	useSetKeyIllustration(newlyAddedAlbums.items?.at(0));
 	const topSongs = useInfiniteQuery(() =>
 		getSongs({}, { sortBy: "userPlayCount", order: "desc" }, [
@@ -164,7 +186,14 @@ export default function Root() {
 				}}
 			/>
 
-			{/* TODO Genres*/}
+			<ScrollView horizontal contentContainerStyle={styles.genreRow}>
+				<Text content={t("home.topGenres")} variant="h4" />
+				{(topGenres.items ?? generateArray(3, undefined)).map(
+					(genre: Genre | undefined, idx) => (
+						<GenreChip genre={genre} key={genre?.slug ?? idx} />
+					),
+				)}
+			</ScrollView>
 
 			<SongGrid
 				seeMore={

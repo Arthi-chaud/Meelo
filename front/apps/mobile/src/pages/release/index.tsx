@@ -23,13 +23,13 @@ import {
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
-import { Chip } from "~/components/chip";
 import {
 	ExternalMetadataDescriptionSection,
 	ExternalMetadataSourcesSection,
 } from "~/components/external-metadata";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
+import { GenreChip } from "~/components/item/resource/genre";
 import { PlaylistTile } from "~/components/item/resource/playlist";
 import ReleaseTile from "~/components/item/resource/release";
 import { VideoTile } from "~/components/item/resource/video";
@@ -357,11 +357,7 @@ const GenreRow = ({
 
 			{(genres ?? generateArray(2)).map(
 				(genre: Genre | undefined, idx) => (
-					<Chip
-						onPress={() => {}} // TODO Redirect to Genre page
-						title={genre?.name}
-						key={genre?.slug ?? idx}
-					/>
+					<GenreChip genre={genre} key={genre?.slug ?? idx} />
 				),
 			)}
 		</ScrollView>

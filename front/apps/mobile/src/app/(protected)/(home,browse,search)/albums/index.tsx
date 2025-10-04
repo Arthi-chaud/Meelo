@@ -18,7 +18,7 @@
 
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { getAlbums, getArtist } from "@/api/queries";
+import { getAlbums, getArtist, getGenre } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { useQuery } from "~/api";
@@ -34,9 +34,14 @@ import { ArtistHeader } from "~/components/resource-header";
 
 export default function AlbumBrowseView() {
 	const { t } = useTranslation();
-	const { compilations, artist: artistId } = useLocalSearchParams<{
+	const {
+		compilations,
+		artist: artistId,
+		genre: genreId,
+	} = useLocalSearchParams<{
 		compilations?: "true";
 		artist?: string;
+		genre?: string;
 	}>();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
@@ -55,16 +60,20 @@ export default function AlbumBrowseView() {
 		(artistId) => getArtist(artistId, ["illustration"]),
 		artistId,
 	);
+
+	const { data: genre } = useQuery((genreId) => getGenre(genreId), genreId);
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
 	return (
 		<>
 			<Stack.Screen
 				options={{
-					headerTitle: t(
-						compilations
-							? "nav.compilations"
-							: "models.album_plural",
-					),
+					headerTitle: genreId
+						? (genre?.name ?? "")
+						: t(
+								compilations
+									? "nav.compilations"
+									: "models.album_plural",
+							),
 				}}
 			/>
 			<InfiniteView
@@ -80,6 +89,7 @@ export default function AlbumBrowseView() {
 						library: libraries,
 						type: types,
 						artist: compilations ? "compilations" : artistId,
+						genre: genreId,
 					},
 					{ sortBy: sort ?? "name", order: order ?? "asc" },
 					["artist", "illustration"],

@@ -25,6 +25,9 @@
 			"label": "Télécharger",
 			"warning": "Il est interdit de télécharger du contenu sans en posséder l'original. Ne téléchargez pas si vous ne le possédez pas légalement."
 		},
+		"genre": {
+			"startRadio": "Allumer la radio avec ce genre"
+		},
 		"goBackHome": "Retour à l'accueil",
 		"goToArtist": "Voir l'Artiste",
 		"goToPlaylist": "Voir la playlist",
@@ -252,6 +255,7 @@
 		"artist_plural": "Artistes",
 		"disc": "Disque",
 		"externalLink_plural": "Liens Externes",
+		"genre": "Genre",
 		"genre_plural": "Genres",
 		"library_plural": "Bibliothèques",
 		"lyrics": "Paroles",

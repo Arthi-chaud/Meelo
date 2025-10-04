@@ -21,6 +21,7 @@ import {
 	ExternalMetadataDescription,
 	ExternalMetadataSourceComponent,
 } from "~/components/external-metadata";
+import { GenreChip } from "~/components/item/resource/genre";
 import { LoadableText } from "~/components/loadable_text";
 import { SongHeader } from "~/components/resource-header";
 import { useRootViewStyle } from "~/hooks/root-view-style";
@@ -183,10 +184,9 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 					>
 						{(genres ?? generateArray(3)).map(
 							(genre: Genre | undefined, idx) => (
-								<Chip
-									key={idx}
-									title={genre?.name}
-									onPress={() => {}} // TODO
+								<GenreChip
+									genre={genre}
+									key={genre?.slug ?? idx}
 								/>
 							),
 						)}
