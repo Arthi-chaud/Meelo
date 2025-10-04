@@ -23,7 +23,6 @@ import {
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
-import { Chip } from "~/components/chip";
 import {
 	ExternalMetadataDescriptionSection,
 	ExternalMetadataSourcesSection,
