@@ -25,6 +25,9 @@
 			"label": "Download",
 			"warning": "Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content."
 		},
+		"genre": {
+			"startRadio": "Start Genre Radio"
+		},
 		"goBackHome": "Go Back Home",
 		"goToArtist": "Go To Artist",
 		"goToPlaylist": "Go To Playlist",
@@ -253,6 +256,7 @@
 		"artist_plural": "Artists",
 		"disc": "Disc",
 		"externalLink_plural": "External Links",
+		"genre": "Genre",
 		"genre_plural": "Genres",
 		"library_plural": "Libraries",
 		"lyrics": "Lyrics",
