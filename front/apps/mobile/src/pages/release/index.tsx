@@ -30,6 +30,7 @@ import {
 } from "~/components/external-metadata";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
+import { GenreChip } from "~/components/item/resource/genre";
 import { PlaylistTile } from "~/components/item/resource/playlist";
 import ReleaseTile from "~/components/item/resource/release";
 import { VideoTile } from "~/components/item/resource/video";
@@ -357,11 +358,7 @@ const GenreRow = ({
 
 			{(genres ?? generateArray(2)).map(
 				(genre: Genre | undefined, idx) => (
-					<Chip
-						href={genre ? `/albums?genre=${genre.id}` : undefined}
-						title={genre?.name}
-						key={genre?.slug ?? idx}
-					/>
+					<GenreChip genre={genre} key={genre?.slug ?? idx} />
 				),
 			)}
 		</ScrollView>

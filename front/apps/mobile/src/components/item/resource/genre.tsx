@@ -1,4 +1,5 @@
 import type Genre from "@/models/genre";
+import { Chip } from "~/components/chip";
 import { useContextMenu } from "~/components/context-menu";
 import { useGenreContextMenu } from "~/components/context-menu/resource/genre";
 import { ListItem } from "../list-item";
@@ -17,4 +18,10 @@ export const GenreItem = ({ genre }: Props) => {
 			contextMenu={ctxMenu}
 		/>
 	);
+};
+
+export const GenreChip = ({ genre }: Props) => {
+	const ctxMenu = useGenreContextMenu(genre);
+	const { openContextMenu } = useContextMenu(ctxMenu);
+	return <Chip title={genre?.name} onPress={openContextMenu} />;
 };
