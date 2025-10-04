@@ -16,11 +16,6 @@ import { LoadableText } from "../loadable_text";
 type Props = {
 	title: string | undefined;
 	subtitle: string | null | undefined;
-	illustration: Illustration | null | undefined;
-	illustrationProps?: Omit<
-		ComponentProps<typeof IllustrationComponent>,
-		"illustration" | "quality"
-	>;
 } & RequireAtLeastOne<{ href: Href | null; onPress: (() => void) | null }> &
 	(
 		| {
@@ -33,6 +28,21 @@ type Props = {
 				onLongPress?: never;
 				contextMenu?: ContextMenuBuilder;
 		  }
+	) &
+	(
+		| {
+				noIllustration?: true;
+				illustration?: never;
+				illustrationProps?: never;
+		  }
+		| {
+				noIllustration?: never;
+				illustration: Illustration | null | undefined;
+				illustrationProps?: Omit<
+					ComponentProps<typeof IllustrationComponent>,
+					"illustration" | "quality"
+				>;
+		  }
 	);
 
 // By default, blurash is disabled
@@ -41,6 +51,7 @@ export const ListItem = ({
 	subtitle,
 	illustration,
 	illustrationProps,
+	noIllustration,
 	href,
 	trailing,
 	contextMenu,
@@ -51,6 +62,7 @@ export const ListItem = ({
 	const router = useRouter();
 	styles.useVariants({
 		normalizedThumbnail: illustrationProps?.normalizedThumbnail ?? false,
+		hasIllustration: noIllustration !== true,
 	});
 	const onLongPressCallback = useCallback(() => {
 		if (onLongPress) {
@@ -70,15 +82,17 @@ export const ListItem = ({
 			onLongPress={onLongPressCallback}
 			style={[styles.root]}
 		>
-			<View style={styles.illustration}>
-				<IllustrationComponent
-					{...illustrationProps}
-					illustration={illustration}
-					useBlurhash={illustrationProps?.useBlurhash ?? false}
-					variant={illustrationProps?.variant ?? "center"}
-					quality="low"
-				/>
-			</View>
+			{noIllustration !== true && (
+				<View style={styles.illustration}>
+					<IllustrationComponent
+						{...illustrationProps}
+						illustration={illustration}
+						useBlurhash={illustrationProps?.useBlurhash ?? false}
+						variant={illustrationProps?.variant ?? "center"}
+						quality="low"
+					/>
+				</View>
+			)}
 			<View style={styles.textContainer}>
 				<LoadableText
 					content={title}
@@ -118,6 +132,12 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: "flex-start",
 		gap: theme.gap(2),
 		padding: theme.gap(1),
+		variants: {
+			hasIllustration: {
+				true: {},
+				false: { minHeight: theme.gap(6) },
+			},
+		},
 	},
 	illustration: {
 		variants: {
@@ -140,6 +160,13 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		justifyContent: "center",
 		gap: theme.gap(1),
+
+		variants: {
+			hasIllustration: {
+				true: {},
+				false: { marginLeft: theme.gap(1) },
+			},
+		},
 	},
 	contextMenu: {
 		justifyContent: "center",
