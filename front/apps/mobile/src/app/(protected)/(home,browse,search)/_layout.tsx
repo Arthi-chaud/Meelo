@@ -20,6 +20,7 @@ const SharedRoutes: {
 	{ name: "artists/[id]", options: { headerTitle: null } },
 	{ name: "albums/index", options: { headerTitle: "models.album_plural" } },
 	{ name: "songs/index", options: { headerTitle: "models.song_plural" } },
+	{ name: "genres", options: { headerTitle: "models.genre_plural" } },
 	{ name: "videos/index", options: { headerTitle: "models.video_plural" } },
 	{ name: "tracks/index", options: { headerTitle: "models.track_plural" } },
 	{
