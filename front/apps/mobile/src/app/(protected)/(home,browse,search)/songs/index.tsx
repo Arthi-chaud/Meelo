@@ -20,7 +20,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { getArtist, getSong, getSongs } from "@/api/queries";
+import { getArtist, getGenre, getSong, getSongs } from "@/api/queries";
 import { transformPage } from "@/api/query";
 import Song, {
 	SongSortingKeys,
@@ -42,7 +42,6 @@ import { InfiniteView } from "~/components/infinite/view";
 import { SongItem } from "~/components/item/resource/song";
 import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
-// TODO Handle Genre Query param
 // TODO song subtitle: allow it to be album
 
 export default function SongBrowseView() {
@@ -53,11 +52,13 @@ export default function SongBrowseView() {
 	const {
 		artist: artistId,
 		rare: rareArtistId,
+		genre: genreId,
 		versionsOf: versionsOfSongId,
 	} = useLocalSearchParams<{
 		artist?: string;
 		rare?: string;
 		versionsOf?: string;
+		genre?: string;
 	}>();
 	const [{ sort, order }, sortControl] = useSortControl({
 		sortingKeys: SongSortingKeys,
@@ -73,6 +74,7 @@ export default function SongBrowseView() {
 		artistId ?? rareArtistId,
 	);
 
+	const { data: genre } = useQuery((genreId) => getGenre(genreId), genreId);
 	const { data: song } = useQuery(
 		(songId) =>
 			getSong(songId, ["artist", "illustration", "featuring", "master"]),
@@ -83,8 +85,10 @@ export default function SongBrowseView() {
 			nav.setOptions({ headerTitle: t("artist.rareSongs") });
 		} else if (versionsOfSongId !== undefined) {
 			nav.setOptions({ headerTitle: t("models.versions") });
+		} else if (genreId !== undefined) {
+			nav.setOptions({ headerTitle: genre?.name ?? "" });
 		}
-	}, [rareArtistId, versionsOfSongId]);
+	}, [rareArtistId, versionsOfSongId, genreId, genre]);
 	const subtitle = useCallback(
 		(songItem: SongWithRelations<"featuring"> | undefined) => {
 			if (
@@ -125,6 +129,7 @@ export default function SongBrowseView() {
 					versionsOf: versionsOfSongId,
 					random,
 					rare: rareArtistId,
+					genre: genreId,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["artist", "illustration", "featuring", "master"],
@@ -135,6 +140,7 @@ export default function SongBrowseView() {
 			libraries,
 			types,
 			artistId,
+			genreId,
 			versionsOfSongId,
 			rareArtistId,
 		],

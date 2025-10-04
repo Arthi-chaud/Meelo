@@ -186,7 +186,11 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 								<Chip
 									key={idx}
 									title={genre?.name}
-									onPress={() => {}} // TODO
+									href={
+										genre
+											? `/songs?genre=${genre.id}`
+											: undefined
+									}
 								/>
 							),
 						)}
