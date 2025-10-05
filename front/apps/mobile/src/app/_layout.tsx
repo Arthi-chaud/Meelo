@@ -101,11 +101,13 @@ export default function RootLayout() {
 
 	useEffect(() => {
 		if (loaded || error) {
-			if (Device.deviceType === Device.DeviceType.TABLET)
-				ScreenOrientation.unlockAsync().then(() =>
-					SplashScreen.hideAsync(),
-				);
-			else SplashScreen.hideAsync();
+			const lock =
+				Device.deviceType === Device.DeviceType.TABLET
+					? ScreenOrientation.unlockAsync()
+					: ScreenOrientation.lockAsync(
+							ScreenOrientation.OrientationLock.PORTRAIT,
+						);
+			lock.then(() => SplashScreen.hideAsync());
 		}
 	}, [loaded, error]);
 
