@@ -19,41 +19,41 @@ import { Divider } from "~/primitives/divider";
 const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
 	{
 		title: "models.artist_plural",
-		href: "/(protected)/(browse)/artists",
+		href: "/(protected)/(nav)/(browse)/artists",
 		icon: ArtistIcon,
 	},
 	{
 		title: "models.album_plural",
-		href: "/(protected)/(browse)/albums",
+		href: "/(protected)/(nav)/(browse)/albums",
 		icon: AlbumIcon,
 	},
 
 	{
 		title: "models.song_plural",
-		href: "/(protected)/(browse)/songs",
+		href: "/(protected)/(nav)/(browse)/songs",
 		icon: SongIcon,
 	},
 
 	{
 		title: "models.video_plural",
-		href: "/(protected)/(browse)/videos",
+		href: "/(protected)/(nav)/(browse)/videos",
 		icon: VideoIcon,
 	},
 	{
 		title: "nav.compilations",
-		href: "/(protected)/(browse)/albums?compilations=true",
+		href: "/(protected)/(nav)/(browse)/albums?compilations=true",
 		icon: CompilationIcon,
 	},
 
 	{
 		title: "models.playlist_plural",
-		href: "/(protected)/(browse)/playlists",
+		href: "/(protected)/(nav)/(browse)/playlists",
 		icon: PlaylistIcon,
 	},
 
 	{
 		title: "models.genre_plural",
-		href: "/(protected)/(browse)/genres",
+		href: "/(protected)/(nav)/(browse)/genres",
 		icon: GenreIcon,
 	},
 ];

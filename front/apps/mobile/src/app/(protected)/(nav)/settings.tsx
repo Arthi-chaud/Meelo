@@ -50,7 +50,7 @@ import { Text } from "~/primitives/text";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
-import { Languages } from "../../../../../translations";
+import { Languages } from "../../../../../../translations";
 
 const BuildCommit =
 	process.env.EXPO_PUBLIC_BUILD_COMMIT ??
