@@ -9,6 +9,7 @@ import { StyleSheet } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { videoPlayerAtom } from "~/components/player/context";
 import { currentTrackAtom } from "~/components/player/state";
+import { Controls } from "~/pages/video-player/controls";
 
 export default function FullscreenVideoPlayer() {
 	const router = useRouter();
@@ -39,6 +40,7 @@ export default function FullscreenVideoPlayer() {
 				}}
 			/>
 			<SafeAreaView style={styles.root}>
+				<Controls style={styles.controls} />
 				{player && (
 					<VideoView
 						player={player}
@@ -52,4 +54,12 @@ export default function FullscreenVideoPlayer() {
 
 const styles = StyleSheet.create(() => ({
 	root: { flex: 1, backgroundColor: "black" },
+	controls: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		zIndex: 1,
+	},
 }));
