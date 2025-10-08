@@ -185,6 +185,10 @@ export default function ProtectedLayout() {
 				<TabTrigger name="(browse)" href="/(protected)/(browse)" />
 				<TabTrigger name="(search)" href="/(protected)/(search)" />
 				<TabTrigger name="settings" href="/(protected)/settings" />
+				<TabTrigger
+					name="video-player"
+					href="/(protected)/video-player"
+				/>
 			</TabList>
 		</Tabs>
 	);
