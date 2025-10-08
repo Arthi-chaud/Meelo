@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import { NavigationBar } from "./nav-bar";
 
 type Props = { style: ViewStyle };
 export const Controls = (props: Props) => {
@@ -52,12 +53,14 @@ export const Controls = (props: Props) => {
 
 	return (
 		<Animated.View style={[styles.root, opacityStyle, props.style]}>
-			<Pressable style={styles.pressable} onPress={onPress}></Pressable>
+			<Pressable style={styles.pressable} onPress={onPress}>
+				<NavigationBar style={{ position: "absolute", top: 0 }} />
+			</Pressable>
 		</Animated.View>
 	);
 };
 
 const styles = StyleSheet.create(() => ({
-	root: { heigth: "100%", width: "100%", backgroundColor: "red" },
+	root: { heigth: "100%", width: "100%" },
 	pressable: { height: "100%", width: "100%" },
 }));
