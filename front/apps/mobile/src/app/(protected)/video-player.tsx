@@ -37,6 +37,8 @@ export default function FullscreenVideoPlayer() {
 			<Stack.Screen
 				options={{
 					headerShown: false,
+					statusBarHidden: true,
+					navigationBarHidden: true,
 				}}
 			/>
 			<SafeAreaView style={styles.root}>
