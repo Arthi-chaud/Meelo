@@ -1,13 +1,19 @@
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { type ComponentProps, useCallback } from "react";
 import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getArtist } from "@/api/queries";
 import { skipTrackAtom } from "@/state/player";
-import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
+import {
+	ForwardIcon,
+	FullscreenIcon,
+	PauseIcon,
+	PlayIcon,
+	RewindIcon,
+} from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
 import { useQuery, useQueryClient } from "~/api";
 import { useContextMenu } from "~/components/context-menu";
@@ -15,6 +21,7 @@ import { useArtistContextMenu } from "~/components/context-menu/resource/artist"
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
@@ -43,7 +50,9 @@ export const Main = () => {
 				</View>
 			</View>
 			<View style={styles.controls}>
-				<TrackNameButton />
+				<WithFullScreenButton>
+					<TrackNameButton />
+				</WithFullScreenButton>
 				<ArtistNameButton />
 				<PlayControls />
 				<ProgressControls />
@@ -97,6 +106,36 @@ const ProgressControls = () => {
 				/>
 			</View>
 			<Slider />
+		</View>
+	);
+};
+
+const WithFullScreenButton = ({ children }: ComponentProps<any>) => {
+	const [currentTrack] = useAtom(currentTrackAtom);
+	const isVideo = currentTrack?.track.type === "Video";
+	const router = useRouter();
+	const onPress = useCallback(() => {
+		router.push("/video-player");
+	}, [router]);
+
+	styles.useVariants({ isVideo });
+	return (
+		<View style={styles.fullscreenButtonRow}>
+			{isVideo && (
+				<Button size="small" icon={FullscreenIcon} onPress={onPress} />
+			)}
+			{children}
+
+			{/* NOTE: it's for the horzontal padding of the title to be symmetrical */}
+			{isVideo && (
+				<View style={{ opacity: 0 }}>
+					<Button
+						size="small"
+						icon={FullscreenIcon}
+						onPress={() => {}}
+					/>
+				</View>
+			)}
 		</View>
 	);
 };
@@ -223,6 +262,18 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		maxWidth: breakpoints.sm,
 		flexDirection: "row",
 		justifyContent: "space-evenly",
+	},
+	fullscreenButtonRow: {
+		flexDirection: "row",
+		width: "100%",
+		justifyContent: "space-between",
+		alignItems: "center",
+		variants: {
+			isVideo: {
+				true: { justifyContent: "space-between" },
+				false: { justifyContent: "center" },
+			},
+		},
 	},
 	video: {
 		width: "100%",
