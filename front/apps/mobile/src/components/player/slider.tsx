@@ -5,23 +5,20 @@ import { Slider as AwesomeSlider } from "react-native-awesome-slider";
 import { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
-import { useAccentColor } from "~/hooks/accent-color";
-import {
-	currentTrackAtom,
-	durationAtom,
-	progressAtom,
-	requestedProgressAtom,
-} from "../state";
+import { durationAtom, progressAtom, requestedProgressAtom } from "./state";
 
-export const Slider = () => {
-	const currentTrack = useAtomValue(currentTrackAtom);
+type Props = {
+	sliderColor: string | undefined;
+	trackColor: string | undefined;
+};
+
+export const Slider = ({ sliderColor, trackColor }: Props) => {
 	const progress = useAtomValue(progressAtom);
 	const setProgress = useSetAtom(requestedProgressAtom);
 	const duration = useAtomValue(durationAtom);
 	const progressShared = useSharedValue(progress);
 	const minValueShared = useSharedValue(0);
 	const maxValueShared = useSharedValue(duration ?? 1);
-	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const animatedTheme = useAnimatedTheme();
 	useEffect(() => {
 		maxValueShared.value = duration ?? 1;
@@ -34,9 +31,8 @@ export const Slider = () => {
 		<View style={styles.root}>
 			<Slider_
 				theme={{
-					minimumTrackTintColor: accentColor,
-					// Converting the accent color from rgb to rgba
-					maximumTrackTintColor: `${accentColor}30`,
+					minimumTrackTintColor: sliderColor,
+					maximumTrackTintColor: trackColor,
 				}}
 				onSlidingComplete={(newProgress) => {
 					setProgress(newProgress);

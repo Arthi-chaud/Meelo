@@ -21,6 +21,7 @@ import { useArtistContextMenu } from "~/components/context-menu/resource/artist"
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import { useAccentColor } from "~/hooks/accent-color";
 import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -28,6 +29,7 @@ import { Text } from "~/primitives/text";
 import { breakpoints } from "~/theme";
 import { videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
+import { Slider } from "../slider";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -38,7 +40,6 @@ import {
 	rewindTrackAtom,
 } from "../state";
 import { useFormattedArtistName } from "../utils";
-import { Slider } from "./slider";
 
 export const Main = () => {
 	const { rt: _rt } = useUnistyles();
@@ -85,6 +86,7 @@ const PlayControls = () => {
 
 const ProgressControls = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
+	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const progress = useAtomValue(progressAtom);
 	const duration = useAtomValue(durationAtom);
 
@@ -105,7 +107,7 @@ const ProgressControls = () => {
 					)}
 				/>
 			</View>
-			<Slider />
+			<Slider sliderColor={accentColor} trackColor={`${accentColor}30`} />
 		</View>
 	);
 };
