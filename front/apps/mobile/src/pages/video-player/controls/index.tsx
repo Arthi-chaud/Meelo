@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import {
 	type GestureResponderEvent,
 	Pressable,
+	View,
 	type ViewStyle,
 } from "react-native";
 import Animated, {
@@ -9,10 +10,11 @@ import Animated, {
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
-import { StyleSheet } from "react-native-unistyles";
+import { ScopedTheme, StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { Bottom } from "./bottom";
 import { NavigationBar } from "./nav-bar";
+import { PlaybackControls } from "./playback";
 
 type Props = { style: ViewStyle };
 export const Controls = (props: Props) => {
@@ -53,18 +55,32 @@ export const Controls = (props: Props) => {
 	}, []);
 
 	return (
-		<Animated.View style={[styles.root, opacityStyle, props.style]}>
-			<Pressable style={styles.pressable} onPress={onPress}>
-				<NavigationBar style={{ position: "absolute", top: 0 }} />
-				<Bottom style={styles.bottomControls} />
-			</Pressable>
-		</Animated.View>
+		<ScopedTheme name="dark">
+			<Animated.View style={[styles.root, opacityStyle, props.style]}>
+				<Pressable style={styles.pressable} onPress={onPress}>
+					<NavigationBar style={styles.navigationHeader} />
+					<View style={styles.playbackControls}>
+						<PlaybackControls />
+					</View>
+					<Bottom style={styles.bottomControls} />
+				</Pressable>
+			</Animated.View>
+		</ScopedTheme>
 	);
 };
 
 const styles = StyleSheet.create((theme) => ({
 	root: { heigth: "100%", width: "100%" },
 	pressable: { height: "100%", width: "100%" },
+	navigationHeader: { position: "absolute", top: 0 },
+	playbackControls: {
+		height: "100%",
+		position: "absolute",
+		top: 0,
+		bottom: 0,
+		width: "100%",
+		justifyContent: "center",
+	},
 	bottomControls: {
 		position: "absolute",
 		bottom: 0,
