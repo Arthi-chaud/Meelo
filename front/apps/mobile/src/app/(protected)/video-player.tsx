@@ -11,6 +11,10 @@ import { videoPlayerAtom } from "~/components/player/context";
 import { currentTrackAtom } from "~/components/player/state";
 import { Controls } from "~/pages/video-player/controls";
 
+//TODO Try to avoid flicker from the video player
+//TODO Crash when in hirizontal mode + infinite view
+//TODO Crash when the next track is not video
+
 export default function FullscreenVideoPlayer() {
 	const router = useRouter();
 	const [currentTrack] = useAtom(currentTrackAtom);
@@ -39,6 +43,7 @@ export default function FullscreenVideoPlayer() {
 					headerShown: false,
 					statusBarHidden: true,
 					navigationBarHidden: true,
+					animation: "none",
 				}}
 			/>
 			<SafeAreaView style={styles.root}>
@@ -55,7 +60,7 @@ export default function FullscreenVideoPlayer() {
 }
 
 const styles = StyleSheet.create(() => ({
-	root: { flex: 1, backgroundColor: "black" },
+	root: { flex: 1, backgroundColor: "#000000" },
 	controls: {
 		position: "absolute",
 		top: 0,
