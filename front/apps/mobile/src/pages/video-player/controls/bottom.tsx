@@ -2,7 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { View, type ViewStyle } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { Illustration } from "~/components/illustration";
@@ -14,7 +14,6 @@ import {
 	progressAtom,
 } from "~/components/player/state";
 import { Text } from "~/primitives/text";
-import { darkTheme } from "~/theme";
 import { useVideoIllustration } from "./utils";
 
 type Props = { style: ViewStyle };
@@ -77,10 +76,11 @@ const VideoName = () => {
 };
 
 const Slider = () => {
+	const { theme } = useUnistyles();
 	return (
 		<Slider_
-			sliderColor={darkTheme.colors.text.primary}
-			trackColor={darkTheme.colors.divider}
+			sliderColor={theme.colors.text.primary}
+			trackColor={theme.colors.divider}
 		/>
 	);
 };
@@ -113,7 +113,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	illustration: {},
 	sliderColumn: { flex: 1, gap: theme.gap(1) },
-	text: { color: darkTheme.colors.text.primary },
+	text: { color: theme.colors.text.primary },
 	progressRow: {
 		width: "100%",
 		flexDirection: "row",
