@@ -117,7 +117,7 @@ const WithFullScreenButton = ({ children }: ComponentProps<any>) => {
 	const isVideo = currentTrack?.track.type === "Video";
 	const router = useRouter();
 	const onPress = useCallback(() => {
-		router.push("/video-player");
+		router.navigate("/video-player");
 	}, [router]);
 
 	styles.useVariants({ isVideo });

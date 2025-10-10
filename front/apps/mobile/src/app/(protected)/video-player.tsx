@@ -41,6 +41,7 @@ export default function FullscreenVideoPlayer() {
 			<Stack.Screen
 				options={{
 					headerShown: false,
+					presentation: "fullScreenModal",
 					statusBarHidden: true,
 					navigationBarHidden: true,
 					animation: "none",
