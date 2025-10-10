@@ -3,7 +3,6 @@ import { useAtomValue } from "jotai";
 import { useMemo } from "react";
 import { View, type ViewStyle } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
@@ -13,6 +12,7 @@ import {
 	durationAtom,
 	progressAtom,
 } from "~/components/player/state";
+import { useFormattedArtistName } from "~/components/player/utils";
 import { Text } from "~/primitives/text";
 import { useVideoIllustration } from "./utils";
 
@@ -50,11 +50,7 @@ export const Bottom = ({ style }: Props) => {
 
 const VideoName = () => {
 	const track = useAtomValue(currentTrackAtom);
-	const formattedArtistName = useMemo(
-		() =>
-			track ? formatArtists(track?.artist, track?.featuring) : undefined,
-		[track],
-	);
+	const formattedArtistName = useFormattedArtistName();
 	return (
 		<View>
 			<LoadableText
