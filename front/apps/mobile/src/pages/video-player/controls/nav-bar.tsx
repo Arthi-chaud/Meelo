@@ -1,21 +1,19 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import type { ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { BackIcon } from "@/ui/icons";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 
-type Props = { style: ViewStyle };
+type Props = { style: ViewStyle; close: () => void };
 
-export const NavigationBar = ({ style }: Props) => {
-	const router = useRouter();
+export const NavigationBar = ({ style, close }: Props) => {
 	return (
 		<LinearGradient
 			style={[styles.root, style]}
 			colors={["black", "transparent"]}
 		>
-			<Pressable onPress={() => router.back()}>
+			<Pressable onPress={close} disableRequestAnimationFrame>
 				<Icon icon={BackIcon} style={{ color: "white" }} />
 			</Pressable>
 		</LinearGradient>
