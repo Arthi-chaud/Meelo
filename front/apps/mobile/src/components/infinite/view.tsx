@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import { type ContentStyle, FlashList } from "@shopify/flash-list";
 import type React from "react";
 import { type ComponentProps, useMemo, useState } from "react";
@@ -69,7 +70,13 @@ export const InfiniteView = <
 		];
 	}, [queryRes.items, queryRes.isFetching, queryRes.isFetchingNextPage]);
 	const ScrollView = props.layout === "list" ? List : Grid;
+	const isFocused = useIsFocused();
 	useSetKeyIllustrationFromInfiniteQuery(props.query);
+	// Note: When video is fullscreen + screen is rotated, unistyle freaksout and rerenders every frame (?) and ends upcrashing
+	// Ugly workaround, but fixes it
+	if (!isFocused) {
+		return null;
+	}
 	return (
 		<View style={[styles.rootStyle]}>
 			{props.header && (
