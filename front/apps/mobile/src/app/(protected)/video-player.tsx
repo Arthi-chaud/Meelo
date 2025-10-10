@@ -3,7 +3,7 @@ import { Stack, useRouter } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { setStatusBarHidden } from "expo-status-bar";
 import { useAtom, useAtomValue } from "jotai";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
@@ -12,29 +12,28 @@ import { currentTrackAtom } from "~/components/player/state";
 import { Controls } from "~/pages/video-player/controls";
 
 //TODO Try to avoid flicker from the video player
-//TODO Crash when in hirizontal mode + infinite view
-//TODO Crash when the next track is not video
 
 export default function FullscreenVideoPlayer() {
+	const isMobile = Device.deviceType !== Device.DeviceType.TABLET;
 	const router = useRouter();
 	const [currentTrack] = useAtom(currentTrackAtom);
 	const player = useAtomValue(videoPlayerAtom);
+	const closePlayer = useCallback(() => {
+		if (isMobile) {
+			ScreenOrientation.lockAsync(
+				ScreenOrientation.OrientationLock.PORTRAIT,
+			).then(() => router.back());
+		} else router.back();
+	}, [isMobile]);
 	useEffect(() => {
-		if (currentTrack?.track.type !== "Video") router.back();
-	}, [currentTrack]);
+		if (currentTrack?.track.type !== "Video") closePlayer();
+	}, [currentTrack, closePlayer]);
 	useEffect(() => {
-		const isMobile = Device.deviceType !== Device.DeviceType.TABLET;
 		if (isMobile) {
 			// Allowing mobiles to use landscape mode
 			ScreenOrientation.unlockAsync();
 		}
 		setStatusBarHidden(true);
-		return () => {
-			isMobile &&
-				ScreenOrientation.lockAsync(
-					ScreenOrientation.OrientationLock.PORTRAIT,
-				);
-		};
 	}, []);
 	return (
 		<>
@@ -48,7 +47,7 @@ export default function FullscreenVideoPlayer() {
 				}}
 			/>
 			<SafeAreaView style={styles.root}>
-				<Controls style={styles.controls} />
+				<Controls style={styles.controls} close={closePlayer} />
 				{player && (
 					<VideoView
 						player={player}

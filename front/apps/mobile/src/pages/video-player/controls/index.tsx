@@ -16,7 +16,7 @@ import { Bottom } from "./bottom";
 import { NavigationBar } from "./nav-bar";
 import { PlaybackControls } from "./playback";
 
-type Props = { style: ViewStyle };
+type Props = { style: ViewStyle; close: () => void };
 export const Controls = (props: Props) => {
 	const opacity = useSharedValue(1);
 	const animatedTheme = useAnimatedTheme();
@@ -53,12 +53,14 @@ export const Controls = (props: Props) => {
 			hideControlsAfterDelay();
 		}
 	}, []);
-
 	return (
 		<ScopedTheme name="dark">
 			<Animated.View style={[styles.root, opacityStyle, props.style]}>
 				<Pressable style={styles.pressable} onPress={onPress}>
-					<NavigationBar style={styles.navigationHeader} />
+					<NavigationBar
+						style={styles.navigationHeader}
+						close={props.close}
+					/>
 					<View style={styles.playbackControls}>
 						<PlaybackControls />
 					</View>
