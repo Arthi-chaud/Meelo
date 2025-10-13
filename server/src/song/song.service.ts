@@ -959,16 +959,36 @@ export default class SongService extends SearchableRepositoryService {
 									},
 								},
 							},
-							// Take all tracks that only appear on non-master albums
+							// Take all tracks that either
+							// - only appear on non-master albums
+							// - only appear on video albums
 							{
 								tracks: {
 									every: {
-										release: {
-											album: {
-												type: "StudioRecording",
+										OR: [
+											{
+												release: {
+													album: {
+														type: "StudioRecording",
+													},
+													masterOf: null,
+												},
 											},
-											masterOf: null,
-										},
+
+											{
+												release: {
+													album: {
+														type: {
+															in: [
+																AlbumType.VideoAlbum,
+																AlbumType.RemixAlbum,
+															],
+														},
+													},
+												},
+												type: TrackType.Audio,
+											},
+										],
 									},
 								},
 							},
@@ -996,19 +1016,6 @@ export default class SongService extends SearchableRepositoryService {
 												},
 											},
 										],
-									},
-								},
-							},
-							// Take all audio tracks that appear only on video albums
-							{
-								tracks: {
-									every: {
-										release: {
-											album: {
-												type: AlbumType.VideoAlbum,
-											},
-										},
-										type: TrackType.Audio,
 									},
 								},
 							},
