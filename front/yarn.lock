@@ -4722,6 +4722,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wandersonalwes/iconsax-react@npm:^0.0.10":
+  version: 0.0.10
+  resolution: "@wandersonalwes/iconsax-react@npm:0.0.10"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/5aea1c91a8752c2d0cf61d25e8b324d1f719020723deb6a3c7ae88614a2663d1275408191c48133dc14b736d6c57bdb6ec30e664f781f4e6a1adccff92fdc11d
+  languageName: node
+  linkType: hard
+
 "@webgpu/types@npm:0.1.21":
   version: 0.1.21
   resolution: "@webgpu/types@npm:0.1.21"
@@ -7367,28 +7378,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iconsax-react@npm:0.0.8":
-  version: 0.0.8
-  resolution: "iconsax-react@npm:0.0.8"
-  dependencies:
-    prop-types: "npm:^15.7.2"
-  peerDependencies:
-    react: "*"
-  checksum: 10c0/056532f76b5704428e3d2e20893848f57b002fe4051c7cf4e3de102f744cd56d9115b4c708b3a38c0cffc14fd20df3c0bd2be679fa24fa113b8433072b57dd4d
-  languageName: node
-  linkType: hard
-
-"iconsax-react@patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch":
-  version: 0.0.8
-  resolution: "iconsax-react@patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch::version=0.0.8&hash=8f7c9e"
-  dependencies:
-    prop-types: "npm:^15.7.2"
-  peerDependencies:
-    react: "*"
-  checksum: 10c0/668d91549905e4c466496a3a6b4cd3a22f9cf47dca74afe9783b4d7b56e16fcfe4b221f6b69fe0ea70c5726703318505e163159ec8c39864e464aec67cd31131
-  languageName: node
-  linkType: hard
-
 "iconv-lite@npm:^0.6.2":
   version: 0.6.3
   resolution: "iconv-lite@npm:0.6.3"
@@ -8640,6 +8629,7 @@ __metadata:
   resolution: "meelo@workspace:."
   dependencies:
     "@biomejs/biome": "npm:2.1.3"
+    "@wandersonalwes/iconsax-react": "npm:^0.0.10"
     jest: "npm:^29.7.0"
     typescript: "npm:5.3.3"
   languageName: unknown
@@ -12277,7 +12267,6 @@ __metadata:
   resolution: "ui@workspace:packages/ui"
   dependencies:
     "@types/react": "npm:*"
-    iconsax-react: "patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch"
     typescript: "npm:5.3.3"
   languageName: unknown
   linkType: soft
