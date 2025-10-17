@@ -16,11 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import Image from "@d11/react-native-fast-image";
 import { useEffect, useMemo, useState } from "react";
 import { View, type ViewStyle } from "react-native";
 import { Blurhash } from "react-native-blurhash";
-import Image from "react-native-fast-image";
-import { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, {
+	useAnimatedStyle,
+	useSharedValue,
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import type IllustrationModel from "@/models/illustration";
 import type { IllustrationQuality } from "@/models/illustration";
@@ -73,14 +76,10 @@ export const Illustration = ({
 		"loading",
 	);
 	const imageOpacity = useSharedValue(0);
-	const blurhashOpacity = useSharedValue(0);
 	const fallbackOpacity = useSharedValue(0);
 
 	const imageOpacityStyle = useAnimatedStyle(() => ({
 		opacity: imageOpacity.value,
-	}));
-	const blurhashOpacityStyle = useAnimatedStyle(() => ({
-		opacity: blurhashOpacity.value,
 	}));
 	const fallbackOpacityStyle = useAnimatedStyle(() => ({
 		opacity: fallbackOpacity.value,
@@ -89,7 +88,6 @@ export const Illustration = ({
 	useEffect(() => {
 		// Whatever the new illustration props is,
 		// we need to reset the blurhash and the image
-		blurhashOpacity.value = 0;
 		imageOpacity.value = 0;
 		if (illustration === null) {
 			fallbackOpacity.value = 1;
@@ -118,13 +116,9 @@ export const Illustration = ({
 								<Blurhash
 									decodeAsync
 									style={[
-										blurhashOpacityStyle,
 										styles.slotContent,
 										styles.blurhash,
 									]}
-									onLoadEnd={() => {
-										blurhashOpacity.value = 1;
-									}}
 									blurhash={illustration.blurhash}
 									decodeWidth={16}
 									decodeHeight={16}
@@ -132,7 +126,7 @@ export const Illustration = ({
 							</View>
 						)}
 
-						<View style={[imageOpacityStyle, styles.slot]}>
+						<Animated.View style={[imageOpacityStyle, styles.slot]}>
 							<Image
 								style={[styles.slotContent]}
 								onLoad={() => {
@@ -157,11 +151,11 @@ export const Illustration = ({
 									),
 								}}
 							/>
-						</View>
+						</Animated.View>
 					</>
 				)}
 				{(!illustration || loadStatus === "error") && (
-					<View
+					<Animated.View
 						style={[
 							fallbackOpacityStyle,
 							styles.fallbackContainer,
@@ -174,7 +168,7 @@ export const Illustration = ({
 								style={styles.fallbackIcon}
 							/>
 						)}
-					</View>
+					</Animated.View>
 				)}
 			</View>
 		</View>

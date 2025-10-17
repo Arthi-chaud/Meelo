@@ -1,8 +1,8 @@
+import Image from "@d11/react-native-fast-image";
 import { openBrowserAsync } from "expo-web-browser";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
-import Image from "react-native-fast-image";
 import { StyleSheet } from "react-native-unistyles";
 import type {
 	AlbumExternalMetadata,
