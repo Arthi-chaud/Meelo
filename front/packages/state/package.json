@@ -2,11 +2,13 @@
 	"name": "state",
 	"sideEffects": false,
 	"dependencies": {
-		"jotai": "^2.12.1",
-		"react": "18.2.0"
+		"jotai": "^2.12.1"
 	},
 	"devDependencies": {
 		"typescript": "5.3.3"
+	},
+	"peerDependencies": {
+		"react": "*"
 	},
 	"packageManager": "yarn@4.4.0"
 }
