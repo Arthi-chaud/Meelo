@@ -3293,7 +3293,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^7.3.4":
+"@mui/material@npm:^7.0.1":
   version: 7.3.4
   resolution: "@mui/material@npm:7.3.4"
   dependencies:
@@ -7375,6 +7375,17 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10c0/056532f76b5704428e3d2e20893848f57b002fe4051c7cf4e3de102f744cd56d9115b4c708b3a38c0cffc14fd20df3c0bd2be679fa24fa113b8433072b57dd4d
+  languageName: node
+  linkType: hard
+
+"iconsax-react@patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch":
+  version: 0.0.8
+  resolution: "iconsax-react@patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch::version=0.0.8&hash=8f7c9e"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/668d91549905e4c466496a3a6b4cd3a22f9cf47dca74afe9783b4d7b56e16fcfe4b221f6b69fe0ea70c5726703318505e163159ec8c39864e464aec67cd31131
   languageName: node
   linkType: hard
 
@@ -12266,7 +12277,7 @@ __metadata:
   resolution: "ui@workspace:packages/ui"
   dependencies:
     "@types/react": "npm:*"
-    iconsax-react: "npm:0.0.8"
+    iconsax-react: "patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch"
     typescript: "npm:5.3.3"
   languageName: unknown
   linkType: soft
@@ -12580,7 +12591,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.14.0"
-    "@mui/material": "npm:^7.3.4"
+    "@mui/material": "npm:^7.0.1"
     "@mui/material-nextjs": "npm:^7.0.0"
     "@mui/utils": "npm:^7.0.1"
     "@mui/x-data-grid": "npm:^7.28.3"

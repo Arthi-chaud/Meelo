@@ -2,7 +2,7 @@
 	"name": "ui",
 	"sideEffects": false,
 	"dependencies": {
-		"iconsax-react": "0.0.8"
+		"iconsax-react": "patch:iconsax-react@npm%3A0.0.8#~/.yarn/patches/iconsax-react-npm-0.0.8-2aa2af964c.patch"
 	},
 	"devDependencies": {
 		"@types/react": "*",
