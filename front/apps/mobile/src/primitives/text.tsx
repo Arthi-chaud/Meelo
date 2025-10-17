@@ -27,6 +27,7 @@ import type { RequireExactlyOne } from "type-fest";
 
 const styles = StyleSheet.create((theme) => ({
 	text: {
+		fontSize: theme.fontSize.default, // to fix typing
 		variants: {
 			color: {
 				primary: { color: theme.colors.text.primary },
