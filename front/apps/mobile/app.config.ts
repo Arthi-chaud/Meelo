@@ -60,7 +60,6 @@ export const expo: ExpoConfig = {
 	],
 	experiments: {
 		typedRoutes: true,
-		autolinkingModuleResolution: true,
 	},
 	extra: {
 		router: {},
