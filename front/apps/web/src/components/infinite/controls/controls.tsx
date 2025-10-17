@@ -112,7 +112,7 @@ const FilterMenuButton = <FilterKeys extends string>({
 					? "misc.loading"
 					: filter.buttonLabel
 			}
-			icon={filter.values && filter.buttonIcon}
+			icon={filter.values && (filter.buttonIcon as ReactNode)}
 			items={(closeMenu) =>
 				filter.values?.map((key) => (
 					<MenuItem
