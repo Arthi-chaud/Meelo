@@ -49,7 +49,7 @@ export const expo: ExpoConfig = {
 			},
 		],
 		[
-			// https://docs.thewidlarzgroup.com/react-native-video/docs/v6/other/expo
+			// https://docs.thewidlarzgroup.com/react-native-video/docs/v7/configuration/expo-plugin
 			"react-native-video",
 			{
 				enableNotificationControls: true,

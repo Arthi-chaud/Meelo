@@ -18,7 +18,7 @@
 
 import Image, {
 	type FastImageProps as ImageProps,
-} from "react-native-fast-image";
+} from "@d11/react-native-fast-image";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 
 const styles = StyleSheet.create((_theme) => ({

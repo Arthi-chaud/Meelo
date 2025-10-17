@@ -1768,6 +1768,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@d11/react-native-fast-image@npm:^8.12.0":
+  version: 8.12.0
+  resolution: "@d11/react-native-fast-image@npm:8.12.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/9f3139b0796fbbaf7be5f9292dac13997d7da9c00916b8b26c7648271e07c593ebe1613b70f88057f93468a3889f0de133af87e36b85a460b31376b0820fa716
+  languageName: node
+  linkType: hard
+
 "@egjs/hammerjs@npm:^2.0.17":
   version: 2.0.17
   resolution: "@egjs/hammerjs@npm:2.0.17"
@@ -4060,17 +4070,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:^1.8.3":
-  version: 1.8.3
-  resolution: "@shopify/flash-list@npm:1.8.3"
+"@shopify/flash-list@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@shopify/flash-list@npm:2.0.2"
   dependencies:
-    recyclerlistview: "npm:4.2.3"
     tslib: "npm:2.8.1"
   peerDependencies:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/0900250ce45157d144e3fef4d1cd8c5dfb03495ecb66da1f512697a6834f4eee7bf0755a3772b3c131135784757e5b36566ed365ea0890d9c10ad872885ef650
+  checksum: 10c0/c4e88348ce66e8f51c6213a42574a097d54cebf2125dc3fd8c077f3f7b83e25209c67bcb9a9102a3178c146cf5c23a978febd9a5ed5328ba1d7c663b5a8149d2
   languageName: node
   linkType: hard
 
@@ -4385,17 +4394,6 @@ __metadata:
     "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10c0/5d30dbf46124a63ee832864bf38ce42de2e8924dc53470f14742343503a2cf1851b6b4f8b892ef661e1a670561f4c9052d782e419d314912e54626f3296e49b6
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:18.0.17":
-  version: 18.0.17
-  resolution: "@types/react@npm:18.0.17"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 10c0/bd4900d1d8567c8b6c2ef6cbb1c83a28b725faf27dc82249958e5d09b15f82e3f28591a22ae5797bc6ee0292d2cf542061bf0faba076bd1ba61266803eb95710
   languageName: node
   linkType: hard
 
@@ -8249,7 +8247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.debounce@npm:4.0.8, lodash.debounce@npm:^4.0.8":
+"lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: 10c0/762998a63e095412b6099b8290903e0a8ddcb353ac6e2e0f2d7e7d03abd4275fe3c689d88960eb90b0dde4f177554d51a690f22a343932ecbc50a5d111849987
@@ -8279,7 +8277,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -9049,10 +9047,11 @@ __metadata:
   resolution: "mobile@workspace:apps/mobile"
   dependencies:
     "@babel/core": "npm:^7.25.2"
+    "@d11/react-native-fast-image": "npm:^8.12.0"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@gorhom/bottom-sheet": "npm:^5.1.8"
     "@react-native-community/checkbox": "npm:^0.5.20"
-    "@shopify/flash-list": "npm:^1.8.3"
+    "@shopify/flash-list": "npm:2.0.2"
     "@shopify/react-native-skia": "npm:2.2.12"
     "@tanstack/react-query": "npm:^5.77.0"
     "@types/lodash": "npm:^4"
@@ -9089,7 +9088,6 @@ __metadata:
     react-native-blurhash: "patch:react-native-blurhash@npm%3A2.1.1#~/.yarn/patches/react-native-blurhash-npm-2.1.1-baca87b7fa.patch"
     react-native-draggable-flatlist: "npm:^4.0.3"
     react-native-edge-to-edge: "npm:^1.6.1"
-    react-native-fast-image: "npm:^8.6.3"
     react-native-gesture-handler: "npm:~2.28.0"
     react-native-keyboard-controller: "npm:1.18.5"
     react-native-mmkv: "npm:4.0.0-beta.12"
@@ -9099,8 +9097,8 @@ __metadata:
     react-native-screens: "npm:~4.16.0"
     react-native-svg: "npm:15.12.1"
     react-native-unistyles: "npm:3.0.15"
-    react-native-video: "npm:^7.0.0-alpha.6"
-    react-native-worklets: "npm:^0.6.1"
+    react-native-video: "npm:^7.0.0-alpha.7"
+    react-native-worklets: "npm:^0.5.1"
     state: "workspace:^"
     toastify-react-native: "npm:^7.2.3"
     type-fest: "npm:^4.33.0"
@@ -9851,7 +9849,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.8.1, prop-types@npm:^15.5.8, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -9979,15 +9977,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:18.2.0":
-  version: 18.2.0
-  resolution: "react-dom@npm:18.2.0"
+"react-dom@npm:19.1.0":
+  version: 19.1.0
+  resolution: "react-dom@npm:19.1.0"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.0"
+    scheduler: "npm:^0.26.0"
   peerDependencies:
-    react: ^18.2.0
-  checksum: 10c0/66dfc5f93e13d0674e78ef41f92ed21dfb80f9c4ac4ac25a4b51046d41d4d2186abc915b897f69d3d0ebbffe6184e7c5876f2af26bfa956f179225d921be713a
+    react: ^19.1.0
+  checksum: 10c0/3e26e89bb6c67c9a6aa86cb888c7a7f8258f2e347a6d2a15299c17eb16e04c19194e3452bc3255bd34000a61e45e2cb51e46292392340432f133e5a5d2dfb5fc
   languageName: node
   linkType: hard
 
@@ -10160,16 +10157,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-fast-image@npm:^8.6.3":
-  version: 8.6.3
-  resolution: "react-native-fast-image@npm:8.6.3"
-  peerDependencies:
-    react: ^17 || ^18
-    react-native: ">=0.60.0"
-  checksum: 10c0/4ebeae53ffeadf1e7e5e133c1cfda81f9efe978f9ece10c732a0338149fe9104681bfdabc8427dad7c934b02bfcbd0e205bb6ca43e2844abc6054630ebe34454
-  languageName: node
-  linkType: hard
-
 "react-native-gesture-handler@npm:~2.28.0":
   version: 2.28.0
   resolution: "react-native-gesture-handler@npm:2.28.0"
@@ -10323,20 +10310,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-video@npm:^7.0.0-alpha.6":
-  version: 7.0.0-alpha.6
-  resolution: "react-native-video@npm:7.0.0-alpha.6"
+"react-native-video@npm:^7.0.0-alpha.7":
+  version: 7.0.0-alpha.7
+  resolution: "react-native-video@npm:7.0.0-alpha.7"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: ">=0.27.2"
-  checksum: 10c0/937ca81525d4efc0653877dd82dee565f7da035c2234ad50d813c05252fbfa3db4a3f949a04a4a4e02afec4dbd5ee223c002f1b72c4ce5ae77a62ab2dd48483b
+  checksum: 10c0/39e3767d32f0292b8f4bcaa51815ba851a2d6ddc727e9bab4a3af70779661e47eb540dcf20fc3bc1c7e5c4c748436e21697afbe2c61515f6e80bf88e76a952fb
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "react-native-worklets@npm:0.6.1"
+"react-native-worklets@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "react-native-worklets@npm:0.5.1"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-class-properties": "npm:^7.0.0-0"
@@ -10353,7 +10340,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 10c0/bc3dcca00e287939aeb7ee7be501f15a0ac59c9351c60efafa89447d70e549e7f126705c154d92dd6e0cab924bf25f3c6ec1234a55a4daa9d3b3f26aa7871777
+  checksum: 10c0/9eb9e6dea9abaf889400a6618355ef59af3075f5004a4bec9e4cba6dcfd13d8b63de0d4b29d75c00a3dcf5ad422e1bdb71636c75b1a2ad1c43d8b512f198bdab
   languageName: node
   linkType: hard
 
@@ -10547,15 +10534,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18.2.0":
-  version: 18.2.0
-  resolution: "react@npm:18.2.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/b562d9b569b0cb315e44b48099f7712283d93df36b19a39a67c254c6686479d3980b7f013dc931f4a5a3ae7645eae6386b4aa5eea933baa54ecd0f9acb0902b8
-  languageName: node
-  linkType: hard
-
 "react@npm:19.1.0":
   version: 19.1.0
   resolution: "react@npm:19.1.0"
@@ -10587,20 +10565,6 @@ __metadata:
     isarray: "npm:0.0.1"
     string_decoder: "npm:~0.10.x"
   checksum: 10c0/02272551396ed8930ddee1a088bdf0379f0f7cc47ac49ed8804e998076cb7daec9fbd2b1fd9c0490ec72e56e8bb3651abeb8080492b8e0a9c3f2158330908ed6
-  languageName: node
-  linkType: hard
-
-"recyclerlistview@npm:4.2.3":
-  version: 4.2.3
-  resolution: "recyclerlistview@npm:4.2.3"
-  dependencies:
-    lodash.debounce: "npm:4.0.8"
-    prop-types: "npm:15.8.1"
-    ts-object-utils: "npm:0.0.5"
-  peerDependencies:
-    react: ">= 15.2.1"
-    react-native: ">= 0.30.0"
-  checksum: 10c0/40b8b948d09f560ce98842e9141d2ce7ee5677ae2c20f7e30de901136d7764a42cc4e5ba3242fca0934055d5fef99c5b03430fcba28d7cfc27155b4ef97f70d5
   languageName: node
   linkType: hard
 
@@ -10935,19 +10899,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:0.26.0":
+"scheduler@npm:0.26.0, scheduler@npm:^0.26.0":
   version: 0.26.0
   resolution: "scheduler@npm:0.26.0"
   checksum: 10c0/5b8d5bfddaae3513410eda54f2268e98a376a429931921a81b5c3a2873aab7ca4d775a8caac5498f8cbc7d0daeab947cf923dbd8e215d61671f9f4e392d34356
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.23.0":
-  version: 0.23.2
-  resolution: "scheduler@npm:0.23.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/26383305e249651d4c58e6705d5f8425f153211aef95f15161c151f7b8de885f24751b377e4a0b3dd42cce09aad3f87a61dab7636859c0d89b7daf1a1e2a5c78
   languageName: node
   linkType: hard
 
@@ -11865,13 +11820,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-object-utils@npm:0.0.5":
-  version: 0.0.5
-  resolution: "ts-object-utils@npm:0.0.5"
-  checksum: 10c0/0279f8a7504b3905f2b14769769985f214154f1aedc60077c3baaced078369ae465aecc6acc04c614f40893e559d05697f6f4ef9fc411e3b6d1d15e6269a5e14
-  languageName: node
-  linkType: hard
-
 "tslib@npm:2.8.1, tslib@npm:^2.0.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
@@ -12306,7 +12254,7 @@ __metadata:
     "@types/accept-language-parser": "npm:^1.5.3"
     "@types/d3-array": "npm:^3.0.3"
     "@types/node": "npm:18.7.7"
-    "@types/react": "npm:18.0.17"
+    "@types/react": "npm:~19.1.10"
     "@types/react-beautiful-dnd": "npm:^13.1.3"
     "@types/react-dom": "npm:18.0.6"
     "@types/react-infinite-scroller": "npm:^1.2.3"
@@ -12324,10 +12272,10 @@ __metadata:
     material-ui-confirm: "npm:^3.0.7"
     mui-react-hook-form-plus: "npm:^1.3.2"
     next: "npm:14.2.32"
-    react: "npm:18.2.0"
+    react: "npm:19.1.0"
     react-beautiful-dnd: "npm:^13.1.1"
     react-blurhash: "npm:^0.3.0"
-    react-dom: "npm:18.2.0"
+    react-dom: "npm:19.1.0"
     react-error-boundary: "npm:^4.0.10"
     react-hook-form: "npm:^7.39.3"
     react-hot-toast: "npm:^2.3.0"
