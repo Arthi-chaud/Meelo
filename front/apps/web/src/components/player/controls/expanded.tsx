@@ -451,7 +451,7 @@ export const ExpandedPlayerControls = (
 							maxWidth: theme.breakpoints.values.md,
 						}}
 					>
-						{/* @ts-ignore */}
+						{/* @ts-expect-error */}
 						<DragDropContext
 							onDragEnd={(result) => {
 								if (result.destination) {
@@ -465,7 +465,7 @@ export const ExpandedPlayerControls = (
 								}
 							}}
 						>
-							{/* @ts-ignore */}
+							{/* @ts-expect-error */}
 							<Droppable droppableId="droppable">
 								{(provided) => (
 									<div
@@ -476,7 +476,7 @@ export const ExpandedPlayerControls = (
 											.slice(cursor + 1)
 											.map((playlistItem, index) => (
 												<>
-													{/* @ts-ignore */}
+													{/* @ts-expect-error */}
 													<Draggable
 														draggableId={index.toString()}
 														key={index}

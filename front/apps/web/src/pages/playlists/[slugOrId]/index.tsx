@@ -123,7 +123,7 @@ type DragAndDropPlaylistProps = {
 
 const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 	return (
-		/* @ts-ignore */
+		/* @ts-expect-error */
 		<DragDropContext
 			onDragEnd={(result) => {
 				if (result.destination) {
@@ -135,13 +135,13 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 				}
 			}}
 		>
-			{/* @ts-ignore */}
+			{/* @ts-expect-error */}
 			<Droppable droppableId="droppable-playlist-entries">
 				{(provided) => (
 					<div {...provided.droppableProps} ref={provided.innerRef}>
 						<Stack spacing={1}>
 							{props.entries.map((playlistItem, index) => (
-								/* @ts-ignore */
+								/* @ts-expect-error */
 								<Draggable
 									draggableId={index.toString()}
 									key={index}
