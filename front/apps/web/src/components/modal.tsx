@@ -1,9 +1,10 @@
 import { Box, Dialog } from "@mui/material";
 import { atom, useAtom, useSetAtom } from "jotai";
+import type { ReactNode } from "react";
 
-const modalAtom = atom<(() => JSX.Element) | null>(null);
+const modalAtom = atom<(() => ReactNode) | null>(null);
 export const closeModalAtom = atom(null, (_, set) => set(modalAtom, null));
-export const openModalAtom = atom(null, (_, set, content: () => JSX.Element) =>
+export const openModalAtom = atom(null, (_, set, content: () => ReactNode) =>
 	set(modalAtom, () => content),
 );
 

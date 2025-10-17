@@ -18,7 +18,7 @@
 
 import { Box, IconButton, Skeleton, useTheme } from "@mui/material";
 import Image, { type ImageProps } from "next/image";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import type { RequireExactlyOne } from "type-fest";
 import type IllustrationModel from "@/models/illustration";
 import type { IllustrationQuality } from "@/models/illustration";
@@ -31,7 +31,7 @@ type IllustrationProps = {
 	/**
 	 * An icon to display when illustration rendering failed
 	 */
-	fallback?: JSX.Element;
+	fallback?: ReactNode;
 
 	/**
 	 * Aspect Ratio of the Illustration

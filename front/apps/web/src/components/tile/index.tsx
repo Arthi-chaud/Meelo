@@ -28,7 +28,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 const PREFIX = "Tile";
 
@@ -74,8 +74,8 @@ const titleStyle = {
 
 type TileProps = {
 	title: string | undefined;
-	illustration: JSX.Element;
-	contextualMenu?: JSX.Element;
+	illustration: ReactNode;
+	contextualMenu?: ReactNode;
 	/**
 	 * URL to push on tile tap
 	 */

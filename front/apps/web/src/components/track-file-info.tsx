@@ -27,6 +27,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import type { useConfirm } from "material-ui-confirm";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { getSourceFile, getTrack } from "@/api/queries";
 import { songTypeToTranslationKey } from "@/models/utils";
@@ -46,7 +47,7 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 	const songType = track.data?.song?.type;
 
 	const tableContent: Partial<
-		Record<TranslationKey, string | number | undefined | JSX.Element>
+		Record<TranslationKey, string | number | undefined | ReactNode>
 	> = {
 		"fileInfo.name": track.data?.name,
 		"fileInfo.type": track.data?.type,

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ReactNode } from "react";
 import * as IScroll from "react-infinite-scroller";
 import type { InfiniteQueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
@@ -29,7 +30,7 @@ type InfiniteScrollProps<T extends Resource, F extends Resource> = {
 	/**
 	 * The method to render all items
 	 */
-	render: (items: (F | undefined)[]) => JSX.Element;
+	render: (items: (F | undefined)[]) => ReactNode;
 	/**
 	 * Query to use
 	 */
@@ -58,6 +59,7 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 					actions={props.emptyState?.actions ?? []}
 				/>
 			)}
+			{/* @ts-ignore */}
 			<IScroll.default
 				pageStart={0}
 				loadMore={() => {
@@ -74,6 +76,7 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 				hasMore={hasNextPage}
 				threshold={500}
 			>
+				{/* @ts-ignore */}
 				{props.render(
 					items === undefined
 						? generateArray(3)

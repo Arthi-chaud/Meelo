@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import type { ReactNode } from "react";
 import type { RequireExactlyOne } from "type-fest";
 
 /**
@@ -25,11 +26,11 @@ type Action = {
 	disabled?: boolean;
 	onClick?: () => void;
 	label: TranslationKey;
-	icon?: JSX.Element;
+	icon?: ReactNode;
 } & Partial<
 	RequireExactlyOne<{
 		href: string;
-		dialog: (controls: { close: () => void }) => JSX.Element;
+		dialog: (controls: { close: () => void }) => ReactNode;
 	}>
 >;
 

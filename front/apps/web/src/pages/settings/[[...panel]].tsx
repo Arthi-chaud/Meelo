@@ -19,7 +19,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getCurrentUserStatus } from "@/api/queries";
@@ -36,7 +36,7 @@ const AvailablePanels = ["interface", "libraries", "users"] as const;
 
 type PanelName = (typeof AvailablePanels)[number];
 
-const Panels: Record<PanelName, JSX.Element> = {
+const Panels: Record<PanelName, ReactNode> = {
 	interface: <UISettings />,
 	libraries: <LibrariesSettings />,
 	users: <UsersSettings />,

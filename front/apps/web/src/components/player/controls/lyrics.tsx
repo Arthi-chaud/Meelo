@@ -80,7 +80,7 @@ const SyncedLyricsComponent = ({
 	const [syncedLyricsWithNext, setLyricsWithNext] =
 		useState<SyncedLyricWithNext[]>();
 	const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(-1);
-	const intervalRef = useRef<NodeJS.Timer>();
+	const intervalRef = useRef<NodeJS.Timer>(null);
 
 	// Do this async-ly, to avoid lag
 	useEffect(() => {
@@ -100,7 +100,7 @@ const SyncedLyricsComponent = ({
 		if (!playerIsExpanded) {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
-				intervalRef.current = undefined;
+				intervalRef.current = null;
 			}
 			return;
 		}
@@ -140,7 +140,7 @@ const SyncedLyricsComponent = ({
 		return () => {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
-				intervalRef.current = undefined;
+				intervalRef.current = null;
 			}
 		};
 	}, [playerIsExpanded, syncedLyricsWithNext]);
