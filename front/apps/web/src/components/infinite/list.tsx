@@ -17,7 +17,7 @@
  */
 
 import { Divider, List } from "@mui/material";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
 import { useGradientBackground } from "~/components/gradient-background";
@@ -35,7 +35,7 @@ type InfiniteListProps<T extends Resource, F extends Resource = T> = Omit<
 		item: F | undefined,
 		items: (F | undefined)[],
 		index: number,
-	) => JSX.Element;
+	) => ReactNode;
 } & Partial<Pick<Parameters<TypedList<T, F>>[0], "emptyState">>;
 
 /**

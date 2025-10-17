@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import {
 	createContext,
 	type DependencyList,
+	type ReactNode,
 	useContext,
 	useEffect,
 	useState,
@@ -81,9 +82,7 @@ const useKey = (...p: Parameters<typeof _useKey>) => {
 	);
 };
 
-export const KeyboardBindingsProvider = (props: {
-	children: JSX.Element[];
-}) => {
+export const KeyboardBindingsProvider = (props: { children: ReactNode[] }) => {
 	const router = useRouter();
 	const [{ bindings }, setBindings] = useState<BindingsState>({
 		bindings: [

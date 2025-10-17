@@ -26,7 +26,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Link from "next/link";
-import { useMemo } from "react";
+import { type ReactNode, useMemo } from "react";
 import type IllustrationModel from "@/models/illustration";
 import { useAccentColor } from "@/utils/accent-color";
 import Illustration from "~/components/illustration";
@@ -35,7 +35,7 @@ type HighlightCardProps = {
 	title: string | undefined;
 	illustration: IllustrationModel | undefined | null;
 	headline: string | undefined;
-	body: string | JSX.Element | undefined;
+	body: string | ReactNode | undefined;
 	href: string | undefined;
 	tags: { label: string; href: string }[];
 };

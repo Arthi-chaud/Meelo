@@ -17,6 +17,7 @@
  */
 
 import { type Breakpoint, Grid } from "@mui/material";
+import type { ReactNode } from "react";
 import type { IllustratedResource } from "@/models/illustration";
 import type { ItemSize } from "@/models/layout";
 import type Resource from "@/models/resource";
@@ -35,7 +36,7 @@ type InfiniteGridProps<T extends Resource, F extends Resource> = Omit<
 		item: F | undefined,
 		items: (F | undefined)[],
 		index: number,
-	) => JSX.Element;
+	) => ReactNode;
 	itemSize: ItemSize;
 };
 

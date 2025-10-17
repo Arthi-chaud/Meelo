@@ -26,7 +26,7 @@ import {
 	MenuItem,
 } from "@mui/material";
 import Link from "next/link";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ContextualMenuIcon } from "@/ui/icons";
 import type Action from "~/components/actions";
@@ -35,7 +35,7 @@ import { useModal } from "../modal";
 export type ContextualMenuProps = {
 	actions: Action[][];
 	onSelect?: (action: Action) => void;
-	buttonIcon?: JSX.Element;
+	buttonIcon?: ReactNode;
 };
 
 export const ContextualMenu = (props: ContextualMenuProps) => {
@@ -49,7 +49,6 @@ export const ContextualMenu = (props: ContextualMenuProps) => {
 	return (
 		<>
 			<IconButton
-				id="basic-button"
 				aria-controls={open ? "basic-menu" : undefined}
 				aria-haspopup="true"
 				aria-expanded={open ? "true" : undefined}

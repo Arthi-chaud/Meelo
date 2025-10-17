@@ -69,8 +69,8 @@ const Player = () => {
 		() => playlist[cursor + 1],
 		[cursor, playlist],
 	);
-	const throwawayAudioPlayer = useRef<HTMLAudioElement>();
-	const audioPlayer = useRef<HTMLAudioElement>();
+	const throwawayAudioPlayer = useRef<HTMLAudioElement>(null);
+	const audioPlayer = useRef<HTMLAudioElement>(null);
 	const [useTranscoding, setUseTranscoding] = useState(false);
 	const hls = useRef(
 		new Hls({
@@ -80,7 +80,7 @@ const Player = () => {
 			},
 		}),
 	);
-	const videoPlayer = useRef<HTMLVideoElement>();
+	const videoPlayer = useRef<HTMLVideoElement>(null);
 	const player = useMemo(() => {
 		if (!currentTrack) {
 			return null;
@@ -461,7 +461,7 @@ const Player = () => {
 		onRewind: onRewind,
 		videoRef: videoPlayer as unknown as LegacyRef<HTMLVideoElement>,
 		onSlide: (newProgress: number) => {
-			if (player?.current !== undefined) {
+			if (player?.current) {
 				player.current.currentTime = newProgress;
 				if (switchTrackIfCrossfade() && throwawayAudioPlayer.current) {
 					throwawayAudioPlayer.current.pause();
@@ -481,7 +481,7 @@ const Player = () => {
 				in={
 					playlistLoading ||
 					playlist.length !== 0 ||
-					player?.current !== undefined
+					player?.current != null
 				}
 				unmountOnExit
 			>
