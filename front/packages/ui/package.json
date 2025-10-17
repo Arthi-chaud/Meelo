@@ -1,6 +1,9 @@
 {
 	"name": "ui",
 	"sideEffects": false,
+	"dependencies": {
+		"@wandersonalwes/iconsax-react": "0.0.10"
+	},
 	"devDependencies": {
 		"@types/react": "*",
 		"typescript": "5.3.3"
