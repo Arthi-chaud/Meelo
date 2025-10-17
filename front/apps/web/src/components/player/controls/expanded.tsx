@@ -31,7 +31,7 @@ import {
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type LegacyRef, useCallback, useState } from "react";
+import { type LegacyRef, type ReactNode, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -579,7 +579,7 @@ export const ExpandedPlayerControls = (
 												</>
 											))}
 
-										{provided.placeholder}
+										{provided.placeholder as ReactNode}
 									</div>
 								)}
 							</Droppable>

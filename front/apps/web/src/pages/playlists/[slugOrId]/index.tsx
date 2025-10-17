@@ -23,7 +23,7 @@ import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -187,8 +187,7 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 									)}
 								</Draggable>
 							))}
-
-							{provided.placeholder}
+							{provided.placeholder as ReactNode}
 						</Stack>
 					</div>
 				)}
