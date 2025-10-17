@@ -68,5 +68,5 @@ export async function middleware(request: NextRequest) {
 // Note putting the callback url in a variable make nextjs error:
 // Unknown identifier "LastFMCallbackHandlerRoute" at "config.matcher[1]".
 export const config = {
-	matcher: ["/albums/:slugOrId/", "/scrobblers/lastfm/callback_handler"],
+	matcher: ["/albums/:slugOrId*", "/scrobblers/lastfm/callback_handler"],
 };
