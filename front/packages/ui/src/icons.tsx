@@ -18,7 +18,7 @@
 
 // @ts-nocheck
 
-import * as Iconsax from "iconsax-react";
+import * as Iconsax from "@wandersonalwes/iconsax-react";
 
 export type Icon = React.FunctionComponent<IconProps>;
 export type IconProps = Iconsax.IconProps;

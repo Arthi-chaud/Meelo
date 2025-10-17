@@ -7,7 +7,7 @@ const defaultConfig = getDefaultConfig(__dirname);
 const path = require("node:path");
 
 const ALIASES = {
-	"iconsax-react": "iconsax-react-nativejs",
+	"@wandersonalwes/iconsax-react": "iconsax-react-nativejs",
 };
 
 const projectRoot = __dirname;
