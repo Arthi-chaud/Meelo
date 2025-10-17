@@ -13,7 +13,7 @@
 	"dependencies": {
 		"@d11/react-native-fast-image": "^8.12.0",
 		"@expo-google-fonts/rubik": "^0.3.0",
-		"@gorhom/bottom-sheet": "^5.1.8",
+		"@gorhom/bottom-sheet": "^5.2.6",
 		"@react-native-community/checkbox": "^0.5.20",
 		"@shopify/flash-list": "2.0.2",
 		"@shopify/react-native-skia": "2.2.12",
