@@ -112,7 +112,6 @@ const FilterMenuButton = <FilterKeys extends string>({
 					? "misc.loading"
 					: filter.buttonLabel
 			}
-			/* @ts-expect-error */
 			icon={filter.values && filter.buttonIcon}
 			items={(closeMenu) =>
 				filter.values?.map((key) => (

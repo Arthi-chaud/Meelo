@@ -1,3 +1,4 @@
+"use client";
 /*
  * Meelo is a music server and application to enjoy your personal music files anywhere, anytime you want.
  * Copyright (C) 2023
