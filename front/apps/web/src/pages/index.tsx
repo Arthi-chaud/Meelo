@@ -20,7 +20,7 @@ import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
 import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import {
@@ -93,9 +93,9 @@ const topGenresQuery = getGenres({}, { sortBy: "songCount", order: "desc" });
 const topLabelsQuery = getLabels({}, { sortBy: "releaseCount", order: "desc" });
 
 const HomePageSection = <T,>(props: {
-	heading: string | JSX.Element;
+	heading: string | ReactNode;
 	queryData: { items?: T[] };
-	render: (items: (T | undefined)[]) => JSX.Element;
+	render: (items: (T | undefined)[]) => ReactNode;
 }) => {
 	const items = props.queryData.items;
 

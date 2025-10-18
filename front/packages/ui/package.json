@@ -2,7 +2,7 @@
 	"name": "ui",
 	"sideEffects": false,
 	"dependencies": {
-		"iconsax-react": "0.0.8"
+		"@wandersonalwes/iconsax-react": "0.0.10"
 	},
 	"devDependencies": {
 		"@types/react": "*",

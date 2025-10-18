@@ -28,12 +28,13 @@ import {
 	useTheme,
 } from "@mui/material";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 type ListItemProps = {
-	icon?: JSX.Element;
+	icon?: ReactNode;
 	title: string | undefined;
 	secondTitle: string | undefined | null;
-	trailing?: JSX.Element;
+	trailing?: ReactNode;
 	href?: string;
 	onClick?: () => void;
 };

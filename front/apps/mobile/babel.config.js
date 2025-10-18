@@ -1,7 +1,15 @@
 module.exports = (api) => {
 	api.cache(true);
 	return {
-		presets: ["babel-preset-expo"],
+		presets: [
+			[
+				"babel-preset-expo",
+				{
+					// Needed for jotai in dev (?)
+					unstable_transformImportMeta: true,
+				},
+			],
+		],
 		plugins: [
 			[
 				"react-native-unistyles/plugin",
@@ -9,7 +17,7 @@ module.exports = (api) => {
 					root: "src",
 				},
 			],
-			"react-native-reanimated/plugin", // Always keep last
+			"react-native-worklets/plugin", // Always keep last
 		],
 	};
 };

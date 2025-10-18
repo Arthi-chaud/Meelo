@@ -17,12 +17,13 @@
  */
 
 import { Box, Grid, Skeleton, Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 type RelationHeaderProps = {
-	illustration: JSX.Element;
+	illustration: ReactNode;
 	title: string | undefined;
 	secondTitle: string | null | undefined;
-	trailing?: JSX.Element;
+	trailing?: ReactNode;
 };
 const RelationPageHeader = (props: RelationHeaderProps) => {
 	return (

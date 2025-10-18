@@ -28,7 +28,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import { deepmerge } from "@mui/utils";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, type ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
@@ -112,7 +112,7 @@ const FilterMenuButton = <FilterKeys extends string>({
 					? "misc.loading"
 					: filter.buttonLabel
 			}
-			icon={filter.values && filter.buttonIcon}
+			icon={filter.values && (filter.buttonIcon as ReactNode)}
 			items={(closeMenu) =>
 				filter.values?.map((key) => (
 					<MenuItem
@@ -287,8 +287,8 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 
 const MenuButton = (props: {
 	label: TranslationKey;
-	icon: JSX.Element | undefined;
-	items: (closeMenu: () => void) => JSX.Element | JSX.Element[];
+	icon: ReactNode | undefined;
+	items: (closeMenu: () => void) => ReactNode | ReactNode[];
 }) => {
 	const { t } = useTranslation();
 	const theme = useTheme();

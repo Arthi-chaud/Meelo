@@ -2,7 +2,7 @@
 const config = {
 	output: "standalone",
 	reactStrictMode: false,
-	swcMinify: true,
+	images: { localPatterns: [{ pathname: "/api/**" }] },
 	i18n: {
 		locales: ["en", "fr"],
 		defaultLocale: "en",

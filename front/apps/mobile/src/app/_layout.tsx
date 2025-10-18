@@ -114,7 +114,6 @@ export default function RootLayout() {
 	if (!loaded) {
 		return null;
 	}
-
 	return (
 		<GestureHandlerRootView>
 			<QueryClientProvider client={queryClient}>

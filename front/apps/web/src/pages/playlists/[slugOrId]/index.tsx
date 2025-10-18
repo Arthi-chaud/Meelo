@@ -23,7 +23,7 @@ import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -123,6 +123,7 @@ type DragAndDropPlaylistProps = {
 
 const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 	return (
+		/* @ts-expect-error */
 		<DragDropContext
 			onDragEnd={(result) => {
 				if (result.destination) {
@@ -134,11 +135,13 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 				}
 			}}
 		>
+			{/* @ts-expect-error */}
 			<Droppable droppableId="droppable-playlist-entries">
 				{(provided) => (
 					<div {...provided.droppableProps} ref={provided.innerRef}>
 						<Stack spacing={1}>
 							{props.entries.map((playlistItem, index) => (
+								/* @ts-expect-error */
 								<Draggable
 									draggableId={index.toString()}
 									key={index}
@@ -184,7 +187,7 @@ const DragAndDropPlaylist = (props: DragAndDropPlaylistProps) => {
 									)}
 								</Draggable>
 							))}
-							{provided.placeholder}
+							{provided.placeholder as ReactNode}
 						</Stack>
 					</div>
 				)}

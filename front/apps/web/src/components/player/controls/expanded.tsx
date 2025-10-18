@@ -31,7 +31,7 @@ import {
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type LegacyRef, useCallback, useState } from "react";
+import { type LegacyRef, type ReactNode, useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -451,6 +451,7 @@ export const ExpandedPlayerControls = (
 							maxWidth: theme.breakpoints.values.md,
 						}}
 					>
+						{/* @ts-expect-error */}
 						<DragDropContext
 							onDragEnd={(result) => {
 								if (result.destination) {
@@ -464,6 +465,7 @@ export const ExpandedPlayerControls = (
 								}
 							}}
 						>
+							{/* @ts-expect-error */}
 							<Droppable droppableId="droppable">
 								{(provided) => (
 									<div
@@ -474,6 +476,7 @@ export const ExpandedPlayerControls = (
 											.slice(cursor + 1)
 											.map((playlistItem, index) => (
 												<>
+													{/* @ts-expect-error */}
 													<Draggable
 														draggableId={index.toString()}
 														key={index}
@@ -575,7 +578,8 @@ export const ExpandedPlayerControls = (
 													/>
 												</>
 											))}
-										{provided.placeholder}
+
+										{provided.placeholder as ReactNode}
 									</div>
 								)}
 							</Droppable>
