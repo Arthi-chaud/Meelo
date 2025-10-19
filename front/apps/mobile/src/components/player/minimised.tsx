@@ -54,13 +54,11 @@ export const MinimisedPlayer = () => {
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
 
-	const onPress = useCallback(() => expandPlayer(), [expandPlayer]);
-
 	return (
 		<RNPRessable
 			android_disableSound
 			style={styles.root}
-			onPress={onPress}
+			onPress={expandPlayer}
 			onLongPress={openContextMenu}
 		>
 			<ColorBackground />
@@ -143,7 +141,7 @@ const PlayButton = () => {
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
 	return (
-		<Pressable onPress={() => (isPlaying ? pause() : play())}>
+		<Pressable onPress={isPlaying ? pause : play}>
 			<Icon
 				icon={isPlaying ? PauseIcon : PlayIcon}
 				style={styles.controlButton}

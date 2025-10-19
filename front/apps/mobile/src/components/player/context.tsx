@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
 	type onProgressData,
+	useVideoPlayer,
 	type VideoConfig,
 	VideoPlayer,
 } from "react-native-video";
