@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
 	type onProgressData,
-	useVideoPlayer,
 	type VideoConfig,
 	VideoPlayer,
 } from "react-native-video";
@@ -110,6 +109,7 @@ export const PlayerContext = () => {
 		if (!playerRef.current) {
 			return;
 		}
+		// TODO clear old onProgress
 		playerRef.current.addEventListener("onProgress", onProgress);
 	}, [onProgress]);
 	useEffect(() => {
