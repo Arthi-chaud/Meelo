@@ -193,7 +193,7 @@ const prepareSSR = async (
 
 type RelatedContentSectionProps = {
 	display: boolean;
-	title: string | JSX.Element;
+	title: string | ReactNode;
 	children: ReactNode;
 };
 

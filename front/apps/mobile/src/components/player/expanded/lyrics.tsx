@@ -138,7 +138,9 @@ const SyncedLyrics = ({
 			ref={scrollViewRef}
 			scrollEnabled={false}
 			showsVerticalScrollIndicator={false}
-			onLayout={(e) => setScrollViewHeight(e.nativeEvent.layout.height)}
+			onLayout={(e: any) =>
+				setScrollViewHeight(e.nativeEvent.layout.height)
+			}
 		>
 			<View style={[styles.syncedLyrics]}>
 				{syncedLyricsWithEnd.map(({ timestamp, content }) => (

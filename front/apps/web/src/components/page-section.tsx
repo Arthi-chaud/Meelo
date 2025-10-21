@@ -19,7 +19,7 @@
 import { Box, Button, Grid } from "@mui/material";
 import type { UseQueryResult } from "@tanstack/react-query";
 import Link from "next/link";
-import { type ComponentProps, Fragment } from "react";
+import { type ComponentProps, Fragment, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import type Artist from "@/models/artist";
@@ -47,7 +47,7 @@ export type PageSectionProps<
 	artist: UseQueryResult<Artist>;
 	seeMoreHref?: string;
 	maxItemCount: number;
-	child: (items: T[] | undefined) => JSX.Element;
+	child: (items: T[] | undefined) => ReactNode;
 	query?: ReturnType<QT>;
 	items?: T[] | undefined;
 	minimizePadding?: true;
@@ -89,7 +89,7 @@ export const SongGridPageSection = (
 
 export const ListPageSection = <T extends Resource>(
 	props: Omit<PageSectionProps<T>, "child"> & {
-		builder: (item: T | undefined, index: number) => JSX.Element;
+		builder: (item: T | undefined, index: number) => ReactNode;
 	},
 ) => {
 	return (

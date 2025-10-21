@@ -52,6 +52,7 @@ const Blurhash = ({ blurhash, ...props }: BlurhashProps) => {
 	return (
 		<Box suppressHydrationWarning {...containerProps}>
 			{blurhash && (
+				// @ts-expect-error
 				<RBlurhash
 					hash={blurhash}
 					style={{ width: "100%", height: "100%" }}

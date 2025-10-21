@@ -28,7 +28,7 @@ export const instanceUrlAtom = atom<string | null, [string | null], void>(
 		if (update !== null) {
 			storage.set(InstanceUrlKey, update);
 		} else {
-			storage.delete(InstanceUrlKey);
+			storage.remove(InstanceUrlKey);
 		}
 		set(_instanceUrlAtom, update);
 	},
@@ -45,7 +45,7 @@ export const accessTokenAtom = atom<string | null, [string | null], void>(
 			expires.setMonth(expires.getMonth() + 1);
 			storage.set(AccessTokenKey, update);
 		} else {
-			storage.delete(AccessTokenKey);
+			storage.remove(AccessTokenKey);
 		}
 		set(_accessToken, update);
 	},

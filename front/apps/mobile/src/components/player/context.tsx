@@ -3,11 +3,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
 	type onProgressData,
+	type VideoConfig,
 	VideoPlayer,
 } from "react-native-video";
 import type API from "@/api";
-import type Track from "@/models/track";
-import { cursorAtom, skipTrackAtom } from "@/state/player";
+import { cursorAtom, skipTrackAtom, type TrackState } from "@/state/player";
+import formatArtists from "@/utils/format-artists";
 import { useAPI, useQueryClient } from "~/api";
 import {
 	currentTrackAtom,
@@ -23,7 +24,6 @@ import {
 export const videoPlayerAtom = atom<VideoPlayer | null>(null);
 
 //TODO Metadata
-//TODO when end of playlist is reached, play should start again
 
 export const PlayerContext = () => {
 	const api = useAPI();
@@ -67,34 +67,35 @@ export const PlayerContext = () => {
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();
-			playerRef.current?.replaceSourceAsync(null);
 			return;
 		}
 		if (playerRef.current === null) {
-			playerRef.current = new VideoPlayer(
-				mkSource(currentTrack.track, api),
-			);
-			playerRef.current.onProgress = onProgress;
-			playerRef.current.onEnd = () => {
+			playerRef.current = new VideoPlayer(mkSource(currentTrack, api));
+			playerRef.current.showNotificationControls = true;
+			playerRef.current.playInBackground = true;
+			playerRef.current.addEventListener("onProgress", onProgress);
+			playerRef.current.addEventListener("onEnd", () => {
 				skipTrack(queryClient);
-			};
-			playerRef.current.onLoad = (data: onLoadData) => {
+			});
+			playerRef.current.addEventListener("onLoad", (data: onLoadData) => {
 				if (!Number.isNaN(data.duration)) {
 					setDuration(data.duration);
 				} else {
 					setDuration(currentTrack.track.duration);
 				}
-			};
+			});
 			playerRef.current.volume = 1;
-			// biome-ignore lint/suspicious/noConsole: For debug
-			playerRef.current.onError = (e) => console.error(e);
+			playerRef.current.addEventListener("onError", (e) =>
+				// biome-ignore lint/suspicious/noConsole: For debug
+				console.error(e),
+			);
 			playerRef.current.play();
 			play();
 			setPlayer(playerRef.current);
 		} else {
 			playerRef.current.pause();
 			playerRef.current
-				.replaceSourceAsync(mkSource(currentTrack.track, api))
+				.replaceSourceAsync(mkSource(currentTrack, api))
 				.then(() => {
 					playerRef.current?.play();
 					play();
@@ -106,7 +107,8 @@ export const PlayerContext = () => {
 		if (!playerRef.current) {
 			return;
 		}
-		playerRef.current.onProgress = onProgress;
+		// TODO clear old onProgress
+		playerRef.current.addEventListener("onProgress", onProgress);
 	}, [onProgress]);
 	useEffect(() => {
 		playerRef.current?.seekTo(requestedProgress);
@@ -141,17 +143,19 @@ export const PlayerContext = () => {
 	return null;
 };
 
-const mkSource = (track: Track, api: API) => ({
+const mkSource = (
+	{ track, artist, featuring }: TrackState,
+	api: API,
+): VideoConfig => ({
 	uri: api.getDirectStreamURL(track.sourceFileId),
 	headers: {
 		Authorization: `Bearer ${api.accessToken}`,
 	},
-	// metadata: {
-	// 	title: track.name,
-	// 	subtitle: "Custom Subtitle",
-	// 	artist: "Custom Artist",
-	// 	description: "Custom Description",
-	// 	imageUri:
-	// 		"https://pbs.twimg.com/profile_images/1498641868397191170/6qW2XkuI_400x400.png",
-	// },
+	metadata: {
+		title: track.name,
+		artist: formatArtists(artist, featuring),
+		imageUri: track.illustration
+			? api.getIllustrationURL(track.illustration.url, "medium")
+			: undefined,
+	},
 });

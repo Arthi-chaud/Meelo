@@ -102,6 +102,13 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Build
         run: |
+          # Source: https://github.com/apache/flink/blob/master/tools/azure-pipelines/free_disk_space.sh
+          sudo apt-get remove -y '^llvm-.*' ;
+          sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell ;
+          sudo apt-get autoremove -y ;
+          sudo apt-get clean ;
+          rm -rf /usr/share/dotnet/
+
           eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
 
       - name: Upload APK

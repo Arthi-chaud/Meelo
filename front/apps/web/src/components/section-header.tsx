@@ -17,10 +17,11 @@
  */
 
 import { Box, Skeleton, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 type SectionHeaderProps = {
-	heading: string | JSX.Element | undefined;
-	trailing?: JSX.Element;
+	heading: string | ReactNode | undefined;
+	trailing?: ReactNode;
 };
 
 /**

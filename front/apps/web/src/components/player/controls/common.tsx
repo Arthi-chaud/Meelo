@@ -17,7 +17,7 @@
  */
 
 import { IconButton, Typography, type TypographyProps } from "@mui/material";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { getSong } from "@/api/queries";
 import type Artist from "@/models/artist";
 import type { TrackWithRelations } from "@/models/track";
@@ -52,7 +52,7 @@ export const playerTextStyle = {
 };
 
 export type ControlButtonProps = {
-	icon: JSX.Element;
+	icon: ReactNode;
 	onClick: () => void;
 };
 

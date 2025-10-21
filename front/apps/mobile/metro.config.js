@@ -7,7 +7,7 @@ const defaultConfig = getDefaultConfig(__dirname);
 const path = require("node:path");
 
 const ALIASES = {
-	"iconsax-react": "iconsax-react-nativejs",
+	"@wandersonalwes/iconsax-react": "iconsax-react-nativejs",
 };
 
 const projectRoot = __dirname;
@@ -18,15 +18,6 @@ function addMonorepoSupport(config) {
 	return {
 		...config,
 		watchFolders: [...config.watchFolders, workspaceRoot],
-		resolver: {
-			...config.resolver,
-			nodeModulesPaths: [
-				...config.resolver.nodeModulesPaths,
-				path.resolve(projectRoot, "node_modules"),
-				path.resolve(workspaceRoot, "node_modules"),
-			],
-			disableHierarchicalLookup: true,
-		},
 	};
 }
 

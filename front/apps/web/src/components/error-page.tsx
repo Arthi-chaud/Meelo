@@ -18,12 +18,13 @@
 
 import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
 import { Head } from "./head";
 
 type ErrorPageProps = {
-	heading: string | JSX.Element;
+	heading: string | ReactNode;
 };
 
 /**

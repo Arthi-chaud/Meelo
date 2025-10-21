@@ -36,7 +36,7 @@ import type {} from "@mui/material/themeCssVarsAugmentation";
 import { deepmerge } from "@mui/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { IconProps } from "@/ui/icons";
 import {
@@ -101,7 +101,7 @@ const getNavItemLabel = (type: (typeof navItems)[number]): TranslationKey => {
 const getNavItemIcon = (
 	type: (typeof navItems)[number],
 	props?: IconProps,
-): JSX.Element => {
+): ReactNode => {
 	switch (type) {
 		case "albums":
 			return <AlbumIcon {...props} />;

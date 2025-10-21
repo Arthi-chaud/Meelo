@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 export type FilterControl<Key extends string> = {
 	// Gives the translation key from an item to choose from
 	formatItem: (k: Key) => TranslationKey;
 	values: readonly Key[] | undefined;
 	buttonLabel: TranslationKey;
-	buttonIcon: JSX.Element | undefined;
+	buttonIcon: ReactNode | undefined;
 } & (
 	| {
 			multipleChoice: true;

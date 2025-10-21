@@ -26,15 +26,17 @@ import {
 	type TabTriggerSlotProps,
 } from "expo-router/ui";
 import { useAtomValue, useSetAtom } from "jotai";
-import { type Ref, useCallback, useEffect, useMemo } from "react";
+import { type Ref, useCallback, useMemo } from "react";
 import {
 	type GestureResponderEvent,
 	type LayoutChangeEvent,
 	View,
 } from "react-native";
-import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, {
+	useAnimatedStyle,
+	withSpring,
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import { infiniteQueryAtom, playlistAtom } from "@/state/player";
@@ -96,6 +98,8 @@ const styles = StyleSheet.create((theme) => ({
 	player: {
 		width: "100%",
 		paddingHorizontal: theme.gap(0.75),
+		marginBottom: 0,
+		paddingBottom: theme.gap(0.75),
 	},
 }));
 
@@ -119,26 +123,14 @@ export default function ProtectedLayout() {
 		() => infinitePlaylist !== null,
 		[infinitePlaylist],
 	);
-	const theme = useAnimatedTheme();
-
-	// For the slide up animation
-	const playerMarginBottom = useSharedValue(-1000);
-	// For the padding between the tabbar and the player
-	const playerPaddingBottom = useSharedValue(0);
-	useEffect(() => {
-		if (!queueIsEmpty || queueIsInfinite) {
-			const style = {
-				stiffness: 1110,
-				damping: 510,
-			};
-			playerMarginBottom.value = withSpring(0, style);
-			playerPaddingBottom.value = withSpring(
-				theme.value.gap(0.75),
-				style,
-			);
-		}
-	}, [queueIsEmpty, queueIsInfinite]);
-
+	const showPlayer = !queueIsEmpty || queueIsInfinite;
+	const playerPresence = useAnimatedStyle(() => {
+		const style = {
+			stiffness: 1110,
+			damping: 510,
+		};
+		return { opacity: withSpring(showPlayer ? 1 : 0, style) };
+	}, [showPlayer]);
 	if (!accessToken || !instanceUrl || user.error) {
 		return <Redirect href="/auth" />;
 	}
@@ -149,13 +141,8 @@ export default function ProtectedLayout() {
 			<View style={styles.footer} onLayout={onLayout}>
 				<View style={styles.player}>
 					{/* TODO blur behing player, like iOS */}
-					{(!queueIsEmpty || queueIsInfinite) && (
-						<Animated.View
-							style={{
-								marginBottom: playerMarginBottom,
-								paddingBottom: playerPaddingBottom,
-							}}
-						>
+					{showPlayer && (
+						<Animated.View style={playerPresence}>
 							<MinimisedPlayer />
 						</Animated.View>
 					)}

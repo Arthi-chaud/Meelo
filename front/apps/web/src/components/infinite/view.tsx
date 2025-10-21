@@ -17,7 +17,7 @@
  */
 
 import { Box, Button, Slide, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { InfiniteQueryFn } from "@/api/query";
 import type { IllustratedResource } from "@/models/illustration";
@@ -41,12 +41,12 @@ export type InfiniteViewProps<
 		item: FinalItemType | undefined,
 		items: (FinalItemType | undefined)[],
 		index: number,
-	) => JSX.Element;
+	) => ReactNode;
 	renderGridItem: (
 		item: FinalItemType | undefined,
 		items: (FinalItemType | undefined)[],
 		index: number,
-	) => JSX.Element;
+	) => ReactNode;
 	emptyState?: Partial<EmptyStateProps>;
 };
 
