@@ -2,7 +2,7 @@ import type { ExpoConfig } from "expo/config";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 
-export const expo: ExpoConfig = {
+module.exports = (_: ExpoConfig) => ({
 	name: IS_DEV ? "Meelo (Dev)" : "Meelo",
 	slug: "meelo",
 	version: "1.0.0",
@@ -14,6 +14,10 @@ export const expo: ExpoConfig = {
 		icon: "./assets/icon-black.png",
 		edgeToEdgeEnabled: true,
 		package: IS_DEV ? "dev.arthichaud.meelo.dev" : "dev.artichaud.meelo",
+		permissions: [
+			"android.permission.FOREGROUND_SERVICE",
+			"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+		],
 	},
 	plugins: [
 		"expo-router",
@@ -48,11 +52,11 @@ export const expo: ExpoConfig = {
 				],
 			},
 		],
+		"./plugins/withMediaServicePlugin.ts",
 		[
 			// https://docs.thewidlarzgroup.com/react-native-video/docs/v7/configuration/expo-plugin
 			"react-native-video",
 			{
-				enableNotificationControls: true,
 				enableBackgroundAudio: true,
 				//TODO Picture in picture
 			},
@@ -70,4 +74,4 @@ export const expo: ExpoConfig = {
 	ios: {
 		bundleIdentifier: "com.arthichaud.meelo",
 	},
-};
+});

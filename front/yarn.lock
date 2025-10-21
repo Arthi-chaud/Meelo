@@ -2082,7 +2082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/config-plugins@npm:~54.0.2":
+"@expo/config-plugins@npm:^54.0.2, @expo/config-plugins@npm:~54.0.2":
   version: 54.0.2
   resolution: "@expo/config-plugins@npm:54.0.2"
   dependencies:
@@ -9297,6 +9297,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@d11/react-native-fast-image": "npm:^8.12.0"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
+    "@expo/config-plugins": "npm:^54.0.2"
     "@gorhom/bottom-sheet": "npm:^5.2.6"
     "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.0.2"
