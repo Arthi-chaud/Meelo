@@ -73,6 +73,7 @@ export const PlayerContext = () => {
 			playerRef.current = new VideoPlayer(mkSource(currentTrack, api));
 			playerRef.current.showNotificationControls = true;
 			playerRef.current.playInBackground = true;
+			// TODO Handle play/pause events
 			playerRef.current.addEventListener("onProgress", onProgress);
 			playerRef.current.addEventListener("onEnd", () => {
 				skipTrack(queryClient);
