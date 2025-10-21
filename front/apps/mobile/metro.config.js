@@ -18,14 +18,6 @@ function addMonorepoSupport(config) {
 	return {
 		...config,
 		watchFolders: [...config.watchFolders, workspaceRoot],
-		// resolver: {
-		// 	...config.resolver,
-		// 	nodeModulesPaths: [
-		// 		...config.resolver.nodeModulesPaths,
-		// 		path.resolve(projectRoot, "node_modules"),
-		// 		path.resolve(workspaceRoot, "node_modules"),
-		// 	],
-		// },
 	};
 }
 

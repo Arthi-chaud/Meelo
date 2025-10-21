@@ -67,7 +67,6 @@ export const PlayerContext = () => {
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();
-			// playerRef.current?.replaceSourceAsync(null);
 			return;
 		}
 		if (playerRef.current === null) {
@@ -95,7 +94,6 @@ export const PlayerContext = () => {
 			setPlayer(playerRef.current);
 		} else {
 			playerRef.current.pause();
-			playerRef.current.showNotificationControls = true;
 			playerRef.current
 				.replaceSourceAsync(mkSource(currentTrack, api))
 				.then(() => {
@@ -155,7 +153,6 @@ const mkSource = (
 	},
 	metadata: {
 		title: track.name,
-		subtitle: "Custom Subtitle",
 		artist: formatArtists(artist, featuring),
 		imageUri: track.illustration
 			? api.getIllustrationURL(track.illustration.url, "medium")
