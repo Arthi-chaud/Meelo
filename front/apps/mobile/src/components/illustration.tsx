@@ -76,14 +76,10 @@ export const Illustration = ({
 		"loading",
 	);
 	const imageOpacity = useSharedValue(0);
-	const blurhashOpacity = useSharedValue(0);
 	const fallbackOpacity = useSharedValue(0);
 
 	const imageOpacityStyle = useAnimatedStyle(() => ({
 		opacity: imageOpacity.value,
-	}));
-	const blurhashOpacityStyle = useAnimatedStyle(() => ({
-		opacity: blurhashOpacity.value,
 	}));
 	const fallbackOpacityStyle = useAnimatedStyle(() => ({
 		opacity: fallbackOpacity.value,
@@ -93,14 +89,13 @@ export const Illustration = ({
 		// Whatever the new illustration props is,
 		// we need to reset the blurhash and the image
 		imageOpacity.value = 0;
-		blurhashOpacity.value = 0;
 		if (illustration === null) {
 			fallbackOpacity.value = 1;
 		} else {
 			fallbackOpacity.value = 0;
 		}
 		setLoadStatus("loading");
-	}, [illustration]);
+	}, [illustration?.url]);
 	return (
 		<View style={[styles.outerContainer, style]}>
 			<View
@@ -116,24 +111,19 @@ export const Illustration = ({
 			>
 				{illustration && loadStatus !== "error" && (
 					<>
-						{useBlurhash && loadStatus !== "done" && (
-							<Animated.View
-								style={[styles.slot, blurhashOpacityStyle]}
-							>
+						{useBlurhash && (
+							<View style={[styles.slot]}>
 								<Blurhash
 									decodeAsync
 									style={[
 										styles.slotContent,
 										styles.blurhash,
 									]}
-									onLoadEnd={() => {
-										blurhashOpacity.value = 1;
-									}}
 									blurhash={illustration.blurhash}
 									decodeWidth={16}
 									decodeHeight={16}
 								/>
-							</Animated.View>
+							</View>
 						)}
 
 						<Animated.View style={[imageOpacityStyle, styles.slot]}>
