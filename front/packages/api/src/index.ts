@@ -622,13 +622,20 @@ export default class API {
 	 * @param imageURL
 	 * @returns the correct, rerouted URL
 	 */
-	getIllustrationURL(imageURL: string, quality: IllustrationQuality): string {
+	getIllustrationURL(
+		imageURL: string,
+		quality: IllustrationQuality,
+		withTokenQueryParam = false,
+	): string {
 		const url = `${this.urls.illustration}${imageURL}`;
-		const qualityQuery =
+		const urlWithQuality =
 			quality === "original"
-				? ""
-				: `${url.includes("?") ? "&" : "?"}quality=${quality}`;
-		return `${url}${qualityQuery}`;
+				? url
+				: `${url}${url.includes("?") ? "&" : "?"}quality=${quality}`;
+		const authedUrl = withTokenQueryParam
+			? `${urlWithQuality}${urlWithQuality.includes("?") ? "&" : "?"}token=${this.accessToken}`
+			: urlWithQuality;
+		return authedUrl;
 	}
 
 	getDirectStreamURL(fileId: number): string {

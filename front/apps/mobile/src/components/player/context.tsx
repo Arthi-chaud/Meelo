@@ -156,7 +156,7 @@ const mkSource = (
 		title: track.name,
 		artist: formatArtists(artist, featuring),
 		imageUri: track.illustration
-			? api.getIllustrationURL(track.illustration.url, "medium")
+			? api.getIllustrationURL(track.illustration.url, "medium", true)
 			: undefined,
 	},
 });
