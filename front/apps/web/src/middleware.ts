@@ -47,6 +47,9 @@ export async function middleware(request: NextRequest) {
 		}
 		return NextResponse.redirect(`${origin}/settings`);
 	}
+	if (pathname === "/albums" || pathname === "/albums/") {
+		return;
+	}
 	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
 	if (albumId === "compilations") {
 		return;
@@ -68,5 +71,5 @@ export async function middleware(request: NextRequest) {
 // Note putting the callback url in a variable make nextjs error:
 // Unknown identifier "LastFMCallbackHandlerRoute" at "config.matcher[1]".
 export const config = {
-	matcher: ["/albums/:slugOrId*", "/scrobblers/lastfm/callback_handler"],
+	matcher: ["/albums/(.*)", "/scrobblers/lastfm/callback_handler"],
 };
