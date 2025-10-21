@@ -51,6 +51,7 @@ export default function FullscreenVideoPlayer() {
 				{player && (
 					<VideoView
 						player={player}
+						keepScreenAwake
 						style={{ height: "100%", width: "100%" }}
 					/>
 				)}
