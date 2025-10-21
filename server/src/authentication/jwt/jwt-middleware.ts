@@ -20,14 +20,15 @@ import { Injectable, type NestMiddleware } from "@nestjs/common";
 import type { NextFunction, Request, Response } from "express";
 
 /**
- * JWT Middleware to pass the access_token cookie to the Authorieation header
+ * JWT Middleware to pass the access_token cookie or token query param to the Authorisation header
  * Must be done, as clients way not be able to pass headers to media requests (like image or audio HTML tags)
  */
 @Injectable()
 export class JwtCookieMiddleware implements NestMiddleware {
 	use(req: Request, _res: Response, next: NextFunction) {
-		if (req.cookies && req.cookies.access_token !== undefined) {
-			req.headers.authorization ??= `Bearer ${req.cookies.access_token}`;
+		const tokenQueryParam = req.cookies.access_token ?? req.query.token;
+		if (tokenQueryParam) {
+			req.headers.authorization ??= `Bearer ${tokenQueryParam}`;
 		}
 		next();
 	}
