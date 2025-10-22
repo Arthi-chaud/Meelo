@@ -67,10 +67,11 @@ const styles = StyleSheet.create((theme) => ({
 			filled: {
 				true: {
 					backgroundColor: theme.colors.text.primary,
+					borderWidth: 0,
 				},
 				false: {
-					borderWidth: 1,
 					borderColor: theme.colors.text.primary,
+					borderWidth: 1,
 				},
 			},
 		},
@@ -84,7 +85,9 @@ const styles = StyleSheet.create((theme) => ({
 				true: {
 					color: theme.colors.text.onAccentSurface,
 				},
-				false: {},
+				false: {
+					color: theme.colors.text.primary,
+				},
 			},
 		},
 	},
@@ -95,7 +98,9 @@ const styles = StyleSheet.create((theme) => ({
 				true: {
 					color: theme.colors.text.onAccentSurface,
 				},
-				false: {},
+				false: {
+					color: theme.colors.text.primary,
+				},
 			},
 		},
 	},
