@@ -2,6 +2,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
+	type onPlaybackStateChangeData,
 	type onProgressData,
 	type VideoConfig,
 	VideoPlayer,
@@ -22,8 +23,6 @@ import {
 
 // Should be used as a readonly handle, mainly for the VideoView component
 export const videoPlayerAtom = atom<VideoPlayer | null>(null);
-
-//TODO Metadata
 
 export const PlayerContext = () => {
 	const api = useAPI();
@@ -73,7 +72,19 @@ export const PlayerContext = () => {
 			playerRef.current = new VideoPlayer(mkSource(currentTrack, api));
 			playerRef.current.showNotificationControls = true;
 			playerRef.current.playInBackground = true;
-			// TODO Handle play/pause events
+			playerRef.current.addEventListener(
+				"onPlaybackStateChange",
+				(e: onPlaybackStateChangeData) => {
+					if (e.isBuffering) {
+						return;
+					}
+					if (e.isPlaying) {
+						play();
+					} else {
+						pause();
+					}
+				},
+			);
 			playerRef.current.addEventListener("onProgress", onProgress);
 			playerRef.current.addEventListener("onEnd", () => {
 				skipTrack(queryClient);
