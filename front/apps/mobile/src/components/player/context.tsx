@@ -1,5 +1,5 @@
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
 	type onPlaybackStateChangeData,
@@ -39,9 +39,13 @@ export const PlayerContext = () => {
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const setDuration = useSetAtom(durationAtom);
 	const currentTrack = useAtomValue(currentTrackAtom);
+	const onProgressRef = useRef<(d: onProgressData) => void>(null);
 
-	const onProgress = useCallback(
-		(data: onProgressData) => {
+	useEffect(() => {
+		if (!playerRef.current) {
+			return;
+		}
+		const onProgress = (data: onProgressData) => {
 			if (!playerRef.current?.isPlaying || !currentTrack) {
 				return;
 			}
@@ -57,9 +61,15 @@ export const PlayerContext = () => {
 				setMarkedAsPlayed(true);
 				api.setSongAsPlayed(currentTrack.track.songId);
 			}
-		},
-		[markedAsPlayed, currentTrack, playerRef.current?.isPlaying],
-	);
+		};
+		if (onProgressRef.current)
+			playerRef.current.removeEventListener(
+				"onProgress",
+				onProgressRef.current,
+			);
+		playerRef.current.addEventListener("onProgress", onProgress);
+		onProgressRef.current = onProgress;
+	}, [markedAsPlayed, currentTrack, playerRef.current?.isPlaying]);
 	useEffect(() => {
 		setMarkedAsPlayed(false);
 		setProgress(0);
@@ -85,7 +95,6 @@ export const PlayerContext = () => {
 					}
 				},
 			);
-			playerRef.current.addEventListener("onProgress", onProgress);
 			playerRef.current.addEventListener("onEnd", () => {
 				skipTrack(queryClient);
 			});
@@ -115,13 +124,6 @@ export const PlayerContext = () => {
 		}
 	}, [currentTrack]);
 
-	useEffect(() => {
-		if (!playerRef.current) {
-			return;
-		}
-		// TODO clear old onProgress
-		playerRef.current.addEventListener("onProgress", onProgress);
-	}, [onProgress]);
 	useEffect(() => {
 		playerRef.current?.seekTo(requestedProgress);
 		if (requestedProgress === 0) {
