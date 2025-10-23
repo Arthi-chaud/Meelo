@@ -2,13 +2,15 @@
 	"name": "infinite-controls",
 	"sideEffects": false,
 	"dependencies": {
-		"i18next": "^23.7.16",
-		"react": "19.1.0",
-		"react-i18next": "^12.2.2"
+		"react": "19.1.0"
 	},
 	"devDependencies": {
 		"@types/react": "*",
 		"typescript": "5.3.3"
+	},
+	"peerDependencies": {
+		"i18next": "^23.7.16",
+		"react-i18next": "^12.2.2"
 	},
 	"packageManager": "yarn@4.4.0"
 }
