@@ -340,7 +340,11 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	playButton: { flex: 1 },
 	playButtonContent: { justifyContent: "center" },
-	itemsContainer: { flex: 1, maxWidth: breakpoints.xl },
+	itemsContainer: {
+		flex: 1,
+		maxWidth: breakpoints.xl,
+		width: "100%",
+	},
 	items: { padding: theme.gap(1), paddingTop: 0 },
 	footer: {
 		width: "100%",
