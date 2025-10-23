@@ -12,13 +12,14 @@ export const currentTrackAtom = atom(
 
 export const playAtom = atom(null, (_, set) => set(_isPlaying, true));
 export const pauseAtom = atom(null, (_, set) => set(_isPlaying, false));
+export const isBufferingAtom = atom(false);
 export const isPlayingAtom = atom((get) => get(_isPlaying));
 // Duration is in seconds
 export const durationAtom = atom<null | number>(null);
 // Progress is in seconds
 export const progressAtom = atom(0);
 
-export const requestedProgressAtom = atom(0);
+export const requestedProgressAtom = atom(0 as number | null);
 
 export const rewindTrackAtom = atom(null, (get, set) => {
 	const progress = get(progressAtom);
