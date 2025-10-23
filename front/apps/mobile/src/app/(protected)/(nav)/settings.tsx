@@ -152,6 +152,7 @@ export default function SettingsView() {
 							title: t(
 								`settings.ui.lang.${i18next.language as "en"}`,
 							),
+							width: "fitContent",
 							icon: ExpandMoreIcon,
 							iconPosition: "right",
 							size: "small",
@@ -187,6 +188,7 @@ export default function SettingsView() {
 									),
 								)
 							}
+							width="fill"
 							icon={OpenExternalIcon}
 							iconPosition="right"
 							containerStyle={{ justifyContent: "center" }}
@@ -203,6 +205,7 @@ export default function SettingsView() {
 				/>
 				<Button
 					title={t("actions.logout")}
+					width="fill"
 					containerStyle={{ alignItems: "center" }}
 					labelStyle={styles.logoutButtonStyle}
 					onPress={() => {

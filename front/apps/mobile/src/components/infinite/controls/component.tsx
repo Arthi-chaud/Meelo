@@ -40,6 +40,7 @@ export const Controls = <S extends string>({
 					buttonProps={{
 						title: t(filter.buttonLabel),
 						icon: filter.buttonIcon as any,
+						width: "fitContent",
 						size: "small",
 						iconPosition: "right",
 					}}
@@ -74,6 +75,7 @@ export const Controls = <S extends string>({
 					formatItem={(item) => t(sort.formatItem(item))}
 					buttonProps={{
 						title: t(sort.formatItem(sort.selected.sort)),
+						width: "fitContent",
 						size: "small",
 						icon:
 							sort.selected.order === "asc" ? AscIcon : DescIcon,
@@ -99,6 +101,7 @@ export const Controls = <S extends string>({
 			{layout && (
 				<Button
 					size="small"
+					width="fitContent"
 					icon={layout.layout === "list" ? GridIcon : ListIcon}
 					containerStyle={styles.button}
 					onPress={() => {
@@ -112,6 +115,7 @@ export const Controls = <S extends string>({
 			{actions?.map((action, idx) => (
 				<Button
 					size="small"
+					width="fitContent"
 					key={idx}
 					icon={action.icon}
 					title={t(action.label)}

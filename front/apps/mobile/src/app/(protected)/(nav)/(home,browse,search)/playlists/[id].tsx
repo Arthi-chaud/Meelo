@@ -141,6 +141,7 @@ const Header = ({
 				<View style={styles.playButton}>
 					<Button
 						title={t("actions.playback.play")}
+						width="fill"
 						icon={PlayIcon}
 						disabled={!onPlay}
 						onPress={() => onPlay?.()}
@@ -150,6 +151,7 @@ const Header = ({
 				<View style={styles.playButton}>
 					<Button
 						title={t("actions.playback.shuffle")}
+						width="fill"
 						disabled={!onShuffle}
 						icon={ShuffleIcon}
 						onPress={() => onShuffle?.()}
@@ -278,6 +280,7 @@ const Footer = ({
 				{userCanEdit && (
 					<Button
 						size="small"
+						width="fitContent"
 						// @ts-expect-error
 						icon={isReordering ? DoneIcon : ReorderPlaylistIcon}
 						title={t(
@@ -291,6 +294,7 @@ const Footer = ({
 				{userIsAdmin && (
 					<Button
 						size="small"
+						width="fitContent"
 						disabled={isReordering}
 						icon={EditIcon}
 						title={t("form.edit")}
@@ -302,6 +306,7 @@ const Footer = ({
 				{userIsAdmin && (
 					<Button
 						size="small"
+						width="fitContent"
 						disabled={isReordering}
 						icon={updateIllustrationAction.icon}
 						title={t(updateIllustrationAction.label)}
@@ -311,6 +316,7 @@ const Footer = ({
 				{userIsAdmin && (
 					<Button
 						size="small"
+						width="fitContent"
 						disabled={isReordering}
 						icon={deletePlaylistAction.icon}
 						title={t(deletePlaylistAction.label)}

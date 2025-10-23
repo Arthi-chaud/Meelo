@@ -75,6 +75,7 @@ export default function SongPage() {
 				<View style={styles.playButton}>
 					<Button
 						title="Play"
+						width="fill"
 						icon={PlayIcon}
 						disabled={!song}
 						onPress={playButtonCallback}

@@ -150,7 +150,6 @@ const styles = StyleSheet.create((theme) => ({
 		},
 		borderRadius: theme.borderRadius,
 	},
-	// Separate this to make sure the entire surface is clickable
 	content: {
 		flexDirection: "row",
 		display: "flex",
@@ -169,10 +168,9 @@ const styles = StyleSheet.create((theme) => ({
 					paddingHorizontal: theme.gap(2),
 				},
 			},
-
 			width: {
-				fill: {},
-				fitContent: {},
+				fill: { width: "100%" },
+				fitContent: { width: "auto" },
 			},
 			disabled: { true: {}, default: {} },
 			variant: {

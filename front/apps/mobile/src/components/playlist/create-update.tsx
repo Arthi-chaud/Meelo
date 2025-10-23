@@ -140,6 +140,7 @@ export const CreateUpdatePlaylistForm = ({
 				title={t(
 					existingPlaylist ? "actions.update" : "actions.create",
 				)}
+				width="fitContent"
 				icon={CheckIcon}
 				containerStyle={styles.saveButtonLabel}
 				disabled={isLoading}

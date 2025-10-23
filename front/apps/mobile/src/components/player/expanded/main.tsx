@@ -124,7 +124,12 @@ const WithFullScreenButton = ({ children }: ComponentProps<any>) => {
 	return (
 		<View style={styles.fullscreenButtonRow}>
 			{isVideo && (
-				<Button size="small" icon={FullscreenIcon} onPress={onPress} />
+				<Button
+					size="small"
+					icon={FullscreenIcon}
+					onPress={onPress}
+					width="fitContent"
+				/>
 			)}
 			{children}
 
@@ -133,6 +138,7 @@ const WithFullScreenButton = ({ children }: ComponentProps<any>) => {
 				<View style={{ opacity: 0 }}>
 					<Button
 						size="small"
+						width="fitContent"
 						icon={FullscreenIcon}
 						onPress={() => {}}
 					/>
