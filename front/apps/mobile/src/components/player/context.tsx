@@ -1,4 +1,4 @@
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import {
 	type onLoadData,
@@ -14,6 +14,7 @@ import { useAPI, useQueryClient } from "~/api";
 import {
 	currentTrackAtom,
 	durationAtom,
+	isBufferingAtom,
 	isPlayingAtom,
 	pauseAtom,
 	playAtom,
@@ -30,7 +31,10 @@ export const PlayerContext = () => {
 	const setPlayer = useSetAtom(videoPlayerAtom);
 	const cursor = useAtomValue(cursorAtom);
 	const isPlaying = useAtomValue(isPlayingAtom);
-	const requestedProgress = useAtomValue(requestedProgressAtom);
+	const setIsBuffering = useSetAtom(isBufferingAtom);
+	const [requestedProgress, setRequestedProgress] = useAtom(
+		requestedProgressAtom,
+	);
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
 	const [markedAsPlayed, setMarkedAsPlayed] = useState(false);
@@ -73,6 +77,7 @@ export const PlayerContext = () => {
 	useEffect(() => {
 		setMarkedAsPlayed(false);
 		setProgress(0);
+		setRequestedProgress(null);
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();
@@ -86,8 +91,11 @@ export const PlayerContext = () => {
 				"onPlaybackStateChange",
 				(e: onPlaybackStateChangeData) => {
 					if (e.isBuffering) {
+						setIsBuffering(true);
 						return;
 					}
+					setIsBuffering(false);
+					setRequestedProgress(null);
 					if (e.isPlaying) {
 						play();
 					} else {
@@ -125,7 +133,11 @@ export const PlayerContext = () => {
 	}, [currentTrack]);
 
 	useEffect(() => {
+		if (requestedProgress === null) {
+			return;
+		}
 		playerRef.current?.seekTo(requestedProgress);
+		setProgress(requestedProgress);
 		if (requestedProgress === 0) {
 			setMarkedAsPlayed(false);
 		}

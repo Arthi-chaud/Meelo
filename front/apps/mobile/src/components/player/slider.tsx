@@ -1,11 +1,16 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { View } from "react-native";
 import { Slider as AwesomeSlider } from "react-native-awesome-slider";
 import { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
-import { durationAtom, progressAtom, requestedProgressAtom } from "./state";
+import {
+	durationAtom,
+	isBufferingAtom,
+	progressAtom,
+	requestedProgressAtom,
+} from "./state";
 
 type Props = {
 	sliderColor: string | undefined;
@@ -14,19 +19,20 @@ type Props = {
 
 export const Slider = ({ sliderColor, trackColor }: Props) => {
 	const progress = useAtomValue(progressAtom);
-	const setProgress = useSetAtom(requestedProgressAtom);
+	const [requestedProgress, setProgress] = useAtom(requestedProgressAtom);
 	const duration = useAtomValue(durationAtom);
 	const progressShared = useSharedValue(progress);
 	const minValueShared = useSharedValue(0);
 	const maxValueShared = useSharedValue(duration ?? 1);
 	const animatedTheme = useAnimatedTheme();
+	const isBuffering = useAtomValue(isBufferingAtom);
 	useEffect(() => {
 		maxValueShared.value = duration ?? 1;
-		progressShared.value = withSpring(
-			progress,
-			animatedTheme.value.animations.progress,
-		);
-	}, [progress, duration]);
+		progressShared.value =
+			isBuffering && requestedProgress
+				? requestedProgress
+				: withSpring(progress, animatedTheme.value.animations.progress);
+	}, [progress, duration, isBuffering, requestedProgress]);
 	return (
 		<View style={styles.root}>
 			<Slider_
