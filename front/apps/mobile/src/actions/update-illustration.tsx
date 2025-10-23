@@ -68,6 +68,7 @@ const UpdateIllustrationForm = ({
 			/>
 			<Button
 				icon={CheckIcon}
+				width="fitContent"
 				title={t("form.confirm")}
 				onPress={handleSubmit(({ url }) => onConfirm(url))}
 			/>

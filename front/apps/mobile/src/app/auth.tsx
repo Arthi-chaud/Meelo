@@ -320,6 +320,7 @@ export default function AuthenticationScreen() {
 					<Button
 						disabled={isLoading}
 						onPress={handleSubmit(onSubmit)}
+						width="fitContent"
 						title={t(
 							formType === "url"
 								? "auth.connectButton"
@@ -339,6 +340,7 @@ export default function AuthenticationScreen() {
 							<Divider h withInsets />
 							<Button
 								variant="outlined"
+								width="fitContent"
 								onPress={() => {
 									setFormType(
 										formType === "login"
