@@ -7462,10 +7462,11 @@ __metadata:
   resolution: "infinite-controls@workspace:packages/infinite-controls"
   dependencies:
     "@types/react": "npm:*"
-    i18next: "npm:^23.7.16"
     react: "npm:19.1.0"
-    react-i18next: "npm:^12.2.2"
     typescript: "npm:5.3.3"
+  peerDependencies:
+    i18next: ^23.7.16
+    react-i18next: ^12.2.2
   languageName: unknown
   linkType: soft
 
