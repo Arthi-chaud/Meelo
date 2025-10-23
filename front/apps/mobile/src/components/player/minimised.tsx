@@ -8,7 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
-import { skipTrackAtom } from "@/state/player";
+import { playlistLoadingAtom, skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import { useContextMenu } from "~/components/context-menu";
@@ -43,7 +43,7 @@ export const MinimisedPlayer = () => {
 	const onSkip = useCallback(() => {
 		skipTrack(queryClient);
 	}, [queryClient, skipTrack]);
-
+	const isLoading = useAtomValue(playlistLoadingAtom);
 	const formattedArtistName = useFormattedArtistName();
 
 	const { data: track } = useQuery(
@@ -53,7 +53,7 @@ export const MinimisedPlayer = () => {
 
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
-
+	styles.useVariants({ loading: isLoading });
 	return (
 		<RNPRessable
 			android_disableSound
@@ -140,6 +140,9 @@ const PlayButton = () => {
 	const isPlaying = useAtomValue(isPlayingAtom);
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
+	const isLoading = useAtomValue(playlistLoadingAtom);
+
+	styles.useVariants({ loading: isLoading });
 	return (
 		<Pressable onPress={isPlaying ? pause : play}>
 			<Icon
@@ -156,14 +159,26 @@ const styles = StyleSheet.create((theme) => ({
 		borderRadius: theme.borderRadius,
 		overflow: "hidden",
 		backgroundColor: theme.colors.background,
+		variants: {
+			loading: { true: {}, false: {} },
+		},
 	},
 	content: {
 		flexDirection: "row",
 		gap: theme.gap(1),
 		padding: theme.gap(0.75),
 		paddingBottom: theme.gap(0.75 + 1 / 3),
+		variants: {
+			loading: { true: {}, false: {} },
+		},
 	},
-	text: { justifyContent: "space-evenly", flex: 1 },
+	text: {
+		justifyContent: "space-evenly",
+		flex: 1,
+		variants: {
+			loading: { true: {}, false: {} },
+		},
+	},
 	progessPosition: {
 		backgroundColor: theme.colors.text.primary,
 		height: theme.gap(1 / 3),
@@ -172,21 +187,36 @@ const styles = StyleSheet.create((theme) => ({
 		overflow: "hidden",
 		borderBottomEndRadius: theme.borderRadius,
 		borderTopEndRadius: theme.borderRadius,
+		variants: {
+			loading: { true: {}, false: {} },
+		},
 	},
 
 	illustration: {
 		height: theme.gap(5.5),
+		variants: {
+			loading: { true: {}, false: {} },
+		},
 	},
 	controlButton: {
 		size: theme.fontSize.rem(1.5),
+		variants: {
+			loading: { true: { opacity: 0.8 }, false: { opacity: 1 } },
+		},
 	} as {},
 	rewindButton: {
 		display: { xs: "none", sm: "flex" },
+		variants: {
+			loading: { true: {}, false: {} },
+		},
 	},
 	controls: {
 		flexDirection: "row",
 		gap: theme.gap(2),
 		paddingHorizontal: theme.gap(1),
 		alignItems: "center",
+		variants: {
+			loading: { true: {}, false: {} },
+		},
 	},
 }));
