@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useAtomValue } from "jotai";
 import { useMemo } from "react";
-import { View, type ViewStyle } from "react-native";
+import { Pressable, View, type ViewStyle } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import formatDuration from "@/utils/format-duration";
 import { Illustration } from "~/components/illustration";
@@ -41,7 +41,10 @@ export const Bottom = ({ style }: Props) => {
 			)}
 			<View style={styles.sliderColumn}>
 				<VideoName />
-				<Slider />
+				{/* Do this to prevent scrub from hiding all controls */}
+				<Pressable onPress={(e) => e.stopPropagation()}>
+					<Slider />
+				</Pressable>
 				<ProgressAndDuration />
 			</View>
 		</LinearGradient>
