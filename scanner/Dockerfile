@@ -8,6 +8,8 @@ RUN go mod download
 
 COPY ./app ./app
 COPY ./internal ./internal
+COPY ./dl_watcher.sh .
+RUN sh dl_watcher.sh
 RUN swag init -d app -o ./app/docs
 ENV CGO_ENABLED=1
 ENV GOOS=linux
