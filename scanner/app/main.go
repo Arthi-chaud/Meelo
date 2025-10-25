@@ -8,6 +8,7 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/watcher"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -24,6 +25,7 @@ const ApiHealthckechAttemptCount = 5
 // @description Prefix the value with `Bearer `
 func main() {
 	setupLogger()
+	watcher.WatchDir()
 	c := config.GetConfig()
 	e := setupEcho(c)
 
