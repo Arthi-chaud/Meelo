@@ -18,7 +18,7 @@
 
 /* eslint-disable jsx-a11y/alt-text */
 
-import { Box, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 import type { ComponentProps } from "react";
@@ -27,17 +27,15 @@ import { useThemedSxValue } from "~/utils/themed-sx-value";
 type ThemedImageProps = Record<"light" | "dark", string | StaticImport> &
 	Omit<ComponentProps<typeof Image>, "src">;
 const ThemedImage = ({ light, dark, ...props }: ThemedImageProps) => {
-	const _theme = useTheme();
 	const sxLightThemeImage = useThemedSxValue("display", "block", "none");
 	const sxDarkThemeImage = useThemedSxValue("display", "none", "block");
-	const isDev = process.env.NODE_ENV !== "production";
 	return (
 		<>
 			<Box sx={sxLightThemeImage}>
-				<Image unoptimized={isDev} src={light} {...props} />
+				<Image unoptimized src={light} {...props} />
 			</Box>
 			<Box sx={sxDarkThemeImage}>
-				<Image unoptimized={isDev} src={dark} {...props} />
+				<Image unoptimized src={dark} {...props} />
 			</Box>
 		</>
 	);
