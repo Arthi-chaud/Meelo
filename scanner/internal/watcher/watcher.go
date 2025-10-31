@@ -2,18 +2,14 @@ package watcher
 
 // #include "wtr/watcher-c.h"
 // #include <stdio.h>
-// void callback(struct wtr_watcher_event event, void* data)
+// void callback(struct wtr_watcher_event event)
 // {
-//   int* count = (int*)data;
-//   *count += 1;
 //   printf(
-//     "count: %d, "
 //     "path name: %s, "
 //     "effect type: %d "
 //     "path type: %d, "
 //     "effect time: %lld, "
 //     "associated path name: %s\n",
-//     *count,
 //     event.path_name,
 //     event.effect_type,
 //     event.path_type,
@@ -23,16 +19,24 @@ package watcher
 //
 import "C"
 import (
+	"fmt"
 	"unsafe"
 )
 
-func WatchDir() {
-	var vC C.int
-	vC = 10000
-	C.wtr_watcher_open(C.CString("/data"), (*[0]byte)(C.callback), unsafe.Pointer(&vC))
-	// for {
-	// 	log.Print("a")
-	// 	time.Sleep(5)
-	// 	// os.Stdin.Read(b)
-	// }
+type Watcher struct {
+	handle unsafe.Pointer
+}
+
+// TODO Add callback
+// Path must be absolute
+func NewWatcher(path string) (Watcher, error) {
+	handle := C.wtr_watcher_open(C.CString(path), (*[0]byte)(C.callback), nil)
+	if handle == nil {
+		return Watcher{}, fmt.Errorf("Spawning a watcher failed")
+	}
+	return Watcher{handle}, nil
+}
+
+func (w Watcher) Close() {
+	C.wtr_watcher_close(w.handle)
 }

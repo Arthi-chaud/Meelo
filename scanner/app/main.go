@@ -25,11 +25,11 @@ const ApiHealthckechAttemptCount = 5
 // @description Prefix the value with `Bearer `
 func main() {
 	setupLogger()
-	watcher.WatchDir()
 	c := config.GetConfig()
 	e := setupEcho(c)
 
 	waitForApi(c)
+	go watcher.WatchLibraries(c)
 	e.Logger.Fatal(e.Start(":8133"))
 }
 
