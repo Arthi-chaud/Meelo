@@ -8,7 +8,6 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
-	"github.com/Arthi-chaud/Meelo/scanner/internal/watcher"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -26,10 +25,10 @@ const ApiHealthckechAttemptCount = 5
 func main() {
 	setupLogger()
 	c := config.GetConfig()
-	e := setupEcho(c)
+	e := setupEcho(&c)
 
 	waitForApi(c)
-	go watcher.WatchLibraries(c)
+	go WatchLibraries(&c)
 	e.Logger.Fatal(e.Start(":8133"))
 }
 
@@ -38,13 +37,13 @@ func setupLogger() {
 }
 
 // Sets up echo endpoints
-func setupEcho(c config.Config) *echo.Echo {
+func setupEcho(c *config.Config) *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
 
 	s := ScannerContext{
-		config: &c,
+		config: c,
 		worker: tasks.NewWorker(),
 	}
 	s.worker.StartWorker(c)

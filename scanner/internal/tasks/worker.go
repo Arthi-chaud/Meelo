@@ -26,7 +26,7 @@ func NewWorker() *Worker {
 	}
 }
 
-func (w *Worker) StartWorker(c config.Config) {
+func (w *Worker) StartWorker(c *config.Config) {
 	go func() {
 		for task := range w.taskQueue {
 			w.process(task)
@@ -34,7 +34,7 @@ func (w *Worker) StartWorker(c config.Config) {
 	}()
 	go func() {
 		for task := range w.thumbnailQueue {
-			if err := SaveThumbnail(task, c); err != nil {
+			if err := SaveThumbnail(task, *c); err != nil {
 				log.Error().Msg("Extracting thumbnail failed:")
 				log.Trace().Msg(err.Error())
 			}

@@ -1,4 +1,4 @@
-package watcher
+package main
 
 import (
 	"path"
@@ -16,10 +16,10 @@ var LibraryPollInterval time.Duration = 5 * time.Second
 // - setups watchers when new ones are created
 // - kills watcher when associated library is deleted
 // - update path of watcher when library path changes
-func WatchLibraries(c config.Config) {
+func WatchLibraries(c *config.Config) {
 	watcherContext := WatcherContext{LibraryWatchers: []LibraryWatcher{}}
 	for {
-		libraries, err := api.GetAllLibraries(c)
+		libraries, err := api.GetAllLibraries(*c)
 		if err != nil {
 			log.Error().Msgf("Polling libraries failed. %s", err.Error())
 			time.Sleep(LibraryPollInterval)
@@ -104,18 +104,18 @@ type LibraryWatcher struct {
 	Watcher Watcher
 }
 
-func NewLibraryWatcher(c config.Config, l api.Library) (LibraryWatcher, error) {
+func NewLibraryWatcher(c *config.Config, l api.Library) (LibraryWatcher, error) {
 	absPath := path.Join(c.DataDirectory, l.Path)
-	watcher, err := NewWatcher(absPath)
+	watcher, err := NewWatcher(absPath, c)
 	if err != nil {
 		return LibraryWatcher{}, err
 	}
 	return LibraryWatcher{Library: l, Watcher: watcher}, nil
 }
 
-func (lw *LibraryWatcher) UpdateLibrary(c config.Config, l api.Library) error {
+func (lw *LibraryWatcher) UpdateLibrary(c *config.Config, l api.Library) error {
 	absPath := path.Join(c.DataDirectory, l.Path)
-	w, err := NewWatcher(absPath)
+	w, err := NewWatcher(absPath, c)
 	if err != nil {
 		return err
 	}

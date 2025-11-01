@@ -4,7 +4,7 @@ REPO=https://github.com/e-dant/watcher
 TAG=0.13.8
 URL="$REPO/archive/refs/tags/$TAG.zip"
 TAR_OUT_DIR=/tmp/watcher-$TAG
-DEST=internal/watcher
+DEST=app/
 
 rm -rf "$DEST"/*
 
