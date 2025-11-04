@@ -11,13 +11,15 @@ import (
 
 var LibraryPollInterval time.Duration = 5 * time.Second
 
-// Uses polling to look for new libraries,
+// Ugly workaround to get libraries
+var watcherContext *WatcherContext = nil
 
+// Uses polling to look for new libraries,
 // - setups watchers when new ones are created
 // - kills watcher when associated library is deleted
 // - update path of watcher when library path changes
 func WatchLibraries(c *config.Config) {
-	watcherContext := WatcherContext{LibraryWatchers: []LibraryWatcher{}}
+	watcherContext = &WatcherContext{LibraryWatchers: []LibraryWatcher{}}
 	for {
 		libraries, err := api.GetAllLibraries(*c)
 		if err != nil {
@@ -106,7 +108,7 @@ type LibraryWatcher struct {
 
 func NewLibraryWatcher(c *config.Config, l api.Library) (LibraryWatcher, error) {
 	absPath := path.Join(c.DataDirectory, l.Path)
-	watcher, err := NewWatcher(absPath, c)
+	watcher, err := NewWatcher(absPath, l, c)
 	if err != nil {
 		return LibraryWatcher{}, err
 	}
@@ -115,7 +117,7 @@ func NewLibraryWatcher(c *config.Config, l api.Library) (LibraryWatcher, error) 
 
 func (lw *LibraryWatcher) UpdateLibrary(c *config.Config, l api.Library) error {
 	absPath := path.Join(c.DataDirectory, l.Path)
-	w, err := NewWatcher(absPath, c)
+	w, err := NewWatcher(absPath, l, c)
 	if err != nil {
 		return err
 	}

@@ -3,30 +3,74 @@ package main
 //#cgo LDFLAGS: -Wl,--allow-multiple-definition
 // #include "wtr/watcher-c.h"
 // #include <stdio.h>
-// void OnEvent();
-// static void go_callback(struct wtr_watcher_event event, void *data)
+// typedef struct wtr_watcher_event WatcherEvent;
+// void onEvent(WatcherEvent event, int libraryId);
+// static void go_callback(WatcherEvent event, void *data)
 // {
-//   OnEvent();
+//   int *libraryId = (int *)data;
+//   onEvent(event, *libraryId);
 // }
 // void *go_callback_ptr = (void*)go_callback;
 //
 import "C"
 import (
 	"fmt"
-	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"strings"
 	"unsafe"
+
+	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/rs/zerolog/log"
 )
+
+var WatcherIsLivePrefix string = "/self/live@"
+
+//export onEvent
+func onEvent(event C.WatcherEvent, libraryIdC C.int) {
+	if configPtr == nil || watcherContext == nil {
+		log.Error().Msg("Received file-system event, but the global config/context is nil. Ignoring")
+		return
+	}
+	libraryId := int(libraryIdC)
+	var library api.Library = api.Library{}
+	for _, w := range watcherContext.LibraryWatchers {
+		lib := w.Library
+		if lib.Id == libraryId {
+			library = lib
+			break
+		}
+	}
+	if library.Id == 0 {
+		log.Error().Msg("Couldn't resolve library FS event payload. Ignoring")
+		return
+	}
+	triggerPath := C.GoString(event.path_name)
+	if strings.HasPrefix(triggerPath[1:], WatcherIsLivePrefix) {
+		if triggerPath[0] != 's' { // If the 'live' event is not a success, ignore
+			return
+		}
+		triggerPath = triggerPath[1+len(WatcherIsLivePrefix):]
+	}
+	eventType := EventType(event.effect_type)
+	err := OnLibraryEvent(triggerPath, eventType, library, configPtr)
+	if err != nil {
+		log.Error().Msgf("An error occured when handling file-system event: %s", err.Error())
+	}
+}
+
+var configPtr *config.Config = nil
 
 type Watcher struct {
 	handle unsafe.Pointer
 }
 
 // Path must be absolute
-func NewWatcher(path string, c *config.Config) (Watcher, error) {
+func NewWatcher(path string, l api.Library, c *config.Config) (Watcher, error) {
 	if configPtr == nil {
 		configPtr = c
 	}
-	handle := C.wtr_watcher_open(C.CString(path), (*[0]byte)(C.go_callback_ptr), nil)
+	libraryIdCInt := C.int(l.Id)
+	handle := C.wtr_watcher_open(C.CString(path), (*[0]byte)(C.go_callback_ptr), unsafe.Pointer(&libraryIdCInt))
 	if handle == nil {
 		return Watcher{}, fmt.Errorf("Spawning a watcher failed")
 	}
