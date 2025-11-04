@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
-	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
+	"github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
 	"github.com/rs/zerolog/log"
 )
 
@@ -12,6 +12,7 @@ import (
 type EventType int
 
 const (
+	Startup      EventType = -1
 	Renamed      EventType = 0
 	Modified     EventType = 1
 	Create       EventType = 2
@@ -20,11 +21,34 @@ const (
 	Other        EventType = 5
 )
 
-func OnLibraryEvent(triggerPath string, eventType EventType, l api.Library, c *config.Config) error {
-	log.Info().
-		Str("library", l.Name).
-		Str("path", triggerPath).
-		Str("event", string(eventType)).
-		Msgf("File-system event from library")
-	return nil
+func OnLibraryEvent(triggerPath string, eventType EventType, l api.Library, s *ScannerContext) {
+	tasksToAdd := []tasks.Task{}
+	switch eventType {
+	case Startup:
+		tasksToAdd = append(tasksToAdd, tasks.NewLibraryScanTask(l, *s.config))
+	case Renamed:
+		tasksToAdd = append(tasksToAdd, tasks.NewLibraryCleanTask(l, *s.config), tasks.NewLibraryScanTask(l, *s.config))
+	case Modified:
+		break // TODO refresh metadata
+	case Create:
+		tasksToAdd = append(tasksToAdd, tasks.NewLibraryScanTask(l, *s.config))
+	case Deleted:
+		tasksToAdd = append(tasksToAdd, tasks.NewLibraryCleanTask(l, *s.config))
+	case OwnerChanged:
+		break // NOOP
+	case Other:
+		break // NOOP
+	default:
+		break
+	}
+	for _, task := range tasksToAdd {
+		added := s.worker.AddTaskIfNoneEquivalent(task)
+		if added {
+			log.Info().
+				Str("library", l.Name).
+				Str("task", task.Type.String()).
+				Msg("Adding task after file-system event")
+
+		}
+	}
 }

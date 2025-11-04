@@ -17,7 +17,7 @@ import (
 
 func NewLibraryScanTask(library api.Library, c config.Config) Task {
 	name := fmt.Sprintf("Scan library '%s'", library.Slug)
-	return createTask(name, func(w *Worker) error { return execScan(library, c, w) })
+	return createTask(library.Id, Scan, name, func(w *Worker) error { return execScan(library, c, w) })
 }
 
 func execScan(library api.Library, c config.Config, w *Worker) error {

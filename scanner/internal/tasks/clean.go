@@ -14,7 +14,7 @@ import (
 
 func NewLibraryCleanTask(library api.Library, c config.Config) Task {
 	name := fmt.Sprintf("Clean library '%s'", library.Slug)
-	return createTask(name, func(w *Worker) error { return execClean(library, c, w) })
+	return createTask(library.Id, Clean, name, func(w *Worker) error { return execClean(library, c, w) })
 }
 
 func execClean(library api.Library, c config.Config, w *Worker) error {

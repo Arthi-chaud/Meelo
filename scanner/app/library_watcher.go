@@ -5,23 +5,22 @@ import (
 	"time"
 
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
-	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/rs/zerolog/log"
 )
 
 var LibraryPollInterval time.Duration = 5 * time.Second
 
-// Ugly workaround to get libraries
+// Ugly workaround to get scanner context
 var watcherContext *WatcherContext = nil
 
 // Uses polling to look for new libraries,
 // - setups watchers when new ones are created
 // - kills watcher when associated library is deleted
 // - update path of watcher when library path changes
-func WatchLibraries(c *config.Config) {
+func WatchLibraries(s *ScannerContext) {
 	watcherContext = &WatcherContext{LibraryWatchers: []LibraryWatcher{}}
 	for {
-		libraries, err := api.GetAllLibraries(*c)
+		libraries, err := api.GetAllLibraries(*s.config)
 		if err != nil {
 			log.Error().Msgf("Polling libraries failed. %s", err.Error())
 			time.Sleep(LibraryPollInterval)
@@ -31,7 +30,7 @@ func WatchLibraries(c *config.Config) {
 		for _, library := range libraries {
 			libraryWatcher := watcherContext.GetLibraryWatcherByLibraryId(library.Id)
 			if libraryWatcher == nil {
-				newWatcher, err := NewLibraryWatcher(c, library)
+				newWatcher, err := NewLibraryWatcher(s, library)
 				if err != nil {
 					log.Error().
 						Str("library", library.Name).
@@ -44,7 +43,7 @@ func WatchLibraries(c *config.Config) {
 					watcherContext.LibraryWatchers = append(watcherContext.LibraryWatchers, newWatcher)
 				}
 			} else if libraryWatcher.Library.Path != library.Path {
-				err := libraryWatcher.UpdateLibrary(c, library)
+				err := libraryWatcher.UpdateLibrary(s, library)
 				if err != nil {
 					log.Error().
 						Str("library", library.Name).
@@ -106,18 +105,18 @@ type LibraryWatcher struct {
 	Watcher Watcher
 }
 
-func NewLibraryWatcher(c *config.Config, l api.Library) (LibraryWatcher, error) {
-	absPath := path.Join(c.DataDirectory, l.Path)
-	watcher, err := NewWatcher(absPath, l, c)
+func NewLibraryWatcher(s *ScannerContext, l api.Library) (LibraryWatcher, error) {
+	absPath := path.Join(s.config.DataDirectory, l.Path)
+	watcher, err := NewWatcher(absPath, l, s)
 	if err != nil {
 		return LibraryWatcher{}, err
 	}
 	return LibraryWatcher{Library: l, Watcher: watcher}, nil
 }
 
-func (lw *LibraryWatcher) UpdateLibrary(c *config.Config, l api.Library) error {
-	absPath := path.Join(c.DataDirectory, l.Path)
-	w, err := NewWatcher(absPath, l, c)
+func (lw *LibraryWatcher) UpdateLibrary(s *ScannerContext, l api.Library) error {
+	absPath := path.Join(s.config.DataDirectory, l.Path)
+	w, err := NewWatcher(absPath, l, s)
 	if err != nil {
 		return err
 	}

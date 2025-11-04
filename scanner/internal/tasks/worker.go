@@ -81,6 +81,26 @@ func (w *Worker) process(task Task) {
 	w.mu.Unlock()
 }
 
+// Returns true if the task is added to the queue
+func (w *Worker) AddTaskIfNoneEquivalent(task Task) bool {
+	taskIsNew := true
+	w.mu.Lock()
+	for _, t := range w.queuedTasks {
+		if task.IsEquivalent(t) {
+			taskIsNew = false
+		}
+		break
+	}
+	w.mu.Unlock()
+
+	if taskIsNew {
+		w.AddTask(task)
+		return true
+	}
+	return false
+
+}
+
 // AddTask adds a task to the queue and tracks it
 func (w *Worker) AddTask(task Task) Task {
 	w.mu.Lock()

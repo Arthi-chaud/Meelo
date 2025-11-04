@@ -15,7 +15,7 @@ import (
 
 func NewMetadataRefreshTask(refreshSelector api.FileSelectorDto, force bool, c config.Config) Task {
 	name := generateTaskName(refreshSelector)
-	return createTask(name, func(w *Worker) error {
+	return createTask(0, Refresh, name, func(w *Worker) error {
 		return execRefresh(refreshSelector, force, c, w)
 	})
 }

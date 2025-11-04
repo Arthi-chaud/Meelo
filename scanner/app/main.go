@@ -25,10 +25,16 @@ const ApiHealthckechAttemptCount = 5
 func main() {
 	setupLogger()
 	c := config.GetConfig()
-	e := setupEcho(&c)
+	s := ScannerContext{
+		config: &c,
+		worker: tasks.NewWorker(),
+	}
+	e := setupEcho(&s)
 
 	waitForApi(c)
-	go WatchLibraries(&c)
+
+	s.worker.StartWorker(&c)
+	go WatchLibraries(&s)
 	e.Logger.Fatal(e.Start(":8133"))
 }
 
@@ -37,16 +43,10 @@ func setupLogger() {
 }
 
 // Sets up echo endpoints
-func setupEcho(c *config.Config) *echo.Echo {
+func setupEcho(s *ScannerContext) *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
-
-	s := ScannerContext{
-		config: c,
-		worker: tasks.NewWorker(),
-	}
-	s.worker.StartWorker(c)
 
 	e.GET("/", s.Status)
 	e.GET("/tasks", s.Tasks)
