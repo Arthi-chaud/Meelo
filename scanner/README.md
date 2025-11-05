@@ -13,3 +13,10 @@
 ### Files
 
 - `settings.json`: JSON File located in `INTERNAL_CONFIG_DIR`. See user doc for specs
+
+### Setup and build
+
+You have to download some C code and use some compiler options:
+
+- Run the `dl_watcher.sh`
+- Before building the app, set the `CGO_CXXFLAGS` env var to `-std=c++17`
