@@ -1,16 +1,19 @@
 name: "Scanner"
 on:
   pull_request:
-    branches: [ main, v3 ]
+    branches: [main, v3]
   push:
-    branches: [ main, v3 ]
+    branches: [main, v3]
   release:
-    types: [ published ]
+    types: [published]
 
 defaults:
   run:
     shell: bash
     working-directory: ./scanner
+env:
+  CGO_ENABLED: 1
+  CGO_CXXFLAGS: -std=c++17
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -46,12 +49,12 @@ jobs:
       - name: Setup Go
         uses: ./.github/actions/cache-scanner
       - name: Install Dependencies and Build
-        run: go build -buildvcs=false  -o scanner ./app
+        run: (g++ -v ; gcc -v) ; go build -buildvcs=false  -o scanner ./app
   Format:
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     container: ghcr.io/hybridgroup/opencv:4.12.0
-    needs: [ Build ]
+    needs: [Build]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -59,12 +62,12 @@ jobs:
         uses: ./.github/actions/cache-scanner
       - uses: Jerome1337/gofmt-action@v1.0.5
         with:
-          gofmt-path: './scanner'
-          gofmt-flags: '-l'
+          gofmt-path: "./scanner"
+          gofmt-flags: "-l"
   Tests:
     runs-on: ubuntu-latest
     container: ghcr.io/hybridgroup/opencv:4.12.0
-    needs: [ Build ]
+    needs: [Build]
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
     steps:
       - name: Check out the repo
@@ -83,7 +86,7 @@ jobs:
           name: coverage-report-scanner
           path: ./scanner/coverage.out
   Analysis:
-    needs: [ Tests ]
+    needs: [Tests]
     name: "Static Analysis"
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
@@ -112,11 +115,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
       - uses: ./.github/actions/dockerize
-        with: 
+        with:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           context: ./scanner
           image-suffix: scanner
           publish: ${{ github.event_name == 'release' || (needs.changes.outputs.scanner == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main') }}
-
