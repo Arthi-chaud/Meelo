@@ -104,11 +104,11 @@ services:
         condition: service_healthy
     environment:
       - GOCODER_SAFE_PATH=${INTERNAL_DATA_DIR}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_SCHEMA=gocoder
-      - POSTGRES_SERVER=db
+      - PGUSER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=${POSTGRES_DB}
+      - PGHOST=db
+      - PGPORT=5432
     volumes:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - transcoder_cache:/cache
