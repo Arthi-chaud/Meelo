@@ -26,7 +26,7 @@ func NewWorker() *Worker {
 	}
 }
 
-func (w *Worker) StartWorker(c config.Config) {
+func (w *Worker) StartWorker(c *config.Config) {
 	go func() {
 		for task := range w.taskQueue {
 			w.process(task)
@@ -34,7 +34,7 @@ func (w *Worker) StartWorker(c config.Config) {
 	}()
 	go func() {
 		for task := range w.thumbnailQueue {
-			if err := SaveThumbnail(task, c); err != nil {
+			if err := SaveThumbnail(task, *c); err != nil {
 				log.Error().Msg("Extracting thumbnail failed:")
 				log.Trace().Msg(err.Error())
 			}
@@ -79,6 +79,26 @@ func (w *Worker) process(task Task) {
 	w.currentTask = Task{}
 	w.progress = 0
 	w.mu.Unlock()
+}
+
+// Returns true if the task is added to the queue
+func (w *Worker) AddTaskIfNoneEquivalent(task Task) bool {
+	taskIsNew := true
+	w.mu.Lock()
+	for _, t := range w.queuedTasks {
+		if task.IsEquivalent(t) {
+			taskIsNew = false
+			break
+		}
+	}
+	w.mu.Unlock()
+
+	if taskIsNew {
+		w.AddTask(task)
+		return true
+	}
+	return false
+
 }
 
 // AddTask adds a task to the queue and tracks it

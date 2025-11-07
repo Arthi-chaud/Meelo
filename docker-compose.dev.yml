@@ -60,7 +60,7 @@ services:
       - API_KEYS=${API_KEYS}
     volumes:
       - ./scanner:/app
-      - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}
       - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   front:
     build:

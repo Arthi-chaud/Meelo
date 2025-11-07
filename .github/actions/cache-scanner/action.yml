@@ -1,5 +1,5 @@
-name: 'Cache (Scanner)'
-description: 'Cache for Scanner'
+name: "Cache (Scanner)"
+description: "Cache for Scanner"
 runs:
   using: "composite"
   steps:
@@ -7,10 +7,11 @@ runs:
         cd scanner
         go install github.com/swaggo/swag/cmd/swag@latest
         $GOPATH/bin/swag init -d app -o ./app/docs
+        sh dl_watcher.sh
       shell: bash
     - uses: actions/setup-go@v5
       with:
         check-latest: true
-        go-version-file: 'scanner/go.mod'
+        go-version-file: "scanner/go.mod"
         cache-dependency-path: scanner/go.sum
-        go-version: '1.24.1'
+        go-version: "1.24.1"
