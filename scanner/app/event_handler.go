@@ -27,9 +27,13 @@ func OnLibraryEvent(triggerPath string, eventType EventType, l api.Library, s *S
 	case Startup:
 		tasksToAdd = append(tasksToAdd, tasks.NewLibraryScanTask(l, *s.config))
 	case Renamed:
+		// TODO: Instead, just update the path in the File entry
 		tasksToAdd = append(tasksToAdd, tasks.NewLibraryCleanTask(l, *s.config), tasks.NewLibraryScanTask(l, *s.config))
 	case Modified:
-		break // TODO refresh metadata
+		// TODO Try to select only related track
+		// tasksToAdd = append(tasksToAdd,
+		// 	tasks.NewMetadataRefreshTask(api.FileSelectorDto{Library: strconv.Itoa(l.Id)}, false, *s.config))
+		break
 	case Create:
 		tasksToAdd = append(tasksToAdd, tasks.NewLibraryScanTask(l, *s.config))
 	case Deleted:

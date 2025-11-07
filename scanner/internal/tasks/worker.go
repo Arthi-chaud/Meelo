@@ -88,8 +88,8 @@ func (w *Worker) AddTaskIfNoneEquivalent(task Task) bool {
 	for _, t := range w.queuedTasks {
 		if task.IsEquivalent(t) {
 			taskIsNew = false
+			break
 		}
-		break
 	}
 	w.mu.Unlock()
 

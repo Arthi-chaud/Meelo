@@ -55,6 +55,9 @@ func createTask(libraryId int, taskType TaskType, name string, exec func(w *Work
 }
 
 func (t Task) IsEquivalent(t1 Task) bool {
+	if t.Type == Refresh && t1.Type == Refresh {
+		return t.Name == t1.Name
+	}
 	return t.LibraryId == t1.LibraryId && t.Type == t1.Type
 }
 
