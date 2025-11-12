@@ -22,7 +22,7 @@ import { validateSync } from "class-validator";
 import FileManagerService from "src/file-manager/file-manager.service";
 import Settings from "./models/settings";
 import {
-	InvalidMeeloDirVarException,
+	InvalidConfigDirVarException,
 	InvalidSettingsFileException,
 	MissingSettingsException,
 } from "./settings.exception";
@@ -35,10 +35,10 @@ export default class SettingsService {
 		@Inject(forwardRef(() => FileManagerService))
 		private fileManagerService: FileManagerService,
 	) {
-		const meeloDir = process.env.INTERNAL_CONFIG_DIR;
+		const configDir = process.env.INTERNAL_CONFIG_DIR;
 
-		if (!meeloDir || !this.fileManagerService.folderExists(meeloDir)) {
-			throw new InvalidMeeloDirVarException(meeloDir);
+		if (!configDir || !this.fileManagerService.folderExists(configDir)) {
+			throw new InvalidConfigDirVarException(configDir);
 		}
 		this.load();
 	}

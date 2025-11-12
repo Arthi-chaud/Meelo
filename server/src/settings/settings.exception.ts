@@ -21,10 +21,10 @@ import {
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
 
-export class InvalidMeeloDirVarException extends NotFoundException {
+export class InvalidConfigDirVarException extends NotFoundException {
 	constructor(value: any) {
 		super(
-			`Environemnt Variable 'MEELO_DIR' is valid. Got: '${value}'. Expected a path to a folder that exist`,
+			`Environemnt Variable 'INTERNAL_CONFIG_DIR' is valid. Got: '${value}'. Expected a path to a folder that exist`,
 		);
 	}
 }
