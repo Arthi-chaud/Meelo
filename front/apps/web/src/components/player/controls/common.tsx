@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconButton, Typography, type TypographyProps } from "@mui/material";
+import {
+	Box,
+	IconButton,
+	Slider,
+	styled,
+	Typography,
+	type TypographyProps,
+	useTheme,
+} from "@mui/material";
 import type { ComponentProps, ReactNode } from "react";
 import { getSong } from "@/api/queries";
 import type Artist from "@/models/artist";
@@ -34,6 +42,8 @@ type PlayerButtonControlsProps = {
 	onPlay: () => void;
 	onSkipTrack: () => void;
 	onRewind: () => void;
+	volume: number;
+	setVolume: (n: number) => void;
 };
 
 export type PlayerControlsProps = ComponentProps<typeof PlayerSlider> &
@@ -86,3 +96,61 @@ export const DurationComponent = ({
 }: { time?: number } & TypographyProps) => (
 	<Typography {...props}>{formatDuration(time)}</Typography>
 );
+
+type VolumeSliderProps = {
+	// The current volume. In range [0, 1]
+	volume: number;
+	setVolume: (n: number) => void;
+};
+
+const volumeClasses = { thumb: "sider-thumb" };
+
+const StyledSlider = styled(Slider)({
+	":hover": {
+		[`& .${volumeClasses.thumb}`]: {
+			opacity: 1,
+		},
+	},
+	[`& .${volumeClasses.thumb}`]: {
+		opacity: 0,
+		":hover": {
+			opacity: 1,
+		},
+	},
+});
+
+export const VolumeSliderThumb = ({ children, sx, ...props }: any) => {
+	const theme = useTheme();
+	return (
+		<Box
+			{...props}
+			className={volumeClasses.thumb}
+			sx={{
+				...sx,
+				width: 13,
+				left: 7,
+				height: 4,
+				position: "absolute",
+				backgroundColor: theme.palette.text.primary,
+				borderRadius: theme.shape.borderRadius,
+			}}
+		>
+			{children}
+		</Box>
+	);
+};
+
+export const VolumeSlider = ({ volume, setVolume }: VolumeSliderProps) => {
+	return (
+		<StyledSlider
+			slots={{ thumb: VolumeSliderThumb }}
+			size="small"
+			min={0}
+			max={100}
+			value={volume * 100}
+			onChange={(_, e) => setVolume((e as number) / 100)}
+			orientation="vertical"
+			color="secondary"
+		/>
+	);
+};

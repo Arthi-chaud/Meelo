@@ -394,7 +394,7 @@ export const ExpandedPlayerControls = (
 							)}
 						</Box>
 						<Stack
-							spacing={2}
+							spacing={{ xs: 7, sm: 5 }}
 							sx={{
 								justifyContent: "center",
 								display: "flex",

@@ -69,6 +69,7 @@ const Player = () => {
 		() => playlist[cursor + 1],
 		[cursor, playlist],
 	);
+	const [volume, setVolume] = useState(1);
 	const throwawayAudioPlayer = useRef<HTMLAudioElement>(null);
 	const audioPlayer = useRef<HTMLAudioElement>(null);
 	const [useTranscoding, setUseTranscoding] = useState(false);
@@ -231,6 +232,10 @@ const Player = () => {
 				player.current!.onplay = () => {
 					setPlaying(true);
 				};
+
+				player.current!.onvolumechange = () => {
+					setVolume(player?.current?.volume ?? 1);
+				};
 				player.current!.onplaying = () => {
 					setPlaying(true);
 				};
@@ -289,6 +294,12 @@ const Player = () => {
 			return undefined;
 		};
 	}, [playing]);
+	useEffect(() => {
+		if (!player?.current) {
+			return;
+		}
+		player.current.volume = volume;
+	}, [volume]);
 	useEffect(() => {
 		if (useTranscoding && currentTrack) {
 			if (!Hls.isSupported()) {
@@ -457,6 +468,8 @@ const Player = () => {
 		onExpand: (expand: boolean) => setExpanded(expand),
 		duration: duration,
 		progress: progress,
+		volume,
+		setVolume,
 		onSkipTrack: onSkipTrack,
 		onRewind: onRewind,
 		videoRef: videoPlayer as unknown as LegacyRef<HTMLVideoElement>,
