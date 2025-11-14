@@ -40,6 +40,7 @@ import {
 	parentSongQuery,
 	playerTextStyle,
 	SkipButton,
+	VolumeSlider,
 } from "./common";
 
 const ProgressBar = ({
@@ -252,6 +253,17 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					</Grid>
 					<Grid size="grow">
 						<SkipButton onClick={props.onSkipTrack} />
+					</Grid>
+					<Grid
+						size="auto"
+						sx={{
+							display: { xs: "none", sm: "block" },
+						}}
+					>
+						<VolumeSlider
+							volume={props.volume}
+							setVolume={props.setVolume}
+						/>
 					</Grid>
 				</Grid>
 			</Grid>

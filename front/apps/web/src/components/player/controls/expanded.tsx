@@ -23,6 +23,7 @@ import {
 	Divider,
 	Grid,
 	IconButton,
+	Popover,
 	Skeleton,
 	Stack,
 	Typography,
@@ -31,7 +32,13 @@ import {
 import { useAtom, useSetAtom } from "jotai";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type LegacyRef, type ReactNode, useCallback, useState } from "react";
+import {
+	type LegacyRef,
+	type ReactNode,
+	useCallback,
+	useMemo,
+	useState,
+} from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -54,6 +61,9 @@ import {
 	PlayerIcon,
 	PlaylistIcon,
 	TrackIcon,
+	VolumeHighIcon,
+	VolumeLowIcon,
+	VolumeSilentIcon,
 } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
@@ -70,9 +80,59 @@ import {
 	parentSongQuery,
 	playerTextStyle,
 	SkipButton,
+	VolumeSlider,
+	type VolumeSliderProps,
 } from "./common";
 import { LyricsComponent } from "./lyrics";
 import PlayerSlider from "./slider";
+
+const VolumeButton = (props: VolumeSliderProps & { disabled?: boolean }) => {
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const open = Boolean(anchorEl);
+	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const handleClose = () => setAnchorEl(null);
+	const Icon = useMemo(() => {
+		if (props.volume < 0.1) {
+			return VolumeSilentIcon;
+		}
+
+		if (props.volume < 0.5) {
+			return VolumeLowIcon;
+		}
+		return VolumeHighIcon;
+	}, [props.volume]);
+	return (
+		<>
+			<IconButton
+				disabled={props.disabled}
+				onClick={handleClick}
+				color="inherit"
+			>
+				<Icon />
+			</IconButton>
+			<Popover
+				open={open}
+				sx={{ zIndex: "tooltip" }}
+				anchorEl={anchorEl}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: "top",
+					horizontal: "left",
+				}}
+				transformOrigin={{
+					vertical: "bottom",
+					horizontal: "left",
+				}}
+			>
+				<Box sx={{ height: 100, width: "auto", padding: 1 }}>
+					<VolumeSlider {...props} />
+				</Box>
+			</Popover>
+		</>
+	);
+};
 
 export const ExpandedPlayerControls = (
 	props: PlayerControlsProps & { videoRef: LegacyRef<HTMLVideoElement> },
@@ -352,12 +412,16 @@ export const ExpandedPlayerControls = (
 								}
 							</Grid>
 						</Grid>
-						<Box
+						<Grid
+							container
 							sx={{
 								display: "flex",
-								justifyContent: "center",
+								justifyContent: "space-between",
 							}}
 						>
+							<Grid size={1}>
+								<IconButton />
+							</Grid>
 							{props.track && props.artist ? (
 								<Link
 									href={`/artists/${props.artist.slug}`}
@@ -392,9 +456,16 @@ export const ExpandedPlayerControls = (
 									width={"50%"}
 								/>
 							)}
-						</Box>
+							<Grid size={1}>
+								<VolumeButton
+									disabled={!props.track}
+									volume={props.volume}
+									setVolume={props.setVolume}
+								/>
+							</Grid>
+						</Grid>
 						<Stack
-							spacing={2}
+							spacing={{ xs: 7, sm: 5 }}
 							sx={{
 								justifyContent: "center",
 								display: "flex",

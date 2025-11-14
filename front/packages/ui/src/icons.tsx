@@ -113,6 +113,11 @@ export const ErrorIcon: Icon = Iconsax.CloseCircle;
 export const OpenExternalIcon: Icon = Iconsax.ExportCircle;
 export const WarningIcon: Icon = Iconsax.Warning2;
 export const BookIcon: Icon = Iconsax.Book1;
+
+export const VolumeSilentIcon: Icon = Iconsax.VolumeMute;
+export const VolumeLowIcon: Icon = Iconsax.VolumeLow1;
+export const VolumeHighIcon: Icon = Iconsax.VolumeHigh;
+
 // Icons for song type
 export const SongTypeOriginalIcon: Icon = Iconsax.Music;
 export const SongTypeRemixIcon: Icon = Iconsax.Repeat;
