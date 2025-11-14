@@ -97,7 +97,7 @@ export const DurationComponent = ({
 	<Typography {...props}>{formatDuration(time)}</Typography>
 );
 
-type VolumeSliderProps = {
+export type VolumeSliderProps = {
 	// The current volume. In range [0, 1]
 	volume: number;
 	setVolume: (n: number) => void;
@@ -119,7 +119,7 @@ const StyledSlider = styled(Slider)({
 	},
 });
 
-export const VolumeSliderThumb = ({ children, sx, ...props }: any) => {
+const VolumeSliderThumb = ({ children, sx, ...props }: any) => {
 	const theme = useTheme();
 	return (
 		<Box
