@@ -14,6 +14,7 @@
 			"seeSongs": "See Songs"
 		},
 		"changeIllutration": "Change Illustration",
+		"connectToNewServer": "Connect a Meelo server",
 		"create": "Create",
 		"delete": "Delete",
 		"deleteFromPlaylist": "Delete from Playlist",

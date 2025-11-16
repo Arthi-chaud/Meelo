@@ -16,28 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useSetAtom } from "jotai";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import {
-	KeyboardAwareScrollView,
-	KeyboardToolbar,
-} from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import { Toast } from "toastify-react-native";
-import { getSettings } from "@/api/queries";
-import type { Settings } from "@/models/settings";
-import { ErrorIcon } from "@/ui/icons";
-import { getAPI_ } from "~/api";
+import { AddIcon } from "@/ui/icons";
+import { useLoginForm } from "~/components/login-form";
 import { Banner } from "~/components/meelo";
 import { Button } from "~/primitives/button";
-import { Divider } from "~/primitives/divider";
-import { Text } from "~/primitives/text";
-import { TextInput } from "~/primitives/text_input";
 import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme, rt) => ({
@@ -47,10 +35,8 @@ const styles = StyleSheet.create((theme, rt) => ({
 		alignItems: "center",
 		marginBottom: theme.gap(10),
 		justifyContent: "space-evenly",
+		flex: 1,
 	},
-	// The padding is a bit much, but it allows making the next form field visible
-	// It would be nice to just center the focused field when the keyboard is up
-	keyboard: { paddingTop: theme.gap(20) },
 	banner: {
 		height: 300,
 		maxHeight: rt.screen.height / 4,
@@ -59,307 +45,42 @@ const styles = StyleSheet.create((theme, rt) => ({
 		justifyContent: "center",
 		alignItems: "flex-end",
 	},
-	errorContainer: {
-		display: "flex",
-		flexDirection: "row",
-		alignItems: "center",
-		gap: theme.gap(1),
-	},
-	errorMsg: {
-		maxWidth: "80%",
-		color: theme.colors.error,
-		textAlign: "center",
-	},
 	formContainer: {
 		display: "flex",
 		width: "100%",
 		flexDirection: "column",
-		justifyContent: "center",
+		justifyContent: "flex-start",
 		alignItems: "center",
 		gap: theme.gap(3),
 	},
 }));
 
-function timeout(ms: number) {
-	return new Promise<any>((_, reject) => {
-		setTimeout(() => reject(new Error("Request timed out")), ms);
-	});
-}
-
 export default function AuthenticationScreen() {
+	const safeAreaStyle = useSafeAreaInsets();
 	const { t } = useTranslation();
-	const defaultValues = {
-		url: "https://",
-		username: "",
-		password: "",
-		confirm: "",
-	};
+	const router = useRouter();
 	const setAccessToken = useSetAtom(accessTokenAtom);
 	const setInstanceUrl = useSetAtom(instanceUrlAtom);
-	const [isLoading, setLoading] = useState(false);
-	const [errorMsg, setErrorMessage] = useState<string>();
-	const [formType, setFormType] = useState<"url" | "login" | "signup">("url");
-	const [allowSignup, setAllowSignup] = useState(false);
-	const safeAreaStyle = useSafeAreaInsets();
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-	} = useForm({ defaultValues });
-	const onSubmit = (data: typeof defaultValues) => {
-		const instanceUrl = data.url.replace(/\/$/, "");
-		const api = getAPI_(null, instanceUrl);
-		setLoading(true);
-		setErrorMessage(undefined);
-		if (formType === "url") {
-			//Note: we dont want/need to cache the settings
-			//It would prank when the instance url changes
-			Promise.race([timeout(3000), getSettings().exec(api)()])
-				.then(({ enableUserRegistration }: Settings) => {
-					setAllowSignup(enableUserRegistration);
-					setFormType("login");
-				})
-				.catch((e) => {
-					setErrorMessage(e.message ?? e.toString());
-				})
-				.finally(() => {
-					setLoading(false);
-				});
-		} else if (formType === "signup") {
-			Promise.race([
-				timeout(3000),
-				api.register({
-					username: data.username,
-					password: data.password,
-				}),
-			])
-				.then(() => {
-					Toast.success(t("toasts.auth.accountCreated"));
-				})
-				.catch((e) => {
-					setErrorMessage(e.message ?? e.toString());
-				})
-				.finally(() => {
-					setLoading(false);
-				});
-		} else {
-			Promise.race([
-				timeout(3000),
-				api.login({
-					username: data.username,
-					password: data.password,
-				}),
-			])
-				.then(({ access_token }) => {
-					setAccessToken(access_token);
-					setInstanceUrl(instanceUrl);
-					router.replace("/");
-				})
-				.catch((e) => {
-					setErrorMessage(e.message ?? e.toString());
-					setLoading(false);
-				});
-		}
-	};
+	const { openLoginForm } = useLoginForm({
+		onLogin: ({ instanceUrl, token }) => {
+			setAccessToken(token);
+			setInstanceUrl(instanceUrl);
+			router.replace("/");
+			return Promise.resolve();
+		},
+	});
 	return (
-		<>
-			<KeyboardAwareScrollView
-				bottomOffset={styles.keyboard.paddingTop}
-				contentContainerStyle={[styles.root, safeAreaStyle]}
-			>
-				<Banner style={styles.banner} />
-				<View style={styles.formContainer}>
-					<Controller
-						control={control}
-						name="url"
-						rules={{
-							required: {
-								value: true,
-								message: t("form.auth.instanceUrlIsRequired"),
-							},
-						}}
-						render={({ field: { onChange, onBlur, value } }) => (
-							<TextInput
-								placeholder={t("form.auth.instanceUrl")}
-								textContentType="URL"
-								autoCorrect={false}
-								autoCapitalize="none"
-								onBlur={onBlur}
-								onChangeText={(e) => {
-									if (formType !== "url") {
-										setFormType("url");
-									}
-									onChange(e);
-								}}
-								error={errors.url?.message}
-								value={value}
-							/>
-						)}
-					/>
-
-					{formType !== "url" && (
-						<>
-							<Controller
-								control={control}
-								name="username"
-								rules={{
-									required: {
-										value: true,
-										message: t(
-											"form.auth.usernameTooShort",
-										),
-									},
-									minLength: {
-										value: 4,
-										message: t(
-											"form.auth.usernameTooShort",
-										),
-									},
-								}}
-								render={({
-									field: { onChange, onBlur, value },
-								}) => (
-									<TextInput
-										placeholder={t("form.auth.username")}
-										textContentType="username"
-										autoCorrect={false}
-										autoCapitalize="none"
-										onBlur={onBlur}
-										onChangeText={onChange}
-										value={value}
-										autoComplete={
-											formType === "login"
-												? "username"
-												: undefined
-										}
-										error={errors.username?.message}
-									/>
-								)}
-							/>
-
-							<Controller
-								control={control}
-								name="password"
-								rules={{
-									required: {
-										value: true,
-										message: t(
-											"form.auth.passwordIsRequired",
-										),
-									},
-									minLength: {
-										value: 6,
-										message: t(
-											"form.auth.passwordTooShort",
-										),
-									},
-								}}
-								render={({
-									field: { onChange, onBlur, value },
-								}) => (
-									<TextInput
-										placeholder={t("form.auth.password")}
-										textContentType={
-											formType === "login"
-												? "password"
-												: "newPassword"
-										}
-										onBlur={onBlur}
-										onChangeText={onChange}
-										value={value}
-										autoComplete={
-											formType === "login"
-												? "password"
-												: undefined
-										}
-										error={errors.password?.message}
-										secureTextEntry
-									/>
-								)}
-							/>
-						</>
-					)}
-					{formType === "signup" && (
-						<Controller
-							control={control}
-							name="confirm"
-							rules={{
-								required: {
-									value: true,
-									message: t("form.auth.pleaseConfirm"),
-								},
-								minLength: {
-									value: 6,
-									message: t("form.auth.passwordTooShort"),
-								},
-								validate: (confirmValue, form) => {
-									if (confirmValue !== form.password) {
-										return t(
-											"form.auth.passwordsAreDifferent",
-										);
-									}
-								},
-							}}
-							render={({
-								field: { onChange, onBlur, value },
-							}) => (
-								<TextInput
-									placeholder={t(
-										"form.auth.confirmPasswordField",
-									)}
-									onBlur={onBlur}
-									onChangeText={onChange}
-									value={value}
-									textContentType="newPassword"
-									secureTextEntry
-									error={errors.confirm?.message}
-								/>
-							)}
-						/>
-					)}
-					<Button
-						disabled={isLoading}
-						onPress={handleSubmit(onSubmit)}
-						width="fitContent"
-						title={t(
-							formType === "url"
-								? "auth.connectButton"
-								: formType === "login"
-									? "auth.loginButton"
-									: "auth.signupButton",
-						)}
-					/>
-					{errorMsg && (
-						<View style={styles.errorContainer}>
-							<ErrorIcon style={styles.errorMsg} />
-							<Text style={styles.errorMsg}>{errorMsg}</Text>
-						</View>
-					)}
-					{allowSignup && formType !== "url" && (
-						<>
-							<Divider h withInsets />
-							<Button
-								variant="outlined"
-								width="fitContent"
-								onPress={() => {
-									setFormType(
-										formType === "login"
-											? "signup"
-											: "login",
-									);
-									setErrorMessage(undefined);
-								}}
-								title={t(
-									formType === "login"
-										? "auth.signup"
-										: "auth.signin",
-								)}
-							/>
-						</>
-					)}
-				</View>
-			</KeyboardAwareScrollView>
-			<KeyboardToolbar />
-		</>
+		<View style={[styles.root, safeAreaStyle]}>
+			<Banner style={styles.banner} />
+			<View style={styles.formContainer}>
+				<Button
+					title={t("actions.connectToNewServer")}
+					icon={AddIcon}
+					onPress={openLoginForm}
+				/>
+			</View>
+			<View />
+			{/* to have a 1/3 page-height footer */}
+		</View>
 	);
 }
