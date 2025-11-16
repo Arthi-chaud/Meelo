@@ -90,14 +90,14 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 					password: data.password,
 				}),
 			])
-				.then(({ access_token }) => {
+				.then(async ({ access_token }) => {
 					Keyboard.dismiss();
-					onLogin({ instanceUrl, token: access_token }).then(() => {
-						setLoading(false);
-						dismiss();
-					});
+					await onLogin({ instanceUrl, token: access_token });
+					setLoading(false);
+					dismiss();
 				})
 				.catch((e) => {
+					setLoading(false);
 					setErrorMessage(e.message ?? e.toString());
 				});
 		}

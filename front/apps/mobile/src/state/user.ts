@@ -16,40 +16,110 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Buffer } from "buffer";
 import { atom } from "jotai";
 import { storage } from "~/utils/storage";
 
-const AccessTokenKey = "access-token";
-const InstanceUrlKey = "instance-url";
+const CurrentInstanceKey = "current-instance";
+const OtherInstancesKey = "other-instances";
 
-export const instanceUrlAtom = atom<string | null, [string | null], void>(
-	(get) => get(_instanceUrlAtom),
-	(_, set, update) => {
-		if (update !== null) {
-			storage.set(InstanceUrlKey, update);
-		} else {
-			storage.remove(InstanceUrlKey);
+type MeeloInstance = {
+	url: string;
+	accessToken: string;
+	// For visual purposes
+	username: string;
+};
+
+const normalizeInstance = (instance: MeeloInstance): MeeloInstance => {
+	return {
+		...instance,
+		url: instance.url.replace(/\/$/, ""),
+	};
+};
+
+const removeDuplicates = (instances: MeeloInstance[]): MeeloInstance[] => {
+	return instances.filter((instance, idx) => {
+		const otherInstanceIndex = instances.findIndex(
+			(instance_) =>
+				instance_.url === instance.url &&
+				instance_.username === instance.username,
+		);
+		return otherInstanceIndex === idx;
+	});
+};
+
+const restoreCurrentInstanceFromLocalStorage = () => {
+	const currentInstanceStr = storage.getString(CurrentInstanceKey);
+	if (currentInstanceStr) {
+		const currentInstance = JSON.parse(
+			Buffer.from(currentInstanceStr, "base64").toString("utf-8"),
+		);
+		// TODO Validate
+		return currentInstance as MeeloInstance;
+	}
+	return null;
+};
+
+const restoreOtherInstancesFromLocalStorage = () => {
+	const otherInstancesStr = storage.getString(OtherInstancesKey);
+	if (otherInstancesStr) {
+		const otherInstances = JSON.parse(
+			Buffer.from(otherInstancesStr, "base64").toString("utf-8"),
+		);
+		// TODO Validate
+		return otherInstances as MeeloInstance[];
+	}
+	return [];
+};
+
+const _currentInstanceAtom = atom<MeeloInstance | null>(
+	restoreCurrentInstanceFromLocalStorage(),
+);
+const _otherInstancesAtom = atom<MeeloInstance[]>(
+	restoreOtherInstancesFromLocalStorage(),
+);
+
+const serialiseInstance = (i: MeeloInstance | MeeloInstance[]) => {
+	return Buffer.from(JSON.stringify(i), "utf-8").toString("base64");
+};
+
+export const currentInstanceAtom = atom<
+	MeeloInstance | null,
+	[MeeloInstance | null],
+	void
+>(
+	(get) => get(_currentInstanceAtom),
+	(_, set, data) => {
+		if (data) {
+			data = normalizeInstance(data);
 		}
-		set(_instanceUrlAtom, update);
+		set(_currentInstanceAtom, data);
+		if (data !== null) {
+			storage.set(CurrentInstanceKey, serialiseInstance(data));
+		} else {
+			storage.remove(CurrentInstanceKey);
+		}
 	},
 );
 
-const _instanceUrlAtom = atom(storage.getString(InstanceUrlKey) ?? null);
-
-export const accessTokenAtom = atom<string | null, [string | null], void>(
-	(get) => get(_accessToken),
-	(_, set, update) => {
-		if (update !== null) {
-			const expires = new Date();
-
-			expires.setMonth(expires.getMonth() + 1);
-			storage.set(AccessTokenKey, update);
-		} else {
-			storage.remove(AccessTokenKey);
-		}
-		set(_accessToken, update);
+export const otherInstancesAtom = atom<
+	MeeloInstance[],
+	[MeeloInstance[]],
+	void
+>(
+	(get) => get(_otherInstancesAtom),
+	(_, set, data) => {
+		data = removeDuplicates(data.map(normalizeInstance));
+		set(_otherInstancesAtom, data);
+		storage.set(OtherInstancesKey, serialiseInstance(data));
 	},
 );
-const _accessToken = atom<string | null>(
-	storage.getString(AccessTokenKey) ?? null,
-);
+
+// Move current instance (if any) to the list of other instances
+export const popCurrentInstanceAtom = atom(null, (get, set) => {
+	const currentInstance = get(currentInstanceAtom);
+	const otherInstances = get(otherInstancesAtom);
+	if (currentInstance)
+		set(otherInstancesAtom, [currentInstance, ...otherInstances]);
+	set(currentInstanceAtom, null);
+});

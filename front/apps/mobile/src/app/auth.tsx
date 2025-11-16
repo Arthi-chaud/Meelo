@@ -22,11 +22,13 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
+import { getCurrentUserStatus } from "@/api/queries";
 import { AddIcon } from "@/ui/icons";
+import { getAPI_ } from "~/api";
 import { useLoginForm } from "~/components/login-form";
 import { Banner } from "~/components/meelo";
 import { Button } from "~/primitives/button";
-import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
+import { currentInstanceAtom } from "~/state/user";
 
 const styles = StyleSheet.create((theme, rt) => ({
 	root: {
@@ -59,14 +61,17 @@ export default function AuthenticationScreen() {
 	const safeAreaStyle = useSafeAreaInsets();
 	const { t } = useTranslation();
 	const router = useRouter();
-	const setAccessToken = useSetAtom(accessTokenAtom);
-	const setInstanceUrl = useSetAtom(instanceUrlAtom);
+	const setCurrentInstance = useSetAtom(currentInstanceAtom);
 	const { openLoginForm } = useLoginForm({
-		onLogin: ({ instanceUrl, token }) => {
-			setAccessToken(token);
-			setInstanceUrl(instanceUrl);
+		onLogin: async ({ instanceUrl, token }) => {
+			const api = getAPI_(token, instanceUrl);
+			const res = await getCurrentUserStatus().exec(api)();
+			setCurrentInstance({
+				url: instanceUrl,
+				accessToken: token,
+				username: res.name,
+			});
 			router.replace("/");
-			return Promise.resolve();
 		},
 	});
 	return (

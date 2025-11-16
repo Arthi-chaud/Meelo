@@ -21,7 +21,7 @@ import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery } from "~/api";
-import { accessTokenAtom } from "~/state/user";
+import { currentInstanceAtom } from "~/state/user";
 
 export const keyIllustrationAtom = atom<Illustration | null>(null);
 
@@ -59,7 +59,7 @@ export const useSetKeyIllustrationFromInfiniteQuery = <
 const transitionDuration = 300;
 
 export const BackgroundGradient = () => {
-	const accessToken = useAtomValue(accessTokenAtom);
+	const currentInstance = useAtomValue(currentInstanceAtom);
 	const keyIllustration = useAtomValue(keyIllustrationAtom);
 	const currentColor1 = useSharedValue("transparent");
 	const currentColor2 = useSharedValue("transparent");
@@ -68,14 +68,14 @@ export const BackgroundGradient = () => {
 	const currentColor5 = useSharedValue("transparent");
 
 	useEffect(() => {
-		if (!accessToken) {
+		if (!currentInstance) {
 			currentColor1.value = "transparent";
 			currentColor2.value = "transparent";
 			currentColor3.value = "transparent";
 			currentColor4.value = "transparent";
 			currentColor5.value = "transparent";
 		}
-	}, [accessToken]);
+	}, [currentInstance]);
 	useEffect(() => {
 		if (keyIllustration) {
 			currentColor1.value = withTiming(keyIllustration.colors[0], {

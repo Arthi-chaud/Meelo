@@ -55,7 +55,7 @@ import { MinimisedPlayer } from "~/components/player/minimised";
 import { bottomTabBarHeightAtom } from "~/hooks/root-view-style";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
-import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
+import { currentInstanceAtom, popCurrentInstanceAtom } from "~/state/user";
 
 //TODO DRY: The header style for settings is very similar to the shared routed ones.
 //TODO I suspect that the setting header style is not updated when theme changes because we don't use withUnistyles
@@ -107,13 +107,13 @@ export default function ProtectedLayout() {
 	const queue = useAtomValue(playlistAtom);
 
 	const infinitePlaylist = useAtomValue(infiniteQueryAtom);
-	const accessToken = useAtomValue(accessTokenAtom);
-	const instanceUrl = useAtomValue(instanceUrlAtom);
+	const currentInstance = useAtomValue(currentInstanceAtom);
+	const popCurrentInstance = useSetAtom(popCurrentInstanceAtom);
 	const setBottomTabBarHeight = useSetAtom(bottomTabBarHeightAtom);
 	const api = useAPI();
 	const user = useTanStackQuery({
 		...toTanStackQuery(api, getCurrentUserStatus),
-		enabled: !!(accessToken && instanceUrl),
+		enabled: !!currentInstance,
 	});
 	const onLayout = useCallback((e: LayoutChangeEvent) => {
 		setBottomTabBarHeight(e.nativeEvent.layout.height);
@@ -131,7 +131,8 @@ export default function ProtectedLayout() {
 		};
 		return { opacity: withSpring(showPlayer ? 1 : 0, style) };
 	}, [showPlayer]);
-	if (!accessToken || !instanceUrl || user.error) {
+	if (!currentInstance || user.error) {
+		popCurrentInstance();
 		return <Redirect href="/auth" />;
 	}
 	//TODO Proper handling of when user is loading

@@ -49,7 +49,7 @@ import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
-import { accessTokenAtom, instanceUrlAtom } from "~/state/user";
+import { popCurrentInstanceAtom } from "~/state/user";
 import { Languages } from "../../../../../../translations";
 
 const BuildCommit =
@@ -61,8 +61,7 @@ export default function SettingsView() {
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const emptyPlaylist = useSetAtom(emptyPlaylistAtom);
 	const { t } = useTranslation();
-	const setAccessToken = useSetAtom(accessTokenAtom);
-	const setInstanceUrl = useSetAtom(instanceUrlAtom);
+	const popCurrentInstance = useSetAtom(popCurrentInstanceAtom);
 	const insets = useSafeAreaInsets();
 	const [colorSchemePref, setColorSchemePref] = useAtom(
 		colorSchemePreference,
@@ -211,8 +210,7 @@ export default function SettingsView() {
 					onPress={() => {
 						emptyPlaylist();
 						queryClient.client.clear();
-						setAccessToken(null);
-						setInstanceUrl(null);
+						popCurrentInstance();
 					}}
 				/>
 			</View>
