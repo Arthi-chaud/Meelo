@@ -81,10 +81,15 @@ export default function SettingsView() {
 	const [colorSchemePref, setColorSchemePref] = useAtom(
 		colorSchemePreference,
 	);
+	const onLeavingInstance = useCallback(() => {
+		emptyPlaylist();
+		queryClient.client.clear();
+	}, [emptyPlaylist, queryClient]);
 	const { openLoginForm } = useLoginForm({
 		onLogin: async (data) => {
 			const api = getAPI_(data.token, data.instanceUrl);
 			const res = await getCurrentUserStatus().exec(api)();
+			onLeavingInstance();
 			popCurrentInstance();
 			setCurrentInstance({
 				url: data.instanceUrl,
@@ -99,10 +104,6 @@ export default function SettingsView() {
 	const { data: scannerVersion } = useQuery(getScannerVersion);
 	const { data: matcherVersion } = useQuery(getMatcherVersion);
 	const actualColorScheme = useColorScheme();
-	const onLeavingInstance = useCallback(() => {
-		emptyPlaylist();
-		queryClient.client.clear();
-	}, [emptyPlaylist, queryClient]);
 	const onOtherInstanceSelect = useCallback(
 		(instance: MeeloInstance) => {
 			onLeavingInstance();
