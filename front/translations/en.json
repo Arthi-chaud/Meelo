@@ -383,7 +383,8 @@
 	"toasts": {
 		"auth": {
 			"accountCreated": "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account",
-			"serverSwitchSuccessful": "Successfully switched server"
+			"serverSwitchSuccessful": "Successfully switched server",
+			"signinFailed": "Could not connect to server"
 		},
 		"leaveWillStopPlaybackAlert": "Leaving the website will stop playback.",
 		"library": {

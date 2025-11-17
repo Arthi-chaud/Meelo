@@ -379,7 +379,8 @@
 	"toasts": {
 		"auth": {
 			"accountCreated": "Votre compte a été créé. Contactez l'administrateur pour qu'il l'active",
-			"serverSwitchSuccessful": "Connection au serveur réussie"
+			"serverSwitchSuccessful": "Connection au serveur réussie",
+			"signinFailed": "Echec de la connexion au server"
 		},
 		"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
 		"library": {
