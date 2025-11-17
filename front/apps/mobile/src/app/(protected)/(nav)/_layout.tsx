@@ -131,8 +131,8 @@ export default function ProtectedLayout() {
 		};
 		return { opacity: withSpring(showPlayer ? 1 : 0, style) };
 	}, [showPlayer]);
-	if (!currentInstance || user.error) {
-		popCurrentInstance();
+	if (user.error || !currentInstance) {
+		if (currentInstance) popCurrentInstance();
 		return <Redirect href="/auth" />;
 	}
 	//TODO Proper handling of when user is loading

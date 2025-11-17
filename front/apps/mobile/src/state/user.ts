@@ -18,12 +18,13 @@
 
 import { Buffer } from "buffer";
 import { atom } from "jotai";
+import { at } from "lodash";
 import { storage } from "~/utils/storage";
 
 const CurrentInstanceKey = "current-instance";
 const OtherInstancesKey = "other-instances";
 
-type MeeloInstance = {
+export type MeeloInstance = {
 	url: string;
 	accessToken: string;
 	// For visual purposes
@@ -123,3 +124,18 @@ export const popCurrentInstanceAtom = atom(null, (get, set) => {
 		set(otherInstancesAtom, [currentInstance, ...otherInstances]);
 	set(currentInstanceAtom, null);
 });
+
+export const deleteOtherInstanceAtom = atom(
+	null,
+	(get, set, instance: MeeloInstance) => {
+		const otherInstances = get(otherInstancesAtom);
+		set(
+			otherInstancesAtom,
+			otherInstances.filter((i) => {
+				return !(
+					i.url === instance.url && i.username === instance.username
+				);
+			}),
+		);
+	},
+);

@@ -66,6 +66,7 @@
 			"seeRelatedVideos": "Voir les vidéos",
 			"seeSongInfo": "Infos sur le morceau"
 		},
+		"switchServer": "Changer de serveur",
 		"track": {
 			"reassignTrack": "Réassigner la piste",
 			"seeTrackInfo": "Infos sur la piste"
@@ -377,7 +378,8 @@
 	},
 	"toasts": {
 		"auth": {
-			"accountCreated": "Votre compte a été créé. Contactez l'administrateur pour qu'il l'active"
+			"accountCreated": "Votre compte a été créé. Contactez l'administrateur pour qu'il l'active",
+			"serverSwitchSuccessful": "Connection au serveur réussie"
 		},
 		"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
 		"library": {
