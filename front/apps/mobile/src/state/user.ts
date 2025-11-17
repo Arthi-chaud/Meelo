@@ -18,7 +18,7 @@
 
 import { Buffer } from "buffer";
 import { atom } from "jotai";
-import { at } from "lodash";
+import * as yup from "yup";
 import { storage } from "~/utils/storage";
 
 const CurrentInstanceKey = "current-instance";
@@ -29,6 +29,20 @@ export type MeeloInstance = {
 	accessToken: string;
 	// For visual purposes
 	username: string;
+};
+
+const MeeloInstanceValidator = yup.object({
+	url: yup.string().required(),
+	accessToken: yup.string().required(),
+	username: yup.string().required(),
+});
+
+const validateInstance = (instance: MeeloInstance): MeeloInstance | null => {
+	try {
+		return MeeloInstanceValidator.validateSync(instance);
+	} catch {
+		return null;
+	}
 };
 
 const normalizeInstance = (instance: MeeloInstance): MeeloInstance => {
@@ -51,26 +65,37 @@ const removeDuplicates = (instances: MeeloInstance[]): MeeloInstance[] => {
 
 const restoreCurrentInstanceFromLocalStorage = () => {
 	const currentInstanceStr = storage.getString(CurrentInstanceKey);
-	if (currentInstanceStr) {
+	if (!currentInstanceStr) {
+		return null;
+	}
+	try {
 		const currentInstance = JSON.parse(
 			Buffer.from(currentInstanceStr, "base64").toString("utf-8"),
 		);
-		// TODO Validate
-		return currentInstance as MeeloInstance;
+		return validateInstance(currentInstance);
+	} catch {
+		return null;
 	}
-	return null;
 };
 
 const restoreOtherInstancesFromLocalStorage = () => {
 	const otherInstancesStr = storage.getString(OtherInstancesKey);
-	if (otherInstancesStr) {
+	if (!otherInstancesStr) {
+		return [];
+	}
+	try {
 		const otherInstances = JSON.parse(
 			Buffer.from(otherInstancesStr, "base64").toString("utf-8"),
 		);
-		// TODO Validate
-		return otherInstances as MeeloInstance[];
+		if (!Array.isArray(otherInstances)) {
+			return [];
+		}
+		return otherInstances
+			.map((i) => validateInstance(i))
+			.filter((i) => i !== null);
+	} catch {
+		return [];
 	}
-	return [];
 };
 
 const _currentInstanceAtom = atom<MeeloInstance | null>(
