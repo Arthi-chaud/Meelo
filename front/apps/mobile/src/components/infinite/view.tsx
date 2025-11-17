@@ -1,8 +1,8 @@
 import { useIsFocused } from "@react-navigation/native";
-import { type ContentStyle, FlashList } from "@shopify/flash-list";
+import { FlashList } from "@shopify/flash-list";
 import type React from "react";
 import { type ComponentProps, useMemo, useState } from "react";
-import { View } from "react-native";
+import { type StyleProp, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import type { InfiniteQuery } from "@/api/query";
 import type { IllustratedResource } from "@/models/illustration";
@@ -107,7 +107,7 @@ export const InfiniteView = <
 							[
 								styles.scrollView,
 								{ paddingBottom },
-							] as ContentStyle
+							] satisfies StyleProp<ViewStyle>
 						}
 						onRefresh={() => queryRes.refetch()}
 						onEndReachedThreshold={0.5}
