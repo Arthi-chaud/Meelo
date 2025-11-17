@@ -15,6 +15,7 @@
 		},
 		"changeIllutration": "Changer l'illustration",
 		"create": "Créer",
+		"connectToNewServer": "Se connecter à un nouveau server",
 		"delete": "Supprimer",
 		"deleteFromPlaylist": "Supprimer de la playlist",
 		"deleteUser": {
@@ -65,6 +66,7 @@
 			"seeRelatedVideos": "Voir les vidéos",
 			"seeSongInfo": "Infos sur le morceau"
 		},
+		"switchServer": "Changer de serveur",
 		"track": {
 			"reassignTrack": "Réassigner la piste",
 			"seeTrackInfo": "Infos sur la piste"
@@ -376,7 +378,9 @@
 	},
 	"toasts": {
 		"auth": {
-			"accountCreated": "Votre compte a été créé. Contactez l'administrateur pour qu'il l'active"
+			"accountCreated": "Votre compte a été créé. Contactez l'administrateur pour qu'il l'active",
+			"serverSwitchSuccessful": "Connection au serveur réussie",
+			"signinFailed": "Echec de la connexion au server"
 		},
 		"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
 		"library": {

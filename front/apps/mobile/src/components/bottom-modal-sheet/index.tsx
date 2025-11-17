@@ -47,6 +47,8 @@ export const Modal = () => {
 					<BlurView style={{ flex: 1 }} />
 				</View>
 			)}
+			keyboardBehavior="interactive"
+			keyboardBlurBehavior="restore"
 			backdropComponent={ModalBackdrop}
 		>
 			<BottomSheetView style={styles.modal}>

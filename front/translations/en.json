@@ -14,6 +14,7 @@
 			"seeSongs": "See Songs"
 		},
 		"changeIllutration": "Change Illustration",
+		"connectToNewServer": "Connect a Meelo server",
 		"create": "Create",
 		"delete": "Delete",
 		"deleteFromPlaylist": "Delete from Playlist",
@@ -65,6 +66,7 @@
 			"seeRelatedVideos": "See Related Videos",
 			"seeSongInfo": "Song Info"
 		},
+		"switchServer": "Switch Server",
 		"track": {
 			"reassignTrack": "Reassign Track",
 			"seeTrackInfo": "Track Info"
@@ -380,7 +382,9 @@
 	},
 	"toasts": {
 		"auth": {
-			"accountCreated": "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account"
+			"accountCreated": "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account",
+			"serverSwitchSuccessful": "Successfully switched server",
+			"signinFailed": "Could not connect to server"
 		},
 		"leaveWillStopPlaybackAlert": "Leaving the website will stop playback.",
 		"library": {
