@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useNavigation } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import i18next from "i18next";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -68,7 +69,27 @@ const BuildCommit =
 	process.env.EXPO_PUBLIC_BUILD_COMMIT ??
 	(process.env.NODE_ENV === "development" ? "dev" : "unknown");
 
+const useResetAllTabs = () => {
+	const navigation = useNavigation();
+
+	return useCallback(() => {
+		const st = navigation.getState();
+		if (!st) {
+			return;
+		}
+		navigation.reset({
+			...st,
+			history: [],
+			routes: st.routes.map((r) => ({
+				...r,
+				state: undefined,
+			})),
+		} as any);
+	}, [navigation]);
+};
+
 export default function SettingsView() {
+	const resetAllTabs = useResetAllTabs();
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const emptyPlaylist = useSetAtom(emptyPlaylistAtom);
@@ -84,7 +105,8 @@ export default function SettingsView() {
 	const onLeavingInstance = useCallback(() => {
 		emptyPlaylist();
 		queryClient.client.clear();
-	}, [emptyPlaylist, queryClient]);
+		resetAllTabs();
+	}, [emptyPlaylist, queryClient, resetAllTabs]);
 	const { openLoginForm } = useLoginForm({
 		onLogin: async (data) => {
 			const api = getAPI_(data.token, data.instanceUrl);
