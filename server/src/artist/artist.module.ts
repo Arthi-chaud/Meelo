@@ -31,7 +31,7 @@ import { ArtistResponseBuilder } from "./models/artist.response";
 @Module({
 	imports: [
 		PrismaModule,
-		SettingsModule,
+		forwardRef(() => SettingsModule),
 		EventsModule,
 		forwardRef(() => IllustrationModule),
 		forwardRef(() => SongModule),

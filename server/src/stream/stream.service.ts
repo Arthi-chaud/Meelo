@@ -19,7 +19,7 @@
 import * as fs from "node:fs";
 import path from "node:path";
 import { HttpService } from "@nestjs/axios";
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { forwardRef, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import mime from "mime";
 import { MeeloException } from "src/exceptions/meelo-exception";
@@ -32,9 +32,10 @@ import Slug from "src/slug/slug";
 
 @Injectable()
 export class StreamService {
-	private transcoderUrl: string | null;
+	private transcoderUrl: string | null = null;
 	private logger: Logger = new Logger(StreamService.name);
 	constructor(
+		@Inject(forwardRef(() => FileService))
 		private fileService: FileService,
 		private fileManagerService: FileManagerService,
 		private httpService: HttpService,
@@ -57,6 +58,10 @@ export class StreamService {
 					this.transcoderUrl = null;
 				});
 		}
+	}
+
+	public get transcoderAvailable() {
+		return !!this.transcoderUrl;
 	}
 
 	// Proxies all requests to transcoder

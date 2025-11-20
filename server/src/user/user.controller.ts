@@ -20,8 +20,10 @@ import {
 	Body,
 	Controller,
 	Delete,
+	forwardRef,
 	Get,
 	HttpStatus,
+	Inject,
 	Post,
 	Put,
 	Query,
@@ -51,6 +53,7 @@ import UserService from "./user.service";
 export default class UserController {
 	constructor(
 		private userService: UserService,
+		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService,
 	) {}
 

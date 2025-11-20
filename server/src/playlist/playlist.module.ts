@@ -32,7 +32,7 @@ import PlaylistService from "./playlist.service";
 	imports: [
 		PrismaModule,
 		forwardRef(() => SongModule),
-		SettingsModule,
+		forwardRef(() => SettingsModule),
 		forwardRef(() => IllustrationModule),
 	],
 	providers: [

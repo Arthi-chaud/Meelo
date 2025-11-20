@@ -22,15 +22,13 @@ import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
 import LibraryModule from "src/library/library.module";
 import PrismaModule from "src/prisma/prisma.module";
 import { RegistrationModule } from "src/registration/registration.module";
-import SettingsModule from "src/settings/settings.module";
 import FileController from "./file.controller";
 import FileService from "./file.service";
 
 @Module({
 	imports: [
 		PrismaModule,
-		FileManagerModule,
-		SettingsModule,
+		forwardRef(() => FileManagerModule),
 		HousekeepingModule,
 		forwardRef(() => RegistrationModule),
 		forwardRef(() => LibraryModule),

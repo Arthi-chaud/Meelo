@@ -49,6 +49,7 @@ export class RegistrationService {
 	private readonly logger = new Logger(RegistrationService.name);
 	constructor(
 		private metadataService: MetadataService,
+		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService,
 		@Inject(forwardRef(() => LibraryService))
 		private libraryService: LibraryService,
@@ -57,6 +58,7 @@ export class RegistrationService {
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 		private illustrationService: IllustrationService,
+		@Inject(forwardRef(() => IllustrationRepository))
 		private illustrationRepository: IllustrationRepository,
 		private housekeepingService: HousekeepingService,
 	) {}

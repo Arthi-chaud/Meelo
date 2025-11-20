@@ -1,8 +1,9 @@
 import type { TestingModule } from "@nestjs/testing";
-import FileModule from "src/file/file.module";
+import ArtistModule from "src/artist/artist.module";
 import type { User } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import SettingsModule from "src/settings/settings.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import {
@@ -22,7 +23,7 @@ describe("User Service", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PrismaModule, FileModule, UserModule],
+			imports: [PrismaModule, UserModule, SettingsModule, ArtistModule],
 			providers: [PrismaService, UserService],
 		})
 			.overrideProvider(PrismaService)

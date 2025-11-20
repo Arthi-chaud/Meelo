@@ -28,6 +28,13 @@ export const metadataOrderValue = ["only", "preferred"] as const;
  */
 export default class Settings {
 	/**
+	 * If true, the transcoder can be used
+	 */
+	@ApiProperty()
+	@IsBoolean()
+	transcoderAvailable: boolean;
+
+	/**
 	 * If true, endpoints with base access control will allow unauth-ed requests
 	 */
 	@ApiProperty()

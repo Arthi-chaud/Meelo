@@ -1,9 +1,11 @@
 import type { TestingModule } from "@nestjs/testing";
 import { User } from "@prisma/client";
+import ArtistModule from "src/artist/artist.module";
 import type { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
+import { StreamModule } from "src/stream/stream.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import {
@@ -24,7 +26,12 @@ describe("Playlist Service", () => {
 
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [PlaylistModule, SettingsModule],
+			imports: [
+				PlaylistModule,
+				SettingsModule,
+				StreamModule,
+				ArtistModule,
+			],
 		})
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)
