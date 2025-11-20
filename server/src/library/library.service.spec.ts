@@ -1,4 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
+import ArtistModule from "src/artist/artist.module";
 import FileModule from "src/file/file.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import { HousekeepingModule } from "src/housekeeping/housekeeping.module";
@@ -9,6 +10,7 @@ import type { Library } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import { RegistrationModule } from "src/registration/registration.module";
+import SettingsModule from "src/settings/settings.module";
 import Slug from "src/slug/slug";
 import TrackModule from "src/track/track.module";
 import { createTestingModule } from "test/test-module";
@@ -39,6 +41,8 @@ describe("Library Service", () => {
 				IllustrationModule,
 				TrackModule,
 				LyricsModule,
+				ArtistModule,
+				SettingsModule,
 			],
 			providers: [LibraryService],
 		})

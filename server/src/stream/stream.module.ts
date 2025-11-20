@@ -17,14 +17,15 @@
  */
 
 import { HttpModule } from "@nestjs/axios";
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import FileModule from "src/file/file.module";
 import { StreamController } from "./stream.controller";
 import { StreamService } from "./stream.service";
 
 @Module({
-	imports: [FileModule, HttpModule],
+	imports: [forwardRef(() => FileModule), HttpModule],
 	providers: [StreamService],
 	controllers: [StreamController],
+	exports: [StreamService],
 })
 export class StreamModule {}

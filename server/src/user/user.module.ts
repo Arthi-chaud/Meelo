@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import PrismaModule from "src/prisma/prisma.module";
 import SettingsModule from "src/settings/settings.module";
 import { UserResponseBuilder } from "./models/user.response";
@@ -24,7 +24,7 @@ import UserController from "./user.controller";
 import UserService from "./user.service";
 
 @Module({
-	imports: [PrismaModule, SettingsModule],
+	imports: [PrismaModule, forwardRef(() => SettingsModule)],
 	providers: [UserService, UserResponseBuilder],
 	controllers: [UserController],
 	exports: [UserService, UserResponseBuilder],

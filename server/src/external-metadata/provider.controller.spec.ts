@@ -1,6 +1,8 @@
 import { createReadStream, existsSync } from "node:fs";
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
+import ArtistModule from "src/artist/artist.module";
+import FileModule from "src/file/file.module";
 import IllustrationService from "src/illustration/illustration.service";
 import type { Provider } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
@@ -21,7 +23,12 @@ describe("External Provider Controller", () => {
 	let provider: Provider;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [ExternalMetadataModule, PrismaModule],
+			imports: [
+				ExternalMetadataModule,
+				PrismaModule,
+				FileModule,
+				ArtistModule,
+			],
 		})
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)

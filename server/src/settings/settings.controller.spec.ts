@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
+import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import request from "supertest";
@@ -17,7 +18,7 @@ describe("Settings Controller", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [SettingsModule, FileManagerModule],
+			imports: [FileManagerModule, SettingsModule, ArtistModule],
 			controllers: [SettingsController],
 		}).compile();
 
@@ -46,6 +47,7 @@ describe("Settings Controller", () => {
 				allowAnonymous: false,
 				version: "unknown",
 				enableUserRegistration: true,
+				transcoderAvailable: false,
 			});
 	});
 });

@@ -18,11 +18,15 @@
 
 import { forwardRef, Module } from "@nestjs/common";
 import FileManagerModule from "src/file-manager/file-manager.module";
+import { StreamModule } from "src/stream/stream.module";
 import SettingsController from "./settings.controller";
 import SettingsService from "./settings.service";
 
 @Module({
-	imports: [forwardRef(() => FileManagerModule)],
+	imports: [
+		forwardRef(() => FileManagerModule),
+		forwardRef(() => StreamModule),
+	],
 	providers: [SettingsService, SettingsController],
 	exports: [SettingsService, SettingsController],
 	controllers: [SettingsController],

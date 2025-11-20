@@ -1,4 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
+import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
 import { createTestingModule } from "test/test-module";
 import SettingsModule from "./settings.module";
@@ -9,7 +10,7 @@ describe("Settings Service", () => {
 	let moduleRef: TestingModule;
 	beforeAll(async () => {
 		moduleRef = await createTestingModule({
-			imports: [SettingsModule, FileManagerModule],
+			imports: [SettingsModule, FileManagerModule, ArtistModule],
 		}).compile();
 		settingsService = moduleRef.get<SettingsService>(SettingsService);
 	});

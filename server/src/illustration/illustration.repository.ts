@@ -62,6 +62,7 @@ export default class IllustrationRepository {
 		private trackService: TrackService,
 		@Inject(forwardRef(() => PlaylistService))
 		private playlistService: PlaylistService,
+		@Inject(forwardRef(() => SettingsService))
 		private settingsService: SettingsService,
 		private providerService: ProviderService,
 	) {

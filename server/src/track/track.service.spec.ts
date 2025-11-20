@@ -26,6 +26,7 @@ import Slug from "src/slug/slug";
 import { SongNotFoundException } from "src/song/song.exceptions";
 import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
+import { StreamModule } from "src/stream/stream.module";
 import VideoModule from "src/video/video.module";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
@@ -70,6 +71,7 @@ describe("Track Service", () => {
 				LyricsModule,
 				LibraryModule,
 				VideoModule,
+				StreamModule,
 			],
 			providers: [
 				PrismaService,

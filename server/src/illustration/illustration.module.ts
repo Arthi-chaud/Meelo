@@ -50,7 +50,7 @@ import IllustrationService from "./illustration.service";
 		forwardRef(() => FileModule),
 		forwardRef(() => PlaylistModule),
 		forwardRef(() => RegistrationModule),
-		SettingsModule,
+		forwardRef(() => SettingsModule),
 		forwardRef(() => ExternalMetadataModule),
 		forwardRef(() => ParserModule),
 	],

@@ -20,6 +20,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { plainToClass } from "class-transformer";
 import { validateSync } from "class-validator";
 import FileManagerService from "src/file-manager/file-manager.service";
+import { StreamService } from "src/stream/stream.service";
 import Settings from "./models/settings";
 import {
 	InvalidConfigDirVarException,
@@ -34,6 +35,8 @@ export default class SettingsService {
 	constructor(
 		@Inject(forwardRef(() => FileManagerService))
 		private fileManagerService: FileManagerService,
+		@Inject(forwardRef(() => StreamService))
+		private streamingService: StreamService,
 	) {
 		const configDir = process.env.INTERNAL_CONFIG_DIR;
 
@@ -55,6 +58,7 @@ export default class SettingsService {
 				process.env.ENABLE_USER_REGISTRATION !== "0",
 			allowAnonymous: process.env.ALLOW_ANONYMOUS === "1",
 			version: process.env.VERSION || "unknown",
+			transcoderAvailable: this.streamingService.transcoderAvailable,
 		} satisfies Settings);
 		// Validation
 		const validationError = validateSync(uncheckedSettings, {

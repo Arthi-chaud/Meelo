@@ -41,7 +41,7 @@ import { RegistrationService } from "./registration.service";
 	exports: [RegistrationService],
 	imports: [
 		ParserModule,
-		SettingsModule,
+		forwardRef(() => SettingsModule),
 		forwardRef(() => LibraryModule),
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),
