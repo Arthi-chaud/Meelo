@@ -283,7 +283,11 @@
 	},
 	"player": {
 		"loadNextSongs": "Load next songs",
-		"saveQueueAsPlaylist": "Save queue as playlist"
+		"saveQueueAsPlaylist": "Save queue as playlist",
+		"stream": {
+			"directStream": "Direct Stream",
+			"transcode": "Transcode"
+		}
 	},
 	"search": {
 		"all": "All"

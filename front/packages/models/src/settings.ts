@@ -22,6 +22,7 @@ export const Settings = yup.object({
 	enableUserRegistration: yup.boolean().required(),
 	allowAnonymous: yup.boolean().required(),
 	version: yup.string().required(),
+	transcoderAvailable: yup.bool(), // Nullable for backward compatibility
 });
 
 export type Settings = yup.InferType<typeof Settings>;

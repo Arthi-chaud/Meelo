@@ -2,6 +2,7 @@ import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ComponentProps, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
@@ -13,9 +14,11 @@ import {
 	PauseIcon,
 	PlayIcon,
 	RewindIcon,
+	SettingsIcon,
 } from "@/ui/icons";
 import formatDuration from "@/utils/format-duration";
 import { useQuery, useQueryClient } from "~/api";
+import { SelectModalButton } from "~/components/bottom-modal-sheet/select";
 import { useContextMenu } from "~/components/context-menu";
 import { useArtistContextMenu } from "~/components/context-menu/resource/artist";
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
@@ -27,7 +30,7 @@ import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { breakpoints } from "~/theme";
-import { videoPlayerAtom } from "../context";
+import { canUseHLSAtom, useHLSAtom, videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
 import { Slider } from "../slider";
 import {
@@ -51,9 +54,9 @@ export const Main = () => {
 				</View>
 			</View>
 			<View style={styles.controls}>
-				<WithFullScreenButton>
+				<WithFullScreenAndTranscodeButton>
 					<TrackNameButton />
-				</WithFullScreenButton>
+				</WithFullScreenAndTranscodeButton>
 				<ArtistNameButton />
 				<PlayControls />
 				<ProgressControls />
@@ -112,39 +115,77 @@ const ProgressControls = () => {
 	);
 };
 
-const WithFullScreenButton = ({ children }: ComponentProps<any>) => {
+const WithFullScreenAndTranscodeButton = ({
+	children,
+}: ComponentProps<any>) => {
 	const [currentTrack] = useAtom(currentTrackAtom);
+	const [useHLS, setUseHLS] = useAtom(useHLSAtom);
+	const canUseHLS = useAtomValue(canUseHLSAtom);
 	const isVideo = currentTrack?.track.type === "Video";
 	const router = useRouter();
-	const onPress = useCallback(() => {
+	const onFullscreenPress = useCallback(() => {
 		router.navigate("/video-player");
 	}, [router]);
-
 	styles.useVariants({ isVideo });
 	return (
-		<View style={styles.fullscreenButtonRow}>
+		<View style={styles.videoButtonRow}>
 			{isVideo && (
-				<Button
-					size="small"
-					icon={FullscreenIcon}
-					onPress={onPress}
-					width="fitContent"
-				/>
-			)}
-			{children}
-
-			{/* NOTE: it's for the horzontal padding of the title to be symmetrical */}
-			{isVideo && (
-				<View style={{ opacity: 0 }}>
+				<View style={styles.videoButton}>
 					<Button
 						size="small"
-						width="fitContent"
 						icon={FullscreenIcon}
-						onPress={() => {}}
+						onPress={onFullscreenPress}
+						width="fitContent"
+					/>
+				</View>
+			)}
+			{children}
+			{isVideo && (
+				<View style={styles.videoButton}>
+					<SelectTranscodingButton
+						{...{ canUseHLS, useHLS, setUseHLS }}
 					/>
 				</View>
 			)}
 		</View>
+	);
+};
+
+export const SelectTranscodingButton = ({
+	useHLS,
+	canUseHLS,
+	setUseHLS,
+}: {
+	useHLS: boolean;
+	canUseHLS: boolean;
+	setUseHLS: (b: boolean) => void;
+}) => {
+	const fields = [
+		"player.stream.directStream",
+		"player.stream.transcode",
+	] as const;
+
+	const { t } = useTranslation();
+	const onPress = useCallback(
+		(t: (typeof fields)[number]) => {
+			setUseHLS(t === fields[1]);
+		},
+		[setUseHLS],
+	);
+	return (
+		<SelectModalButton
+			closeOnSelect
+			buttonProps={{
+				disabled: !canUseHLS,
+				size: "small",
+				icon: SettingsIcon,
+				width: "fitContent",
+			}}
+			values={fields}
+			onSelect={onPress}
+			isSelected={(v) => (v === fields[0] ? !useHLS : useHLS)}
+			formatItem={(v) => t(v)}
+		/>
 	);
 };
 
@@ -170,20 +211,23 @@ const TrackNameButton = () => {
 		}
 	}, [currentTrack]);
 	return (
-		<Pressable
-			onPress={onPress}
-			disabled={
-				!currentTrack?.track.songId && !currentTrack?.track.releaseId
-			}
-			onLongPress={openContextMenu}
-		>
-			<LoadableText
-				content={currentTrack?.track.name}
-				variant="h4"
-				skeletonWidth={20}
-				numberOfLines={1}
-			/>
-		</Pressable>
+		<View style={styles.trackName}>
+			<Pressable
+				onPress={onPress}
+				disabled={
+					!currentTrack?.track.songId &&
+					!currentTrack?.track.releaseId
+				}
+				onLongPress={openContextMenu}
+			>
+				<LoadableText
+					content={currentTrack?.track.name}
+					variant="h4"
+					skeletonWidth={20}
+					numberOfLines={1}
+				/>
+			</Pressable>
+		</View>
 	);
 };
 
@@ -271,7 +315,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		flexDirection: "row",
 		justifyContent: "space-evenly",
 	},
-	fullscreenButtonRow: {
+	videoButtonRow: {
 		flexDirection: "row",
 		width: "100%",
 		justifyContent: "space-between",
@@ -283,6 +327,8 @@ const styles = StyleSheet.create((theme, _rt) => ({
 			},
 		},
 	},
+	videoButton: { flex: 0 },
+	trackName: { flex: 1, alignItems: "center" },
 	video: {
 		width: "100%",
 		height: "100%",
