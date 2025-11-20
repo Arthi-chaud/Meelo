@@ -9347,6 +9347,7 @@ __metadata:
     react-native-screens: "npm:~4.16.0"
     react-native-svg: "npm:15.12.1"
     react-native-unistyles: "npm:3.0.15"
+    react-native-uuid: "npm:^2.0.3"
     react-native-video: "npm:^7.0.0-alpha.7"
     react-native-worklets: "npm:^0.5.1"
     state: "workspace:^"
@@ -10550,6 +10551,13 @@ __metadata:
     react-native-reanimated:
       optional: true
   checksum: 10c0/ff8bb6c95f8e335c8865c46347029c3d9659111d885ff420ae63f90cd7486f0a725826ed414cdf0936d89f9440c54d98b484f53f570500bc398ad99283a67900
+  languageName: node
+  linkType: hard
+
+"react-native-uuid@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "react-native-uuid@npm:2.0.3"
+  checksum: 10c0/d94bccc28936c2dea081ab404f90b0c968092013af4d428b8e74bf407d6098ad5410914f77a903ad1296cce364fc85d27d8dfd70d22ec48d8cf1b7edc8803a8d
   languageName: node
   linkType: hard
 

@@ -282,7 +282,11 @@
 	},
 	"player": {
 		"loadNextSongs": "Charger les morceaux suivants",
-		"saveQueueAsPlaylist": "Sauvegarder la playlist"
+		"saveQueueAsPlaylist": "Sauvegarder la playlist",
+		"stream": {
+			"directStream": "Streamer en direct",
+			"transcode": "Transcoder"
+		}
 	},
 	"search": {
 		"all": "Tous"

@@ -1,5 +1,6 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import uuid from "react-native-uuid";
 import {
 	type onLoadData,
 	type onPlaybackStateChangeData,
@@ -8,9 +9,10 @@ import {
 	VideoPlayer,
 } from "react-native-video";
 import type API from "@/api";
+import { getSettings } from "@/api/queries";
 import { cursorAtom, skipTrackAtom, type TrackState } from "@/state/player";
 import formatArtists from "@/utils/format-artists";
-import { useAPI, useQueryClient } from "~/api";
+import { useAPI, useQuery, useQueryClient } from "~/api";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -21,9 +23,13 @@ import {
 	progressAtom,
 	requestedProgressAtom,
 } from "./state";
-
 // Should be used as a readonly handle, mainly for the VideoView component
 export const videoPlayerAtom = atom<VideoPlayer | null>(null);
+
+// These can be used
+export const useHLSAtom = atom(false);
+const _canUseHLSAtom = atom(false);
+export const canUseHLSAtom = atom((get) => get(_canUseHLSAtom));
 
 export const PlayerContext = () => {
 	const api = useAPI();
@@ -44,7 +50,13 @@ export const PlayerContext = () => {
 	const setDuration = useSetAtom(durationAtom);
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const onProgressRef = useRef<(d: onProgressData) => void>(null);
+	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
+	const [canUseHLS, setCanUseHLS] = useAtom(_canUseHLSAtom);
+	const { data: settings } = useQuery(getSettings);
 
+	useEffect(() => {
+		setCanUseHLS(settings?.transcoderAvailable === true);
+	}, [settings]);
 	useEffect(() => {
 		if (!playerRef.current) {
 			return;
@@ -78,6 +90,7 @@ export const PlayerContext = () => {
 		setMarkedAsPlayed(false);
 		setProgress(0);
 		setRequestedProgress(null);
+		setIsHLS(false);
 		if (!currentTrack) {
 			playerRef.current?.pause();
 			pause();
@@ -114,10 +127,17 @@ export const PlayerContext = () => {
 				}
 			});
 			playerRef.current.volume = 1;
-			playerRef.current.addEventListener("onError", (e) =>
+			playerRef.current.addEventListener("onError", (e) => {
+				if (
+					!isHLS &&
+					e.code === "source/unsupported-content-type" &&
+					canUseHLS
+				) {
+					setIsHLS(true);
+				}
 				// biome-ignore lint/suspicious/noConsole: For debug
-				console.error(e),
-			);
+				console.error(e);
+			});
 			playerRef.current.play();
 			play();
 			setPlayer(playerRef.current);
@@ -142,6 +162,18 @@ export const PlayerContext = () => {
 			setMarkedAsPlayed(false);
 		}
 	}, [requestedProgress]);
+	useEffect(() => {
+		if (!playerRef.current || !currentTrack) {
+			return;
+		}
+		const timestamp = playerRef.current?.currentTime;
+		playerRef.current
+			.replaceSourceAsync(mkSource(currentTrack, api, isHLS))
+			.then(() => {
+				playerRef.current!.seekTo(timestamp);
+				playerRef.current!.play();
+			});
+	}, [isHLS]);
 
 	useEffect(() => {
 		if (!playerRef.current) {
@@ -169,13 +201,23 @@ export const PlayerContext = () => {
 	return null;
 };
 
+const clientId = uuid.v4();
+
 const mkSource = (
 	{ track, artist, featuring }: TrackState,
 	api: API,
+	useTranscoding = false,
 ): VideoConfig => ({
-	uri: api.getDirectStreamURL(track.sourceFileId),
+	uri: useTranscoding
+		? api.getTranscodeStreamURL(track.sourceFileId, track.type)
+		: api.getDirectStreamURL(track.sourceFileId),
 	headers: {
 		Authorization: `Bearer ${api.accessToken}`,
+		...(useTranscoding
+			? {
+					"X-CLIENT-ID": clientId,
+				}
+			: {}),
 	},
 	metadata: {
 		title: track.name,
