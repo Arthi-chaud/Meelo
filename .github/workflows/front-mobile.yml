@@ -70,7 +70,7 @@ jobs:
     permissions:
       contents: write
     if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -102,12 +102,12 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Build
         run: |
-          # Source: https://github.com/apache/flink/blob/master/tools/azure-pipelines/free_disk_space.sh
-          sudo apt-get remove -y '^llvm-.*' ;
-          sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell ;
-          sudo apt-get autoremove -y ;
-          sudo apt-get clean ;
-          rm -rf /usr/share/dotnet/
+          # # Source: https://github.com/apache/flink/blob/master/tools/azure-pipelines/free_disk_space.sh
+          # sudo apt-get remove -y '^llvm-.*' ;
+          # sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell ;
+          # sudo apt-get autoremove -y ;
+          # sudo apt-get clean ;
+          # rm -rf /usr/share/dotnet/
 
           eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
 
