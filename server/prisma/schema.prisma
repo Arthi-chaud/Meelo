@@ -130,6 +130,7 @@ model Album {
     /// @description String identifier
     /// @example my-artist-my-album
     slug             String             @unique
+	nameSlug         String
 	sortName         String
 	sortSlug         String
     /// @description The date of the first release of the album
@@ -255,8 +256,7 @@ model Release {
     /// @description String identifier
     /// @example my-artist-my-release-deluxe-edition
     slug             String                   @unique
-    sortName         String           
-    sortSlug         String            
+	nameSlug         String
     /// @description The date of the release
     releaseDate      DateTime?
     /// @description The tracks on the release
@@ -310,6 +310,7 @@ model Song {
     /// @description String identifier
     /// @example my-artist-my-song
     slug             String            @unique
+	nameSlug         String
     sortName         String           
     sortSlug         String            
     /// @description The main artist of the song

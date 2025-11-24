@@ -1,12 +1,3 @@
-ALTER TABLE "albums"
-    DROP COLUMN "nameSlug";
-
-ALTER TABLE "releases"
-    DROP COLUMN "nameSlug";
-
-ALTER TABLE "songs"
-    DROP COLUMN "nameSlug";
-
 ALTER TABLE "videos"
     DROP COLUMN "nameSlug";
 
@@ -15,10 +6,6 @@ ALTER TABLE "artists"
     ADD COLUMN "sortSlug" text;
 
 ALTER TABLE "albums"
-    ADD COLUMN "sortName" text,
-    ADD COLUMN "sortSlug" text;
-
-ALTER TABLE "releases"
     ADD COLUMN "sortName" text,
     ADD COLUMN "sortSlug" text;
 
@@ -100,11 +87,6 @@ SET
     "sortName" = tosort_str ("name");
 
 UPDATE
-    "releases"
-SET
-    "sortName" = tosort_str ("name");
-
-UPDATE
     "videos"
 SET
     "sortName" = tosort_str ("name");
@@ -117,11 +99,6 @@ SET
 
 UPDATE
     "albums"
-SET
-    "sortSlug" = slugify ("sortName");
-
-UPDATE
-    "releases"
 SET
     "sortSlug" = slugify ("sortName");
 
@@ -146,11 +123,6 @@ ALTER TABLE "albums"
     ALTER COLUMN "sortSlug" TYPE TEXT COLLATE numeric;
 
 ALTER TABLE "videos"
-    ALTER COLUMN "sortName" SET NOT NULL,
-    ALTER COLUMN "sortSlug" SET NOT NULL,
-    ALTER COLUMN "sortSlug" TYPE TEXT COLLATE numeric;
-
-ALTER TABLE "releases"
     ALTER COLUMN "sortName" SET NOT NULL,
     ALTER COLUMN "sortSlug" SET NOT NULL,
     ALTER COLUMN "sortSlug" TYPE TEXT COLLATE numeric;
