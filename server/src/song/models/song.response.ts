@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	type ArtistResponse,
 	ArtistResponseBuilder,
@@ -37,7 +37,7 @@ import {
 import TrackService from "src/track/track.service";
 
 export class SongResponse extends IntersectionType(
-	Song,
+	OmitType(Song, ["sortSlug", "nameSlug"]),
 	IllustratedResponse,
 	class {
 		lyrics?: LyricsResponse | null;
@@ -82,7 +82,7 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			id: song.id,
 			name: song.name,
 			slug: song.slug,
-			nameSlug: song.nameSlug,
+			sortName: song.sortName,
 			artistId: song.artistId,
 			masterId: song.masterId,
 			bpm: song.bpm,

@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	type ArtistResponse,
 	ArtistResponseBuilder,
@@ -40,7 +40,7 @@ import {
 } from "../../song/models/song.response";
 
 export class VideoResponse extends IntersectionType(
-	Video,
+	OmitType(Video, ["sortSlug"]),
 	IllustratedResponse,
 	class {
 		master?: TrackResponse;
@@ -70,7 +70,10 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 
 	returnType = VideoResponse;
 
-	async buildResponse(video: VideoWithRelations): Promise<VideoResponse> {
+	async buildResponse({
+		sortSlug,
+		...video
+	}: VideoWithRelations): Promise<VideoResponse> {
 		if (video.master === null) {
 			this.logger.warn(
 				"The Master Track of a video had to be resolved manually. " +

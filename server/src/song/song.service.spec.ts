@@ -498,7 +498,12 @@ describe("Song Service", () => {
 		it("should order by name, using natural sort", async () => {
 			//Setup
 			const tmpArtist = await dummyRepository.artist.create({
-				data: { name: "TMP", slug: "tmp" },
+				data: {
+					name: "TMP",
+					slug: "tmp",
+					sortName: "TMP",
+					sortSlug: "tmp",
+				},
 			});
 			const songGroup = { slug: new Slug("tmp") };
 			const song1 = await songService.create({

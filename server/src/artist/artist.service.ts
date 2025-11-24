@@ -42,6 +42,7 @@ import {
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
+import { getSortName } from "src/sort/sort-name";
 import TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import {
@@ -125,10 +126,13 @@ export default class ArtistService extends SearchableRepositoryService {
 
 	async create(input: ArtistQueryParameters.CreateInput) {
 		const artistSlug = new Slug(input.name);
+		const artistSortName = getSortName(input.name);
 		return this.prismaService.artist
 			.create({
 				data: {
 					name: input.name,
+					sortName: artistSortName,
+					sortSlug: new Slug(artistSortName).toString(),
 					registeredAt: input.registeredAt,
 					slug: artistSlug.toString(),
 				},

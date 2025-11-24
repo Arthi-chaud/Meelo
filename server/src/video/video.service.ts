@@ -40,6 +40,7 @@ import {
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
+import { getSortName } from "src/sort/sort-name";
 import TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
@@ -64,7 +65,11 @@ export default class VideoService extends SearchableRepositoryService {
 		@Inject(forwardRef(() => TrackService))
 		private trackService: TrackService,
 	) {
-		super("videos", ["name", "slug", "nameSlug", "type"], meiliSearch);
+		super(
+			"videos",
+			["name", "slug", "sortSlug", "nameSlug", "type"],
+			meiliSearch,
+		);
 	}
 
 	async create<I extends VideoQueryParameters.RelationInclude = {}>(
@@ -72,13 +77,15 @@ export default class VideoService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		const artist = await this.artistService.get(data.artist);
+		const sortName = getSortName(data.name);
 		const args = {
 			include: include ?? ({} as I),
 			data: {
 				name: data.name,
 				registeredAt: data.registeredAt,
 				slug: new Slug(artist.name, data.name).toString(),
-				nameSlug: new Slug(data.name).toString(),
+				sortName,
+				sortSlug: new Slug(sortName).toString(),
 				type: data.type ?? this.parserService.getVideoType(data.name),
 				artist: {
 					connect: ArtistService.formatWhereInput(data.artist),
@@ -110,7 +117,7 @@ export default class VideoService extends SearchableRepositoryService {
 				this.meiliSearch.index(this.indexName).addDocuments([
 					{
 						id: res.id,
-						nameSlug: res.nameSlug,
+						sortSlug: res.sortSlug,
 						slug: res.slug,
 						name: res.name,
 					},
@@ -561,7 +568,7 @@ export default class VideoService extends SearchableRepositoryService {
 		switch (sortingParameter.sortBy) {
 			case "name":
 				sort.push(
-					{ nameSlug: sortingParameter.order },
+					{ sortSlug: sortingParameter.order },
 					{ artist: { slug: "asc" } },
 					{ id: "asc" },
 				);
@@ -575,7 +582,7 @@ export default class VideoService extends SearchableRepositoryService {
 			case "artistName":
 				sort.push(
 					{ artist: { slug: sortingParameter.order } },
-					{ nameSlug: "asc" },
+					{ sortSlug: "asc" },
 					{ id: "asc" },
 				);
 				break;
@@ -609,7 +616,7 @@ export default class VideoService extends SearchableRepositoryService {
 						},
 					},
 					{
-						nameSlug: "asc",
+						sortSlug: "asc",
 					},
 					{
 						artist: {

@@ -110,7 +110,8 @@ describe("Video Service", () => {
 				artist: { id: dummyRepository.artistB.id },
 			});
 			expect(video.name).toBe("My Video");
-			expect(video.nameSlug).toBe("my-video");
+			expect(video.sortName).toBe("My Video");
+			expect(video.sortSlug).toBe("my-video");
 
 			expect(video.slug).toBe(`${dummyRepository.artistB.slug}-my-video`);
 			expect(video.type).toBe(VideoType.Interview);

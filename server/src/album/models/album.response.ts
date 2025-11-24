@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	type ArtistResponse,
 	ArtistResponseBuilder,
@@ -36,7 +36,7 @@ import ReleaseService from "src/release/release.service";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class AlbumResponse extends IntersectionType(
-	Album,
+	OmitType(Album, ["sortSlug", "nameSlug"]),
 	IllustratedResponse,
 	class {
 		artist?: ArtistResponse | null;
@@ -80,7 +80,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 			id: album.id,
 			name: album.name,
 			slug: album.slug,
-			nameSlug: album.nameSlug,
+			sortName: album.sortName,
 			releaseDate: album.releaseDate,
 			registeredAt: album.registeredAt,
 			masterId: album.masterId,

@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { IntersectionType } from "@nestjs/swagger";
+import { IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
@@ -26,7 +26,7 @@ import { Artist, type ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ArtistResponse extends IntersectionType(
-	Artist,
+	OmitType(Artist, ["sortSlug"]),
 	IllustratedResponse,
 ) {}
 
@@ -42,6 +42,7 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 			id: artist.id,
 			name: artist.name,
 			slug: artist.slug,
+			sortName: artist.sortName,
 			registeredAt: artist.registeredAt,
 			illustrationId: artist.illustrationId,
 			illustration: artist.illustration

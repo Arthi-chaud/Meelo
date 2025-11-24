@@ -54,6 +54,8 @@ namespace SongQueryParameters {
 		| "featuring"
 		| "groupId"
 		| "bpm"
+		| "sortName"
+		| "sortSlug"
 	> & {
 		artist: ArtistQueryParameters.WhereInput;
 		group: SongGroupQueryParameters.GetOrCreateInput;
