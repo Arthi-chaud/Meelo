@@ -48,6 +48,7 @@ import {
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
+import { getSortName } from "src/sort/sort-name";
 import TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
@@ -79,7 +80,7 @@ export default class SongService extends SearchableRepositoryService {
 	) {
 		super(
 			"songs",
-			["name", "slug", "nameSlug", "lyrics", "type"],
+			["name", "slug", "sortSlug", "nameSlug", "lyrics", "type"],
 			meiliSearch,
 		);
 	}
@@ -105,10 +106,13 @@ export default class SongService extends SearchableRepositoryService {
 			songNameSlug,
 			song.featuring,
 		).toString();
+		const songSortName = getSortName(song.name);
 		const args = {
 			data: {
 				slug: songUniqueSlug,
-				nameSlug: songNameSlug,
+				nameSlug: new Slug(song.name).toString(),
+				sortName: songSortName,
+				sortSlug: new Slug(songSortName).toString(),
 				genres: {
 					connect: song.genres.map((genre) =>
 						GenreService.formatWhereInput(genre),
@@ -147,6 +151,7 @@ export default class SongService extends SearchableRepositoryService {
 				this.meiliSearch.index(this.indexName).addDocuments([
 					{
 						id: created.id,
+						sortSlug: created.sortSlug,
 						nameSlug: created.nameSlug,
 						slug: created.slug,
 						name: created.name,
@@ -428,7 +433,7 @@ export default class SongService extends SearchableRepositoryService {
 		switch (sortingParameter.sortBy) {
 			case "name":
 				sort.push(
-					{ nameSlug: sortingParameter.order },
+					{ sortSlug: sortingParameter.order },
 					{ artist: { slug: "asc" } },
 				);
 				break;
@@ -437,7 +442,7 @@ export default class SongService extends SearchableRepositoryService {
 					{
 						bpm: { sort: sortingParameter.order, nulls: "last" },
 					},
-					{ nameSlug: "asc" },
+					{ sortSlug: "asc" },
 				);
 				break;
 			case "addDate":
@@ -449,7 +454,7 @@ export default class SongService extends SearchableRepositoryService {
 			case "artistName":
 				sort.push(
 					{ artist: { slug: sortingParameter.order } },
-					{ nameSlug: "asc" },
+					{ sortSlug: "asc" },
 				);
 				break;
 			case "userPlayCount":
@@ -460,7 +465,7 @@ export default class SongService extends SearchableRepositoryService {
 							_count: sortingParameter.order,
 						},
 					},
-					{ nameSlug: "asc" },
+					{ sortSlug: "asc" },
 					{ artist: { slug: "asc" } },
 				);
 				break;
@@ -483,7 +488,7 @@ export default class SongService extends SearchableRepositoryService {
 						},
 					},
 					{
-						nameSlug: "asc",
+						sortSlug: "asc",
 					},
 					{
 						artist: {

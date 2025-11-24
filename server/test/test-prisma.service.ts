@@ -146,11 +146,26 @@ export default class TestPrismaService extends PrismaService {
 		[this.artistA, this.artistB, this.artistC] =
 			await this.artist.createManyAndReturn({
 				data: [
-					{ name: "My Artist", slug: "my-artist" },
+					{
+						name: "My Artist",
+						slug: "my-artist",
+						sortName: "My Artist",
+						sortSlug: "my-artist",
+					},
 
-					{ name: "My Second Artist", slug: "my-second-artist" },
+					{
+						name: "My Second Artist",
+						slug: "my-second-artist",
+						sortName: "My Second Artist",
+						sortSlug: "my-second-artist",
+					},
 
-					{ name: "My Third Artist", slug: "my-third-artist" },
+					{
+						name: "My Third Artist",
+						slug: "my-third-artist",
+						sortName: "My Third Artist",
+						sortSlug: "my-third-artist",
+					},
 				],
 			});
 		[this.albumA1, this.albumB1, this.compilationAlbumA] =
@@ -159,6 +174,8 @@ export default class TestPrismaService extends PrismaService {
 					{
 						name: "My Album",
 						slug: "my-artist-my-album",
+						sortName: "My Album",
+						sortSlug: "my-album",
 						nameSlug: "my-album",
 						artistId: this.artistA.id,
 						releaseDate: new Date("2022"),
@@ -167,12 +184,16 @@ export default class TestPrismaService extends PrismaService {
 						name: "My Second Album",
 						slug: "my-second-artist-my-second-album",
 						nameSlug: "my-second-album",
+						sortName: "My Second Album",
+						sortSlug: "my-second-album",
 						artistId: this.artistB.id,
 					},
 					{
 						name: "My Compilation Album",
 						slug: "compilations-my-compilation-album",
 						nameSlug: "my-compilation-album",
+						sortName: "My Compilation Album",
+						sortSlug: "my-compilation-album",
 						releaseDate: new Date("2000"),
 						type: AlbumType.Compilation,
 					},
@@ -248,6 +269,8 @@ export default class TestPrismaService extends PrismaService {
 						name: "My Song",
 						slug: "my-artist-my-song",
 						nameSlug: "my-song",
+						sortName: "My Song",
+						sortSlug: "my-song",
 						artistId: this.artistA.id,
 						type: SongType.Original,
 						groupId: songGroupA1.id,
@@ -256,6 +279,8 @@ export default class TestPrismaService extends PrismaService {
 						name: "My Other Song",
 						slug: "my-artist-my-other-song",
 						nameSlug: "my-other-song",
+						sortName: "My Other Song",
+						sortSlug: "my-other-song",
 						artistId: this.artistA.id,
 						groupId: songGroupA2.id,
 						type: SongType.Original,
@@ -263,6 +288,8 @@ export default class TestPrismaService extends PrismaService {
 					{
 						name: "My Second Song",
 						slug: "my-second-artist-my-second-song",
+						sortName: "My Second Song",
+						sortSlug: "my-second-song",
 						nameSlug: "my-second-song",
 						artistId: this.artistB.id,
 						groupId: songGroupB.id,
@@ -271,6 +298,8 @@ export default class TestPrismaService extends PrismaService {
 					{
 						name: "My C Song",
 						slug: "my-third-artist-my-c-song",
+						sortName: "My C Song",
+						sortSlug: "my-c-song",
 						nameSlug: "my-c-song",
 						artistId: this.artistC.id,
 						groupId: songGroupC.id,
@@ -368,7 +397,8 @@ export default class TestPrismaService extends PrismaService {
 			data: {
 				name: "My Song",
 				slug: "my-artist-my-song",
-				nameSlug: "my-song",
+				sortSlug: "my-song",
+				sortName: "My Song",
 				artist: { connect: { id: this.artistA.id } },
 				song: { connect: { id: this.songA1.id } },
 				type: VideoType.MusicVideo,

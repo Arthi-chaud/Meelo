@@ -76,7 +76,10 @@ describe("Album Service", () => {
 				expect(newCompilationAlbum.slug).toBe(
 					"compilations-my-other-compilation-album",
 				);
-				expect(newCompilationAlbum.nameSlug).toBe(
+				expect(newCompilationAlbum.sortName).toBe(
+					"My Other Compilation Album",
+				);
+				expect(newCompilationAlbum.sortSlug).toBe(
 					"my-other-compilation-album",
 				);
 				expect(newCompilationAlbum.type).toBe(
@@ -122,7 +125,8 @@ describe("Album Service", () => {
 					new Date(Date.now()).getUTCDate(),
 				);
 				expect(newAlbum.name).toBe("My Live Album");
-				expect(newAlbum.nameSlug).toBe("my-live-album");
+				expect(newAlbum.sortName).toBe(newAlbum.name);
+				expect(newAlbum.sortSlug).toBe("my-live-album");
 				expect(newAlbum.slug).toBe("my-artist-my-live-album");
 				expect(newAlbum.type).toBe(AlbumType.LiveRecording);
 			});

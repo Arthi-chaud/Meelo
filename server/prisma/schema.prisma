@@ -130,8 +130,9 @@ model Album {
     /// @description String identifier
     /// @example my-artist-my-album
     slug             String             @unique
-    /// @example my-album
-    nameSlug         String
+	nameSlug         String
+	sortName         String
+	sortSlug         String
     /// @description The date of the first release of the album
     releaseDate      DateTime?
     /// @description The date the album was registered
@@ -173,6 +174,8 @@ model Artist {
     /// @description Unique string identifer
     /// @example my-artist
     slug             String            @unique
+    sortName         String           
+    sortSlug         String            
     /// @description Array of Albums where the artist is the main one
     albums           Album[]
     /// @description Array of Songs by the artist
@@ -253,8 +256,7 @@ model Release {
     /// @description String identifier
     /// @example my-artist-my-release-deluxe-edition
     slug             String                   @unique
-    /// @example my-release-deluxe-edition
-    nameSlug         String
+	nameSlug         String
     /// @description The date of the release
     releaseDate      DateTime?
     /// @description The tracks on the release
@@ -308,8 +310,9 @@ model Song {
     /// @description String identifier
     /// @example my-artist-my-song
     slug             String            @unique
-    /// @example my-song
-    nameSlug         String
+	nameSlug         String
+    sortName         String           
+    sortSlug         String            
     /// @description The main artist of the song
     artist           Artist            @relation("MainSongArtist", fields: [artistId], references: [id])
     /// @description Unique numeric identifier of the main artist
@@ -359,8 +362,8 @@ model Video {
     /// @description String identifier
     /// @example my-artist-my-video
     slug     String     @unique
-    /// @example my-video
-    nameSlug String
+    sortName String
+    sortSlug String
     /// Title of the video
     name     String
     /// The main artist of the video

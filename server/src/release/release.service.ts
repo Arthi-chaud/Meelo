@@ -84,6 +84,7 @@ export default class ReleaseService {
 			data: {
 				name: input.name,
 				slug: uniqueSlug,
+				nameSlug: releaseNameSlug,
 				registeredAt: input.registeredAt,
 				releaseDate: input.releaseDate,
 				extensions: input.extensions,
@@ -114,7 +115,6 @@ export default class ReleaseService {
 							},
 						}
 					: undefined,
-				nameSlug: releaseNameSlug,
 			},
 			include: include ?? ({} as I),
 		};

@@ -65,6 +65,8 @@ describe("Artist Service", () => {
 			});
 			expect(newArtist.name).toBe("My New Artist");
 			expect(newArtist.slug).toBe("my-new-artist");
+			expect(newArtist.sortName).toBe("My New Artist");
+			expect(newArtist.sortSlug).toBe("my-new-artist");
 			expect(newArtist.registeredAt).toStrictEqual(registeredAt);
 			expect(newArtist.id).toBeDefined();
 		});

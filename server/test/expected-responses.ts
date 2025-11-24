@@ -9,7 +9,7 @@ import type {
 	VideoWithRelations,
 } from "src/prisma/models";
 
-export const expectedArtistResponse = (artist: Artist) => ({
+export const expectedArtistResponse = ({ sortSlug, ...artist }: Artist) => ({
 	...artist,
 	registeredAt: artist.registeredAt.toISOString(),
 });
@@ -19,19 +19,30 @@ export const expectedFileResponse = (file: File) => ({
 	registerDate: file.registerDate.toISOString(),
 });
 
-export const expectedAlbumResponse = (album: Album) => ({
+export const expectedAlbumResponse = ({
+	sortSlug,
+	nameSlug,
+	...album
+}: Album) => ({
 	...album,
 	registeredAt: album.registeredAt.toISOString(),
 	releaseDate: album.releaseDate?.toISOString() ?? null,
 });
 
-export const expectedSongResponse = (song: SongWithRelations) => ({
+export const expectedSongResponse = ({
+	nameSlug,
+	sortSlug,
+	...song
+}: SongWithRelations) => ({
 	...song,
 	registeredAt: song.registeredAt.toISOString(),
 	type: SongType.Original,
 });
 
-export const expectedVideoResponse = (video: VideoWithRelations) => ({
+export const expectedVideoResponse = ({
+	sortSlug,
+	...video
+}: VideoWithRelations) => ({
 	...video,
 	registeredAt: video.registeredAt.toISOString(),
 	type: VideoType.MusicVideo,

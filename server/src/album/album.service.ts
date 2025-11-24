@@ -44,6 +44,7 @@ import {
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
+import { getSortName } from "src/sort/sort-name";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import { shuffle } from "src/utils/shuffle";
 import {
@@ -69,7 +70,11 @@ export default class AlbumService extends SearchableRepositoryService {
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: MeiliSearch,
 	) {
-		super("albums", ["name", "slug", "nameSlug", "type"], meiliSearch);
+		super(
+			"albums",
+			["name", "slug", "sortSlug", "nameSlug", "type"],
+			meiliSearch,
+		);
 	}
 
 	async getOrCreate<I extends AlbumQueryParameters.RelationInclude = {}>(
@@ -115,6 +120,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				? compilationAlbumArtistKeyword
 				: (await this.artistServce.get(album.artist)).slug;
 		const albumNameSlug = new Slug(album.name).toString();
+		const albumSortName = getSortName(album.name);
 		return this.prismaService.album
 			.create({
 				data: {
@@ -128,6 +134,8 @@ export default class AlbumService extends SearchableRepositoryService {
 						: undefined,
 					slug: new Slug(artistSlug, albumNameSlug).toString(),
 					nameSlug: albumNameSlug,
+					sortName: albumSortName,
+					sortSlug: new Slug(albumSortName).toString(),
 					releaseDate: album.releaseDate,
 					registeredAt: album.registeredAt,
 					type: this.parserService.getAlbumType(album.name),
@@ -138,7 +146,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					{
 						id: created.id,
 						slug: created.slug,
-						nameSlug: created.nameSlug,
+						sortSlug: created.sortSlug,
 						name: created.name,
 						type: created.type,
 					},
@@ -532,14 +540,14 @@ export default class AlbumService extends SearchableRepositoryService {
 		switch (sortingParameter.sortBy) {
 			case "name":
 				return [
-					{ nameSlug: sortingParameter.order },
+					{ sortSlug: sortingParameter.order },
 					{ artist: { slug: "asc" } },
 					{ id: "asc" },
 				];
 			case "artistName":
 				return [
 					{ artist: { slug: sortingParameter.order } },
-					{ nameSlug: "asc" },
+					{ sortSlug: "asc" },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ id: "asc" },
 				];
@@ -557,7 +565,7 @@ export default class AlbumService extends SearchableRepositoryService {
 						},
 					},
 					{ artist: { slug: "asc" } },
-					{ nameSlug: "asc" },
+					{ sortSlug: "asc" },
 					{ id: "asc" },
 				];
 			default:

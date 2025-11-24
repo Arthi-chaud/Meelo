@@ -41,17 +41,28 @@ describe("Parser Service", () => {
 				data: {
 					name: "Christine & The Queens",
 					slug: "christine-the-queens",
+					sortName: "Christine & The Queens",
+					sortSlug: "christine-the-queens",
 				},
 			})
 			.catch(() => {});
 		await prismaService.artist
-			.create({ data: { name: "Me & My Monkey", slug: "me-my-monkey" } })
+			.create({
+				data: {
+					name: "Me & My Monkey",
+					slug: "me-my-monkey",
+					sortName: "Me & My Monkey",
+					sortSlug: "me-my-monkey",
+				},
+			})
 			.catch(() => {});
 		await prismaService.artist
 			.create({
 				data: {
 					name: "Miss Kittin & The Hacker",
 					slug: "miss-kittin-the-hacker",
+					sortName: "Miss Kittin & The Hacker",
+					sortSlug: "miss-kittin-the-hacker",
 				},
 			})
 			.catch(() => {});
