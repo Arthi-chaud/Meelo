@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable jsx-a11y/alt-text */
-
 import { Box } from "@mui/material";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";

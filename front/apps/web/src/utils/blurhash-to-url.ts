@@ -16,9 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable max-len */
-/* eslint-disable no-shadow */
-/* eslint-disable init-declarations */
 // From https://gist.github.com/mattiaz9/53cb67040fa135cb395b1d015a200aff.
 // Thanks to the author
 import { decode } from "blurhash";
