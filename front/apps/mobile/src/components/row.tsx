@@ -1,7 +1,8 @@
+import { FlashList, type FlashListRef } from "@shopify/flash-list";
 import type { Href } from "expo-router";
 import type React from "react";
 import { createRef, useMemo } from "react";
-import { FlatList, View, type ViewStyle } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import type Resource from "@/models/resource";
 import { EmptyState } from "~/components/empty-state";
@@ -25,7 +26,7 @@ export const Row = <T extends Resource>({ items, ...props }: Props<T>) => {
 	return <RowBase {...props} items={itemList} />;
 };
 
-const RowBase = <T,>({
+const RowBase = <T extends Resource>({
 	items,
 	header,
 	hideIfEmpty,
@@ -34,7 +35,7 @@ const RowBase = <T,>({
 	onEndReached,
 	seeMore,
 }: Props<T>) => {
-	const flatListRef = createRef<FlatList<unknown>>();
+	const flatListRef = createRef<FlashListRef<unknown>>();
 	return (
 		(!hideIfEmpty || (items && items.length > 0)) && (
 			<View style={[styles.root, style]}>
@@ -56,17 +57,19 @@ const RowBase = <T,>({
 					/>
 				)}
 				{items?.length !== 0 ? (
-					<ResponsiveFlatList
-						horizontal
-						snapToAlignment="start"
-						decelerationRate={"normal"}
-						ref={flatListRef}
+					<ResponsiveFlashList
 						data={items}
-						onEndReached={onEndReached}
+						horizontal
 						contentContainerStyle={styles.row}
+						onEndReached={onEndReached}
+						ref={flatListRef}
+						snapToAlignment="start"
+						keyExtractor={(item, idx) =>
+							item ? `item-${(item as T).id}` : `skeleton-${idx}`
+						}
 						renderItem={({ item, index }) => {
 							return (
-								<View style={[styles.item(index)]}>
+								<View style={styles.item(index)}>
 									{render(item as T | undefined)}
 								</View>
 							);
@@ -83,7 +86,7 @@ const RowBase = <T,>({
 };
 
 const styles = StyleSheet.create((theme, rt) => ({
-	root: { display: "flex", alignItems: "flex-start", width: "100%" },
+	root: { width: "100%" },
 	emptyState: {
 		aspectRatio: 2.5, // TODO this an approximate, would be nice to compute this correctly
 		width: "100%",
@@ -96,9 +99,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 	}),
 }));
 
-const ResponsiveFlatList = withUnistyles(FlatList, (theme, rt) => ({
-	// @ts-expect-error
-	initialNumToRender: theme.layout.grid.columnCount[rt.breakpoint!],
+const ResponsiveFlashList = withUnistyles(FlashList, (theme, rt) => ({
 	snapToInterval:
 		// TODO The interval is not correct,
 		// the further we scroll the more the snap position is shifted to the left
