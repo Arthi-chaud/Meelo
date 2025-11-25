@@ -20,6 +20,7 @@ import { useSongContextMenu } from "~/components/context-menu/resource/song";
 import { useVideoContextMenu } from "~/components/context-menu/resource/video";
 import { LoadableText } from "~/components/loadable_text";
 import { currentTrackAtom } from "~/components/player/state";
+import * as Haptics from "~/haptics";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -189,11 +190,17 @@ const TrackItem = ({
 		return songContextMenu;
 	}, [songWithTrack, videoWithTrack, videoContextMenu, songContextMenu]);
 	const { openContextMenu } = useContextMenu(contextMenu);
+	const onLongPress = useCallback(() => {
+		if (contextMenu) {
+			openContextMenu();
+			Haptics.onContextMenuOpen();
+		}
+	}, [contextMenu, openContextMenu]);
 	return (
 		<Pressable
 			disabled={track === undefined}
 			style={styles.trackButton}
-			onLongPress={contextMenu ? openContextMenu : undefined}
+			onLongPress={onLongPress}
 			onPress={onPress}
 		>
 			<View style={styles.trackIndex(maxTrackIndex)}>

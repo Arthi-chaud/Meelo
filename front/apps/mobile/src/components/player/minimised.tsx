@@ -15,6 +15,7 @@ import { useContextMenu } from "~/components/context-menu";
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import * as Haptics from "~/haptics";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -30,7 +31,6 @@ import {
 	rewindTrackAtom,
 } from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
-
 export const MinimisedPlayer = () => {
 	const expandPlayer = useSetAtom(expandPlayerAtom);
 	const queryClient = useQueryClient();
@@ -53,13 +53,17 @@ export const MinimisedPlayer = () => {
 
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
+	const onLongPress = useCallback(() => {
+		openContextMenu();
+		Haptics.onContextMenuOpen();
+	}, [openContextMenu]);
 	styles.useVariants({ loading: isLoading });
 	return (
 		<RNPRessable
 			android_disableSound
 			style={styles.root}
 			onPress={expandPlayer}
-			onLongPress={openContextMenu}
+			onLongPress={onLongPress}
 		>
 			<ColorBackground />
 			<View style={styles.content}>

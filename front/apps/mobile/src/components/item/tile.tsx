@@ -8,6 +8,7 @@ import type { ContextMenuBuilder } from "~/components/context-menu";
 import { useContextMenu } from "~/components/context-menu";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import * as Haptics from "~/haptics";
 
 //TODO press effect
 
@@ -75,7 +76,10 @@ export const Tile = ({
 			props.illustrationProps?.normalizedThumbnail ?? false,
 	});
 	const onLongPress = useCallback(() => {
-		contextMenu && openContextMenu();
+		if (contextMenu) {
+			openContextMenu();
+			Haptics.onContextMenuOpen();
+		}
 	}, [contextMenu, openContextMenu]);
 	const router = useRouter();
 	const onShortPress = useCallback(() => {

@@ -17,6 +17,7 @@ import {
 import { DeleteIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { ListItem } from "~/components/item/list-item";
+import * as Haptics from "~/haptics";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -70,7 +71,10 @@ export const Queue = () => {
 						/* @ts-expect-error */
 						<ScaleDecorator>
 							<QueueItem
-								onDrag={drag}
+								onDrag={() => {
+									drag();
+									Haptics.onDragStart();
+								}}
 								track={t}
 								onPress={() => onItemPress(idx)}
 								onDelete={() => onItemDelete(idx)}
