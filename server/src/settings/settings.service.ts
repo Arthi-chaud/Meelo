@@ -102,6 +102,8 @@ export default class SettingsService {
 	}
 
 	get settingsValues(): Settings {
+		this.settings.transcoderAvailable =
+			this.streamingService.transcoderAvailable;
 		return this.settings;
 	}
 }

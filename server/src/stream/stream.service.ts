@@ -32,7 +32,7 @@ import Slug from "src/slug/slug";
 
 @Injectable()
 export class StreamService {
-	private transcoderUrl: string | null = null;
+	private transcoderUrl: string | null;
 	private logger: Logger = new Logger(StreamService.name);
 	constructor(
 		@Inject(forwardRef(() => FileService))
@@ -40,15 +40,14 @@ export class StreamService {
 		private fileManagerService: FileManagerService,
 		private httpService: HttpService,
 	) {
-		const transcoderUrl = process.env.TRANSCODER_URL ?? null;
-		if (transcoderUrl) {
+		this.transcoderUrl = process.env.TRANSCODER_URL ?? null;
+		if (this.transcoderUrl) {
 			this.httpService.axiosRef
-				.get(transcoderUrl, { validateStatus: (s) => s < 500 })
+				.get(this.transcoderUrl, { validateStatus: (s) => s < 500 })
 				.then(() => {
 					// there is no healthcheck route atm
 					// knowing that it responded is OK
 					this.logger.log("Transcoder found!");
-					this.transcoderUrl = transcoderUrl;
 				})
 				.catch((err) => {
 					this.logger.warn(
@@ -61,7 +60,7 @@ export class StreamService {
 	}
 
 	public get transcoderAvailable() {
-		return !!this.transcoderUrl;
+		return this.transcoderUrl != null;
 	}
 
 	// Proxies all requests to transcoder
