@@ -10,6 +10,7 @@ import {
 	useContextMenu,
 } from "~/components/context-menu";
 import { Illustration as IllustrationComponent } from "~/components/illustration";
+import * as Haptics from "~/haptics";
 import { Pressable } from "~/primitives/pressable";
 import { LoadableText } from "../loadable_text";
 
@@ -68,6 +69,7 @@ export const ListItem = ({
 		if (onLongPress) {
 			onLongPress();
 		} else if (contextMenu) {
+			Haptics.onContextMenuOpen();
 			openContextMenu();
 		}
 	}, [onLongPress, contextMenu, openContextMenu]);

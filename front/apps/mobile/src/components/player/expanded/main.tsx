@@ -24,6 +24,7 @@ import { useArtistContextMenu } from "~/components/context-menu/resource/artist"
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import * as Haptics from "~/haptics";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
@@ -210,15 +211,19 @@ const TrackNameButton = () => {
 			dismiss();
 		}
 	}, [currentTrack]);
+	const onLongPress = useCallback(() => {
+		openContextMenu();
+		Haptics.onContextMenuOpen();
+	}, [openContextMenu]);
 	return (
 		<View style={styles.trackName}>
 			<Pressable
 				onPress={onPress}
+				onLongPress={onLongPress}
 				disabled={
 					!currentTrack?.track.songId &&
 					!currentTrack?.track.releaseId
 				}
-				onLongPress={openContextMenu}
 			>
 				<LoadableText
 					content={currentTrack?.track.name}
@@ -248,10 +253,13 @@ const ArtistNameButton = () => {
 		dismiss();
 		router.navigate(`/artists/${currentTrack?.artist.id}`);
 	}, [currentTrack]);
-
+	const onLongPress = useCallback(() => {
+		openContextMenu();
+		Haptics.onContextMenuOpen();
+	}, [openContextMenu]);
 	const formattedArtistName = useFormattedArtistName();
 	return (
-		<Pressable onPress={onPress} onLongPress={openContextMenu}>
+		<Pressable onPress={onPress} onLongPress={onLongPress}>
 			<LoadableText
 				content={formattedArtistName}
 				variant="h5"

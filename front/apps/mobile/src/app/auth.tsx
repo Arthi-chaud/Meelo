@@ -123,7 +123,7 @@ export default function AuthenticationScreen() {
 	return (
 		<View style={[styles.root, safeAreaStyle]}>
 			<Banner style={styles.banner} />
-			{otherInstances.length && (
+			{otherInstances.length ? (
 				<View style={styles.instanceButtons}>
 					{otherInstances.map((instance, idx) => (
 						<Fragment key={idx}>
@@ -137,7 +137,7 @@ export default function AuthenticationScreen() {
 						</Fragment>
 					))}
 				</View>
-			)}
+			) : null}
 			<View style={styles.formContainer}>
 				<Button
 					title={t("actions.connectToNewServer")}
@@ -145,7 +145,7 @@ export default function AuthenticationScreen() {
 					onPress={openLoginForm}
 				/>
 			</View>
-			{!otherInstances.length && <View />}
+			{!otherInstances.length ? <View /> : null}
 			{/* to have a 1/3 page-height footer */}
 		</View>
 	);

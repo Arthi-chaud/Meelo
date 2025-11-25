@@ -33,6 +33,7 @@ import { useAPI, useQuery, useQueryClient } from "~/api";
 import { usePlaylistContextMenu } from "~/components/context-menu/resource/playlist";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
+import * as Haptics from "~/haptics";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
@@ -208,7 +209,14 @@ const Items = ({
 					<SongItem
 						song={item}
 						subtitle="artists"
-						onLongPress={isReordering ? drag : undefined}
+						onLongPress={
+							isReordering
+								? () => {
+										drag();
+										Haptics.onDragStart();
+									}
+								: undefined
+						}
 						illustrationProps={{}}
 						onPress={() => onItemPress(getIndex()!)}
 					/>
