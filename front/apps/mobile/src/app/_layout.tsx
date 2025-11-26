@@ -105,7 +105,7 @@ export default function RootLayout() {
 				Device.deviceType === Device.DeviceType.TABLET
 					? ScreenOrientation.unlockAsync()
 					: ScreenOrientation.lockAsync(
-							ScreenOrientation.OrientationLock.PORTRAIT,
+							ScreenOrientation.OrientationLock.PORTRAIT_UP,
 						);
 			lock.then(() => SplashScreen.hideAsync());
 		}
