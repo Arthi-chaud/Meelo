@@ -39,3 +39,4 @@ yarn-error.*
 app-example
 android
 *.apk
+ios

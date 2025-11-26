@@ -2,7 +2,7 @@ import type { ExpoConfig } from "expo/config";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 
-module.exports = (_: ExpoConfig) => ({
+module.exports = (_: ExpoConfig): ExpoConfig => ({
 	name: IS_DEV ? "Meelo (Dev)" : "Meelo",
 	slug: "meelo",
 	version: "1.0.0",
@@ -19,9 +19,20 @@ module.exports = (_: ExpoConfig) => ({
 			"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
 		],
 	},
+	ios: {
+		bundleIdentifier: "com.arthichaud.meelo",
+		infoPlist: {
+			UIViewControllerBasedStatusBarAppearance: true,
+		},
+	},
 	plugins: [
 		"expo-router",
-		"expo-screen-orientation",
+		[
+			"expo-screen-orientation",
+			{
+				initialOrientation: "DEFAULT",
+			},
+		],
 		[
 			"expo-splash-screen",
 			{
@@ -70,8 +81,5 @@ module.exports = (_: ExpoConfig) => ({
 		eas: {
 			projectId: "b8d8dcdb-a905-4674-9c62-db4256e0d94f",
 		},
-	},
-	ios: {
-		bundleIdentifier: "com.arthichaud.meelo",
 	},
 });
