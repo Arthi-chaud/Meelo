@@ -84,6 +84,7 @@ export const CreateUpdatePlaylistForm = ({
 				}}
 				render={({ field: { onChange, onBlur, value } }) => (
 					<TextInput
+						inModal
 						placeholder={t("browsing.controls.sort.name")}
 						autoFocus
 						autoCorrect={false}

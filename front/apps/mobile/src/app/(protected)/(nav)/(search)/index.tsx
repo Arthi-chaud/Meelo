@@ -116,6 +116,7 @@ export default function SearchView() {
 			header={
 				<View style={styles.searchHeader}>
 					<TextInput
+						inModal={false}
 						autoCorrect={false}
 						autoCapitalize={"none"}
 						placeholder={t("nav.search")}

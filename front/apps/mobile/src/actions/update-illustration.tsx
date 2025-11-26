@@ -55,6 +55,7 @@ const UpdateIllustrationForm = ({
 				}}
 				render={({ field: { onChange, onBlur, value } }) => (
 					<TextInput
+						inModal
 						placeholder={t("form.illustration.url")}
 						textContentType="URL"
 						autoCorrect={false}

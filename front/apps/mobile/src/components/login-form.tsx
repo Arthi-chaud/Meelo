@@ -1,20 +1,9 @@
-import {
-	useBottomSheetInternal,
-	useBottomSheetModal,
-} from "@gorhom/bottom-sheet";
+import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { openBrowserAsync } from "expo-web-browser";
 import { useCallback, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import {
-	findNodeHandle,
-	Keyboard,
-	type NativeSyntheticEvent,
-	TextInput as RNTextInput,
-	type TextInputFocusEventData,
-	type TextInputProps,
-	View,
-} from "react-native";
+import { Keyboard, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getSettings } from "@/api/queries";
 import type { Settings } from "@/models/settings";
@@ -62,7 +51,6 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 		formState: { errors },
 	} = useForm({ defaultValues });
 	const instanceUrl = useWatch({ control, name: "url" });
-	const { handleOnFocus, handleOnBlur } = useKeyboardFocusEvents();
 	const onSubmit = (data: typeof defaultValues) => {
 		const instanceUrl = data.url.replace(/\/$/, "");
 		const api = getAPI_(null, instanceUrl);
@@ -115,15 +103,12 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 				}}
 				render={({ field: { onChange, onBlur, value } }) => (
 					<TextInput
+						inModal
 						placeholder={t("form.auth.instanceUrl")}
 						textContentType="URL"
 						autoCorrect={false}
 						autoCapitalize="none"
-						onFocus={handleOnFocus}
-						onBlur={(e) => {
-							onBlur();
-							handleOnBlur(e);
-						}}
+						onBlur={onBlur}
 						onChangeText={(e) => {
 							if (formType !== "url") {
 								setFormType("url");
@@ -153,15 +138,12 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 						}}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
+								inModal
 								placeholder={t("form.auth.username")}
 								textContentType="username"
 								autoCorrect={false}
 								autoCapitalize="none"
-								onFocus={handleOnFocus}
-								onBlur={(e) => {
-									onBlur();
-									handleOnBlur(e);
-								}}
+								onBlur={onBlur}
 								onChangeText={onChange}
 								value={value}
 								autoComplete={
@@ -189,17 +171,14 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 						}}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
+								inModal
 								placeholder={t("form.auth.password")}
 								textContentType={
 									formType === "login"
 										? "password"
 										: "newPassword"
 								}
-								onFocus={handleOnFocus}
-								onBlur={(e) => {
-									onBlur();
-									handleOnBlur(e);
-								}}
+								onBlur={onBlur}
 								onChangeText={onChange}
 								value={value}
 								autoComplete={
@@ -251,53 +230,6 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 			)}
 		</View>
 	);
-};
-
-// https://gorhom.dev/react-native-bottom-sheet/keyboard-handling
-//
-// Code is from https://github.com/gorhom/react-native-bottom-sheet/blob/d12f3f7da19e5152fb541c4cfd36340cf5274473/src/components/bottomSheetTextInput/BottomSheetTextInput.tsx#L28
-const useKeyboardFocusEvents = () => {
-	const { animatedKeyboardState, textInputNodesRef } =
-		useBottomSheetInternal();
-
-	const handleOnFocus = useCallback(
-		(args: NativeSyntheticEvent<TextInputFocusEventData>) => {
-			animatedKeyboardState.set((state) => ({
-				...state,
-				target: args.nativeEvent.target,
-			}));
-		},
-		[animatedKeyboardState],
-	) as NonNullable<TextInputProps["onFocus"]>;
-	const handleOnBlur = useCallback(
-		(args: NativeSyntheticEvent<TextInputFocusEventData>) => {
-			const keyboardState = animatedKeyboardState.get();
-			const currentFocusedInput = findNodeHandle(
-				//@ts-expect-error
-				RNTextInput.State.currentlyFocusedInput(),
-			);
-
-			/**
-			 * we need to make sure that we only remove the target
-			 * if the target belong to the current component and
-			 * if the currently focused input is not in the targets set.
-			 */
-			const shouldRemoveCurrentTarget =
-				keyboardState.target === args.nativeEvent.target;
-			const shouldIgnoreBlurEvent =
-				currentFocusedInput &&
-				textInputNodesRef.current.has(currentFocusedInput);
-
-			if (shouldRemoveCurrentTarget && !shouldIgnoreBlurEvent) {
-				animatedKeyboardState.set((state) => ({
-					...state,
-					target: undefined,
-				}));
-			}
-		},
-		[animatedKeyboardState, textInputNodesRef],
-	) as NonNullable<TextInputProps["onBlur"]>;
-	return { handleOnBlur, handleOnFocus };
 };
 
 function timeout(ms: number) {
