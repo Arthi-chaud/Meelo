@@ -10,9 +10,11 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { BlurView } from "~/components/blur-view";
 
-type ModalAtom = { content: () => ReactNode; onDismiss: () => void };
+type ModalAtom = { content: () => ReactNode; onDismiss?: () => void };
 
 const modalAtom = atom<ModalAtom | null>(null);
+
+export const closeModalAtom = atom(null, (_, set) => set(modalAtom, null));
 
 export const useModal = (p: ModalAtom) => {
 	const setModalContent = useSetAtom(modalAtom);
@@ -23,7 +25,7 @@ export const useModal = (p: ModalAtom) => {
 export const Modal = () => {
 	const [modalContent, setModalContent] = useAtom(modalAtom);
 	const onClose = useCallback(() => {
-		modalContent?.onDismiss();
+		modalContent?.onDismiss?.();
 		setModalContent(null);
 	}, [modalContent]);
 	const Content = modalContent?.content ?? View;
@@ -32,8 +34,11 @@ export const Modal = () => {
 	useEffect(() => {
 		if (modalContent !== null) {
 			modalRef.current?.present();
+		} else {
+			modalRef.current?.close();
+			onClose();
 		}
-	}, [modalContent]);
+	}, [modalContent, onClose]);
 	return (
 		<BottomSheetModal
 			ref={modalRef}
