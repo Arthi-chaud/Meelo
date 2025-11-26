@@ -26,7 +26,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import Logger from "src/logger/logger";
 import { Album, type AlbumWithRelations, type Genre } from "src/prisma/models";
 import {
 	type ReleaseResponse,
@@ -50,7 +49,6 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	AlbumWithRelations,
 	AlbumResponse
 > {
-	private readonly logger = new Logger(AlbumResponseBuilder.name);
 	constructor(
 		@Inject(forwardRef(() => ArtistResponseBuilder))
 		private artistResponseBuilder: ArtistResponseBuilder,
@@ -65,13 +63,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 	returnType = AlbumResponse;
 
 	async buildResponse(album: AlbumWithRelations): Promise<AlbumResponse> {
-		/// This should happen only during scans
 		if (album.master === null) {
-			this.logger.warn(
-				"The Master Release of an album had to be resolved manually. " +
-					"This should happen only during a scan or a clean. " +
-					"If it is not the case, this is a bug.",
-			);
 			album.master = await this.releaseService.getMasterRelease({
 				id: album.id,
 			});
