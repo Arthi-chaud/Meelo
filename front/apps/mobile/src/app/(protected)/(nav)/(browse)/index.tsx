@@ -1,6 +1,7 @@
 import { type Href, useRouter } from "expo-router";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	AlbumIcon,
@@ -15,6 +16,7 @@ import {
 import { ListItem } from "~/components/item/list-item";
 import { SafeView } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
+import { Icon as IconComponent } from "~/primitives/icon";
 
 const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
 	{
@@ -66,8 +68,11 @@ export default function BrowseList() {
 			{tabs.map(({ title, href, icon }) => (
 				<Fragment key={title}>
 					<ListItem
-						illustration={null}
-						illustrationProps={{ fallbackIcon: icon }}
+						leading={
+							<View style={styles.icon}>
+								<IconComponent icon={icon} />
+							</View>
+						}
 						title={t(title)}
 						subtitle={null}
 						onPress={() => router.navigate(href)}
@@ -86,5 +91,12 @@ const styles = StyleSheet.create((theme) => ({
 		height: "100%",
 		alignItems: "flex-start",
 		justifyContent: "flex-start",
+	},
+	icon: {
+		height: "100%",
+		backgroundColor: theme.colors.skeleton,
+		borderRadius: theme.borderRadius,
+		justifyContent: "center",
+		alignItems: "center",
 	},
 }));

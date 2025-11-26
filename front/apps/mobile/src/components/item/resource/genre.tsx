@@ -11,7 +11,7 @@ export const GenreItem = ({ genre }: Props) => {
 	const { openContextMenu } = useContextMenu(ctxMenu);
 	return (
 		<ListItem
-			noIllustration
+			leading={null}
 			title={genre?.name}
 			subtitle={null}
 			onPress={openContextMenu}
