@@ -1,5 +1,10 @@
 import { type Href, useRouter } from "expo-router";
-import { type ComponentProps, type ReactElement, useCallback } from "react";
+import {
+	type ComponentProps,
+	type ReactElement,
+	type ReactNode,
+	useCallback,
+} from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { RequireAtLeastOne } from "type-fest";
@@ -32,12 +37,12 @@ type Props = {
 	) &
 	(
 		| {
-				noIllustration?: true;
+				leading: ReactNode | null;
 				illustration?: never;
 				illustrationProps?: never;
 		  }
 		| {
-				noIllustration?: never;
+				leading?: never;
 				illustration: Illustration | null | undefined;
 				illustrationProps?: Omit<
 					ComponentProps<typeof IllustrationComponent>,
@@ -52,7 +57,7 @@ export const ListItem = ({
 	subtitle,
 	illustration,
 	illustrationProps,
-	noIllustration,
+	leading,
 	href,
 	trailing,
 	contextMenu,
@@ -63,7 +68,7 @@ export const ListItem = ({
 	const router = useRouter();
 	styles.useVariants({
 		normalizedThumbnail: illustrationProps?.normalizedThumbnail ?? false,
-		hasIllustration: noIllustration !== true,
+		hasIllustration: leading === undefined,
 	});
 	const onLongPressCallback = useCallback(() => {
 		if (onLongPress) {
@@ -84,7 +89,7 @@ export const ListItem = ({
 			onLongPress={onLongPressCallback}
 			style={[styles.root]}
 		>
-			{noIllustration !== true && (
+			{leading === undefined ? (
 				<View style={styles.illustration}>
 					<IllustrationComponent
 						{...illustrationProps}
@@ -94,7 +99,9 @@ export const ListItem = ({
 						quality="low"
 					/>
 				</View>
-			)}
+			) : leading !== null ? (
+				<View style={styles.illustration}>{leading}</View>
+			) : null}
 			<View style={styles.textContainer}>
 				<LoadableText
 					content={title}
