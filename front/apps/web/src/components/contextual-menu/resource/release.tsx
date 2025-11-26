@@ -121,7 +121,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 				],
 
 				[
-					ChangeAlbumType(props.release.album, queryClient, confirm),
+					ChangeAlbumType(props.release.album, queryClient),
 					UpdateReleaseIllustrationAction(
 						queryClient,
 						props.release.id,

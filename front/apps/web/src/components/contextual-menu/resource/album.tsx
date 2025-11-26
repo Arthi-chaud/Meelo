@@ -63,7 +63,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 						]
 					: [],
 				[
-					ChangeAlbumType(props.album, queryClient, confirm),
+					ChangeAlbumType(props.album, queryClient),
 					RefreshAlbumMetadataAction(albumSlug, t),
 				],
 				[

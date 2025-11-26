@@ -120,13 +120,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 					: [],
 				[
 					...(props.track.song
-						? [
-								ChangeSongType(
-									props.track.song,
-									queryClient,
-									confirm,
-								),
-							]
+						? [ChangeSongType(props.track.song, queryClient)]
 						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id, t),

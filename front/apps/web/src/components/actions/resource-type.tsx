@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Chip, Grid } from "@mui/material";
-import type { useConfirm } from "material-ui-confirm";
+import { Box, Chip, Grid } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -36,6 +35,7 @@ import { VideoType } from "@/models/video";
 import { store } from "@/state/store";
 import { EditIcon } from "@/ui/icons";
 import { userAtom } from "~/state/user";
+import { closeModalAtom, openModalAtom } from "../modal";
 import type Action from "./";
 
 const ResourceTypeForm = <Enum extends string>(props: {
@@ -75,21 +75,20 @@ const ChangeResourceType = <
 	label: TranslationKey,
 	queryClient: QueryClient,
 	onSelect: (newType: TypeEnum) => Promise<void>,
-	confirm: ReturnType<typeof useConfirm>,
 ): Action => {
 	return {
 		label: label,
 		icon: <EditIcon />,
 		disabled: store.get(userAtom)?.admin !== true,
 		onClick: () =>
-			confirm({
-				title: <br />,
-				description: (
+			store.set(openModalAtom, () => (
+				<Box sx={{ paddingX: 4, paddingY: 6 }}>
 					<ResourceTypeForm
 						defaultValue={resource.type}
 						values={types}
 						translate={translateType}
-						onSelect={(type) =>
+						onSelect={(type) => {
+							store.set(closeModalAtom);
 							toast
 								.promise(onSelect(type), {
 									loading: "Updating...",
@@ -112,21 +111,15 @@ const ChangeResourceType = <
 									queryClient.client.invalidateQueries({
 										queryKey: ["bsides"],
 									});
-								})
-						}
+								});
+						}}
 					/>
-				),
-				cancellationButtonProps: { sx: { display: "none" } },
-				confirmationText: "OK",
-			}),
+				</Box>
+			)),
 	};
 };
 
-const ChangeSongType = (
-	s: Song,
-	client: QueryClient,
-	confirm: ReturnType<typeof useConfirm>,
-) =>
+const ChangeSongType = (s: Song, client: QueryClient) =>
 	ChangeResourceType(
 		s,
 		SongType.filter((t) => t !== "Unknown"),
@@ -142,14 +135,9 @@ const ChangeSongType = (
 				client.client.invalidateQueries({ queryKey: ["bsides"] });
 				return res;
 			}),
-		confirm,
 	);
 
-const ChangeAlbumType = (
-	a: Album,
-	client: QueryClient,
-	confirm: ReturnType<typeof useConfirm>,
-) =>
+const ChangeAlbumType = (a: Album, client: QueryClient) =>
 	ChangeResourceType(
 		a,
 		AlbumType,
@@ -161,14 +149,9 @@ const ChangeAlbumType = (
 				client.client.invalidateQueries({ queryKey: ["albums"] });
 				return res;
 			}),
-		confirm,
 	);
 
-const ChangeVideoType = (
-	v: Video,
-	client: QueryClient,
-	confirm: ReturnType<typeof useConfirm>,
-) =>
+const ChangeVideoType = (v: Video, client: QueryClient) =>
 	ChangeResourceType(
 		v,
 		VideoType,
@@ -180,7 +163,6 @@ const ChangeVideoType = (
 				client.client.invalidateQueries({ queryKey: ["videos"] });
 				return res;
 			}),
-		confirm,
 	);
 
 export { ChangeSongType, ChangeAlbumType, ChangeVideoType };

@@ -90,7 +90,7 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 						]
 					: [],
 				[
-					ChangeVideoType(props.video, queryClient, confirm),
+					ChangeVideoType(props.video, queryClient),
 					UpdateTrackIllustrationAction(
 						queryClient,
 						props.video.master.id,
