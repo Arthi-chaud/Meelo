@@ -92,7 +92,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					GoToRelatedTracksAction(songSlug),
 				],
 				[
-					ChangeSongType(props.song, queryClient, confirm),
+					ChangeSongType(props.song, queryClient),
 					RefreshSongMetadataAction(props.song.id, t),
 					MergeSongAction(props.song, queryClient),
 				],
