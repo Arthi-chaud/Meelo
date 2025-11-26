@@ -99,7 +99,7 @@ export const InfiniteView = <
 					<View style={styles.emptyState}>
 						<EmptyState />
 					</View>
-				) : (
+				) : controlsHeight !== null ? (
 					<ScrollView
 						data={itemList}
 						refreshing={queryRes.isRefetching}
@@ -158,7 +158,7 @@ export const InfiniteView = <
 									},
 								})}
 					/>
-				)}
+				) : null}
 			</View>
 		</View>
 	);
