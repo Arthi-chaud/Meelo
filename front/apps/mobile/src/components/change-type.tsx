@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Toast } from "toastify-react-native";
@@ -14,7 +15,7 @@ import {
 import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { useAPI, useQueryClient } from "~/api";
-import { useModal } from "./bottom-modal-sheet";
+import { closeModalAtom, useModal } from "./bottom-modal-sheet";
 import { SelectBottomModalContent } from "./bottom-modal-sheet/select";
 
 type ChangeTypeModal<T extends string> = {
@@ -120,12 +121,17 @@ export const useChangeVideoTypeModal = (video: Video | undefined) => {
 export const useChangeTypeModal = <Type extends string>(
 	props: ChangeTypeModal<Type>,
 ) => {
+	const closeModal = useSetAtom(closeModalAtom);
 	const content = useCallback(() => {
 		if (!props) {
 			return null;
 		}
-		return <ChangeTypeModal {...props} />;
-	}, [props]);
+		const onSelect: typeof props.onSelect = (e) => {
+			props.onSelect(e);
+			closeModal();
+		};
+		return <ChangeTypeModal {...props} onSelect={onSelect} />;
+	}, [props, closeModal]);
 	const { openModal } = useModal({
 		content,
 		onDismiss: () => {},
