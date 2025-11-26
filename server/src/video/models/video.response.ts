@@ -26,7 +26,6 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import Logger from "src/logger/logger";
 import { Video, type VideoWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
@@ -54,7 +53,6 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 	VideoWithRelations,
 	VideoResponse
 > {
-	private readonly logger = new Logger(VideoResponseBuilder.name);
 	constructor(
 		@Inject(forwardRef(() => SongResponseBuilder))
 		private songResponseBuilder: SongResponseBuilder,
@@ -75,11 +73,6 @@ export class VideoResponseBuilder extends ResponseBuilderInterceptor<
 		...video
 	}: VideoWithRelations): Promise<VideoResponse> {
 		if (video.master === null) {
-			this.logger.warn(
-				"The Master Track of a video had to be resolved manually. " +
-					"This should happen only during a scan or a clean. " +
-					"If it is not the case, this is a bug.",
-			);
 			video.master = await this.trackService.getVideoMasterTrack({
 				id: video.id,
 			});
