@@ -16,9 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useBottomSheetInternal } from "@gorhom/bottom-sheet";
+import { useCallback } from "react";
 import {
+	findNodeHandle,
+	type NativeSyntheticEvent,
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
+	type TextInputFocusEventData,
 	View,
 	type ViewStyle,
 } from "react-native";
@@ -32,6 +37,7 @@ import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
 type TextInputProps = RNTextInputProps & {
 	error?: string;
+	inModal: boolean;
 	containerStyle?: ViewStyle;
 };
 
@@ -86,6 +92,7 @@ export const TextInput = ({
 	style,
 	error,
 	containerStyle,
+	inModal,
 	...props
 }: TextInputProps) => {
 	const isFocused = useSharedValue(false);
@@ -94,7 +101,9 @@ export const TextInput = ({
 	);
 	const animatedTheme = useAnimatedTheme();
 	const springConfig = { damping: 100, stiffness: 500 };
-
+	const { handleOnBlur, handleOnFocus } = inModal
+		? useKeyboardFocusEvents()
+		: { handleOnFocus: () => {}, handleOnBlur: () => {} };
 	const innerlabelStyle = useAnimatedStyle(() => {
 		const labelIsRaised = isFocused.value || !isEmpty.value;
 		return {
@@ -166,10 +175,12 @@ export const TextInput = ({
 					}}
 					onBlur={(e) => {
 						isFocused.value = false;
+						handleOnBlur(e);
 						props.onBlur?.(e);
 					}}
 					onFocus={(e) => {
 						isFocused.value = true;
+						handleOnFocus(e);
 						props.onFocus?.(e);
 					}}
 					style={[styles.input, style]}
@@ -177,4 +188,51 @@ export const TextInput = ({
 			</Animated.View>
 		</View>
 	);
+};
+
+// https://gorhom.dev/react-native-bottom-sheet/keyboard-handling
+//
+// Code is from https://github.com/gorhom/react-native-bottom-sheet/blob/d12f3f7da19e5152fb541c4cfd36340cf5274473/src/components/bottomSheetTextInput/BottomSheetTextInput.tsx#L28
+const useKeyboardFocusEvents = () => {
+	const { animatedKeyboardState, textInputNodesRef } =
+		useBottomSheetInternal();
+
+	const handleOnFocus = useCallback(
+		(args: NativeSyntheticEvent<TextInputFocusEventData>) => {
+			animatedKeyboardState.set((state) => ({
+				...state,
+				target: args.nativeEvent.target,
+			}));
+		},
+		[animatedKeyboardState],
+	) as NonNullable<TextInputProps["onFocus"]>;
+	const handleOnBlur = useCallback(
+		(args: NativeSyntheticEvent<TextInputFocusEventData>) => {
+			const keyboardState = animatedKeyboardState.get();
+			const currentFocusedInput = findNodeHandle(
+				//@ts-expect-error
+				RNTextInput.State.currentlyFocusedInput(),
+			);
+
+			/**
+			 * we need to make sure that we only remove the target
+			 * if the target belong to the current component and
+			 * if the currently focused input is not in the targets set.
+			 */
+			const shouldRemoveCurrentTarget =
+				keyboardState.target === args.nativeEvent.target;
+			const shouldIgnoreBlurEvent =
+				currentFocusedInput &&
+				textInputNodesRef.current.has(currentFocusedInput);
+
+			if (shouldRemoveCurrentTarget && !shouldIgnoreBlurEvent) {
+				animatedKeyboardState.set((state) => ({
+					...state,
+					target: undefined,
+				}));
+			}
+		},
+		[animatedKeyboardState, textInputNodesRef],
+	) as NonNullable<TextInputProps["onBlur"]>;
+	return { handleOnBlur, handleOnFocus };
 };
