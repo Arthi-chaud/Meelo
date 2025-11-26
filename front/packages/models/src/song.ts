@@ -28,14 +28,14 @@ export const SongType = [
 	"Remix",
 	"Live",
 	"Acoustic",
+	"Demo",
+	"Medley",
 	"Instrumental",
+	"Acappella",
 	"Edit",
 	"Clean",
-	"Demo",
-	"Unknown",
-	"Acappella",
-	"Medley",
 	"NonMusic",
+	"Unknown",
 ] as const;
 export type SongType = (typeof SongType)[number];
 
