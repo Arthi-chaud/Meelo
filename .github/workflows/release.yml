@@ -1,0 +1,32 @@
+name: Release
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: Push artefacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set Tag env var
+        run: |
+          VERSION=${{ github.event.release.tag_name }}
+          sed "s/TAG=/TAG=$VERSION/" -i .env.example
+      - name: Rename production docker compose
+        run: |
+          mv docker-compose.prod.yml docker-compose.yml
+      - name: Rename dotenv
+        run: |
+          mv .env.example env.example
+      - name: Upload release artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./docker-compose.yml
+            ./nginx.conf.template
+            ./settings.json
+            ./env.example
