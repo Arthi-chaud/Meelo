@@ -2,7 +2,7 @@
 services:
   server:
     init: true
-    image: arthichaud/meelo-server:${TAG:-latest}
+    image: arthichaud/meelo-server:${TAG}
     expose:
       - 4000
     restart: on-failure
@@ -29,7 +29,7 @@ services:
       timeout: 5s
       retries: 5
   scanner:
-    image: arthichaud/meelo-scanner:${TAG:-latest}
+    image: arthichaud/meelo-scanner:${TAG}
     expose:
       - 8133
     depends_on:
@@ -49,7 +49,7 @@ services:
       - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
       - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   front:
-    image: arthichaud/meelo-front:${TAG:-latest}
+    image: arthichaud/meelo-front:${TAG}
     expose:
       - 3000
     depends_on:
@@ -65,7 +65,7 @@ services:
       - PUBLIC_MATCHER_URL=http://{PUBLIC_URL}/matcher
       - SSR_MATCHER_URL=http://matcher:6789
   matcher:
-    image: arthichaud/meelo-matcher:${TAG:-latest}
+    image: arthichaud/meelo-matcher:${TAG}
     restart: on-failure
     expose:
       - 6789
