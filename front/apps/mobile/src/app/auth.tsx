@@ -23,7 +23,6 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import { Toast } from "toastify-react-native";
 import { getCurrentUserStatus } from "@/api/queries";
 import { AddIcon, MoreIcon } from "@/ui/icons";
 import { getAPI_ } from "~/api";
@@ -32,6 +31,7 @@ import { useLoginForm } from "~/components/login-form";
 import { Banner } from "~/components/meelo";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
+import { showErrorToast } from "~/primitives/toast";
 import {
 	currentInstanceAtom,
 	deleteOtherInstanceAtom,
@@ -104,9 +104,9 @@ export default function AuthenticationScreen() {
 					router.replace("/");
 				})
 				.catch((e) => {
-					Toast.error(
-						`${t("toasts.auth.signinFailed")}: ${e.message ?? e.error ?? JSON.stringify(e)}`,
-					);
+					showErrorToast({
+						text: `${t("toasts.auth.signinFailed")}: ${e.message ?? e.error ?? JSON.stringify(e)}`,
+					});
 				});
 		},
 		[setCurrentInstance, router],

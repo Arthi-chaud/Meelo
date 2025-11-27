@@ -2,7 +2,6 @@ import { useInfiniteQuery as useReactInfiniteQuery } from "@tanstack/react-query
 import { useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Toast } from "toastify-react-native";
 import { getLibraries } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import {
@@ -14,6 +13,7 @@ import {
 	useTypeFiltersControl as useTypeFiltersControlBase,
 } from "@/infinite-controls/filters/resource-type";
 import { useAPI } from "~/api";
+import { showErrorToast } from "~/primitives/toast";
 
 const useLibraryFilterControl = () => {
 	const { t } = useTranslation();
@@ -25,7 +25,7 @@ const useLibraryFilterControl = () => {
 	});
 	useEffect(() => {
 		if (librariesQuery.isError) {
-			Toast.error(t("toasts.library.loadFail"));
+			showErrorToast({ text: t("toasts.library.loadFail") });
 		}
 	}, [librariesQuery.isError]);
 	const libraries = librariesQuery.data?.pages.at(0)?.items;
@@ -46,7 +46,7 @@ const useLibraryFiltersControl = () => {
 	});
 	useEffect(() => {
 		if (librariesQuery.isError) {
-			Toast.error(t("toasts.library.loadFail"));
+			showErrorToast({ text: t("toasts.library.loadFail") });
 		}
 	}, [librariesQuery.isError]);
 	const libraries = librariesQuery.data?.pages.at(0)?.items;

@@ -1,13 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Toast } from "toastify-react-native";
 import type Album from "@/models/album";
 import type Release from "@/models/release";
 import type Song from "@/models/song";
 import type Track from "@/models/track";
 import { MasterIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
+import { showSuccessToast } from "~/primitives/toast";
 
 export const useSetReleaseAsMaster = (
 	release: Release | undefined,
@@ -21,7 +21,7 @@ export const useSetReleaseAsMaster = (
 				masterReleaseId: release?.id,
 			}),
 		onSuccess: () => {
-			Toast.success(t("toasts.releaseSetAsMaster"));
+			showSuccessToast({ text: t("toasts.releaseSetAsMaster") });
 			queryClient.client.invalidateQueries({ queryKey: ["releases"] });
 			queryClient.client.invalidateQueries({ queryKey: ["albums"] });
 			queryClient.client.invalidateQueries({ queryKey: [release?.id] });
@@ -56,7 +56,7 @@ export const useSetSongTrackAsMaster = (
 				masterTrackId: track?.id,
 			}),
 		onSuccess: () => {
-			Toast.success(t("toasts.trackSetAsMaster"));
+			showSuccessToast({ text: t("toasts.trackSetAsMaster") });
 			queryClient.client.invalidateQueries({ queryKey: ["tracks"] });
 			queryClient.client.invalidateQueries({ queryKey: ["songs"] });
 			queryClient.client.invalidateQueries({ queryKey: ["releases"] });

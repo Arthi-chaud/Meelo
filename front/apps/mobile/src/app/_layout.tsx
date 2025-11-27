@@ -33,7 +33,6 @@ import { Provider } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import ToastManager from "toastify-react-native";
 import { store } from "@/state/store";
 import "intl-pluralrules";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -42,12 +41,11 @@ import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { UnistylesRuntime } from "react-native-unistyles";
-import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
 import { DefaultQueryOptions } from "@/api/query";
 import { BackgroundGradient } from "~/components/background-gradient";
 import { Modal } from "~/components/bottom-modal-sheet";
 import { useColorScheme } from "~/hooks/color-scheme";
-import { Toast as MeeloToast } from "~/primitives/toast";
+import { ToastManager } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import { appThemes } from "~/theme";
@@ -164,18 +162,7 @@ export default function RootLayout() {
 						<BackgroundGradient />
 					</ColorSchemeProvider>
 				</Provider>
-				<ToastManager
-					theme={actualColorScheme}
-					custom={MeeloToast}
-					config={{
-						success: (p: ToastConfigParams) => (
-							<MeeloToast {...p} variant={"success"} />
-						),
-						error: (p: ToastConfigParams) => (
-							<MeeloToast {...p} variant={"error"} />
-						),
-					}}
-				/>
+				<ToastManager />
 			</QueryClientProvider>
 		</GestureHandlerRootView>
 	);

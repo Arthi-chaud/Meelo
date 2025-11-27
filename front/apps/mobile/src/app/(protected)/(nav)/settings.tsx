@@ -25,7 +25,6 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
-import { Toast } from "toastify-react-native";
 import {
 	getCurrentUserStatus,
 	getMatcherVersion,
@@ -54,6 +53,7 @@ import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { showSuccessToast } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import {
@@ -118,7 +118,7 @@ export default function SettingsView() {
 				accessToken: data.token,
 				username: res.name,
 			});
-			Toast.success(t("toasts.auth.serverSwitchSuccessful"));
+			showSuccessToast({ text: t("toasts.auth.serverSwitchSuccessful") });
 		},
 	});
 	const [lng, setLng] = useAtom(languagePreference);

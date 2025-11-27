@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Toast } from "toastify-react-native";
 import type Album from "@/models/album";
 import { AlbumType } from "@/models/album";
 import type Song from "@/models/song";
@@ -15,6 +14,7 @@ import {
 import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { useAPI, useQueryClient } from "~/api";
+import { showErrorToast, showSuccessToast } from "~/primitives/toast";
 import { closeModalAtom, useModal } from "./bottom-modal-sheet";
 import { SelectBottomModalContent } from "./bottom-modal-sheet/select";
 
@@ -36,13 +36,13 @@ export const useChangeAlbumTypeModal = (album: Album | undefined) => {
 				}
 			: undefined,
 		onSuccess: () => {
-			Toast.success("Update successful!");
+			showSuccessToast({ text: "Update successful!" });
 			client.invalidateQueries({ queryKey: ["albums"] });
 			client.invalidateQueries({ queryKey: [album?.slug] });
 			client.invalidateQueries({ queryKey: [album?.id] });
 		},
 		onError: () => {
-			Toast.error("Update failed");
+			showErrorToast({ text: "Update failed" });
 		},
 	});
 	const { openModal } = useChangeTypeModal({
@@ -66,13 +66,13 @@ export const useChangeSongTypeModal = (song: Song | undefined) => {
 				}
 			: undefined,
 		onSuccess: () => {
-			Toast.success("Update successful!");
+			showSuccessToast({ text: "Update successful!" });
 			client.invalidateQueries({ queryKey: ["songs"] });
 			client.invalidateQueries({ queryKey: [song?.slug] });
 			client.invalidateQueries({ queryKey: [song?.id] });
 		},
 		onError: () => {
-			Toast.error("Update failed");
+			showErrorToast({ text: "Update failed" });
 		},
 	});
 	const { openModal } = useChangeTypeModal({
@@ -96,14 +96,14 @@ export const useChangeVideoTypeModal = (video: Video | undefined) => {
 				}
 			: undefined,
 		onSuccess: () => {
-			Toast.success("Update successful!");
+			showSuccessToast({ text: "Update successful!" });
 			client.invalidateQueries({ queryKey: ["videos"] });
 			client.invalidateQueries({ queryKey: [video?.slug] });
 			client.invalidateQueries({ queryKey: [video?.id] });
 			client.invalidateQueries({ queryKey: ["releases"] });
 		},
 		onError: () => {
-			Toast.error("Update failed");
+			showErrorToast({ text: "Update failed" });
 		},
 	});
 	const { openModal } = useChangeTypeModal({
