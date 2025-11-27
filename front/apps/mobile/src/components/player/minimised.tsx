@@ -8,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import { VideoView } from "react-native-video";
 import { playlistLoadingAtom, skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
@@ -19,6 +20,7 @@ import * as Haptics from "~/haptics";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { videoPlayerAtom } from "./context";
 import { expandPlayerAtom } from "./expanded/state";
 import { getTrackForContextMenu } from "./queries";
 import {
@@ -46,6 +48,7 @@ export const MinimisedPlayer = () => {
 	const isLoading = useAtomValue(playlistLoadingAtom);
 	const formattedArtistName = useFormattedArtistName();
 
+	const player = useAtomValue(videoPlayerAtom);
 	const { data: track } = useQuery(
 		getTrackForContextMenu,
 		currentTrack?.track.id,
@@ -68,13 +71,23 @@ export const MinimisedPlayer = () => {
 			<ColorBackground />
 			<View style={styles.content}>
 				<View style={styles.illustration}>
-					<Illustration
-						illustration={currentTrack?.track.illustration}
-						normalizedThumbnail={isVideo}
-						variant="center"
-						useBlurhash
-						quality={isVideo ? "medium" : "low"}
-					/>
+					{currentTrack?.track.type === "Video" && player ? (
+						<View style={styles.videoContainer}>
+							<VideoView
+								player={player}
+								resizeMode="cover"
+								style={styles.video}
+							/>
+						</View>
+					) : (
+						<Illustration
+							illustration={currentTrack?.track.illustration}
+							normalizedThumbnail={isVideo}
+							variant="center"
+							useBlurhash
+							quality={isVideo ? "medium" : "low"}
+						/>
+					)}
 				</View>
 				<View style={styles.text}>
 					<LoadableText
@@ -195,7 +208,11 @@ const styles = StyleSheet.create((theme) => ({
 			loading: { true: {}, false: {} },
 		},
 	},
-
+	videoContainer: { borderRadius: theme.borderRadius, overflow: "hidden" },
+	video: {
+		aspectRatio: 16 / 9,
+		height: "100%",
+	},
 	illustration: {
 		height: theme.gap(5.5),
 		variants: {
