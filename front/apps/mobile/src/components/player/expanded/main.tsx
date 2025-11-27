@@ -55,10 +55,12 @@ export const Main = () => {
 				</View>
 			</View>
 			<View style={styles.controls}>
-				<WithFullScreenAndTranscodeButton>
-					<TrackNameButton />
-				</WithFullScreenAndTranscodeButton>
-				<ArtistNameButton />
+				<View style={styles.textColumn}>
+					<WithFullScreenAndTranscodeButton>
+						<TrackNameButton />
+					</WithFullScreenAndTranscodeButton>
+					<ArtistNameButton />
+				</View>
 				<PlayControls />
 				<ProgressControls />
 			</View>
@@ -76,13 +78,16 @@ const PlayControls = () => {
 	return (
 		<View style={styles.playControls}>
 			<Pressable onPress={rewindTrack}>
-				<Icon icon={RewindIcon} />
+				<Icon icon={RewindIcon} style={styles.playControlButton} />
 			</Pressable>
 			<Pressable onPress={() => (isPlaying ? pause() : play())}>
-				<Icon icon={isPlaying ? PauseIcon : PlayIcon} />
+				<Icon
+					icon={isPlaying ? PauseIcon : PlayIcon}
+					style={styles.playControlButton}
+				/>
 			</Pressable>
 			<Pressable onPress={() => skipTrack(queryClient)}>
-				<Icon icon={ForwardIcon} />
+				<Icon icon={ForwardIcon} style={styles.playControlButton} />
 			</Pressable>
 		</View>
 	);
@@ -228,6 +233,7 @@ const TrackNameButton = () => {
 				<LoadableText
 					content={currentTrack?.track.name}
 					variant="h4"
+					style={styles.trackNameText}
 					skeletonWidth={20}
 					numberOfLines={1}
 				/>
@@ -282,7 +288,6 @@ const IllustrationOrVideo = () => {
 			illustration={currentTrack?.track.illustration}
 			dropShadow
 			quality="original"
-			useBlurhash
 			variant="center"
 		/>
 	);
@@ -309,6 +314,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		justifyContent: "space-evenly",
 		alignItems: "center",
 	},
+	textColumn: { gap: theme.gap(1.5), alignItems: "center" },
 	sliderContainer: {
 		width: "100%",
 		maxWidth: breakpoints.md,
@@ -324,6 +330,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		flexDirection: "row",
 		justifyContent: "space-evenly",
 	},
+	playControlButton: { size: theme.fontSize.rem(2) } as {},
 	videoButtonRow: {
 		flexDirection: "row",
 		width: "100%",
@@ -338,6 +345,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 	},
 	videoButton: { flex: 0 },
 	trackName: { flex: 1, alignItems: "center" },
+	trackNameText: theme.fontStyles.semiBold,
 	video: {
 		width: "100%",
 		height: "100%",
