@@ -80,11 +80,16 @@ def get_sources_from_musicbrainz(
         external_sources.append(
             ExternalMetadataSourceDto(resource_url, mb_provider.api_model.id)
         )
+    remaining_providers = context.providers
     try:
         resource = mb_get_resource(mb_provider, mbEntry.id)
         if "relations" not in resource.keys():
             return (wikidata_id, external_sources)
         for rel in resource["relations"]:
+            if not len(remaining_providers):
+                break
+            if "url" not in rel:
+                continue
             if rel["type"] == "wikidata":
                 wikidata_id = rel["url"]["resource"].replace(
                     "https://www.wikidata.org/wiki/", ""
@@ -92,13 +97,16 @@ def get_sources_from_musicbrainz(
                 continue
             providers = [
                 p
-                for p in context.providers
+                for p in remaining_providers
                 if p.get_musicbrainz_relation_key() == rel["type"]
                 or p.is_musicbrainz_relation(rel)
             ]
             if not len(providers):
                 continue
             provider = providers[0]
+            remaining_providers = [
+                p for p in remaining_providers if p.settings.id != provider.settings.id
+            ]
             provider_id = provider.api_model.id
             if not [
                 previous_match
@@ -108,6 +116,7 @@ def get_sources_from_musicbrainz(
                 external_sources.append(
                     ExternalMetadataSourceDto(rel["url"]["resource"], provider_id)
                 )
+
     except Exception:
         pass
     return (wikidata_id, external_sources)
