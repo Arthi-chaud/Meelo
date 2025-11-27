@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
-import { Toast } from "toastify-react-native";
 import type { AddToPlaylistPayload } from "@/api";
 import { getPlaylists } from "@/api/queries";
 import { AddIcon, PlaylistIcon } from "@/ui/icons";
@@ -15,6 +14,7 @@ import { ListItem } from "~/components/item/list-item";
 import { PlaylistItem } from "~/components/item/resource/playlist";
 import { Divider } from "~/primitives/divider";
 import { Text } from "~/primitives/text";
+import { showErrorToast, showSuccessToast } from "~/primitives/toast";
 import { useCreatePlaylistFormModal } from "./playlist/create-update";
 
 export const useAddToPlaylistAction = (
@@ -50,13 +50,19 @@ const ChoosePlaylistModal = ({
 			queryClient.api
 				.addToPlaylist(payload, playlistId)
 				.then(() => {
-					Toast.success(t("toasts.playlist.addedToPlaylist"));
+					showSuccessToast({
+						text: t("toasts.playlist.addedToPlaylist"),
+					});
 					dismiss();
 					queryClient.client.invalidateQueries({
 						queryKey: ["playlists"],
 					});
 				})
-				.catch((e) => Toast.error(t(e.message ?? ""))),
+				.catch((e) =>
+					showErrorToast({
+						text: t(e.message ?? e.error ?? JSON.stringify(e)),
+					}),
+				),
 	});
 	const { openFormModal } = useCreatePlaylistFormModal(undefined, (p) =>
 		addToPlaylist.mutate(p.id),

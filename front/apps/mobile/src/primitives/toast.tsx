@@ -16,42 +16,72 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { DeviceType, deviceType } from "expo-device";
 import { Pressable, View } from "react-native";
-import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
-import type { ToastConfigParams } from "toastify-react-native/utils/interfaces";
+import Toast, { type ToastConfig } from "react-native-toast-message";
+import { StyleSheet } from "react-native-unistyles";
 import { CheckIcon, ErrorIcon } from "@/ui/icons";
 import { Text } from "~/primitives/text";
 
-export const Toast = ({
-	text1,
-	variant,
-	hide,
-}: ToastConfigParams & UnistylesVariants<typeof styles>) => {
+type ToastProps = { text: string };
+
+export const showSuccessToast = (t: ToastProps) => {
+	Toast.hide();
+	Toast.show({ type: "success", text1: t.text });
+};
+export const showErrorToast = (t: ToastProps) => {
+	Toast.hide();
+	Toast.show({ type: "error", text1: t.text });
+};
+
+type ToastComponentProps = { text: string; variant: "success" | "error" };
+
+export const ToastComponent = ({ text, variant }: ToastComponentProps) => {
 	const Icon = variant === "success" ? CheckIcon : ErrorIcon;
-	styles.useVariants({ variant });
+	styles.useVariants({ variant, isTablet: deviceType === DeviceType.TABLET });
 	return (
-		<Pressable style={styles.root} onPress={hide}>
+		<Pressable style={styles.root} onPress={() => Toast.hide()}>
 			<View style={styles.icon}>
 				<Icon variant="Bold" style={styles.icon} />
 			</View>
-			<Text variant="subtitle" style={styles.text}>
-				{text1}
+			<Text variant="body" style={styles.text}>
+				{text}
 			</Text>
 		</Pressable>
 	);
 };
 
-const styles = StyleSheet.create((theme, rt) => ({
+const toastConfig: ToastConfig = {
+	success: ({ text1 }) => (
+		<ToastComponent text={text1 ?? ""} variant="success" />
+	),
+
+	error: ({ text1 }) => <ToastComponent text={text1 ?? ""} variant="error" />,
+};
+
+export const ToastManager = () => {
+	return <Toast config={toastConfig} />;
+};
+
+const styles = StyleSheet.create((theme) => ({
 	root: {
-		//TODO Max width
-		width: rt.screen.width - theme.gap(1 * 2),
+		variants: {
+			isTablet: {
+				true: {
+					alignSelf: "flex-end",
+					marginRight: theme.gap(2),
+				},
+				false: {},
+			},
+		},
+		width: "auto",
 		backgroundColor: theme.colors.background,
-		borderRadius: theme.borderRadius,
+		borderRadius: theme.borderRadius * 1.5,
 		padding: theme.gap(2),
-		display: "flex",
 		flexDirection: "row",
+		justifyContent: "center",
 		alignItems: "center",
-		gap: theme.gap(2),
+		gap: theme.gap(1.5),
 		elevation: 10,
 	},
 	icon: {
@@ -64,7 +94,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 		aspectRatio: 1,
 	},
 	text: {
-		flex: 1,
 		fontSize: theme.fontSize.rem(1.5),
 	},
 }));

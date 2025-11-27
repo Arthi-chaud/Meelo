@@ -9,7 +9,6 @@ import DraggableFlatList, {
 	ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { StyleSheet } from "react-native-unistyles";
-import { Toast } from "toastify-react-native";
 import {
 	getCurrentUserStatus,
 	getPlaylist,
@@ -37,6 +36,7 @@ import * as Haptics from "~/haptics";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
+import { showErrorToast } from "~/primitives/toast";
 import { breakpoints } from "~/theme";
 
 type PlaylistEntryType = PlaylistEntryWithRelations<
@@ -275,7 +275,9 @@ const Footer = ({
 						queryKey: ["playlists"],
 					}),
 				)
-				.catch(() => Toast.error("Updating illustration failed")),
+				.catch(() =>
+					showErrorToast({ text: "Updating illustration failed" }),
+				),
 	});
 
 	const updateIllustrationAction = useUpdateIllustrationAction((url) =>
