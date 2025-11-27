@@ -1,4 +1,4 @@
-import { useBottomSheetModal } from "@gorhom/bottom-sheet";
+import { BottomSheetView, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ComponentProps, useCallback } from "react";
@@ -48,7 +48,7 @@ import { useFormattedArtistName } from "../utils";
 export const Main = () => {
 	const { rt: _rt } = useUnistyles();
 	return (
-		<>
+		<BottomSheetView style={styles.root}>
 			<View style={styles.illustrationContainer}>
 				<View style={styles.illustration}>
 					<IllustrationOrVideo />
@@ -62,7 +62,7 @@ export const Main = () => {
 				<PlayControls />
 				<ProgressControls />
 			</View>
-		</>
+		</BottomSheetView>
 	);
 };
 
@@ -289,6 +289,7 @@ const IllustrationOrVideo = () => {
 };
 
 const styles = StyleSheet.create((theme, _rt) => ({
+	root: { width: "100%", height: "100%", display: "flex" },
 	illustrationContainer: {
 		width: "100%",
 		aspectRatio: 1,

@@ -1,10 +1,7 @@
-import {
-	BottomSheetScrollView,
-	type BottomSheetScrollViewMethods,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type LayoutChangeEvent, View } from "react-native";
+import { type LayoutChangeEvent, ScrollView, View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	withSpring,
@@ -77,7 +74,7 @@ const SyncedLyrics = ({
 }: {
 	syncedLyrics: SyncedLyricModel[];
 }) => {
-	const scrollViewRef = useRef<BottomSheetScrollViewMethods>(null);
+	const scrollViewRef = useRef<ScrollView>(null);
 	const [scrollViewHeight, setScrollViewHeight] = useState<number | null>(
 		null,
 	);
@@ -134,7 +131,7 @@ const SyncedLyrics = ({
 		return () => clearInterval(interval);
 	}, [onInterval]);
 	return (
-		<BottomSheetScrollView
+		<ScrollView
 			ref={scrollViewRef}
 			scrollEnabled={false}
 			showsVerticalScrollIndicator={false}
@@ -167,7 +164,7 @@ const SyncedLyrics = ({
 					/>
 				))}
 			</View>
-		</BottomSheetScrollView>
+		</ScrollView>
 	);
 };
 
