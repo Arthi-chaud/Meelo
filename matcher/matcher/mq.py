@@ -2,7 +2,7 @@ import pika
 import asyncio
 import logging
 import os
-from typing import Callable, Any
+from typing import Awaitable, Callable, Any
 from matcher.context import Context
 from pika.adapters.blocking_connection import BlockingChannel
 
@@ -12,7 +12,9 @@ channel: BlockingChannel | None = None
 queue_name = "meelo"
 
 
-def connect_mq(on_message_callback: Callable[[BlockingChannel, Any, Any, Any], None]):
+def connect_mq(
+    on_message_callback: Callable[[BlockingChannel, Any, Any, Any], Awaitable[None]],
+):
     global channel
     rabbitUrl = os.environ.get("RABBITMQ_URL")
     if not rabbitUrl:
@@ -32,7 +34,15 @@ def connect_mq(on_message_callback: Callable[[BlockingChannel, Any, Any, Any], N
     logging.info(f"Version: {Context.get().settings.version}")
     logging.info("Ready to match!")
     channel.basic_qos(prefetch_count=1)
-    channel.basic_consume(queue_name, on_message_callback=on_message_callback)
+    # TODO AWAIT
+    channel.basic_consume(
+        queue_name,
+        on_message_callback=lambda bc, arg1, arg2, arg3: asyncio.run(
+            (
+                on_message_callback(bc, arg1, arg2, arg3)  # pyright: ignore
+            )
+        ),
+    )
 
 
 def start_consuming():

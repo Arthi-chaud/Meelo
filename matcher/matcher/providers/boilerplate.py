@@ -52,9 +52,9 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         return f.run(rel) if f else None
 
     # Artist
-    def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         f = self.get_feature(SearchArtistFeature)
-        return f.run(artist_name) if f else None
+        return await f.run(artist_name) if f else None
 
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
         f = self.get_feature(GetArtistUrlFromIdFeature)
@@ -64,28 +64,28 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetArtistIdFromUrlFeature)
         return f.run(artist_url) if f else None
 
-    def get_artist(self, artist_id: str) -> Any | None:
+    async def get_artist(self, artist_id: str) -> Any | None:
         f = self.get_feature(GetArtistFeature)
-        return f.run(artist_id) if f else None
+        return await f.run(artist_id) if f else None
 
-    def get_artist_description(self, artist: Any) -> str | None:
+    async def get_artist_description(self, artist: Any) -> str | None:
         f = self.get_feature(GetArtistDescriptionFeature)
-        return f.run(artist) if f else None
+        return await f.run(artist) if f else None
 
-    def get_artist_illustration_url(self, artist: Any) -> str | None:
+    async def get_artist_illustration_url(self, artist: Any) -> str | None:
         f = self.get_feature(GetArtistIllustrationUrlFeature)
-        return f.run(artist) if f else None
+        return await f.run(artist) if f else None
 
     def get_wikidata_artist_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataArtistRelationKeyFeature)
         return f.run() if f else None
 
     # Album
-    def search_album(
+    async def search_album(
         self, album_name: str, artist_name: str | None
     ) -> AlbumSearchResult | None:
         f = self.get_feature(SearchAlbumFeature)
-        return f.run(album_name, artist_name) if f else None
+        return await f.run(album_name, artist_name) if f else None
 
     def get_album_url_from_id(self, album_id: str) -> str | None:
         f = self.get_feature(GetAlbumUrlFromIdFeature)
@@ -95,29 +95,29 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetAlbumIdFromUrlFeature)
         return f.run(album_url) if f else None
 
-    def get_album(self, album_id: str) -> Any | None:
+    async def get_album(self, album_id: str) -> Any | None:
         f = self.get_feature(GetAlbumFeature)
-        return f.run(album_id) if f else None
+        return await f.run(album_id) if f else None
 
-    def get_album_description(self, album: Any) -> str | None:
+    async def get_album_description(self, album: Any) -> str | None:
         f = self.get_feature(GetAlbumDescriptionFeature)
-        return f.run(album) if f else None
+        return await f.run(album) if f else None
 
-    def get_album_rating(self, album: Any) -> int | None:
+    async def get_album_rating(self, album: Any) -> int | None:
         f = self.get_feature(GetAlbumRatingFeature)
-        return f.run(album) if f else None
+        return await f.run(album) if f else None
 
-    def get_album_type(self, album: Any) -> AlbumType | None:
+    async def get_album_type(self, album: Any) -> AlbumType | None:
         f = self.get_feature(GetAlbumTypeFeature)
-        return f.run(album) if f else None
+        return await f.run(album) if f else None
 
-    def get_album_genres(self, album: Any) -> List[str] | None:
+    async def get_album_genres(self, album: Any) -> List[str] | None:
         f = self.get_feature(GetAlbumGenresFeature)
-        return f.run(album) if f else None
+        return await f.run(album) if f else None
 
-    def get_album_release_date(self, album: Any) -> date | None:
+    async def get_album_release_date(self, album: Any) -> date | None:
         f = self.get_feature(GetAlbumReleaseDateFeature)
-        return f.run(album) if f else None
+        return await f.run(album) if f else None
 
     def get_wikidata_album_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataAlbumRelationKeyFeature)
@@ -125,7 +125,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     # Song
 
-    def search_song(
+    async def search_song(
         self,
         song_name: str,
         artist_name: str,
@@ -133,33 +133,37 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         duration: int | None,
     ) -> SongSearchResult | None:
         f = self.get_feature(SearchSongFeature)
-        return f.run(song_name, artist_name, featuring_artists, duration) if f else None
+        return (
+            (await f.run(song_name, artist_name, featuring_artists, duration))
+            if f
+            else None
+        )
 
-    def search_song_with_acoustid(
+    async def search_song_with_acoustid(
         self, song_acoustid: str, duration: int, song_name: str
     ) -> SongSearchResult | None:
         f = self.get_feature(SearchSongWithAcoustIdFeature)
-        return f.run(song_acoustid, duration, song_name) if f else None
+        return await f.run(song_acoustid, duration, song_name) if f else None
 
-    def get_song(self, song_id: str) -> Any | None:
+    async def get_song(self, song_id: str) -> Any | None:
         f = self.get_feature(GetSongFeature)
-        return f.run(song_id) if f else None
+        return await f.run(song_id) if f else None
 
-    def get_song_description(self, song: Any) -> str | None:
+    async def get_song_description(self, song: Any) -> str | None:
         f = self.get_feature(GetSongDescriptionFeature)
-        return f.run(song) if f else None
+        return await f.run(song) if f else None
 
-    def get_song_genres(self, song: Any) -> List[str] | None:
+    async def get_song_genres(self, song: Any) -> List[str] | None:
         f = self.get_feature(GetSongGenresFeature)
-        return f.run(song) if f else None
+        return await f.run(song) if f else None
 
-    def get_plain_song_lyrics(self, song: Any) -> str | None:
+    async def get_plain_song_lyrics(self, song: Any) -> str | None:
         f = self.get_feature(GetPlainSongLyricsFeature)
-        return f.run(song) if f else None
+        return await f.run(song) if f else None
 
-    def get_synced_song_lyrics(self, song: Any) -> SyncedLyrics | None:
+    async def get_synced_song_lyrics(self, song: Any) -> SyncedLyrics | None:
         f = self.get_feature(GetSyncedSongLyricsFeature)
-        return f.run(song) if f else None
+        return await f.run(song) if f else None
 
     def get_wikidata_song_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataSongRelationKeyFeature)

@@ -66,7 +66,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
         return {
             "Accept-Encoding": "gzip",
             "Accept": "application/vnd.discogs.v2.plaintext+json",
-            "User-Agent": "Meelo Matcher/0.0.1",
+            "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
         }
 
     def _get_client(self):
@@ -75,7 +75,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
             user_token=self.settings.api_key,
         )
 
-    def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         client = self._get_client()
         try:
             return ArtistSearchResult(
@@ -84,7 +84,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
         except Exception:
             return None
 
-    def _get_artist(self, artist_id: str) -> Any | None:
+    async def _get_artist(self, artist_id: str) -> Any | None:
         try:
             return requests.get(
                 f"https://api.discogs.com/artists/{artist_id}",
@@ -94,7 +94,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
         except Exception:
             return None
 
-    def _get_artist_illustration_url(self, artist: Any) -> str | None:
+    async def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             # We sort images and take the most square one.
             images = artist["images"]
@@ -107,7 +107,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
 
     # Album
 
-    def _get_album(self, album_id: str) -> Any | None:
+    async def _get_album(self, album_id: str) -> Any | None:
         try:
             return requests.get(
                 f"https://api.discogs.com/masters/{album_id}",
@@ -117,7 +117,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
         except Exception:
             return None
 
-    def _get_album_genres(self, album: Any) -> List[str] | None:
+    async def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             return [capitalize_all_words(g) for g in album["genres"]]
         except Exception:

@@ -7,12 +7,12 @@ from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
 
-class TestMusicbrainz(unittest.TestCase):
+class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         MatcherTestUtils.setup_context()
 
-    def test_search_artist(self):
+    async def test_search_artist(self):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "f4d5cc07-3bc9-4836-9b15-88a08359bc63"),
             ("Christine & The Queens", "9c90ffbf-b137-4dee-bfcc-b8010787840d"),
@@ -29,19 +29,19 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [artist_name, expected] in scenarios:
             with self.subTest("Search Artist", artist_name=artist_name):
-                artist: ArtistSearchResult = provider.search_artist(artist_name)  # pyright: ignore
+                artist: ArtistSearchResult = await provider.search_artist(artist_name)  # pyright: ignore
                 self.assertIsNotNone(artist)
                 self.assertEqual(artist.id, expected)
 
-    def test_get_artist(self):
+    async def test_get_artist(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        artist = provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
+        artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         self.assertIsNotNone(artist)
         self.assertEqual(artist["name"], "Britney Spears")  # pyright:ignore
 
-    def test_search_album(self):
+    async def test_search_album(self):
         scenarios: List[Tuple[str, str | None, str | None]] = [
             ("Nova Tunes 01", None, "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
             # Test when is not actually various artist, but has type 'compilation'
@@ -111,7 +111,7 @@ class TestMusicbrainz(unittest.TestCase):
             with self.subTest(
                 "Search Album", album_name=album_name, artist_name=artist_name
             ):
-                album: AlbumSearchResult = provider.search_album(
+                album: AlbumSearchResult = await provider.search_album(
                     album_name, artist_name
                 )  # pyright: ignore
                 if not expected:
@@ -120,15 +120,15 @@ class TestMusicbrainz(unittest.TestCase):
                     self.assertIsNotNone(album)
                     self.assertEqual(album.id, expected)
 
-    def test_get_album_release_date_and_genres_and_type(self):
+    async def test_get_album_release_date_and_genres_and_type(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        album = provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
+        album = await provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
         self.assertIsNotNone(album)
-        release_date = provider.get_album_release_date(album)
+        release_date = await provider.get_album_release_date(album)
         self.assertEqual(release_date, datetime.date(1994, 9, 26))
-        genres: List[str] = provider.get_album_genres(album)  # pyright: ignore
+        genres: List[str] = await provider.get_album_genres(album)  # pyright: ignore
         self.assertEqual(len(genres), 6)
         self.assertIn("Trip Hop", genres)
         self.assertIn("Electronic", genres)
@@ -136,19 +136,19 @@ class TestMusicbrainz(unittest.TestCase):
         self.assertIn("Downtempo", genres)
         self.assertIn("Alternative Dance", genres)
         self.assertIn("Electronica", genres)
-        type = provider.get_album_type(album)
+        type = await provider.get_album_type(album)
         self.assertIs(AlbumType.STUDIO, type)
 
-    def test_get_album_release_date_month_only(self):
+    async def test_get_album_release_date_month_only(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        album = provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
+        album = await provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
         self.assertIsNotNone(album)
-        release_date = provider.get_album_release_date(album)
+        release_date = await provider.get_album_release_date(album)
         self.assertEqual(release_date, datetime.date(1994, 11, 1))
 
-    def test_get_album_type(self):
+    async def test_get_album_type(self):
         scenarios: List[Tuple[str, AlbumType]] = [
             # Madonna - I'm Going to tell you a secret
             ("876da970-473b-3a01-9aea-79d1fa6b053a", AlbumType.LIVE),
@@ -185,12 +185,12 @@ class TestMusicbrainz(unittest.TestCase):
         )  # pyright: ignore
         for [mbid, expected_type] in scenarios:
             with self.subTest("Get Album Type", mbid=mbid, type=expected_type):
-                album = provider.get_album(mbid)
+                album = await provider.get_album(mbid)
                 self.assertIsNotNone(album)
-                type = provider.get_album_type(album)
+                type = await provider.get_album_type(album)
                 self.assertIs(expected_type, type)
 
-    def test_search_song(self):
+    async def test_search_song(self):
         scenarios: List[Tuple[str, str, List[str], List[str]]] = [
             (
                 "Breathe On Me",
@@ -224,11 +224,13 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [song_name, artist_name, featuring, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name, featuring=featuring):
-                song = provider.search_song(song_name, artist_name, featuring, None)
+                song = await provider.search_song(
+                    song_name, artist_name, featuring, None
+                )
                 self.assertIsNotNone(song)
                 self.assertIn(song.id, expected)  # pyright: ignore
 
-    def test_search_song_with_acoustid(self):
+    async def test_search_song_with_acoustid(self):
         scenarios: List[Tuple[str, str, int, List[str]]] = [
             (
                 "Hung Up",
@@ -262,21 +264,23 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [song_name, acoustid, duration, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name):
-                song = provider.search_song_with_acoustid(acoustid, duration, song_name)
+                song = await provider.search_song_with_acoustid(
+                    acoustid, duration, song_name
+                )
                 if expected == []:
                     self.assertIsNone(song)
                 else:
                     self.assertIsNotNone(song)
                     self.assertIn(song.id, expected)  # pyright: ignore
 
-    def test_get_song_with_genres(self):
+    async def test_get_song_with_genres(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        song = provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
+        song = await provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
         self.assertIsNotNone(song)
         self.assertEqual(song["title"], "Breathe on Me")  # pyright:ignore
-        genres: List[str] = provider.get_song_genres(song)  # pyright: ignore
+        genres: List[str] = await provider.get_song_genres(song)  # pyright: ignore
         self.assertIsNotNone(genres)
         self.assertIn("Pop", genres)
         self.assertIn("Dance-Pop", genres)

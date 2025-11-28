@@ -1,7 +1,9 @@
+import asyncio
 import logging
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.models.match_result import ArtistMatchResult
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
@@ -10,9 +12,9 @@ from ..context import Context
 from . import common
 
 
-def match_and_post_artist(artist_id: int, artist_name: str):
+async def match_and_post_artist(artist_id: int, artist_name: str):
     try:
-        res = match_artist(artist_id, artist_name)
+        res = await match_artist(artist_id, artist_name)
         context = Context.get()
         if res.metadata:
             logging.info(
@@ -26,10 +28,10 @@ def match_and_post_artist(artist_id: int, artist_name: str):
         logging.error(e)
 
 
-def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
+async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
     context = Context.get()
     artist_illustration_url: str | None = None
-    (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
+    (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
         lambda mb: mb.search_artist(artist_name),
         lambda mb, mbid: mb.get_artist(mbid),
         lambda mb, mbid: mb.get_artist_url_from_id(mbid),
@@ -39,7 +41,7 @@ def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:
-        external_sources = external_sources + common.get_sources_from_wikidata(
+        external_sources = external_sources + await common.get_sources_from_wikidata(
             wikidata_id,
             [p for p in context.providers if p.api_model.id not in sources_ids],
             lambda p: p.get_wikidata_artist_relation_key(),
@@ -48,16 +50,27 @@ def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
 
     # Resolve by searching
     sources_ids = [source.provider_id for source in external_sources]
-    for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
-        search_res = provider.search_artist(artist_name)
+
+    async def search_artist_url(p: BaseProviderBoilerplate):
+        search_res = await p.search_artist(artist_name)
         if not search_res:
-            continue
-        artist_url = provider.get_artist_url_from_id(str(search_res.id))
+            return None
+        artist_url = p.get_artist_url_from_id(str(search_res.id))
         if not artist_url:
-            continue
-        external_sources.append(
-            ExternalMetadataSourceDto(artist_url, provider.api_model.id)
+            return None
+        return ExternalMetadataSourceDto(artist_url, p.api_model.id)
+
+    external_sources = external_sources + [
+        res
+        for res in await asyncio.gather(
+            *[
+                search_artist_url(p)
+                for p in context.providers
+                if p.api_model.id not in sources_ids
+            ]
         )
+        if res is not None
+    ]
 
     for source in external_sources:
         provider = common.get_provider_from_external_source(source)
@@ -72,13 +85,13 @@ def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
         provider_artist_id = provider.get_artist_id_from_url(source.url)
         if not provider_artist_id:
             continue
-        artist = provider.get_artist(provider_artist_id)
+        artist = await provider.get_artist(provider_artist_id)
         if not artist:
             continue
         if not description:
-            description = provider.get_artist_description(artist)
+            description = await provider.get_artist_description(artist)
         if not artist_illustration_url:
-            artist_illustration_url = provider.get_artist_illustration_url(artist)
+            artist_illustration_url = await provider.get_artist_illustration_url(artist)
         if description and artist_illustration_url:
             break
     return ArtistMatchResult(

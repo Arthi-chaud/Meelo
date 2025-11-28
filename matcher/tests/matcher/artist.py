@@ -4,13 +4,13 @@ from matcher.matcher.artist import match_artist
 from tests.matcher.common import MatcherTestUtils
 
 
-class TestMatchArtist(unittest.TestCase):
+class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         return MatcherTestUtils.setup_context()
 
-    def test_get_artist(self):
-        res = match_artist(1, "Madonna")
+    async def test_get_artist(self):
+        res = await match_artist(1, "Madonna")
         # Illustration
         self.assertIsNotNone(res.illustration_url)
         res.illustration_url = str(res.illustration_url)
@@ -45,8 +45,8 @@ class TestMatchArtist(unittest.TestCase):
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/artist/mn0000237205")
 
-    def test_get_artist_with_special_char(self):
-        res = match_artist(1, "P!nk")
+    async def test_get_artist_with_special_char(self):
+        res = await match_artist(1, "P!nk")
 
         # Illustration
         self.assertIsNotNone(res.illustration_url)
@@ -82,8 +82,8 @@ class TestMatchArtist(unittest.TestCase):
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/artist/mn0001878899")
 
-    def test_get_artist_with_placeholder_image(self):
-        res = match_artist(1, "Peplab")
+    async def test_get_artist_with_placeholder_image(self):
+        res = await match_artist(1, "Peplab")
         # Illustration
         self.assertIsNotNone(res.illustration_url)
         res.illustration_url = str(res.illustration_url)

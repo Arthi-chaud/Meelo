@@ -6,13 +6,15 @@ from tests.matcher.common import MatcherTestUtils
 from matcher.context import Context
 
 
-class TestMatchAlbum(unittest.TestCase):
+class TestMatchAlbum(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         return MatcherTestUtils.setup_context()
 
-    def test_get_album(self):
-        res = match_album(1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO)
+    async def test_get_album(self):
+        res = await match_album(
+            1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
+        )
         # Type
         self.assertIsNone(res.album_type)
         # Genres
@@ -70,8 +72,8 @@ class TestMatchAlbum(unittest.TestCase):
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000356345")
 
-    def test_get_album2(self):
-        res = match_album(
+    async def test_get_album2(self):
+        res = await match_album(
             1, "The Tortured Poets Department", "Taylor Swift", AlbumType.STUDIO
         )
         # Type
@@ -118,8 +120,8 @@ class TestMatchAlbum(unittest.TestCase):
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0004210541")
 
-    def test_get_album_no_rating(self):
-        res = match_album(1, "Aéromusical", "Superbus", AlbumType.STUDIO)
+    async def test_get_album_no_rating(self):
+        res = await match_album(1, "Aéromusical", "Superbus", AlbumType.STUDIO)
         # Rating
         self.assertIsNone(res.metadata.rating)
         # Release date
@@ -149,21 +151,25 @@ class TestMatchAlbum(unittest.TestCase):
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000770491")
 
-    def test_get_album_ignore_genres(self):
+    async def test_get_album_ignore_genres(self):
         # Setup
         context = Context.get()
         context.settings.push_genres = False
-        res = match_album(1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO)
+        res = await match_album(
+            1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
+        )
         # Teardown
         context.settings.push_genres = True
         # Genres
         self.assertEqual(len(res.genres), 0)
 
-    def test_get_album_correct_type(self):
+    async def test_get_album_correct_type(self):
         # Setup
         context = Context.get()
         context.settings.push_genres = False
-        res = match_album(1, "(How to Live) as Ghosts", "10 Years", AlbumType.LIVE)
+        res = await match_album(
+            1, "(How to Live) as Ghosts", "10 Years", AlbumType.LIVE
+        )
         # Teardown
         context.settings.push_genres = True
         self.assertEqual(res.album_type, AlbumType.STUDIO)
