@@ -67,6 +67,7 @@ def match_song(
     # We could skip using crossreference using wikidata,
     # because musicbrainz is not always useful for songs
     # + Searching using Genius seems efficient enough
+    print("a")
     (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
         lambda mb: (
             mb.search_song_with_acoustid(acoustid, duration, song_name)
@@ -78,6 +79,7 @@ def match_song(
         lambda mb, mbid: mb.get_song_url_from_id(mbid),
     )
 
+    print("b")
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:
@@ -88,6 +90,7 @@ def match_song(
             lambda p, song_id: p.get_song_url_from_id(song_id),
         )
 
+    print("c")
     # Resolve by searching
     sources_ids = [source.provider_id for source in external_sources]
     for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
@@ -101,6 +104,7 @@ def match_song(
             ExternalMetadataSourceDto(song_url, provider.api_model.id)
         )
 
+    print("d")
     for source in external_sources:
         provider = common.get_provider_from_external_source(source)
         is_useful = (
@@ -146,6 +150,8 @@ def match_song(
             break
     if not plain_lyrics and synced_lyrics:
         plain_lyrics = "\n".join([line for (_, line) in synced_lyrics])
+
+    print("e")
     return SongMatchResult(
         ExternalMetadataDto(
             description,
