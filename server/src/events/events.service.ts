@@ -51,6 +51,7 @@ export class EventsService {
 			options: {
 				urls: [process.env.RABBITMQ_URL!],
 				queue: QueueName,
+				persistent: true,
 				queueOptions: {
 					maxPriority: 5,
 					durable: true,

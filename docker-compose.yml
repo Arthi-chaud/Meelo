@@ -147,8 +147,8 @@ services:
       retries: 5
   mq:
     image: rabbitmq:4.0-alpine
+    hostname: meelo-mq
     environment:
-      - RABBITMQ_NODENAME=meelo
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     healthcheck:
