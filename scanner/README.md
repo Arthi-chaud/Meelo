@@ -16,7 +16,9 @@
 
 ### Setup and build
 
-You have to download some C code and use some compiler options:
+To run the app or tests, you'll have to install [GoCV](https://gocv.io).
+
+You also have to download some C code and use some compiler options:
 
 - Run the `dl_watcher.sh`
 - Before building the app, set the `CGO_CXXFLAGS` env var to `-std=c++17`
