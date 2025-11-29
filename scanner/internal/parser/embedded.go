@@ -68,7 +68,6 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		errors = append(errors, fmt.Errorf("could not parse bitrate. %s", err.Error()))
 	}
 	metadata.Duration = int64(probeData.Format.DurationSeconds)
-	metadata.Type = getType(*probeData)
 	tags := CollectTags(probeData)
 
 	ParseTag(tags, []string{"artist", "tope"}, func(value string) {
@@ -160,12 +159,4 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		}
 	}
 	return metadata, errors
-}
-
-func getType(probeData ffprobe.ProbeData) internal.TrackType {
-	videoStream := probeData.FirstVideoStream()
-	if videoStream == nil || videoStream.Disposition.AttachedPic == 1 || videoStream.Duration == "" {
-		return internal.Audio
-	}
-	return internal.Video
 }
