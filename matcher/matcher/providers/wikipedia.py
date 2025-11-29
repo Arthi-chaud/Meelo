@@ -46,7 +46,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
             GetSongDescriptionFeature(lambda song: self.get_article_extract(song)),
         ]
 
-    def get_article(self, article_id: str) -> Any | None:
+    async def get_article(self, article_id: str) -> Any | None:
         try:
             res = requests.get(
                 "https://en.wikipedia.org/w/api.php",
@@ -68,7 +68,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
         except Exception:
             return None
 
-    def get_article_extract(self, article: Any) -> str | None:
+    async def get_article_extract(self, article: Any) -> str | None:
         try:
             desc: str = article["extract"]
             return desc if not desc.startswith("Undefined may refer") else None
@@ -83,7 +83,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
 
     # the id is the article name
 
-    def get_article_name_from_wikidata(self, wikidata_id: str) -> str | None:
+    async def get_article_name_from_wikidata(self, wikidata_id: str) -> str | None:
         try:
             entities = requests.get(
                 "https://www.wikidata.org/w/api.php",

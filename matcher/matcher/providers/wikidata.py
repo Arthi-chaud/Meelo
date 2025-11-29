@@ -19,7 +19,7 @@ class WikidataRelations:
 # Note: Not a regular provider, we use it to link with other providers
 @dataclass
 class WikidataProvider:
-    def get_resource_relations(self, wikidata_id):
+    async def get_resource_relations(self, wikidata_id):
         try:
             return WikidataRelations(
                 requests.get(

@@ -48,7 +48,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
 
     # Album
 
-    def _get_album(self, album_id: str) -> Any | None:
+    async def _get_album(self, album_id: str) -> Any | None:
         try:
             html = requests.get(
                 str(self.get_album_url_from_id(album_id)),
@@ -61,7 +61,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
         except Exception:
             pass
 
-    def _get_album_rating(self, album: Any) -> int | None:
+    async def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
         try:
             div = tag.find("div", attrs={"title": "AllMusic Rating"})
@@ -82,7 +82,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
         except Exception:
             pass
 
-    def _get_album_release_date(self, album: Any) -> date | None:
+    async def _get_album_release_date(self, album: Any) -> date | None:
         try:
             raw_json = album.find("script", attrs={"type": "application/ld+json"}).text
             json_obj = json.loads(raw_json)

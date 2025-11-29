@@ -1,27 +1,30 @@
+import asyncio
 import logging
 
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import LyricsMatchResult, SongMatchResult, SyncedLyrics
+from matcher.providers.boilerplate import BaseProviderBoilerplate
+from matcher.providers.lrclib import LrcLibProvider
+from . import common
+from ..models.api.dto import ExternalMetadataSourceDto
+from ..context import Context
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetSongDescriptionFeature,
     GetPlainSongLyricsFeature,
     GetSyncedSongLyricsFeature,
 )
-from . import common
-from ..models.api.dto import ExternalMetadataSourceDto
-from ..context import Context
 
 
-def match_and_post_song(song_id: int, song_name: str):
+async def match_and_post_song(song_id: int, song_name: str):
     try:
         context = Context.get()
         song = context.client.get_song(song_id)
         source_file = (
             context.client.get_file(song.master.source_file_id) if song.master else None
         )
-        res = match_song(
+        res = await match_song(
             song_id,
             song.name,
             song.artist.name,
@@ -49,7 +52,7 @@ def match_and_post_song(song_id: int, song_name: str):
         logging.error(e)
 
 
-def match_song(
+async def match_song(
     song_id: int,
     song_name: str,
     artist_name: str,
@@ -59,21 +62,34 @@ def match_song(
 ) -> SongMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
+    lrclibProvider = Context.get().get_provider(LrcLibProvider)
+    external_sources: List[ExternalMetadataSourceDto] = []
     genres: List[str] = []
     plain_lyrics: str | None = None
     synced_lyrics: SyncedLyrics | None = None
     description: str | None = None
-    external_sources: List[ExternalMetadataSourceDto] = []
     # We could skip using crossreference using wikidata,
     # because musicbrainz is not always useful for songs
     # + Searching using Genius seems efficient enough
-    (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
-        lambda mb: (
-            mb.search_song_with_acoustid(acoustid, duration, song_name)
-            or mb.search_song(song_name, artist_name, featuring, duration)
+    providers = (
+        context.providers
+        if not lrclibProvider
+        else [
+            p
+            for p in context.providers
+            if p.api_model.id != lrclibProvider.api_model.id
+        ]
+    )
+
+    async def mb_search(mb: BaseProviderBoilerplate):
+        return (
+            (await mb.search_song_with_acoustid(acoustid, duration, song_name))
+            if acoustid is not None and duration is not None
+            else await mb.search_song(song_name, artist_name, featuring, duration)
         )
-        if acoustid is not None and duration is not None
-        else mb.search_song(song_name, artist_name, featuring, duration),
+
+    (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
+        lambda mb: mb_search(mb),
         lambda mb, mbid: mb.get_song(mbid),
         lambda mb, mbid: mb.get_song_url_from_id(mbid),
     )
@@ -81,25 +97,36 @@ def match_song(
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:
-        external_sources = external_sources + common.get_sources_from_wikidata(
+        external_sources = external_sources + await common.get_sources_from_wikidata(
             wikidata_id,
-            [p for p in context.providers if p.api_model.id not in sources_ids],
+            [p for p in providers if p.api_model.id not in sources_ids],
             lambda p: p.get_wikidata_song_relation_key(),
             lambda p, song_id: p.get_song_url_from_id(song_id),
         )
 
     # Resolve by searching
     sources_ids = [source.provider_id for source in external_sources]
-    for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
-        search_res = provider.search_song(song_name, artist_name, featuring, duration)
+
+    async def search_song_url(p: BaseProviderBoilerplate):
+        search_res = await p.search_song(song_name, artist_name, featuring, duration)
         if not search_res:
-            continue
-        song_url = provider.get_song_url_from_id(str(search_res.id))
+            return None
+        song_url = p.get_song_url_from_id(str(search_res.id))
         if not song_url:
-            continue
-        external_sources.append(
-            ExternalMetadataSourceDto(song_url, provider.api_model.id)
+            return None
+        return ExternalMetadataSourceDto(song_url, p.api_model.id)
+
+    external_sources = external_sources + [
+        res
+        for res in await asyncio.gather(
+            *[
+                search_song_url(p)
+                for p in providers
+                if p.api_model.id not in sources_ids
+            ]
         )
+        if res is not None
+    ]
 
     for source in external_sources:
         provider = common.get_provider_from_external_source(source)
@@ -126,26 +153,46 @@ def match_song(
         provider_song_id = provider.get_song_id_from_url(source.url)
         if not provider_song_id:
             continue
-        song = provider.get_song(provider_song_id)
+        song = await provider.get_song(provider_song_id)
         if not song:
             continue
         if not description:
-            description = provider.get_song_description(song)
+            description = await provider.get_song_description(song)
         if not synced_lyrics:
-            synced_lyrics = provider.get_synced_song_lyrics(song)
+            synced_lyrics = await provider.get_synced_song_lyrics(song)
         if not plain_lyrics:
-            plain_lyrics = provider.get_plain_song_lyrics(song)
+            plain_lyrics = await provider.get_plain_song_lyrics(song)
         if not plain_lyrics and synced_lyrics:
             plain_lyrics = "\n".join([line for (_, line) in synced_lyrics])
         genres = genres + (
-            [g for g in provider.get_song_genres(song) or [] if g not in genres]
+            [g for g in await provider.get_song_genres(song) or [] if g not in genres]
             if need_genres
             else []
         )
         if description and plain_lyrics and synced_lyrics and genres:
             break
+
     if not plain_lyrics and synced_lyrics:
         plain_lyrics = "\n".join([line for (_, line) in synced_lyrics])
+
+    if (not plain_lyrics or not synced_lyrics) and lrclibProvider is not None:
+        song = await lrclibProvider._search_and_get_song(
+            song_name, artist_name, featuring, duration
+        )
+        if song:
+            synced = await lrclibProvider._parse_synced_lyrics(song)
+            plain = (
+                "\n".join([line for (_, line) in synced])
+                if synced
+                else (await lrclibProvider._parse_plain_lyrics(song))
+            )
+
+            if not plain_lyrics and plain:
+                plain_lyrics = plain
+            if synced:
+                synced_lyrics = synced
+                plain_lyrics = plain or plain_lyrics
+
     return SongMatchResult(
         ExternalMetadataDto(
             description,

@@ -50,7 +50,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
             GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
         ]
 
-    def _get_album(self, album_id: str) -> Any | None:
+    async def _get_album(self, album_id: str) -> Any | None:
         album_url = self.get_album_url_from_id(album_id)
         try:
             html = requests.get(
@@ -76,7 +76,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
     # except Exception:
     #     pass
 
-    def _get_album_release_date(self, album: Any) -> date | None:
+    async def _get_album_release_date(self, album: Any) -> date | None:
         tag: Tag = album
         try:
             release_date = tag.find(
@@ -86,7 +86,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
         except Exception:
             pass
 
-    def _get_album_rating(self, album: Any) -> int | None:
+    async def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
         try:
             raw_value = tag.find("span", attrs={"itemprop": "ratingValue"}).text  # pyright: ignore

@@ -20,7 +20,7 @@ from matcher.mq import (
 from .models.event import Event
 
 
-def consume(ch: BlockingChannel, method, prop, body):
+async def consume(ch: BlockingChannel, method, prop, body):
     event = Event.from_json(body)
     ctx = Context.get()
     ctx.pending_items_count = get_queue_size()
@@ -31,17 +31,17 @@ def consume(ch: BlockingChannel, method, prop, body):
     ctx.current_item = CurrentItem(name=event.name, type=event.type, id=event.id)
     match event.type:
         case "artist":
-            match_and_post_artist(event.id, event.name)
+            await match_and_post_artist(event.id, event.name)
             ch.basic_ack(delivery_tag)
             ctx.increment_handled_items_count()
             pass
         case "album":
-            match_and_post_album(event.id, event.name)
+            await match_and_post_album(event.id, event.name)
             ctx.increment_handled_items_count()
             ch.basic_ack(delivery_tag)
             pass
         case "song":
-            match_and_post_song(event.id, event.name)
+            await match_and_post_song(event.id, event.name)
             ctx.increment_handled_items_count()
             ch.basic_ack(delivery_tag)
             pass
@@ -63,6 +63,8 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     logging.basicConfig(level=logging.INFO)
+    logging.getLogger("asyncio").setLevel(logging.ERROR)
+    logging.getLogger("pika").setLevel(logging.ERROR)
     bootstrap_context()
     connect_mq(consume)
     start_consuming()

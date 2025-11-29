@@ -7,12 +7,12 @@ from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
 
-class TestMusicbrainz(unittest.TestCase):
+class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         MatcherTestUtils.setup_context()
 
-    def test_search_artist(self):
+    async def test_search_artist(self):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "f4d5cc07-3bc9-4836-9b15-88a08359bc63"),
             ("Christine & The Queens", "9c90ffbf-b137-4dee-bfcc-b8010787840d"),
@@ -29,19 +29,19 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [artist_name, expected] in scenarios:
             with self.subTest("Search Artist", artist_name=artist_name):
-                artist: ArtistSearchResult = provider.search_artist(artist_name)  # pyright: ignore
+                artist: ArtistSearchResult = await provider.search_artist(artist_name)  # pyright: ignore
                 self.assertIsNotNone(artist)
                 self.assertEqual(artist.id, expected)
 
-    def test_get_artist(self):
+    async def test_get_artist(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        artist = provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
+        artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         self.assertIsNotNone(artist)
         self.assertEqual(artist["name"], "Britney Spears")  # pyright:ignore
 
-    def test_search_album(self):
+    async def test_search_album(self):
         scenarios: List[Tuple[str, str | None, str | None]] = [
             ("Nova Tunes 01", None, "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
             # Test when is not actually various artist, but has type 'compilation'
@@ -111,7 +111,7 @@ class TestMusicbrainz(unittest.TestCase):
             with self.subTest(
                 "Search Album", album_name=album_name, artist_name=artist_name
             ):
-                album: AlbumSearchResult = provider.search_album(
+                album: AlbumSearchResult = await provider.search_album(
                     album_name, artist_name
                 )  # pyright: ignore
                 if not expected:
@@ -120,15 +120,15 @@ class TestMusicbrainz(unittest.TestCase):
                     self.assertIsNotNone(album)
                     self.assertEqual(album.id, expected)
 
-    def test_get_album_release_date_and_genres_and_type(self):
+    async def test_get_album_release_date_and_genres_and_type(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        album = provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
+        album = await provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
         self.assertIsNotNone(album)
-        release_date = provider.get_album_release_date(album)
+        release_date = await provider.get_album_release_date(album)
         self.assertEqual(release_date, datetime.date(1994, 9, 26))
-        genres: List[str] = provider.get_album_genres(album)  # pyright: ignore
+        genres: List[str] = await provider.get_album_genres(album)  # pyright: ignore
         self.assertEqual(len(genres), 6)
         self.assertIn("Trip Hop", genres)
         self.assertIn("Electronic", genres)
@@ -136,19 +136,19 @@ class TestMusicbrainz(unittest.TestCase):
         self.assertIn("Downtempo", genres)
         self.assertIn("Alternative Dance", genres)
         self.assertIn("Electronica", genres)
-        type = provider.get_album_type(album)
+        type = await provider.get_album_type(album)
         self.assertIs(AlbumType.STUDIO, type)
 
-    def test_get_album_release_date_month_only(self):
+    async def test_get_album_release_date_month_only(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        album = provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
+        album = await provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
         self.assertIsNotNone(album)
-        release_date = provider.get_album_release_date(album)
+        release_date = await provider.get_album_release_date(album)
         self.assertEqual(release_date, datetime.date(1994, 11, 1))
 
-    def test_get_album_type(self):
+    async def test_get_album_type(self):
         scenarios: List[Tuple[str, AlbumType]] = [
             # Madonna - I'm Going to tell you a secret
             ("876da970-473b-3a01-9aea-79d1fa6b053a", AlbumType.LIVE),
@@ -185,18 +185,21 @@ class TestMusicbrainz(unittest.TestCase):
         )  # pyright: ignore
         for [mbid, expected_type] in scenarios:
             with self.subTest("Get Album Type", mbid=mbid, type=expected_type):
-                album = provider.get_album(mbid)
+                album = await provider.get_album(mbid)
                 self.assertIsNotNone(album)
-                type = provider.get_album_type(album)
+                type = await provider.get_album_type(album)
                 self.assertIs(expected_type, type)
 
-    def test_search_song(self):
+    async def test_search_song(self):
         scenarios: List[Tuple[str, str, List[str], List[str]]] = [
             (
                 "Breathe On Me",
                 "Britney Spears",
                 [],
-                ["08d07438-9b9c-4c41-a1d5-7211a32cc9ad"],
+                [
+                    "08d07438-9b9c-4c41-a1d5-7211a32cc9ad",
+                    "a3522de9-4682-486d-9117-29fca7fabb55",
+                ],
             ),
             ("100%", "Moloko", [], ["13f48782-ca5a-4a7f-9623-f1054697c173"]),
             (
@@ -221,11 +224,13 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [song_name, artist_name, featuring, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name, featuring=featuring):
-                song = provider.search_song(song_name, artist_name, featuring, None)
+                song = await provider.search_song(
+                    song_name, artist_name, featuring, None
+                )
                 self.assertIsNotNone(song)
                 self.assertIn(song.id, expected)  # pyright: ignore
 
-    def test_search_song_with_acoustid(self):
+    async def test_search_song_with_acoustid(self):
         scenarios: List[Tuple[str, str, int, List[str]]] = [
             (
                 "Hung Up",
@@ -237,7 +242,7 @@ class TestMusicbrainz(unittest.TestCase):
                 "Overrated (Radio Edit)",
                 "AQADtNKiJJEkRUqCcBe0xNKPT0qK77huaJx6_MiP40dzBbdxlsjVQ2NJNMFz5PlR4qkVHD7RD_8RG0c3x3B9hLKFXheaPjjS4_mgI-eExhqOpteRo1aEJt3x7agEk6dwo3Y26Eu-IN_gZ8SeqMcT_EGV8YObC0d-QQrJbcjzCMfB-HCajCN2PWjmFj2aHFeiIGbiAZ1ZmIf2IBdztFJUNG2Oi7iOH6H9QBRzIe2Ww79Q5gpuHUdXCg6VpYN9hNTRLiOas8cl7fiyZ0VeNHFQPsXvIxcpXEkeiD-eCNHxFzmTHFqT6Kh05J9RpS-al_hxecifQ98e1Jo-iE-OPCeabniEUl-CJq-k4MH38EhmJgizCZfxPAETNQyHC_4R-qiqYYpeXLjyw7OMH-PDSEKizAwm4Wnw5ziaHz1_PNFzJJ2SHLkuoQ9d-OjzCXelIdJ2JFqP89hxGm7QT8eVRU6ERjlVJDsiXULzBMxK55gS5hyu4zvyQ7yJH5_WQZWSzMhT9Edzc8TDLXgRkTmkKLuJPMuOfXCFOmaMPBe0PwzS_PBjTAeTKDQi8UHyBFcenBKac6huPHKIT4paDbkKvXCeHlcu6B--Iy4myjTa1SiVEk2XIl9y_BqhozuLpnqgZ8EuSrhOfNB34lPw1-ijEs3xQnU-hHkPKwuNPsc6G32UCM1cATmNejT8E2nS9miHr7iI6Mnx44twXULFH5vwRiMkc8jhv8L05WiFxvjw_eglwVF1WLkRqpoMfUcutGrQfD52XcgO5S_64AophHiyIz9uRReSPYePZhKPL9GN-QqewzK5ZODF4YyCS1JQ-Cn2Ia1y4bOKNGlRi8ejYn9xJeAbXMmFyTIc08KDH5H6Qx94IZeSF72wuziNX6iO-_j0o_rxY3ckpAVz4dGS4k-InkdTfA0-BY-O6pmgH3mSw_nBUFt2XKrBak9wH1TN4ulYPM2OS4mio4mXIjRRPYUpPUid8HhKG2108A-e41txCnuCR7UwIV5-WOWhSbuEvOCVowyPf5j-43iKZsdYKTIafUashjt0Iz8aawHzB3mO_YQeXCGL48d7fIf66AgvnnjRxvh0_Cn6LMeU_MFluXiSaHgWNFyP7x0ccxm4JrjI48lB_cWXoZ_wkML-G1-y4zsqybDaHj_qrcjzCheUK0b46AIT4t3w2COa6kIffLPx1CFO6Uh2BllS3XiJZ3OK_5iu8EGYQz9eI0eVD15jFb-Gb8LUWcgP_UEeioOrBv-OI4kkSRGaTBtydLnQKMxxqTrCrMwnJJPDKcWND5UjoaTwRMfjRahtNI-O6wZyHYoi3QjJ5Og5-MS07cEbHTmzCGViHlqOfxGaH9pzxJoOSzzu48h16EqC2DhxjdGCi5kFp8eVIW8_HOKImAqV45jiJN2KUH6GH1-iCFaWDOcXTDeaZzkuolYOLVtyId4uPKLw4BeaSZvRVcqM30MO7Vl6WIpxhKdxMRyOJpSuIomWJUf8Cz-aWUH_BVcOJo-QKEf8JUSXZNExZQt55IyK_hA_hPtRKrnw5Q3SqIdu5NaEWse740obNPGNycaZRDliakeynmiqmMHFD9yjlcKPSFG0CRo7I7fxKJVU7Mgh-0eoh2BSCk9xe9hfXI-QykdyXfhxNXjsB010B4-QHxrljIjY48c1gRGXodEX5NKhH5eyaHiBRMlzdE_i4hTm4aKFvrBeJOuR07iW49KF_2jUJaioHEk-ZMclDbvwWMeUuELYHV-ULYGefDj4QZMTDdGSMuiBHz9T9Dka90iq_sgnonmKnkR-oWuWEaqF_Jh-XJyYID-0yJkQqsdZ7OOE2NwOmRtiLzdKKREaHj_eJviO8IWWfM-QR1Px6UGVmcKPHo-yHCF5NL6gI8wZ9MlwHZ3iDIePXseRZzrUdccRHn7QRuGL3kfzGHuNJj_CTZSgtkGWDv_RJ0mFKxf2B02OSGzl4rkIjUtIwcepzIdYFeEDVr9x_biFPXlwSUeeXcOkR5DE8QiP6w72w5SN84ZxvfiJSzxSJdMmQVcUhIkZGb0iEufxo3GKNluPYz-IXOOHQ8VK5JKJWGKOsoN4omF87I8oxNJmMO84NDr2TDs-Kcb1HM0_PCHMKEd-qFv2wXo4aGqy4r-wLzRyKgNv7GEoXDkq_rh2Cs7Rv9h15PogXTrCJ9hr_PjooPfxPRWOT8dzYXwOV2DXDI_o4L0EP8czDXluXFqOxwn0ysKVIz-aJNLBqFqIR6SCE0VT79gV5TiDPyca-UWeLMKjHA85vEEcz8RU_eCPi8fe49YTPOGRz2iSQ-HGo_-QHd_RLM-D_WiO7_hZlDmaSMsQniO0yMsR4xamSgvR9McvZD5-KFdwn8hZ4kNRbkdoKYfvQ__RZNlIIX-CNVLmo3oGJvXxJVFwKR-e8UHzasd-uMoqPEdPCvuN_vBzMJdiCpew48lxH53uDT_8I3yyY9chIdcboXly7A98_Ap64YtM4YhaJKWSsPh0UGNl4pxxLQ_2IT10ETn64rtCWOnR66grpLNKiFmOkDse3EzhH-dxLUd_5NTxwxeJH08p_KhF4hr64IGfHOkXolfwfsSnB_eHG2EY9dC-I__w4MqNnQ8eJdNwHwejyx6YvDlyD817aCepof9gjjKhnSGwC2F5pCOD5oLeIxaFv0a1Fd7CBr_QnEXP6GjSEq-R83hzaNmL_-iNbsohNz2u52g5_Dj6MEMuXDlKKikuBs9HvDnRI90naF2G_MF-lD8XtMyDN9MI7jteo8nRDggAMRAK4wgG0DoBhEHMEiCUE4YCwBUwiEECgDFHKCCIoIAYZIgEkBDGkHCUAkEIQcAaIZhAxAEhABBEkKWEAEIAxYwAhigkqCnCMAGZEM4ZQgABwgAnCSFAACCAUUAwTBBAwgqBkBJgGiEAAMAJgKgAAAPmIBMAGIUAQIg6wRAAQgglAKPCKIIUEUBIYwRBBAslgACHOMCAsAoAAwJBihAwFAIIQCuAIEQogYSjxihlEAEAmASIEccQQZCQSgBByBDCAGYgAIQCBIiiAAiCsHHCMYOYMcALYAgpwEBqGGBAAAUQhAAYZgxwQDDDlGIWACGAUsAQYgwDyghnGCIGAAAFAgoaBQQolgBQgKBECYcMJhYgAQUQhBCClACGEGWAAIApAgQSTgBAgGEAIESIIcQioYAAEABiCAAACMAUYYAQBYBDACgqkRIGUEUEQ0QBoQAUhgAhiEBEIUGIAQZCIbgAAgEBCzWSGEAUUJgYIygTBiAhxABUGAIMAAIRpAAwhgmBlAEAAcCAQEYwyAwACCDjSDBCIWQAYsQpBwwgDigFBSKEQEC4kAIhZ6RRihgpAFSaWMAMMgiMRBwDSggCAEIQEGEEMIg5JIQgjjlmAAFGQKQMoIQBAAzZwqCCCGMWCAaMUUQIo4QgyCgAAACAAWAMAAooaKwyBhKjGFAEEECMAYAJjIRRTAiChBFEAAGApAJZYIgSQgBjEBDCGIKEIBI4Aw1FAgBABIAOGEOAcAAZAKhgTihhQCEAAWOANFAxYgglQAACFCCGAYUeAAYhjYwjAAiCAEPOCwEUAIIIAohABhhBkGEAECgUFQgAJwBhWiGAAECKACaUEkQBgBEDgChjiGAgcAsUMcIBEABxAFBGDAEEiACsUoICAQwAggBEFREKKiUMYEAJAQQDThAiLCLOCEKBIIIoY5wQQAgDgFDIOOAQQQABg50QygBAFBDCAA",
                 222,
-                [],  # Does not return satisfactory results
+                ["ad830438-1993-4267-af17-a2c3dd431c4d"],
             ),
             (
                 "American Pie (Victor Calderone Filter Dub Mix)",
@@ -259,21 +264,23 @@ class TestMusicbrainz(unittest.TestCase):
 
         for [song_name, acoustid, duration, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name):
-                song = provider.search_song_with_acoustid(acoustid, duration, song_name)
+                song = await provider.search_song_with_acoustid(
+                    acoustid, duration, song_name
+                )
                 if expected == []:
                     self.assertIsNone(song)
                 else:
                     self.assertIsNotNone(song)
                     self.assertIn(song.id, expected)  # pyright: ignore
 
-    def test_get_song_with_genres(self):
+    async def test_get_song_with_genres(self):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        song = provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
+        song = await provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
         self.assertIsNotNone(song)
         self.assertEqual(song["title"], "Breathe on Me")  # pyright:ignore
-        genres: List[str] = provider.get_song_genres(song)  # pyright: ignore
+        genres: List[str] = await provider.get_song_genres(song)  # pyright: ignore
         self.assertIsNotNone(genres)
         self.assertIn("Pop", genres)
         self.assertIn("Dance-Pop", genres)

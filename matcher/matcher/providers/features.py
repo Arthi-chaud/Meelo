@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, List
+from typing import Any, Awaitable, List
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
@@ -38,19 +38,19 @@ class IsMusicBrainzRelationFeature(BaseFeature[Any, bool]):
 ## Artists
 
 
-class SearchArtistFeature(BaseFeature[str, ArtistSearchResult | None]):
+class SearchArtistFeature(BaseFeature[str, Awaitable[ArtistSearchResult | None]]):
     pass
 
 
-class GetArtistFeature(BaseFeature[ResourceId, Any | None]):
+class GetArtistFeature(BaseFeature[ResourceId, Awaitable[Any | None]]):
     pass
 
 
-class GetArtistDescriptionFeature(BaseFeature[Any, str | None]):
+class GetArtistDescriptionFeature(BaseFeature[Any, Awaitable[str | None]]):
     pass
 
 
-class GetArtistIllustrationUrlFeature(BaseFeature[Any, str | None]):
+class GetArtistIllustrationUrlFeature(BaseFeature[Any, Awaitable[str | None]]):
     pass
 
 
@@ -70,32 +70,32 @@ class GetArtistIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class SearchAlbumFeature(
-    BaseFeature[ResourceName, ResourceName | None, AlbumSearchResult | None]
+    BaseFeature[ResourceName, ResourceName | None, Awaitable[AlbumSearchResult | None]]
 ):
     pass
 
 
-class GetAlbumFeature(BaseFeature[ResourceId, Any | None]):
+class GetAlbumFeature(BaseFeature[ResourceId, Awaitable[Any | None]]):
     pass
 
 
-class GetAlbumDescriptionFeature(BaseFeature[Any, str | None]):
+class GetAlbumDescriptionFeature(BaseFeature[Any, Awaitable[str | None]]):
     pass
 
 
-class GetAlbumRatingFeature(BaseFeature[Any, int | None]):
+class GetAlbumRatingFeature(BaseFeature[Any, Awaitable[int | None]]):
     pass
 
 
-class GetAlbumGenresFeature(BaseFeature[Any, List[str] | None]):
+class GetAlbumGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
     pass
 
 
-class GetAlbumTypeFeature(BaseFeature[Any, AlbumType | None]):
+class GetAlbumTypeFeature(BaseFeature[Any, Awaitable[AlbumType | None]]):
     pass
 
 
-class GetAlbumReleaseDateFeature(BaseFeature[Any, date | None]):
+class GetAlbumReleaseDateFeature(BaseFeature[Any, Awaitable[date | None]]):
     pass
 
 
@@ -120,35 +120,35 @@ class SearchSongFeature(
         ResourceName,
         List[ResourceName],
         int | None,
-        SongSearchResult | None,
+        Awaitable[SongSearchResult | None],
     ]
 ):
     pass
 
 
 class SearchSongWithAcoustIdFeature(
-    BaseFeature[str, int, str, SongSearchResult | None]
+    BaseFeature[str, int, str, Awaitable[SongSearchResult | None]]
 ):
     pass
 
 
-class GetSongFeature(BaseFeature[ResourceId, Any | None]):
+class GetSongFeature(BaseFeature[ResourceId, Awaitable[Any | None]]):
     pass
 
 
-class GetSongDescriptionFeature(BaseFeature[Any, str | None]):
+class GetSongDescriptionFeature(BaseFeature[Any, Awaitable[str | None]]):
     pass
 
 
-class GetSongGenresFeature(BaseFeature[Any, List[str] | None]):
+class GetSongGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
     pass
 
 
-class GetPlainSongLyricsFeature(BaseFeature[Any, str | None]):
+class GetPlainSongLyricsFeature(BaseFeature[Any, Awaitable[str | None]]):
     pass
 
 
-class GetSyncedSongLyricsFeature(BaseFeature[Any, SyncedLyrics | None]):
+class GetSyncedSongLyricsFeature(BaseFeature[Any, Awaitable[SyncedLyrics | None]]):
     pass
 
 

@@ -44,13 +44,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         logging.getLogger("musicbrainzngs").setLevel(logging.ERROR)
         with warnings.catch_warnings(action="ignore"):
             musicbrainzngs.set_format("json")
-        musicbrainzngs.set_useragent(
-            "Meelo Matcher", "0.0.1", "github.com/Arthi-chaud/Meelo"
-        )
         self.features = [
-            GetArtistFeature(
-                lambda artist: musicbrainzngs.get_artist_by_id(artist, ["url-rels"])
-            ),
+            GetArtistFeature(lambda artist_id: self._get_artist(artist_id)),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://musicbrainz.org/artist/{artist_id}"
@@ -101,11 +96,18 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             ),
         ]
 
+    def _set_user_agent(self):
+        musicbrainzngs.set_useragent(
+            "Meelo Matcher",
+            Context.get().settings.version,
+            "github.com/Arthi-chaud/Meelo",
+        )
+
     # Note: Only use this method if action is not supported by library
     # E.g. Getting genres of a release-group
     @_rate_limit
     @staticmethod
-    def _fetch(url: str, query: Any = {}) -> Any:
+    async def _fetch(url: str, query: Any = {}) -> Any:
         res = requests.get(
             f"https://musicbrainz.org/ws/2{url}",
             params={**query, **{"fmt": "json"}},
@@ -118,7 +120,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
 
-    def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _get_artist(self, id: str) -> Any:
+        self._set_user_agent()
+        return musicbrainzngs.get_artist_by_id(id, ["url-rels"])
+
+    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+        self._set_user_agent()
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
         return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
 
@@ -129,7 +136,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         return res
 
     # Album
-    def _search_album(
+    async def _search_album(
         self,
         album_name: str,
         artist_name: str | None,
@@ -147,6 +154,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         artist_slug = to_slug(artist_name) if artist_name else None
         is_single = sanitised_album_name != album_name
         try:
+            self._set_user_agent()
             releases = musicbrainzngs.search_releases(
                 sanitised_album_name,
                 arid=self.compilation_artist_id if not artist_name else None,
@@ -209,12 +217,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             logging.error(e)
             return None
 
-    def _get_album(self, album_id: str) -> Any | None:
-        return self._fetch(
+    async def _get_album(self, album_id: str) -> Any | None:
+        return await self._fetch(
             f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
 
-    def _get_album_release_date(self, album: Any) -> date | None:
+    async def _get_album_release_date(self, album: Any) -> date | None:
         str_release_date = album.get("first-release-date")
         if not str_release_date:
             return None
@@ -226,7 +234,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             except Exception:
                 continue
 
-    def _get_album_genres(self, album: Any) -> List[str] | None:
+    async def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             genres: List[Any] = album["genres"]
             return [
@@ -237,7 +245,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         except Exception:
             pass
 
-    def _get_album_type(self, album: Any) -> AlbumType | None:
+    async def _get_album_type(self, album: Any) -> AlbumType | None:
         raw_types: List[str] = []
         if album.get("primary-type"):
             raw_types.append(album["primary-type"])
@@ -258,10 +266,10 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             return AlbumType.REMIXES
         return None
 
-    def _get_song(self, recording_id: str) -> Any | None:
+    async def _get_song(self, recording_id: str) -> Any | None:
         try:
             # mbngz does not accept genres as recording include
-            recording = self._fetch(
+            recording = await self._fetch(
                 f"/recording/{recording_id}",
                 {
                     "inc": "+".join(
@@ -277,16 +285,18 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     # It's simpler for us to use a recording instead of finding a work because
     # - Finding the work from a recording requires a new query
     # - Work dont include genres, recordings do
-    def _search_song(
+    async def _search_song(
         self, song_name: str, artist_name: str, featuring: List[str]
     ) -> SongSearchResult | None:
         try:
-            recordings = self._fetch(
-                "/recording",
-                {
-                    "query": f"work:{song_name.replace('.', '')} and artistname:{artist_name}",
-                    "limit": 100,
-                },
+            recordings = (
+                await self._fetch(
+                    "/recording",
+                    {
+                        "query": f"work:{song_name.replace('.', '')} and artistname:{artist_name}",
+                        "limit": 100,
+                    },
+                )
             )["recordings"]
             artist_slug = to_slug(artist_name)
             song_slug = to_slug(song_name)
@@ -315,7 +325,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         except Exception:
             pass
 
-    def _search_song_with_acoustid(
+    async def _search_song_with_acoustid(
         self, acoustid: str, duration: int, song_name: str
     ) -> SongSearchResult | None:
         try:
@@ -337,7 +347,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         except Exception:
             pass
 
-    def _get_song_genres(self, song: Any) -> List[str] | None:
+    async def _get_song_genres(self, song: Any) -> List[str] | None:
         try:
             genres: List[Any] = song["genres"]
             return [

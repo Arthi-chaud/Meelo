@@ -1,9 +1,11 @@
+import asyncio
 import logging
 
 from datetime import date, datetime
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import AlbumMatchResult
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.domain import AlbumType
 from matcher.providers.features import (
     GetAlbumDescriptionFeature,
@@ -19,11 +21,11 @@ from ..context import Context
 OVERRIDABLE_ALBUM_TYPES = [AlbumType.STUDIO, AlbumType.LIVE]
 
 
-def match_and_post_album(album_id: int, album_name: str):
+async def match_and_post_album(album_id: int, album_name: str):
     try:
         context = Context.get()
         album = context.client.get_album(album_id)
-        res = match_album(
+        res = await match_album(
             album_id,
             album_name,
             album.artist.name if album.artist else None,
@@ -72,7 +74,7 @@ def match_and_post_album(album_id: int, album_name: str):
         logging.error(e)
 
 
-def match_album(
+async def match_album(
     album_id: int, album_name: str, artist_name: str | None, type: AlbumType
 ) -> AlbumMatchResult:
     need_genres = Context.get().settings.push_genres
@@ -84,17 +86,18 @@ def match_album(
     album_type: AlbumType | None = (
         None if type == AlbumType.OTHER or type in OVERRIDABLE_ALBUM_TYPES else type
     )
-    (wikidata_id, external_sources) = common.get_sources_from_musicbrainz(
+    (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
         lambda mb, mbid: mb.get_album(mbid),
         lambda mb, mbid: mb.get_album_url_from_id(mbid),
     )
+
     description: str | None = None
 
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:
-        external_sources = external_sources + common.get_sources_from_wikidata(
+        external_sources = external_sources + await common.get_sources_from_wikidata(
             wikidata_id,
             [p for p in context.providers if p.api_model.id not in sources_ids],
             lambda p: p.get_wikidata_album_relation_key(),
@@ -103,16 +106,27 @@ def match_album(
 
     # Resolve by searching
     sources_ids = [source.provider_id for source in external_sources]
-    for provider in [p for p in context.providers if p.api_model.id not in sources_ids]:
-        search_res = provider.search_album(album_name, artist_name)
+
+    async def search_album_url(p: BaseProviderBoilerplate):
+        search_res = await p.search_album(album_name, artist_name)
         if not search_res:
-            continue
-        album_url = provider.get_album_url_from_id(str(search_res.id))
+            return None
+        album_url = p.get_album_url_from_id(str(search_res.id))
         if not album_url:
-            continue
-        external_sources.append(
-            ExternalMetadataSourceDto(album_url, provider.api_model.id)
+            return None
+        return ExternalMetadataSourceDto(album_url, p.api_model.id)
+
+    external_sources = external_sources + [
+        res
+        for res in await asyncio.gather(
+            *[
+                search_album_url(p)
+                for p in context.providers
+                if p.api_model.id not in sources_ids
+            ]
         )
+        if res is not None
+    ]
 
     for source in external_sources:
         provider = common.get_provider_from_external_source(source)
@@ -132,19 +146,19 @@ def match_album(
         provider_album_id = provider.get_album_id_from_url(source.url)
         if not provider_album_id:
             continue
-        album = provider.get_album(provider_album_id)
+        album = await provider.get_album(provider_album_id)
         if not album:
             continue
         if not album_type:
-            album_type = provider.get_album_type(album)
+            album_type = await provider.get_album_type(album)
         if not rating:
-            rating = provider.get_album_rating(album)
+            rating = await provider.get_album_rating(album)
         if not description:
-            description = provider.get_album_description(album)
+            description = await provider.get_album_description(album)
         if not release_date:
-            release_date = provider.get_album_release_date(album)
+            release_date = await provider.get_album_release_date(album)
         genres = genres + (
-            [g for g in provider.get_album_genres(album) or [] if g not in genres]
+            [g for g in await provider.get_album_genres(album) or [] if g not in genres]
             if need_genres
             else []
         )
