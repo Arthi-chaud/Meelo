@@ -50,7 +50,7 @@ services:
       test: ["CMD-SHELL", "wget -qO- localhost:8133"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     ports:
       - "8133:8133"
     environment:
@@ -162,9 +162,9 @@ services:
     env_file:
       - .env
   mq:
+    hostname: meelo-mq
     image: rabbitmq:4.0-alpine
     environment:
-      - RABBITMQ_NODENAME=meelo
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     healthcheck:
