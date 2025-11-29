@@ -140,3 +140,14 @@ func TestParserStandaloneTrack(t *testing.T) {
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "Bad Romance", m.Name)
 }
+
+func TestParserFileType(t *testing.T) {
+	path := path.Join("../..", "testdata", "video.mkv")
+	c := getParserTestConfig()
+	c.TrackRegex = []string{"^.*$"}
+	c.Metadata.Source = config.Embedded
+	c.Metadata.Order = config.Preferred
+	m, _ := ParseMetadata(c, path)
+
+	assert.Equal(t, internal.Video, m.Type)
+}

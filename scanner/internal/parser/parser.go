@@ -14,6 +14,10 @@ import (
 func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, []error) {
 	var metadata internal.Metadata
 	var errors []error
+	fileType, err := getTypeFromPath(filePath)
+	if err != nil {
+		errors = append(errors, err)
+	}
 	if config.Metadata.Order == c.Only {
 		if config.Metadata.Source == c.Path {
 			metadata, errors = parseMetadataFromPath(config, filePath)
@@ -44,6 +48,7 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		internal.Contains(compilationArtistNames, strings.ToLower(metadata.Artist))
 	metadata.Path = filePath
 	metadata.RegistrationDate = time.Now()
+	metadata.Type = fileType
 	checksum, err := internal.ComputeChecksum(filePath)
 	if err != nil {
 		errors = append(errors, err)
