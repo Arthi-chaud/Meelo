@@ -14,7 +14,9 @@ def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
 
 
 async def run_tasks_from_sources(
-    f: Callable[[ExternalMetadataSourceDto, BaseProviderBoilerplate], Awaitable[None]],
+    f: Callable[
+        [ExternalMetadataSourceDto | None, BaseProviderBoilerplate], Awaitable[None]
+    ],
     sources: List[ExternalMetadataSourceDto],
 ):
     async def get_task_or_noop(p: BaseProviderBoilerplate):
@@ -22,6 +24,8 @@ async def run_tasks_from_sources(
             if s.provider_id == p.api_model.id:
                 await f(s, p)
                 return
+
+        await f(None, p)
 
     await Context.get().run_provider_task(lambda p: get_task_or_noop(p))
 

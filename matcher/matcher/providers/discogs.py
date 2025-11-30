@@ -78,9 +78,8 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
     async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         client = self._get_client()
         try:
-            return ArtistSearchResult(
-                str(client.search(artist_name, type="artist")[0].id)
-            )
+            data = client.search(artist_name, type="artist")[0]
+            return ArtistSearchResult(str(data.id), data)
         except Exception:
             return None
 

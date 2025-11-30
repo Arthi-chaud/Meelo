@@ -131,7 +131,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                     )
                     == artist_slug
                 ):
-                    return ArtistSearchResult(artist["result"]["name"])
+                    return ArtistSearchResult(
+                        artist["result"]["name"], artist["result"]
+                    )
             return None
         except Exception:
             return None

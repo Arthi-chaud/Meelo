@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
@@ -47,29 +46,6 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
             lambda p, artist_id: p.get_artist_url_from_id(artist_id),
         )
 
-    # Resolve by searching
-    sources_ids = [source.provider_id for source in external_sources]
-
-    async def search_artist_url(p: BaseProviderBoilerplate):
-        search_res = await p.search_artist(artist_name)
-        if not search_res:
-            return None
-        artist_url = p.get_artist_url_from_id(str(search_res.id))
-        if not artist_url:
-            return None
-        return ExternalMetadataSourceDto(artist_url, p.api_model.id)
-
-    external_sources = external_sources + [
-        res
-        for res in await asyncio.gather(
-            *[
-                search_artist_url(p)
-                for p in context.get_providers()
-                if p.api_model.id not in sources_ids
-            ]
-        )
-        if res is not None
-    ]
     shared_res = SharedValue(
         ArtistMatchResult(
             ExternalMetadataDto(
@@ -78,40 +54,54 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
                 rating=None,
                 album_id=None,
                 song_id=None,
-                sources=external_sources,
+                sources=[],
             ),
             None,
         )
     )
 
     async def provider_task(
-        source: ExternalMetadataSourceDto, provider: BaseProviderBoilerplate
+        source: ExternalMetadataSourceDto | None,
+        provider: BaseProviderBoilerplate,
     ):
-        provider_artist_id = provider.get_artist_id_from_url(source.url)
-        if not provider_artist_id:
-            return
-        artist = await provider.get_artist(provider_artist_id)
+        artist = None
+        if source:
+            provider_artist_id = provider.get_artist_id_from_url(source.url)
+            if provider_artist_id:
+                artist = await provider.get_artist(provider_artist_id)
+        if not artist:
+            res = await provider.search_artist(artist_name)
+            if res:
+                artist = res.data
+                provider_artist_url = provider.get_artist_url_from_id(res.id)
+                if provider_artist_url:
+                    source = ExternalMetadataSourceDto(
+                        provider_artist_url, provider.api_model.id
+                    )
+        if source:
+            await shared_res.update(lambda r: r.metadata.push_source(source))
         if not artist:
             return
-        needs_description = False
 
-        if provider.has_feature(GetArtistDescriptionFeature):
+        get_artist_description = provider.get_feature(GetArtistDescriptionFeature)
+        if get_artist_description:
             needs_description = await shared_res.to_bool(
                 lambda r: r.metadata.description is None
             )
             if needs_description:
-                description = await provider.get_artist_description(artist)
+                description = await get_artist_description.run(artist)
                 if description:
                     await shared_res.update(
                         lambda r: r.metadata.set_description_if_none(description)
                     )
 
-        if provider.has_feature(GetArtistIllustrationUrlFeature):
+        get_artist_illustration = provider.get_feature(GetArtistIllustrationUrlFeature)
+        if get_artist_illustration:
             needs_illustration = await shared_res.to_bool(
                 lambda r: r.illustration_url is None
             )
             if needs_illustration:
-                illustration_url = await provider.get_artist_illustration_url(artist)
+                illustration_url = await get_artist_illustration.run(artist)
                 if illustration_url:
                     await shared_res.update(
                         lambda r: r.set_illustration_url_if_none(illustration_url)

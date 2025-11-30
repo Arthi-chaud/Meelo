@@ -127,7 +127,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
         self._set_user_agent()
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
-        return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
+        try:
+            match = matches[0]
+            id = match.get("id")
+            return ArtistSearchResult(
+                str(id), None
+            )  # Not returning artist here because 'get' returns more info
+        except Exception:
+            pass
 
     # To search albums, sometimes we need to replace acronyms
     def _sanitise_acronyms(self, s: str) -> str:
