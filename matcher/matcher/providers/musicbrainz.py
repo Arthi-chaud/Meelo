@@ -28,7 +28,7 @@ from matcher.providers.features import (
     GetSongIdFromUrlFeature,
 )
 from ..utils import capitalize_all_words, to_slug
-from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult, SongSearchResult
+from .domain import AlbumType, SearchResult
 from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
@@ -124,10 +124,17 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         self._set_user_agent()
         return musicbrainzngs.get_artist_by_id(id, ["url-rels"])
 
-    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _search_artist(self, artist_name: str) -> SearchResult | None:
         self._set_user_agent()
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
-        return ArtistSearchResult(matches[0]["id"]) if len(matches) > 0 else None
+        try:
+            match = matches[0]
+            id = match.get("id")
+            return SearchResult(
+                str(id), None
+            )  # Not returning artist here because 'get' returns more info
+        except Exception:
+            pass
 
     # To search albums, sometimes we need to replace acronyms
     def _sanitise_acronyms(self, s: str) -> str:
@@ -140,7 +147,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         self,
         album_name: str,
         artist_name: str | None,
-    ) -> AlbumSearchResult | None:
+    ) -> SearchResult | None:
         album_name = self._sanitise_acronyms(album_name)
         # TODO It's ugly, use an album_type variable from API
         sanitised_album_name = re.sub(
@@ -211,7 +218,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 == album_slug
             ]
             if len(exact_matches) > 0:
-                return AlbumSearchResult(exact_matches[0][release_group_key]["id"])
+                match = exact_matches[0][release_group_key]
+                return SearchResult(match["id"], match)
             return None
         except Exception as e:
             logging.error(e)
@@ -287,7 +295,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     # - Work dont include genres, recordings do
     async def _search_song(
         self, song_name: str, artist_name: str, featuring: List[str]
-    ) -> SongSearchResult | None:
+    ) -> SearchResult | None:
         try:
             recordings = (
                 await self._fetch(
@@ -321,13 +329,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 for r in artist_recordings
                 if (r.get("disambiguation") or "main") == "main"
             ] or artist_recordings
-            return SongSearchResult(ordered_recordings[0]["id"])
+            match = ordered_recordings[0]
+            return SearchResult(match["id"], match)
         except Exception:
             pass
 
     async def _search_song_with_acoustid(
         self, acoustid: str, duration: int, song_name: str
-    ) -> SongSearchResult | None:
+    ) -> SearchResult | None:
         try:
             song_slug = to_slug(song_name)
             recordings = requests.get(
@@ -343,7 +352,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 recordings,
                 key=lambda r: -r["sources"],
             )
-            return SongSearchResult(ordered_recordings[0]["id"])
+            match = ordered_recordings[0]
+            return SearchResult(match["id"], match)
         except Exception:
             pass
 

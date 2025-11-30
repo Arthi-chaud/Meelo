@@ -52,18 +52,18 @@ class TestLrcLib(unittest.IsolatedAsyncioTestCase):
             with self.subTest(
                 "Search Song", song=song_name, artist=artist_name, feats=feats
             ):
-                song = await provider._search_and_get_song(
+                song = await provider._search_song(
                     song_name, artist_name, feats, duration
                 )
                 if len(expected) == 0:
                     self.assertIsNone(song)
                 else:
                     self.assertIsNotNone(song)
-                    self.assertIn(song["id"], [e for e in expected])  # pyright: ignore
+                    self.assertIn(song.id, [e for e in expected])  # pyright: ignore
 
     async def test_get_song(self):
         provider: LrcLibProvider = Context().get().get_provider(LrcLibProvider)  # pyright: ignore
-        song = await provider._search_and_get_song("Hung Up", "Madonna", [], None)
+        song = (await provider._search_song("Hung Up", "Madonna", [], None)).data  # pyright: ignore
         self.assertIsNotNone(song)
         self.assertEqual(song["id"], 45828)  # pyright: ignore
         self.assertIsNotNone(song["plainLyrics"])  # pyright: ignore
@@ -77,7 +77,6 @@ class TestLrcLib(unittest.IsolatedAsyncioTestCase):
         )
         self.assertTrue(plain_lyrics.endswith("I'm tired of waiting on you\n"))
 
-        song = await provider._search_and_get_song("Hung Up", "Madonna", [], None)
         synced_lyrics: SyncedLyrics = await provider._parse_synced_lyrics(song)  # pyright: ignore
 
         def get_lyrics_at(ts: float):

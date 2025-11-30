@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, List, TypeAlias
 import requests
 
 from matcher.context import Context
@@ -27,7 +27,7 @@ from matcher.providers.features import (
     SearchArtistFeature,
     SearchSongFeature,
 )
-from .domain import ArtistSearchResult, AlbumSearchResult, SongSearchResult
+from .domain import SearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
@@ -35,6 +35,8 @@ from datetime import date
 import re
 from ..utils import to_slug
 from bs4 import BeautifulSoup
+
+AlbumSearchResultData: TypeAlias = tuple[Any, Any]
 
 
 # Consider that the passed Ids are names, not the numeric ids
@@ -105,7 +107,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             },
         ).json()
 
-    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _search_artist(self, artist_name: str) -> SearchResult | None:
         try:
             artist_name = artist_name.lower()
             artists = (await self._fetch("/search/artist", {"q": artist_name}))[
@@ -131,7 +133,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                     )
                     == artist_slug
                 ):
-                    return ArtistSearchResult(artist["result"]["name"])
+                    return SearchResult(artist["result"]["name"], artist["result"])
             return None
         except Exception:
             return None
@@ -182,7 +184,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
     # Album
     async def _search_album(
         self, album_name: str, artist_name: str | None
-    ) -> AlbumSearchResult | None:
+    ) -> SearchResult | None:
         artist_slug = None if not artist_name else to_slug(artist_name)
         album_slug = to_slug(album_name)
         try:
@@ -197,22 +199,24 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                     continue
                 if to_slug(album["name"]) == album_slug:
                     album_url = album["url"]
-                    return AlbumSearchResult(str(self.get_album_id_from_url(album_url)))
+                    return SearchResult(
+                        str(self.get_album_id_from_url(album_url)), album
+                    )
             return None
         except Exception:
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            artists = (await self._fetch("/search/album", {"q": album_id}))["response"][
+            albums = (await self._fetch("/search/album", {"q": album_id}))["response"][
                 "sections"
             ][0]["hits"]
-            for artist in artists:
-                artist = artist["result"]
-                if not artist["_type"] == "album":
+            for album in albums:
+                album = album["result"]
+                if not album["_type"] == "album":
                     continue
-                if artist["url"] == self.get_album_url_from_id(album_id):
-                    return artist
+                if album["url"] == self.get_album_url_from_id(album_id):
+                    return album
             return None
         except Exception:
             return None
@@ -269,7 +273,6 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
         for div in divs:
             if "start the song bio" in div.get_text().lower():
                 return
-
         # Note: There are 2 matching divs, which are nested. We are interested in the second one
         return self._clean_html(divs[1:])
 
@@ -280,7 +283,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
 
     async def _search_song(
         self, song_name: str, artist_name: str, featuring: List[str]
-    ) -> SongSearchResult | None:
+    ) -> SearchResult | None:
         try:
             response = (
                 await self._fetch("/search/song", {"q": f"{artist_name} {song_name}"})
@@ -328,6 +331,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             song_id = (
                 self.get_song_id_from_url(final_match["url"]) if final_match else None
             )
-            return SongSearchResult(song_id) if song_id else None
+            song = await self._get_song(song_id)
+            return SearchResult(song_id, song) if song_id else None
         except Exception:
             return None

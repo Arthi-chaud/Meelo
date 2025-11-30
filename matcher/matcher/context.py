@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, TypeVar, Type
 from matcher.providers.boilerplate import BaseProviderBoilerplate
+from matcher.providers.thread import ProviderTask, ProviderThread
 from .api import API
 from .settings import Settings
 
@@ -18,16 +19,31 @@ class CurrentItem:
 class _InternalContext:
     client: API
     settings: Settings
-    providers: List[BaseProviderBoilerplate]
+    provider_threads: List[ProviderThread]
     handled_items_count: int
     pending_items_count: int
     current_item: CurrentItem | None = None
 
+    async def run_provider_task(self, t: ProviderTask) -> None:
+        for provider_t in self.provider_threads:
+            provider_t.process_task(t)
+        for provider_t in self.provider_threads:
+            provider_t.wait_for_task_end()
+
     def get_provider(self, cl: Type[T]) -> T | None:
-        for provider in self.providers:
-            if isinstance(provider, cl):
-                return provider
+        p = self.get_provider_thread(cl)
+        return p.provider if p else None
+
+    def get_provider_thread(self, cl: Type[T]) -> ProviderThread[T] | None:
+        for provider_t in self.provider_threads:
+            if isinstance(provider_t.provider, cl):
+                return provider_t
         return None
+
+    def get_providers(
+        self,
+    ) -> List[BaseProviderBoilerplate]:
+        return [p.provider for p in self.provider_threads]
 
     def increment_handled_items_count(self):
         self.handled_items_count = self.handled_items_count + 1
@@ -43,7 +59,8 @@ class Context:
     def init(
         cls, client: API, settings: Settings, providers: List[BaseProviderBoilerplate]
     ):
-        cls._instance = _InternalContext(client, settings, providers, 0, 0)
+        threads = [ProviderThread(p) for p in providers]
+        cls._instance = _InternalContext(client, settings, threads, 0, 0)
 
     @classmethod
     def get(cls) -> _InternalContext:

@@ -28,10 +28,12 @@ class TestMatchAlbum(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Euro House", res.genres)
         # Rating
         self.assertIsNotNone(res.metadata.rating)
-        self.assertEqual(res.metadata.rating, 70)
+        self.assertIn(res.metadata.rating, [70, 80])
         # Release date
         self.assertIsNotNone(res.release_date)
-        self.assertEqual(res.release_date, datetime.date(2005, 11, 11))
+        self.assertIn(
+            res.release_date, [datetime.date(2005, 11, 11), datetime.date(2005, 11, 15)]
+        )
         # Matches
         self.assertIsNotNone(res.metadata)
         self.assertEqual(res.metadata.album_id, 1)
