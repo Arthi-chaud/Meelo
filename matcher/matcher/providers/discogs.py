@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, List
 from matcher.context import Context
+from matcher.providers.domain import SearchResult
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
@@ -16,9 +17,7 @@ from matcher.providers.features import (
     GetMusicBrainzRelationKeyFeature,
 )
 from matcher.utils import capitalize_all_words
-import discogs_client.client
 import requests
-from .domain import ArtistSearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
 import discogs_client
@@ -75,11 +74,11 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
             user_token=self.settings.api_key,
         )
 
-    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _search_artist(self, artist_name: str) -> SearchResult | None:
         client = self._get_client()
         try:
             data = client.search(artist_name, type="artist")[0]
-            return ArtistSearchResult(str(data.id), data)
+            return SearchResult(str(data.id), data)
         except Exception:
             return None
 

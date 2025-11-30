@@ -27,7 +27,7 @@ from matcher.providers.features import (
     SearchArtistFeature,
     SearchSongFeature,
 )
-from .domain import ArtistSearchResult, AlbumSearchResult, SongSearchResult
+from .domain import SearchResult, SongSearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
@@ -105,7 +105,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             },
         ).json()
 
-    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _search_artist(self, artist_name: str) -> SearchResult | None:
         try:
             artist_name = artist_name.lower()
             artists = (await self._fetch("/search/artist", {"q": artist_name}))[
@@ -131,9 +131,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                     )
                     == artist_slug
                 ):
-                    return ArtistSearchResult(
-                        artist["result"]["name"], artist["result"]
-                    )
+                    return SearchResult(artist["result"]["name"], artist["result"])
             return None
         except Exception:
             return None
@@ -184,7 +182,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
     # Album
     async def _search_album(
         self, album_name: str, artist_name: str | None
-    ) -> AlbumSearchResult | None:
+    ) -> SearchResult | None:
         artist_slug = None if not artist_name else to_slug(artist_name)
         album_slug = to_slug(album_name)
         try:
@@ -199,22 +197,24 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
                     continue
                 if to_slug(album["name"]) == album_slug:
                     album_url = album["url"]
-                    return AlbumSearchResult(str(self.get_album_id_from_url(album_url)))
+                    return SearchResult(
+                        str(self.get_album_id_from_url(album_url)), album
+                    )
             return None
         except Exception:
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            artists = (await self._fetch("/search/album", {"q": album_id}))["response"][
+            albums = (await self._fetch("/search/album", {"q": album_id}))["response"][
                 "sections"
             ][0]["hits"]
-            for artist in artists:
-                artist = artist["result"]
-                if not artist["_type"] == "album":
+            for album in albums:
+                album = album["result"]
+                if not album["_type"] == "album":
                     continue
-                if artist["url"] == self.get_album_url_from_id(album_id):
-                    return artist
+                if album["url"] == self.get_album_url_from_id(album_id):
+                    return album
             return None
         except Exception:
             return None

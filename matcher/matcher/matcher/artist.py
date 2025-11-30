@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
@@ -64,48 +65,39 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
         source: ExternalMetadataSourceDto | None,
         provider: BaseProviderBoilerplate,
     ):
-        artist = None
-        if source:
-            provider_artist_id = provider.get_artist_id_from_url(source.url)
-            if provider_artist_id:
-                artist = await provider.get_artist(provider_artist_id)
-        if not artist:
-            res = await provider.search_artist(artist_name)
-            if res:
-                artist = res.data
-                provider_artist_url = provider.get_artist_url_from_id(res.id)
-                if provider_artist_url:
-                    source = ExternalMetadataSourceDto(
-                        provider_artist_url, provider.api_model.id
-                    )
+        (source, artist) = await common.resolve_data_from_source(
+            source,
+            provider,
+            lambda: provider.search_artist(artist_name),
+            lambda id: provider.get_artist(id),
+            lambda url: provider.get_artist_url_from_id(url),
+            lambda id: provider.get_artist_id_from_url(id),
+        )
         if source:
             await shared_res.update(lambda r: r.metadata.push_source(source))
         if not artist:
             return
 
-        get_artist_description = provider.get_feature(GetArtistDescriptionFeature)
-        if get_artist_description:
-            needs_description = await shared_res.to_bool(
-                lambda r: r.metadata.description is None
-            )
-            if needs_description:
-                description = await get_artist_description.run(artist)
-                if description:
-                    await shared_res.update(
-                        lambda r: r.metadata.set_description_if_none(description)
-                    )
-
-        get_artist_illustration = provider.get_feature(GetArtistIllustrationUrlFeature)
-        if get_artist_illustration:
-            needs_illustration = await shared_res.to_bool(
-                lambda r: r.illustration_url is None
-            )
-            if needs_illustration:
-                illustration_url = await get_artist_illustration.run(artist)
-                if illustration_url:
-                    await shared_res.update(
-                        lambda r: r.set_illustration_url_if_none(illustration_url)
-                    )
+        await asyncio.gather(
+            common.bind_feature_to_result(
+                GetArtistDescriptionFeature,
+                provider,
+                lambda: shared_res.to_bool(lambda r: r.metadata.description is None),
+                lambda get_description: get_description.run(artist),
+                lambda description: shared_res.update(
+                    lambda r: r.metadata.set_description_if_none(description)
+                ),
+            ),
+            common.bind_feature_to_result(
+                GetArtistIllustrationUrlFeature,
+                provider,
+                lambda: shared_res.to_bool(lambda r: r.illustration_url is None),
+                lambda get_illustration_url: get_illustration_url.run(artist),
+                lambda url: shared_res.update(
+                    lambda r: r.set_illustration_url_if_none(url)
+                ),
+            ),
+        )
 
     await common.run_tasks_from_sources(provider_task, external_sources)
 

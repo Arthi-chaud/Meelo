@@ -28,7 +28,7 @@ from matcher.providers.features import (
     GetSongIdFromUrlFeature,
 )
 from ..utils import capitalize_all_words, to_slug
-from .domain import AlbumType, ArtistSearchResult, AlbumSearchResult, SongSearchResult
+from .domain import AlbumType, SearchResult, SongSearchResult
 from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
@@ -124,13 +124,13 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         self._set_user_agent()
         return musicbrainzngs.get_artist_by_id(id, ["url-rels"])
 
-    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def _search_artist(self, artist_name: str) -> SearchResult | None:
         self._set_user_agent()
         matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
         try:
             match = matches[0]
             id = match.get("id")
-            return ArtistSearchResult(
+            return SearchResult(
                 str(id), None
             )  # Not returning artist here because 'get' returns more info
         except Exception:
@@ -147,7 +147,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         self,
         album_name: str,
         artist_name: str | None,
-    ) -> AlbumSearchResult | None:
+    ) -> SearchResult | None:
         album_name = self._sanitise_acronyms(album_name)
         # TODO It's ugly, use an album_type variable from API
         sanitised_album_name = re.sub(
@@ -218,7 +218,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 == album_slug
             ]
             if len(exact_matches) > 0:
-                return AlbumSearchResult(exact_matches[0][release_group_key]["id"])
+                match = exact_matches[0][release_group_key]
+                return SearchResult(match["id"], match)
             return None
         except Exception as e:
             logging.error(e)

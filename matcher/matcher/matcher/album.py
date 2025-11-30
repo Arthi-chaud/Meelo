@@ -1,8 +1,7 @@
 import asyncio
 import logging
 
-from datetime import date, datetime
-from typing import List
+from datetime import datetime
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import AlbumMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -14,6 +13,7 @@ from matcher.providers.features import (
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
 )
+from matcher.providers.thread import SharedValue
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
@@ -79,12 +79,8 @@ async def match_album(
 ) -> AlbumMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
-    release_date: date | None = None
-    genres: List[str] = []
-    rating: int | None = None
-    # The type is none if it needs to be found, or sth else if the API already knows it
-    album_type: AlbumType | None = (
-        None if type == AlbumType.OTHER or type in OVERRIDABLE_ALBUM_TYPES else type
+    should_look_for_album_type = (
+        type == AlbumType.OTHER or type in OVERRIDABLE_ALBUM_TYPES
     )
     (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
         lambda mb: mb.search_album(album_name, artist_name),
@@ -92,90 +88,104 @@ async def match_album(
         lambda mb, mbid: mb.get_album_url_from_id(mbid),
     )
 
-    description: str | None = None
-
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:
         external_sources = external_sources + await common.get_sources_from_wikidata(
             wikidata_id,
-            [p for p in context.providers if p.api_model.id not in sources_ids],
+            [p for p in context.get_providers() if p.api_model.id not in sources_ids],
             lambda p: p.get_wikidata_album_relation_key(),
             lambda p, album_id: p.get_album_url_from_id(album_id),
         )
 
-    # Resolve by searching
-    sources_ids = [source.provider_id for source in external_sources]
-
-    async def search_album_url(p: BaseProviderBoilerplate):
-        search_res = await p.search_album(album_name, artist_name)
-        if not search_res:
-            return None
-        album_url = p.get_album_url_from_id(str(search_res.id))
-        if not album_url:
-            return None
-        return ExternalMetadataSourceDto(album_url, p.api_model.id)
-
-    external_sources = external_sources + [
-        res
-        for res in await asyncio.gather(
-            *[
-                search_album_url(p)
-                for p in context.providers
-                if p.api_model.id not in sources_ids
-            ]
+    shared_res = SharedValue(
+        AlbumMatchResult(
+            ExternalMetadataDto(
+                description=None,
+                artist_id=None,
+                rating=None,
+                album_id=album_id,
+                song_id=None,
+                sources=[],
+            ),
+            None,
+            None,
+            [],
         )
-        if res is not None
-    ]
-
-    for source in external_sources:
-        provider = common.get_provider_from_external_source(source)
-        is_useful = (
-            (not description and provider.has_feature(GetAlbumDescriptionFeature))
-            or (not release_date and provider.has_feature(GetAlbumReleaseDateFeature))
-            or (not rating and provider.has_feature(GetAlbumRatingFeature))
-            or (not album_type and provider.has_feature(GetAlbumTypeFeature))
-            or (
-                need_genres
-                and len(genres) == 0
-                and provider.has_feature(GetAlbumGenresFeature)
-            )
-        )
-        if not is_useful:
-            continue
-        provider_album_id = provider.get_album_id_from_url(source.url)
-        if not provider_album_id:
-            continue
-        album = await provider.get_album(provider_album_id)
-        if not album:
-            continue
-        if not album_type:
-            album_type = await provider.get_album_type(album)
-        if not rating:
-            rating = await provider.get_album_rating(album)
-        if not description:
-            description = await provider.get_album_description(album)
-        if not release_date:
-            release_date = await provider.get_album_release_date(album)
-        genres = genres + (
-            [g for g in await provider.get_album_genres(album) or [] if g not in genres]
-            if need_genres
-            else []
-        )
-        if description and release_date and rating and genres:
-            break
-    return AlbumMatchResult(
-        ExternalMetadataDto(
-            description,
-            artist_id=None,
-            rating=rating,
-            album_id=album_id,
-            song_id=None,
-            sources=external_sources,
-        )
-        if len(external_sources) > 0 or description or rating
-        else None,
-        release_date,
-        album_type if album_type != type else None,
-        genres,
     )
+
+    async def provider_task(
+        source: ExternalMetadataSourceDto | None,
+        provider: BaseProviderBoilerplate,
+    ):
+        (source, album) = await common.resolve_data_from_source(
+            source,
+            provider,
+            lambda: provider.search_album(album_name, artist_name),
+            lambda id: provider.get_album(id),
+            lambda url: provider.get_album_url_from_id(url),
+            lambda id: provider.get_album_id_from_url(id),
+        )
+        if source:
+            await shared_res.update(lambda r: r.metadata.push_source(source))
+        if not album:
+            return
+        await asyncio.gather(
+            common.bind_feature_to_result(
+                GetAlbumDescriptionFeature,
+                provider,
+                lambda: shared_res.to_bool(lambda r: r.metadata.description is None),
+                lambda get_description: get_description.run(album),
+                lambda description: shared_res.update(
+                    lambda r: r.metadata.set_description_if_none(description)
+                ),
+            ),
+            common.bind_feature_to_result(
+                GetAlbumReleaseDateFeature,
+                provider,
+                lambda: shared_res.to_bool(lambda r: r.release_date is None),
+                lambda get_release_date: get_release_date.run(album),
+                lambda release_data: shared_res.update(
+                    lambda r: r.set_release_date_if_none(release_data)
+                ),
+            ),
+            common.bind_feature_to_result(
+                GetAlbumRatingFeature,
+                provider,
+                lambda: (shared_res.to_bool(lambda r: r.metadata.rating is None)),
+                lambda get_rating: get_rating.run(album),
+                lambda rating: shared_res.update(
+                    lambda r: r.metadata.set_rating_if_none(rating)
+                ),
+            ),
+            common.bind_feature_to_result(
+                GetAlbumTypeFeature,
+                provider,
+                lambda: (
+                    shared_res.to_bool(  # NOTE: Kinda bad to lock the mutex if no need to get album type
+                        lambda r: r.album_type is None and should_look_for_album_type
+                    )
+                ),
+                lambda get_album_type: get_album_type.run(album),
+                lambda album_type: shared_res.update(
+                    lambda r: r.set_album_type_if_none(album_type)
+                ),
+            ),
+            common.bind_feature_to_result(
+                GetAlbumGenresFeature,
+                provider,
+                lambda: (
+                    shared_res.to_bool(  # NOTE: Kinda bad to lock the mutex if no need to get genres
+                        lambda _: need_genres
+                    )
+                ),
+                lambda get_album_genres: get_album_genres.run(album),
+                lambda genres: shared_res.update(lambda r: r.push_genres(genres)),
+            ),
+        )
+
+    await common.run_tasks_from_sources(provider_task, external_sources)
+    res = shared_res.unsafe_get_value()
+    if res.album_type == type:
+        res.album_type = None
+    return res

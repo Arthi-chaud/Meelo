@@ -32,7 +32,7 @@ from .features import (
     SearchSongFeature,
     SearchSongWithAcoustIdFeature,
 )
-from .domain import AlbumSearchResult, AlbumType, ArtistSearchResult, SongSearchResult
+from .domain import AlbumType, SearchResult, SongSearchResult
 from typing import Any, List
 
 
@@ -52,7 +52,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         return f.run(rel) if f else None
 
     # Artist
-    async def search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    async def search_artist(self, artist_name: str) -> SearchResult | None:
         f = self.get_feature(SearchArtistFeature)
         return await f.run(artist_name) if f else None
 
@@ -83,7 +83,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     # Album
     async def search_album(
         self, album_name: str, artist_name: str | None
-    ) -> AlbumSearchResult | None:
+    ) -> SearchResult | None:
         f = self.get_feature(SearchAlbumFeature)
         return await f.run(album_name, artist_name) if f else None
 

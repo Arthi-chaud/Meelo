@@ -3,12 +3,11 @@ from typing import Any, Awaitable, List
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
-    AlbumSearchResult,
     AlbumType,
-    ArtistSearchResult,
     ResourceId,
     ResourceUrl,
     ResourceName,
+    SearchResult,
     SongSearchResult,
 )
 
@@ -38,7 +37,7 @@ class IsMusicBrainzRelationFeature(BaseFeature[Any, bool]):
 ## Artists
 
 
-class SearchArtistFeature(BaseFeature[str, Awaitable[ArtistSearchResult | None]]):
+class SearchArtistFeature(BaseFeature[str, Awaitable[SearchResult | None]]):
     pass
 
 
@@ -70,7 +69,7 @@ class GetArtistIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class SearchAlbumFeature(
-    BaseFeature[ResourceName, ResourceName | None, Awaitable[AlbumSearchResult | None]]
+    BaseFeature[ResourceName, ResourceName | None, Awaitable[SearchResult | None]]
 ):
     pass
 

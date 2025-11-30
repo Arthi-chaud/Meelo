@@ -47,5 +47,8 @@ class ExternalMetadataDto(DataClassJsonMixin):
     def push_source(self, source: ExternalMetadataSourceDto):
         self.sources.append(source)
 
+    def set_rating_if_none(self, rating: int):
+        self.rating = self.rating or rating
+
     def set_description_if_none(self, description: str):
         self.description = self.description or description

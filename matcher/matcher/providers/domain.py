@@ -4,14 +4,9 @@ from enum import Enum
 
 
 @dataclass
-class ArtistSearchResult:
+class SearchResult:
     id: str
     data: Any | None
-
-
-@dataclass
-class AlbumSearchResult:
-    id: str
 
 
 @dataclass

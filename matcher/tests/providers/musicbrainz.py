@@ -2,7 +2,7 @@ from typing import List, Tuple
 import unittest
 import datetime
 from matcher.context import Context
-from matcher.providers.domain import AlbumSearchResult, AlbumType, ArtistSearchResult
+from matcher.providers.domain import AlbumType, SearchResult
 from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
@@ -29,7 +29,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
 
         for [artist_name, expected] in scenarios:
             with self.subTest("Search Artist", artist_name=artist_name):
-                artist: ArtistSearchResult = await provider.search_artist(artist_name)  # pyright: ignore
+                artist: SearchResult = await provider.search_artist(artist_name)  # pyright: ignore
                 self.assertIsNotNone(artist)
                 self.assertEqual(artist.id, expected)
 
@@ -111,7 +111,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
             with self.subTest(
                 "Search Album", album_name=album_name, artist_name=artist_name
             ):
-                album: AlbumSearchResult = await provider.search_album(
+                album: SearchResult = await provider.search_album(
                     album_name, artist_name
                 )  # pyright: ignore
                 if not expected:
