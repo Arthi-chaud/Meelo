@@ -8,6 +8,7 @@ from matcher.providers.features import (
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
 )
+from matcher.providers.thread import SharedValue
 from ..context import Context
 from . import common
 
@@ -16,7 +17,7 @@ async def match_and_post_artist(artist_id: int, artist_name: str):
     try:
         res = await match_artist(artist_id, artist_name)
         context = Context.get()
-        if res.metadata:
+        if len(res.metadata.sources):
             logging.info(
                 f"Matched with {len(res.metadata.sources)} providers for artist {artist_name}"
             )
@@ -30,20 +31,18 @@ async def match_and_post_artist(artist_id: int, artist_name: str):
 
 async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
     context = Context.get()
-    artist_illustration_url: str | None = None
     (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
         lambda mb: mb.search_artist(artist_name),
         lambda mb, mbid: mb.get_artist(mbid),
         lambda mb, mbid: mb.get_artist_url_from_id(mbid),
     )
-    description: str | None = None
 
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:
         external_sources = external_sources + await common.get_sources_from_wikidata(
             wikidata_id,
-            [p for p in context.providers if p.api_model.id not in sources_ids],
+            [p for p in context.get_providers() if p.api_model.id not in sources_ids],
             lambda p: p.get_wikidata_artist_relation_key(),
             lambda p, artist_id: p.get_artist_url_from_id(artist_id),
         )
@@ -65,45 +64,59 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
         for res in await asyncio.gather(
             *[
                 search_artist_url(p)
-                for p in context.providers
+                for p in context.get_providers()
                 if p.api_model.id not in sources_ids
             ]
         )
         if res is not None
     ]
-
-    for source in external_sources:
-        provider = common.get_provider_from_external_source(source)
-        is_useful = (
-            not description and provider.has_feature(GetArtistDescriptionFeature)
-        ) or (
-            not artist_illustration_url
-            and provider.has_feature(GetArtistIllustrationUrlFeature)
+    shared_res = SharedValue(
+        ArtistMatchResult(
+            ExternalMetadataDto(
+                None,
+                artist_id=artist_id,
+                rating=None,
+                album_id=None,
+                song_id=None,
+                sources=external_sources,
+            ),
+            None,
         )
-        if not is_useful:
-            continue
+    )
+
+    async def provider_task(
+        source: ExternalMetadataSourceDto, provider: BaseProviderBoilerplate
+    ):
         provider_artist_id = provider.get_artist_id_from_url(source.url)
         if not provider_artist_id:
-            continue
+            return
         artist = await provider.get_artist(provider_artist_id)
         if not artist:
-            continue
-        if not description:
-            description = await provider.get_artist_description(artist)
-        if not artist_illustration_url:
-            artist_illustration_url = await provider.get_artist_illustration_url(artist)
-        if description and artist_illustration_url:
-            break
-    return ArtistMatchResult(
-        ExternalMetadataDto(
-            description,
-            artist_id=artist_id,
-            rating=None,
-            album_id=None,
-            song_id=None,
-            sources=external_sources,
-        )
-        if len(external_sources) > 0 or description
-        else None,
-        artist_illustration_url,
-    )
+            return
+        needs_description = False
+
+        if provider.has_feature(GetArtistDescriptionFeature):
+            needs_description = await shared_res.to_bool(
+                lambda r: r.metadata.description is None
+            )
+            if needs_description:
+                description = await provider.get_artist_description(artist)
+                if description:
+                    await shared_res.update(
+                        lambda r: r.metadata.set_description_if_none(description)
+                    )
+
+        if provider.has_feature(GetArtistIllustrationUrlFeature):
+            needs_illustration = await shared_res.to_bool(
+                lambda r: r.illustration_url is None
+            )
+            if needs_illustration:
+                illustration_url = await provider.get_artist_illustration_url(artist)
+                if illustration_url:
+                    await shared_res.update(
+                        lambda r: r.set_illustration_url_if_none(illustration_url)
+                    )
+
+    await common.run_tasks_from_sources(provider_task, external_sources)
+
+    return shared_res.unsafe_get_value()

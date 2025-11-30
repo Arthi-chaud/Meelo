@@ -31,5 +31,8 @@ class AlbumMatchResult:
 
 @dataclass
 class ArtistMatchResult:
-    metadata: ExternalMetadataDto | None
+    metadata: ExternalMetadataDto
     illustration_url: str | None
+
+    def set_illustration_url_if_none(self, illustration_url: str):
+        self.illustration_url = self.illustration_url or illustration_url

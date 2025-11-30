@@ -8,7 +8,22 @@ from ..providers.wikipedia import WikipediaProvider
 
 
 def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
-    return [p for p in Context.get().providers if p.api_model.id == dto.provider_id][0]
+    return [
+        p for p in Context.get().get_providers() if p.api_model.id == dto.provider_id
+    ][0]
+
+
+async def run_tasks_from_sources(
+    f: Callable[[ExternalMetadataSourceDto, BaseProviderBoilerplate], Awaitable[None]],
+    sources: List[ExternalMetadataSourceDto],
+):
+    async def get_task_or_noop(p: BaseProviderBoilerplate):
+        for s in sources:
+            if s.provider_id == p.api_model.id:
+                await f(s, p)
+                return
+
+    await Context.get().run_provider_task(lambda p: get_task_or_noop(p))
 
 
 async def get_sources_from_wikidata(
@@ -80,7 +95,7 @@ async def get_sources_from_musicbrainz(
         external_sources.append(
             ExternalMetadataSourceDto(resource_url, mb_provider.api_model.id)
         )
-    remaining_providers = context.providers
+    remaining_providers = context.get_providers()
     try:
         resource = await mb_get_resource(mb_provider, mbEntry.id)
         if "relations" not in resource.keys():

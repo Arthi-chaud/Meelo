@@ -43,3 +43,6 @@ class ExternalMetadataDto(DataClassJsonMixin):
     artist_id: int | None
     album_id: int | None
     sources: List[ExternalMetadataSourceDto]
+
+    def set_description_if_none(self, description: str):
+        self.description = self.description or description
