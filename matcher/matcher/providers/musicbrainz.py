@@ -28,7 +28,7 @@ from matcher.providers.features import (
     GetSongIdFromUrlFeature,
 )
 from ..utils import capitalize_all_words, to_slug
-from .domain import AlbumType, SearchResult, SongSearchResult
+from .domain import AlbumType, SearchResult
 from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
@@ -295,7 +295,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     # - Work dont include genres, recordings do
     async def _search_song(
         self, song_name: str, artist_name: str, featuring: List[str]
-    ) -> SongSearchResult | None:
+    ) -> SearchResult | None:
         try:
             recordings = (
                 await self._fetch(
@@ -329,13 +329,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 for r in artist_recordings
                 if (r.get("disambiguation") or "main") == "main"
             ] or artist_recordings
-            return SongSearchResult(ordered_recordings[0]["id"])
+            match = ordered_recordings[0]
+            return SearchResult(match["id"], match)
         except Exception:
             pass
 
     async def _search_song_with_acoustid(
         self, acoustid: str, duration: int, song_name: str
-    ) -> SongSearchResult | None:
+    ) -> SearchResult | None:
         try:
             song_slug = to_slug(song_name)
             recordings = requests.get(
@@ -351,7 +352,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
                 recordings,
                 key=lambda r: -r["sources"],
             )
-            return SongSearchResult(ordered_recordings[0]["id"])
+            match = ordered_recordings[0]
+            return SearchResult(match["id"], match)
         except Exception:
             pass
 

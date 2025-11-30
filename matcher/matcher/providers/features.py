@@ -8,7 +8,6 @@ from matcher.providers.domain import (
     ResourceUrl,
     ResourceName,
     SearchResult,
-    SongSearchResult,
 )
 
 
@@ -119,14 +118,14 @@ class SearchSongFeature(
         ResourceName,
         List[ResourceName],
         int | None,
-        Awaitable[SongSearchResult | None],
+        Awaitable[SearchResult | None],
     ]
 ):
     pass
 
 
 class SearchSongWithAcoustIdFeature(
-    BaseFeature[str, int, str, Awaitable[SongSearchResult | None]]
+    BaseFeature[str, int, str, Awaitable[SearchResult | None]]
 ):
     pass
 

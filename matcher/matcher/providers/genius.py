@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, List, TypeAlias
 import requests
 
 from matcher.context import Context
@@ -27,7 +27,7 @@ from matcher.providers.features import (
     SearchArtistFeature,
     SearchSongFeature,
 )
-from .domain import SearchResult, SongSearchResult
+from .domain import SearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
 from urllib.parse import urlparse
@@ -35,6 +35,8 @@ from datetime import date
 import re
 from ..utils import to_slug
 from bs4 import BeautifulSoup
+
+AlbumSearchResultData: TypeAlias = tuple[Any, Any]
 
 
 # Consider that the passed Ids are names, not the numeric ids
@@ -271,7 +273,6 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
         for div in divs:
             if "start the song bio" in div.get_text().lower():
                 return
-
         # Note: There are 2 matching divs, which are nested. We are interested in the second one
         return self._clean_html(divs[1:])
 
@@ -282,7 +283,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
 
     async def _search_song(
         self, song_name: str, artist_name: str, featuring: List[str]
-    ) -> SongSearchResult | None:
+    ) -> SearchResult | None:
         try:
             response = (
                 await self._fetch("/search/song", {"q": f"{artist_name} {song_name}"})
@@ -330,6 +331,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             song_id = (
                 self.get_song_id_from_url(final_match["url"]) if final_match else None
             )
-            return SongSearchResult(song_id) if song_id else None
+            song = await self._get_song(song_id)
+            return SearchResult(song_id, song) if song_id else None
         except Exception:
             return None

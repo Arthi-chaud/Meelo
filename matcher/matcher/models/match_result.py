@@ -10,15 +10,25 @@ type SyncedLyrics = List[Tuple[float, str]]
 
 @dataclass
 class LyricsMatchResult:
-    plain: str
+    plain: str | None
     synced: SyncedLyrics | None
 
 
 @dataclass
 class SongMatchResult:
-    metadata: ExternalMetadataDto | None
-    lyrics: LyricsMatchResult | None
+    metadata: ExternalMetadataDto
+    lyrics: LyricsMatchResult
     genres: List[str]
+
+    def set_synced_lyrics(self, lyrics: SyncedLyrics):
+        self.lyrics.synced = lyrics
+        self.lyrics.plain = "\n".join([line for (_, line) in self.lyrics.synced])
+
+    def set_plain_lyrics_if_none(self, lyrics: str):
+        self.lyrics.plain = self.lyrics.plain or lyrics
+
+    def push_genres(self, genres: List[str]):
+        self.genres = self.genres + [g for g in genres if g not in self.genres]
 
 
 @dataclass
