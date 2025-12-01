@@ -12,10 +12,6 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
     def setUpClass(cls):
         MatcherTestUtils.setup_context()
 
-    def setUp(self):
-        return
-        Context.get().get_provider(MusicBrainzProvider).reset_session()
-
     async def test_search_artist(self):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "f4d5cc07-3bc9-4836-9b15-88a08359bc63"),

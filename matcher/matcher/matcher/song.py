@@ -5,7 +5,6 @@ from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import LyricsMatchResult, SongMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
-from matcher.providers.thread import SharedValue
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
@@ -93,21 +92,17 @@ async def match_song(
             lambda p, song_id: p.get_song_url_from_id(song_id),
         )
 
-    shared_res = SharedValue(
-        SongMatchResult(
-            ExternalMetadataDto(
-                description=None,
-                artist_id=None,
-                rating=None,
-                album_id=None,
-                song_id=song_id,
-                sources=[],
-            ),
-            LyricsMatchResult(None, None),
-            [],
-            # LyricsMatchResult(plain_lyrics, synced_lyrics) if plain_lyrics else None,
-            # genres,
-        )
+    res = SongMatchResult(
+        ExternalMetadataDto(
+            description=None,
+            artist_id=None,
+            rating=None,
+            album_id=None,
+            song_id=song_id,
+            sources=[],
+        ),
+        LyricsMatchResult(None, None),
+        [],
     )
 
     async def provider_task(
@@ -123,53 +118,42 @@ async def match_song(
             lambda id: provider.get_song_id_from_url(id),
         )
         if source:
-            await shared_res.update(lambda r: r.metadata.push_source(source))
+            res.metadata.push_source(source)
         if not song:
             return
         await asyncio.gather(
             common.bind_feature_to_result(
                 GetSongDescriptionFeature,
                 provider,
-                lambda: shared_res.to_bool(lambda r: r.metadata.description is None),
+                lambda: res.metadata.description is None,
                 lambda get_description: get_description.run(song),
-                lambda description: shared_res.update(
-                    lambda r: r.metadata.set_description_if_none(description)
-                ),
+                lambda description: res.metadata.set_description_if_none(description),
             ),
             common.bind_feature_to_result(
                 GetSongGenresFeature,
                 provider,
-                lambda: (
-                    shared_res.to_bool(  # NOTE: Kinda bad to lock the mutex if no need to get genres
-                        lambda _: need_genres
-                    )
-                ),
+                lambda: need_genres,
                 lambda get_song_genres: get_song_genres.run(song),
-                lambda genres: shared_res.update(lambda r: r.push_genres(genres)),
+                lambda genres: res.push_genres(genres),
             ),
             common.bind_feature_to_result(
                 GetSyncedSongLyricsFeature,
                 provider,
-                lambda: (shared_res.to_bool(lambda r: r.lyrics.synced is None)),
+                lambda: res.lyrics.synced is None,
                 lambda get_synced_lyrics: get_synced_lyrics.run(song),
-                lambda lyrics: shared_res.update(lambda r: r.set_synced_lyrics(lyrics)),
+                lambda lyrics: res.set_synced_lyrics(lyrics),
             ),
             common.bind_feature_to_result(
                 GetPlainSongLyricsFeature,
                 provider,
-                lambda: (shared_res.to_bool(lambda r: r.lyrics.plain is None)),
+                lambda: res.lyrics.plain is None,
                 lambda get_plain_lyrics: get_plain_lyrics.run(song),
-                lambda lyrics: shared_res.update(
-                    lambda r: r.set_plain_lyrics_if_none(lyrics)
-                ),
+                lambda lyrics: res.set_plain_lyrics_if_none(lyrics),
             ),
         )
 
     await common.run_tasks_from_sources(provider_task, external_sources)
 
-    res = shared_res.unsafe_get_value()
-    if not shared_res.value.lyrics.plain and shared_res.value.lyrics.synced:
-        shared_res.value.lyrics.plain = "\n".join(
-            [line for (_, line) in shared_res.value.lyrics.synced]
-        )
+    if not res.lyrics.plain and res.lyrics.synced:
+        res.lyrics.plain = "\n".join([line for (_, line) in res.lyrics.synced])
     return res

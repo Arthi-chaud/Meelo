@@ -13,7 +13,6 @@ from matcher.providers.features import (
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
 )
-from matcher.providers.thread import SharedValue
 from . import common
 from ..models.api.dto import ExternalMetadataSourceDto
 from ..context import Context
@@ -98,20 +97,18 @@ async def match_album(
             lambda p, album_id: p.get_album_url_from_id(album_id),
         )
 
-    shared_res = SharedValue(
-        AlbumMatchResult(
-            ExternalMetadataDto(
-                description=None,
-                artist_id=None,
-                rating=None,
-                album_id=album_id,
-                song_id=None,
-                sources=[],
-            ),
-            None,
-            None,
-            [],
-        )
+    res = AlbumMatchResult(
+        ExternalMetadataDto(
+            description=None,
+            artist_id=None,
+            rating=None,
+            album_id=album_id,
+            song_id=None,
+            sources=[],
+        ),
+        None,
+        None,
+        [],
     )
 
     async def provider_task(
@@ -127,65 +124,48 @@ async def match_album(
             lambda id: provider.get_album_id_from_url(id),
         )
         if source:
-            await shared_res.update(lambda r: r.metadata.push_source(source))
+            res.metadata.push_source(source)
         if not album:
             return
         await asyncio.gather(
             common.bind_feature_to_result(
                 GetAlbumDescriptionFeature,
                 provider,
-                lambda: shared_res.to_bool(lambda r: r.metadata.description is None),
+                lambda: res.metadata.description is None,
                 lambda get_description: get_description.run(album),
-                lambda description: shared_res.update(
-                    lambda r: r.metadata.set_description_if_none(description)
-                ),
+                lambda description: res.metadata.set_description_if_none(description),
             ),
             common.bind_feature_to_result(
                 GetAlbumReleaseDateFeature,
                 provider,
-                lambda: shared_res.to_bool(lambda r: r.release_date is None),
+                lambda: res.release_date is None,
                 lambda get_release_date: get_release_date.run(album),
-                lambda release_data: shared_res.update(
-                    lambda r: r.set_release_date_if_none(release_data)
-                ),
+                lambda release_data: res.set_release_date_if_none(release_data),
             ),
             common.bind_feature_to_result(
                 GetAlbumRatingFeature,
                 provider,
-                lambda: (shared_res.to_bool(lambda r: r.metadata.rating is None)),
+                lambda: res.metadata.rating is None,
                 lambda get_rating: get_rating.run(album),
-                lambda rating: shared_res.update(
-                    lambda r: r.metadata.set_rating_if_none(rating)
-                ),
+                lambda rating: res.metadata.set_rating_if_none(rating),
             ),
             common.bind_feature_to_result(
                 GetAlbumTypeFeature,
                 provider,
-                lambda: (
-                    shared_res.to_bool(  # NOTE: Kinda bad to lock the mutex if no need to get album type
-                        lambda r: r.album_type is None and should_look_for_album_type
-                    )
-                ),
+                lambda: res.album_type is None and should_look_for_album_type,
                 lambda get_album_type: get_album_type.run(album),
-                lambda album_type: shared_res.update(
-                    lambda r: r.set_album_type_if_none(album_type)
-                ),
+                lambda album_type: res.set_album_type_if_none(album_type),
             ),
             common.bind_feature_to_result(
                 GetAlbumGenresFeature,
                 provider,
-                lambda: (
-                    shared_res.to_bool(  # NOTE: Kinda bad to lock the mutex if no need to get genres
-                        lambda _: need_genres
-                    )
-                ),
+                lambda: need_genres,
                 lambda get_album_genres: get_album_genres.run(album),
-                lambda genres: shared_res.update(lambda r: r.push_genres(genres)),
+                lambda genres: res.push_genres(genres),
             ),
         )
 
     await common.run_tasks_from_sources(provider_task, external_sources)
-    res = shared_res.unsafe_get_value()
     if res.album_type == type:
         res.album_type = None
     return res

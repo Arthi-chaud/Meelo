@@ -47,6 +47,7 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
         ### Allmusic
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/artist/mn0000237205")
+        await MatcherTestUtils.reset_sessions()
 
     async def test_get_artist_with_special_char(self):
         await MatcherTestUtils.reset_sessions()
@@ -85,6 +86,7 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
         ### Allmusic
         [allmusic] = [p for p in res.metadata.sources if "allmusic" in p.url]
         self.assertEqual(allmusic.url, "https://www.allmusic.com/artist/mn0001878899")
+        await MatcherTestUtils.reset_sessions()
 
     async def test_get_artist_with_placeholder_image(self):
         await MatcherTestUtils.reset_sessions()
@@ -114,3 +116,4 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
             mb.url,
             "https://musicbrainz.org/artist/ccccf1ba-c503-48d7-8c8c-f7c80c3347d4",
         )
+        await MatcherTestUtils.reset_sessions()

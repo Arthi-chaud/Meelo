@@ -8,7 +8,6 @@ from matcher.providers.features import (
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
 )
-from matcher.providers.thread import SharedValue
 from ..context import Context
 from . import common
 
@@ -49,18 +48,16 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
             lambda p, artist_id: p.get_artist_url_from_id(artist_id),
         )
 
-    shared_res = SharedValue(
-        ArtistMatchResult(
-            ExternalMetadataDto(
-                None,
-                artist_id=artist_id,
-                rating=None,
-                album_id=None,
-                song_id=None,
-                sources=[],
-            ),
+    res = ArtistMatchResult(
+        ExternalMetadataDto(
             None,
-        )
+            artist_id=artist_id,
+            rating=None,
+            album_id=None,
+            song_id=None,
+            sources=[],
+        ),
+        None,
     )
 
     async def provider_task(
@@ -76,7 +73,7 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
             lambda id: provider.get_artist_id_from_url(id),
         )
         if source:
-            await shared_res.update(lambda r: r.metadata.push_source(source))
+            res.metadata.push_source(source)
         if not artist:
             return
 
@@ -84,23 +81,19 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
             common.bind_feature_to_result(
                 GetArtistDescriptionFeature,
                 provider,
-                lambda: shared_res.to_bool(lambda r: r.metadata.description is None),
+                lambda: res.metadata.description is None,
                 lambda get_description: get_description.run(artist),
-                lambda description: shared_res.update(
-                    lambda r: r.metadata.set_description_if_none(description)
-                ),
+                lambda description: res.metadata.set_description_if_none(description),
             ),
             common.bind_feature_to_result(
                 GetArtistIllustrationUrlFeature,
                 provider,
-                lambda: shared_res.to_bool(lambda r: r.illustration_url is None),
+                lambda: res.illustration_url is None,
                 lambda get_illustration_url: get_illustration_url.run(artist),
-                lambda url: shared_res.update(
-                    lambda r: r.set_illustration_url_if_none(url)
-                ),
+                lambda url: res.set_illustration_url_if_none(url),
             ),
         )
 
     await common.run_tasks_from_sources(provider_task, external_sources)
 
-    return shared_res.unsafe_get_value()
+    return res

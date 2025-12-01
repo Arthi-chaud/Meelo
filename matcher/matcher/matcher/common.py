@@ -64,16 +64,15 @@ D = TypeVar("D")
 async def bind_feature_to_result[F, D](
     feature: Type[F],
     provider: BaseProviderBoilerplate,
-    guard_data_is_missing: Callable[[], Awaitable[bool]],
+    guard_data_is_missing: Callable[[], bool],
     get: Callable[[F], Awaitable[D | None]],
-    set_result: Callable[[D], Awaitable[None]],
+    set_result: Callable[[D], None],
 ):
     f = provider.get_feature(feature)
-    if f:
-        if await guard_data_is_missing():
-            res = await get(f)
-            if res:
-                await set_result(res)
+    if f and guard_data_is_missing():
+        res = await get(f)
+        if res:
+            set_result(res)
 
 
 async def get_sources_from_wikidata(
