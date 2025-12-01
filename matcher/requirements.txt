@@ -1,6 +1,7 @@
 pika
 dataclasses-json
 jsons
+aiormq
 unittest2
 musicbrainzngs
 python3-discogs-client

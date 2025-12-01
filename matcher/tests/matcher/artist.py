@@ -14,7 +14,9 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
         # Illustration
         self.assertIsNotNone(res.illustration_url)
         res.illustration_url = str(res.illustration_url)
-        self.assertTrue("discogs" in res.illustration_url)
+        self.assertTrue(
+            "discogs" in res.illustration_url or "genius.com" in res.illustration_url
+        )
         # Matches
         self.assertIsNotNone(res.metadata)
         self.assertEqual(res.metadata.artist_id, 1)

@@ -3,51 +3,49 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 import logging
+from aiormq.abc import AbstractChannel, DeliveredMessage
 from pydantic import BaseModel
 from matcher.bootstrap import bootstrap_context
 from matcher.context import Context, CurrentItem
-from pika.adapters.blocking_connection import BlockingChannel
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
 from matcher.api import User
 from matcher.mq import (
     connect_mq,
-    start_consuming,
     stop_mq,
     get_queue_size,
 )
 from .models.event import Event
 
 
-async def consume(ch: BlockingChannel, method, prop, body):
-    event = Event.from_json(body)
+async def consume(message: DeliveredMessage, channel: AbstractChannel):
+    event = Event.from_json(message.body)
     ctx = Context.get()
-    ctx.pending_items_count = get_queue_size()
+    ctx.pending_items_count = await get_queue_size()
     if ctx.pending_items_count == 0:
         ctx.clear_handled_items_count()
-    delivery_tag = method.delivery_tag
-    logging.info(f"Received event: {event} (P={prop.priority})")
+    delivery_tag = message.delivery_tag
+    logging.info(f"Received event: {event}")
     ctx.current_item = CurrentItem(name=event.name, type=event.type, id=event.id)
     match event.type:
         case "artist":
             await match_and_post_artist(event.id, event.name)
-            ch.basic_ack(delivery_tag)
             ctx.increment_handled_items_count()
             pass
         case "album":
             await match_and_post_album(event.id, event.name)
             ctx.increment_handled_items_count()
-            ch.basic_ack(delivery_tag)
             pass
         case "song":
             await match_and_post_song(event.id, event.name)
             ctx.increment_handled_items_count()
-            ch.basic_ack(delivery_tag)
             pass
         case _:
             logging.warning("No handler for event " + event.type)
             pass
+    if delivery_tag is not None:
+        await channel.basic_ack(delivery_tag)
     ctx.current_item = None
 
 
@@ -66,13 +64,12 @@ async def startup():
     logging.getLogger("asyncio").setLevel(logging.ERROR)
     logging.getLogger("pika").setLevel(logging.ERROR)
     await bootstrap_context()
-    connect_mq(consume)
-    start_consuming()
+    await connect_mq(consume)
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    stop_mq()
+    await stop_mq()
 
 
 class StatusResponse(BaseModel):
