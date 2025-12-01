@@ -20,9 +20,11 @@ from matcher.providers.features import (
 async def match_and_post_song(song_id: int, song_name: str):
     try:
         context = Context.get()
-        song = context.client.get_song(song_id)
+        song = await context.client.get_song(song_id)
         source_file = (
-            context.client.get_file(song.master.source_file_id) if song.master else None
+            await context.client.get_file(song.master.source_file_id)
+            if song.master
+            else None
         )
         res = await match_song(
             song_id,
@@ -36,19 +38,19 @@ async def match_and_post_song(song_id: int, song_name: str):
             logging.info(
                 f"Matched with {len(res.metadata.sources)} providers for song {song_name}"
             )
-            context.client.post_external_metadata(res.metadata)
+            await context.client.post_external_metadata(res.metadata)
 
         if res.lyrics.plain or res.lyrics.synced:
             logging.info(
                 f"Found {'synced lyrics' if res.lyrics.synced else 'lyrics'} for song {song.name}"
             )
             if res.lyrics.plain:  # Note should always be true
-                context.client.post_song_lyrics(
+                await context.client.post_song_lyrics(
                     song_id, res.lyrics.plain, res.lyrics.synced
                 )
         if res.genres:
             logging.info(f"Found {len(res.genres)} genres for song {song.name}")
-            context.client.post_song_genres(song_id, res.genres)
+            await context.client.post_song_genres(song_id, res.genres)
     except Exception as e:
         logging.error(e)
 

@@ -11,15 +11,17 @@ from .settings import BaseProviderSettings
 
 # Reads settings, push to API providers that do not exist
 # Builds Provider classes and sets up global context
-def bootstrap_context():
+async def bootstrap_context():
     try:
         api_client = API()
         settings = Settings()
-        if not api_client.ping():
+        if not await api_client.ping():
             raise Exception("Could not connect to API.")
         logging.info(f"{len(settings.provider_settings)} providers enabled.")
-        provider_api_entries = push_missing_providers(
-            api_client.get_providers().items, settings.provider_settings, api_client
+        provider_api_entries = await push_missing_providers(
+            (await api_client.get_providers()).items,
+            settings.provider_settings,
+            api_client,
         )
         resolved_providers = build_provider_models(
             provider_api_entries, settings.provider_settings
@@ -30,7 +32,7 @@ def bootstrap_context():
         exit(1)
 
 
-def push_missing_providers(
+async def push_missing_providers(
     api_providers: List[ProviderApiModel],
     enabled_providers: List[BaseProviderSettings],
     api_client: API,
@@ -42,9 +44,9 @@ def push_missing_providers(
             for api_prov in api_providers
             if api_prov.name == enabled_provider.name
         ] == []:
-            res = api_client.post_provider(enabled_provider.name)
+            res = await api_client.post_provider(enabled_provider.name)
             icon_path = f"./assets/{res.slug}/icon.png"
-            api_client.post_provider_icon(res.id, icon_path)
+            await api_client.post_provider_icon(res.id, icon_path)
             api_providers.append(res)
     if created_providers_name != []:
         logging.info(

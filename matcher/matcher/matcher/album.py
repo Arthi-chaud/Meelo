@@ -24,7 +24,7 @@ OVERRIDABLE_ALBUM_TYPES = [AlbumType.STUDIO, AlbumType.LIVE]
 async def match_and_post_album(album_id: int, album_name: str):
     try:
         context = Context.get()
-        album = context.client.get_album(album_id)
+        album = await context.client.get_album(album_id)
         res = await match_album(
             album_id,
             album_name,
@@ -46,7 +46,7 @@ async def match_and_post_album(album_id: int, album_name: str):
             logging.info(
                 f"Matched with {len(res.metadata.sources)} providers for album {album_name}"
             )
-            context.client.post_external_metadata(res.metadata)
+            await context.client.post_external_metadata(res.metadata)
 
         if old_release_date and res.release_date:
             if abs(res.release_date.year - old_release_date.year) > 2:
@@ -67,7 +67,7 @@ async def match_and_post_album(album_id: int, album_name: str):
             or (album_type != album.type)
             and album_type != AlbumType.OTHER
         ):
-            context.client.post_album_update(
+            await context.client.post_album_update(
                 album_id, res.release_date, res.genres, album_type
             )
     except Exception as e:

@@ -21,10 +21,12 @@ async def match_and_post_artist(artist_id: int, artist_name: str):
             logging.info(
                 f"Matched with {len(res.metadata.sources)} providers for artist {artist_name}"
             )
-            context.client.post_external_metadata(res.metadata)
+            await context.client.post_external_metadata(res.metadata)
         if res.illustration_url:
             logging.info(f"Found image for artist {artist_name}")
-            context.client.post_artist_illustration(artist_id, res.illustration_url)
+            await context.client.post_artist_illustration(
+                artist_id, res.illustration_url
+            )
     except Exception as e:
         logging.error(e)
 

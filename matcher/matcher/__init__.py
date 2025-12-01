@@ -65,7 +65,7 @@ async def startup():
     logging.basicConfig(level=logging.INFO)
     logging.getLogger("asyncio").setLevel(logging.ERROR)
     logging.getLogger("pika").setLevel(logging.ERROR)
-    bootstrap_context()
+    await bootstrap_context()
     connect_mq(consume)
     start_consuming()
 
@@ -109,7 +109,7 @@ async def get_user(req: Request) -> User:
     token = tokenCookie or tokenHeader
     if not token:
         raise ErrorResponse("Missing token")
-    user = Context.get().client.get_user(token)
+    user = await Context.get().client.get_user(token)
     if user is None:
         raise ErrorResponse("Invalid token")
     if not user.enabled:

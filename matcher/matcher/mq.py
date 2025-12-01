@@ -34,7 +34,6 @@ def connect_mq(
     logging.info(f"Version: {Context.get().settings.version}")
     logging.info("Ready to match!")
     channel.basic_qos(prefetch_count=1)
-    # TODO AWAIT
     channel.basic_consume(
         queue_name,
         on_message_callback=lambda bc, arg1, arg2, arg3: asyncio.run(
