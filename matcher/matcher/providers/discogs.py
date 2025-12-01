@@ -1,5 +1,8 @@
+import asyncio
 from dataclasses import dataclass
 from typing import Any, List
+
+import aiohttp
 from matcher.context import Context
 from matcher.providers.domain import SearchResult
 from matcher.providers.features import (
@@ -17,7 +20,6 @@ from matcher.providers.features import (
     GetMusicBrainzRelationKeyFeature,
 )
 from matcher.utils import capitalize_all_words
-import requests
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
 import discogs_client
@@ -61,34 +63,38 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
             GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
         ]
 
-    def _headers(self):
-        return {
-            "Accept-Encoding": "gzip",
-            "Accept": "application/vnd.discogs.v2.plaintext+json",
-            "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
-        }
-
     def _get_client(self):
         return discogs_client.Client(
             f"Meelo Matcher/{Context.get().settings.version}",
             user_token=self.settings.api_key,
         )
 
+    async def _fetch(self, route: str, host="https://api.discogs.com") -> Any | None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"{host}{route}",
+                headers={
+                    "Accept-Encoding": "gzip",
+                    "Accept": "application/vnd.discogs.v2.plaintext+json",
+                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
+                },
+                params={"token": self.settings.api_key},
+            ) as response:
+                return await response.json()
+
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         client = self._get_client()
         try:
-            data = client.search(artist_name, type="artist")[0]
+            data = await asyncio.to_thread(
+                lambda: client.search(artist_name, type="artist")[0]
+            )
             return SearchResult(str(data.id), data)
         except Exception:
             return None
 
     async def _get_artist(self, artist_id: str) -> Any | None:
         try:
-            return requests.get(
-                f"https://api.discogs.com/artists/{artist_id}",
-                headers=self._headers(),
-                params={"token": self.settings.api_key},
-            ).json()
+            return await self._fetch(f"/artists/{artist_id}")
         except Exception:
             return None
 
@@ -107,11 +113,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            return requests.get(
-                f"https://api.discogs.com/masters/{album_id}",
-                headers=self._headers(),
-                params={"token": self.settings.api_key},
-            ).json()
+            return await self._fetch(f"/masters/{album_id}")
         except Exception:
             return None
 

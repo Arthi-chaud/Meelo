@@ -1,8 +1,11 @@
+import asyncio
 from dataclasses import dataclass
 import logging
 import re
 from typing import Any, List
 import warnings
+
+import aiohttp
 from matcher.context import Context
 
 from matcher.providers.features import (
@@ -33,7 +36,6 @@ from ..settings import MusicBrainzSettings
 from .boilerplate import BaseProviderBoilerplate
 import musicbrainzngs
 from musicbrainzngs.musicbrainz import _rate_limit
-import requests
 from datetime import date, datetime
 
 
@@ -108,25 +110,30 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     @_rate_limit
     @staticmethod
     async def _fetch(url: str, query: Any = {}) -> Any:
-        res = requests.get(
-            f"https://musicbrainz.org/ws/2{url}",
-            params={**query, **{"fmt": "json"}},
-            headers={
-                "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
-            },
-        )
-        return res.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"https://musicbrainz.org/ws/2{url}",
+                params={**query, **{"fmt": "json"}},
+                headers={
+                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
+                },
+            ) as response:
+                return await response.json()
 
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
 
     async def _get_artist(self, id: str) -> Any:
         self._set_user_agent()
-        return musicbrainzngs.get_artist_by_id(id, ["url-rels"])
+        return await asyncio.to_thread(
+            lambda: musicbrainzngs.get_artist_by_id(id, ["url-rels"])
+        )
 
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         self._set_user_agent()
-        matches = musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
+        matches = await asyncio.to_thread(
+            lambda: musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
+        )
         try:
             match = matches[0]
             id = match.get("id")
@@ -162,12 +169,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         is_single = sanitised_album_name != album_name
         try:
             self._set_user_agent()
-            releases = musicbrainzngs.search_releases(
-                sanitised_album_name,
-                arid=self.compilation_artist_id if not artist_name else None,
-                artist=artist_name,
-                limit=20,
-            )["releases"]
+            releases = await asyncio.to_thread(
+                lambda: musicbrainzngs.search_releases(
+                    sanitised_album_name,
+                    arid=self.compilation_artist_id if not artist_name else None,
+                    artist=artist_name,
+                    limit=20,
+                )["releases"]
+            )
             release_group_key = "release-group"
             typed_releases = [
                 r
@@ -339,21 +348,27 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
     ) -> SearchResult | None:
         try:
             song_slug = to_slug(song_name)
-            recordings = requests.get(
-                # Note: the 'params' are does not allow the '+' for the 'meta' field
-                f"https://api.acoustid.org/v2/lookup?client={'3WWOxoNbNH'}&duration={duration}&fingerprint={acoustid}&meta=recordings+sources",
-            ).json()["results"][0]["recordings"]
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    # Note: the 'params' are does not allow the '+' for the 'meta' field
+                    f"https://api.acoustid.org/v2/lookup?client={'3WWOxoNbNH'}&duration={duration}&fingerprint={acoustid}&meta=recordings+sources",
+                ) as response:
+                    recordings = (await response.json())["results"][0]["recordings"]
 
-            recordings = [r for r in recordings if r.get("sources") and r.get("title")]
-            ## Filter recordings by title
-            recordings = [r for r in recordings if to_slug(r["title"]) == song_slug]
-            ## Order recordings by sources count
-            ordered_recordings = sorted(
-                recordings,
-                key=lambda r: -r["sources"],
-            )
-            match = ordered_recordings[0]
-            return SearchResult(match["id"], match)
+                    recordings = [
+                        r for r in recordings if r.get("sources") and r.get("title")
+                    ]
+                    ## Filter recordings by title
+                    recordings = [
+                        r for r in recordings if to_slug(r["title"]) == song_slug
+                    ]
+                    ## Order recordings by sources count
+                    ordered_recordings = sorted(
+                        recordings,
+                        key=lambda r: -r["sources"],
+                    )
+                    match = ordered_recordings[0]
+                    return SearchResult(match["id"], match)
         except Exception:
             pass
 

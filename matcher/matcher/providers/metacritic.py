@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
+
+import aiohttp
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
@@ -15,7 +17,6 @@ from matcher.providers.features import (
     IsMusicBrainzRelationFeature,
 )
 from matcher.settings import MetacriticSettings
-import requests
 from bs4 import BeautifulSoup, Tag
 from datetime import date, datetime
 
@@ -53,14 +54,16 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
     async def _get_album(self, album_id: str) -> Any | None:
         album_url = self.get_album_url_from_id(album_id)
         try:
-            html = requests.get(
-                str(album_url),
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
-            ).text
-            soup = BeautifulSoup(html, "html.parser")
-            return soup
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    str(album_url),
+                    headers={
+                        "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
+                    },
+                ) as response:
+                    html = await response.text()
+                    soup = BeautifulSoup(html, "html.parser")
+                    return soup
         except Exception:
             pass
 

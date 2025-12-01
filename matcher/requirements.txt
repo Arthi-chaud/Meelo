@@ -10,3 +10,4 @@ beautifulsoup4
 python-slugify
 fastapi[standard]==0.117.1
 asyncio
+aiohttp

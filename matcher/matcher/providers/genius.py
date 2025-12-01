@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, List, TypeAlias
-import requests
-
+from typing import Any, Awaitable, Callable, List, TypeAlias
+import aiohttp
 from matcher.context import Context
 from matcher.providers.features import (
     GetAlbumFeature,
@@ -95,28 +94,42 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
             SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
         ]
 
-    async def _fetch(self, url: str, params={}, host="https://genius.com/api"):
-        return requests.get(
-            f"{host}{url}",
-            params=params
-            if host == "https://genius.com/api"
-            else {**params, "access_token": self.settings.api_key},
-            headers={
-                "Authorization": f"{self.settings.api_key}",
-                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-            },
-        ).json()
+    async def __fetch(
+        self,
+        url: str,
+        host: str,
+        then: Callable[[aiohttp.ClientResponse], Awaitable[Any]],
+        params={},
+    ):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"{host}{url}",
+                params=params
+                if host == "https://genius.com/api"
+                else {**params, "access_token": self.settings.api_key},
+                headers={
+                    "Authorization": f"{self.settings.api_key}",
+                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                },
+            ) as response:
+                return await then(response)
+
+    async def _fetch_json(self, url: str, params={}, host="https://genius.com/api"):
+        return await self.__fetch(url, host, lambda r: r.json(), params)
+
+    async def _fetch_text(self, url: str, params={}, host="https://genius.com/api"):
+        return await self.__fetch(url, host, lambda r: r.text(), params)
 
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         try:
             artist_name = artist_name.lower()
-            artists = (await self._fetch("/search/artist", {"q": artist_name}))[
+            artists = (await self._fetch_json("/search/artist", {"q": artist_name}))[
                 "response"
             ]["sections"][0]["hits"]
             # Sometimes search fails if the name contains ' and ' instead of ' & '
             if len(artists) == 0 and " and " in artist_name:
                 artists = (
-                    await self._fetch(
+                    await self._fetch_json(
                         "/search/artist", {"q": artist_name.replace(" and ", " & ")}
                     )
                 )["response"]["sections"][0]["hits"]
@@ -140,7 +153,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
 
     async def _get_artist(self, artist_id: str) -> Any | None:
         try:
-            artists = (await self._fetch("/search/artist", {"q": artist_id}))[
+            artists = (await self._fetch_json("/search/artist", {"q": artist_id}))[
                 "response"
             ]["sections"][0]["hits"]
             for artist in artists:
@@ -159,7 +172,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
     async def _get_artist_description(self, artist) -> str | None:
         try:
             artist = (
-                await self._fetch(
+                await self._fetch_json(
                     artist["api_path"],
                     {"text_format": "plain"},
                     "https://api.genius.com",
@@ -189,7 +202,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
         album_slug = to_slug(album_name)
         try:
             albums = (
-                await self._fetch(
+                await self._fetch_json(
                     "/search/album", {"q": f"{album_name} {artist_name or str()}"}
                 )
             )["response"]["sections"][0]["hits"]
@@ -208,9 +221,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            albums = (await self._fetch("/search/album", {"q": album_id}))["response"][
-                "sections"
-            ][0]["hits"]
+            albums = (await self._fetch_json("/search/album", {"q": album_id}))[
+                "response"
+            ]["sections"][0]["hits"]
             for album in albums:
                 album = album["result"]
                 if not album["_type"] == "album":
@@ -236,12 +249,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
         url: str = self.get_song_url_from_id(song_id)  # pyright: ignore
         try:
             # Stolen from https://github.com/johnwmillr/LyricsGenius/blob/795a81b0d0bd63855d18dc694400fb34079f6f6f/lyricsgenius/genius.py#L95
-            html = requests.get(
-                url,
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
-            ).text.replace("<br/>", "\n")
+            html = (await self._fetch_text(url, host="")).replace("<br/>", "\n")
             soup = BeautifulSoup(html, "html.parser")
             return soup
         except Exception:
@@ -286,7 +294,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
     ) -> SearchResult | None:
         try:
             response = (
-                await self._fetch("/search/song", {"q": f"{artist_name} {song_name}"})
+                await self._fetch_json(
+                    "/search/song", {"q": f"{artist_name} {song_name}"}
+                )
             )["response"]
             search_res = [res for res in response["sections"][0]["hits"]]
             songs = [res["result"] for res in search_res if res.get("type") == "song"]

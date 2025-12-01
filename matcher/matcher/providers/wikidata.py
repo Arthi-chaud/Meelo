@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
-import requests
+import aiohttp
 from matcher.context import Context
 
 
@@ -21,13 +21,13 @@ class WikidataRelations:
 class WikidataProvider:
     async def get_resource_relations(self, wikidata_id):
         try:
-            return WikidataRelations(
-                requests.get(
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
                     f"https://wikidata.org/w/rest.php/wikibase/v1/entities/items/{wikidata_id}",
                     headers={
                         "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
                     },
-                ).json()
-            )
+                ) as response:
+                    return WikidataRelations(await response.json())
         except Exception:
             return None

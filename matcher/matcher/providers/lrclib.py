@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import re
 from typing import Any, List
-import requests
+import aiohttp
 from matcher.context import Context
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -34,12 +34,14 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
         ]
 
     async def _fetch(self, route: str):
-        return requests.get(
-            "https://lrclib.net/api" + route,
-            headers={
-                "User-Agent": f"Meelo Matcher {Context.get().settings.version} (github.com/Arthi-chaud/meelo)"
-            },
-        ).json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://lrclib.net/api" + route,
+                headers={
+                    "User-Agent": f"Meelo Matcher {Context.get().settings.version} (github.com/Arthi-chaud/meelo)"
+                },
+            ) as response:
+                return await response.json()
 
     def _candidate_is_valid(self, item: Any, duration: int | None):
         if item.get("id") is None:

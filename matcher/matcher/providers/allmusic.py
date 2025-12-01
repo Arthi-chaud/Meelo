@@ -2,7 +2,8 @@ from dataclasses import dataclass
 import datetime
 from typing import Any
 import json
-import requests
+
+import aiohttp
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from ..settings import AllMusicSettings
@@ -50,14 +51,16 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            html = requests.get(
-                str(self.get_album_url_from_id(album_id)),
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
-            ).text
-            soup = BeautifulSoup(html, "html.parser")
-            return soup
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    str(self.get_album_url_from_id(album_id)),
+                    headers={
+                        "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
+                    },
+                ) as response:
+                    html = await response.text()
+                    soup = BeautifulSoup(html, "html.parser")
+                    return soup
         except Exception:
             pass
 
