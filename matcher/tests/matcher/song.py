@@ -10,6 +10,7 @@ class TestMatchSong(unittest.IsolatedAsyncioTestCase):
         return MatcherTestUtils.setup_context()
 
     async def test_get_song_with_featuring_artist(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_song(
             1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None, None
         )
@@ -62,6 +63,7 @@ class TestMatchSong(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_get_song_ignore_genres(self):
+        await MatcherTestUtils.reset_sessions()
         # Setup
         context = Context.get()
         context.settings.push_genres = False

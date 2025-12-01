@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 import re
 from typing import Any, List
-import aiohttp
 from matcher.context import Context
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.domain import SearchResult
+from matcher.providers.session import HasSession
 from matcher.settings import LrcLibSettings
 from matcher.providers.features import (
     GetSyncedSongLyricsFeature,
@@ -17,7 +17,7 @@ from matcher.providers.features import (
 
 
 @dataclass
-class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
+class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
     def __post_init__(self):
         self.features = [
             SearchSongFeature(
@@ -34,14 +34,14 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings]):
         ]
 
     async def _fetch(self, route: str):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                "https://lrclib.net/api" + route,
-                headers={
-                    "User-Agent": f"Meelo Matcher {Context.get().settings.version} (github.com/Arthi-chaud/meelo)"
-                },
-            ) as response:
-                return await response.json()
+        session = await self.get_session()
+        async with session.get(
+            "https://lrclib.net/api" + route,
+            headers={
+                "User-Agent": f"Meelo Matcher {Context.get().settings.version} (github.com/Arthi-chaud/meelo)"
+            },
+        ) as response:
+            return await response.json()
 
     def _candidate_is_valid(self, item: Any, duration: int | None):
         if item.get("id") is None:

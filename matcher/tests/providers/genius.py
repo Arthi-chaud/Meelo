@@ -24,6 +24,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
             ("Selena Gomez and the Scene", "Selena Gomez & The Scene"),
         ]
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         for [artist_name, expected] in scenarios:
             with self.subTest(
                 "Search Artist",
@@ -37,8 +38,10 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_get_artist_description_and_image(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         artist = await provider.get_artist("Massive Attack")
         self.assertIsNotNone(artist)
+        print(artist)
         description = await provider.get_artist_description(
             artist,
         )
@@ -53,6 +56,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_get_artist_without_image(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         artist = await provider.get_artist("Peplab")
         self.assertIsNotNone(artist)
         illustration = await provider.get_artist_illustration_url(
@@ -63,6 +67,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_get_album_release_date(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         album = await provider.get_album("Superbus/Aeromusical")
         self.assertIsNotNone(album)
         release_date = await provider.get_album_release_date(
@@ -73,6 +78,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_get_song_lyrics(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         song = await provider.get_song("Girls-aloud-models")
         self.assertIsNotNone(song)
         # Lyrics
@@ -87,6 +93,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_get_song_lyrics_and_description(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         song = await provider.get_song("Rachel-stevens-some-girls")
         self.assertIsNotNone(song)
         # Lyrics
@@ -107,6 +114,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_get_song_wo_lyrics_and_description(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         song = await provider.get_song("Madonna-die-another-day-dirty-vegas-dub")
         self.assertIsNotNone(song)
         # Lyrics
@@ -119,6 +127,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
     @unittest.skipIf(MatcherTestUtils.is_ci(), "")
     async def test_search_song(self):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
+        await provider.reset_session()
         scenarios: List[Tuple[str, str, List[str], str | None]] = [
             ("Overrated", "Siobhan Donaghy", [], "Siobhan-donaghy-overrated"),
             ("Work B**ch", "Britney Spears", [], "Britney-spears-work-bch-work-work"),

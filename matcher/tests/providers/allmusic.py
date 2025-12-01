@@ -12,6 +12,7 @@ class TestAllMusic(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_album_rating_and_release_date(self):
         provider: AllMusicProvider = Context().get().get_provider(AllMusicProvider)  # pyright: ignore
+        await provider.reset_session()
         album = await provider.get_album("mw0004378326")
         self.assertIsNotNone(album)
         rating = await provider.get_album_rating(album)
@@ -21,6 +22,7 @@ class TestAllMusic(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_album_rating_when_null_and_release_date(self):
         provider: AllMusicProvider = Context().get().get_provider(AllMusicProvider)  # pyright: ignore
+        await provider.reset_session()
         album = await provider.get_album("mw0000770491")
         self.assertIsNotNone(album)
         rating = await provider.get_album_rating(album)

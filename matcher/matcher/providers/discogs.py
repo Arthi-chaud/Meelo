@@ -1,8 +1,6 @@
 import asyncio
 from dataclasses import dataclass
 from typing import Any, List
-
-import aiohttp
 from matcher.context import Context
 from matcher.providers.domain import SearchResult
 from matcher.providers.features import (
@@ -19,6 +17,7 @@ from matcher.providers.features import (
     SearchArtistFeature,
     GetMusicBrainzRelationKeyFeature,
 )
+from matcher.providers.session import HasSession
 from matcher.utils import capitalize_all_words
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
@@ -32,7 +31,7 @@ import discogs_client
 
 
 @dataclass
-class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
+class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "discogs"),
@@ -70,17 +69,17 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
         )
 
     async def _fetch(self, route: str, host="https://api.discogs.com") -> Any | None:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{host}{route}",
-                headers={
-                    "Accept-Encoding": "gzip",
-                    "Accept": "application/vnd.discogs.v2.plaintext+json",
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
-                },
-                params={"token": self.settings.api_key},
-            ) as response:
-                return await response.json()
+        session = await self.get_session()
+        async with session.get(
+            f"{host}{route}",
+            headers={
+                "Accept-Encoding": "gzip",
+                "Accept": "application/vnd.discogs.v2.plaintext+json",
+                "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
+            },
+            params={"token": self.settings.api_key},
+        ) as response:
+            return await response.json()
 
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         client = self._get_client()

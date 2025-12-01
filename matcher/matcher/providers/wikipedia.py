@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
-
-import aiohttp
-
 from matcher.context import Context
+from matcher.providers.session import HasSession
 from .features import (
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -22,7 +20,7 @@ from ..settings import WikipediaSettings
 
 
 @dataclass
-class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
+class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetArtistIdFromUrlFeature(
@@ -49,26 +47,26 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
 
     async def get_article(self, article_id: str) -> Any | None:
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    "https://en.wikipedia.org/w/api.php",
-                    params={
-                        "format": "json",
-                        "action": "query",
-                        "prop": "extracts",
-                        "exintro": "true",
-                        "explaintext": "true",
-                        "redirects": 1,
-                        "titles": unquote(article_id),
-                    },
-                    headers={
-                        "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-                    },
-                ) as response:
-                    json = await response.json()
-                    res = json["query"]["pages"]
-                    first_entity = next(iter(res))
-                    return res[first_entity]
+            session = await self.get_session()
+            async with session.get(
+                "https://en.wikipedia.org/w/api.php",
+                params={
+                    "format": "json",
+                    "action": "query",
+                    "prop": "extracts",
+                    "exintro": "true",
+                    "explaintext": "true",
+                    "redirects": 1,
+                    "titles": unquote(article_id),
+                },
+                headers={
+                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                },
+            ) as response:
+                json = await response.json()
+                res = json["query"]["pages"]
+                first_entity = next(iter(res))
+                return res[first_entity]
         except Exception:
             return None
 
@@ -89,22 +87,22 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
 
     async def get_article_name_from_wikidata(self, wikidata_id: str) -> str | None:
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    "https://www.wikidata.org/w/api.php",
-                    params={
-                        "action": "wbgetentities",
-                        "props": "sitelinks",
-                        "ids": wikidata_id,
-                        "sitefilter": "enwiki",
-                        "format": "json",
-                    },
-                    headers={
-                        "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-                    },
-                ) as response:
-                    entities = (await response.json())["entities"]
-                    first_entity = next(iter(entities))
-                    return entities[first_entity]["sitelinks"]["enwiki"]["title"]
+            session = await self.get_session()
+            async with session.get(
+                "https://www.wikidata.org/w/api.php",
+                params={
+                    "action": "wbgetentities",
+                    "props": "sitelinks",
+                    "ids": wikidata_id,
+                    "sitefilter": "enwiki",
+                    "format": "json",
+                },
+                headers={
+                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                },
+            ) as response:
+                entities = (await response.json())["entities"]
+                first_entity = next(iter(entities))
+                return entities[first_entity]["sitelinks"]["enwiki"]["title"]
         except Exception:
             return None

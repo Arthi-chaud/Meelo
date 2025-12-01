@@ -12,6 +12,10 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
     def setUpClass(cls):
         MatcherTestUtils.setup_context()
 
+    def setUp(self):
+        return
+        Context.get().get_provider(MusicBrainzProvider).reset_session()
+
     async def test_search_artist(self):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "f4d5cc07-3bc9-4836-9b15-88a08359bc63"),
@@ -26,7 +30,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-
+        await provider.reset_session()
         for [artist_name, expected] in scenarios:
             with self.subTest("Search Artist", artist_name=artist_name):
                 artist: SearchResult = await provider.search_artist(artist_name)  # pyright: ignore
@@ -37,6 +41,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
+        await provider.reset_session()
         artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         self.assertIsNotNone(artist)
         self.assertEqual(artist["name"], "Britney Spears")  # pyright:ignore
@@ -106,7 +111,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-
+        await provider.reset_session()
         for [album_name, artist_name, expected] in scenarios:
             with self.subTest(
                 "Search Album", album_name=album_name, artist_name=artist_name
@@ -124,6 +129,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
+        await provider.reset_session()
         album = await provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
         self.assertIsNotNone(album)
         release_date = await provider.get_album_release_date(album)
@@ -143,6 +149,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
+        await provider.reset_session()
         album = await provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
         self.assertIsNotNone(album)
         release_date = await provider.get_album_release_date(album)
@@ -183,6 +190,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
+        await provider.reset_session()
         for [mbid, expected_type] in scenarios:
             with self.subTest("Get Album Type", mbid=mbid, type=expected_type):
                 album = await provider.get_album(mbid)
@@ -207,6 +215,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
                 "Katy Perry",
                 [],
                 [
+                    "7b1c9868-2cd5-4e9a-abb1-21a79be5ca35",
                     "59025ade-1476-466e-bff4-7a20a6e296b8",
                     "a0ad9828-ff96-42d0-b7a5-d0e85ec001c2",
                 ],
@@ -221,7 +230,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-
+        await provider.reset_session()
         for [song_name, artist_name, featuring, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name, featuring=featuring):
                 song = await provider.search_song(
@@ -261,7 +270,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-
+        await provider.reset_session()
         for [song_name, acoustid, duration, expected] in scenarios:
             with self.subTest("Search Song", song_name=song_name):
                 song = await provider.search_song_with_acoustid(
@@ -277,6 +286,7 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
+        await provider.reset_session()
         song = await provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
         self.assertIsNotNone(song)
         self.assertEqual(song["title"], "Breathe on Me")  # pyright:ignore

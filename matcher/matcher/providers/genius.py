@@ -26,6 +26,7 @@ from matcher.providers.features import (
     SearchArtistFeature,
     SearchSongFeature,
 )
+from matcher.providers.session import HasSession
 from .domain import SearchResult
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import GeniusSettings
@@ -40,7 +41,7 @@ AlbumSearchResultData: TypeAlias = tuple[Any, Any]
 
 # Consider that the passed Ids are names, not the numeric ids
 @dataclass
-class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
+class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "genius"),
@@ -101,18 +102,18 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
         then: Callable[[aiohttp.ClientResponse], Awaitable[Any]],
         params={},
     ):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{host}{url}",
-                params=params
-                if host == "https://genius.com/api"
-                else {**params, "access_token": self.settings.api_key},
-                headers={
-                    "Authorization": f"{self.settings.api_key}",
-                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-                },
-            ) as response:
-                return await then(response)
+        session = await self.get_session()
+        async with session.get(
+            f"{host}{url}",
+            params=params
+            if host == "https://genius.com/api"
+            else {**params, "access_token": self.settings.api_key},
+            headers={
+                "Authorization": f"{self.settings.api_key}",
+                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+            },
+        ) as response:
+            return await then(response)
 
     async def _fetch_json(self, url: str, params={}, host="https://genius.com/api"):
         return await self.__fetch(url, host, lambda r: r.json(), params)
@@ -171,13 +172,12 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings]):
 
     async def _get_artist_description(self, artist) -> str | None:
         try:
-            artist = (
-                await self._fetch_json(
-                    artist["api_path"],
-                    {"text_format": "plain"},
-                    "https://api.genius.com",
-                )
-            )["response"]["artist"]
+            response = await self._fetch_json(
+                artist["api_path"],
+                {"text_format": "plain"},
+                "https://api.genius.com",
+            )
+            artist = response["response"]["artist"]
             desc = artist["description"]["plain"]
             if desc == "?":
                 return None

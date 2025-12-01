@@ -21,6 +21,7 @@ class TestDiscogs(unittest.IsolatedAsyncioTestCase):
             ("Selena Gomez and the Scene", "1867561"),
         ]
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        await provider.reset_session()
         for [artist_name, expected] in scenarios:
             with self.subTest(
                 "Search Artist",
@@ -33,6 +34,7 @@ class TestDiscogs(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_artist_image(self):
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        await provider.reset_session()
         artist = await provider.get_artist("4480")
         self.assertIsNotNone(artist)
         illustration = await provider.get_artist_illustration_url(artist)
@@ -40,6 +42,7 @@ class TestDiscogs(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_album_genres(self):
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        await provider.reset_session()
         album = await provider.get_album("138437")
         self.assertIsNotNone(album)
         genres = await provider.get_album_genres(album)

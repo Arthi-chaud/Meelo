@@ -3,9 +3,9 @@ import datetime
 from typing import Any
 import json
 
-import aiohttp
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
+from matcher.providers.session import HasSession
 from ..settings import AllMusicSettings
 from .features import (
     GetAlbumFeature,
@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup, Tag
 
 
 @dataclass
-class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
+class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "allmusic"),
@@ -47,21 +47,20 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
             ),
         ]
 
-    # Album
-
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    str(self.get_album_url_from_id(album_id)),
-                    headers={
-                        "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                    },
-                ) as response:
-                    html = await response.text()
-                    soup = BeautifulSoup(html, "html.parser")
-                    return soup
-        except Exception:
+            session = await self.get_session()
+            async with session.get(
+                str(self.get_album_url_from_id(album_id)),
+                headers={
+                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
+                },
+            ) as response:
+                html = await response.text()
+                soup = BeautifulSoup(html, "html.parser")
+                return soup
+        except Exception as e:
+            print(e)
             pass
 
     async def _get_album_rating(self, album: Any) -> int | None:

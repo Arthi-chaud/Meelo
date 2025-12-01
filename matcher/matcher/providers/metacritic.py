@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 from typing import Any
-
-import aiohttp
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
@@ -16,13 +14,14 @@ from matcher.providers.features import (
     GetWikidataAlbumRelationKeyFeature,
     IsMusicBrainzRelationFeature,
 )
+from matcher.providers.session import HasSession
 from matcher.settings import MetacriticSettings
 from bs4 import BeautifulSoup, Tag
 from datetime import date, datetime
 
 
 @dataclass
-class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
+class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession):
     def __post_init__(self):
         self.features = [
             IsMusicBrainzRelationFeature(
@@ -53,18 +52,19 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
 
     async def _get_album(self, album_id: str) -> Any | None:
         album_url = self.get_album_url_from_id(album_id)
+        session = await self.get_session()
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
-                    str(album_url),
-                    headers={
-                        "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                    },
-                ) as response:
-                    html = await response.text()
-                    soup = BeautifulSoup(html, "html.parser")
-                    return soup
-        except Exception:
+            async with session.get(
+                str(album_url),
+                headers={
+                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
+                },
+            ) as response:
+                html = await response.text()
+                soup = BeautifulSoup(html, "html.parser")
+                return soup
+        except Exception as e:
+            print(e)
             pass
 
     # def _get_album_description(self, album: Any, album_url: str) -> str | None:

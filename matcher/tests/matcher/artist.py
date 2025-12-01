@@ -10,6 +10,7 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
         return MatcherTestUtils.setup_context()
 
     async def test_get_artist(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_artist(1, "Madonna")
         # Illustration
         self.assertIsNotNone(res.illustration_url)
@@ -48,6 +49,7 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/artist/mn0000237205")
 
     async def test_get_artist_with_special_char(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_artist(1, "P!nk")
 
         # Illustration
@@ -85,6 +87,7 @@ class TestMatchArtist(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/artist/mn0001878899")
 
     async def test_get_artist_with_placeholder_image(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_artist(1, "Peplab")
         # Illustration
         self.assertIsNotNone(res.illustration_url)

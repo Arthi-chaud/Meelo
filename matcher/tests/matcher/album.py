@@ -12,6 +12,7 @@ class TestMatchAlbum(unittest.IsolatedAsyncioTestCase):
         return MatcherTestUtils.setup_context()
 
     async def test_get_album(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_album(
             1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
         )
@@ -75,6 +76,7 @@ class TestMatchAlbum(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000356345")
 
     async def test_get_album2(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_album(
             1, "The Tortured Poets Department", "Taylor Swift", AlbumType.STUDIO
         )
@@ -123,6 +125,7 @@ class TestMatchAlbum(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0004210541")
 
     async def test_get_album_no_rating(self):
+        await MatcherTestUtils.reset_sessions()
         res = await match_album(1, "Aéromusical", "Superbus", AlbumType.STUDIO)
         # Rating
         self.assertIsNone(res.metadata.rating)
@@ -154,6 +157,7 @@ class TestMatchAlbum(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(allmusic.url, "https://www.allmusic.com/album/mw0000770491")
 
     async def test_get_album_ignore_genres(self):
+        await MatcherTestUtils.reset_sessions()
         # Setup
         context = Context.get()
         context.settings.push_genres = False

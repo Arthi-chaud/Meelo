@@ -3,8 +3,6 @@ from dataclasses import dataclass
 import logging
 import re
 from typing import Any, List
-import warnings
-
 import aiohttp
 from matcher.context import Context
 
@@ -33,19 +31,54 @@ from matcher.providers.features import (
 from ..utils import capitalize_all_words, to_slug
 from .domain import AlbumType, SearchResult
 from ..settings import MusicBrainzSettings
+from .session import HasSession
 from .boilerplate import BaseProviderBoilerplate
-import musicbrainzngs
-from musicbrainzngs.musicbrainz import _rate_limit
 from datetime import date, datetime
+import time
+
+
+# Stolen from https://github.com/alastair/python-musicbrainzngs/blob/master/musicbrainzngs/musicbrainz.py
+class RateLimiter(object):
+    def __init__(self):
+        self.limit_interval = 1.0
+        self.limit_requests = 1
+        self.last_call = 0.0
+        self.lock = asyncio.Lock()
+        self.remaining_requests = None
+
+    def _update_remaining(self):
+        if self.remaining_requests is None:
+            self.remaining_requests = float(self.limit_requests)
+
+        else:
+            since_last_call = time.time() - self.last_call
+            self.remaining_requests += since_last_call * (
+                self.limit_requests / self.limit_interval
+            )
+            self.remaining_requests = min(
+                self.remaining_requests, float(self.limit_requests)
+            )
+
+        self.last_call = time.time()
+
+    async def rate_limit(self):
+        async with self.lock:
+            self._update_remaining()
+            while self.remaining_requests and (self.remaining_requests < 0.999):
+                time.sleep(
+                    (1.0 - self.remaining_requests)
+                    * (self.limit_requests / self.limit_interval)
+                )
+                self._update_remaining()
+
+            if self.remaining_requests:
+                self.remaining_requests -= 1.0
 
 
 @dataclass
-class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
+class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSession):
     def __post_init__(self):
-        # Ignore warning at runtime, the library uses XML and does not parse everything we want (like genres)
-        logging.getLogger("musicbrainzngs").setLevel(logging.ERROR)
-        with warnings.catch_warnings(action="ignore"):
-            musicbrainzngs.set_format("json")
+        self.rate_limiter = RateLimiter()
         self.features = [
             GetArtistFeature(lambda artist_id: self._get_artist(artist_id)),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
@@ -98,49 +131,39 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
             ),
         ]
 
-    def _set_user_agent(self):
-        musicbrainzngs.set_useragent(
-            "Meelo Matcher",
-            Context.get().settings.version,
-            "github.com/Arthi-chaud/Meelo",
-        )
-
     # Note: Only use this method if action is not supported by library
     # E.g. Getting genres of a release-group
-    @_rate_limit
-    @staticmethod
-    async def _fetch(url: str, query: Any = {}) -> Any:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"https://musicbrainz.org/ws/2{url}",
-                params={**query, **{"fmt": "json"}},
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
-                },
-            ) as response:
-                return await response.json()
+    async def _fetch(self, url: str, query: Any = {}) -> Any:
+        await self.rate_limiter.rate_limit()
+        session = await self.get_session()
+        async with session.get(
+            f"https://musicbrainz.org/ws/2{url}",
+            params={**query, **{"fmt": "json"}},
+            headers={
+                "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
+            },
+        ) as response:
+            return await response.json()
 
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
 
     async def _get_artist(self, id: str) -> Any:
-        self._set_user_agent()
-        return await asyncio.to_thread(
-            lambda: musicbrainzngs.get_artist_by_id(id, ["url-rels"])
-        )
+        return await self._fetch(f"/artist/{id}", {"inc": "url-rels"})
 
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
-        self._set_user_agent()
-        matches = await asyncio.to_thread(
-            lambda: musicbrainzngs.search_artists(artist_name, limit=3)["artists"]
-        )
         try:
-            match = matches[0]
+            matches = await self._fetch(
+                "/artist",
+                {"query": artist_name, "limit": 3},
+            )
+            match = matches["artists"][0]
             id = match.get("id")
             return SearchResult(
                 str(id), None
             )  # Not returning artist here because 'get' returns more info
-        except Exception:
+        except Exception as e:
+            print(e)
             pass
 
     # To search albums, sometimes we need to replace acronyms
@@ -168,25 +191,26 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings]):
         artist_slug = to_slug(artist_name) if artist_name else None
         is_single = sanitised_album_name != album_name
         try:
-            self._set_user_agent()
-            releases = await asyncio.to_thread(
-                lambda: musicbrainzngs.search_releases(
-                    sanitised_album_name,
-                    arid=self.compilation_artist_id if not artist_name else None,
-                    artist=artist_name,
-                    limit=20,
-                )["releases"]
-            )
-            release_group_key = "release-group"
-            typed_releases = [
-                r
-                for r in releases
-                if (
-                    r[release_group_key].get("primary-type") == "Single"
-                    if is_single
-                    else r[release_group_key].get("primary-type") != "Single"
+            releases = (
+                await self._fetch(
+                    "/release",
+                    {
+                        "query": f"{sanitised_album_name.lower()} {f'arid:{self.compilation_artist_id()}' if not artist_name else f'artist:({artist_name.lower()})'}",
+                        "limit": 20,
+                    },
                 )
-            ]
+            )["releases"]
+            release_group_key = "release-group"
+            typed_releases = []
+
+            for r in releases:
+                p_type = r[release_group_key].get("primary-type")
+                if p_type is None:
+                    continue
+                if (is_single and p_type == "Single") or (
+                    not is_single and p_type != "Single"
+                ):
+                    typed_releases.append(r)
             ordered_releases = (
                 sorted(
                     [r for r in typed_releases if "date" in r.keys()],

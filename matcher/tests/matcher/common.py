@@ -5,8 +5,15 @@ from dotenv import dotenv_values
 from matcher.api import API
 from matcher.context import Context
 from matcher.models.api.provider import Provider
+from matcher.providers.allmusic import AllMusicProvider
 from matcher.providers.base import BaseProvider
+from matcher.providers.discogs import DiscogsProvider
 from matcher.providers.factory import ProviderFactory
+from matcher.providers.genius import GeniusProvider
+from matcher.providers.lrclib import LrcLibProvider
+from matcher.providers.metacritic import MetacriticProvider
+from matcher.providers.musicbrainz import MusicBrainzProvider
+from matcher.providers.wikipedia import WikipediaProvider
 from matcher.settings import (
     GeniusSettings,
     LrcLibSettings,
@@ -73,6 +80,17 @@ class MatcherTestUtils:
             )
             pass
         Context.init(API(), settings, providers)
+
+    @staticmethod
+    async def reset_sessions():
+        ctx = Context.get()
+        await ctx.get_provider(AllMusicProvider).reset_session()
+        await ctx.get_provider(MusicBrainzProvider).reset_session()
+        await ctx.get_provider(DiscogsProvider).reset_session()
+        await ctx.get_provider(GeniusProvider).reset_session()
+        await ctx.get_provider(MetacriticProvider).reset_session()
+        await ctx.get_provider(LrcLibProvider).reset_session()
+        await ctx.get_provider(WikipediaProvider).reset_session()
 
     @staticmethod
     def is_ci():

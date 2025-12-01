@@ -47,7 +47,7 @@ class TestLrcLib(unittest.IsolatedAsyncioTestCase):
             ),
         ]
         provider: LrcLibProvider = Context().get().get_provider(LrcLibProvider)  # pyright: ignore
-
+        await provider.reset_session()
         for [song_name, artist_name, feats, duration, expected] in scenarios:
             with self.subTest(
                 "Search Song", song=song_name, artist=artist_name, feats=feats
@@ -63,6 +63,7 @@ class TestLrcLib(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_song(self):
         provider: LrcLibProvider = Context().get().get_provider(LrcLibProvider)  # pyright: ignore
+        await provider.reset_session()
         song = (await provider._search_song("Hung Up", "Madonna", [], None)).data  # pyright: ignore
         self.assertIsNotNone(song)
         self.assertEqual(song["id"], 45828)  # pyright: ignore
