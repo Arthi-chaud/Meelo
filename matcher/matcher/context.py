@@ -35,6 +35,11 @@ class _InternalContext:
                 return provider
         return None
 
+    def get_provider_or_raise(self, cl: Type[T]) -> T:
+        res = self.get_provider(cl)
+        assert res is not None
+        return res
+
     def get_providers(
         self,
     ) -> List[BaseProviderBoilerplate]:

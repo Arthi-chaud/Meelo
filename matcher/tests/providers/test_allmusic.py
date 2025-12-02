@@ -20,7 +20,9 @@ async def ctx():
 class TestAllMusic:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_rating_and_release_date(self, ctx):
-        provider: AllMusicProvider = Context().get().get_provider(AllMusicProvider)  # pyright: ignore
+        provider: AllMusicProvider = (
+            Context().get().get_provider_or_raise(AllMusicProvider)
+        )
         album = await provider.get_album("mw0004378326")
         assert album is not None
         rating = await provider.get_album_rating(album)
@@ -30,7 +32,9 @@ class TestAllMusic:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_rating_when_null_and_release_date(self, ctx):
-        provider: AllMusicProvider = Context().get().get_provider(AllMusicProvider)  # pyright: ignore
+        provider: AllMusicProvider = (
+            Context().get().get_provider_or_raise(AllMusicProvider)
+        )
         album = await provider.get_album("mw0000770491")
         assert album is not None
         rating = await provider.get_album_rating(album)

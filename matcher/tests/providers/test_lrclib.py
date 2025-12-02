@@ -3,7 +3,6 @@ import pytest
 import pytest_asyncio
 from matcher.context import Context
 from typing import List, Tuple
-from matcher.models.match_result import SyncedLyrics
 from matcher.providers.lrclib import LrcLibProvider
 from tests.matcher.common import MatcherTestUtils
 
@@ -55,7 +54,7 @@ class TestLrcLib:
                 [7379532],
             ),
         ]
-        provider: LrcLibProvider = Context().get().get_provider(LrcLibProvider)  # pyright: ignore
+        provider: LrcLibProvider = Context().get().get_provider_or_raise(LrcLibProvider)
         for [song_name, artist_name, feats, duration, expected] in scenarios:
             with subtests.test(
                 "Search Song", song=song_name, artist=artist_name, feats=feats
@@ -71,12 +70,14 @@ class TestLrcLib:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_song(self, ctx):
-        provider: LrcLibProvider = Context().get().get_provider(LrcLibProvider)  # pyright: ignore
-        song = (await provider._search_song("Hung Up", "Madonna", [], None)).data  # pyright: ignore
+        provider: LrcLibProvider = Context().get().get_provider_or_raise(LrcLibProvider)
+        song = await provider._search_song("Hung Up", "Madonna", [], None)
         assert song is not None
-        assert song["id"] == 45828  # pyright: ignore
-        assert song["plainLyrics"] is not None  # pyright: ignore
-        assert song["syncedLyrics"] is not None  # pyright: ignore
+        song = song.data
+        assert song is not None
+        assert song["id"] == 45828
+        assert song["plainLyrics"] is not None
+        assert song["syncedLyrics"] is not None
 
         plain_lyrics = await provider.get_plain_song_lyrics(song)
         assert plain_lyrics is not None

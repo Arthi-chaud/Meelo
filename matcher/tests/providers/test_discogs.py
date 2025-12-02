@@ -29,7 +29,9 @@ class TestDiscogs:
             ("Selena Gomez & The Scene", "1867561"),
             ("Selena Gomez and the Scene", "1867561"),
         ]
-        provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        provider: DiscogsProvider = (
+            Context().get().get_provider_or_raise(DiscogsProvider)
+        )
         for [artist_name, expected] in scenarios:
             with subtests.test(
                 "Search Artist",
@@ -42,7 +44,9 @@ class TestDiscogs:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_artist_image(self, ctx):
-        provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        provider: DiscogsProvider = (
+            Context().get().get_provider_or_raise(DiscogsProvider)
+        )
         artist = await provider.get_artist("4480")
         assert artist is not None
         illustration = await provider.get_artist_illustration_url(artist)
@@ -50,7 +54,9 @@ class TestDiscogs:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_genres(self, ctx):
-        provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
+        provider: DiscogsProvider = (
+            Context().get().get_provider_or_raise(DiscogsProvider)
+        )
         album = await provider.get_album("138437")
         assert album is not None
         genres = await provider.get_album_genres(album)

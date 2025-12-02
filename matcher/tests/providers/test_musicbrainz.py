@@ -4,7 +4,7 @@ import pytest
 import pytest_asyncio
 import datetime
 from matcher.context import Context
-from matcher.providers.domain import AlbumType, SearchResult
+from matcher.providers.domain import AlbumType
 from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
@@ -33,19 +33,19 @@ class TestMusicbrainz:
         ]
 
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         for [artist_name, expected] in scenarios:
             with subtests.test("Search Artist", artist_name=artist_name):
-                artist: SearchResult = await provider.search_artist(artist_name)  # pyright: ignore
+                artist = await provider.search_artist(artist_name)
                 assert artist is not None
                 assert artist.id == expected
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_artist(self, ctx):
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         assert artist is not None
         assert artist.get("name") == "Britney Spears"
@@ -114,15 +114,13 @@ class TestMusicbrainz:
         ]
 
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         for [album_name, artist_name, expected] in scenarios:
             with subtests.test(
                 "Search Album", album_name=album_name, artist_name=artist_name
             ):
-                album: SearchResult = await provider.search_album(
-                    album_name, artist_name
-                )  # pyright: ignore
+                album = await provider.search_album(album_name, artist_name)
                 if not expected:
                     assert album is None
                 else:
@@ -132,8 +130,8 @@ class TestMusicbrainz:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_release_date_and_genres_and_type(self, ctx):
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         album = await provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
         assert album is not None
         release_date = await provider.get_album_release_date(album)
@@ -153,8 +151,8 @@ class TestMusicbrainz:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_release_date_month_only(self, ctx):
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         album = await provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
         assert album is not None
         release_date = await provider.get_album_release_date(album)
@@ -194,8 +192,8 @@ class TestMusicbrainz:
         ]
 
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         for [mbid, expected_type] in scenarios:
             with subtests.test("Get Album Type", mbid=mbid, type=expected_type):
                 album = await provider.get_album(mbid)
@@ -234,8 +232,8 @@ class TestMusicbrainz:
             ),
         ]
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         for [song_name, artist_name, featuring, expected] in scenarios:
             with subtests.test("Search Song", song_name=song_name, featuring=featuring):
                 song = await provider.search_song(
@@ -274,8 +272,8 @@ class TestMusicbrainz:
             ),
         ]
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         for [song_name, acoustid, duration, expected] in scenarios:
             with subtests.test("Search Song", song_name=song_name):
                 song = await provider.search_song_with_acoustid(
@@ -290,8 +288,8 @@ class TestMusicbrainz:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_song_with_genres(self, ctx):
         provider: MusicBrainzProvider = (
-            Context().get().get_provider(MusicBrainzProvider)
-        )  # pyright: ignore
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
         song = await provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
         assert song is not None
         assert song["title"] == "Breathe on Me"

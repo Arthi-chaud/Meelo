@@ -20,8 +20,10 @@ async def ctx():
 class TestMetacritic:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_rating_and_release_date(self, ctx):
-        provider: MetacriticProvider = Context().get().get_provider(MetacriticProvider)  # pyright: ignore
-        album = await provider.get_album("renaissance/beyonce")  # pyright: ignore
+        provider: MetacriticProvider = (
+            Context().get().get_provider_or_raise(MetacriticProvider)
+        )
+        album = await provider.get_album("renaissance/beyonce")
         assert album is not None
         rating = await provider.get_album_rating(album)
         assert rating == 91

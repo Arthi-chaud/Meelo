@@ -19,7 +19,9 @@ async def ctx():
 class TestWikipedia:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_description(self, ctx):
-        provider: WikipediaProvider = Context().get().get_provider(WikipediaProvider)  # pyright: ignore
+        provider: WikipediaProvider = (
+            Context().get().get_provider_or_raise(WikipediaProvider)
+        )
         album = await provider.get_album("Do You Like My Tight Sweater?")
         assert album is not None
         description = await provider.get_album_description(album)
@@ -29,7 +31,9 @@ class TestWikipedia:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_artist_description(self, ctx):
-        provider: WikipediaProvider = Context().get().get_provider(WikipediaProvider)  # pyright: ignore
+        provider: WikipediaProvider = (
+            Context().get().get_provider_or_raise(WikipediaProvider)
+        )
         artist = await provider.get_album("Siobhán Donaghy")
         assert artist is not None
         description = await provider.get_artist_description(artist)
@@ -38,7 +42,9 @@ class TestWikipedia:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_song_description(self, ctx):
-        provider: WikipediaProvider = Context().get().get_provider(WikipediaProvider)  # pyright: ignore
+        provider: WikipediaProvider = (
+            Context().get().get_provider_or_raise(WikipediaProvider)
+        )
         song = await provider.get_song("Hung_Up")
         assert song is not None
         description = await provider.get_song_description(song)
