@@ -65,10 +65,8 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
 
     async def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
-        print(tag)
         try:
             div = tag.find("div", attrs={"title": "AllMusic Rating"})
-            print(div)
             # sth like ratingAllmusic6
 
             [rating_class] = [

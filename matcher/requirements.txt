@@ -12,3 +12,4 @@ asyncio
 aiohttp
 pytest
 pytest-asyncio
+aiohttp-client-cache

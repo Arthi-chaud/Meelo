@@ -37,7 +37,6 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
         lambda mb, mbid: mb.get_artist(mbid),
         lambda mb, mbid: mb.get_artist_url_from_id(mbid),
     )
-
     # Link using Wikidata
     sources_ids = [source.provider_id for source in external_sources]
     if wikidata_id:

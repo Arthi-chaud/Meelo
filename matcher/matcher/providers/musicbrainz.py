@@ -36,13 +36,14 @@ from .session import HasSession
 from .boilerplate import BaseProviderBoilerplate
 from datetime import date, datetime
 import time
+from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
 
 
 # Stolen from https://github.com/alastair/python-musicbrainzngs/blob/master/musicbrainzngs/musicbrainz.py
 class RateLimiter(object):
     def __init__(self):
         self.limit_interval = 1.0
-        self.limit_requests = 1
+        self.limit_requests = 2
         self.last_call = 0.0
         self.lock = asyncio.Lock()
         self.remaining_requests = None
@@ -66,7 +67,7 @@ class RateLimiter(object):
         async with self.lock:
             self._update_remaining()
             while self.remaining_requests and (self.remaining_requests < 0.999):
-                time.sleep(
+                await asyncio.sleep(
                     (1.0 - self.remaining_requests)
                     * (self.limit_requests / self.limit_interval)
                 )
@@ -133,8 +134,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         ]
 
     def mk_session(self) -> ClientSession:
-        return ClientSession(
+        return CachedSession(
             base_url="https://musicbrainz.org/",
+            cache=CacheBackend(expire_after=3),
             headers={
                 "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
             },
@@ -143,12 +145,22 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     # Note: Only use this method if action is not supported by library
     # E.g. Getting genres of a release-group
     async def _fetch(self, url: str, query: Any = {}) -> Any:
-        await self.rate_limiter.rate_limit()
-        async with self.get_session().get(
-            f"/ws/2{url}",
+        session: CachedSession = self.get_session()  # pyright: ignore
+        route = f"/ws/2{url}"
+        is_cached = any(
+            [
+                route == s.path and query == s.query  # pyright: ignore (s is URL, not str)
+                async for s in session.cache.get_urls()
+            ]
+        )
+        if not is_cached:
+            await self.rate_limiter.rate_limit()
+        async with session.get(
+            route,
             params={**query, **{"fmt": "json"}},
         ) as response:
-            return await response.json()
+            res = await response.json()
+            return res
 
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"

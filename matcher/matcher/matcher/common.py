@@ -10,9 +10,7 @@ from ..providers.wikipedia import WikipediaProvider
 
 
 def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
-    return [
-        p for p in Context.get().get_providers() if p.api_model.id == dto.provider_id
-    ][0]
+    return [p for p in Context.get().providers if p.api_model.id == dto.provider_id][0]
 
 
 async def run_tasks_from_sources(

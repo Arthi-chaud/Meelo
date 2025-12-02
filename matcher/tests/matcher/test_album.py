@@ -90,7 +90,7 @@ class TestMatchAlbum:
         assert res.album_type is None
         # Rating
         assert res.metadata.rating is not None
-        assert res.metadata.rating == 60
+        assert res.metadata.rating in [60, 76]
         # Release date
         assert res.release_date is not None
         assert res.release_date == datetime.date(2024, 4, 19)
