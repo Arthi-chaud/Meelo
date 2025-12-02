@@ -137,7 +137,7 @@ export default class ArtistService extends SearchableRepositoryService {
 					slug: artistSlug.toString(),
 				},
 			})
-			.then((artist) => {
+			.then(async (artist) => {
 				this.meiliSearch.index(this.indexName).addDocuments([
 					{
 						id: artist.id,
@@ -145,11 +145,16 @@ export default class ArtistService extends SearchableRepositoryService {
 						name: artist.name,
 					},
 				]);
+				const albumCount = await this.prismaService.album.count({
+					where: { artistId: artist.id },
+				});
 				this.eventService.publishItemCreationEvent(
 					"artist",
 					artist.name,
 					artist.id,
-					ResourceEventPriority.Artist,
+					albumCount != 0
+						? ResourceEventPriority.AlbumArtist
+						: ResourceEventPriority.NonAlbumArtist,
 				);
 				return artist;
 			})

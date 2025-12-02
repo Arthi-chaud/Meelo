@@ -32,11 +32,12 @@ type ResourceCreationEventType = "artist" | "album" | "song";
 
 // Should be numbers between 1 and 5. The higher, the more important
 export enum ResourceEventPriority {
-	Artist = 4,
+	AlbumArtist = 4,
 	OriginalSong = 3,
 	NonOriginalSong = 1,
 	ExtraMaterial = 1,
 	StudioAlbum = 4,
+	NonAlbumArtist = 4,
 	NonStudioAlbum = 2,
 }
 
