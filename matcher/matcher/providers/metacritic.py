@@ -21,6 +21,8 @@ from matcher.settings import MetacriticSettings
 from bs4 import BeautifulSoup, Tag
 from datetime import date, datetime
 
+from matcher.utils import asyncify
+
 
 @dataclass
 class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession):
@@ -47,9 +49,11 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
             GetWikidataAlbumRelationKeyFeature(lambda: "P1712"),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
             GetAlbumReleaseDateFeature(
-                lambda album: self._get_album_release_date(album)
+                lambda album: asyncify(self._get_album_release_date, album)
             ),
-            GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
+            GetAlbumRatingFeature(
+                lambda album: asyncify(self._get_album_rating, album)
+            ),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -81,7 +85,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
     # except Exception:
     #     pass
 
-    async def _get_album_release_date(self, album: Any) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         tag: Tag = album
         try:
             release_date = tag.find(
@@ -91,7 +95,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
         except Exception:
             pass
 
-    async def _get_album_rating(self, album: Any) -> int | None:
+    def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
         try:
             raw_value = tag.find("span", attrs={"itemprop": "ratingValue"}).text  # pyright: ignore

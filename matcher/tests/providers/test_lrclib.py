@@ -78,18 +78,19 @@ class TestLrcLib:
         assert song["plainLyrics"] is not None  # pyright: ignore
         assert song["syncedLyrics"] is not None  # pyright: ignore
 
-        plain_lyrics = await provider._parse_plain_lyrics(song)
+        plain_lyrics = await provider.get_plain_song_lyrics(song)
         assert plain_lyrics is not None
         plain_lyrics = str(plain_lyrics)
         assert plain_lyrics.startswith("Time goes by so slowly\nTime goes by so slowly")
         assert plain_lyrics.endswith("I'm tired of waiting on you\n")
 
-        synced_lyrics: SyncedLyrics = await provider._parse_synced_lyrics(song)  # pyright: ignore
+        synced_lyrics = await provider.get_synced_song_lyrics(song)
+
+        assert synced_lyrics is not None
 
         def get_lyrics_at(ts: float):
             return [line for (t, line) in synced_lyrics if t == ts][0]
 
-        assert synced_lyrics is not None
         assert get_lyrics_at(6.71) == "Time goes by so slowly"
         assert get_lyrics_at(229.33) == ""
         assert get_lyrics_at(330.84) == "Waiting for your call"

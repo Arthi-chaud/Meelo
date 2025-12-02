@@ -34,7 +34,7 @@ from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from datetime import date
 import re
-from ..utils import to_slug
+from ..utils import asyncify, to_slug
 from bs4 import BeautifulSoup
 
 AlbumSearchResultData: TypeAlias = tuple[Any, Any]
@@ -62,7 +62,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
                 lambda artist: self._get_artist_description(artist)
             ),
             GetArtistIllustrationUrlFeature(
-                lambda artist: self._get_artist_illustration_url(artist)
+                lambda artist: asyncify(self._get_artist_illustration_url, artist)
             ),
             GetWikidataArtistRelationKeyFeature(lambda: "P2373"),
             SearchAlbumFeature(
@@ -78,7 +78,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             ),
             GetAlbumFeature(lambda album: self._get_album(album)),
             GetAlbumReleaseDateFeature(
-                lambda album: self._get_album_release_date(album)
+                lambda album: asyncify(self._get_album_release_date, album)
             ),
             GetWikidataAlbumRelationKeyFeature(lambda: "P6217"),
             GetWikidataSongRelationKeyFeature(lambda: "P6218"),
@@ -91,8 +91,10 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
                 )
             ),
             GetSongFeature(lambda id: self._get_song(id)),
-            GetPlainSongLyricsFeature(lambda s: self._get_song_lyrics(s)),
-            GetSongDescriptionFeature(lambda s: self._get_song_description(s)),
+            GetPlainSongLyricsFeature(lambda s: asyncify(self._get_song_lyrics, s)),
+            GetSongDescriptionFeature(
+                lambda s: asyncify(self._get_song_description, s)
+            ),
             SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
         ]
 
@@ -189,7 +191,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
         except Exception:
             return None
 
-    async def _get_artist_illustration_url(self, artist: Any) -> str | None:
+    def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             imageUrl = artist["image_url"]
             if "default_avatar" in imageUrl:
@@ -238,7 +240,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
         except Exception:
             return None
 
-    async def _get_album_release_date(self, album: Any) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         try:
             album_release_date = album["release_date_components"]
             return date(
@@ -259,7 +261,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
         except Exception:
             pass
 
-    async def _get_song_lyrics(self, song: Any) -> str | None:
+    def _get_song_lyrics(self, song: Any) -> str | None:
         html: BeautifulSoup = song
         divs = html.find_all(
             "div",
@@ -279,7 +281,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
 
         return self._clean_html(divs)
 
-    async def _get_song_description(self, song: Any) -> str | None:
+    def _get_song_description(self, song: Any) -> str | None:
         html = song
         divs = html.find_all("div", class_=re.compile(r"^SongDescription[-_].+"))
         for div in divs:

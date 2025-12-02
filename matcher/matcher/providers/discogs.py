@@ -1,4 +1,3 @@
-import asyncio
 from dataclasses import dataclass
 from typing import Any, List
 
@@ -20,7 +19,7 @@ from matcher.providers.features import (
     GetMusicBrainzRelationKeyFeature,
 )
 from matcher.providers.session import HasSession
-from matcher.utils import capitalize_all_words
+from matcher.utils import asyncify, capitalize_all_words
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
 import discogs_client
@@ -48,7 +47,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
             ),
             GetArtistFeature(lambda artist_name: self._get_artist(artist_name)),
             GetArtistIllustrationUrlFeature(
-                lambda artist: self._get_artist_illustration_url(artist)
+                lambda artist: asyncify(self._get_artist_illustration_url, artist)
             ),
             GetWikidataArtistRelationKeyFeature(lambda: "P1953"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P1954"),
@@ -61,7 +60,9 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
                 )
             ),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
-            GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+            GetAlbumGenresFeature(
+                lambda album: asyncify(self._get_album_genres, album)
+            ),
         ]
 
     def _get_client(self):
@@ -90,9 +91,8 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         client = self._get_client()
         try:
-            data = await asyncio.to_thread(
-                lambda: client.search(artist_name, type="artist")[0]
-            )
+            data = await asyncify(lambda: client.search(artist_name, type="artist")[0])
+
             return SearchResult(str(data.id), data)
         except Exception:
             return None
@@ -103,7 +103,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
         except Exception:
             return None
 
-    async def _get_artist_illustration_url(self, artist: Any) -> str | None:
+    def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             # We sort images and take the most square one.
             images = artist["images"]
@@ -122,7 +122,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
         except Exception:
             return None
 
-    async def _get_album_genres(self, album: Any) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             return [capitalize_all_words(g) for g in album["genres"]]
         except Exception:

@@ -16,6 +16,7 @@ from matcher.providers.features import (
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
 )
+from matcher.utils import asyncify
 
 
 @dataclass
@@ -27,8 +28,12 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
                     song, artist, feat, duration
                 )
             ),
-            GetPlainSongLyricsFeature(lambda song: self._parse_plain_lyrics(song)),
-            GetSyncedSongLyricsFeature(lambda song: self._parse_synced_lyrics(song)),
+            GetPlainSongLyricsFeature(
+                lambda song: asyncify(self._parse_plain_lyrics, song)
+            ),
+            GetSyncedSongLyricsFeature(
+                lambda song: asyncify(self._parse_synced_lyrics, song)
+            ),
             GetSongUrlFromIdFeature(lambda id: f"https://lrclib.net/api/get/{id}"),
             GetSongIdFromUrlFeature(
                 lambda url: url.replace("https://lrclib.net/api/get/", "")
@@ -93,10 +98,10 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
         except Exception:
             pass
 
-    async def _parse_plain_lyrics(self, song: Any) -> str | None:
+    def _parse_plain_lyrics(self, song: Any) -> str | None:
         return song.get("plainLyrics")
 
-    async def _parse_synced_lyrics(self, song: Any) -> SyncedLyrics | None:
+    def _parse_synced_lyrics(self, song: Any) -> SyncedLyrics | None:
         synced_lyrics = song.get("syncedLyrics")
         if not synced_lyrics:
             return

@@ -4,6 +4,7 @@ from typing import Any
 from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.session import HasSession
+from matcher.utils import asyncify
 from .features import (
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -33,7 +34,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
             ),
             GetArtistFeature(lambda artist_id: self.get_article(artist_id)),
             GetArtistDescriptionFeature(
-                lambda artist: self.get_article_extract(artist)
+                lambda artist: asyncify(self.get_article_extract, artist)
             ),
             GetAlbumIdFromUrlFeature(
                 lambda album_url: self.get_article_id_from_url(album_url)
@@ -42,9 +43,13 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
                 lambda album_id: self.get_article_url_from_id(album_id)
             ),
             GetAlbumFeature(lambda album_id: self.get_article(album_id)),
-            GetAlbumDescriptionFeature(lambda album: self.get_article_extract(album)),
+            GetAlbumDescriptionFeature(
+                lambda album: asyncify(self.get_article_extract, album)
+            ),
             GetSongFeature(lambda song_id: self.get_article(song_id)),
-            GetSongDescriptionFeature(lambda song: self.get_article_extract(song)),
+            GetSongDescriptionFeature(
+                lambda song: asyncify(self.get_article_extract, song)
+            ),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -75,7 +80,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
         except Exception:
             return None
 
-    async def get_article_extract(self, article: Any) -> str | None:
+    def get_article_extract(self, article: Any) -> str | None:
         try:
             desc: str = article["extract"]
             return desc if not desc.startswith("Undefined may refer") else None

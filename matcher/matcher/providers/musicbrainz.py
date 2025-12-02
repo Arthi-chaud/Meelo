@@ -29,7 +29,7 @@ from matcher.providers.features import (
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
 )
-from ..utils import capitalize_all_words, to_slug
+from ..utils import asyncify, capitalize_all_words, to_slug
 from .domain import AlbumType, SearchResult
 from ..settings import MusicBrainzSettings
 from .session import HasSession
@@ -93,7 +93,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 )
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
-            GetAlbumTypeFeature(lambda album: self._get_album_type(album)),
+            GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
             SearchAlbumFeature(
@@ -111,9 +111,11 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             ),
             GetAlbumFeature(lambda album: self._get_album(album)),
             GetAlbumReleaseDateFeature(
-                lambda album: self._get_album_release_date(album)
+                lambda album: asyncify(self._get_album_release_date, album)
             ),
-            GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+            GetAlbumGenresFeature(
+                lambda album: asyncify(self._get_album_genres, album)
+            ),
             SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
             SearchSongWithAcoustIdFeature(
                 lambda acoustid, dur, name: self._search_song_with_acoustid(
@@ -121,7 +123,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 )
             ),
             GetSongFeature(lambda s: self._get_song(s)),
-            GetSongGenresFeature(lambda album: self._get_song_genres(album)),
+            GetSongGenresFeature(lambda album: asyncify(self._get_song_genres, album)),
             GetWikidataSongRelationKeyFeature(lambda: "P435"),
             GetSongUrlFromIdFeature(
                 lambda song_id: f"https://musicbrainz.org/recording/{song_id}"
@@ -279,7 +281,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
 
-    async def _get_album_release_date(self, album: Any) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         str_release_date = album.get("first-release-date")
         if not str_release_date:
             return None
@@ -291,7 +293,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             except Exception:
                 continue
 
-    async def _get_album_genres(self, album: Any) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             genres: List[Any] = album["genres"]
             return [
@@ -302,7 +304,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         except Exception:
             pass
 
-    async def _get_album_type(self, album: Any) -> AlbumType | None:
+    def _get_album_type(self, album: Any) -> AlbumType | None:
         raw_types: List[str] = []
         if album.get("primary-type"):
             raw_types.append(album["primary-type"])
@@ -412,7 +414,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         except Exception:
             pass
 
-    async def _get_song_genres(self, song: Any) -> List[str] | None:
+    def _get_song_genres(self, song: Any) -> List[str] | None:
         try:
             genres: List[Any] = song["genres"]
             return [

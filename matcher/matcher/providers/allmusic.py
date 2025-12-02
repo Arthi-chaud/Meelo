@@ -6,6 +6,7 @@ from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.session import HasSession
+from matcher.utils import asyncify
 from ..settings import AllMusicSettings
 from .features import (
     GetAlbumFeature,
@@ -41,9 +42,11 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
                 )
             ),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
-            GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
+            GetAlbumRatingFeature(
+                lambda album: asyncify(self._get_album_rating, album)
+            ),
             GetAlbumReleaseDateFeature(
-                lambda album: self._get_album_release_date(album)
+                lambda album: asyncify(self._get_album_release_date, album)
             ),
         ]
 
@@ -63,7 +66,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
         except Exception:
             pass
 
-    async def _get_album_rating(self, album: Any) -> int | None:
+    def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
         try:
             div = tag.find("div", attrs={"title": "AllMusic Rating"})
@@ -85,7 +88,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
         except Exception:
             pass
 
-    async def _get_album_release_date(self, album: Any) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         try:
             raw_json = album.find("script", attrs={"type": "application/ld+json"}).text
             json_obj = json.loads(raw_json)
