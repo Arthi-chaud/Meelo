@@ -43,7 +43,7 @@ from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
 class RateLimiter(object):
     def __init__(self):
         self.limit_interval = 1.0
-        self.limit_requests = 2
+        self.limit_requests = 1 if Context.is_ci() else 2
         self.last_call = 0.0
         self.lock = asyncio.Lock()
         self.remaining_requests = None

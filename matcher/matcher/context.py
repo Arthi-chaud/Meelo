@@ -1,5 +1,6 @@
 import asyncio
 from dataclasses import dataclass
+import os
 from typing import Awaitable, Callable, List, TypeVar, Type
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from .api import API
@@ -54,6 +55,11 @@ class _InternalContext:
 
 class Context:
     _instance: _InternalContext | None
+
+    @staticmethod
+    def is_ci() -> bool:
+        val = os.environ.get("CI")
+        return val is not None and (val == "1" or len(val) > 1)
 
     @classmethod
     def init(
