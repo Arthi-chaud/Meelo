@@ -1,4 +1,6 @@
-import unittest
+import asyncio
+import pytest
+import pytest_asyncio
 import datetime
 from matcher.context import Context
 from matcher.providers.domain import SongSearchResult
@@ -7,13 +9,20 @@ from matcher.providers.genius import GeniusProvider
 from typing import List, Tuple
 
 
-class TestGenius(unittest.IsolatedAsyncioTestCase):
-    @classmethod
-    def setUpClass(cls):
-        MatcherTestUtils.setup_context()
+loop: asyncio.AbstractEventLoop
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_search_artist(self):
+
+@pytest_asyncio.fixture(scope="module")
+async def ctx():
+    MatcherTestUtils.setup_context()
+    yield Context.get()
+    await MatcherTestUtils.reset_sessions()
+
+
+class TestGenius:
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_artist(self, ctx, subtests):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "P!nk"),
             ("Christine & The Queens", "Christine and the Queens"),
@@ -26,106 +35,108 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         for [artist_name, expected] in scenarios:
-            with self.subTest(
+            with subtests.test(
                 "Search Artist",
                 artist_name=artist_name,
                 expected=expected,
             ):
                 artist = await provider.search_artist(artist_name)
-                self.assertIsNotNone(artist)
-                self.assertEqual(artist.id, expected)  # pyright: ignore
+                assert artist is not None
+                assert artist.id == expected
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_get_artist_description_and_image(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_artist_description_and_image(self, ctx):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         artist = await provider.get_artist("Massive Attack")
-        self.assertIsNotNone(artist)
-        print(artist)
+        assert artist is not None
         description = await provider.get_artist_description(
             artist,
         )
-        self.assertIsNotNone(description)
-        self.assertIn("Bristol", description)  # pyright: ignore
-        self.assertIn("and formerly Andy", description)  # pyright: ignore
+        assert description is not None
+        assert "Bristol" in description
+        assert "and formerly Andy" in description
         illustration = await provider.get_artist_illustration_url(
             artist,
         )
-        self.assertIsNotNone(illustration)
+        assert illustration is not None
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_get_artist_without_image(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_artist_without_image(self, ctx):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         artist = await provider.get_artist("Peplab")
-        self.assertIsNotNone(artist)
+        assert artist is not None
         illustration = await provider.get_artist_illustration_url(
             artist,
         )
-        self.assertIsNone(illustration)
+        assert illustration is None
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_get_album_release_date(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_release_date(self, ctx):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         album = await provider.get_album("Superbus/Aeromusical")
-        self.assertIsNotNone(album)
+        assert album is not None
         release_date = await provider.get_album_release_date(
             album,
         )
-        self.assertEqual(release_date, datetime.date(2002, 3, 26))
+        assert release_date == datetime.date(2002, 3, 26)
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_get_song_lyrics(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_song_lyrics(self, ctx):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         song = await provider.get_song("Girls-aloud-models")
-        self.assertIsNotNone(song)
+        assert song is not None
         # Lyrics
         lyrics: str = await provider.get_plain_song_lyrics(song)  # pyright: ignore
-        self.assertIsNotNone(lyrics)
+        assert lyrics is not None
         lines = lyrics.split("\n")
-        self.assertEqual("[Intro: Sarah & Cheryl]", lines[0])
-        self.assertEqual(
-            "Girls girls girls girls girls girls girls", lines[len(lines) - 1]
-        )
+        assert "[Intro: Sarah & Cheryl]" == lines[0]
+        assert "Girls girls girls girls girls girls girls" == lines[len(lines) - 1]
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_get_song_lyrics_and_description(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_song_lyrics_and_description(self, ctx):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         song = await provider.get_song("Rachel-stevens-some-girls")
-        self.assertIsNotNone(song)
+        assert song is not None
         # Lyrics
         lyrics: str = await provider.get_plain_song_lyrics(song)  # pyright: ignore
-        self.assertIsNotNone(lyrics)
+        assert lyrics is not None
         lines = lyrics.split("\n")
-        self.assertEqual("[Verse 1]", lines[0])
-        self.assertIn("(A chat, a gift)", lines)
-        self.assertIn("All I seem to get is the other, other", lines)
+        assert "[Verse 1]" == lines[0]
+        assert "(A chat, a gift)" in lines
+        assert "All I seem to get is the other, other" in lines
         # Description
         desc: str = await provider.get_song_description(song)  # pyright: ignore
-        self.assertIsNotNone(desc)
-        self.assertTrue(
-            desc.startswith("Some Girls is a single released by Rachel Stevens")
-        )
-        self.assertIn("album Come and Get It and", desc)
+        assert desc is not None
+        assert desc.startswith("Some Girls is a single released by Rachel Stevens")
+        assert "album Come and Get It and" in desc
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_get_song_wo_lyrics_and_description(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_song_wo_lyrics_and_description(self, ctx):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         song = await provider.get_song("Madonna-die-another-day-dirty-vegas-dub")
-        self.assertIsNotNone(song)
+        assert song is not None
         # Lyrics
-        lyrics: str = await provider.get_plain_song_lyrics(song)  # pyright: ignore
-        self.assertIsNone(lyrics)
+        lyrics = await provider.get_plain_song_lyrics(song)
+        assert lyrics is None
         # Description
-        desc: str = await provider.get_song_description(song)  # pyright: ignore
-        self.assertIsNone(desc)
+        desc = await provider.get_song_description(song)
+        assert desc is None
 
-    @unittest.skipIf(MatcherTestUtils.is_ci(), "")
-    async def test_search_song(self):
+    @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_song(self, ctx, subtests):
         provider: GeniusProvider = Context().get().get_provider(GeniusProvider)  # pyright: ignore
         await provider.reset_session()
         scenarios: List[Tuple[str, str, List[str], str | None]] = [
@@ -147,7 +158,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
             # ("Drive", "Peplab", [], None),
         ]
         for [song_name, artist_name, feat, expected] in scenarios:
-            with self.subTest(
+            with subtests.test(
                 "Search Song",
                 song_name=song_name,
                 artist_name=artist_name,
@@ -158,7 +169,7 @@ class TestGenius(unittest.IsolatedAsyncioTestCase):
                     song_name, artist_name, feat, None
                 )  # pyright: ignore
                 if expected:
-                    self.assertIsNotNone(search_res)
-                    self.assertEqual(search_res.id, expected)
+                    assert search_res is not None
+                    assert search_res.id == expected
                 else:
-                    self.assertIsNone(search_res)
+                    assert search_res is None

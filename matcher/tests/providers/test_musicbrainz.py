@@ -1,5 +1,7 @@
 from typing import List, Tuple
-import unittest
+import asyncio
+import pytest
+import pytest_asyncio
 import datetime
 from matcher.context import Context
 from matcher.providers.domain import AlbumType, SearchResult
@@ -7,12 +9,19 @@ from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
 
-class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
-    @classmethod
-    def setUpClass(cls):
-        MatcherTestUtils.setup_context()
+loop: asyncio.AbstractEventLoop
 
-    async def test_search_artist(self):
+
+@pytest_asyncio.fixture(scope="module")
+async def ctx():
+    MatcherTestUtils.setup_context()
+    yield Context.get()
+    await MatcherTestUtils.reset_sessions()
+
+
+class TestMusicbrainz:
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_artist(self, ctx, subtests):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "f4d5cc07-3bc9-4836-9b15-88a08359bc63"),
             ("Christine & The Queens", "9c90ffbf-b137-4dee-bfcc-b8010787840d"),
@@ -26,23 +35,23 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         for [artist_name, expected] in scenarios:
-            with self.subTest("Search Artist", artist_name=artist_name):
+            with subtests.test("Search Artist", artist_name=artist_name):
                 artist: SearchResult = await provider.search_artist(artist_name)  # pyright: ignore
-                self.assertIsNotNone(artist)
-                self.assertEqual(artist.id, expected)
+                assert artist is not None
+                assert artist.id == expected
 
-    async def test_get_artist(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_artist(self, ctx):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
-        self.assertIsNotNone(artist)
-        self.assertEqual(artist["name"], "Britney Spears")  # pyright:ignore
+        assert artist is not None
+        assert artist.get("name") == "Britney Spears"
 
-    async def test_search_album(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_album(self, ctx, subtests):
         scenarios: List[Tuple[str, str | None, str | None]] = [
             ("Nova Tunes 01", None, "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
             # Test when is not actually various artist, but has type 'compilation'
@@ -107,51 +116,52 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         for [album_name, artist_name, expected] in scenarios:
-            with self.subTest(
+            with subtests.test(
                 "Search Album", album_name=album_name, artist_name=artist_name
             ):
                 album: SearchResult = await provider.search_album(
                     album_name, artist_name
                 )  # pyright: ignore
                 if not expected:
-                    self.assertIsNone(album)
+                    assert album is None
                 else:
-                    self.assertIsNotNone(album)
-                    self.assertEqual(album.id, expected)
+                    assert album is not None
+                    assert album.id == expected
 
-    async def test_get_album_release_date_and_genres_and_type(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_release_date_and_genres_and_type(self, ctx):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         album = await provider.get_album("ded46e46-788d-3c1f-b21b-9f5e9c37b1bc")
-        self.assertIsNotNone(album)
+        assert album is not None
         release_date = await provider.get_album_release_date(album)
-        self.assertEqual(release_date, datetime.date(1994, 9, 26))
-        genres: List[str] = await provider.get_album_genres(album)  # pyright: ignore
-        self.assertEqual(len(genres), 6)
-        self.assertIn("Trip Hop", genres)
-        self.assertIn("Electronic", genres)
-        self.assertIn("Dub", genres)
-        self.assertIn("Downtempo", genres)
-        self.assertIn("Alternative Dance", genres)
-        self.assertIn("Electronica", genres)
+        assert release_date == datetime.date(1994, 9, 26)
+        genres = await provider.get_album_genres(album)
+        assert genres is not None
+        assert len(genres) == 6
+        assert "Trip Hop" in genres
+        assert "Electronic" in genres
+        assert "Dub" in genres
+        assert "Downtempo" in genres
+        assert "Alternative Dance" in genres
+        assert "Electronica" in genres
         type = await provider.get_album_type(album)
-        self.assertIs(AlbumType.STUDIO, type)
+        assert type is AlbumType.STUDIO
 
-    async def test_get_album_release_date_month_only(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_release_date_month_only(self, ctx):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         album = await provider.get_album("88f4aea6-617a-305b-ab3d-9433dc2d5c6f")
-        self.assertIsNotNone(album)
+        assert album is not None
         release_date = await provider.get_album_release_date(album)
-        self.assertEqual(release_date, datetime.date(1994, 11, 1))
+        assert release_date == datetime.date(1994, 11, 1)
 
-    async def test_get_album_type(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_type(self, ctx, subtests):
         scenarios: List[Tuple[str, AlbumType]] = [
             # Madonna - I'm Going to tell you a secret
             ("876da970-473b-3a01-9aea-79d1fa6b053a", AlbumType.LIVE),
@@ -186,15 +196,15 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         for [mbid, expected_type] in scenarios:
-            with self.subTest("Get Album Type", mbid=mbid, type=expected_type):
+            with subtests.test("Get Album Type", mbid=mbid, type=expected_type):
                 album = await provider.get_album(mbid)
-                self.assertIsNotNone(album)
+                assert album is not None
                 type = await provider.get_album_type(album)
-                self.assertIs(expected_type, type)
+                assert expected_type == type
 
-    async def test_search_song(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_song(self, ctx, subtests):
         scenarios: List[Tuple[str, str, List[str], List[str]]] = [
             (
                 "Breathe On Me",
@@ -226,16 +236,16 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         for [song_name, artist_name, featuring, expected] in scenarios:
-            with self.subTest("Search Song", song_name=song_name, featuring=featuring):
+            with subtests.test("Search Song", song_name=song_name, featuring=featuring):
                 song = await provider.search_song(
                     song_name, artist_name, featuring, None
                 )
-                self.assertIsNotNone(song)
-                self.assertIn(song.id, expected)  # pyright: ignore
+                assert song is not None
+                assert song.id in expected
 
-    async def test_search_song_with_acoustid(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_song_with_acoustid(self, ctx, subtests):
         scenarios: List[Tuple[str, str, int, List[str]]] = [
             (
                 "Hung Up",
@@ -266,30 +276,29 @@ class TestMusicbrainz(unittest.IsolatedAsyncioTestCase):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         for [song_name, acoustid, duration, expected] in scenarios:
-            with self.subTest("Search Song", song_name=song_name):
+            with subtests.test("Search Song", song_name=song_name):
                 song = await provider.search_song_with_acoustid(
                     acoustid, duration, song_name
                 )
                 if expected == []:
-                    self.assertIsNone(song)
+                    assert song is None
                 else:
-                    self.assertIsNotNone(song)
-                    self.assertIn(song.id, expected)  # pyright: ignore
+                    assert song is not None
+                    assert song.id in expected
 
-    async def test_get_song_with_genres(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_song_with_genres(self, ctx):
         provider: MusicBrainzProvider = (
             Context().get().get_provider(MusicBrainzProvider)
         )  # pyright: ignore
-        await provider.reset_session()
         song = await provider.get_song("08d07438-9b9c-4c41-a1d5-7211a32cc9ad")
-        self.assertIsNotNone(song)
-        self.assertEqual(song["title"], "Breathe on Me")  # pyright:ignore
-        genres: List[str] = await provider.get_song_genres(song)  # pyright: ignore
-        self.assertIsNotNone(genres)
-        self.assertIn("Pop", genres)
-        self.assertIn("Dance-Pop", genres)
-        self.assertIn("Electro", genres)
-        self.assertIn("Synth-Pop", genres)
-        self.assertIn("Ballad", genres)
+        assert song is not None
+        assert song["title"] == "Breathe on Me"
+        genres = await provider.get_song_genres(song)
+        assert genres is not None
+        assert "Pop" in genres
+        assert "Dance-Pop" in genres
+        assert "Electro" in genres
+        assert "Synth-Pop" in genres
+        assert "Ballad" in genres

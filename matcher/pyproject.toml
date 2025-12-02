@@ -1,2 +1,6 @@
 [tool.pyright]
 ignore = ['tests/matcher']
+
+[tool.pytest]
+testpaths = ["tests"]
+addopts = ["-p", "no:warnings", "--no-header"]

@@ -162,8 +162,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             return SearchResult(
                 str(id), None
             )  # Not returning artist here because 'get' returns more info
-        except Exception as e:
-            print(e)
+        except Exception:
             pass
 
     # To search albums, sometimes we need to replace acronyms

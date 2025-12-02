@@ -3,7 +3,6 @@ dataclasses-json
 jsons
 aiormq
 unittest2
-musicbrainzngs
 python3-discogs-client
 python-dotenv
 beautifulsoup4
@@ -11,3 +10,5 @@ python-slugify
 fastapi[standard]==0.117.1
 asyncio
 aiohttp
+pytest
+pytest-asyncio

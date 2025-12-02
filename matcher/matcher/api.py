@@ -28,6 +28,7 @@ class API:
         self._key = (os.environ.get("API_KEYS") or "").split(",")[0]
         if not self._key:
             raise Exception("Missing or empty env variable: 'API_KEYS'")
+        self.session = aiohttp.ClientSession(base_url=self._url)
 
     async def ping(self) -> bool:
         try:
@@ -37,46 +38,43 @@ class API:
             return False
 
     async def _get(self, route: str, token: str | None = None) -> Any:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{self._url}{route}",
-                headers={"Authorization": f"Bearer {token}"}
-                if token
-                else {"x-api-key": self._key},
-            ) as response:
-                if response.status != 200:
-                    logging.error("GETting API failed: ")
-                    raise Exception(response.content)
-                return await response.json()
+        async with self.session.get(
+            route,
+            headers={"Authorization": f"Bearer {token}"}
+            if token
+            else {"x-api-key": self._key},
+        ) as response:
+            if response.status != 200:
+                logging.error("GETting API failed: ")
+                raise Exception(response.content)
+            return await response.json()
 
     async def _post(self, route: str, json: dict = {}, file_path: str = "") -> Any:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{self._url}{route}",
-                headers={
-                    "x-api-key": self._key,
-                },
-                data={"file": open(file_path, "rb")} if len(file_path) else None,
-                json=json if len(json.keys()) else None,
-            ) as response:
-                if response.status != 201:
-                    logging.error("POSTting API failed: ")
-                    raise Exception(response.content)
-                return await response.json()
+        async with self.session.post(
+            route,
+            headers={
+                "x-api-key": self._key,
+            },
+            data={"file": open(file_path, "rb")} if len(file_path) else None,
+            json=json if len(json.keys()) else None,
+        ) as response:
+            if response.status != 201:
+                logging.error("POSTting API failed: ")
+                raise Exception(response.content)
+            return await response.json()
 
     async def _put(self, route: str, json: dict = {}, file_path: str = "") -> None:
-        async with aiohttp.ClientSession() as session:
-            async with session.put(
-                f"{self._url}{route}",
-                headers={
-                    "x-api-key": self._key,
-                },
-                data={"file": open(file_path, "rb")} if len(file_path) else None,
-                json=json if len(json.keys()) else None,
-            ) as response:
-                if response.status != 200:
-                    logging.error("PUTting API failed: ")
-                    raise Exception(response.content)
+        async with self.session.put(
+            route,
+            headers={
+                "x-api-key": self._key,
+            },
+            data={"file": open(file_path, "rb")} if len(file_path) else None,
+            json=json if len(json.keys()) else None,
+        ) as response:
+            if response.status != 200:
+                logging.error("PUTting API failed: ")
+                raise Exception(response.content)
 
     async def post_external_metadata(self, dto: ExternalMetadataDto):
         await self._post("/external-metadata", json=dto.to_dict())

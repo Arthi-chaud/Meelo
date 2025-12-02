@@ -34,7 +34,7 @@ class MatcherTestUtils:
         os.environ,
         {
             "INTERNAL_CONFIG_DIR": "/config/",
-            "API_URL": "localhost:3000",
+            "API_URL": "http://localhost:3000",
             "API_KEYS": "a",
             "CI": os.getenv("CI") or "",
             geniusTokenKey: os.getenv(geniusTokenKey)
@@ -93,6 +93,6 @@ class MatcherTestUtils:
         await ctx.get_provider(WikipediaProvider).reset_session()
 
     @staticmethod
-    def is_ci():
+    def is_ci() -> bool:
         val = os.environ.get("CI")
         return val and (val == "1" or len(val) > 1)

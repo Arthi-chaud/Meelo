@@ -63,8 +63,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
                 html = await response.text()
                 soup = BeautifulSoup(html, "html.parser")
                 return soup
-        except Exception as e:
-            print(e)
+        except Exception:
             pass
 
     # def _get_album_description(self, album: Any, album_url: str) -> str | None:

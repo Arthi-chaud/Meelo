@@ -1,16 +1,25 @@
-import unittest
+import asyncio
+import pytest
+import pytest_asyncio
 from matcher.context import Context
 from tests.matcher.common import MatcherTestUtils
 from matcher.providers.discogs import DiscogsProvider
 from typing import List, Tuple
 
 
-class TestDiscogs(unittest.IsolatedAsyncioTestCase):
-    @classmethod
-    def setUpClass(cls):
-        MatcherTestUtils.setup_context()
+loop: asyncio.AbstractEventLoop
 
-    async def test_search_artist(self):
+
+@pytest_asyncio.fixture(scope="module")
+async def ctx():
+    MatcherTestUtils.setup_context()
+    yield Context.get()
+    await MatcherTestUtils.reset_sessions()
+
+
+class TestDiscogs:
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_search_artist(self, ctx, subtests):
         scenarios: List[Tuple[str, str]] = [
             ("P!nk", "36988"),
             ("Christine & The Queens", "2714640"),
@@ -21,29 +30,28 @@ class TestDiscogs(unittest.IsolatedAsyncioTestCase):
             ("Selena Gomez and the Scene", "1867561"),
         ]
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
-        await provider.reset_session()
         for [artist_name, expected] in scenarios:
-            with self.subTest(
+            with subtests.test(
                 "Search Artist",
                 artist_name=artist_name,
                 expected=expected,
             ):
                 artist = await provider.search_artist(artist_name)
-                self.assertIsNotNone(artist)
-                self.assertEqual(artist.id, expected)  # pyright: ignore
+                assert artist is not None
+                assert artist.id == expected
 
-    async def test_get_artist_image(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_artist_image(self, ctx):
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
-        await provider.reset_session()
         artist = await provider.get_artist("4480")
-        self.assertIsNotNone(artist)
+        assert artist is not None
         illustration = await provider.get_artist_illustration_url(artist)
-        self.assertIsNotNone(illustration)
+        assert illustration is not None
 
-    async def test_get_album_genres(self):
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_genres(self, ctx):
         provider: DiscogsProvider = Context().get().get_provider(DiscogsProvider)  # pyright: ignore
-        await provider.reset_session()
         album = await provider.get_album("138437")
-        self.assertIsNotNone(album)
+        assert album is not None
         genres = await provider.get_album_genres(album)
-        self.assertEqual(genres, ["Electronic"])
+        assert genres == ["Electronic"]

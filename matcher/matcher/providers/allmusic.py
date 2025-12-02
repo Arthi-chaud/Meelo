@@ -59,8 +59,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
                 html = await response.text()
                 soup = BeautifulSoup(html, "html.parser")
                 return soup
-        except Exception as e:
-            print(e)
+        except Exception:
             pass
 
     async def _get_album_rating(self, album: Any) -> int | None:
