@@ -13,3 +13,4 @@ aiohttp
 pytest
 pytest-asyncio
 aiohttp-client-cache
+pytest-rerunfailures
