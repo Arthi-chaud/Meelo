@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import datetime
 from typing import Any
 import json
-
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.session import HasSession
@@ -47,14 +47,15 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
             ),
         ]
 
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"}
+        )
+
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            session = await self.get_session()
-            async with session.get(
+            async with self.get_session().get(
                 str(self.get_album_url_from_id(album_id)),
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
             ) as response:
                 html = await response.text()
                 soup = BeautifulSoup(html, "html.parser")
@@ -64,9 +65,12 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
 
     async def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
+        print(tag)
         try:
             div = tag.find("div", attrs={"title": "AllMusic Rating"})
+            print(div)
             # sth like ratingAllmusic6
+
             [rating_class] = [
                 c
                 for c in div.attrs["class"]  # pyright: ignore

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
+
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
@@ -50,15 +52,16 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
             GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
         ]
 
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"},
+        )
+
     async def _get_album(self, album_id: str) -> Any | None:
         album_url = self.get_album_url_from_id(album_id)
-        session = await self.get_session()
         try:
-            async with session.get(
+            async with self.get_session().get(
                 str(album_url),
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
             ) as response:
                 html = await response.text()
                 soup = BeautifulSoup(html, "html.parser")

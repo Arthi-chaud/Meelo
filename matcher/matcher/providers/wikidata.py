@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
+
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.session import HasSession
 
@@ -19,14 +21,18 @@ class WikidataRelations:
 # Note: Not a regular provider, we use it to link with other providers
 @dataclass
 class WikidataProvider(HasSession):
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            base_url="https://wikidata.org/",
+            headers={
+                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+            },
+        )
+
     async def get_resource_relations(self, wikidata_id):
         try:
-            session = await self.get_session()
-            async with session.get(
-                f"https://wikidata.org/w/rest.php/wikibase/v1/entities/items/{wikidata_id}",
-                headers={
-                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-                },
+            async with self.get_session().get(
+                f"/w/rest.php/wikibase/v1/entities/items/{wikidata_id}",
             ) as response:
                 return WikidataRelations(await response.json())
         except Exception:

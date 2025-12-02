@@ -1,6 +1,8 @@
 import asyncio
 from dataclasses import dataclass
 from typing import Any, List
+
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.domain import SearchResult
 from matcher.providers.features import (
@@ -68,15 +70,19 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
             user_token=self.settings.api_key,
         )
 
-    async def _fetch(self, route: str, host="https://api.discogs.com") -> Any | None:
-        session = await self.get_session()
-        async with session.get(
-            f"{host}{route}",
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            base_url="https://api.discogs.com/",
             headers={
                 "Accept-Encoding": "gzip",
                 "Accept": "application/vnd.discogs.v2.plaintext+json",
                 "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
             },
+        )
+
+    async def _fetch(self, route: str) -> Any | None:
+        async with self.get_session().get(
+            route,
             params={"token": self.settings.api_key},
         ) as response:
             return await response.json()

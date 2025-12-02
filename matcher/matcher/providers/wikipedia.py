@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
+
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.session import HasSession
 from .features import (
@@ -45,10 +47,16 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
             GetSongDescriptionFeature(lambda song: self.get_article_extract(song)),
         ]
 
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={
+                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+            },
+        )
+
     async def get_article(self, article_id: str) -> Any | None:
         try:
-            session = await self.get_session()
-            async with session.get(
+            async with self.get_session().get(
                 "https://en.wikipedia.org/w/api.php",
                 params={
                     "format": "json",
@@ -58,9 +66,6 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
                     "explaintext": "true",
                     "redirects": 1,
                     "titles": unquote(article_id),
-                },
-                headers={
-                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
                 },
             ) as response:
                 json = await response.json()
@@ -87,8 +92,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
 
     async def get_article_name_from_wikidata(self, wikidata_id: str) -> str | None:
         try:
-            session = await self.get_session()
-            async with session.get(
+            async with self.get_session().get(
                 "https://www.wikidata.org/w/api.php",
                 params={
                     "action": "wbgetentities",
@@ -96,9 +100,6 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
                     "ids": wikidata_id,
                     "sitefilter": "enwiki",
                     "format": "json",
-                },
-                headers={
-                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
                 },
             ) as response:
                 entities = (await response.json())["entities"]

@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Any, List
 import aiohttp
+from aiohttp.client import ClientSession
 from matcher.context import Context
 
 from matcher.providers.features import (
@@ -131,17 +132,21 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             ),
         ]
 
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            base_url="https://musicbrainz.org/",
+            headers={
+                "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
+            },
+        )
+
     # Note: Only use this method if action is not supported by library
     # E.g. Getting genres of a release-group
     async def _fetch(self, url: str, query: Any = {}) -> Any:
         await self.rate_limiter.rate_limit()
-        session = await self.get_session()
-        async with session.get(
-            f"https://musicbrainz.org/ws/2{url}",
+        async with self.get_session().get(
+            f"/ws/2{url}",
             params={**query, **{"fmt": "json"}},
-            headers={
-                "User-Agent": f"Meelo Matcher/{Context.get().settings.version} ( github.com/Arthi-chaud/Meelo )"
-            },
         ) as response:
             return await response.json()
 

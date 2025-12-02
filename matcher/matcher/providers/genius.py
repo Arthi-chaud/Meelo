@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, List, TypeAlias
 import aiohttp
+from aiohttp.client import ClientSession
 from matcher.context import Context
 from matcher.providers.features import (
     GetAlbumFeature,
@@ -95,6 +96,14 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
         ]
 
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={
+                "Authorization": f"{self.settings.api_key}",
+                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+            },
+        )
+
     async def __fetch(
         self,
         url: str,
@@ -102,16 +111,11 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
         then: Callable[[aiohttp.ClientResponse], Awaitable[Any]],
         params={},
     ):
-        session = await self.get_session()
-        async with session.get(
+        async with self.get_session().get(
             f"{host}{url}",
             params=params
             if host == "https://genius.com/api"
             else {**params, "access_token": self.settings.api_key},
-            headers={
-                "Authorization": f"{self.settings.api_key}",
-                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-            },
         ) as response:
             return await then(response)
 
