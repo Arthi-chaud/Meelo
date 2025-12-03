@@ -2,9 +2,11 @@ from dataclasses import dataclass
 import datetime
 from typing import Any
 import json
-import requests
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
+from matcher.providers.session import HasSession
+from matcher.utils import asyncify
 from ..settings import AllMusicSettings
 from .features import (
     GetAlbumFeature,
@@ -22,7 +24,7 @@ from bs4 import BeautifulSoup, Tag
 
 
 @dataclass
-class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
+class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "allmusic"),
@@ -40,32 +42,36 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
                 )
             ),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
-            GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
+            GetAlbumRatingFeature(
+                lambda album: asyncify(self._get_album_rating, album)
+            ),
             GetAlbumReleaseDateFeature(
-                lambda album: self._get_album_release_date(album)
+                lambda album: asyncify(self._get_album_release_date, album)
             ),
         ]
 
-    # Album
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"}
+        )
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            html = requests.get(
+            async with self.get_session().get(
                 str(self.get_album_url_from_id(album_id)),
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
-            ).text
-            soup = BeautifulSoup(html, "html.parser")
-            return soup
+            ) as response:
+                html = await response.text()
+                soup = BeautifulSoup(html, "html.parser")
+                return soup
         except Exception:
             pass
 
-    async def _get_album_rating(self, album: Any) -> int | None:
+    def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
         try:
             div = tag.find("div", attrs={"title": "AllMusic Rating"})
             # sth like ratingAllmusic6
+
             [rating_class] = [
                 c
                 for c in div.attrs["class"]  # pyright: ignore
@@ -82,7 +88,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings]):
         except Exception:
             pass
 
-    async def _get_album_release_date(self, album: Any) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         try:
             raw_json = album.find("script", attrs={"type": "application/ld+json"}).text
             json_obj = json.loads(raw_json)

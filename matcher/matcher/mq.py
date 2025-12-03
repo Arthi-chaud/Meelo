@@ -1,65 +1,54 @@
-import pika
-import asyncio
+from aiormq.abc import AbstractChannel
+import aiormq
 import logging
 import os
-from typing import Awaitable, Callable, Any
+from typing import Callable, Any, Coroutine
 from matcher.context import Context
-from pika.adapters.blocking_connection import BlockingChannel
 
 
-channel: BlockingChannel | None = None
+channel: AbstractChannel | None = None
 
 queue_name = "meelo"
 
 
-def connect_mq(
-    on_message_callback: Callable[[BlockingChannel, Any, Any, Any], Awaitable[None]],
+async def connect_mq(
+    on_message_callback: Callable[[Any, AbstractChannel], Coroutine[Any, Any, Any]],
 ):
-    global channel
-    rabbitUrl = os.environ.get("RABBITMQ_URL")
-    if not rabbitUrl:
+    rabbit_url = os.environ.get("RABBITMQ_URL")
+    if not rabbit_url:
         logging.error("Missing env var 'RABBITMQ_URL'")
         exit(1)
-    connectionParams = pika.URLParameters(rabbitUrl)
-    connection = pika.BlockingConnection(connectionParams)
-    channel = connection.channel()
-    channel.queue_declare(
+    global channel
+    connection = await aiormq.connect(rabbit_url)
+    channel = await connection.channel()
+    declare_ok = await channel.queue_declare(
         queue=queue_name,
         durable=True,
         arguments={"x-max-priority": 5},
         auto_delete=False,
         exclusive=False,
     )
-
+    if declare_ok.queue is None:
+        logging.error("Couldn't declare queue")
+        exit(1)
     logging.info(f"Version: {Context.get().settings.version}")
     logging.info("Ready to match!")
-    channel.basic_qos(prefetch_count=1)
-    # TODO AWAIT
-    channel.basic_consume(
-        queue_name,
-        on_message_callback=lambda bc, arg1, arg2, arg3: asyncio.run(
-            (
-                on_message_callback(bc, arg1, arg2, arg3)  # pyright: ignore
-            )
-        ),
+    await channel.basic_qos(prefetch_count=1)
+    await channel.basic_consume(
+        declare_ok.queue,
+        lambda msg: on_message_callback(msg, channel),  # pyright: ignore
     )
 
 
-def start_consuming():
-    loop = asyncio.get_running_loop()
-    loop.run_in_executor(None, lambda: channel and channel.start_consuming())
-
-
-def stop_mq():
+async def stop_mq():
     if channel is not None:
-        channel.stop_consuming()
-        channel.close()
+        await channel.close()
 
 
-def get_queue_size() -> int:
+async def get_queue_size() -> int:
     if not channel:
         return 0
-    res = channel.queue_declare(
+    res = await channel.queue_declare(
         queue=queue_name,
         durable=True,
         arguments={"x-max-priority": 5},
@@ -67,5 +56,4 @@ def get_queue_size() -> int:
         auto_delete=False,
         exclusive=False,
     )
-
-    return res.method.message_count
+    return res.message_count or 0

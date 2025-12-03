@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Any, List
+
+from aiohttp import ClientSession
 from matcher.context import Context
+from matcher.providers.domain import SearchResult
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
@@ -15,10 +18,8 @@ from matcher.providers.features import (
     SearchArtistFeature,
     GetMusicBrainzRelationKeyFeature,
 )
-from matcher.utils import capitalize_all_words
-import discogs_client.client
-import requests
-from .domain import ArtistSearchResult
+from matcher.providers.session import HasSession
+from matcher.utils import asyncify, capitalize_all_words
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
 import discogs_client
@@ -31,7 +32,7 @@ import discogs_client
 
 
 @dataclass
-class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
+class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "discogs"),
@@ -46,7 +47,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
             ),
             GetArtistFeature(lambda artist_name: self._get_artist(artist_name)),
             GetArtistIllustrationUrlFeature(
-                lambda artist: self._get_artist_illustration_url(artist)
+                lambda artist: asyncify(self._get_artist_illustration_url, artist)
             ),
             GetWikidataArtistRelationKeyFeature(lambda: "P1953"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P1954"),
@@ -59,15 +60,10 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
                 )
             ),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
-            GetAlbumGenresFeature(lambda album: self._get_album_genres(album)),
+            GetAlbumGenresFeature(
+                lambda album: asyncify(self._get_album_genres, album)
+            ),
         ]
-
-    def _headers(self):
-        return {
-            "Accept-Encoding": "gzip",
-            "Accept": "application/vnd.discogs.v2.plaintext+json",
-            "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
-        }
 
     def _get_client(self):
         return discogs_client.Client(
@@ -75,26 +71,39 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
             user_token=self.settings.api_key,
         )
 
-    async def _search_artist(self, artist_name: str) -> ArtistSearchResult | None:
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            base_url="https://api.discogs.com/",
+            headers={
+                "Accept-Encoding": "gzip",
+                "Accept": "application/vnd.discogs.v2.plaintext+json",
+                "User-Agent": f"Meelo Matcher/{Context.get().settings.version}",
+            },
+        )
+
+    async def _fetch(self, route: str) -> Any | None:
+        async with self.get_session().get(
+            route,
+            params={"token": self.settings.api_key},
+        ) as response:
+            return await response.json()
+
+    async def _search_artist(self, artist_name: str) -> SearchResult | None:
         client = self._get_client()
         try:
-            return ArtistSearchResult(
-                str(client.search(artist_name, type="artist")[0].id)
-            )
+            data = await asyncify(lambda: client.search(artist_name, type="artist")[0])
+
+            return SearchResult(str(data.id), data)
         except Exception:
             return None
 
     async def _get_artist(self, artist_id: str) -> Any | None:
         try:
-            return requests.get(
-                f"https://api.discogs.com/artists/{artist_id}",
-                headers=self._headers(),
-                params={"token": self.settings.api_key},
-            ).json()
+            return await self._fetch(f"/artists/{artist_id}")
         except Exception:
             return None
 
-    async def _get_artist_illustration_url(self, artist: Any) -> str | None:
+    def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             # We sort images and take the most square one.
             images = artist["images"]
@@ -109,15 +118,11 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings]):
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:
-            return requests.get(
-                f"https://api.discogs.com/masters/{album_id}",
-                headers=self._headers(),
-                params={"token": self.settings.api_key},
-            ).json()
+            return await self._fetch(f"/masters/{album_id}")
         except Exception:
             return None
 
-    async def _get_album_genres(self, album: Any) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> List[str] | None:
         try:
             return [capitalize_all_words(g) for g in album["genres"]]
         except Exception:

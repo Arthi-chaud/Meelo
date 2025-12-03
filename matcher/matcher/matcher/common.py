@@ -1,7 +1,9 @@
 from matcher.models.api.dto import ExternalMetadataSourceDto
+from matcher.providers.base import BaseFeature
 from matcher.providers.boilerplate import BaseProviderBoilerplate
+from matcher.providers.domain import SearchResult
 from ..context import Context
-from typing import Any, Awaitable, Callable, List
+from typing import Any, Awaitable, Callable, List, Type, TypeVar
 from ..providers.wikidata import WikidataProvider
 from ..providers.musicbrainz import MusicBrainzProvider
 from ..providers.wikipedia import WikipediaProvider
@@ -9,6 +11,66 @@ from ..providers.wikipedia import WikipediaProvider
 
 def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
     return [p for p in Context.get().providers if p.api_model.id == dto.provider_id][0]
+
+
+async def run_tasks_from_sources(
+    f: Callable[
+        [ExternalMetadataSourceDto | None, BaseProviderBoilerplate], Awaitable[None]
+    ],
+    sources: List[ExternalMetadataSourceDto],
+):
+    async def get_task_or_noop(p: BaseProviderBoilerplate):
+        for s in sources:
+            if s.provider_id == p.api_model.id:
+                await f(s, p)
+                return
+
+        await f(None, p)
+
+    await Context.get().run_provider_task(lambda p: get_task_or_noop(p))
+
+
+async def resolve_data_from_source(
+    source: ExternalMetadataSourceDto | None,
+    provider: BaseProviderBoilerplate,
+    search: Callable[[], Awaitable[SearchResult | None]],
+    get: Callable[[str], Awaitable[Any | None]],
+    url_to_id: Callable[[str], str | None],
+    id_to_url: Callable[[str], str | None],
+) -> tuple[ExternalMetadataSourceDto | None, Any | None]:
+    data = None
+    if source:
+        provider_resource_id = id_to_url(source.url)
+        if provider_resource_id:
+            data = await get(provider_resource_id)
+    if not data:
+        res = await search()
+        if res:
+            data = res.data
+            provider_resource_url = url_to_id(res.id)
+            if provider_resource_url:
+                source = ExternalMetadataSourceDto(
+                    provider_resource_url, provider.api_model.id
+                )
+    return (source, data)
+
+
+F = TypeVar("F", bound=BaseFeature)
+D = TypeVar("D")
+
+
+async def bind_feature_to_result[F, D](
+    feature: Type[F],
+    provider: BaseProviderBoilerplate,
+    guard_data_is_missing: Callable[[], bool],
+    get: Callable[[F], Awaitable[D | None]],
+    set_result: Callable[[D], None],
+):
+    f = provider.get_feature(feature)
+    if f and guard_data_is_missing():
+        res = await get(f)
+        if res:
+            set_result(res)
 
 
 async def get_sources_from_wikidata(
@@ -80,7 +142,7 @@ async def get_sources_from_musicbrainz(
         external_sources.append(
             ExternalMetadataSourceDto(resource_url, mb_provider.api_model.id)
         )
-    remaining_providers = context.providers
+    remaining_providers = context.get_providers()
     try:
         resource = await mb_get_resource(mb_provider, mbEntry.id)
         if "relations" not in resource.keys():

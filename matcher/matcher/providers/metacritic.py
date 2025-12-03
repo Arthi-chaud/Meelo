@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
+
+from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
@@ -14,14 +16,16 @@ from matcher.providers.features import (
     GetWikidataAlbumRelationKeyFeature,
     IsMusicBrainzRelationFeature,
 )
+from matcher.providers.session import HasSession
 from matcher.settings import MetacriticSettings
-import requests
 from bs4 import BeautifulSoup, Tag
 from datetime import date, datetime
 
+from matcher.utils import asyncify
+
 
 @dataclass
-class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
+class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession):
     def __post_init__(self):
         self.features = [
             IsMusicBrainzRelationFeature(
@@ -45,22 +49,27 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
             GetWikidataAlbumRelationKeyFeature(lambda: "P1712"),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
             GetAlbumReleaseDateFeature(
-                lambda album: self._get_album_release_date(album)
+                lambda album: asyncify(self._get_album_release_date, album)
             ),
-            GetAlbumRatingFeature(lambda album: self._get_album_rating(album)),
+            GetAlbumRatingFeature(
+                lambda album: asyncify(self._get_album_rating, album)
+            ),
         ]
+
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"},
+        )
 
     async def _get_album(self, album_id: str) -> Any | None:
         album_url = self.get_album_url_from_id(album_id)
         try:
-            html = requests.get(
+            async with self.get_session().get(
                 str(album_url),
-                headers={
-                    "User-Agent": f"Meelo Matcher/{Context.get().settings.version}"
-                },
-            ).text
-            soup = BeautifulSoup(html, "html.parser")
-            return soup
+            ) as response:
+                html = await response.text()
+                soup = BeautifulSoup(html, "html.parser")
+                return soup
         except Exception:
             pass
 
@@ -76,7 +85,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
     # except Exception:
     #     pass
 
-    async def _get_album_release_date(self, album: Any) -> date | None:
+    def _get_album_release_date(self, album: Any) -> date | None:
         tag: Tag = album
         try:
             release_date = tag.find(
@@ -86,7 +95,7 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings]):
         except Exception:
             pass
 
-    async def _get_album_rating(self, album: Any) -> int | None:
+    def _get_album_rating(self, album: Any) -> int | None:
         tag: Tag = album
         try:
             raw_value = tag.find("span", attrs={"itemprop": "ratingValue"}).text  # pyright: ignore
