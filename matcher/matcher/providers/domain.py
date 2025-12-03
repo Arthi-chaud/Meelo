@@ -1,16 +1,12 @@
 from dataclasses import dataclass
-from typing import TypeAlias
+from typing import Any, TypeAlias
 from enum import Enum
 
 
 @dataclass
-class ArtistSearchResult:
+class SearchResult:
     id: str
-
-
-@dataclass
-class AlbumSearchResult:
-    id: str
+    data: Any | None
 
 
 @dataclass

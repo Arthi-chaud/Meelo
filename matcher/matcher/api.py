@@ -2,8 +2,8 @@ from datetime import date
 import os
 import logging
 from typing import Any, List, TypeVar
+import aiohttp
 from dataclasses_json import DataClassJsonMixin
-import requests
 
 from matcher.models.api.domain import Album, Song, File
 from matcher.models.api.dto import (
@@ -28,99 +28,95 @@ class API:
         self._key = (os.environ.get("API_KEYS") or "").split(",")[0]
         if not self._key:
             raise Exception("Missing or empty env variable: 'API_KEYS'")
+        self.session = aiohttp.ClientSession(base_url=self._url)
 
-    def ping(self) -> bool:
-        return True if self._get("/") else False
+    async def ping(self) -> bool:
+        try:
+            await self._get("/")
+            return True
+        except Exception:
+            return False
 
-    def _get(self, route: str, token: str | None = None) -> requests.Response:
-        response = requests.get(
-            f"{self._url}{route}",
+    async def _get(self, route: str, token: str | None = None) -> Any:
+        async with self.session.get(
+            route,
             headers={"Authorization": f"Bearer {token}"}
             if token
             else {"x-api-key": self._key},
-        )
-        if response.status_code != 200:
-            logging.error("GETting API failed: ")
-            raise Exception(response.content)
-        return response
+        ) as response:
+            if response.status != 200:
+                logging.error("GETting API failed: ")
+                raise Exception(response.content)
+            return await response.json()
 
-    def _post(
-        self, route: str, json: dict = {}, file_path: str = ""
-    ) -> requests.Response:
-        response = requests.post(
-            f"{self._url}{route}",
+    async def _post(self, route: str, json: dict = {}, file_path: str = "") -> Any:
+        async with self.session.post(
+            route,
             headers={
                 "x-api-key": self._key,
             },
-            files={"file": open(file_path, "rb")} if len(file_path) else None,
+            data={"file": open(file_path, "rb")} if len(file_path) else None,
             json=json if len(json.keys()) else None,
-        )
-        if response.status_code != 201:
-            logging.error("POSTting API failed: ")
-            raise Exception(response.content)
-        return response
+        ) as response:
+            if response.status != 201:
+                logging.error("POSTting API failed: ")
+                raise Exception(response.content)
+            return await response.json()
 
-    def _put(
-        self, route: str, json: dict = {}, file_path: str = ""
-    ) -> requests.Response:
-        response = requests.put(
-            f"{self._url}{route}",
+    async def _put(self, route: str, json: dict = {}, file_path: str = "") -> None:
+        async with self.session.put(
+            route,
             headers={
                 "x-api-key": self._key,
             },
-            files={"file": open(file_path, "rb")} if len(file_path) else None,
+            data={"file": open(file_path, "rb")} if len(file_path) else None,
             json=json if len(json.keys()) else None,
-        )
-        if response.status_code != 200:
-            logging.error("PUTting API failed: ")
-            raise Exception(response.content)
-        return response
+        ) as response:
+            if response.status != 200:
+                logging.error("PUTting API failed: ")
+                raise Exception(response.content)
 
-    def post_external_metadata(self, dto: ExternalMetadataDto):
-        self._post("/external-metadata", json=dto.to_dict())
+    async def post_external_metadata(self, dto: ExternalMetadataDto):
+        await self._post("/external-metadata", json=dto.to_dict())
 
-    def post_artist_illustration(self, artist_id: int, image_url):
-        self._post(
+    async def post_artist_illustration(self, artist_id: int, image_url):
+        await self._post(
             "/illustrations/url",
             json={"url": image_url, "artistId": artist_id},
         )
 
-    def get_providers(self) -> Page[Provider]:
-        response = self._get("/external-providers").json()
+    async def get_providers(self) -> Page[Provider]:
+        response = await self._get("/external-providers")
         return API._to_page(response, Provider)
 
-    def get_album(self, album_id: int) -> Album:
-        response = self._get(f"/albums/{album_id}?with=artist")
-        json = response.json()
+    async def get_album(self, album_id: int) -> Album:
+        json = await self._get(f"/albums/{album_id}?with=artist")
         return Album.schema().load(json)
 
-    def get_song(self, song_id: int) -> Song:
-        response = self._get(f"/songs/{song_id}?with=artist,featuring,master")
-        json = response.json()
+    async def get_song(self, song_id: int) -> Song:
+        json = await self._get(f"/songs/{song_id}?with=artist,featuring,master")
         return Song.schema().load(json)
 
-    def get_file(self, file_id: int) -> File:
-        response = self._get(f"/files/{file_id}")
-        json = response.json()
+    async def get_file(self, file_id: int) -> File:
+        json = await self._get(f"/files/{file_id}")
         return File.schema().load(json)
 
-    def get_user(self, token: str) -> User | None:
+    async def get_user(self, token: str) -> User | None:
         try:
-            response = self._get("/users/me", token)
-            json = response.json()
+            json = await self._get("/users/me", token)
             return User.schema().load(json)
         except Exception:
             return None
 
-    def post_provider(self, provider_name: str) -> Provider:
+    async def post_provider(self, provider_name: str) -> Provider:
         dto = CreateProviderDto(name=provider_name)
-        response = self._post("/external-providers", json=dto.to_dict())
-        return Provider.schema().load(response.json())
+        json = await self._post("/external-providers", json=dto.to_dict())
+        return Provider.schema().load(json)
 
-    def post_provider_icon(self, provider_id: int, icon_path):
-        self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
+    async def post_provider_icon(self, provider_id: int, icon_path):
+        await self._post(f"/external-providers/{provider_id}/icon", file_path=icon_path)
 
-    def post_album_update(
+    async def post_album_update(
         self,
         album_id: int,
         release_date: date | None,
@@ -132,9 +128,9 @@ class API:
             genres=genres,
             type=type.value if type else None,
         )
-        self._put(f"/albums/{album_id}", json=dto.to_dict())
+        await self._put(f"/albums/{album_id}", json=dto.to_dict())
 
-    def post_song_lyrics(
+    async def post_song_lyrics(
         self, song_id: int, plain_lyrics: str, synced_lyrics: SyncedLyrics | None
     ):
         dto = {"plain": plain_lyrics}
@@ -143,10 +139,10 @@ class API:
                 {"timestamp": t, "content": line} for (t, line) in synced_lyrics
             ]
             dto = {**dto, "synced": formatted}
-        self._post(f"/songs/{song_id}/lyrics", json=dto)
+        await self._post(f"/songs/{song_id}/lyrics", json=dto)
 
-    def post_song_genres(self, song_id: int, genres: List[str]):
-        self._put(f"/songs/{song_id}", json={"genres": genres})
+    async def post_song_genres(self, song_id: int, genres: List[str]):
+        await self._put(f"/songs/{song_id}", json={"genres": genres})
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:

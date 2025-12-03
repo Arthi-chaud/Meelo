@@ -1,4 +1,3 @@
-import asyncio
 import os
 from unittest import mock
 
@@ -6,8 +5,15 @@ from dotenv import dotenv_values
 from matcher.api import API
 from matcher.context import Context
 from matcher.models.api.provider import Provider
+from matcher.providers.allmusic import AllMusicProvider
 from matcher.providers.base import BaseProvider
+from matcher.providers.discogs import DiscogsProvider
 from matcher.providers.factory import ProviderFactory
+from matcher.providers.genius import GeniusProvider
+from matcher.providers.lrclib import LrcLibProvider
+from matcher.providers.metacritic import MetacriticProvider
+from matcher.providers.musicbrainz import MusicBrainzProvider
+from matcher.providers.wikipedia import WikipediaProvider
 from matcher.settings import (
     GeniusSettings,
     LrcLibSettings,
@@ -28,7 +34,7 @@ class MatcherTestUtils:
         os.environ,
         {
             "INTERNAL_CONFIG_DIR": "/config/",
-            "API_URL": "localhost:3000",
+            "API_URL": "http://localhost:3000",
             "API_KEYS": "a",
             "CI": os.getenv("CI") or "",
             geniusTokenKey: os.getenv(geniusTokenKey)
@@ -76,6 +82,17 @@ class MatcherTestUtils:
         Context.init(API(), settings, providers)
 
     @staticmethod
-    def is_ci():
+    async def reset_sessions():
+        ctx = Context.get()
+        await ctx.get_provider(AllMusicProvider).reset_session()
+        await ctx.get_provider(MusicBrainzProvider).reset_session()
+        await ctx.get_provider(DiscogsProvider).reset_session()
+        await ctx.get_provider(GeniusProvider).reset_session()
+        await ctx.get_provider(MetacriticProvider).reset_session()
+        await ctx.get_provider(LrcLibProvider).reset_session()
+        await ctx.get_provider(WikipediaProvider).reset_session()
+
+    @staticmethod
+    def is_ci() -> bool:
         val = os.environ.get("CI")
         return val and (val == "1" or len(val) > 1)

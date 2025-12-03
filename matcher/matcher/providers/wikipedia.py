@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 from typing import Any
 
+from aiohttp import ClientSession
 from matcher.context import Context
+from matcher.providers.session import HasSession
+from matcher.utils import asyncify
 from .features import (
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -16,12 +19,11 @@ from .features import (
 )
 from urllib.parse import unquote
 from matcher.providers.boilerplate import BaseProviderBoilerplate
-import requests
 from ..settings import WikipediaSettings
 
 
 @dataclass
-class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
+class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetArtistIdFromUrlFeature(
@@ -32,7 +34,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
             ),
             GetArtistFeature(lambda artist_id: self.get_article(artist_id)),
             GetArtistDescriptionFeature(
-                lambda artist: self.get_article_extract(artist)
+                lambda artist: asyncify(self.get_article_extract, artist)
             ),
             GetAlbumIdFromUrlFeature(
                 lambda album_url: self.get_article_id_from_url(album_url)
@@ -41,34 +43,44 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
                 lambda album_id: self.get_article_url_from_id(album_id)
             ),
             GetAlbumFeature(lambda album_id: self.get_article(album_id)),
-            GetAlbumDescriptionFeature(lambda album: self.get_article_extract(album)),
+            GetAlbumDescriptionFeature(
+                lambda album: asyncify(self.get_article_extract, album)
+            ),
             GetSongFeature(lambda song_id: self.get_article(song_id)),
-            GetSongDescriptionFeature(lambda song: self.get_article_extract(song)),
+            GetSongDescriptionFeature(
+                lambda song: asyncify(self.get_article_extract, song)
+            ),
         ]
+
+    def mk_session(self) -> ClientSession:
+        return ClientSession(
+            headers={
+                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+            },
+        )
 
     async def get_article(self, article_id: str) -> Any | None:
         try:
-            res = requests.get(
+            async with self.get_session().get(
                 "https://en.wikipedia.org/w/api.php",
                 params={
                     "format": "json",
                     "action": "query",
                     "prop": "extracts",
-                    "exintro": True,
-                    "explaintext": True,
+                    "exintro": "true",
+                    "explaintext": "true",
                     "redirects": 1,
                     "titles": unquote(article_id),
                 },
-                headers={
-                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-                },
-            ).json()["query"]["pages"]
-            first_entity = next(iter(res))
-            return res[first_entity]
+            ) as response:
+                json = await response.json()
+                res = json["query"]["pages"]
+                first_entity = next(iter(res))
+                return res[first_entity]
         except Exception:
             return None
 
-    async def get_article_extract(self, article: Any) -> str | None:
+    def get_article_extract(self, article: Any) -> str | None:
         try:
             desc: str = article["extract"]
             return desc if not desc.startswith("Undefined may refer") else None
@@ -85,7 +97,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
 
     async def get_article_name_from_wikidata(self, wikidata_id: str) -> str | None:
         try:
-            entities = requests.get(
+            async with self.get_session().get(
                 "https://www.wikidata.org/w/api.php",
                 params={
                     "action": "wbgetentities",
@@ -94,11 +106,9 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings]):
                     "sitefilter": "enwiki",
                     "format": "json",
                 },
-                headers={
-                    "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
-                },
-            ).json()["entities"]
-            first_entity = next(iter(entities))
-            return entities[first_entity]["sitelinks"]["enwiki"]["title"]
+            ) as response:
+                entities = (await response.json())["entities"]
+                first_entity = next(iter(entities))
+                return entities[first_entity]["sitelinks"]["enwiki"]["title"]
         except Exception:
             return None

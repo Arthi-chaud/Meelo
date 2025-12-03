@@ -1,5 +1,7 @@
+import asyncio
 from dataclasses import dataclass
-from typing import List, TypeVar, Type
+import os
+from typing import Awaitable, Callable, List, TypeVar, Type
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from .api import API
 from .settings import Settings
@@ -23,11 +25,26 @@ class _InternalContext:
     pending_items_count: int
     current_item: CurrentItem | None = None
 
+    async def run_provider_task(
+        self, t: Callable[[BaseProviderBoilerplate], Awaitable[None]]
+    ) -> None:
+        await asyncio.gather(*[t(p) for p in self.providers])
+
     def get_provider(self, cl: Type[T]) -> T | None:
         for provider in self.providers:
             if isinstance(provider, cl):
                 return provider
         return None
+
+    def get_provider_or_raise(self, cl: Type[T]) -> T:
+        res = self.get_provider(cl)
+        assert res is not None
+        return res
+
+    def get_providers(
+        self,
+    ) -> List[BaseProviderBoilerplate]:
+        return self.providers
 
     def increment_handled_items_count(self):
         self.handled_items_count = self.handled_items_count + 1
@@ -38,6 +55,11 @@ class _InternalContext:
 
 class Context:
     _instance: _InternalContext | None
+
+    @staticmethod
+    def is_ci() -> bool:
+        val = os.environ.get("CI")
+        return val is not None and (val == "1" or len(val) > 1)
 
     @classmethod
     def init(
