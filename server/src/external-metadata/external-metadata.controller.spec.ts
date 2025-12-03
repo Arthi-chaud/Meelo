@@ -65,6 +65,7 @@ describe("External Metadata Controller", () => {
 					expect(entry.sources.length).toBe(1);
 					expect(entry.sources[0].providerName).toBe(provider.name);
 					expect(entry.sources[0].providerId).toBe(provider.id);
+					expect(entry.sources[0].url).toBe("URL");
 					createdMetadata = entry;
 				});
 		});
@@ -73,11 +74,21 @@ describe("External Metadata Controller", () => {
 				.post("/external-metadata")
 				.send({
 					albumId: dummyRepository.albumA1.id,
-					description: "a",
+					description: "b",
 					rating: undefined,
-					sources: [{ providerId: provider.id, url: "URL" }],
+					sources: [{ providerId: provider.id, url: "URL2" }],
 				} satisfies CreateExternalMetadataDto)
-				.expect(409);
+				.expect(201)
+				.expect((res) => {
+					const entry: ExternalMetadataResponse = res.body;
+					expect(entry.description).toBe("b");
+					expect(entry.rating).toBe(null);
+					expect(entry.sources.length).toBe(1);
+					expect(entry.sources[0].providerName).toBe(provider.name);
+					expect(entry.sources[0].providerId).toBe(provider.id);
+					expect(entry.sources[0].url).toBe("URL2");
+					createdMetadata = entry;
+				});
 		});
 		it("should return an error, as album does not exist", () => {
 			return request(app.getHttpServer())

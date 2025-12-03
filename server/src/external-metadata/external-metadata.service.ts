@@ -65,6 +65,17 @@ export default class ExternalMetadataService {
 					throw new DuplicateSourcesInExternalMetadataDto();
 				}
 			});
+		// NOTE: No need to delete related sources, they will be cascade-deleted
+		await this.prismaService.externalMetadata
+			.deleteMany({
+				where: {
+					albumId: data.albumId ?? undefined,
+					releaseId: data.releaseId ?? undefined,
+					artistId: data.artistId ?? undefined,
+					songId: data.songId ?? undefined,
+				},
+			})
+			.catch(() => {});
 		return this.prismaService.externalMetadata
 			.create({
 				data: {
