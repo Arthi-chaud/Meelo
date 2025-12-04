@@ -5,7 +5,7 @@ from typing import Any, List, TypeVar
 import aiohttp
 from dataclasses_json import DataClassJsonMixin
 
-from matcher.models.api.domain import Album, Song, File
+from matcher.models.api.domain import Album, Artist, Song, File
 from matcher.models.api.dto import (
     CreateProviderDto,
     ExternalMetadataDto,
@@ -46,7 +46,7 @@ class API:
         ) as response:
             if response.status != 200:
                 logging.error("GETting API failed: ")
-                raise Exception(response.content)
+                raise Exception(await response.text())
             return await response.json()
 
     async def _post(self, route: str, json: dict = {}, file_path: str = "") -> Any:
@@ -60,7 +60,7 @@ class API:
         ) as response:
             if response.status != 201:
                 logging.error("POSTting API failed: ")
-                raise Exception(response.content)
+                raise Exception(await response.text())
             return await response.json()
 
     async def _put(self, route: str, json: dict = {}, file_path: str = "") -> None:
@@ -74,7 +74,7 @@ class API:
         ) as response:
             if response.status != 200:
                 logging.error("PUTting API failed: ")
-                raise Exception(response.content)
+                raise Exception(await response.text())
 
     async def post_external_metadata(self, dto: ExternalMetadataDto):
         await self._post("/external-metadata", json=dto.to_dict())
@@ -89,12 +89,16 @@ class API:
         response = await self._get("/external-providers")
         return API._to_page(response, Provider)
 
-    async def get_album(self, album_id: int) -> Album:
-        json = await self._get(f"/albums/{album_id}?with=artist")
+    async def get_album(self, album_id: int, token: str | None = None) -> Album:
+        json = await self._get(f"/albums/{album_id}?with=artist", token)
         return Album.schema().load(json)
 
-    async def get_song(self, song_id: int) -> Song:
-        json = await self._get(f"/songs/{song_id}?with=artist,featuring,master")
+    async def get_artist(self, artist_id: int, token: str | None = None) -> Artist:
+        json = await self._get(f"/artists/{artist_id}", token)
+        return Artist.schema().load(json)
+
+    async def get_song(self, song_id: int, token: str | None = None) -> Song:
+        json = await self._get(f"/songs/{song_id}?with=artist,featuring,master", token)
         return Song.schema().load(json)
 
     async def get_file(self, file_id: int) -> File:
