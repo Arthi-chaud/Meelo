@@ -16,98 +16,158 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Checkbox, Grid } from "@mui/material";
+import { Box, Button, Checkbox, Divider, Stack } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import type { ArraySlice } from "type-fest";
 import type API from "@/api";
 import { MetadataRefreshIcon } from "@/ui/icons";
-import { useAPI } from "~/api";
+import { useAPI, useQueryClient } from "~/api";
 import type Action from "./";
 
-type APIMethodParams = ArraySlice<Parameters<API["refreshMetadata"]>, 0, -1>;
+type RefreshableResourceType =
+	| Parameters<API["refreshLocalMetadata"]>[0]
+	| "artist";
 
 const RefreshMetadataActionContent = ({
 	t,
-	params,
+	resourceType,
+	resourceId,
 	close,
 }: {
 	t: Translator;
-	params: APIMethodParams;
+	resourceType: RefreshableResourceType;
+	resourceId: number;
 	close: () => void;
 }) => {
 	const [force, setForce] = useState(false);
 	const api = useAPI();
-
+	const canRefreshLocalMetadata = resourceType !== "artist";
+	const canRefreshExternalMetadata = ["artist", "song", "album"].includes(
+		resourceType,
+	);
+	const queryClient = useQueryClient();
 	return (
-		<Grid container spacing={2} sx={{ padding: 2 }}>
-			<Grid
-				size={{ xs: 12 }}
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				<Checkbox checked={force} onClick={() => setForce((f) => !f)} />
-				{t("tasks.refreshMetadataForm.forceLabel")}
-			</Grid>
-			<Grid size={{ xs: 12 }}>
+		<Stack spacing={2} sx={{ padding: 2 }}>
+			{canRefreshLocalMetadata && (
+				<>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<Checkbox
+							checked={force}
+							onClick={() => setForce((f) => !f)}
+						/>
+						{t("tasks.refreshMetadataForm.forceLabel")}
+					</Box>
+					<Button
+						fullWidth
+						variant="contained"
+						onClick={() => {
+							api.refreshLocalMetadata(
+								resourceType,
+								resourceId,
+								force,
+							)
+								.then(() =>
+									toast.success(
+										t("toasts.refreshMetadata.started"),
+									),
+								)
+								.catch(() =>
+									toast.error(
+										t("toasts.refreshMetadata.failed"),
+									),
+								);
+							close();
+						}}
+					>
+						{t("tasks.refreshLocalMetadata")}
+					</Button>
+				</>
+			)}
+			{canRefreshLocalMetadata && canRefreshExternalMetadata && (
+				<Divider />
+			)}
+			{canRefreshExternalMetadata && (
 				<Button
 					fullWidth
 					variant="contained"
 					onClick={() => {
-						api.refreshMetadata(...[...params, force])
-							.then(() =>
-								toast.success(
-									t("toasts.refreshMetadata.started"),
-								),
+						toast
+							.promise(
+								api.refreshExternalMetadata({
+									[`${resourceType}Id`]: resourceId,
+								}),
+								{
+									loading: t(
+										"toasts.refreshMetadata.started",
+									),
+									success: "Metadata Refreshed!",
+									error: t("toasts.refreshMetadata.failed"),
+								},
 							)
-							.catch(() =>
-								toast.error(t("toasts.refreshMetadata.failed")),
-							);
+							.then(async () => {
+								await queryClient.client.invalidateQueries({
+									queryKey: ["api", "external-metadata"],
+								});
+							});
 						close();
 					}}
 				>
-					{t("tasks.refreshMetadata")}
+					{t("tasks.refreshExternalMetadata")}
 				</Button>
-			</Grid>
-		</Grid>
+			)}
+		</Stack>
 	);
 };
 
 const RefreshMetadataAction = (
 	t: Translator,
-	...params: APIMethodParams
+	resourceType: RefreshableResourceType,
+	resourceId: number,
 ): Action => ({
 	label: "tasks.refreshMetadata",
 	icon: <MetadataRefreshIcon />,
 	dialog: ({ close }) => (
-		<RefreshMetadataActionContent t={t} params={params} close={close} />
+		<RefreshMetadataActionContent
+			t={t}
+			resourceId={resourceId}
+			resourceType={resourceType}
+			close={close}
+		/>
 	),
 });
 
 export const RefreshLibraryMetadataAction = (
-	librarySlugOrId: number | string,
+	librarySlugOrId: number,
 	t: Translator,
 ) => RefreshMetadataAction(t, "library", librarySlugOrId);
 
+export const RefreshArtistMetadataAction = (
+	artistSlugOrId: number,
+	t: Translator,
+) => RefreshMetadataAction(t, "artist", artistSlugOrId);
+
 export const RefreshAlbumMetadataAction = (
-	albumSlugOrId: number | string,
+	albumSlugOrId: number,
 	t: Translator,
 ) => RefreshMetadataAction(t, "album", albumSlugOrId);
 
 export const RefreshReleaseMetadataAction = (
-	releaseSlugOrId: number | string,
+	releaseSlugOrId: number,
 	t: Translator,
 ) => RefreshMetadataAction(t, "release", releaseSlugOrId);
 
 export const RefreshSongMetadataAction = (
-	songSlugOrId: number | string,
+	songSlugOrId: number,
 	t: Translator,
 ) => RefreshMetadataAction(t, "song", songSlugOrId);
 
 export const RefreshTrackMetadataAction = (
-	trackSlugOrId: number | string,
+	trackSlugOrId: number,
 	t: Translator,
 ) => RefreshMetadataAction(t, "track", trackSlugOrId);

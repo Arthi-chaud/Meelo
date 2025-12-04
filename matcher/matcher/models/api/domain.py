@@ -12,12 +12,14 @@ from matcher.providers.domain import AlbumType
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class Artist(DataClassJsonMixin):
+    id: int
     name: str
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class Album(DataClassJsonMixin):
+    id: int
     name: str
     artist: Optional[Artist] = None
     type: AlbumType = AlbumType.OTHER
@@ -34,6 +36,7 @@ class Track(DataClassJsonMixin):
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class Song(DataClassJsonMixin):
+    id: int
     name: str
     artist: Artist
     featuring: List[Artist]

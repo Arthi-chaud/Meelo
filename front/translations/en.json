@@ -378,6 +378,8 @@
 		"cleanLibraries": "Clean Libraries",
 		"refresh": "Refresh",
 		"refreshMetadata": "Refresh Metadata",
+		"refreshLocalMetadata": "Refresh Local Metadata",
+		"refreshExternalMetadata": "Refresh External Metadata",
 		"refreshMetadataForm": {
 			"forceLabel": "Force refresh if files have not changed"
 		},

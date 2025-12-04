@@ -29,7 +29,7 @@ import { DownloadReleaseAction } from "~/components/actions/download";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
 import { PlayReleaseAction } from "~/components/actions/play-album";
 import { AddToPlaylistAction } from "~/components/actions/playlist";
-import { RefreshReleaseMetadataAction } from "~/components/actions/refresh-metadata";
+import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareReleaseAction } from "~/components/actions/share";
 import { UpdateReleaseIllustrationAction } from "~/components/actions/update-illustration";
@@ -126,7 +126,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						queryClient,
 						props.release.id,
 					),
-					RefreshReleaseMetadataAction(props.release.id, t),
+					RefreshAlbumMetadataAction(props.release.albumId, t),
 				],
 				[
 					DownloadReleaseAction(

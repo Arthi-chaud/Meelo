@@ -34,7 +34,7 @@ import {
 	PlayAfterAction,
 	PlayNextAction,
 } from "~/components/actions/playlist";
-import { RefreshTrackMetadataAction } from "~/components/actions/refresh-metadata";
+import { RefreshSongMetadataAction } from "~/components/actions/refresh-metadata";
 import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShareSongAction } from "~/components/actions/share";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
@@ -93,7 +93,9 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 						? [ChangeSongType(props.track.song, queryClient)]
 						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
-					RefreshTrackMetadataAction(props.track.id, t),
+					...(props.track.songId
+						? [RefreshSongMetadataAction(props.track.songId, t)]
+						: []),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],
 				[

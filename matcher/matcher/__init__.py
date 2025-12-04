@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -19,34 +20,44 @@ from matcher.mq import (
 from .models.event import Event
 
 
+match_lock = asyncio.Lock()
+
+
 async def consume(message: DeliveredMessage, channel: AbstractChannel):
     event = Event.from_json(message.body)
-    ctx = Context.get()
-    ctx.pending_items_count = await get_queue_size()
-    if ctx.pending_items_count == 0:
-        ctx.clear_handled_items_count()
     delivery_tag = message.delivery_tag
     logging.info(f"Received event: {event}")
-    ctx.current_item = CurrentItem(name=event.name, type=event.type, id=event.id)
-    match event.type:
-        case "artist":
-            await match_and_post_artist(event.id, event.name)
-            ctx.increment_handled_items_count()
-            pass
-        case "album":
-            await match_and_post_album(event.id, event.name)
-            ctx.increment_handled_items_count()
-            pass
-        case "song":
-            await match_and_post_song(event.id, event.name)
-            ctx.increment_handled_items_count()
-            pass
-        case _:
-            logging.warning("No handler for event " + event.type)
-            pass
+    await match(event.type, event.name, event.id)
     if delivery_tag is not None:
         await channel.basic_ack(delivery_tag)
-    ctx.current_item = None
+
+
+async def match(resourceType: str, resourceName: str, resourceId: int):
+    async with match_lock:
+        ctx = Context.get()
+        ctx.current_item = CurrentItem(
+            name=resourceName, type=resourceType, id=resourceId
+        )
+        ctx.pending_items_count = await get_queue_size()
+        if ctx.pending_items_count == 0:
+            ctx.clear_handled_items_count()
+        match resourceType:
+            case "artist":
+                await match_and_post_artist(resourceId, resourceName)
+                ctx.increment_handled_items_count()
+                pass
+            case "album":
+                await match_and_post_album(resourceId, resourceName)
+                ctx.increment_handled_items_count()
+                pass
+            case "song":
+                await match_and_post_song(resourceId, resourceName)
+                ctx.increment_handled_items_count()
+                pass
+            case _:
+                logging.warning("No handler for resource with type " + resourceType)
+                pass
+        ctx.current_item = None
 
 
 app = FastAPI(
@@ -98,7 +109,7 @@ async def error_handler(_: Request, exc: ErrorResponse):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-async def get_user(req: Request) -> User:
+async def get_user_token(req: Request) -> str:
     tokenHeader = req.headers.get("Auhtorization")
     tokenCookie = req.cookies.get("access_token")
     if tokenHeader is not None:
@@ -106,6 +117,10 @@ async def get_user(req: Request) -> User:
     token = tokenCookie or tokenHeader
     if not token:
         raise ErrorResponse("Missing token")
+    return token
+
+
+async def get_user(token: Annotated[str, Depends(get_user_token)]) -> User:
     user = await Context.get().client.get_user(token)
     if user is None:
         raise ErrorResponse("Invalid token")
@@ -137,3 +152,37 @@ async def queue(
         handled_items=ctx.handled_items_count,
         current_item=ctx.current_item,
     )
+
+
+class MatchDTO(BaseModel):
+    artistId: int | None = None
+    albumId: int | None = None
+    songId: int | None = None
+
+
+@app.post(
+    "/match",
+    summary="Refresh external metadata for the given resource",
+    tags=["Endpoints"],
+)
+async def rematch(
+    _: Annotated[User, Depends(get_admin_user)],
+    token: Annotated[str, Depends(get_user_token)],
+    dto: MatchDTO,
+) -> None:
+    if not dto.artistId and not dto.albumId and not dto.songId:
+        raise ErrorResponse("Empty DTO")
+    # Intentionally not checking if more than one field is set in the DTO
+    ctx = Context.get()
+    try:
+        if dto.artistId:
+            artist = await ctx.client.get_artist(dto.artistId, token)
+            await match("artist", artist.name, artist.id)
+        if dto.albumId:
+            album = await ctx.client.get_album(dto.albumId, token)
+            await match("album", album.name, album.id)
+        if dto.songId:
+            song = await ctx.client.get_song(dto.songId, token)
+            await match("song", song.name, song.id)
+    except Exception as e:
+        raise ErrorResponse(e.__str__())
