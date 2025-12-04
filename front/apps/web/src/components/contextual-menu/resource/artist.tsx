@@ -25,6 +25,7 @@ import {
 	GoToArtistSongsAction,
 } from "~/components/actions/link";
 import { AddToPlaylistAction } from "~/components/actions/playlist";
+import { RefreshArtistMetadataAction } from "~/components/actions/refresh-metadata";
 import { ShareArtistAction } from "~/components/actions/share";
 import { UpdateArtistIllustrationAction } from "~/components/actions/update-illustration";
 import { ContextualMenu } from "..";
@@ -52,7 +53,13 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 						queryClient,
 					),
 				],
-				[UpdateArtistIllustrationAction(queryClient, props.artist.id)],
+				[
+					UpdateArtistIllustrationAction(
+						queryClient,
+						props.artist.id,
+					),
+					RefreshArtistMetadataAction(props.artist.id, t),
+				],
 				[ShareArtistAction(artistSlug, t)],
 			]}
 		/>

@@ -27,7 +27,7 @@ async def consume(message: DeliveredMessage, channel: AbstractChannel):
     event = Event.from_json(message.body)
     delivery_tag = message.delivery_tag
     logging.info(f"Received event: {event}")
-    await match(event.name, event.type, event.id)
+    await match(event.type, event.name, event.id)
     if delivery_tag is not None:
         await channel.basic_ack(delivery_tag)
 

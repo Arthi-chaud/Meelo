@@ -166,6 +166,23 @@ export default class API {
 		});
 	}
 
+	//// External Metadata
+	async refreshExternalMetadata(
+		dto: Partial<
+			Record<"artistId" | "albumId" | "songId", number | undefined>
+		>,
+	): Promise<void> {
+		return this.fetch({
+			route: `/match`,
+			errorMessage: "Refreshing Metadata Failed",
+			parameters: {},
+			data: dto,
+			service: Service.Matcher,
+			method: "POST",
+			emptyResponse: true,
+		});
+	}
+
 	//// Tasks
 
 	async cleanLibraries(): Promise<TaskResponse> {
@@ -213,7 +230,7 @@ export default class API {
 		});
 	}
 
-	async refreshMetadata(
+	async refreshLocalMetadata(
 		parentResourceType: "library" | "album" | "song" | "release" | "track",
 		resourceSlugOrId: number | string,
 		force: boolean,

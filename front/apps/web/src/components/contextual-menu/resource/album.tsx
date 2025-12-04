@@ -64,7 +64,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 					: [],
 				[
 					ChangeAlbumType(props.album, queryClient),
-					RefreshAlbumMetadataAction(albumSlug, t),
+					RefreshAlbumMetadataAction(props.album.id, t),
 				],
 				[
 					DownloadReleaseAsyncAction(

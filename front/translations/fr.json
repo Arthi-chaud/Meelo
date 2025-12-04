@@ -374,6 +374,8 @@
 		"cleanLibraries": "Nettoyer les Bibliothèques",
 		"refresh": "Rafraîchir",
 		"refreshMetadata": "Rafraîchir les métadonnées",
+		"refreshLocalMetadata": "Rafraîchir les métadonnées locales",
+		"refreshExternalMetadata": "Rafraîchir les métadonnées externes",
 		"refreshMetadataForm": {
 			"forceLabel": "Force le scan si les fichiers n'ont pas changé"
 		},
