@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { FlashList } from "@shopify/flash-list";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView } from "react-native";
+import { ScrollView, type ScrollViewProps } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbums,
@@ -27,8 +28,8 @@ import {
 	getReleases,
 	getSongs,
 } from "@/api/queries";
-import type { AlbumSortingKey } from "@/models/album";
-import type { ArtistSortingKey } from "@/models/artist";
+import type { AlbumSortingKey, AlbumWithRelations } from "@/models/album";
+import type { ArtistSortingKey, ArtistWithRelations } from "@/models/artist";
 import type Genre from "@/models/genre";
 import type { SongSortingKey } from "@/models/song";
 import { generateArray } from "@/utils/gen-list";
@@ -38,9 +39,8 @@ import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
 import ReleaseTile from "~/components/item/resource/release";
-import { Row } from "~/components/row";
-import { SafeScrollView } from "~/components/safe-view";
-import { SongGrid } from "~/components/song-grid";
+import { Row, type RowProps } from "~/components/row";
+import { SongGrid, type SongGridProps } from "~/components/song-grid";
 import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
@@ -57,6 +57,22 @@ const styles = StyleSheet.create((theme) => ({
 		marginBottom: theme.gap(1),
 	},
 }));
+
+type HomePageSection =
+	| { type: "tileRow"; props: RowProps<any> }
+	| { type: "genreRow"; props: ScrollViewProps }
+	| { type: "songGrid"; props: SongGridProps };
+
+const renderHomePageSection = (s: HomePageSection) => {
+	switch (s.type) {
+		case "songGrid":
+			return <SongGrid {...s.props} />;
+		case "tileRow":
+			return <Row {...s.props} />;
+		case "genreRow":
+			return <ScrollView {...s.props} />;
+	}
+};
 
 export default function Root() {
 	const { t } = useTranslation();
@@ -118,101 +134,122 @@ export default function Root() {
 			newlyAddedReleases.data,
 		],
 	);
-	return (
-		<SafeScrollView contentContainerStyle={[styles.main]}>
-			<Row
-				header={t("home.newlyAddedAlbums")}
-				items={sync(newlyAddedAlbums.items)}
-				render={(album) => {
-					return <AlbumTile album={album} subtitle="artistName" />;
-				}}
-				seeMore={
-					newlyAddedAlbums.hasNextPage
-						? {
-								pathname: "/albums",
-								params: {
-									sort: "addDate",
-									order: "desc",
-								} satisfies Sorting<AlbumSortingKey>,
-							}
-						: undefined
-				}
-			/>
 
-			<Row
-				header={t("home.newlyAddedArtists")}
-				items={sync(newlyAddedArtists.items)}
-				render={(artist) => {
+	const sections: HomePageSection[] = [
+		{
+			type: "tileRow",
+			props: {
+				header: t("home.newlyAddedAlbums"),
+				items: sync(newlyAddedAlbums.items),
+				render: (album) => {
+					return <AlbumTile album={album} subtitle="artistName" />;
+				},
+				seeMore: newlyAddedAlbums.hasNextPage
+					? {
+							pathname: "/albums",
+							params: {
+								sort: "addDate",
+								order: "desc",
+							} satisfies Sorting<AlbumSortingKey>,
+						}
+					: undefined,
+			} satisfies RowProps<AlbumWithRelations<"illustration" | "artist">>,
+		},
+		/* TODO Featured albums */
+		{
+			type: "tileRow",
+			props: {
+				header: t("home.newlyAddedArtists"),
+				items: sync(newlyAddedArtists.items),
+				render: (artist) => {
 					return <ArtistTile artist={artist} />;
-				}}
-				seeMore={
-					newlyAddedArtists.hasNextPage
-						? {
-								pathname: "/artists",
-								params: {
-									sort: "addDate",
-									order: "desc",
-								} satisfies Sorting<ArtistSortingKey>,
-							}
-						: undefined
-				}
-			/>
-			{/* TODO Featured albums */}
-
-			<Row
-				header={t("home.latestAlbums")}
-				items={sync(latestAlbums.items)}
-				render={(album) => {
+				},
+				seeMore: newlyAddedArtists.hasNextPage
+					? {
+							pathname: "/artists",
+							params: {
+								sort: "addDate",
+								order: "desc",
+							} satisfies Sorting<ArtistSortingKey>,
+						}
+					: undefined,
+			} satisfies RowProps<ArtistWithRelations<"illustration">>,
+		},
+		{
+			type: "tileRow",
+			props: {
+				header: t("home.latestAlbums"),
+				items: sync(latestAlbums.items),
+				render: (album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
-				}}
-				seeMore={
-					latestAlbums.hasNextPage
-						? {
-								pathname: "/albums",
-								params: {
-									sort: "releaseDate",
-									order: "desc",
-								} satisfies Sorting<AlbumSortingKey>,
-							}
-						: undefined
-				}
-			/>
-
-			<Row
-				header={t("home.newlyAddedReleases")}
-				items={sync(newlyAddedReleases.items)}
-				render={(release) => {
+				},
+				seeMore: latestAlbums.hasNextPage
+					? {
+							pathname: "/albums",
+							params: {
+								sort: "releaseDate",
+								order: "desc",
+							} satisfies Sorting<AlbumSortingKey>,
+						}
+					: undefined,
+			} satisfies RowProps<AlbumWithRelations<"illustration" | "artist">>,
+		},
+		{
+			type: "tileRow",
+			props: {
+				header: t("home.newlyAddedReleases"),
+				items: sync(newlyAddedReleases.items),
+				render: (release) => {
 					return <ReleaseTile release={release} />;
-				}}
-			/>
-
-			<ScrollView horizontal contentContainerStyle={styles.genreRow}>
-				<Text content={t("home.topGenres")} variant="h4" />
-				{(topGenres.items ?? generateArray(3, undefined)).map(
-					(genre: Genre | undefined, idx) => (
-						<GenreChip genre={genre} key={genre?.slug ?? idx} />
-					),
-				)}
-			</ScrollView>
-
-			<SongGrid
-				seeMore={
-					topSongs.hasNextPage
-						? {
-								pathname: "/songs",
-								params: {
-									sort: "userPlayCount",
-									order: "desc",
-								} satisfies Sorting<SongSortingKey>,
-							}
-						: undefined
-				}
-				hideIfEmpty
-				header={t("home.mostPlayedSongs")}
-				songs={sync(topSongs.data?.pages.at(0)?.items)}
-				subtitle={() => "artists"}
-				style={styles.lastSection}
-			/>
-		</SafeScrollView>
+				},
+			},
+		},
+		{
+			type: "genreRow",
+			props: {
+				horizontal: true,
+				contentContainerStyle: styles.genreRow,
+				children: (
+					<>
+						<Text content={t("home.topGenres")} variant="h4" />
+						{(topGenres.items ?? generateArray(3, undefined)).map(
+							(genre: Genre | undefined, idx) => (
+								<GenreChip
+									genre={genre}
+									key={genre?.slug ?? idx}
+								/>
+							),
+						)}
+					</>
+				),
+			},
+		},
+		{
+			type: "songGrid",
+			props: {
+				seeMore: topSongs.hasNextPage
+					? {
+							pathname: "/songs",
+							params: {
+								sort: "userPlayCount",
+								order: "desc",
+							} satisfies Sorting<SongSortingKey>,
+						}
+					: undefined,
+				hideIfEmpty: true,
+				header: t("home.mostPlayedSongs"),
+				songs: sync(topSongs.data?.pages.at(0)?.items),
+				subtitle: () => "artists",
+				style: styles.lastSection,
+			},
+		},
+	];
+	return (
+		<FlashList
+			data={sections}
+			getItemType={(t) => t.type}
+			renderItem={({ item }) => renderHomePageSection(item)}
+			contentContainerStyle={styles.main}
+		/>
 	);
 }
