@@ -8,7 +8,7 @@ import type Resource from "@/models/resource";
 import { EmptyState } from "~/components/empty-state";
 import { SectionHeader } from "./section-header";
 
-type Props<T> = {
+export type RowProps<T> = {
 	items?: (T | undefined)[];
 	header?: string;
 	style?: ViewStyle;
@@ -18,7 +18,7 @@ type Props<T> = {
 	hideIfEmpty?: true;
 };
 
-export const Row = <T extends Resource>({ items, ...props }: Props<T>) => {
+export const Row = <T extends Resource>({ items, ...props }: RowProps<T>) => {
 	const itemList = useMemo(() => {
 		return items ?? [undefined];
 	}, [items]);
@@ -34,7 +34,7 @@ const RowBase = <T extends Resource>({
 	render,
 	onEndReached,
 	seeMore,
-}: Props<T>) => {
+}: RowProps<T>) => {
 	const flatListRef = createRef<FlashListRef<unknown>>();
 	return (
 		(!hideIfEmpty || (items && items.length > 0)) && (
