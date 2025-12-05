@@ -40,12 +40,13 @@ import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
 import ReleaseTile from "~/components/item/resource/release";
 import { Row, type RowProps } from "~/components/row";
+import { SafeFlashList } from "~/components/safe-view";
 import { SongGrid, type SongGridProps } from "~/components/song-grid";
 import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
 const styles = StyleSheet.create((theme) => ({
-	main: { paddingTop: theme.gap(2), gap: theme.gap(2) },
+	main: { gap: theme.gap(2) },
 	lastSection: {
 		paddingBottom: theme.gap(1),
 	},
@@ -253,11 +254,11 @@ export default function Root() {
 		},
 	];
 	return (
-		<FlashList
+		<SafeFlashList
 			data={sections}
 			getItemType={(t) => t.type}
 			renderItem={({ item }) => renderHomePageSection(item)}
-			contentContainerStyle={styles.main}
+			contentContainerStyle={[styles.main]}
 		/>
 	);
 }
