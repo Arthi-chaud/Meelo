@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, type FlashListProps } from "@shopify/flash-list";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, type ScrollViewProps } from "react-native";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbums,
@@ -51,16 +51,20 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	title: { paddingLeft: theme.gap(2) },
 	genreRow: {
-		gap: theme.gap(1),
 		alignItems: "center",
-		paddingLeft: theme.gap(2),
+		paddingHorizontal: theme.gap(2),
+		paddingVertical: theme.gap(1),
 		marginBottom: theme.gap(1),
+	},
+	genreChip: {
+		paddingLeft: theme.gap(1.5),
+		alignItems: "center",
 	},
 }));
 
 type HomePageSection =
 	| { type: "tileRow"; props: RowProps<any> }
-	| { type: "genreRow"; props: ScrollViewProps }
+	| { type: "genreRow"; props: FlashListProps<Genre | undefined> }
 	| { type: "songGrid"; props: SongGridProps };
 
 const renderHomePageSection = (s: HomePageSection) => {
@@ -70,7 +74,7 @@ const renderHomePageSection = (s: HomePageSection) => {
 		case "tileRow":
 			return <Row {...s.props} />;
 		case "genreRow":
-			return <ScrollView {...s.props} />;
+			return <FlashList {...s.props} />;
 	}
 };
 
@@ -208,20 +212,24 @@ export default function Root() {
 			type: "genreRow",
 			props: {
 				horizontal: true,
-				contentContainerStyle: styles.genreRow,
-				children: (
-					<>
-						<Text content={t("home.topGenres")} variant="h4" />
-						{(topGenres.items ?? generateArray(3, undefined)).map(
-							(genre: Genre | undefined, idx) => (
-								<GenreChip
-									genre={genre}
-									key={genre?.slug ?? idx}
-								/>
-							),
-						)}
-					</>
+				data: topGenres.items ?? generateArray(3, undefined),
+
+				ListHeaderComponent: (
+					<Text content={t("home.topGenres")} variant="h4" />
 				),
+				CellRendererComponent: (props) => {
+					return (
+						<View
+							{...props}
+							style={[styles.genreChip, props.style]}
+						/>
+					);
+				},
+				renderItem: ({ item: genre, index }) => (
+					<GenreChip genre={genre} key={genre?.slug ?? index} />
+				),
+
+				contentContainerStyle: styles.genreRow,
 			},
 		},
 		{
