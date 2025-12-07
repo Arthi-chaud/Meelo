@@ -1,0 +1,31 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"schedule": [
+		"on wednesday"
+	],
+	"minimumReleaseAge": "7 days",
+	"packageRules": [
+		{
+			"matchDatasources": [
+				"docker"
+			],
+			"matchPackagePatterns": [
+				"meilisearch"
+			],
+			"allowedVersions": "<=1.5"
+		},
+		{
+			"matchDatasources": [
+				"docker"
+			],
+			"matchPackagePatterns": [
+				"postgres"
+			],
+			"allowedVersions": "3.14"
+		}
+	],
+	"postUpdateOptions": [
+		"gomodTidy",
+		"gomodUpdateImportPaths"
+	]
+}
