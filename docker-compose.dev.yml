@@ -153,7 +153,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres:alpine3.16
+    image: postgres:alpine3.14
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
