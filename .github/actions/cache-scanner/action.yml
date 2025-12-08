@@ -9,7 +9,7 @@ runs:
         $GOPATH/bin/swag init -d app -o ./app/docs
         sh dl_watcher.sh
       shell: bash
-    - uses: actions/setup-go@v5
+    - uses: actions/setup-go@v6
       with:
         check-latest: true
         go-version-file: "scanner/go.mod"

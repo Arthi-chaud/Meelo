@@ -1,11 +1,11 @@
 name: "Server"
 on:
   pull_request:
-    branches: [ main, v3 ]
+    branches: [main, v3]
   push:
-    branches: [ main, v3 ]
+    branches: [main, v3]
   release:
-    types: [ published ]
+    types: [published]
 
 defaults:
   run:
@@ -24,7 +24,7 @@ jobs:
       server: ${{ steps.filter.outputs.server }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-server
       - name: Install Dependencies
@@ -52,13 +52,13 @@ jobs:
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
     container: node:22-alpine3.20
     runs-on: ubuntu-latest
-    needs: [ Build ]
+    needs: [Build]
     permissions:
       contents: read
       pull-requests: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-server
       - name: Install Dependencies
@@ -68,7 +68,7 @@ jobs:
   Tests:
     runs-on: ubuntu-latest
     container: node:22-alpine3.20
-    needs: [ Build ]
+    needs: [Build]
     if: ${{ needs.changes.outputs.server == 'true' && always() }}
     env:
       NODE_OPTIONS: "--max_old_space_size=4096"
@@ -99,7 +99,7 @@ jobs:
           MEILI_MASTER_KEY: 1234
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-server
       - name: Install Dependencies
@@ -110,19 +110,19 @@ jobs:
         run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-report-server
           path: ./server/coverage
   Analysis:
-    needs: [ Tests ]
+    needs: [Tests]
     name: "Static Analysis"
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.server == 'true' && always() }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: coverage-report-server
           path: ./server/coverage
@@ -142,9 +142,9 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - uses: ./.github/actions/dockerize
-        with: 
+        with:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
           docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
