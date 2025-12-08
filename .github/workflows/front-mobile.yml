@@ -24,7 +24,7 @@ jobs:
       front: ${{ steps.filter.outputs.front }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -43,7 +43,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Check out the repo
-  #       uses: actions/checkout@v3
+  #       uses: actions/checkout@v5
   #     - name: Restore Dependencies
   #       uses: ./.github/actions/cache-front
   #     - name: Install Dependencies
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}

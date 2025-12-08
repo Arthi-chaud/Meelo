@@ -24,7 +24,7 @@ jobs:
       matcher: ${{ steps.filter.outputs.matcher }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-matcher
       - uses: jakebailey/pyright-action@v2
@@ -54,7 +54,7 @@ jobs:
     needs: [Typecheck]
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-matcher
       - run: pip install ruff
@@ -70,7 +70,7 @@ jobs:
       CI: "1"
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Restore Dependencies
         uses: ./.github/actions/cache-matcher
       - run: python3 -m pytest
@@ -83,7 +83,7 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - uses: ./.github/actions/dockerize
         with:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
