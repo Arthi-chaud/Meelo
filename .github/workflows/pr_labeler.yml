@@ -1,7 +1,7 @@
 # https://github.com/marketplace/actions/labeler#create-workflow
 name: "Pull Request Labeler"
 on:
-- pull_request_target
+  - pull_request_target
 
 jobs:
   labeler:
@@ -10,7 +10,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
-    - uses: actions/labeler@v5
-      with:
-        configuration-path: .github/pr_labeler.yml
+      - uses: actions/checkout@v5
+      - uses: actions/labeler@v6
+        with:
+          configuration-path: .github/pr_labeler.yml
