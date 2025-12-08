@@ -1,45 +1,45 @@
-name: 'Dockerisation'
-description: 'Build using Docker, and publish if necessary'
+name: "Dockerisation"
+description: "Build using Docker, and publish if necessary"
 inputs:
-  docker-username: 
-    description: 'Username to publish Docker image under'
+  docker-username:
+    description: "Username to publish Docker image under"
     required: true
-  docker-token: 
-    description: 'Token to publish Docker image'
+  docker-token:
+    description: "Token to publish Docker image"
     required: true
   github-token:
-    description: 'GitHub Token'
+    description: "GitHub Token"
     required: true
-  image-suffix: 
+  image-suffix:
     description: "Suffix to 'meelo-'"
     required: true
-  publish: 
-    description: 'Publish to registry'
-    default: 'false'
-  context: 
-    description: 'Directory of the Dockerfile'
+  publish:
+    description: "Publish to registry"
+    default: "false"
+  context:
+    description: "Directory of the Dockerfile"
     required: true
 
 runs:
   using: "composite"
-  steps: 
+  steps:
     - name: Check out the repo
       uses: actions/checkout@v5
-    - name: Get Tag 
-      shell: bash 
+    - name: Get Tag
+      shell: bash
       if: ${{ github.event_name == 'release' }}
-      run : echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-    - name: Get Commit 
-      shell: bash 
+      run: echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+    - name: Get Commit
+      shell: bash
       if: ${{ github.event_name != 'release' }}
-      run : echo "VERSION=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})" >> $GITHUB_ENV
+      run: echo "VERSION=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})" >> $GITHUB_ENV
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         username: ${{ inputs.docker-username }}
         password: ${{ inputs.docker-token }}
     - name: Log in to the GitHub Container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -50,15 +50,15 @@ runs:
       uses: docker/setup-buildx-action@v3
     - name: Extract metadata (tags, labels) for Docker
       id: meta
-      uses: docker/metadata-action@v4
+      uses: docker/metadata-action@v5
       with:
         images: |
           arthichaud/meelo-${{ inputs.image-suffix }}
           ghcr.io/${{ github.repository }}-${{ inputs.image-suffix }}
     - name: Build and push Docker images
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v6
       with:
-        context: ${{ inputs.context }} 
+        context: ${{ inputs.context }}
         platforms: ${{ (inputs.publish == 'true' || inputs.publish == true) && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
         push: ${{ inputs.publish == 'true' || inputs.publish == true }}
         cache-from: type=gha
