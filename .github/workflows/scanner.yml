@@ -81,7 +81,7 @@ jobs:
         run: go test ./... -coverprofile=coverage.out
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-report-scanner
           path: ./scanner/coverage.out
@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: coverage-report-scanner
           path: ./scanner
