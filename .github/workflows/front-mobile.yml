@@ -89,7 +89,7 @@ jobs:
         run: yarn workspaces focus -A
       # https://github.com/thomasread99/expo-workflows/blob/cd3a0efc7ff3cfa83dec9b03f7bb078d78f46b88/android/android-apk-build.yml#L19C7-L23C34
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "temurin"
