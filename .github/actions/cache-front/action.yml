@@ -1,21 +1,21 @@
-name: 'Cache (Front)'
-description: 'Cache for Front'
+name: "Cache (Front)"
+description: "Cache for Front"
 runs:
   using: "composite"
   steps:
     - name: Setup node
-      uses: actions/setup-node@v4.0.2
+      uses: actions/setup-node@v4.4.0
       with:
         node-version: 22.x
     - name: Cache
       uses: actions/cache@v4
       with:
-          path: |
-            ./front/node_modules
-            ./front/apps/web/.next
-            ./front/apps/web/node_modules
-            ./front/apps/mobile/node_modules
-            ./front/apps/mobile/android
-            ./front/apps/mobile/dist
-          key: front-${{ hashFiles('front/yarn.lock') }}
-          restore-keys: front-
+        path: |
+          ./front/node_modules
+          ./front/apps/web/.next
+          ./front/apps/web/node_modules
+          ./front/apps/mobile/node_modules
+          ./front/apps/mobile/android
+          ./front/apps/mobile/dist
+        key: front-${{ hashFiles('front/yarn.lock') }}
+        restore-keys: front-
