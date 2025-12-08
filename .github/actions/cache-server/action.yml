@@ -7,7 +7,7 @@ runs:
       shell: sh
       run: apk add --update --no-progress tar
     - name: Cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
           path: |
             ./server/node_modules
