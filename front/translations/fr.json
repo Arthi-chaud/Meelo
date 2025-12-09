@@ -14,8 +14,8 @@
 			"seeSongs": "Voir les morceaux"
 		},
 		"changeIllutration": "Changer l'illustration",
-		"create": "Créer",
 		"connectToNewServer": "Se connecter à un nouveau server",
+		"create": "Créer",
 		"delete": "Supprimer",
 		"deleteFromPlaylist": "Supprimer de la playlist",
 		"deleteUser": {
@@ -111,11 +111,11 @@
 		"topVideos": "Meilleurs Clips Vidéos"
 	},
 	"auth": {
+		"connectButton": "Se connecter au server",
 		"loginButton": "Se connecter",
 		"signin": "On s'est déjà vu ? Connectez-vous",
 		"signup": "Nouveau ici ? Inscrivez-vous",
-		"signupButton": "Créer le compte",
-		"connectButton": "Se connecter au server"
+		"signupButton": "Créer le compte"
 	},
 	"browsing": {
 		"controls": {
@@ -124,9 +124,9 @@
 			"changeLayout": "Changer la disposition",
 			"desc": "Desc.",
 			"filter": {
-				"header": "Filtrer",
 				"allLibraries": "Toutes librairies",
 				"allTypes": "Tous Types",
+				"header": "Filtrer",
 				"nTypes": "{{n}} Types"
 			},
 			"groupVersions": "Grouper les versions",
@@ -205,6 +205,9 @@
 		"confirm": "Confirmer",
 		"done": "OK",
 		"edit": "Changer",
+		"illustration": {
+			"url": "Entrez l'URL de la nouvelle illustration"
+		},
 		"library": {
 			"nameIsRequired": "Le nom est obligatoire",
 			"nameOfLibrary": "Nom de la bibliothèque",
@@ -302,10 +305,11 @@
 				"pending": "En attente"
 			}
 		},
+		"manageFromWebApp": "Gérer les librairies et les utilisateurs depuis l'application web",
 		"ui": {
 			"account": {
-				"header": "Compte",
-				"changePassword": "Changer le mot de passe"
+				"changePassword": "Changer le mot de passe",
+				"header": "Compte"
 			},
 			"autoMode": "Thème Automatique",
 			"colorScheme": "Thème",
@@ -319,11 +323,13 @@
 			},
 			"keyboardBindings": "Raccourcis Clavier",
 			"lang": {
+				"da": "Danois",
 				"de": "Allemand",
 				"en": "Anglais",
 				"fr": "Français",
 				"id": "Indonésien",
 				"it": "Italien",
+				"pt": "Portugais",
 				"pt_br": "Portugais (Brésil)",
 				"ru": "Russe"
 			},
@@ -373,9 +379,9 @@
 		"clean": "Nettoyer",
 		"cleanLibraries": "Nettoyer les Bibliothèques",
 		"refresh": "Rafraîchir",
-		"refreshMetadata": "Rafraîchir les métadonnées",
-		"refreshLocalMetadata": "Rafraîchir les métadonnées locales",
 		"refreshExternalMetadata": "Rafraîchir les métadonnées externes",
+		"refreshLocalMetadata": "Rafraîchir les métadonnées locales",
+		"refreshMetadata": "Rafraîchir les métadonnées",
 		"refreshMetadataForm": {
 			"forceLabel": "Force le scan si les fichiers n'ont pas changé"
 		},
