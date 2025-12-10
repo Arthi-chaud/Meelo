@@ -4,6 +4,9 @@
 		"on wednesday"
 	],
 	"minimumReleaseAge": "7 days",
+	"patch": {
+		"enabled": false
+	},
 	"packageRules": [
 		{
 			"matchDatasources": [
