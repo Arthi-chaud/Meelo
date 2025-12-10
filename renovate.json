@@ -22,6 +22,66 @@
 				"postgres"
 			],
 			"allowedVersions": "3.14"
+		},
+		{
+			"matchPackageNames": [
+				"/@nestjs/"
+			],
+			"groupName": "nestjs",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/^expo$/",
+				"/expo-/",
+				"/@expo\//",
+				"react-native"
+			],
+			"groupName": "expo",
+			"schedule": [
+				"* * 2 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/@mui\//"
+			],
+			"groupName": "mui",
+			"schedule": [
+				"* * 2 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/@prisma\//",
+				"/prisma-/",
+				"/^prisma@/"
+			],
+			"groupName": "prisma",
+			"schedule": [
+				"* * 2 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/^jest/",
+				"/^ts-jest@/"
+			],
+			"groupName": "jest",
+			"schedule": [
+				"* * 2 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/@tanstack\//"
+			],
+			"groupName": "react-query",
+			"schedule": [
+				"* * 1 * *"
+			]
 		}
 	],
 	"postUpdateOptions": [
