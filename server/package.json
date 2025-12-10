@@ -73,7 +73,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.1.3",
-		"@golevelup/ts-jest": "^0.7.0",
 		"@nestjs/cli": "^11.0.10",
 		"@nestjs/schematics": "^11.0.0",
 		"@nestjs/testing": "^11.1.5",
@@ -94,11 +93,11 @@
 		"@types/passport-local": "^1.0.34",
 		"@types/slug": "^5.0.3",
 		"@types/supertest": "^6.0.3",
-		"jest": "^30.0.5",
+		"jest": "^30.2.0",
 		"prisma-types-generator": "^1.3.2",
 		"source-map-support": "^0.5.20",
 		"supertest": "^7.1.4",
-		"ts-jest": "^29.4.1",
+		"ts-jest": "^29.4.6",
 		"ts-loader": "^9.5.2",
 		"ts-node": "^10.0.0",
 		"tsconfig-paths": "^3.10.1",
@@ -119,6 +118,9 @@
 		"modulePaths": [
 			"<rootDir>",
 			"src"
+		],
+		"modulePathIgnorePatterns": [
+			"<rootDir>/dist"
 		],
 		"testRegex": ".*\\.spec\\.ts$",
 		"transform": {
