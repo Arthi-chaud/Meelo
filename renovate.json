@@ -57,7 +57,7 @@
 			"matchPackageNames": [
 				"/@prisma\//",
 				"/prisma-/",
-				"/^prisma@/"
+				"/^prisma$/"
 			],
 			"groupName": "prisma",
 			"schedule": [
@@ -82,6 +82,14 @@
 			"schedule": [
 				"* * 1 * *"
 			]
+		},
+		{
+			"matchPackageNames": [
+				"/^slug$/",
+				"/^@types/slug$/"
+			],
+			"groupName": "slug",
+			"enabled": false
 		}
 	],
 	"postUpdateOptions": [
