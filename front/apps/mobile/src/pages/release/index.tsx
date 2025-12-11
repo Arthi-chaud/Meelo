@@ -1,7 +1,8 @@
+import { FlashList } from "@shopify/flash-list";
 import { useSetAtom } from "jotai";
-import { useCallback, useMemo } from "react";
+import { type ComponentProps, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View, type ViewStyle } from "react-native";
+import { View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbum,
@@ -12,6 +13,7 @@ import {
 } from "@/api/queries";
 import type Album from "@/models/album";
 import type Genre from "@/models/genre";
+import type { SongWithRelations } from "@/models/song";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
@@ -48,6 +50,61 @@ import {
 } from "./queries";
 import { Tracklist } from "./tracklist";
 
+type ReleasePageSection =
+	| {
+			type: "header";
+			props: ComponentProps<typeof Header>;
+	  }
+	| {
+			type: "tracklist";
+			props: ComponentProps<typeof Tracklist>;
+	  }
+	| {
+			type: "genre-row";
+			props: ComponentProps<typeof GenreRow>;
+	  }
+	| {
+			type: "row";
+			props: ComponentProps<typeof Row>;
+	  }
+	| {
+			type: "song-grid";
+			props: ComponentProps<typeof SongGrid>;
+	  }
+	| {
+			type: "extra-section";
+			props: ComponentProps<typeof ExtraSection>;
+	  }
+	| {
+			type: "external-description";
+			props: ComponentProps<typeof ExternalMetadataDescriptionSection>;
+	  }
+	| {
+			type: "external-source";
+			props: ComponentProps<typeof ExternalMetadataSourcesSection>;
+	  };
+
+const renderSection = (section: ReleasePageSection) => {
+	switch (section.type) {
+		case "header":
+			return <Header {...section.props} />;
+		case "tracklist":
+			return <Tracklist {...section.props} />;
+		case "genre-row":
+			return <GenreRow {...section.props} />;
+		case "row":
+			return <Row {...section.props} />;
+		case "song-grid":
+			return <SongGrid {...section.props} />;
+		case "extra-section":
+			return <ExtraSection {...section.props} />;
+		case "external-source":
+			return <ExternalMetadataSourcesSection {...section.props} />;
+		case "external-description":
+			return <ExternalMetadataDescriptionSection {...section.props} />;
+	}
+};
+
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
 	const { data: release } = useQuery(() =>
 		getRelease(releaseId, ["illustration", "discs"]),
@@ -77,43 +134,48 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 				})) ?? []
 		);
 	}, [tracks_]);
+	const postSections = usePostTracklistSections({
+		releaseId: release?.id,
+		album: album,
+		tracks: tracks_ ?? [],
+		albumArtistId: album?.artistId,
+	});
+	const sections: ReleasePageSection[] = [
+		{
+			type: "header",
+			props: {
+				isMixed: isMixed,
+				release: release,
+				album: album,
+				tracks: tracks,
+				totalDuration: totalDuration,
+			},
+		},
+		{
+			type: "tracklist",
+			props: {
+				// Note: We wait for the album to be loaded to avoid a shift in the tracklist
+				// if the song artist isn't the album's
+				albumArtistId: album?.artistId,
+				tracks: album ? tracks : undefined,
+				tracklist: album ? (tracklist as any) : undefined, // TODO Avoid cast
+				discs: album ? release?.discs : undefined,
+			},
+		},
+		...postSections,
+	];
 
 	useSetKeyIllustration(release);
 	return (
-		<>
-			<Header
-				isMixed={isMixed}
-				release={release}
-				album={album}
-				tracks={tracks}
-				totalDuration={totalDuration}
-			/>
-			<Tracklist
-				// Note: We wait for the album to be loaded to avoid a shift in the tracklist
-				// if the song artist isn't the album's
-				albumArtistId={album?.artistId}
-				tracks={album ? tracks : undefined}
-				tracklist={album ? (tracklist as any) : undefined} // TODO Avoid cast
-				discs={album ? release?.discs : undefined}
-			/>
-			{/* No need to mount this as long as the release is not loaded */}
-			{release !== undefined && (
-				<>
-					{/* TODO Show only exclusive tracks */}
-					{/* TODO Label */}
-					<PostTracklistSections
-						releaseId={release?.id}
-						album={album}
-						tracks={tracks_ ?? []}
-						albumArtistId={album?.artistId}
-					/>
-				</>
-			)}
-		</>
+		<FlashList
+			data={sections}
+			getItemType={({ type }) => type}
+			renderItem={({ item }) => renderSection(item)}
+		/>
 	);
 }
 
-const PostTracklistSections = ({
+const usePostTracklistSections = ({
 	album,
 	releaseId,
 	albumArtistId,
@@ -123,7 +185,7 @@ const PostTracklistSections = ({
 	releaseId: number | undefined;
 	albumArtistId: number | undefined | null;
 	tracks: TracklistItemWithRelations<"artist" | "featuring">[];
-}) => {
+}): ReleasePageSection[] => {
 	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const { data: featuringArtists } = useQuery(
@@ -188,150 +250,243 @@ const PostTracklistSections = ({
 			const cursor = items.findIndex(({ id }) => id === videoId);
 			playTracks({ tracks, cursor });
 		},
-		[],
+		[playTracks],
 	);
-	return (
-		<View style={styles.bottomSections}>
-			<GenreRow genres={genres} style={styles.section} />
-			<SongGrid
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.bonusTracks")}
+	const genreRow: ReleasePageSection = useMemo(
+		() => ({ type: "genre-row", props: { genres, style: styles.section } }),
+		[genres],
+	);
+	const bonusTracks: ReleasePageSection = useMemo(
+		() => ({
+			type: "song-grid",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.bonusTracks"),
 				// Avoid shift when bsides are loaded before main artist
-				songs={albumArtistId === undefined ? undefined : bSides}
-				parentArtistId={albumArtistId ?? undefined}
-				subtitle={
-					!bSides
-						? null
-						: (song) =>
-								song.artistId === albumArtistId &&
-								song.featuring.length === 0
-									? null
-									: "artists"
-				}
-			/>
+				songs: albumArtistId === undefined ? undefined : bSides,
+				parentArtistId: albumArtistId ?? undefined,
+				subtitle: !bSides
+					? null
+					: (song) =>
+							song.artistId === albumArtistId &&
+							song.featuring.length === 0
+								? null
+								: "artists",
+			},
+		}),
+		[albumArtistId, bSides],
+	);
+	const releasesSection: ReleasePageSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.otherAlbumReleases"),
+				items: relatedReleases,
+				render: (release) => <ReleaseTile release={release as any} />, // TODO avoid cast
+			},
+		}),
+		[relatedReleases],
+	);
 
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.otherAlbumReleases")}
-				items={relatedReleases}
-				render={(release) => <ReleaseTile release={release} />}
-			/>
-			{(
+	const videoSections: ReleasePageSection[] = useMemo(
+		() =>
+			(
 				[
 					["musicVideos", videos],
 					["livePerformances", liveVideos],
 				] as const
-			).map(([label, items]) => (
-				<Row
-					key={label}
-					hideIfEmpty
-					items={videoItems === undefined ? undefined : items}
-					header={t(`browsing.sections.${label}`)}
-					style={styles.section}
-					render={(video) => (
-						<VideoTile
-							onPress={() =>
-								video && onVideoPress(video.id, items)
-							}
-							illustrationProps={{
-								normalizedThumbnail: true,
-							}}
-							video={video}
-							subtitle="duration"
-						/>
-					)}
-				/>
-			))}
-			{videoItems === undefined ||
-				bSidesItems === undefined ||
-				((videoExtras.length > 0 || audioExtras.length > 0) && (
-					<View style={{ width: "100%" }}>
-						<SectionHeader
-							content={
-								videoItems === undefined ||
-								bSidesItems === undefined
-									? undefined
-									: t("browsing.sections.extras")
-							}
-							skeletonWidth={10}
-						/>
-
-						<Row
-							hideIfEmpty
-							items={
-								videoItems === undefined
-									? undefined
-									: videoExtras
-							}
-							render={(video) => (
+			).map(
+				([label, items]) =>
+					({
+						type: "row",
+						props: {
+							hideIfEmpty: true,
+							items: videoItems === undefined ? undefined : items,
+							header: t(`browsing.sections.${label}`),
+							style: styles.section,
+							render: (video) => (
 								<VideoTile
 									onPress={() =>
-										video &&
-										onVideoPress(video.id, videoExtras)
+										video && onVideoPress(video.id, items)
 									}
 									illustrationProps={{
 										normalizedThumbnail: true,
 									}}
-									video={video}
+									video={video as any}
 									subtitle="duration"
 								/>
-							)}
-						/>
-						<SongGrid
-							hideIfEmpty
-							subtitle={() => null}
-							songs={
-								bSidesItems === undefined
-									? undefined
-									: audioExtras
-							}
-						/>
-					</View>
-				))}
+							),
+						},
+					}) satisfies ReleasePageSection,
+			),
+		[videos, videoItems, liveVideos],
+	);
 
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.relatedAlbums")}
-				items={relatedAlbums}
-				render={(album) => <AlbumTile album={album} subtitle="year" />}
-			/>
+	const extraSection: ReleasePageSection | null = useMemo(() => {
+		if (
+			videoItems === undefined ||
+			bSidesItems === undefined ||
+			videoExtras.length > 0 ||
+			audioExtras.length > 0
+		) {
+			return {
+				type: "extra-section",
+				props: {
+					audioExtras: audioExtras,
+					videoExtras: videoExtras,
+					onVideoPress: (id: number) => onVideoPress(id, videoExtras),
+				},
+			};
+		}
+		return null;
+	}, [videoItems, bSidesItems, videoExtras, audioExtras]);
 
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.onThisAlbum")}
-				items={
+	const relatedAlbumsSection: ReleasePageSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.relatedAlbums"),
+				items: relatedAlbums,
+				render: (album) => (
+					<AlbumTile album={album as any} subtitle="year" />
+				),
+			},
+		}),
+		[relatedAlbums],
+	);
+	const relatedArtistsSection: ReleasePageSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.onThisAlbum"),
+				items:
 					// We don't want to list them until we know who the album artist is
 					albumArtistId === undefined
 						? undefined
 						: featuringArtists?.filter(
 								({ id }) => id !== albumArtistId,
-							)
+							),
+				render: (artist) => <ArtistTile artist={artist as any} />,
+			},
+		}),
+		[albumArtistId, featuringArtists],
+	);
+	const playlistsSection: ReleasePageSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("browsing.sections.featuredOnPlaylists"),
+				items: relatedPlaylists,
+				render: (playlist) => (
+					<PlaylistTile playlist={playlist as any} />
+				),
+			},
+		}),
+		[relatedPlaylists],
+	);
+	const externalMetadataSections: ReleasePageSection[] = useMemo(() => {
+		if (externalMetadata !== null) {
+			return [
+				{
+					type: "external-description",
+					props: {
+						externalMetadata: externalMetadata,
+						style: styles.section,
+					},
+				},
+
+				{
+					type: "external-source",
+					props: {
+						externalMetadata: externalMetadata,
+						style: styles.section,
+					},
+				},
+			];
+		}
+		return [];
+	}, [externalMetadata]);
+
+	return useMemo(
+		() =>
+			[
+				genreRow,
+				bonusTracks,
+				releasesSection,
+				...videoSections,
+				extraSection,
+				relatedAlbumsSection,
+				relatedArtistsSection,
+				playlistsSection,
+				...externalMetadataSections,
+			].filter((s): s is ReleasePageSection => s !== null),
+		[
+			genreRow,
+			bonusTracks,
+			releasesSection,
+			videoSections,
+			extraSection,
+			relatedAlbumsSection,
+			relatedArtistsSection,
+			playlistsSection,
+			externalMetadataSections,
+		],
+	);
+};
+
+type ExtraSectionProps = {
+	videoExtras:
+		| VideoWithRelations<"illustration" | "master" | "artist">[]
+		| undefined;
+	onVideoPress: (id: number) => void;
+	audioExtras:
+		| SongWithRelations<
+				"illustration" | "master" | "artist" | "featuring"
+		  >[]
+		| undefined;
+};
+
+const ExtraSection = ({
+	videoExtras,
+	onVideoPress,
+	audioExtras,
+}: ExtraSectionProps) => {
+	const { t } = useTranslation();
+	return (
+		<View style={styles.extraSection}>
+			<SectionHeader
+				content={
+					videoExtras === undefined && audioExtras === undefined
+						? undefined
+						: t("browsing.sections.extras")
 				}
-				render={(artist) => <ArtistTile artist={artist} />}
+				skeletonWidth={10}
 			/>
+
 			<Row
 				hideIfEmpty
-				style={styles.section}
-				header={t("browsing.sections.featuredOnPlaylists")}
-				items={relatedPlaylists}
-				render={(playlist) => <PlaylistTile playlist={playlist} />}
+				items={videoExtras}
+				render={(video) => (
+					<VideoTile
+						onPress={() => video && onVideoPress(video.id)}
+						illustrationProps={{
+							normalizedThumbnail: true,
+						}}
+						video={video}
+						subtitle="duration"
+					/>
+				)}
 			/>
-			{externalMetadata !== null && (
-				<>
-					<ExternalMetadataDescriptionSection
-						externalMetadata={externalMetadata}
-						style={styles.section}
-					/>
-					<ExternalMetadataSourcesSection
-						externalMetadata={externalMetadata}
-						style={styles.section}
-					/>
-				</>
-			)}
+			<SongGrid hideIfEmpty subtitle={() => null} songs={audioExtras} />
 		</View>
 	);
 };
@@ -348,19 +503,22 @@ const GenreRow = ({
 		return null;
 	}
 	return (
-		<ScrollView
+		<FlashList
 			horizontal
 			contentContainerStyle={styles.genreRow}
 			style={style}
-		>
-			<Text content={`${t("models.genre_plural")}:`} variant="subtitle" />
-
-			{(genres ?? generateArray(2)).map(
-				(genre: Genre | undefined, idx) => (
-					<GenreChip genre={genre} key={genre?.slug ?? idx} />
-				),
+			data={genres ?? generateArray(2)}
+			CellRendererComponent={(props) => (
+				<View {...props} style={[props.style, styles.genreChip]} />
 			)}
-		</ScrollView>
+			renderItem={({ item: genre }) => <GenreChip genre={genre} />}
+			ListHeaderComponent={
+				<Text
+					content={`${t("models.genre_plural")}:`}
+					variant="subtitle"
+				/>
+			}
+		/>
 	);
 };
 
@@ -374,8 +532,9 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: "flex-start",
 	},
 	genreRow: {
-		gap: theme.gap(1.5),
 		paddingHorizontal: theme.gap(2),
 		alignItems: "center",
 	},
+	extraSection: { width: "100%" },
+	genreChip: { paddingLeft: theme.gap(1) },
 }));
