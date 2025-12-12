@@ -1,3 +1,4 @@
+import { FlashList, type FlashListProps } from "@shopify/flash-list";
 import {
 	ScrollView,
 	type ScrollViewProps,
@@ -7,6 +8,29 @@ import {
 } from "react-native";
 
 import { useRootViewStyle } from "~/hooks/root-view-style";
+
+export const SafeFlashList = <T,>(
+	props: Omit<FlashListProps<T>, "contentContainerStyle"> & {
+		contentContainerStyle?: ViewStyle[];
+	},
+) => {
+	const { paddingTop, ...rootStyle } = useRootViewStyle();
+	return (
+		<FlashList
+			{...props}
+			contentContainerStyle={[
+				...(props.contentContainerStyle ?? []),
+				rootStyle,
+				{
+					paddingTop: mergePaddingTop(
+						paddingTop,
+						props.contentContainerStyle,
+					),
+				},
+			]}
+		/>
+	);
+};
 
 // ScrollView that adds padding at the top and bottom to avoid header + tabbar
 export const SafeScrollView = (

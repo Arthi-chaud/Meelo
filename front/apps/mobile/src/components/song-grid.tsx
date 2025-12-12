@@ -22,7 +22,7 @@ type Song = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"
 >;
 
-type Props = {
+export type SongGridProps = {
 	songs: Song[] | undefined;
 	style?: ViewStyle;
 	seeMore?: Href;
@@ -44,7 +44,7 @@ export const SongGrid = ({
 	seeMore,
 	parentArtistId,
 	...props
-}: Props) => {
+}: SongGridProps) => {
 	const playTracks = useSetAtom(playTracksAtom);
 	const scrollViewRef = createRef<ScrollView>();
 	const [columnWidth, setColumnWidth] = useState<number>();
