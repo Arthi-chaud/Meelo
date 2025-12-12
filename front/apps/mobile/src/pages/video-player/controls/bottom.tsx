@@ -58,7 +58,7 @@ const VideoName = () => {
 		<View>
 			<LoadableText
 				content={track?.track.name}
-				style={styles.text}
+				style={[styles.text, styles.titleText]}
 				variant="h4"
 				skeletonWidth={10}
 				numberOfLines={1}
@@ -113,6 +113,7 @@ const styles = StyleSheet.create((theme) => ({
 	illustration: {},
 	sliderColumn: { flex: 1, gap: theme.gap(1) },
 	text: { color: theme.colors.text.primary },
+	titleText: theme.fontStyles.semiBold,
 	progressRow: {
 		width: "100%",
 		flexDirection: "row",
