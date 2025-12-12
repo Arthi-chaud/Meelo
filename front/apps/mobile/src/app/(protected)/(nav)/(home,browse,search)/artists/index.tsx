@@ -16,8 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getArtists } from "@/api/queries";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useEffect } from "react";
+import { getArtists, getLabel } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
+import { useQuery } from "~/api";
 import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
@@ -33,8 +36,21 @@ export default function ArtistBrowseView() {
 		sortingKeys: ArtistSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
+
+	const { label: labelId } = useLocalSearchParams<{
+		label?: string;
+	}>();
 	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
+
+	const { data: label } = useQuery((labelId) => getLabel(labelId), labelId);
 	const Item = layout === "list" ? ArtistItem : ArtistTile;
+	const nav = useNavigation();
+
+	useEffect(() => {
+		if (labelId !== undefined) {
+			nav.setOptions({ headerTitle: label?.name ?? "" });
+		}
+	}, [labelId, label]);
 	return (
 		<InfiniteView
 			layout={layout}
@@ -44,7 +60,7 @@ export default function ArtistBrowseView() {
 				filters: [libraryFilterControl],
 			}}
 			query={getArtists(
-				{ library: libraries },
+				{ library: libraries, label: labelId },
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
 				["illustration"],
 			)}

@@ -51,6 +51,7 @@
 		"release": {
 			"setAllTracksAsMaster": "Set all tracks as Master"
 		},
+		"seeArtists": "Go To Artists",
 		"setAsMaster": "Set as Master",
 		"share": "Share",
 		"song": {
@@ -261,6 +262,7 @@
 		"genre": "Genre",
 		"genre_plural": "Genres",
 		"library_plural": "Libraries",
+		"label": "Record Label",
 		"lyrics": "Lyrics",
 		"playlist": "Playlist",
 		"playlist_plural": "Playlists",

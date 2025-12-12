@@ -51,6 +51,7 @@
 		"release": {
 			"setAllTracksAsMaster": "Promouvoir toutes les pistes"
 		},
+		"seeArtists": "Voir les Artistes",
 		"setAsMaster": "Promouvoir",
 		"share": "Partager",
 		"song": {
@@ -262,6 +263,7 @@
 		"externalLink_plural": "Liens Externes",
 		"genre": "Genre",
 		"genre_plural": "Genres",
+		"label": "Label",
 		"library_plural": "Bibliothèques",
 		"lyrics": "Paroles",
 		"playlist": "Playlist",

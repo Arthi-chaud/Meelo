@@ -13,6 +13,8 @@ import {
 } from "@/api/queries";
 import type Album from "@/models/album";
 import type Genre from "@/models/genre";
+import type Label from "@/models/label";
+import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
@@ -32,6 +34,7 @@ import {
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
+import { LabelChip } from "~/components/item/resource/label";
 import { PlaylistTile } from "~/components/item/resource/playlist";
 import ReleaseTile from "~/components/item/resource/release";
 import { VideoTile } from "~/components/item/resource/video";
@@ -80,6 +83,10 @@ type ReleasePageSection =
 			props: ComponentProps<typeof ExternalMetadataDescriptionSection>;
 	  }
 	| {
+			type: "label-footer";
+			props: ComponentProps<typeof RecordLabelSection>;
+	  }
+	| {
 			type: "external-source";
 			props: ComponentProps<typeof ExternalMetadataSourcesSection>;
 	  };
@@ -94,6 +101,8 @@ const renderSection = (section: ReleasePageSection) => {
 			return <GenreRow {...section.props} />;
 		case "row":
 			return <Row {...section.props} />;
+		case "label-footer":
+			return <RecordLabelSection {...section.props} />;
 		case "song-grid":
 			return <SongGrid {...section.props} />;
 		case "extra-section":
@@ -107,7 +116,7 @@ const renderSection = (section: ReleasePageSection) => {
 
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
 	const { data: release } = useQuery(() =>
-		getRelease(releaseId, ["illustration", "discs"]),
+		getRelease(releaseId, ["illustration", "discs", "label"]),
 	);
 
 	const { data: album } = useQuery(
@@ -135,7 +144,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 		);
 	}, [tracks_]);
 	const postSections = usePostTracklistSections({
-		releaseId: release?.id,
+		release,
 		album: album,
 		tracks: tracks_ ?? [],
 		albumArtistId: album?.artistId,
@@ -177,15 +186,16 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 
 const usePostTracklistSections = ({
 	album,
-	releaseId,
+	release,
 	albumArtistId,
 	tracks,
 }: {
 	album: Album | undefined;
-	releaseId: number | undefined;
+	release: ReleaseWithRelations<"label"> | undefined;
 	albumArtistId: number | undefined | null;
 	tracks: TracklistItemWithRelations<"artist" | "featuring">[];
 }): ReleasePageSection[] => {
+	const releaseId = release?.id;
 	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const { data: featuringArtists } = useQuery(
@@ -251,6 +261,19 @@ const usePostTracklistSections = ({
 			playTracks({ tracks, cursor });
 		},
 		[playTracks],
+	);
+	const labelFooter: ReleasePageSection | null = useMemo(
+		() =>
+			release?.label
+				? {
+						type: "label-footer",
+						props: {
+							style: styles.section,
+							label: release.label,
+						},
+					}
+				: null,
+		[release],
 	);
 	const genreRow: ReleasePageSection = useMemo(
 		() => ({ type: "genre-row", props: { genres, style: styles.section } }),
@@ -419,6 +442,7 @@ const usePostTracklistSections = ({
 	return useMemo(
 		() =>
 			[
+				labelFooter,
 				genreRow,
 				bonusTracks,
 				releasesSection,
@@ -430,6 +454,7 @@ const usePostTracklistSections = ({
 				...externalMetadataSections,
 			].filter((s): s is ReleasePageSection => s !== null),
 		[
+			labelFooter,
 			genreRow,
 			bonusTracks,
 			releasesSection,
@@ -491,6 +516,22 @@ const ExtraSection = ({
 	);
 };
 
+const RecordLabelSection = ({
+	style,
+	label,
+}: {
+	style: ViewStyle;
+	label: Label;
+}) => {
+	const { t } = useTranslation();
+	return (
+		<View style={[style, styles.labelSection]}>
+			<Text content={`${t("models.label")}:`} variant="subtitle" />
+			<LabelChip label={label} />
+		</View>
+	);
+};
+
 const GenreRow = ({
 	genres,
 	style,
@@ -535,6 +576,16 @@ const styles = StyleSheet.create((theme) => ({
 		paddingHorizontal: theme.gap(2),
 		alignItems: "center",
 	},
-	extraSection: { width: "100%" },
 	genreChip: { paddingLeft: theme.gap(1) },
+	extraSection: { width: "100%" },
+	labelSection: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: theme.gap(1),
+		paddingHorizontal: theme.gap(2),
+		paddingBottom: theme.gap(2.5),
+	},
+	labelText: {
+		textDecorationLine: "underline",
+	},
 }));
