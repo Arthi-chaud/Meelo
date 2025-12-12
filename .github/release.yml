@@ -5,8 +5,7 @@ changelog:
     - title: Exciting New Features 🎉
       labels:
         - Feature
-        - Basic
-    - title: Improvements, Optmizations & Enhancements 👍
+    - title: Improvements, Optimisations & Enhancements 👍
       labels:
         - Enhancement/Optimization
         - Layout
@@ -14,12 +13,12 @@ changelog:
       labels:
         - Bug
         - Fixes
-    - title: Documentation 📖
-      labels:
-        - Documentation
     - title: Security 🛡
       labels:
         - Security
+    - title: Documentation 📖
+      labels:
+        - Documentation
     - title: Deployment ⚙
       labels:
         - CI/CD
