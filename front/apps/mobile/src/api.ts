@@ -17,6 +17,7 @@
  */
 
 import { useAtomValue } from "jotai";
+import { useMemo } from "react";
 import API from "@/api";
 import {
 	mkUseInfiniteQuery,
@@ -31,10 +32,13 @@ import { currentInstanceAtom } from "./state/user";
 
 export const useAPI = () => {
 	const currentInstance = useAtomValue(currentInstanceAtom);
-	return getAPI_(
-		currentInstance?.accessToken ?? null,
-		currentInstance?.url ?? "",
-	);
+	const api = useMemo(() => {
+		return getAPI_(
+			currentInstance?.accessToken ?? null,
+			currentInstance?.url ?? "",
+		);
+	}, [currentInstance]);
+	return api;
 };
 
 // Get API instance using atom to resolve access token
@@ -68,7 +72,7 @@ export const useQuery = <
 	query: QueryFn<ReturnType, Transformed, Params>,
 	...queryParams: Partial<Params>
 ) => {
-	return mkUseQuery(getAPI, query, ...queryParams);
+	return mkUseQuery(useAPI, query, ...queryParams);
 };
 
 /**
@@ -96,4 +100,4 @@ export const useInfiniteQuery = <
 	return mkUseInfiniteQuery(useAPI, query, ...queryParams);
 };
 
-export const useQueryClient = () => mkUseQueryClient(getAPI);
+export const useQueryClient = () => mkUseQueryClient(useAPI);

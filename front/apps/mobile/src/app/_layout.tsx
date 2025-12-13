@@ -81,7 +81,11 @@ export default function RootLayout() {
 		() =>
 			new QueryClient({
 				defaultOptions: {
-					queries: DefaultQueryOptions,
+					queries: {
+						...DefaultQueryOptions,
+						refetchOnMount: false,
+						refetchOnWindowFocus: false,
+					},
 				},
 			}),
 	);

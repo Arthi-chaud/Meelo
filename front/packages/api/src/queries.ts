@@ -517,15 +517,10 @@ export const getSearchHistory = (): Query<SearchResult[]> => {
 /// Users
 
 export const getCurrentUserStatus = (): Query<User> => {
-	return {
-		key: ["users", "me"],
-		exec: (api) => () =>
-			api.fetch({
-				route: "/users/me",
-				parameters: {},
-				validator: User,
-			}),
-	};
+	return _mkSimpleQuery({
+		route: "/users/me",
+		validator: User,
+	});
 };
 
 export const getUsers = (

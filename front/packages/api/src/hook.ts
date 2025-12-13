@@ -23,7 +23,7 @@ import {
 	useQuery as useReactQuery,
 	useQueryClient as useReactQueryClient,
 } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import type Resource from "@/models/resource";
 import type API from ".";
 import {
@@ -49,11 +49,6 @@ export const mkUseQuery = <
 	);
 	const hook = useReactQuery(queryOpts);
 
-	useEffect(() => {
-		if (queryOpts.enabled) {
-			hook.refetch();
-		}
-	}, [api]);
 	return hook;
 };
 
@@ -76,13 +71,6 @@ export const mkUseQueries = <ReturnType, Params extends any[][]>(
 	);
 	const hook = useReactQueries({ queries: queryOpts });
 
-	useEffect(() => {
-		queryOpts.forEach((queryOpt, idx) => {
-			if (queryOpt.enabled) {
-				hook[idx].refetch();
-			}
-		});
-	}, [api]);
 	return hook;
 };
 
