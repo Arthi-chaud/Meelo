@@ -25,12 +25,14 @@ import {
 	IsDate,
 	IsDefined,
 	IsEnum,
+	IsInt,
 	IsNotEmpty,
 	IsNumber,
 	IsOptional,
 	IsPositive,
 	IsString,
 	Matches,
+	Min,
 	MinLength,
 } from "class-validator";
 
@@ -112,8 +114,8 @@ export default class Metadata {
 	 * Index of the track on the disc
 	 */
 	@ApiPropertyOptional()
-	@IsPositive()
-	@IsNumber()
+	@IsInt()
+	@Min(0)
 	@IsOptional()
 	index?: number;
 
