@@ -62,6 +62,7 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		return internal.Metadata{}, []error{err}
 	}
 	var metadata internal.Metadata
+	metadata.Index = -1
 	if bitrate, err := strconv.Atoi(probeData.Format.BitRate); err == nil {
 		metadata.Bitrate = int64(math.Floor(float64(bitrate) / float64(1000)))
 	} else {

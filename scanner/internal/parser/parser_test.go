@@ -136,7 +136,7 @@ func TestParserStandaloneTrack(t *testing.T) {
 	assert.Equal(t, int64(0), m.Duration)
 	assert.Equal(t, "", m.Release)
 	assert.Equal(t, int64(0), m.DiscIndex)
-	assert.Equal(t, int64(0), m.Index)
+	assert.Equal(t, int64(-1), m.Index)
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "Bad Romance", m.Name)
 }
