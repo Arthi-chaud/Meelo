@@ -58,6 +58,15 @@ export default class Metadata {
 	@ApiProperty()
 	artist: string;
 
+	/**
+	 * Sort Name of the artist of the track
+	 */
+	@ApiPropertyOptional()
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	sortArtist?: string;
+
 	@ApiPropertyOptional()
 	@IsArray()
 	@IsOptional()
@@ -72,6 +81,15 @@ export default class Metadata {
 	@IsNotEmpty()
 	@IsOptional()
 	albumArtist?: string;
+
+	/**
+	 * Sort Name of the artist of the parent album
+	 */
+	@ApiPropertyOptional()
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	sortAlbumArtist?: string;
 
 	/**
 	 * Name of the album of the track

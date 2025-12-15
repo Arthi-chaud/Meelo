@@ -70,6 +70,7 @@ export default class MetadataService {
 		const albumArtist = !metadata.compilation
 			? await this.artistService.getOrCreate({
 					name: metadata.albumArtist ?? metadata.artist!,
+					sortName: metadata.sortAlbumArtist,
 					registeredAt: file.registerDate,
 				})
 			: undefined;
@@ -91,6 +92,10 @@ export default class MetadataService {
 		}
 		const songArtist = await this.artistService.getOrCreate({
 			name: parsedArtistName,
+			sortName:
+				parsedArtistName !== metadata.artist
+					? undefined
+					: metadata.sortArtist,
 			registeredAt: file.registerDate,
 		});
 		const featuringArtists = await Promise.all(

@@ -126,7 +126,7 @@ export default class ArtistService extends SearchableRepositoryService {
 
 	async create(input: ArtistQueryParameters.CreateInput) {
 		const artistSlug = new Slug(input.name);
-		const artistSortName = getSortName(input.name);
+		const artistSortName = input.sortName ?? getSortName(input.name);
 		return this.prismaService.artist
 			.create({
 				data: {

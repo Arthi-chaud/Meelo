@@ -14,8 +14,12 @@ type Metadata struct {
 	IsCompilation bool
 	// Name of the artist of the track
 	Artist string `validate:"required"`
+	// Sort Name of the artist of the track
+	SortArtist string
 	// Name of the artist of the parent album
 	AlbumArtist string
+	// Sort Name of the album artist
+	SortAlbumArtist string
 	// Plain Lyrics of the song. One string == one line. Empty lines are line jumps
 	PlainLyrics  PlainLyrics
 	SyncedLyrics SyncedLyrics
