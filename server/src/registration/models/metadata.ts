@@ -101,6 +101,15 @@ export default class Metadata {
 	album?: string;
 
 	/**
+	 * Sort Name of the album
+	 */
+	@ApiPropertyOptional()
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	sortAlbum?: string;
+
+	/**
 	 * Name of the release of the track
 	 */
 	@ApiPropertyOptional()
@@ -117,6 +126,15 @@ export default class Metadata {
 	@IsNotEmpty()
 	@IsDefined()
 	name: string;
+
+	/**
+	 * Sort Name of the track
+	 */
+	@ApiPropertyOptional()
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	sortName?: string;
 
 	/**
 	 * Release date of the track

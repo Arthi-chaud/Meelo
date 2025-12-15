@@ -25,10 +25,14 @@ type Metadata struct {
 	SyncedLyrics SyncedLyrics
 	// Name of the album of the track
 	Album string
+	// Sort name of the track
+	SortAlbum string
 	// Name of the release of the track
 	Release string
 	// Name of the track
 	Name string `validate:"required"`
+	// Sort name of the track
+	SortName string
 	// Release date of the track
 	ReleaseDate *time.Time
 	// Index of the track on the disc

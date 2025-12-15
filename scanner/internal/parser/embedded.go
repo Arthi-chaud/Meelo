@@ -79,6 +79,9 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	})
 	ParseTag(tags, []string{"album"}, func(value string) {
 		metadata.Album = value
+		ParseTag(tags, []string{"sort_album"}, func(value string) {
+			metadata.SortAlbum = value
+		})
 	})
 	ParseTag(tags, []string{"album_artist", "albumartist"}, func(value string) {
 		metadata.AlbumArtist = value
@@ -88,6 +91,9 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	})
 	ParseTag(tags, []string{"title"}, func(value string) {
 		metadata.Name = value
+	})
+	ParseTag(tags, []string{"sort_name", "sort_title"}, func(value string) {
+		metadata.SortName = value
 	})
 	ParseTag(tags, []string{"label", "tpub", "publisher"}, func(value string) {
 		metadata.Label = value

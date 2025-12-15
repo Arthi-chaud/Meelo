@@ -120,7 +120,7 @@ export default class AlbumService extends SearchableRepositoryService {
 				? compilationAlbumArtistKeyword
 				: (await this.artistServce.get(album.artist)).slug;
 		const albumNameSlug = new Slug(album.name).toString();
-		const albumSortName = getSortName(album.name);
+		const albumSortName = album.sortName ?? getSortName(album.name);
 		return this.prismaService.album
 			.create({
 				data: {

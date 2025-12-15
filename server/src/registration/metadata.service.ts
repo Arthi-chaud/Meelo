@@ -93,7 +93,7 @@ export default class MetadataService {
 		const songArtist = await this.artistService.getOrCreate({
 			name: parsedArtistName,
 			sortName:
-				parsedArtistName !== metadata.artist
+				parsedArtistName !== metadata.artist // Ignore sort name if it contained featuring artists
 					? undefined
 					: metadata.sortArtist,
 			registeredAt: file.registerDate,
@@ -143,6 +143,11 @@ export default class MetadataService {
 				? await this.songService.getOrCreate(
 						{
 							name: parsedTrackName.parsedName,
+							sortName:
+								// Ignoring sort name if it contains featuring artists
+								parsedTrackName.parsedName !== metadata.name
+									? undefined
+									: metadata.sortName,
 							group: {
 								slug: songGroupSlug,
 							},
@@ -195,6 +200,7 @@ export default class MetadataService {
 						name: this.parserService.parseReleaseExtension(
 							metadata.album,
 						).parsedName,
+						sortName: metadata.sortAlbum,
 						artist: albumArtist
 							? { id: albumArtist?.id }
 							: undefined,
