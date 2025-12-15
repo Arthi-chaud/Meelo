@@ -182,6 +182,11 @@ export default class MetadataService {
 				? await this.videoService.getOrCreate(
 						{
 							name: videoName,
+							sortName:
+								// Ignore sort name if the name contains featuring artists
+								parsedSongName !== metadata.name
+									? undefined
+									: metadata.sortName,
 							type: videoType,
 							artist: { id: songArtist.id },
 							group: {
