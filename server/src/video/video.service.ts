@@ -77,7 +77,7 @@ export default class VideoService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		const artist = await this.artistService.get(data.artist);
-		const sortName = getSortName(data.name);
+		const sortName = data.sortName ?? getSortName(data.name);
 		const args = {
 			include: include ?? ({} as I),
 			data: {

@@ -70,6 +70,7 @@ export default class MetadataService {
 		const albumArtist = !metadata.compilation
 			? await this.artistService.getOrCreate({
 					name: metadata.albumArtist ?? metadata.artist!,
+					sortName: metadata.sortAlbumArtist,
 					registeredAt: file.registerDate,
 				})
 			: undefined;
@@ -91,6 +92,10 @@ export default class MetadataService {
 		}
 		const songArtist = await this.artistService.getOrCreate({
 			name: parsedArtistName,
+			sortName:
+				parsedArtistName !== metadata.artist // Ignore sort name if it contained featuring artists
+					? undefined
+					: metadata.sortArtist,
 			registeredAt: file.registerDate,
 		});
 		const featuringArtists = await Promise.all(
@@ -138,6 +143,11 @@ export default class MetadataService {
 				? await this.songService.getOrCreate(
 						{
 							name: parsedTrackName.parsedName,
+							sortName:
+								// Ignoring sort name if it contains featuring artists
+								parsedSongName !== metadata.name
+									? undefined
+									: metadata.sortName,
 							group: {
 								slug: songGroupSlug,
 							},
@@ -172,6 +182,11 @@ export default class MetadataService {
 				? await this.videoService.getOrCreate(
 						{
 							name: videoName,
+							sortName:
+								// Ignore sort name if the name contains featuring artists
+								parsedSongName !== metadata.name
+									? undefined
+									: metadata.sortName,
 							type: videoType,
 							artist: { id: songArtist.id },
 							group: {
@@ -190,6 +205,7 @@ export default class MetadataService {
 						name: this.parserService.parseReleaseExtension(
 							metadata.album,
 						).parsedName,
+						sortName: metadata.sortAlbum,
 						artist: albumArtist
 							? { id: albumArtist?.id }
 							: undefined,

@@ -44,6 +44,7 @@ namespace ArtistQueryParameters {
 		| "sortName"
 		| "sortSlug"
 	> & {
+		sortName?: string;
 		registeredAt?: Date;
 	};
 	/**

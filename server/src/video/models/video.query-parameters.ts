@@ -33,6 +33,7 @@ import type { RequireAtLeastOne, RequireExactlyOne } from "type-fest";
 namespace VideoQueryParameters {
 	export type CreateInput = {
 		name: string;
+		sortName?: string;
 		registeredAt?: Date;
 		artist: ArtistQueryParameters.WhereInput;
 		song?: SongQueryParameters.WhereInput;

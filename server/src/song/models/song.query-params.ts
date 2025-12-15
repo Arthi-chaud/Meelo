@@ -59,6 +59,7 @@ namespace SongQueryParameters {
 	> & {
 		artist: ArtistQueryParameters.WhereInput;
 		group: SongGroupQueryParameters.GetOrCreateInput;
+		sortName?: string;
 		featuring?: RequireExactlyOne<
 			Pick<ArtistQueryParameters.WhereInput, "slug">
 		>[];

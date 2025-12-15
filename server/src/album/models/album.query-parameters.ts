@@ -48,6 +48,7 @@ namespace AlbumQueryParameters {
 		class {
 			releaseDate?: Date;
 			registeredAt?: Date;
+			sortName?: string;
 			artist?: ArtistQueryParameters.WhereInput;
 		},
 	) {}

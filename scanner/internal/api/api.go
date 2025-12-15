@@ -117,16 +117,28 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	mp := multipart.NewWriter(reqBody)
 	mp.WriteField("compilation", strconv.FormatBool(m.IsCompilation))
 	mp.WriteField("artist", m.Artist)
+	if len(m.SortArtist) > 0 {
+		mp.WriteField("sortArtist", m.SortArtist)
+	}
 	if len(m.AlbumArtist) > 0 {
 		mp.WriteField("albumArtist", m.AlbumArtist)
+		if len(m.SortAlbumArtist) > 0 {
+			mp.WriteField("sortAlbumArtist", m.SortAlbumArtist)
+		}
 	}
 	if len(m.Album) > 0 {
 		mp.WriteField("album", m.Album)
+		if len(m.SortAlbum) > 0 {
+			mp.WriteField("sortAlbum", m.SortAlbum)
+		}
 	}
 	if len(m.Release) > 0 {
 		mp.WriteField("release", m.Release)
 	}
 	mp.WriteField("name", m.Name)
+	if len(m.SortName) > 0 {
+		mp.WriteField("sortName", m.SortName)
+	}
 	if m.ReleaseDate != nil {
 		mp.WriteField("releaseDate", (*m.ReleaseDate).Format(time.RFC3339))
 	}

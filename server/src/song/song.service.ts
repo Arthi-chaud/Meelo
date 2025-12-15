@@ -106,7 +106,7 @@ export default class SongService extends SearchableRepositoryService {
 			songNameSlug,
 			song.featuring,
 		).toString();
-		const songSortName = getSortName(song.name);
+		const songSortName = song.sortName ?? getSortName(song.name);
 		const args = {
 			data: {
 				slug: songUniqueSlug,
