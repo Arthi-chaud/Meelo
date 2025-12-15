@@ -80,3 +80,11 @@ func TestPathBPM(t *testing.T) {
 	assert.Equal(t, "My Track", m.Name)
 	assert.Equal(t, float64(140), m.Bpm)
 }
+func TestMissingTrackIndex(t *testing.T) {
+	path := "/data/Compilations/My Album (2006)/00 My Track.m4v"
+	m, _ := parseMetadataFromPath(getPathTestConfig(), path)
+
+	assert.Equal(t, "My Track", m.Name)
+	assert.Equal(t, int64(0), m.Index)
+	assert.Equal(t, int64(0), m.DiscIndex)
+}

@@ -52,6 +52,7 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 	var metadata internal.Metadata
 	var errors []error
 
+	metadata.Index = -1
 	if index := regex.SubexpIndex("AlbumArtist"); index != -1 {
 		metadata.AlbumArtist = matches[index]
 	}

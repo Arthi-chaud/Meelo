@@ -111,5 +111,8 @@ func Merge(m1 Metadata, m2 Metadata) (Metadata, error) {
 	if m1.ReleaseDate != nil && (*m1.ReleaseDate).Year() == 1 {
 		m1.ReleaseDate = m2.ReleaseDate
 	}
+	if m1.Index == -1 && m2.Index != -1 {
+		m1.Index = m2.Index
+	}
 	return m1, nil
 }
