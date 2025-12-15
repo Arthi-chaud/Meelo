@@ -145,7 +145,7 @@ export default class MetadataService {
 							name: parsedTrackName.parsedName,
 							sortName:
 								// Ignoring sort name if it contains featuring artists
-								parsedTrackName.parsedName !== metadata.name
+								parsedSongName !== metadata.name
 									? undefined
 									: metadata.sortName,
 							group: {

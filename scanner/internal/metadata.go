@@ -25,7 +25,7 @@ type Metadata struct {
 	SyncedLyrics SyncedLyrics
 	// Name of the album of the track
 	Album string
-	// Sort name of the track
+	// Sort name of the album
 	SortAlbum string
 	// Name of the release of the track
 	Release string
