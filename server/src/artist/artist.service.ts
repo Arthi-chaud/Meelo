@@ -414,7 +414,7 @@ export default class ArtistService extends SearchableRepositoryService {
 		sortingParameter.order ??= "asc";
 		switch (sortingParameter.sortBy) {
 			case "name":
-				return [{ slug: sortingParameter.order }, { id: "asc" }];
+				return [{ sortSlug: sortingParameter.order }, { id: "asc" }];
 			case "albumCount":
 				return [
 					{ albums: { _count: sortingParameter.order } },
