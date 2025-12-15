@@ -2,26 +2,28 @@
 
 changelog:
   categories:
-    - title: Exciting New Features 🎉
+    - title: 🎉 New Features
       labels:
         - Feature
-    - title: Improvements, Optimisations & Enhancements 👍
+    - title: 👍 Improvements, Optimisations & Enhancements
       labels:
         - Enhancement/Optimization
-        - Layout
-    - title: Fixes & Patches 🩹
+    - title: 🐛 Bug Fixes
       labels:
         - Bug
         - Fixes
-    - title: Security 🛡
+    - title: 🌐 Translations
+      labels:
+        - Translation
+    - title: 🛡 Security
       labels:
         - Security
-    - title: Documentation 📖
+    - title: 📖 Documentation
       labels:
         - Documentation
-    - title: Deployment ⚙
+    - title: 📤 Deployment
       labels:
         - CI/CD
-    - title: Other Changes 🔀
-      labels:
-        - "*"
+  exclude:
+    labels:
+      - release-note-ignore
