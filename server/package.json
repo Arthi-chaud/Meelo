@@ -69,7 +69,8 @@
 		"@prisma/internals": "6.2.1",
 		"form-data": "4.0.4",
 		"braces": "3.0.3",
-		"tar": "6.2.1"
+		"tar": "6.2.1",
+		"@jimp/core@npm:1.6.0": "patch:@jimp/core@npm%3A1.6.0#~/.yarn/patches/@jimp-core-npm-1.6.0-787392d238.patch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.1.3",
