@@ -147,4 +147,9 @@ describe("Illustration Service", () => {
 			]);
 		});
 	});
+
+	it("can handle big images (#1270)", async () => {
+		const img = fs.readFileSync("test/assets/bigcover.jpeg");
+		await illustrationService.getImageStats(img);
+	});
 });
