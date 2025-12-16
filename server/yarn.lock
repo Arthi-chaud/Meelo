@@ -1734,6 +1734,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jimp/core@patch:@jimp/core@npm%3A1.6.0#~/.yarn/patches/@jimp-core-npm-1.6.0-787392d238.patch":
+  version: 1.6.0
+  resolution: "@jimp/core@patch:@jimp/core@npm%3A1.6.0#~/.yarn/patches/@jimp-core-npm-1.6.0-787392d238.patch::version=1.6.0&hash=d6a3ba"
+  dependencies:
+    "@jimp/file-ops": "npm:1.6.0"
+    "@jimp/types": "npm:1.6.0"
+    "@jimp/utils": "npm:1.6.0"
+    await-to-js: "npm:^3.0.0"
+    exif-parser: "npm:^0.1.12"
+    file-type: "npm:^16.0.0"
+    mime: "npm:3"
+  checksum: 10c0/45181743011b8dc165fac79f2b52b213cb835e9e3919a64da173345b5418cdaecc0bd2c6ed24f95373272a44bbcd0574973cd0a610876bb88b51c69d2f1894ce
+  languageName: node
+  linkType: hard
+
 "@jimp/diff@npm:1.6.0":
   version: 1.6.0
   resolution: "@jimp/diff@npm:1.6.0"

@@ -219,7 +219,9 @@ export default class IllustrationService {
 	}
 
 	async getImageStats(buffer: Buffer): Promise<IllustrationStats> {
-		const image = await Jimp.read(buffer);
+		const image = await Jimp.read(buffer, {
+			"image/jpeg": { maxMemoryUsageInMB: 1024 },
+		});
 		const aspectRatio = image.width / image.height;
 
 		return Promise.all([
