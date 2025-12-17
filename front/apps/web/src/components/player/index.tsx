@@ -158,10 +158,9 @@ const Player = () => {
 			crossfade != null &&
 			nextTrackIsAudio &&
 			currentTrackIsAudio &&
-			!Number.isNaN(player!.current!.duration) &&
-			Math.abs(
-				player!.current!.currentTime - player!.current!.duration,
-			) <= crossfade
+			!Number.isNaN(player.current!.duration) &&
+			Math.abs(player.current!.currentTime - player.current!.duration) <=
+				crossfade
 		) {
 			const newId = throwawayAudioPlayer.current!.id;
 			throwawayAudioPlayer.current = document.getElementById(
@@ -191,6 +190,7 @@ const Player = () => {
 	};
 
 	const startPlayback = (isTrancoding: boolean) => {
+		// biome-ignore lint: false positive
 		player
 			?.current!.play()
 			.then(() => {
@@ -391,6 +391,7 @@ const Player = () => {
 			setDuration(currentTrack.track.duration ?? undefined);
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
+			// biome-ignore lint: false positive
 			player!.current!.src = api.getDirectStreamURL(
 				currentTrack.track.sourceFileId,
 			);

@@ -50,7 +50,10 @@ export async function middleware(request: NextRequest) {
 	if (pathname === "/albums" || pathname === "/albums/") {
 		return;
 	}
-	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1)!;
+	const albumId = pathname.match("/albums/(?<slug>[^/]*)")?.at(1);
+	if (albumId === null || albumId === undefined) {
+		return;
+	}
 	if (albumId === "compilations") {
 		return;
 	}

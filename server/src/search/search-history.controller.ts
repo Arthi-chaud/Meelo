@@ -107,6 +107,7 @@ export class SearchHistoryController {
 			pagination,
 		);
 		return Promise.all(
+			// biome-ignore lint: All cases are covered
 			history.map((item) => {
 				switch (getSearchResourceType(item)) {
 					case "video":

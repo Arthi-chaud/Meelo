@@ -87,6 +87,7 @@ export class SearchController {
 		}
 		const items = await this.searchService.search(query);
 		return Promise.all(
+			// biome-ignore lint: All cases are covered
 			items.map((item) => {
 				switch (getSearchResourceType(item)) {
 					case "video":

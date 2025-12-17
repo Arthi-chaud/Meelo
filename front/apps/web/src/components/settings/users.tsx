@@ -102,7 +102,9 @@ const UsersSettings = () => {
 					} else if (status.admin === false) {
 						toastMessages.push(t("toasts.users.nowNotAdmin"));
 					}
-					toastMessages.forEach((message) => toast.success(message));
+					toastMessages.forEach((message) => {
+						toast.success(message);
+					});
 					queryClient.client.invalidateQueries();
 				}),
 	});
