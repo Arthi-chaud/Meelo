@@ -4798,10 +4798,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/d3-array@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@types/d3-array@npm:3.0.3"
-  checksum: 10c0/4dddae293e6e16764f8e465539548454b202a0f325f7d1cd0777690c4598bd593b1fb952501421d771204988b1a10393cf062775d2fc23851b0dec96c92eb3a4
+"@types/d3-array@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "@types/d3-array@npm:3.2.2"
+  checksum: 10c0/6137cb97302f8a4f18ca22c0560c585cfcb823f276b23d89f2c0c005d72697ec13bca671c08e68b4b0cabd622e3f0e91782ee221580d6774074050be96dd7028
   languageName: node
   linkType: hard
 
@@ -13381,7 +13381,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.77.0"
     "@tanstack/react-query-devtools": "npm:^5.77.0"
     "@types/accept-language-parser": "npm:^1.5.3"
-    "@types/d3-array": "npm:^3.0.3"
+    "@types/d3-array": "npm:^3.2.2"
     "@types/node": "npm:18.7.7"
     "@types/react": "npm:~19.1.10"
     "@types/react-beautiful-dnd": "npm:^13.1.3"
