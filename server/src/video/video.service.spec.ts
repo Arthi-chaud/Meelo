@@ -203,7 +203,9 @@ describe("Video Service", () => {
 				video: { is: { id: dummyRepository.videoA1.id } },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
-			videoTracks.forEach((track) => expect(track.songId).toBe(null));
+			videoTracks.forEach((track) => {
+				expect(track.songId).toBe(null);
+			});
 		});
 
 		it("should set video back as video", async () => {
@@ -219,9 +221,9 @@ describe("Video Service", () => {
 				video: { is: { id: dummyRepository.videoA1.id } },
 			});
 			expect(videoTracks.length).toBeGreaterThanOrEqual(1);
-			videoTracks.forEach((track) =>
-				expect(track.songId).toBe(dummyRepository.songA1.id),
-			);
+			videoTracks.forEach((track) => {
+				expect(track.songId).toBe(dummyRepository.songA1.id);
+			});
 		});
 	});
 });

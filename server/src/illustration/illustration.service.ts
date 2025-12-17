@@ -99,6 +99,8 @@ export default class IllustrationService {
 		} catch {
 			/* empty */
 		}
+
+		// biome-ignore lint: All cases are covered
 		ImageQuality.map((quality) => {
 			try {
 				const pathOfFile = dir.join(

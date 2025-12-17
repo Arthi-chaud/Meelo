@@ -5,7 +5,11 @@
 		"lineWidth": 80
 	},
 	"files": {
-		"includes": ["**", "!**/src/prisma/models/**", "!dist/**"]
+		"includes": [
+			"**",
+			"!**/src/prisma/models/**",
+			"!dist/**"
+		]
 	},
 	"javascript": {
 		"parser": {

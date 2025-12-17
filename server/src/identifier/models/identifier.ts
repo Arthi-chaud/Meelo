@@ -22,7 +22,7 @@ export const castIdentifier = (s: string): Identifier => {
 	if (Number.isNaN(+s)) {
 		return s;
 	}
-	return Number.parseInt(s);
+	return Number.parseInt(s, 10);
 };
 
 export default Identifier;
