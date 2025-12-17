@@ -4,6 +4,7 @@
 		"on wednesday"
 	],
 	"minimumReleaseAge": "7 days",
+	"separateMinorPatch": true,
 	"patch": {
 		"enabled": false
 	},
