@@ -3,6 +3,10 @@
 	"schedule": [
 		"on wednesday"
 	],
+	"labels": [
+		"Dependencies",
+		"release-note-ignore"
+	],
 	"minimumReleaseAge": "7 days",
 	"separateMinorPatch": true,
 	"prHourlyLimit": 5,
