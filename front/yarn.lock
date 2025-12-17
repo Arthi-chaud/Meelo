@@ -4611,9 +4611,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:2.2.12":
-  version: 2.2.12
-  resolution: "@shopify/react-native-skia@npm:2.2.12"
+"@shopify/react-native-skia@npm:2.4.7":
+  version: 2.4.7
+  resolution: "@shopify/react-native-skia@npm:2.4.7"
   dependencies:
     canvaskit-wasm: "npm:0.40.0"
     react-reconciler: "npm:0.31.0"
@@ -4628,7 +4628,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/57b175f8c8e44b3910a3f73f397b4db155540ba4648cd957b7f6fd24397e0f88670d7c43d3b98bd650685caa0241b5cb7d1bd0e60e8cfaab60acbf34edd4c5af
+  checksum: 10c0/5a60d01c47bd65c6dc2c54392e6bb76a60f9710285cfb702ca00cce2277fdca9800d719712c67990af484bbf85c55ccc7aacd7f0922bebbed57f18f35f58103b
   languageName: node
   linkType: hard
 
@@ -10016,7 +10016,7 @@ __metadata:
     "@gorhom/bottom-sheet": "npm:^5.2.8"
     "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.0.2"
-    "@shopify/react-native-skia": "npm:2.2.12"
+    "@shopify/react-native-skia": "npm:2.4.7"
     "@tanstack/react-query": "npm:^5.77.0"
     "@types/lodash": "npm:^4"
     "@types/react": "npm:~19.1.10"

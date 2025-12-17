@@ -17,7 +17,7 @@
 		"@gorhom/bottom-sheet": "^5.2.8",
 		"@react-native-community/checkbox": "^0.5.20",
 		"@shopify/flash-list": "2.0.2",
-		"@shopify/react-native-skia": "2.2.12",
+		"@shopify/react-native-skia": "2.4.7",
 		"@tanstack/react-query": "^5.77.0",
 		"api": "workspace:^",
 		"expo": "^54.0.0",
