@@ -6074,9 +6074,9 @@ __metadata:
   linkType: hard
 
 "change-case@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "change-case@npm:5.1.2"
-  checksum: 10c0/80ea44e2c6da8bf53556a669b8ca0f7044223450d2aac6076ae2e212a1af397e4b4a72643f9ad188fff92984ca358bd3fe3d02dae2ef04f81cb9cb8e78f27770
+  version: 5.4.4
+  resolution: "change-case@npm:5.4.4"
+  checksum: 10c0/2a9c2b9c9ad6ab2491105aaf506db1a9acaf543a18967798dcce20926c6a173aa63266cb6189f3086e3c14bf7ae1f8ea4f96ecc466fcd582310efa00372f3734
   languageName: node
   linkType: hard
 
