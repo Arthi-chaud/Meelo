@@ -62,13 +62,11 @@ export const Queue = () => {
 		<View style={styles.root}>
 			<Divider h />
 			<BottomSheetDraggableView>
-				{/* @ts-expect-error */}
 				<DraggableFlatList
 					data={queue}
 					onDragEnd={({ from, to }) => onDragEnd(from, to)}
 					keyExtractor={([t, idx]) => `${t.track.id}-${idx}`}
 					renderItem={({ item: [t, idx], drag }) => (
-						/* @ts-expect-error */
 						<ScaleDecorator>
 							<QueueItem
 								onDrag={() => {

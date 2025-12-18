@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
 import type { SortControl } from "@/infinite-controls/sort";
@@ -23,13 +23,7 @@ export const Controls = <S extends string>({
 	actions,
 }: Props<S>) => {
 	const { t } = useTranslation();
-	const OrderIcon = withUnistyles(
-		sort?.selected.order === "desc" ? DescIcon : AscIcon,
-		(theme) => ({
-			color: theme.colors.text.primary,
-			size: theme.fontSize.rem(1),
-		}),
-	);
+	const OrderIcon = sort?.selected.order === "desc" ? DescIcon : AscIcon;
 	return (
 		<View style={styles.row}>
 			<View style={styles.row}>
