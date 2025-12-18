@@ -6,12 +6,12 @@
 	"sideEffects": false,
 	"scripts": {
 		"start": "APP_VARIANT=development expo start",
-		"android": "APP_VARIANT=development expo run:android",
+		"android": "DISABLE_SVG=1 APP_VARIANT=development expo run:android",
 		"android:prebuild": "APP_VARIANT=development expo prebuild -p android",
 		"ios": "expo run:ios"
 	},
 	"dependencies": {
-		"@d11/react-native-fast-image": "^8.12.0",
+		"@d11/react-native-fast-image": "^8.13.0",
 		"@expo-google-fonts/rubik": "^0.3.0",
 		"@expo/config-plugins": "^54.0.2",
 		"@gorhom/bottom-sheet": "^5.2.8",
