@@ -80,7 +80,7 @@ const SyncedLyricsComponent = ({
 	const [syncedLyricsWithNext, setLyricsWithNext] =
 		useState<SyncedLyricWithNext[]>();
 	const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(-1);
-	const intervalRef = useRef<NodeJS.Timer>(null);
+	const intervalRef = useRef<NodeJS.Timeout>(null);
 
 	// Do this async-ly, to avoid lag
 	useEffect(() => {
