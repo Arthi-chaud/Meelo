@@ -102,6 +102,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Build
         run: |
+          export DISABLE_SVG=1 # For fast image
           # Source: https://github.com/apache/flink/blob/master/tools/azure-pipelines/free_disk_space.sh
           sudo apt-get remove -y '^llvm-.*' ;
           sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell ;

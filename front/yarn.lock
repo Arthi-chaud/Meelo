@@ -1888,7 +1888,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@d11/react-native-fast-image@npm:^8.12.0":
+"@d11/react-native-fast-image@npm:^8.13.0":
   version: 8.13.0
   resolution: "@d11/react-native-fast-image@npm:8.13.0"
   peerDependencies:
@@ -10003,7 +10003,7 @@ __metadata:
   resolution: "mobile@workspace:apps/mobile"
   dependencies:
     "@babel/core": "npm:^7.25.2"
-    "@d11/react-native-fast-image": "npm:^8.12.0"
+    "@d11/react-native-fast-image": "npm:^8.13.0"
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@expo/config-plugins": "npm:^54.0.2"
     "@gorhom/bottom-sheet": "npm:^5.2.8"
