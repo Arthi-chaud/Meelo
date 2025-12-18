@@ -71,7 +71,7 @@
 		"utils": "workspace:^"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.25.2",
+		"@babel/core": "^7.28.5",
 		"@types/lodash": "^4",
 		"@types/react": "~19.1.10",
 		"typescript": "~5.9.2"
