@@ -21,3 +21,6 @@ meelo/
 data/
 
 .env
+
+**/.direnv
+**/.envrc
