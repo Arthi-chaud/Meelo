@@ -194,7 +194,6 @@ const Items = ({
 			playlistEntries?.map(({ entryId }) => entryId) ?? [];
 	}, [isReordering, playlistEntries]);
 	return (
-		/* @ts-expect-error */
 		<DraggableFlatList
 			containerStyle={styles.itemsContainer}
 			contentContainerStyle={styles.items}
@@ -204,7 +203,6 @@ const Items = ({
 				item?.entryId.toString() ?? `skeleton-${idx}`
 			}
 			renderItem={({ item, drag, getIndex }) => (
-				/* @ts-expect-error */
 				<ScaleDecorator>
 					<SongItem
 						song={item}
@@ -291,7 +289,6 @@ const Footer = ({
 					<Button
 						size="small"
 						width="fitContent"
-						// @ts-expect-error
 						icon={isReordering ? DoneIcon : ReorderPlaylistIcon}
 						title={t(
 							isReordering

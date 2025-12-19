@@ -59,7 +59,6 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 					actions={props.emptyState?.actions ?? []}
 				/>
 			)}
-			{/* @ts-expect-error */}
 			<IScroll.default
 				pageStart={0}
 				loadMore={() => {
@@ -76,7 +75,6 @@ const InfiniteScroll = <T extends Resource, F extends Resource>(
 				hasMore={hasNextPage}
 				threshold={500}
 			>
-				{/* @ts-expect-error */}
 				{props.render(
 					items === undefined
 						? generateArray(3)
