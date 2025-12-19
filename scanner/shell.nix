@@ -5,12 +5,12 @@ pkgs.mkShell {
   packages = with pkgs; [
     go
     golangci-lint
+    gopls
     chromaprint
-    opencv
+    pkgs.opencv4
   ];
   shellHook = ''
-    if ! test -d app/wtr;
-      then sh dl_watcher.sh
-      fi
+    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${pkgs.opencv4}/lib/pkgconfig";  
   '';
+
 }
