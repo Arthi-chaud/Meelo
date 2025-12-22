@@ -28,9 +28,9 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
-      interval: 5s
+      interval: 3s
       timeout: 5s
-      retries: 5
+      retries: 20
   front:
     build:
       context: ./front
@@ -62,9 +62,9 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- localhost:8133"]
-      interval: 5s
+      interval: 3s
       timeout: 5s
-      retries: 10
+      retries: 20
     environment:
       - API_URL=http://server:4000
       - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
@@ -116,9 +116,9 @@ services:
     image: postgres:alpine3.14
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 3s
+      timeout: 3s
+      retries: 20
     env_file:
       - .env
     volumes:
@@ -143,8 +143,9 @@ services:
           "--spider",
           "http://0.0.0.0:7700/health",
         ]
-      timeout: 5s
-      retries: 5
+      interval: 3s
+      timeout: 3s
+      retries: 20
   mq:
     image: rabbitmq:4.0-alpine
     hostname: meelo-mq
@@ -155,7 +156,7 @@ services:
       test: rabbitmq-diagnostics -q ping
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
   nginx:
