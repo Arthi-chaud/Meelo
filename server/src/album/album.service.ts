@@ -18,7 +18,7 @@
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { AlbumType, Prisma } from "@prisma/client";
-import type MeiliSearch from "meilisearch";
+import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import ArtistService from "src/artist/artist.service";

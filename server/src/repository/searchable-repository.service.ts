@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type MeiliSearch from "meilisearch";
+import { MeiliSearch } from "meilisearch";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { sortItemsUsingOrderedIdList } from "./repository.utils";
 
@@ -31,8 +31,8 @@ export default abstract class SearchableRepositoryService {
 			.createIndex(this.indexName, {
 				primaryKey: "id",
 			})
-			.then(async (task) => {
-				await this.meiliSearch.waitForTask(task.taskUid);
+			.waitTask()
+			.then(async () => {
 				this.meiliSearch
 					.index(this.indexName)
 					.updateSearchableAttributes(searchableKeys);
