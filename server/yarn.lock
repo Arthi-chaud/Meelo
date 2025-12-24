@@ -5852,7 +5852,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helmet@npm:^6.0.0":
+"helmet@npm:^6.2.0":
   version: 6.2.0
   resolution: "helmet@npm:6.2.0"
   checksum: 10c0/52d97adfdb151ebdc08e5d78eb93eebfb7e8e3e0563e68664828138dc6ab2d9d512b4ae71e1f8c6fcf8ddc38f87908325971d95dcabaafd4fde1f5b0faabeb8c
@@ -7334,7 +7334,7 @@ __metadata:
     damerau-levenshtein: "npm:^1.0.8"
     fs: "npm:^0.0.1-security"
     get-rgba-palette: "npm:^2.0.1"
-    helmet: "npm:^6.0.0"
+    helmet: "npm:^6.2.0"
     http-proxy-middleware: "npm:^3.0.5"
     jest: "npm:^30.2.0"
     jimp: "npm:^1.6.0"

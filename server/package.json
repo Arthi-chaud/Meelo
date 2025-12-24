@@ -44,7 +44,7 @@
 		"damerau-levenshtein": "^1.0.8",
 		"fs": "^0.0.1-security",
 		"get-rgba-palette": "^2.0.1",
-		"helmet": "^6.0.0",
+		"helmet": "^6.2.0",
 		"http-proxy-middleware": "^3.0.5",
 		"jimp": "^1.6.0",
 		"md5": "^2.3.0",
