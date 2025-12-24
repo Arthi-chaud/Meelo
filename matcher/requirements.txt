@@ -7,7 +7,7 @@ python3-discogs-client
 python-dotenv
 beautifulsoup4
 python-slugify
-fastapi[standard]==0.117.1
+fastapi[standard]==0.124.4
 asyncio
 aiohttp
 pytest
