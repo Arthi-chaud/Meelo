@@ -8506,33 +8506,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.12.1":
-  version: 2.12.1
-  resolution: "jotai@npm:2.12.1"
+"jotai@npm:^2.12.1, jotai@npm:^2.12.5":
+  version: 2.16.0
+  resolution: "jotai@npm:2.16.0"
   peerDependencies:
+    "@babel/core": ">=7.0.0"
+    "@babel/template": ">=7.0.0"
     "@types/react": ">=17.0.0"
     react: ">=17.0.0"
   peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@babel/template":
+      optional: true
     "@types/react":
       optional: true
     react:
       optional: true
-  checksum: 10c0/8ef622b7d626919d87595d7382467cb81698a14925befdd27abc3b03d441077eca35328d51d10dc6fe3e91ee4d4e9ba7456bacbdf36940161bd2afeba861ac83
-  languageName: node
-  linkType: hard
-
-"jotai@npm:^2.12.5":
-  version: 2.12.5
-  resolution: "jotai@npm:2.12.5"
-  peerDependencies:
-    "@types/react": ">=17.0.0"
-    react: ">=17.0.0"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/5075b2c78f3e170d84a14b9f69a5903a5aa5b61242ee9acebc5665ce5a5fb13724748107dfd1069d00fe45b3a4ed15e07c40c0861dc817effc10532b733afabe
+  checksum: 10c0/7bf00184c284904eb7f7c1d56f753f06bb63d0425fd1515b78c7970773f51831647291ea0b7ec891f10796551e6ba79400c01465a5cdbfc76864f0102b52028d
   languageName: node
   linkType: hard
 
