@@ -53,7 +53,7 @@
 		"nestjs-form-data": "^1.9.93",
 		"nestjs-meilisearch": "^3.0.0",
 		"normalize-path": "^3.0.0",
-		"passport": "^0.6.0",
+		"passport": "^0.7.0",
 		"passport-jwt": "^4.0.0",
 		"passport-local": "^1.0.0",
 		"prisma": "^6.2.1",
