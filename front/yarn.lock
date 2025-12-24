@@ -6043,7 +6043,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.26.1":
+"core-js@npm:^3.47.0":
   version: 3.47.0
   resolution: "core-js@npm:3.47.0"
   checksum: 10c0/9b1a7088b7c660c7b8f1d4c90bb1816a8d5352ebdcb7bc742e3a0e4eb803316b5aa17bacb8769522342196351a5430178f46914644f2bfdb94ce0ced3c7fd523
@@ -12971,7 +12971,7 @@ __metadata:
     accept-language-parser: "npm:^1.5.0"
     blurhash: "npm:^2.0.5"
     cookies-next: "npm:^5.1.0"
-    core-js: "npm:^3.26.1"
+    core-js: "npm:^3.47.0"
     d3-array: "npm:^3.2.0"
     format-duration: "npm:^2.0.0"
     hls.js: "npm:^1.5.11"
