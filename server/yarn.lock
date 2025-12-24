@@ -4744,15 +4744,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.6":
-  version: 3.1.8
-  resolution: "cross-fetch@npm:3.1.8"
-  dependencies:
-    node-fetch: "npm:^2.6.12"
-  checksum: 10c0/4c5e022ffe6abdf380faa6e2373c0c4ed7ef75e105c95c972b6f627c3f083170b6886f19fb488a7fa93971f4f69dcc890f122b0d97f0bf5f41ca1d9a8f58c8af
-  languageName: node
-  linkType: hard
-
 "cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-spawn@npm:7.0.3"
@@ -7339,7 +7330,7 @@ __metadata:
     jest: "npm:^30.2.0"
     jimp: "npm:^1.6.0"
     md5: "npm:^2.3.0"
-    meilisearch: "npm:^0.36.0"
+    meilisearch: "npm:^0.54.0"
     mime: "npm:^3.0.0"
     nestjs-form-data: "npm:^1.9.93"
     nestjs-meilisearch: "npm:^3.0.0"
@@ -7365,12 +7356,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"meilisearch@npm:^0.36.0":
-  version: 0.36.0
-  resolution: "meilisearch@npm:0.36.0"
-  dependencies:
-    cross-fetch: "npm:^3.1.6"
-  checksum: 10c0/06832e85135d16b49a7d67d1514605876a66052a4b830949990d310ed618774fcce62c302a7f27f6f75a470ed568e929372455f94a971ba9178f9fe917d17e0d
+"meilisearch@npm:^0.54.0":
+  version: 0.54.0
+  resolution: "meilisearch@npm:0.54.0"
+  checksum: 10c0/8f6bef5278e50f11469672bf747a6533384f2a48c8e7c07a9b5657ae9a9f4dfedffe366b4b3054aff186458aab56aac311ce9ad4dd3a1eb30e3e066943259cb5
   languageName: node
   linkType: hard
 
@@ -7773,20 +7762,6 @@ __metadata:
   dependencies:
     lodash: "npm:^4.17.21"
   checksum: 10c0/5dac6502dbef087092d041fcc2686d8be61168593b3a9baf964d62652f55a3a9c2277f171b81cccb851ccef33f2d070f45e633fab1fda3264f8e1ae9041c673f
-  languageName: node
-  linkType: hard
-
-"node-fetch@npm:^2.6.12":
-  version: 2.7.0
-  resolution: "node-fetch@npm:2.7.0"
-  dependencies:
-    whatwg-url: "npm:^5.0.0"
-  peerDependencies:
-    encoding: ^0.1.0
-  peerDependenciesMeta:
-    encoding:
-      optional: true
-  checksum: 10c0/b55786b6028208e6fbe594ccccc213cab67a72899c9234eb59dba51062a299ea853210fcf526998eaa2867b0963ad72338824450905679ff0fa304b8c5093ae8
   languageName: node
   linkType: hard
 
@@ -9419,13 +9394,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tr46@npm:~0.0.3":
-  version: 0.0.3
-  resolution: "tr46@npm:0.0.3"
-  checksum: 10c0/047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
-  languageName: node
-  linkType: hard
-
 "ts-jest@npm:^29.4.6":
   version: 29.4.6
   resolution: "ts-jest@npm:29.4.6"
@@ -9944,13 +9912,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webidl-conversions@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "webidl-conversions@npm:3.0.1"
-  checksum: 10c0/5612d5f3e54760a797052eb4927f0ddc01383550f542ccd33d5238cfd65aeed392a45ad38364970d0a0f4fea32e1f4d231b3d8dac4a3bdd385e5cf802ae097db
-  languageName: node
-  linkType: hard
-
 "webpack-node-externals@npm:3.0.0":
   version: 3.0.0
   resolution: "webpack-node-externals@npm:3.0.0"
@@ -10000,16 +9961,6 @@ __metadata:
   bin:
     webpack: bin/webpack.js
   checksum: 10c0/d0cf86f8cac249874d6f36292e25011413ebb5bae82c48fa78a165a217e63db00b1a1f563f5195070eb17a055c6da4b6ab89fbdd37f781abdda862aa8c0bd623
-  languageName: node
-  linkType: hard
-
-"whatwg-url@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "whatwg-url@npm:5.0.0"
-  dependencies:
-    tr46: "npm:~0.0.3"
-    webidl-conversions: "npm:^3.0.0"
-  checksum: 10c0/1588bed84d10b72d5eec1d0faa0722ba1962f1821e7539c535558fb5398d223b0c50d8acab950b8c488b4ba69043fd833cc2697056b167d8ad46fac3995a55d5
   languageName: node
   linkType: hard
 
