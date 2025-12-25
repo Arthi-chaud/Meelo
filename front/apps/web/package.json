@@ -39,7 +39,7 @@
 		"react-dom": "19.1.0",
 		"react-error-boundary": "^4.0.10",
 		"react-hook-form": "^7.39.3",
-		"react-hot-toast": "^2.3.0",
+		"react-hot-toast": "^2.6.0",
 		"react-i18next": "^12.3.1",
 		"react-infinite-scroller": "^1.2.6",
 		"react-use": "^17.5.1",
