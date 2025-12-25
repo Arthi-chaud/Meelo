@@ -37,7 +37,7 @@
 		"react-beautiful-dnd": "^13.1.1",
 		"react-blurhash": "^0.3.0",
 		"react-dom": "19.1.0",
-		"react-error-boundary": "^4.0.10",
+		"react-error-boundary": "^4.1.2",
 		"react-hook-form": "^7.68.0",
 		"react-hot-toast": "^2.6.0",
 		"react-i18next": "^12.3.1",
