@@ -2,7 +2,7 @@
 	"name": "state",
 	"sideEffects": false,
 	"dependencies": {
-		"jotai": "^2.12.1",
+		"jotai": "^2.16.0",
 		"react": "18.2.0"
 	},
 	"devDependencies": {
