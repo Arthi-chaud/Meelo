@@ -64,6 +64,16 @@
 		},
 		{
 			"matchPackageNames": [
+				"/^i18next$/",
+				"/^react-i18next$/"
+			],
+			"groupName": "i18next",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
 				"/@prisma\//",
 				"/prisma-/",
 				"/^prisma$/"

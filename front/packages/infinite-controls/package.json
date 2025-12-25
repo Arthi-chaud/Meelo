@@ -9,8 +9,8 @@
 		"typescript": "5.3.3"
 	},
 	"peerDependencies": {
-		"i18next": "^23.7.16",
-		"react-i18next": "^12.2.2"
+		"i18next": "^23.16.8",
+		"react-i18next": "^12.3.1"
 	},
 	"packageManager": "yarn@4.4.0"
 }
