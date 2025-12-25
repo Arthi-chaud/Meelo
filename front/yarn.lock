@@ -10619,7 +10619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hot-toast@npm:^2.3.0":
+"react-hot-toast@npm:^2.6.0":
   version: 2.6.0
   resolution: "react-hot-toast@npm:2.6.0"
   dependencies:
@@ -12978,7 +12978,7 @@ __metadata:
     react-dom: "npm:19.1.0"
     react-error-boundary: "npm:^4.0.10"
     react-hook-form: "npm:^7.39.3"
-    react-hot-toast: "npm:^2.3.0"
+    react-hot-toast: "npm:^2.6.0"
     react-i18next: "npm:^12.3.1"
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.5.1"
