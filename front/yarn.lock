@@ -9716,7 +9716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mui-react-hook-form-plus@npm:^1.3.2":
+"mui-react-hook-form-plus@npm:^1.5.1":
   version: 1.5.1
   resolution: "mui-react-hook-form-plus@npm:1.5.1"
   peerDependencies:
@@ -12969,7 +12969,7 @@ __metadata:
     i18next: "npm:^23.7.16"
     jotai: "npm:^2.16.0"
     material-ui-confirm: "npm:^3.0.7"
-    mui-react-hook-form-plus: "npm:^1.3.2"
+    mui-react-hook-form-plus: "npm:^1.5.1"
     next: "npm:15.5.7"
     react: "npm:19.1.0"
     react-beautiful-dnd: "npm:^13.1.1"
