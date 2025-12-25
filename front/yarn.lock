@@ -9659,7 +9659,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     models: "workspace:^"
     react: "npm:19.1.0"
-    react-hook-form: "npm:^7.58.0"
+    react-hook-form: "npm:^7.68.0"
     react-i18next: "npm:^12.3.1"
     react-native: "npm:0.81.4"
     react-native-awesome-slider: "npm:^2.9.0"
@@ -10601,21 +10601,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.39.3":
-  version: 7.39.5
-  resolution: "react-hook-form@npm:7.39.5"
-  peerDependencies:
-    react: ^16.8.0 || ^17 || ^18
-  checksum: 10c0/b9e2d29ca2177722851e9645aa791ea137038ee56e8106e67365472626cc2f9752c7ab28010f36f24746ee0585f3ef1435946183ac5cb0fa6a71b74f27d55f0a
-  languageName: node
-  linkType: hard
-
-"react-hook-form@npm:^7.58.0":
-  version: 7.58.0
-  resolution: "react-hook-form@npm:7.58.0"
+"react-hook-form@npm:^7.68.0":
+  version: 7.69.0
+  resolution: "react-hook-form@npm:7.69.0"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10c0/9e87bf1dfb43157ffec1b112092e8c5b2b9d0056c2a8bdea6c15e08d510b365915101f499f2e7698e16e94541ac82b26ab8e3b05af5b0cccfc82d29cf31c1b0b
+  checksum: 10c0/99440aac1edbbda1f1704e31bea72dd75130d09593f5fce037596d381fb3dbf5a9864b28f49ecd52bd6dfabceb437905578fe2efc20c69411500fbdbc8647df6
   languageName: node
   linkType: hard
 
@@ -12977,7 +12968,7 @@ __metadata:
     react-blurhash: "npm:^0.3.0"
     react-dom: "npm:19.1.0"
     react-error-boundary: "npm:^4.0.10"
-    react-hook-form: "npm:^7.39.3"
+    react-hook-form: "npm:^7.68.0"
     react-hot-toast: "npm:^2.6.0"
     react-i18next: "npm:^12.3.1"
     react-infinite-scroller: "npm:^1.2.6"
