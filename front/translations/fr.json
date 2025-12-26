@@ -385,7 +385,8 @@
 		"refreshLocalMetadata": "Rafraîchir les métadonnées locales",
 		"refreshMetadata": "Rafraîchir les métadonnées",
 		"refreshMetadataForm": {
-			"forceLabel": "Force le scan si les fichiers n'ont pas changé"
+			"forceLabel": "Force le scan si les fichiers n'ont pas changé",
+			"reuseLabel": "Réutiliser les sources connues"
 		},
 		"scan": "Scanner",
 		"scanLibraries": "Scanner les Bibliothèques"
