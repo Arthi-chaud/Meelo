@@ -53,7 +53,7 @@ async def match(
                 ctx.increment_handled_items_count()
                 pass
             case "song":
-                await match_and_post_song(resourceId, resourceName)  # TODO reuseSources
+                await match_and_post_song(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case _:

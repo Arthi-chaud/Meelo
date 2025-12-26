@@ -16,23 +16,42 @@ from matcher.providers.features import (
 )
 
 
-async def match_and_post_song(song_id: int, song_name: str):
+async def match_and_post_song(song_id: int, song_name: str, reuseSources: bool):
     try:
         context = Context.get()
         song = await context.client.get_song(song_id)
+
+        async def match():
+            if not reuseSources:
+                return await match_song(
+                    song_id,
+                    song.name,
+                    song.artist.name,
+                    [f.name for f in song.featuring],
+                    song.master.duration if song.master else None,
+                    source_file.fingerprint if source_file else None,
+                    None,
+                )
+
+            previous_metadata = await context.client.get_song_external_metadata(song_id)
+            previous_sources = previous_metadata.sources if previous_metadata else []
+
+            return await match_song(
+                song_id,
+                song.name,
+                song.artist.name,
+                [f.name for f in song.featuring],
+                song.master.duration if song.master else None,
+                source_file.fingerprint if source_file else None,
+                previous_sources,
+            )
+
         source_file = (
             await context.client.get_file(song.master.source_file_id)
             if song.master
             else None
         )
-        res = await match_song(
-            song_id,
-            song.name,
-            song.artist.name,
-            [f.name for f in song.featuring],
-            song.master.duration if song.master else None,
-            source_file.fingerprint if source_file else None,
-        )
+        res = await match()
         if res.metadata:
             logging.info(
                 f"Matched with {len(res.metadata.sources)} providers for song {song_name}"
@@ -61,6 +80,7 @@ async def match_song(
     featuring: List[str],
     duration: int | None,
     acoustid: str | None,
+    sources_to_reuse: List[ExternalMetadataSourceDto] | None,
 ) -> SongMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
@@ -76,21 +96,34 @@ async def match_song(
             else await mb.search_song(song_name, artist_name, featuring, duration)
         )
 
-    (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
-        lambda mb: mb_search(mb),
-        lambda mb, mbid: mb.get_song(mbid),
-        lambda mb, mbid: mb.get_song_url_from_id(mbid),
-    )
-
-    # Link using Wikidata
-    sources_ids = [source.provider_id for source in external_sources]
-    if wikidata_id:
-        external_sources = external_sources + await common.get_sources_from_wikidata(
-            wikidata_id,
-            [p for p in context.get_providers() if p.api_model.id not in sources_ids],
-            lambda p: p.get_wikidata_song_relation_key(),
-            lambda p, song_id: p.get_song_url_from_id(song_id),
+    async def resolve_sources():
+        (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
+            lambda mb: mb_search(mb),
+            lambda mb, mbid: mb.get_song(mbid),
+            lambda mb, mbid: mb.get_song_url_from_id(mbid),
         )
+
+        # Link using Wikidata
+        sources_ids = [source.provider_id for source in external_sources]
+        if wikidata_id:
+            external_sources = (
+                external_sources
+                + await common.get_sources_from_wikidata(
+                    wikidata_id,
+                    [
+                        p
+                        for p in context.get_providers()
+                        if p.api_model.id not in sources_ids
+                    ],
+                    lambda p: p.get_wikidata_song_relation_key(),
+                    lambda p, song_id: p.get_song_url_from_id(song_id),
+                )
+            )
+        return external_sources
+
+    external_sources = (
+        sources_to_reuse if sources_to_reuse is not None else await resolve_sources()
+    )
 
     res = SongMatchResult(
         ExternalMetadataDto(
@@ -109,6 +142,8 @@ async def match_song(
         source: ExternalMetadataSourceDto | None,
         provider: BaseProviderBoilerplate,
     ):
+        if source is None and sources_to_reuse is not None:
+            return
         (source, song) = await common.resolve_data_from_source(
             source,
             provider,
