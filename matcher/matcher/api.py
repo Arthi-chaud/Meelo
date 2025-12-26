@@ -88,8 +88,16 @@ class API:
     async def get_artist_external_metadata(
         self, artistId: int
     ) -> ExternalMetadataDto | None:
+        return await self._get_external_metadata(f"artist={artistId}")
+
+    async def get_album_external_metadata(
+        self, albumId: int
+    ) -> ExternalMetadataDto | None:
+        return await self._get_external_metadata(f"album={albumId}")
+
+    async def _get_external_metadata(self, query: str) -> ExternalMetadataDto | None:
         try:
-            json = await self._get(f"/external-metadata?artist={artistId}")
+            json = await self._get(f"/external-metadata?{query}")
             return ExternalMetadataDto.schema().load(json)
         except Exception as e:
             print(e)

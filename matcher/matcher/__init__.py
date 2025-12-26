@@ -49,9 +49,7 @@ async def match(
                 ctx.increment_handled_items_count()
                 pass
             case "album":
-                await match_and_post_album(
-                    resourceId, resourceName
-                )  # TODO reuseSources
+                await match_and_post_album(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case "song":
