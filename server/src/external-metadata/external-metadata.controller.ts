@@ -83,6 +83,7 @@ export default class ExternalMetadataController {
 	@ApiOperation({
 		summary: "Get the metadata entry",
 	})
+	@Role(Roles.Default, Roles.Microservice)
 	@Get()
 	async getExternalMetadataEntry(@Query() where: Selector) {
 		const selectorSize = Object.keys(where).length;
