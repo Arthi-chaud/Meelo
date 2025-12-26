@@ -85,6 +85,16 @@ class API:
             json={"url": image_url, "artistId": artist_id},
         )
 
+    async def get_artist_external_metadata(
+        self, artistId: int
+    ) -> ExternalMetadataDto | None:
+        try:
+            json = await self._get(f"/external-metadata?artist={artistId}")
+            return ExternalMetadataDto.schema().load(json)
+        except Exception as e:
+            print(e)
+            pass
+
     async def get_providers(self) -> Page[Provider]:
         response = await self._get("/external-providers")
         return API._to_page(response, Provider)
