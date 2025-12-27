@@ -80,7 +80,7 @@ async def match_song(
     featuring: List[str],
     duration: int | None,
     acoustid: str | None,
-    sources_to_reuse: List[ExternalMetadataSourceDto] | None,
+    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
 ) -> SongMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()

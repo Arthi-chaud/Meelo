@@ -45,7 +45,7 @@ async def match_and_post_artist(artist_id: int, artist_name: str, reuseSources: 
 async def match_artist(
     artist_id: int,
     artist_name: str,
-    sources_to_reuse: List[ExternalMetadataSourceDto] | None,
+    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
 ) -> ArtistMatchResult:
     context = Context.get()
 

@@ -96,7 +96,7 @@ async def match_album(
     album_name: str,
     artist_name: str | None,
     type: AlbumType,
-    sources_to_reuse: List[ExternalMetadataSourceDto] | None,
+    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
 ) -> AlbumMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
