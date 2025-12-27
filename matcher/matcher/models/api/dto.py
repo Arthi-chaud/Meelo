@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional
-from dataclasses_json import DataClassJsonMixin, LetterCase, dataclass_json
+from dataclasses_json import DataClassJsonMixin, LetterCase, Undefined, dataclass_json
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
@@ -27,22 +27,22 @@ class CreateProviderDto(DataClassJsonMixin):
     name: str
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class ExternalMetadataSourceDto(DataClassJsonMixin):
     url: str
     provider_id: int
 
 
-@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class ExternalMetadataDto(DataClassJsonMixin):
     description: str | None
     rating: int | None
-    song_id: int | None
-    artist_id: int | None
-    album_id: int | None
     sources: List[ExternalMetadataSourceDto]
+    song_id: Optional[int] = None
+    artist_id: Optional[int] = None
+    album_id: Optional[int] = None
 
     def push_source(self, source: ExternalMetadataSourceDto):
         self.sources.append(source)

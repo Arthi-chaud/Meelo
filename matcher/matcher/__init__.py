@@ -32,7 +32,9 @@ async def consume(message: DeliveredMessage, channel: AbstractChannel):
         await channel.basic_ack(delivery_tag)
 
 
-async def match(resourceType: str, resourceName: str, resourceId: int):
+async def match(
+    resourceType: str, resourceName: str, resourceId: int, reuseSources=False
+):
     async with match_lock:
         ctx = Context.get()
         ctx.current_item = CurrentItem(
@@ -43,15 +45,15 @@ async def match(resourceType: str, resourceName: str, resourceId: int):
             ctx.clear_handled_items_count()
         match resourceType:
             case "artist":
-                await match_and_post_artist(resourceId, resourceName)
+                await match_and_post_artist(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case "album":
-                await match_and_post_album(resourceId, resourceName)
+                await match_and_post_album(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case "song":
-                await match_and_post_song(resourceId, resourceName)
+                await match_and_post_song(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case _:
@@ -110,7 +112,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 async def get_user_token(req: Request) -> str:
-    tokenHeader = req.headers.get("Auhtorization")
+    tokenHeader = req.headers.get("Authorization")
     tokenCookie = req.cookies.get("access_token")
     if tokenHeader is not None:
         tokenHeader = tokenHeader.removesuffix("Bearer ")
@@ -158,6 +160,7 @@ class MatchDTO(BaseModel):
     artistId: int | None = None
     albumId: int | None = None
     songId: int | None = None
+    reuseSources: bool
 
 
 @app.post(
@@ -177,12 +180,12 @@ async def rematch(
     try:
         if dto.artistId:
             artist = await ctx.client.get_artist(dto.artistId, token)
-            await match("artist", artist.name, artist.id)
+            await match("artist", artist.name, artist.id, reuseSources=dto.reuseSources)
         if dto.albumId:
             album = await ctx.client.get_album(dto.albumId, token)
-            await match("album", album.name, album.id)
+            await match("album", album.name, album.id, reuseSources=dto.reuseSources)
         if dto.songId:
             song = await ctx.client.get_song(dto.songId, token)
-            await match("song", song.name, song.id)
+            await match("song", song.name, song.id, reuseSources=dto.reuseSources)
     except Exception as e:
         raise ErrorResponse(e.__str__())

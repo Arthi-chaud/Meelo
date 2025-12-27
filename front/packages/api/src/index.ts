@@ -171,12 +171,13 @@ export default class API {
 		dto: Partial<
 			Record<"artistId" | "albumId" | "songId", number | undefined>
 		>,
+		reuseSources: boolean,
 	): Promise<void> {
 		return this.fetch({
 			route: `/match`,
 			errorMessage: "Refreshing Metadata Failed",
 			parameters: {},
-			data: dto,
+			data: { ...dto, reuseSources },
 			service: Service.Matcher,
 			method: "POST",
 			emptyResponse: true,

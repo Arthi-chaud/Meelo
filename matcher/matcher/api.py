@@ -85,6 +85,28 @@ class API:
             json={"url": image_url, "artistId": artist_id},
         )
 
+    async def get_artist_external_metadata(
+        self, artistId: int
+    ) -> ExternalMetadataDto | None:
+        return await self._get_external_metadata(f"artist={artistId}")
+
+    async def get_album_external_metadata(
+        self, albumId: int
+    ) -> ExternalMetadataDto | None:
+        return await self._get_external_metadata(f"album={albumId}")
+
+    async def get_song_external_metadata(
+        self, songId: int
+    ) -> ExternalMetadataDto | None:
+        return await self._get_external_metadata(f"song={songId}")
+
+    async def _get_external_metadata(self, query: str) -> ExternalMetadataDto | None:
+        try:
+            json = await self._get(f"/external-metadata?{query}")
+            return ExternalMetadataDto.schema().load(json)
+        except Exception:
+            pass
+
     async def get_providers(self) -> Page[Provider]:
         response = await self._get("/external-providers")
         return API._to_page(response, Provider)

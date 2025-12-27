@@ -383,7 +383,8 @@
 		"refreshLocalMetadata": "Refresh Local Metadata",
 		"refreshExternalMetadata": "Refresh External Metadata",
 		"refreshMetadataForm": {
-			"forceLabel": "Force refresh if files have not changed"
+			"forceLabel": "Force refresh if files have not changed",
+			"reuseLabel": "Reuse known sources"
 		},
 		"scan": "Scan",
 		"scanLibraries": "Scan Libraries"
