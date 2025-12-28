@@ -1,6 +1,6 @@
 import asyncio
 from typing import Annotated
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Query, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 import logging
@@ -98,14 +98,12 @@ class QueueResponse(BaseModel):
 
 class ErrorResponse(Exception):
     message: str
-
-    def __init__(self, msg: str):
-        self.message = msg
+    status: int
 
 
 @app.exception_handler(ErrorResponse)
 async def error_handler(_: Request, exc: ErrorResponse):
-    return JSONResponse({"message": exc.message}, status_code=401)
+    return JSONResponse({"message": exc.message}, status_code=exc.status)
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -118,33 +116,38 @@ async def get_user_token(req: Request) -> str:
         tokenHeader = tokenHeader.removesuffix("Bearer ")
     token = tokenCookie or tokenHeader
     if not token:
-        raise ErrorResponse("Missing token")
+        raise ErrorResponse("Missing token", status.HTTP_401_UNAUTHORIZED)
     return token
 
 
 async def get_user(token: Annotated[str, Depends(get_user_token)]) -> User:
     user = await Context.get().client.get_user(token)
     if user is None:
-        raise ErrorResponse("Invalid token")
+        raise ErrorResponse("Invalid token", status.HTTP_400_BAD_REQUEST)
     if not user.enabled:
-        raise ErrorResponse("User is not enabled")
+        raise ErrorResponse("User is not enabled", status.HTTP_401_UNAUTHORIZED)
     return user
 
 
 async def get_admin_user(user: Annotated[User, Depends(get_user)]) -> User:
     if not user.admin:
-        raise ErrorResponse("User is not an admin")
+        raise ErrorResponse("User is not an admin", status.HTTP_401_UNAUTHORIZED)
     return user
 
 
 @app.get("/", tags=["Endpoints"])
-async def status() -> StatusResponse:
+async def matcher_status() -> StatusResponse:
     return StatusResponse(
         message="Matcher is alive.", version=Context.get().settings.version
     )
 
 
-@app.get("/queue", summary="Get info on the task queue", tags=["Endpoints"])
+@app.get(
+    "/queue",
+    summary="Get info on the task queue",
+    tags=["Endpoints"],
+    response_model=QueueResponse,
+)
 async def queue(
     _: Annotated[User, Depends(get_admin_user)],
 ) -> QueueResponse:
@@ -174,7 +177,7 @@ async def rematch(
     dto: MatchDTO,
 ) -> None:
     if not dto.artistId and not dto.albumId and not dto.songId:
-        raise ErrorResponse("Empty DTO")
+        raise ErrorResponse("Empty DTO", status.HTTP_400_BAD_REQUEST)
     # Intentionally not checking if more than one field is set in the DTO
     ctx = Context.get()
     try:
@@ -188,4 +191,4 @@ async def rematch(
             song = await ctx.client.get_song(dto.songId, token)
             await match("song", song.name, song.id, reuseSources=dto.reuseSources)
     except Exception as e:
-        raise ErrorResponse(e.__str__())
+        raise ErrorResponse(e.__str__(), status.HTTP_500_INTERNAL_SERVER_ERROR)
