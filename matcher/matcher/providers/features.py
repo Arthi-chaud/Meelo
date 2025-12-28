@@ -24,6 +24,10 @@ class GetWikidataRelationKeyFeature(BaseFeature[str]):
     pass
 
 
+class IsUrlFeature(BaseFeature[ResourceUrl, bool]):
+    pass
+
+
 ## Cross-relations
 class GetMusicBrainzRelationKeyFeature(BaseFeature[str]):
     pass
@@ -61,6 +65,10 @@ class GetArtistUrlFromIdFeature(GetUrlFromIdFeature):
 
 
 class GetArtistIdFromUrlFeature(GetIdFromUrlFeature):
+    pass
+
+
+class IsArtistUrlFeature(IsUrlFeature):
     pass
 
 
@@ -106,6 +114,10 @@ class GetAlbumIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class GetWikidataAlbumRelationKeyFeature(GetWikidataRelationKeyFeature):
+    pass
+
+
+class IsAlbumUrlFeature(IsUrlFeature):
     pass
 
 
@@ -159,4 +171,8 @@ class GetSongIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class GetWikidataSongRelationKeyFeature(GetWikidataRelationKeyFeature):
+    pass
+
+
+class IsSongUrlFeature(IsUrlFeature):
     pass
