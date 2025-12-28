@@ -22,6 +22,11 @@ import type { AlbumType } from "@/models/album";
 import { ResourceNotFound } from "@/models/exceptions";
 import type { IllustrationQuality } from "@/models/illustration";
 import Library from "@/models/library";
+import {
+	type RefreshMetadataDto,
+	type ResolveUrlDto,
+	ResolveUrlResponse,
+} from "@/models/matcher";
 import type { PaginationParameters } from "@/models/pagination";
 import Playlist, {
 	type CreatePlaylistDto,
@@ -168,9 +173,7 @@ export default class API {
 
 	//// External Metadata
 	async refreshExternalMetadata(
-		dto: Partial<
-			Record<"artistId" | "albumId" | "songId", number | undefined>
-		>,
+		dto: RefreshMetadataDto,
 		reuseSources: boolean,
 	): Promise<void> {
 		return this.fetch({
@@ -182,6 +185,18 @@ export default class API {
 			method: "POST",
 			emptyResponse: true,
 		});
+	}
+
+	async resolveUrl(dto: ResolveUrlDto): Promise<ResolveUrlResponse | null> {
+		return this.fetch({
+			route: `/resolve-url`,
+			errorMessage: "Refreshing Metadata Failed",
+			parameters: {},
+			otherParameters: dto,
+			service: Service.Matcher,
+			method: "GET",
+			validator: ResolveUrlResponse,
+		}).catch(() => null);
 	}
 
 	//// Tasks

@@ -33,12 +33,14 @@ import {
 import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
+	type CommonExternalMetadata,
 	SongExternalMetadata,
 } from "@/models/external-metadata";
 import File from "@/models/file";
 import Genre, { type GenreSortingKeys } from "@/models/genre";
 import Label, { type LabelSortingKeys } from "@/models/label";
 import Library from "@/models/library";
+import type { MatchableResourceType } from "@/models/matcher";
 import PaginatedResponse, {
 	type PaginationParameters,
 } from "@/models/pagination";
@@ -466,12 +468,12 @@ export const getAlbumExternalMetadata = (slugOrId: string | number) =>
 		AlbumExternalMetadata,
 	);
 
-const getResourceExternalMetadata = <
-	T,
+export const getResourceExternalMetadata = <
+	T extends CommonExternalMetadata,
 	V extends yup.Schema<T> = yup.Schema<T>,
 >(
 	resourceSlugOrId: string | number,
-	resourceType: "artist" | "album" | "song",
+	resourceType: MatchableResourceType,
 	validator: V,
 ): Query<T | null> => {
 	const query = _mkSimpleQuery({

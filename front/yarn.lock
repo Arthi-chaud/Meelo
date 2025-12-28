@@ -9691,6 +9691,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "models@workspace:packages/models"
   dependencies:
+    type-fest: "npm:^4.33.0"
     typescript: "npm:5.3.3"
   languageName: unknown
   linkType: soft
