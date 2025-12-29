@@ -88,7 +88,7 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
             return None
 
     def get_article_id_from_url(self, article_url: str) -> str:
-        return article_url.replace("https://en.wikipedia.org/wiki/", "")
+        return article_url.removeprefix("https://en.wikipedia.org/wiki/")
 
     def get_article_url_from_id(self, article_url: str) -> str:
         return f"https://en.wikipedia.org/wiki/{article_url}"

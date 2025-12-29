@@ -1,4 +1,5 @@
 import asyncio
+from dataclasses import dataclass
 from typing import Annotated
 from fastapi import Depends, FastAPI, Query, Request, status
 from fastapi.responses import JSONResponse
@@ -96,6 +97,7 @@ class QueueResponse(BaseModel):
     pending_items: int
 
 
+@dataclass
 class ErrorResponse(Exception):
     message: str
     status: int
@@ -192,3 +194,38 @@ async def rematch(
             await match("song", song.name, song.id, reuseSources=dto.reuseSources)
     except Exception as e:
         raise ErrorResponse(e.__str__(), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ResolvedUrlResponse(BaseModel):
+    url: str
+    providerId: int
+
+
+@app.get(
+    "/resolve-url",
+    summary="Get the provider from a resource's URL",
+    response_model=ResolvedUrlResponse,
+    tags=["Endpoints"],
+)
+async def resolve_url(
+    _: Annotated[User, Depends(get_admin_user)],
+    url: Annotated[str, Query()],
+    resource_type: Annotated[str, Query()],
+):
+    context = Context.get()
+    res = None
+    if resource_type not in ["artist", "album", "song"]:
+        raise ErrorResponse("Invalid resource type", status.HTTP_400_BAD_REQUEST)
+    for p in context.get_providers():
+        if (
+            (resource_type == "artist" and p.is_artist_url(url))
+            or (resource_type == "album" and p.is_album_url(url))
+            or (resource_type == "song" and p.is_song_url(url))
+        ):
+            res = p
+            break
+    if res is None:
+        raise ErrorResponse(
+            "No provider recognises this url", status.HTTP_404_NOT_FOUND
+        )
+    return ResolvedUrlResponse(url=url, providerId=res.api_model.id)

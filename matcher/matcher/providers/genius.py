@@ -52,7 +52,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetArtistIdFromUrlFeature(
-                lambda artist_url: artist_url.replace("https://genius.com/artists/", "")
+                lambda artist_url: artist_url.removeprefix(
+                    "https://genius.com/artists/"
+                )
             ),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://genius.com/artists/{artist_id}"
@@ -74,7 +76,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
                 lambda album_id: f"https://genius.com/albums/{album_id}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda album_url: album_url.replace("https://genius.com/albums/", "")
+                lambda album_url: album_url.removeprefix("https://genius.com/albums/")
             ),
             GetAlbumFeature(lambda album: self._get_album(album)),
             GetAlbumReleaseDateFeature(

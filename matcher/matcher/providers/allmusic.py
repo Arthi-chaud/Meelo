@@ -14,6 +14,7 @@ from .features import (
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumUrlFromIdFeature,
+    GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
     GetMusicBrainzRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
@@ -28,6 +29,11 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
     def __post_init__(self):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "allmusic"),
+            GetArtistIdFromUrlFeature(
+                lambda artist_url: artist_url.replace(
+                    "https://www.allmusic.com/artist/", ""
+                )
+            ),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://www.allmusic.com/artist/{artist_id}"
             ),

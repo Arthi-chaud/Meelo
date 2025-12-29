@@ -36,7 +36,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
             ),
             GetSongUrlFromIdFeature(lambda id: f"https://lrclib.net/api/get/{id}"),
             GetSongIdFromUrlFeature(
-                lambda url: url.replace("https://lrclib.net/api/get/", "")
+                lambda url: url.removeprefix("https://lrclib.net/api/get/")
             ),
         ]
 

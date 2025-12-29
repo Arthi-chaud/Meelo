@@ -32,7 +32,9 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
                 lambda rel: "metacritic" in rel["url"]["resource"]
             ),
             GetArtistIdFromUrlFeature(
-                lambda url: url.replace("https://metacritic.com/person", "")
+                lambda url: url.removeprefix("https://metacritic.com/person").removeprefix(
+                    "https://www.metacritic.com/person"
+                )
             ),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
