@@ -26,6 +26,7 @@ import type { ReleaseWithRelations } from "@/models/release";
 import { MasterIcon, UpgradeIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { DownloadReleaseAction } from "~/components/actions/download";
+import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
 import { PlayReleaseAction } from "~/components/actions/play-album";
 import { AddToPlaylistAction } from "~/components/actions/playlist";
@@ -127,6 +128,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						props.release.id,
 					),
 					RefreshAlbumMetadataAction(props.release.albumId, t),
+					EditExternalLinksAction("album", props.release.albumId),
 				],
 				[
 					DownloadReleaseAction(

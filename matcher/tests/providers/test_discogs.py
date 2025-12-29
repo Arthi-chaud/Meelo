@@ -18,6 +18,10 @@ async def ctx():
 
 
 class TestDiscogs:
+    def test_is_artist_url(self, ctx):
+        provider = Context().get().get_provider_or_raise(DiscogsProvider)
+        assert provider.is_artist_url("https://www.discogs.com/artist/3424607")
+
     @pytest.mark.asyncio(loop_scope="module")
     async def test_search_artist(self, ctx, subtests):
         scenarios: List[Tuple[str, str]] = [

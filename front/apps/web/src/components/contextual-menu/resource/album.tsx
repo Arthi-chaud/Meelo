@@ -22,6 +22,7 @@ import { getMasterRelease } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { useQueryClient } from "~/api";
 import { DownloadReleaseAsyncAction } from "~/components/actions/download";
+import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
 import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
 import { PlayReleaseAction } from "~/components/actions/play-album";
 import { AddToPlaylistAction } from "~/components/actions/playlist";
@@ -65,6 +66,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 				[
 					ChangeAlbumType(props.album, queryClient),
 					RefreshAlbumMetadataAction(props.album.id, t),
+					EditExternalLinksAction("album", props.album.id),
 				],
 				[
 					DownloadReleaseAsyncAction(

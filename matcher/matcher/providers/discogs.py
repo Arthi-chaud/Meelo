@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, List
+from urllib.parse import urlparse
 
 from aiohttp import ClientSession
 from matcher.context import Context
@@ -19,7 +20,12 @@ from matcher.providers.features import (
     GetMusicBrainzRelationKeyFeature,
 )
 from matcher.providers.session import HasSession
-from matcher.utils import asyncify, capitalize_all_words
+from matcher.utils import (
+    asyncify,
+    capitalize_all_words,
+    normalise_url_for_parse,
+    removeprefix_or_none,
+)
 from .boilerplate import BaseProviderBoilerplate
 from ..settings import DiscogsSettings
 import discogs_client
@@ -38,12 +44,10 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
             GetMusicBrainzRelationKeyFeature(lambda: "discogs"),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetArtistIdFromUrlFeature(
-                lambda artist_url: artist_url.replace(
-                    "https://www.discogs.com/artist/", ""
-                )
+                lambda artist_url: self._get_artist_id_from_url(artist_url)
             ),
             GetArtistUrlFromIdFeature(
-                lambda artist_id: "https://www.discogs.com/artist/" + str(artist_id)
+                lambda artist_id: f"https://www.discogs.com/artist/{artist_id}"
             ),
             GetArtistFeature(lambda artist_name: self._get_artist(artist_name)),
             GetArtistIllustrationUrlFeature(
@@ -55,9 +59,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
                 lambda album_id: f"https://www.discogs.com/master/{album_id}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda album_url: album_url.replace(
-                    "https://www.discogs.com/master/", ""
-                )
+                lambda album_url: self._get_album_id_from_url(album_url)
             ),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
             GetAlbumGenresFeature(
@@ -87,6 +89,22 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
             params={"token": self.settings.api_key},
         ) as response:
             return await response.json()
+
+    def _get_resource_path_from_url(self, resource_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(resource_url))
+        if not url.netloc.endswith("discogs.com"):
+            return None
+        return url.path
+
+    def _get_artist_id_from_url(self, artist_url) -> str | None:
+        path = self._get_resource_path_from_url(artist_url)
+        if path:
+            return removeprefix_or_none(path, "/artist/")
+
+    def _get_album_id_from_url(self, album_url) -> str | None:
+        path = self._get_resource_path_from_url(album_url)
+        if path:
+            return removeprefix_or_none(path, "/master/")
 
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         client = self._get_client()

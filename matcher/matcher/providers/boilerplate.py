@@ -10,11 +10,13 @@ from .features import (
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
+    IsAlbumUrlFeature,
     GetArtistDescriptionFeature,
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistIllustrationUrlFeature,
     GetArtistUrlFromIdFeature,
+    IsArtistUrlFeature,
     GetMusicBrainzRelationKeyFeature,
     GetSongDescriptionFeature,
     GetSongFeature,
@@ -31,6 +33,7 @@ from .features import (
     SearchArtistFeature,
     SearchSongFeature,
     SearchSongWithAcoustIdFeature,
+    IsSongUrlFeature,
 )
 from .domain import AlbumType, SearchResult
 from typing import Any, List
@@ -59,6 +62,16 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     def get_artist_url_from_id(self, artist_id: str) -> str | None:
         f = self.get_feature(GetArtistUrlFromIdFeature)
         return f.run(artist_id) if f else None
+
+    def is_artist_url(self, url: str) -> bool:
+        f = self.get_feature(IsArtistUrlFeature)
+        if f:
+            return f.run(url)
+        f = self.get_feature(GetArtistIdFromUrlFeature)
+        if not f:
+            return False
+        res = f.run(url)
+        return res is not None if f else False
 
     def get_artist_id_from_url(self, artist_url) -> str | None:
         f = self.get_feature(GetArtistIdFromUrlFeature)
@@ -119,6 +132,16 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetAlbumReleaseDateFeature)
         return await f.run(album) if f else None
 
+    def is_album_url(self, url: str) -> bool:
+        f = self.get_feature(IsAlbumUrlFeature)
+        if f:
+            return f.run(url)
+        f = self.get_feature(GetAlbumIdFromUrlFeature)
+        if not f:
+            return False
+        res = f.run(url)
+        return res is not None if f else False
+
     def get_wikidata_album_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataAlbumRelationKeyFeature)
         return f.run() if f else None
@@ -176,3 +199,13 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     def get_song_id_from_url(self, song_url) -> str | None:
         f = self.get_feature(GetSongIdFromUrlFeature)
         return f.run(song_url) if f else None
+
+    def is_song_url(self, url: str) -> bool:
+        f = self.get_feature(IsSongUrlFeature)
+        if f:
+            return f.run(url)
+        f = self.get_feature(GetSongIdFromUrlFeature)
+        if not f:
+            return False
+        res = f.run(url)
+        return res is not None if f else False

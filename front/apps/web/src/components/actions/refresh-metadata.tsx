@@ -116,7 +116,8 @@ const RefreshMetadataActionContent = ({
 								.promise(
 									api.refreshExternalMetadata(
 										{
-											[`${resourceType}Id`]: resourceId,
+											[`${resourceType}Id` as "artistId"]:
+												resourceId,
 										},
 										reuseSources,
 									),

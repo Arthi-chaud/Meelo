@@ -34,7 +34,13 @@ from ..settings import GeniusSettings
 from urllib.parse import urlparse
 from datetime import date
 import re
-from ..utils import asyncify, to_slug
+from ..utils import (
+    asyncify,
+    normalise_url_for_parse,
+    removeprefix_or_none,
+    removesuffix_or_none,
+    to_slug,
+)
 from bs4 import BeautifulSoup
 
 AlbumSearchResultData: TypeAlias = tuple[Any, Any]
@@ -52,7 +58,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetArtistIdFromUrlFeature(
-                lambda artist_url: artist_url.replace("https://genius.com/artists/", "")
+                lambda artist_url: self._get_artist_id_from_url(artist_url)
             ),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://genius.com/artists/{artist_id}"
@@ -74,7 +80,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
                 lambda album_id: f"https://genius.com/albums/{album_id}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda album_url: album_url.replace("https://genius.com/albums/", "")
+                lambda album_url: self._get_album_id_from_url(album_url)
             ),
             GetAlbumFeature(lambda album: self._get_album(album)),
             GetAlbumReleaseDateFeature(
@@ -85,11 +91,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             GetSongUrlFromIdFeature(
                 lambda id: f"https://genius.com/{id.replace('-lyrics', '')}-lyrics"
             ),
-            GetSongIdFromUrlFeature(
-                lambda url: url.replace("-lyrics", "").replace(
-                    "https://genius.com/", ""
-                )
-            ),
+            GetSongIdFromUrlFeature(lambda url: self._get_song_id_from_url(url)),
             GetSongFeature(lambda id: self._get_song(id)),
             GetPlainSongLyricsFeature(lambda s: asyncify(self._get_song_lyrics, s)),
             GetSongDescriptionFeature(
@@ -120,6 +122,27 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             else {**params, "access_token": self.settings.api_key},
         ) as response:
             return await then(response)
+
+    def _get_resource_path_from_url(self, resource_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(resource_url))
+        if not url.netloc.endswith("genius.com"):
+            return None
+        return url.path
+
+    def _get_artist_id_from_url(self, artist_url) -> str | None:
+        path = self._get_resource_path_from_url(artist_url)
+        if path:
+            return removeprefix_or_none(path, "/artists/")
+
+    def _get_album_id_from_url(self, album_url) -> str | None:
+        path = self._get_resource_path_from_url(album_url)
+        if path:
+            return removeprefix_or_none(path, "/albums/")
+
+    def _get_song_id_from_url(self, song_url) -> str | None:
+        path = self._get_resource_path_from_url(song_url)
+        if path:
+            return removesuffix_or_none(path.removeprefix("/"), "-lyrics")
 
     async def _fetch_json(self, url: str, params={}, host="https://genius.com/api"):
         return await self.__fetch(url, host, lambda r: r.json(), params)

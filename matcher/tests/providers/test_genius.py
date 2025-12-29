@@ -19,6 +19,10 @@ async def ctx():
 
 
 class TestGenius:
+    def test_is_song_url(self, ctx):
+        provider = Context().get().get_provider_or_raise(GeniusProvider)
+        assert provider.is_song_url("https://genius.com/Madonna-hung-up-lyrics")
+
     @pytest.mark.skipif(MatcherTestUtils.is_ci(), reason="")
     @pytest.mark.asyncio(loop_scope="module")
     async def test_search_artist(self, ctx, subtests):

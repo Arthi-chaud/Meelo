@@ -27,6 +27,7 @@ import { MasterIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import type Action from "~/components/actions";
 import { DownloadAction } from "~/components/actions/download";
+import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
 import {
 	GoToReleaseAction,
 	GoToSongInfoAction,
@@ -124,6 +125,10 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					RefreshTrackMetadataAction(props.track.id, t),
+
+					...(props.track.songId
+						? [EditExternalLinksAction("song", props.track.songId)]
+						: []),
 					...(props.track.song !== null && props.track.songId !== null
 						? [ReassignTrackAction(props.track as any, queryClient)]
 						: []),
