@@ -34,6 +34,7 @@ import {
 	AlbumExternalMetadata,
 	ArtistExternalMetadata,
 	type CommonExternalMetadata,
+	ExternalProvider,
 	SongExternalMetadata,
 } from "@/models/external-metadata";
 import File from "@/models/file";
@@ -513,6 +514,13 @@ export const getSearchHistory = (): Query<SearchResult[]> => {
 	return _mkSimpleQuery({
 		route: "/search/history",
 		customValidator: SearchResultTransformer,
+	});
+};
+
+export const getExternalProviders = (): InfiniteQuery<ExternalProvider> => {
+	return _mkSimplePaginatedQuery({
+		route: "/external-providers",
+		validator: PaginatedResponse(ExternalProvider),
 	});
 };
 

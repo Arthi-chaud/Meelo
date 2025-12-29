@@ -22,6 +22,7 @@ import type Artist from "@/models/artist";
 import type { TrackWithRelations } from "@/models/track";
 import { useQueryClient } from "~/api";
 import { DownloadAction } from "~/components/actions/download";
+import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
 import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
@@ -94,7 +95,16 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					...(props.track.songId
-						? [RefreshSongMetadataAction(props.track.songId, t)]
+						? [
+								RefreshSongMetadataAction(
+									props.track.songId,
+									t,
+								),
+								EditExternalLinksAction(
+									"song",
+									props.track.songId,
+								),
+							]
 						: []),
 				],
 				[ShowTrackFileInfoAction(confirm, props.track.id)],

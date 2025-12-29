@@ -19,6 +19,7 @@
 import { useTranslation } from "react-i18next";
 import type Artist from "@/models/artist";
 import { useQueryClient } from "~/api";
+import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
 import {
 	GoToArtistAction,
 	GoToArtistAlbumsAction,
@@ -59,6 +60,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 						props.artist.id,
 					),
 					RefreshArtistMetadataAction(props.artist.id, t),
+					EditExternalLinksAction("artist", props.artist.id),
 				],
 				[ShareArtistAction(artistSlug, t)],
 			]}

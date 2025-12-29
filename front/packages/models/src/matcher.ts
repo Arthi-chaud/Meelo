@@ -1,5 +1,6 @@
 import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
+import type { CommonExternalMetadata } from "./external-metadata";
 export type MatchableResourceType = "artist" | "album" | "song";
 
 export type RefreshMetadataDto = RequireExactlyOne<
@@ -16,3 +17,10 @@ export const ResolveUrlResponse = yup.object({
 	providerId: yup.number().required(),
 });
 export type ResolveUrlResponse = yup.InferType<typeof ResolveUrlResponse>;
+
+export type CreateExternalMetadataDto<T extends CommonExternalMetadata> = Omit<
+	T,
+	"sources"
+> & {
+	sources: { providerId: number; url: string }[];
+};

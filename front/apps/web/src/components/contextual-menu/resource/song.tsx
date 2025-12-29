@@ -25,6 +25,7 @@ import type { SongWithRelations } from "@/models/song";
 import { DeleteIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { DownloadAsyncAction } from "~/components/actions/download";
+import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
 import {
 	GoToArtistAction,
 	GoToRelatedTracksAction,
@@ -94,6 +95,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				[
 					ChangeSongType(props.song, queryClient),
 					RefreshSongMetadataAction(props.song.id, t),
+					EditExternalLinksAction("song", props.song.id),
 					MergeSongAction(props.song, queryClient),
 				],
 				[

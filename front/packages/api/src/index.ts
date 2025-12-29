@@ -20,9 +20,11 @@ import type { RequireExactlyOne } from "type-fest";
 import * as yup from "yup";
 import type { AlbumType } from "@/models/album";
 import { ResourceNotFound } from "@/models/exceptions";
+import type { CommonExternalMetadata } from "@/models/external-metadata";
 import type { IllustrationQuality } from "@/models/illustration";
 import Library from "@/models/library";
 import {
+	type CreateExternalMetadataDto,
 	type RefreshMetadataDto,
 	type ResolveUrlDto,
 	ResolveUrlResponse,
@@ -192,11 +194,24 @@ export default class API {
 			route: `/resolve-url`,
 			errorMessage: "Refreshing Metadata Failed",
 			parameters: {},
-			otherParameters: dto,
+			otherParameters: { ...dto, resource_type: dto.resourceType },
 			service: Service.Matcher,
 			method: "GET",
 			validator: ResolveUrlResponse,
 		}).catch(() => null);
+	}
+
+	async submitExternalMetadata<T extends CommonExternalMetadata>(
+		dto: CreateExternalMetadataDto<T>,
+	): Promise<void> {
+		return this.fetch({
+			route: `/external-metadata`,
+			errorMessage: "Submitting Metadata Failed",
+			parameters: {},
+			data: dto,
+			method: "POST",
+			emptyResponse: true,
+		});
 	}
 
 	//// Tasks
