@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import re
 from typing import Any, List
+from urllib.parse import urlparse
 
 from aiohttp import ClientSession
 from matcher.context import Context
@@ -16,7 +17,7 @@ from matcher.providers.features import (
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
 )
-from matcher.utils import asyncify
+from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
 
 
 @dataclass
@@ -35,9 +36,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
                 lambda song: asyncify(self._parse_synced_lyrics, song)
             ),
             GetSongUrlFromIdFeature(lambda id: f"https://lrclib.net/api/get/{id}"),
-            GetSongIdFromUrlFeature(
-                lambda url: url.removeprefix("https://lrclib.net/api/get/")
-            ),
+            GetSongIdFromUrlFeature(lambda url: self._get_song_id_from_url(url)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -60,6 +59,12 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
             if abs(duration - item_duration) > 2:
                 return False
         return True
+
+    def _get_song_id_from_url(self, resource_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(resource_url))
+        if not url.netloc == "lrclib.net":
+            return None
+        return removeprefix_or_none(url.path, "/api/get/")
 
     async def _search_song(
         self,

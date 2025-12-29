@@ -2,11 +2,12 @@ from dataclasses import dataclass
 import datetime
 from typing import Any
 import json
+from urllib.parse import urlparse
 from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.session import HasSession
-from matcher.utils import asyncify
+from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
 from ..settings import AllMusicSettings
 from .features import (
     GetAlbumFeature,
@@ -30,9 +31,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "allmusic"),
             GetArtistIdFromUrlFeature(
-                lambda artist_url: artist_url.replace(
-                    "https://www.allmusic.com/artist/", ""
-                )
+                lambda artist_url: self._get_artist_id_from_url(artist_url)
             ),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://www.allmusic.com/artist/{artist_id}"
@@ -43,9 +42,7 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
                 lambda album_id: f"https://www.allmusic.com/album/{album_id}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda album_url: album_url.replace(
-                    "https://www.allmusic.com/album/", ""
-                )
+                lambda album_url: self._get_album_id_from_url(album_url)
             ),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
             GetAlbumRatingFeature(
@@ -60,6 +57,22 @@ class AllMusicProvider(BaseProviderBoilerplate[AllMusicSettings], HasSession):
         return ClientSession(
             headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"}
         )
+
+    def _get_resource_path_from_url(self, resource_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(resource_url))
+        if not url.netloc.endswith("allmusic.com"):
+            return None
+        return url.path
+
+    def _get_artist_id_from_url(self, artist_url) -> str | None:
+        path = self._get_resource_path_from_url(artist_url)
+        if path:
+            return removeprefix_or_none(path, "/artist/")
+
+    def _get_album_id_from_url(self, album_url) -> str | None:
+        path = self._get_resource_path_from_url(album_url)
+        if path:
+            return removeprefix_or_none(path, "/album/")
 
     async def _get_album(self, album_id: str) -> Any | None:
         try:

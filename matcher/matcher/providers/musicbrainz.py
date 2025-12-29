@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import logging
 import re
 from typing import Any, List
+from urllib.parse import urlparse
 import aiohttp
 from aiohttp.client import ClientSession
 from matcher.context import Context
@@ -29,7 +30,13 @@ from matcher.providers.features import (
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
 )
-from ..utils import asyncify, capitalize_all_words, to_slug
+from ..utils import (
+    asyncify,
+    capitalize_all_words,
+    normalise_url_for_parse,
+    removeprefix_or_none,
+    to_slug,
+)
 from .domain import AlbumType, SearchResult
 from ..settings import MusicBrainzSettings
 from .session import HasSession
@@ -88,9 +95,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 lambda artist_id: f"https://musicbrainz.org/artist/{artist_id}"
             ),
             GetArtistIdFromUrlFeature(
-                lambda artist_url: artist_url.replace(
-                    "https://musicbrainz.org/artist/", ""
-                )
+                lambda artist_url: self._get_artist_id_from_url(artist_url)
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
@@ -105,9 +110,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 lambda album_id: f"https://musicbrainz.org/release-group/{album_id}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda album_url: album_url.replace(
-                    "https://musicbrainz.org/release-group/", ""
-                )
+                lambda album_url: self._get_album_id_from_url(album_url)
             ),
             GetAlbumFeature(lambda album: self._get_album(album)),
             GetAlbumReleaseDateFeature(
@@ -129,9 +132,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 lambda song_id: f"https://musicbrainz.org/recording/{song_id}"
             ),
             GetSongIdFromUrlFeature(
-                lambda song_url: song_url.replace(
-                    "https://musicbrainz.org/recording/", ""
-                )
+                lambda song_url: self._get_song_id_from_url(song_url)
             ),
         ]
 
@@ -166,6 +167,27 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
 
     def compilation_artist_id(self):
         return "89ad4ac3-39f7-470e-963a-56509c546377"
+
+    def _get_resource_path_from_url(self, resource_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(resource_url))
+        if not url.netloc.endswith("musicbrainz.org"):
+            return None
+        return url.path
+
+    def _get_artist_id_from_url(self, artist_url) -> str | None:
+        path = self._get_resource_path_from_url(artist_url)
+        if path:
+            return removeprefix_or_none(path, "/artist/")
+
+    def _get_album_id_from_url(self, album_url) -> str | None:
+        path = self._get_resource_path_from_url(album_url)
+        if path:
+            return removeprefix_or_none(path, "/release-group/")
+
+    def _get_song_id_from_url(self, song_url) -> str | None:
+        path = self._get_resource_path_from_url(song_url)
+        if path:
+            return removeprefix_or_none(path, "/recording/")
 
     async def _get_artist(self, id: str) -> Any:
         return await self._fetch(f"/artist/{id}", {"inc": "url-rels"})
@@ -277,9 +299,11 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:
-        return await self._fetch(
+        res = await self._fetch(
             f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
+        print("\n\n\n\n", res)
+        return res
 
     def _get_album_release_date(self, album: Any) -> date | None:
         str_release_date = album.get("first-release-date")

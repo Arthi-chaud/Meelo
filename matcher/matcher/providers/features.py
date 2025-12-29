@@ -16,7 +16,7 @@ class GetUrlFromIdFeature(BaseFeature[ResourceId, ResourceUrl]):
     pass
 
 
-class GetIdFromUrlFeature(BaseFeature[ResourceUrl, ResourceId]):
+class GetIdFromUrlFeature(BaseFeature[ResourceUrl, ResourceId | None]):
     pass
 
 

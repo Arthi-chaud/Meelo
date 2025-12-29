@@ -68,7 +68,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         if f:
             return f.run(url)
         f = self.get_feature(GetArtistIdFromUrlFeature)
-        return f.run(url) != url if f else False
+        if not f:
+            return False
+        res = f.run(url)
+        return res is not None if f else False
 
     def get_artist_id_from_url(self, artist_url) -> str | None:
         f = self.get_feature(GetArtistIdFromUrlFeature)
@@ -134,7 +137,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         if f:
             return f.run(url)
         f = self.get_feature(GetAlbumIdFromUrlFeature)
-        return f.run(url) != url if f else False
+        if not f:
+            return False
+        res = f.run(url)
+        return res is not None if f else False
 
     def get_wikidata_album_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataAlbumRelationKeyFeature)
@@ -199,4 +205,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         if f:
             return f.run(url)
         f = self.get_feature(GetSongIdFromUrlFeature)
-        return f.run(url) != url if f else False
+        if not f:
+            return False
+        res = f.run(url)
+        return res is not None if f else False

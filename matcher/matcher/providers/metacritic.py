@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
+from urllib.parse import urlparse
 
 from aiohttp import ClientSession
 from matcher.context import Context
@@ -21,7 +22,7 @@ from matcher.settings import MetacriticSettings
 from bs4 import BeautifulSoup, Tag
 from datetime import date, datetime
 
-from matcher.utils import asyncify
+from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
 
 
 @dataclass
@@ -31,22 +32,16 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
             IsMusicBrainzRelationFeature(
                 lambda rel: "metacritic" in rel["url"]["resource"]
             ),
-            GetArtistIdFromUrlFeature(
-                lambda url: url.removeprefix("https://metacritic.com/person").removeprefix(
-                    "https://www.metacritic.com/person"
-                )
-            ),
+            GetArtistIdFromUrlFeature(lambda url: self._get_artist_id_from_url(url)),
             GetArtistUrlFromIdFeature(
                 lambda artist_id: f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
             ),
             GetWikidataArtistRelationKeyFeature(lambda: "P1712"),
             GetAlbumUrlFromIdFeature(
-                lambda album_id: f"https://www.metacritic.com/music/{album_id.replace('music/', '')}"
+                lambda album_id: f"https://www.metacritic.com/music/{album_id.removeprefix('music/')}"
             ),
             GetAlbumIdFromUrlFeature(
-                lambda album_url: album_url.replace(
-                    "https://www.metacritic.com/music/", ""
-                )
+                lambda album_url: self._get_album_id_from_url(album_url)
             ),
             GetWikidataAlbumRelationKeyFeature(lambda: "P1712"),
             GetAlbumFeature(lambda album_id: self._get_album(album_id)),
@@ -62,6 +57,22 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
         return ClientSession(
             headers={"User-Agent": f"Meelo Matcher/{Context.get().settings.version}"},
         )
+
+    def _get_resource_path_from_url(self, resource_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(resource_url))
+        if not url.netloc.endswith("metacritic.com"):
+            return None
+        return url.path
+
+    def _get_artist_id_from_url(self, artist_url) -> str | None:
+        path = self._get_resource_path_from_url(artist_url)
+        if path:
+            return removeprefix_or_none(path, "/person/")
+
+    def _get_album_id_from_url(self, album_url) -> str | None:
+        path = self._get_resource_path_from_url(album_url)
+        if path:
+            return removeprefix_or_none(path, "/music/")
 
     async def _get_album(self, album_id: str) -> Any | None:
         album_url = self.get_album_url_from_id(album_id)

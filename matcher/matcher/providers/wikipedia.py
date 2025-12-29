@@ -4,7 +4,7 @@ from typing import Any
 from aiohttp import ClientSession
 from matcher.context import Context
 from matcher.providers.session import HasSession
-from matcher.utils import asyncify
+from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
 from .features import (
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -20,6 +20,7 @@ from .features import (
 from urllib.parse import unquote
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from ..settings import WikipediaSettings
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -87,8 +88,11 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
         except Exception:
             return None
 
-    def get_article_id_from_url(self, article_url: str) -> str:
-        return article_url.removeprefix("https://en.wikipedia.org/wiki/")
+    def get_article_id_from_url(self, article_url: str) -> str | None:
+        url = urlparse(normalise_url_for_parse(article_url))
+        if not url.netloc.endswith("wikipedia.org"):
+            return None
+        return removeprefix_or_none(url.path, "/wiki/")
 
     def get_article_url_from_id(self, article_url: str) -> str:
         return f"https://en.wikipedia.org/wiki/{article_url}"
