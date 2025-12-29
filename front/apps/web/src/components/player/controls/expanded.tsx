@@ -508,6 +508,7 @@ export const ExpandedPlayerControls = (
 						progress={props.progress}
 						setProgress={props.onSlide}
 						playerIsExpanded={props.expanded}
+						trackIsVideo={props.track?.type === "Video"}
 					/>
 				</Box>
 			)}
