@@ -3208,10 +3208,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/validator@npm:^13.7.10":
-  version: 13.7.10
-  resolution: "@types/validator@npm:13.7.10"
-  checksum: 10c0/986ac935937603b71d2dd0f3bfd72bbfddb861303ba7767d8a3bccd2eb6a29f3af3dae8d349e8b2465b445e08ee8e1bc3d21d009bd322323ba897dea79298634
+"@types/validator@npm:^13.15.3":
+  version: 13.15.10
+  resolution: "@types/validator@npm:13.15.10"
+  checksum: 10c0/3e2e65fcd37dd6961ca3fd0535293d0c42f5911dc3ca44b96f458835e6db2392b678ccbb0c9815d8c0a14e653439e6c62c7b8758a6cd1d6e390551c9e56618ac
   languageName: node
   linkType: hard
 
@@ -4403,14 +4403,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-validator@npm:^0.14.0":
-  version: 0.14.0
-  resolution: "class-validator@npm:0.14.0"
+"class-validator@npm:^0.14.3":
+  version: 0.14.3
+  resolution: "class-validator@npm:0.14.3"
   dependencies:
-    "@types/validator": "npm:^13.7.10"
-    libphonenumber-js: "npm:^1.10.14"
-    validator: "npm:^13.7.0"
-  checksum: 10c0/1f7c34052f0c342b1d27c5aec7c42b646bb77a56874acc0d8003e2ad8f0294e7da18b43e9caaac8e8817cbb309cf9f14bcebe4611994390ca4818f3b393783dc
+    "@types/validator": "npm:^13.15.3"
+    libphonenumber-js: "npm:^1.11.1"
+    validator: "npm:^13.15.20"
+  checksum: 10c0/6d451c359aecb04479b95034b10cca02015d3b6f34480574c618c070e12f3676cb4cdfa76bfa61353356a483ff01326e9ce3f07ef584be6c31806190117f7fa4
   languageName: node
   linkType: hard
 
@@ -7014,10 +7014,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:^1.10.14":
-  version: 1.10.18
-  resolution: "libphonenumber-js@npm:1.10.18"
-  checksum: 10c0/3987bda861b52990f525622c15ae5c72894a66a9319e8b93153da1f7f3a53570d928c8517831b320ad315fe3c008ca17ee2253e41ba497af8bd84e260ff21135
+"libphonenumber-js@npm:^1.11.1":
+  version: 1.12.33
+  resolution: "libphonenumber-js@npm:1.12.33"
+  checksum: 10c0/8a2ae4884da48bb28bf3651ff23bb896eb5f12ea0600bb1ca321538458805f5f22b860ff6eaaed42f897212fa9edfa1d62fe1fa0755a44c707cc465a7975c246
   languageName: node
   linkType: hard
 
@@ -7320,7 +7320,7 @@ __metadata:
     bcrypt: "npm:^6.0.0"
     blurhash: "npm:^2.0.5"
     class-transformer: "npm:^0.5.1"
-    class-validator: "npm:^0.14.0"
+    class-validator: "npm:^0.14.3"
     cookie-parser: "npm:^1.4.7"
     damerau-levenshtein: "npm:^1.0.8"
     fs: "npm:^0.0.1-security"
@@ -9870,10 +9870,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:^13.7.0":
-  version: 13.7.0
-  resolution: "validator@npm:13.7.0"
-  checksum: 10c0/234c9db98001d6f75c04174dd7f67a297728c8cb369db99f21c41ba4a254558bf91427ecdcc9017ddcd44271c9db38e96079cf432a41c92f13d96d6ca0d5c28d
+"validator@npm:^13.15.20":
+  version: 13.15.26
+  resolution: "validator@npm:13.15.26"
+  checksum: 10c0/d66041685c531423f6b514d0481228503b96682fe30ed7925ad77ff3cd08c3983dc94f45e18457e44f62f89027b94a3342009d65421800ce65f6e0d2c6eaf7fc
   languageName: node
   linkType: hard
 
