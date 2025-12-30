@@ -42,10 +42,11 @@ func execScan(library api.Library, c config.Config, w *Worker) error {
 			// File is already in library
 			continue
 		}
-		stringMime := mime.TypeByExtension(path.Ext(fileInDir))
+		ext := path.Ext(fileInDir)
+		stringMime := mime.TypeByExtension(ext)
 		if strings.HasPrefix(stringMime, "video/") || strings.HasPrefix(stringMime, "audio/") {
 			pathsNotRegistered = append(pathsNotRegistered, fileInDir)
-		} else if !strings.HasPrefix(stringMime, "image/") {
+		} else if !strings.HasPrefix(stringMime, "image/") && ext != ".lrc" {
 			log.Warn().
 				Str("file", path.Base(fileInDir)).
 				Msg("File does not seem to be an audio or video file. Ignored.")
