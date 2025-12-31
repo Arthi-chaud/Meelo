@@ -2,7 +2,8 @@
 	"name": "models",
 	"sideEffects": false,
 	"dependencies": {
-		"type-fest": "^4.41.0"
+		"type-fest": "^4.41.0",
+		"yup": "^1.7.1"
 	},
 	"devDependencies": {
 		"typescript": "5.3.3"

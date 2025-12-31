@@ -4907,7 +4907,7 @@ __metadata:
     react: "npm:19.1.0"
     type-fest: "npm:^4.41.0"
     typescript: "npm:5.3.3"
-    yup: "npm:^1.0.0"
+    yup: "npm:^1.7.1"
   languageName: unknown
   linkType: soft
 
@@ -9509,6 +9509,7 @@ __metadata:
   dependencies:
     type-fest: "npm:^4.41.0"
     typescript: "npm:5.3.3"
+    yup: "npm:^1.7.1"
   languageName: unknown
   linkType: soft
 
@@ -12716,7 +12717,6 @@ __metadata:
     typescript: "npm:5.3.3"
     usehooks-ts: "npm:^2.9.5"
     uuid: "npm:^10.0.0"
-    yup: "npm:^1.0.0"
   languageName: unknown
   linkType: soft
 
@@ -12993,15 +12993,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yup@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "yup@npm:1.0.0"
+"yup@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "yup@npm:1.7.1"
   dependencies:
     property-expr: "npm:^2.0.5"
     tiny-case: "npm:^1.0.3"
     toposort: "npm:^2.0.2"
     type-fest: "npm:^2.19.0"
-  checksum: 10c0/9c333077df46ddad74e462f26c3cbe539017453001f61448c4a25ac0e0f77e38c8703d6a085ce315e0c05dbc4278730a1c98383ae4dd92a4ffa48f3ae3fdfa1e
+  checksum: 10c0/76b8c7fc2ba467a346935d027a25c067f9653bb0413cd60fbe0518e3d62637a56dbfca49979c4bab1a93d8e9a50843ca73d90bdc271e2f5bce1effa7734e5f28
   languageName: node
   linkType: hard
 
