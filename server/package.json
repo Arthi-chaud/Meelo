@@ -101,7 +101,7 @@
 		"ts-jest": "^29.4.6",
 		"ts-loader": "^9.5.2",
 		"ts-node": "^10.0.0",
-		"tsconfig-paths": "^3.10.1",
+		"tsconfig-paths": "^4.2.0",
 		"type-fest": "^4.24.0",
 		"typescript": "^4.3.5"
 	},
