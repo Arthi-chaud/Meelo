@@ -10741,12 +10741,12 @@ __metadata:
   linkType: hard
 
 "react-native-edge-to-edge@npm:^1.6.1":
-  version: 1.6.1
-  resolution: "react-native-edge-to-edge@npm:1.6.1"
+  version: 1.7.0
+  resolution: "react-native-edge-to-edge@npm:1.7.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/612e947536dfff610ad849045d9826920bc61a6e815d807aa09297125ff858d927ef781b82ccf3a32903a76f412a2d6bd0777d003586f9b741fa2fc459624622
+  checksum: 10c0/809dcf1c68f79cff788963ec7691b37024986e82470be5047bfbe42929fc2c7d45db23eab816321e776f0bb3a8295f7efa526377bce6a559c10681cd409d597d
   languageName: node
   linkType: hard
 
