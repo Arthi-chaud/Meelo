@@ -163,7 +163,7 @@ services:
       - .env
   mq:
     hostname: meelo-mq
-    image: rabbitmq:4.0-alpine
+    image: rabbitmq:4.2-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}

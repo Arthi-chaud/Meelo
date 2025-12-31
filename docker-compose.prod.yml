@@ -135,7 +135,7 @@ services:
       db:
         condition: service_healthy
   mq:
-    image: rabbitmq:4.0-alpine
+    image: rabbitmq:4.2-alpine
     hostname: meelo-mq
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
