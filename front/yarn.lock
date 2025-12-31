@@ -11104,7 +11104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-use@npm:^17.5.1":
+"react-use@npm:^17.6.0":
   version: 17.6.0
   resolution: "react-use@npm:17.6.0"
   dependencies:
@@ -12964,7 +12964,7 @@ __metadata:
     react-hot-toast: "npm:^2.6.0"
     react-i18next: "npm:^12.3.1"
     react-infinite-scroller: "npm:^1.2.6"
-    react-use: "npm:^17.5.1"
+    react-use: "npm:^17.6.0"
     sharp: "npm:^0.33.4"
     type-fest: "npm:^4.33.0"
     typescript: "npm:5.3.3"
