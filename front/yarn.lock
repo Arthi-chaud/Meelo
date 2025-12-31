@@ -9668,7 +9668,7 @@ __metadata:
     react-native-edge-to-edge: "npm:^1.6.1"
     react-native-gesture-handler: "npm:~2.28.0"
     react-native-keyboard-controller: "npm:1.18.5"
-    react-native-mmkv: "npm:4.0.0-beta.12"
+    react-native-mmkv: "npm:4.1.0"
     react-native-nitro-modules: "npm:0.30.1"
     react-native-reanimated: "npm:~4.1.1"
     react-native-safe-area-context: "npm:~5.6.0"
@@ -10797,14 +10797,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-mmkv@npm:4.0.0-beta.12":
-  version: 4.0.0-beta.12
-  resolution: "react-native-mmkv@npm:4.0.0-beta.12"
+"react-native-mmkv@npm:4.1.0":
+  version: 4.1.0
+  resolution: "react-native-mmkv@npm:4.1.0"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: "*"
-  checksum: 10c0/87a15c9dcec78a4c75241921676adfbd534fa5fd9b7723e68097eeaff539232d2c2cb50051f9bab84fe5f01e45d623dadcbbb628b528cf7a2849a8485a50bc52
+  checksum: 10c0/af69e58df6d78366b93cbd055ab810201f2e7403a09b448f218014eba6695af10569eb64e6ed81c21b9dbb976c9d7c5fb76650a4de2304731956f42717d80804
   languageName: node
   linkType: hard
 
