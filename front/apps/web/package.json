@@ -42,7 +42,7 @@
 		"react-hot-toast": "^2.6.0",
 		"react-i18next": "^12.3.1",
 		"react-infinite-scroller": "^1.2.6",
-		"react-use": "^17.5.1",
+		"react-use": "^17.6.0",
 		"sharp": "^0.33.4",
 		"type-fest": "^4.33.0",
 		"usehooks-ts": "^2.9.5",
