@@ -12539,7 +12539,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"usehooks-ts@npm:^2.9.5":
+"usehooks-ts@npm:^2.16.0":
   version: 2.16.0
   resolution: "usehooks-ts@npm:2.16.0"
   dependencies:
@@ -12716,7 +12716,7 @@ __metadata:
     react-use: "npm:^17.6.0"
     type-fest: "npm:^4.41.0"
     typescript: "npm:5.3.3"
-    usehooks-ts: "npm:^2.9.5"
+    usehooks-ts: "npm:^2.16.0"
     uuid: "npm:^10.0.0"
   languageName: unknown
   linkType: soft
