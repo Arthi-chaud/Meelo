@@ -12540,12 +12540,13 @@ __metadata:
   linkType: hard
 
 "usehooks-ts@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "usehooks-ts@npm:2.9.5"
+  version: 2.16.0
+  resolution: "usehooks-ts@npm:2.16.0"
+  dependencies:
+    lodash.debounce: "npm:^4.0.8"
   peerDependencies:
-    react: ^16.8.0  || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0  || ^17.0.0 || ^18.0.0
-  checksum: 10c0/ccdc6a149e472428adc723a0f6ad27d6fb0366545fe9be1538f7ae1964dbcd491a74c08e88cfe744e2f5ca247cbb1232540538bc6172be57ed0832f492792fd1
+    react: ^16.8.0  || ^17 || ^18
+  checksum: 10c0/0b7babf09b587cf7af71644dd603ee2efd820ec173c414af1c2afc2c61decc357738b093cabb6a881ac97d8a4e614723ee20096bddd459779f3a0786f4e6b2bf
   languageName: node
   linkType: hard
 
