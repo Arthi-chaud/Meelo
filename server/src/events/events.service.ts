@@ -49,7 +49,9 @@ export class EventsService {
 		this.client = ClientProxyFactory.create({
 			transport: Transport.RMQ,
 			options: {
-				urls: [process.env.RABBITMQ_URL!],
+				// See https://github.com/rabbitmq/rabbitmq-server/discussions/13616
+				// https://amqp-node.github.io/amqplib/channel_api.html#connect
+				urls: [`${process.env.RABBITMQ_URL!}?frameMax=131072`],
 				queue: QueueName,
 				persistent: true,
 				queueOptions: {
