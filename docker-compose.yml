@@ -161,7 +161,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
   nginx:
     restart: on-failure
-    image: nginx:1.24.0-alpine
+    image: nginx:1.29.4-alpine
     depends_on:
       server:
         condition: service_started
