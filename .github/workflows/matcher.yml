@@ -37,7 +37,7 @@ jobs:
   Typecheck:
     needs: changes
     if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
-    container: python:3.13-alpine
+    container: python:3.14-alpine
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -49,7 +49,7 @@ jobs:
           working-directory: "./matcher/matcher"
   Lint:
     if: ${{ needs.changes.outputs.matcher == 'true' && github.event_name == 'pull_request' }}
-    container: python:3.13-alpine
+    container: python:3.14-alpine
     runs-on: ubuntu-latest
     needs: [Typecheck]
     steps:
@@ -62,7 +62,7 @@ jobs:
   Tests:
     runs-on: ubuntu-latest
     needs: [Typecheck]
-    container: python:3.13-alpine
+    container: python:3.14-alpine
     if: ${{ needs.changes.outputs.matcher == 'true' && always() }}
     env:
       GENIUS_ACCESS_TOKEN: "${{ secrets.GENIUS_ACCESS_TOKEN }}"
