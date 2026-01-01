@@ -302,7 +302,6 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         res = await self._fetch(
             f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
-        print("\n\n\n\n", res)
         return res
 
     def _get_album_release_date(self, album: Any) -> date | None:
