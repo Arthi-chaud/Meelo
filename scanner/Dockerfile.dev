@@ -1,4 +1,4 @@
-FROM golang:1.24.1-alpine
+FROM golang:1.25.5-alpine
 RUN go install github.com/bokwoon95/wgo@latest ; go install github.com/swaggo/swag/cmd/swag@latest
 
 RUN apk update && apk upgrade && apk add ffmpeg chromaprint mailcap make cmake sudo curl pkgconf g++ linux-headers
