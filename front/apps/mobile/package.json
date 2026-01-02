@@ -44,7 +44,7 @@
 		"jotai": "^2.16.0",
 		"lodash": "^4.17.21",
 		"models": "workspace:^",
-		"react": "19.1.0",
+		"react": "19.2.3",
 		"react-hook-form": "^7.68.0",
 		"react-i18next": "^12.3.1",
 		"react-native": "0.81.4",
@@ -73,7 +73,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.28.5",
 		"@types/lodash": "^4",
-		"@types/react": "~19.1.10",
+		"@types/react": "~19.2.0",
 		"typescript": "~5.9.2"
 	},
 	"packageManager": "yarn@4.4.0"
