@@ -37,7 +37,7 @@ jobs:
   Build:
     needs: changes
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
-    container: node:22-alpine3.20
+    container: node:24-alpine3.23
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -50,7 +50,7 @@ jobs:
         run: yarn build
   Biome:
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
-    container: node:22-alpine3.20
+    container: node:24-alpine3.23
     runs-on: ubuntu-latest
     needs: [Build]
     permissions:
@@ -67,7 +67,7 @@ jobs:
         run: yarn run biome ci .
   Tests:
     runs-on: ubuntu-latest
-    container: node:22-alpine3.20
+    container: node:24-alpine3.23
     needs: [Build]
     if: ${{ needs.changes.outputs.server == 'true' && always() }}
     env:
