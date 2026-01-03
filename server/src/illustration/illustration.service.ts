@@ -85,7 +85,7 @@ export default class IllustrationService {
 	saveIllustration(fileContent: Buffer, outPath: IllustrationPath) {
 		this.deleteIllustration(outPath);
 		fs.mkdirSync(dir.dirname(outPath), { recursive: true });
-		fs.writeFileSync(outPath, fileContent);
+		fs.writeFileSync(outPath, fileContent as any);
 	}
 
 	/**
@@ -217,7 +217,7 @@ export default class IllustrationService {
 	}
 
 	async getImageHash(buffer: Buffer): Promise<string> {
-		return md5(buffer);
+		return md5(buffer as any);
 	}
 
 	async getImageStats(buffer: Buffer): Promise<IllustrationStats> {
