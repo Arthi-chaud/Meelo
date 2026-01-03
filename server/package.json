@@ -103,7 +103,7 @@
 		"ts-node": "^10.0.0",
 		"tsconfig-paths": "^4.2.0",
 		"type-fest": "4.41.0",
-		"typescript": "^4.3.5"
+		"typescript": "^5.9.3"
 	},
 	"jest": {
 		"testTimeout": 150000,

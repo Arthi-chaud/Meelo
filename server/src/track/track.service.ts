@@ -270,12 +270,13 @@ export default class TrackService {
 				},
 			});
 		}
-		if (where.artist) {
+		if (where.artist !== undefined) {
 			query.push({
 				release: {
-					album: filterToPrisma(where.artist, (a) =>
+					// NOTE: Not sure why the null cast is necessary
+					album: filterToPrisma(where.artist!, (a) =>
 						AlbumService.formatManyWhereInput({
-							artist: { is: a },
+							artist: { is: a! },
 						}),
 					),
 				},
