@@ -98,7 +98,7 @@
 		"@types/slug": "^5.0.3",
 		"@types/supertest": "^6.0.3",
 		"jest": "^30.2.0",
-		"prisma-types-generator": "^1.3.2",
+		"prisma-types-generator": "patch:prisma-types-generator@npm%3A1.3.2#~/.yarn/patches/prisma-types-generator-npm-1.3.2-d91e9d4063.patch",
 		"source-map-support": "^0.5.20",
 		"supertest": "^7.1.4",
 		"ts-jest": "^29.4.6",
