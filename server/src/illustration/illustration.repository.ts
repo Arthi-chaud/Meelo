@@ -18,7 +18,7 @@
 
 import { join } from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IllustrationType } from "@prisma/client";
+import { IllustrationType } from "src/prisma/generated/client";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";

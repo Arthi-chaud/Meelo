@@ -1,21 +1,19 @@
 {
 	"compilerOptions": {
-		"module": "esnext",
-		"moduleResolution": "bundler",
+		"module": "commonjs",
+		"moduleResolution": "node",
 		"declaration": true,
 		"removeComments": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
-		"target": "esnext",
+		"target": "es2023",
 		"sourceMap": true,
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"paths": {
-			"*": [
-				"*",
-				"src/*"
-			]
+			"*": ["*", "src/*"],
+			"~/*": ["src/*"]
 		},
 		"incremental": true,
 		"skipLibCheck": true,
@@ -31,8 +29,5 @@
 		"noImplicitThis": true,
 		"allowJs": true
 	},
-	"include": [
-		"./src/**/*.ts",
-		"./prisma/types.d.ts"
-	]
+	"include": ["./src/**/*.ts", "./prisma/types.d.ts"]
 }

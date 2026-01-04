@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import { IllustrationType, SongType } from "@prisma/client";
+import { IllustrationType, SongType } from "src/prisma/generated/client";
 import { LyricsResponse, SyncedLyric } from "src/lyrics/models/lyrics.response";
 import type { Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";

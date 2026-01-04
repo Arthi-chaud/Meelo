@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { AlbumType, SongType, VideoType } from "@prisma/client";
+import { AlbumType, SongType, VideoType } from "src/prisma/generated/client";
 import ArtistService from "src/artist/artist.service";
 import Slug from "src/slug/slug";
 import escapeRegex from "src/utils/escape-regex";

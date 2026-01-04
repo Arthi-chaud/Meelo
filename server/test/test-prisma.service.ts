@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { hashSync } from "bcrypt";
+import Logger from "src/logger/logger";
 import {
 	type Album,
 	AlbumType,
@@ -17,9 +19,7 @@ import {
 	type User,
 	type Video,
 	VideoType,
-} from "@prisma/client";
-import { hashSync } from "bcrypt";
-import Logger from "src/logger/logger";
+} from "src/prisma/generated/client";
 import type { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";

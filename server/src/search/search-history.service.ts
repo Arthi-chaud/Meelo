@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma, type Video } from "@prisma/client";
+import { Prisma, type Video } from "src/prisma/generated/client";
 import { PrismaError } from "prisma-error-enum/dist";
 import AlbumService from "src/album/album.service";
 import type { AlbumModel } from "src/album/models/album.model";

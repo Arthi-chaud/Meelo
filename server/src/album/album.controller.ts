@@ -26,7 +26,7 @@ import {
 	Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { AlbumType } from "@prisma/client";
+import { AlbumType } from "src/prisma/generated/client";
 import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";

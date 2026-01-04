@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Scrobbler as ScrobblerEnum } from "@prisma/client";
+import { Scrobbler as ScrobblerEnum } from "src/prisma/generated/client";
 
 export type ScrobbleData = {
 	artistName: string;

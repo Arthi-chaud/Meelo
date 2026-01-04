@@ -23,7 +23,7 @@ import {
 	IllustrationType,
 	type Library,
 	TrackType,
-} from "@prisma/client";
+} from "src/prisma/generated/client";
 import {
 	InvalidRequestException,
 	NotFoundException,

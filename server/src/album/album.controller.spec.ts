@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import { type Genre, IllustrationType } from "@prisma/client";
+import { type Genre, IllustrationType } from "src/prisma/generated/client";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import FileModule from "src/file/file.module";

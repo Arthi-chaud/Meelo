@@ -31,7 +31,7 @@ import {
 	Request,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import type { User } from "@prisma/client";
+import type { User } from "src/prisma/generated/client";
 import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import {

@@ -1,5 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
-import { type Artist, SongType } from "@prisma/client";
+import { type Artist, SongType } from "src/prisma/generated/client";
 import AlbumModule from "src/album/album.module";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";

@@ -22,7 +22,7 @@ import {
 	Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import type { User } from "@prisma/client";
+import type { User } from "src/prisma/generated/client";
 import {
 	InsufficientPermissionsException,
 	MissingApiKeyPermissionsException,

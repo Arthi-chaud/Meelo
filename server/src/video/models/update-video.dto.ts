@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { VideoType } from "@prisma/client";
+import { VideoType } from "src/prisma/generated/client";
 import { IsEnum, IsOptional } from "class-validator";
 
 export default class UpdateVideoDTO {
