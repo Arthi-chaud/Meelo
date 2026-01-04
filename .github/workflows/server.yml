@@ -39,6 +39,9 @@ jobs:
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
     container: node:24-alpine3.23
     runs-on: ubuntu-latest
+    env:
+      # NOTE: Necessary for prisma's code gen
+      DATABASE_URL: "postgresql://test:test@postgres:5432/test?schema=public"
     steps:
       - name: Check out the repo
         uses: actions/checkout@v5
@@ -48,6 +51,7 @@ jobs:
         run: yarn install
       - name: Build
         run: yarn build
+
   Biome:
     if: ${{ needs.changes.outputs.server == 'true' && github.event_name == 'pull_request' }}
     container: node:24-alpine3.23
@@ -105,7 +109,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install
       - name: Migrate DB Schema
-        run: yarn run prisma migrate dev
+        run: yarn run prisma generate && yarn run prisma migrate dev
       - name: Run unit tests with coverage
         run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1
       - name: Upload Unit Tests artifact
