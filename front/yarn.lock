@@ -4161,7 +4161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query-devtools@npm:^5.77.0":
+"@tanstack/react-query-devtools@npm:^5.91.2":
   version: 5.91.2
   resolution: "@tanstack/react-query-devtools@npm:5.91.2"
   dependencies:
@@ -4173,7 +4173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.77.0":
+"@tanstack/react-query@npm:^5.90.14":
   version: 5.90.16
   resolution: "@tanstack/react-query@npm:5.90.16"
   dependencies:
@@ -4850,7 +4850,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api@workspace:packages/api"
   dependencies:
-    "@tanstack/react-query": "npm:^5.77.0"
+    "@tanstack/react-query": "npm:^5.90.14"
     jotai: "npm:^2.16.0"
     react: "npm:19.1.0"
     type-fest: "npm:^4.41.0"
@@ -9399,7 +9399,7 @@ __metadata:
     "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.2.0"
     "@shopify/react-native-skia": "npm:2.4.7"
-    "@tanstack/react-query": "npm:^5.77.0"
+    "@tanstack/react-query": "npm:^5.90.14"
     "@types/lodash": "npm:^4"
     "@types/react": "npm:~19.1.10"
     api: "workspace:^"
@@ -12648,8 +12648,8 @@ __metadata:
     "@mui/utils": "npm:^7.3.6"
     "@mui/x-data-grid": "npm:^8.23.0"
     "@mui/x-date-pickers": "npm:^8.23.0"
-    "@tanstack/react-query": "npm:^5.77.0"
-    "@tanstack/react-query-devtools": "npm:^5.77.0"
+    "@tanstack/react-query": "npm:^5.90.14"
+    "@tanstack/react-query-devtools": "npm:^5.91.2"
     "@types/accept-language-parser": "npm:^1.5.3"
     "@types/d3-array": "npm:^3.2.2"
     "@types/node": "npm:18.19.130"
