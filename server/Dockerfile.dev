@@ -10,7 +10,7 @@ COPY .yarnrc.yml ./
 RUN corepack enable
 RUN yarn
 COPY ./prisma ./prisma
-RUN yarn build
+COPY ./prisma.config.ts ./prisma.config.ts
 ENV VERSION=dev
 
 CMD yarn							\

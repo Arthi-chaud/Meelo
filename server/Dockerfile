@@ -11,6 +11,7 @@ RUN corepack enable
 RUN yarn workspaces focus
 COPY ./src ./src
 COPY ./prisma/ ./prisma
+COPY ./prisma.config.ts ./prisma.config.ts
 RUN yarn install --immutable
 RUN yarn run build && yarn workspaces focus --all --production
 
@@ -21,9 +22,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
 COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/dist ./dist
 RUN corepack enable
 ENV VERSION=$VERSION
 
-CMD ["/bin/sh", "-c", "yarn run prisma migrate dev --skip-generate && yarn run start:prod"]
+CMD ["/bin/sh", "-c", "yarn run prisma migrate dev && yarn run start:prod"]
 
