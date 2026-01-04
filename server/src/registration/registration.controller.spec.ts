@@ -1,6 +1,5 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { File, Song } from "src/prisma/generated/client";
 import ArtistModule from "src/artist/artist.module";
 import FileModule from "src/file/file.module";
 import FileService from "src/file/file.service";
@@ -8,6 +7,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import LabelModule from "src/label/label.module";
 import ParserModule from "src/parser/parser.module";
 import PlaylistModule from "src/playlist/playlist.module";
+import type { File, Song } from "src/prisma/generated/client";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";

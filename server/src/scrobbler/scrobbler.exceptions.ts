@@ -17,8 +17,8 @@
  */
 
 import { HttpStatus } from "@nestjs/common";
-import { Scrobbler } from "src/prisma/generated/client";
 import { MeeloException } from "src/exceptions/meelo-exception";
+import { Scrobbler } from "src/prisma/generated/client";
 
 export class MissingScrobblerSettingsException extends MeeloException {
 	constructor(scrobbler: Scrobbler, missingEnvVar: string) {

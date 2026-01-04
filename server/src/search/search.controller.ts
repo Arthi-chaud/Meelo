@@ -23,7 +23,6 @@ import {
 	ApiTags,
 	getSchemaPath,
 } from "@nestjs/swagger";
-import type { Video } from "src/prisma/generated/client";
 import {
 	AlbumResponse,
 	AlbumResponseBuilder,
@@ -33,6 +32,7 @@ import {
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
+import type { Video } from "src/prisma/generated/client";
 import type { AlbumWithRelations, Artist, Song } from "src/prisma/models";
 import {
 	SongResponse,

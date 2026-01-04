@@ -17,11 +17,11 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { AlbumType, TrackType } from "src/prisma/generated/client";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
+import { AlbumType, TrackType } from "src/prisma/generated/client";
 import type { File } from "src/prisma/models";
 import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";

@@ -17,7 +17,6 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { AlbumType, Prisma, VideoType } from "src/prisma/generated/client";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -30,6 +29,7 @@ import LibraryService from "src/library/library.service";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ParserService from "src/parser/parser.service";
+import { AlbumType, Prisma, VideoType } from "src/prisma/generated/client";
 import type { VideoWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import {

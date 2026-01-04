@@ -18,7 +18,6 @@
 
 import { join } from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IllustrationType } from "src/prisma/generated/client";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
@@ -27,6 +26,7 @@ import Logger from "src/logger/logger";
 import type PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import { UnallowedPlaylistUpdate } from "src/playlist/playlist.exceptions";
 import PlaylistService from "src/playlist/playlist.service";
+import { IllustrationType } from "src/prisma/generated/client";
 import type { Illustration } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";

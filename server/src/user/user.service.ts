@@ -17,13 +17,13 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "src/prisma/generated/client";
 import bcrypt from "bcrypt";
 import { PrismaError } from "prisma-error-enum";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type Identifier from "src/identifier/models/identifier";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import type { User } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import {

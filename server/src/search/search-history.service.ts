@@ -17,13 +17,13 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma, type Video } from "src/prisma/generated/client";
 import { PrismaError } from "prisma-error-enum/dist";
 import AlbumService from "src/album/album.service";
 import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma, type Video } from "src/prisma/generated/client";
 import type { Artist, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";

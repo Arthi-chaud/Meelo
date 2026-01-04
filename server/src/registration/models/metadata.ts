@@ -17,7 +17,6 @@
  */
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { TrackType } from "src/prisma/generated/client";
 import { Transform, Type } from "class-transformer";
 import {
 	IsArray,
@@ -35,6 +34,7 @@ import {
 	Min,
 	MinLength,
 } from "class-validator";
+import { TrackType } from "src/prisma/generated/client";
 
 /**
  * Extracted metadata from a track file

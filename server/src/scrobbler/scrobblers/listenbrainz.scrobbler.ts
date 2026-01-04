@@ -17,8 +17,8 @@
  */
 
 import { HttpService } from "@nestjs/axios";
-import { Scrobbler } from "src/prisma/generated/client";
 import Logger from "src/logger/logger";
+import { Scrobbler } from "src/prisma/generated/client";
 import { ScrobblerRequestFailedException } from "../scrobbler.exceptions";
 import IScrobbler, { ScrobbleData } from "./scrobbler";
 
