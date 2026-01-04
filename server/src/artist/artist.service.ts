@@ -17,7 +17,6 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -34,6 +33,7 @@ import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import {

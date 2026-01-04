@@ -29,7 +29,7 @@ import {
 	Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { User } from "@prisma/client";
+import { User } from "src/prisma/generated/client";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";

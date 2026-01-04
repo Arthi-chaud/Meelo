@@ -19,7 +19,7 @@
 import { createReadStream } from "node:fs";
 import { basename } from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/prisma/generated/client";
 import archiver from "archiver";
 import type { Response } from "express";
 import mime from "mime";

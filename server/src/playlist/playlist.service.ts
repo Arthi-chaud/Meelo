@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Playlist, Prisma } from "@prisma/client";
+import { Playlist, Prisma } from "src/prisma/generated/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";

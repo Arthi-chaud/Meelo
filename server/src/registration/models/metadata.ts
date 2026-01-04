@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { TrackType } from "@prisma/client";
+import { TrackType } from "src/prisma/generated/client";
 import { Transform, Type } from "class-transformer";
 import {
 	IsArray,

@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/prisma/generated/client";
 import bcrypt from "bcrypt";
 import { PrismaError } from "prisma-error-enum";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";

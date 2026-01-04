@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { SongType } from "@prisma/client";
+import { SongType } from "src/prisma/generated/client";
 import { IsEnum, IsOptional } from "class-validator";
 
 export default class UpdateSongDTO {

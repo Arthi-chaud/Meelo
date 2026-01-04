@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/prisma/generated/client";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";

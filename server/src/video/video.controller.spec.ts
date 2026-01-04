@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Video } from "@prisma/client";
+import type { Video } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import SongModule from "src/song/song.module";
 import request from "supertest";

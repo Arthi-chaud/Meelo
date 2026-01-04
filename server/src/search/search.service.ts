@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import type { Video } from "@prisma/client";
+import type { Video } from "src/prisma/generated/client";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import AlbumService from "src/album/album.service";

@@ -1,5 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
-import { AlbumType, SongType, VideoType } from "@prisma/client";
+import { AlbumType, SongType, VideoType } from "src/prisma/generated/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";

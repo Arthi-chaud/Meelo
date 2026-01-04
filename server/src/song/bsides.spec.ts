@@ -8,7 +8,7 @@ import {
 	SongType,
 	Track,
 	TrackType,
-} from "@prisma/client";
+} from "src/prisma/generated/client";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";

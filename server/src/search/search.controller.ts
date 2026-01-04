@@ -23,7 +23,7 @@ import {
 	ApiTags,
 	getSchemaPath,
 } from "@nestjs/swagger";
-import type { Video } from "@prisma/client";
+import type { Video } from "src/prisma/generated/client";
 import {
 	AlbumResponse,
 	AlbumResponseBuilder,

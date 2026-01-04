@@ -1,5 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
-import { type Video, VideoType } from "@prisma/client";
+import { type Video, VideoType } from "src/prisma/generated/client";
 import AlbumModule from "src/album/album.module";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";

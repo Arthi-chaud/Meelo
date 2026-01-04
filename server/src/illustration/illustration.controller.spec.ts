@@ -22,7 +22,7 @@ import { createReadStream, existsSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { IllustrationType } from "@prisma/client";
+import { IllustrationType } from "src/prisma/generated/client";
 import { AppProviders } from "src/app.plugins";
 import AuthenticationModule from "src/authentication/authentication.module";
 import type { Illustration } from "src/prisma/models";

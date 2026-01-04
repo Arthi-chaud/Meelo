@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IllustrationType } from "@prisma/client";
+import { IllustrationType } from "src/prisma/generated/client";
 import { IsDefined, IsEnum, IsIn, IsNumber, IsString } from "class-validator";
 import {
 	HasMimeType,

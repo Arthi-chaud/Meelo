@@ -18,7 +18,7 @@
 
 import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { VideoType } from "@prisma/client";
+import { VideoType } from "src/prisma/generated/client";
 import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";

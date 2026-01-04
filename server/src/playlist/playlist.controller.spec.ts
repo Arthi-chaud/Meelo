@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { TestingModule } from "@nestjs/testing";
-import { IllustrationType, type Playlist } from "@prisma/client";
+import { IllustrationType, type Playlist } from "src/prisma/generated/client";
 import { AppProviders, applyMiddlewares } from "src/app.plugins";
 import AuthenticationModule from "src/authentication/authentication.module";
 import IllustrationModule from "src/illustration/illustration.module";

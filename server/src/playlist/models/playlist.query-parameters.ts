@@ -17,7 +17,6 @@
  */
 
 import { PickType } from "@nestjs/swagger";
-import { Omit } from "@prisma/client/runtime/library";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Playlist } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
