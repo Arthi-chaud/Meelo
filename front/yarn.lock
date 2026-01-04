@@ -1331,15 +1331,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.25.7":
-  version: 7.27.0
-  resolution: "@babel/runtime@npm:7.27.0"
-  dependencies:
-    regenerator-runtime: "npm:^0.14.0"
-  checksum: 10c0/35091ea9de48bd7fd26fb177693d64f4d195eb58ab2b142b893b7f3fa0f1d7c677604d36499ae0621a3703f35ba0c6a8f6c572cc8f7dc0317213841e493cf663
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:^7.28.4":
   version: 7.28.4
   resolution: "@babel/runtime@npm:7.28.4"
@@ -3173,7 +3164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.16.6 || ^6.0.0 || ^7.0.0, @mui/utils@npm:^7.3.6":
+"@mui/utils@npm:^7.3.5, @mui/utils@npm:^7.3.6":
   version: 7.3.6
   resolution: "@mui/utils@npm:7.3.6"
   dependencies:
@@ -3193,17 +3184,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^7.29.12":
-  version: 7.29.12
-  resolution: "@mui/x-data-grid@npm:7.29.12"
+"@mui/x-data-grid@npm:^8.0.0":
+  version: 8.23.0
+  resolution: "@mui/x-data-grid@npm:8.23.0"
   dependencies:
-    "@babel/runtime": "npm:^7.25.7"
-    "@mui/utils": "npm:^5.16.6 || ^6.0.0 || ^7.0.0"
-    "@mui/x-internals": "npm:7.29.0"
+    "@babel/runtime": "npm:^7.28.4"
+    "@mui/utils": "npm:^7.3.5"
+    "@mui/x-internals": "npm:8.23.0"
+    "@mui/x-virtualizer": "npm:0.3.0"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
-    reselect: "npm:^5.1.1"
-    use-sync-external-store: "npm:^1.0.0"
+    use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     "@emotion/react": ^11.9.0
     "@emotion/styled": ^11.8.1
@@ -3216,18 +3207,18 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10c0/c2d19474271d00e56909db63485e1223c005c17891c13c23ffe2486d4b887f2971603cd6513e258dcd8c07bca383eb87fc8faaff17b2f5be6bee4c659e921e64
+  checksum: 10c0/0bb86710866210302f4da45bf64683f2f719e29e27655c4260c6af3111b466f7563bd63e7187005f69fa2460026d21187bfdc98b978046bafaa1ea54e508ac0f
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.29.4":
-  version: 7.29.4
-  resolution: "@mui/x-date-pickers@npm:7.29.4"
+"@mui/x-date-pickers@npm:^8.0.0":
+  version: 8.23.0
+  resolution: "@mui/x-date-pickers@npm:8.23.0"
   dependencies:
-    "@babel/runtime": "npm:^7.25.7"
-    "@mui/utils": "npm:^5.16.6 || ^6.0.0 || ^7.0.0"
-    "@mui/x-internals": "npm:7.29.0"
-    "@types/react-transition-group": "npm:^4.4.11"
+    "@babel/runtime": "npm:^7.28.4"
+    "@mui/utils": "npm:^7.3.5"
+    "@mui/x-internals": "npm:8.23.0"
+    "@types/react-transition-group": "npm:^4.4.12"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     react-transition-group: "npm:^4.4.5"
@@ -3264,19 +3255,35 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/d56a0749da577979ad88e0f18dbb624a483458f5d8efe75d9d6b1b460edfd50579f7f6d6cde5cc0a7ec662cfa98fbe1865109cbf6cbc49d02606d0e1cc324ed7
+  checksum: 10c0/a5e86d30f07b8f852bd4015deee73e8509e7058a28383a5cc0920dfecb9d03b80b6fcfa30a05d13568aa63d9224877396f4566584fecfd6f6872ceabf1eb5c40
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:7.29.0":
-  version: 7.29.0
-  resolution: "@mui/x-internals@npm:7.29.0"
+"@mui/x-internals@npm:8.23.0":
+  version: 8.23.0
+  resolution: "@mui/x-internals@npm:8.23.0"
   dependencies:
-    "@babel/runtime": "npm:^7.25.7"
-    "@mui/utils": "npm:^5.16.6 || ^6.0.0 || ^7.0.0"
+    "@babel/runtime": "npm:^7.28.4"
+    "@mui/utils": "npm:^7.3.5"
+    reselect: "npm:^5.1.1"
+    use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/adb4358ef0e29f6f57622b50ff479e9d225078761b4c82546343e2976ccb55eed687e122c37874c76a170f4ec2ea6e82f89bf8b9c0ef3b5cb35b32d026761fba
+  checksum: 10c0/3195746a3ace98ecc67ed8992cd1d1cb8f6794236cbe60ddab55157d9cbb193023e78de7097047ada47c543305082a6a90240600edaaf3db3d1f00bcf0c55bf4
+  languageName: node
+  linkType: hard
+
+"@mui/x-virtualizer@npm:0.3.0":
+  version: 0.3.0
+  resolution: "@mui/x-virtualizer@npm:0.3.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.28.4"
+    "@mui/utils": "npm:^7.3.5"
+    "@mui/x-internals": "npm:8.23.0"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/cfe024cfc846e9a67738db9b10971b797d1c22841e822c0d7c1f68a3569345c8e586a0964439bf9f71412876919fde9d4ee399362a1ea5d296311450c34f837d
   languageName: node
   linkType: hard
 
@@ -4422,7 +4429,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.4.11, @types/react-transition-group@npm:^4.4.12":
+"@types/react-transition-group@npm:^4.4.12":
   version: 4.4.12
   resolution: "@types/react-transition-group@npm:4.4.12"
   peerDependencies:
@@ -12489,12 +12496,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.0.0, use-sync-external-store@npm:^1.5.0":
+"use-sync-external-store@npm:^1.5.0":
   version: 1.5.0
   resolution: "use-sync-external-store@npm:1.5.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/1b8663515c0be34fa653feb724fdcce3984037c78dd4a18f68b2c8be55cc1a1084c578d5b75f158d41b5ddffc2bf5600766d1af3c19c8e329bb20af2ec6f52f4
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "use-sync-external-store@npm:1.6.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/35e1179f872a53227bdf8a827f7911da4c37c0f4091c29b76b1e32473d1670ebe7bcd880b808b7549ba9a5605c233350f800ffab963ee4a4ee346ee983b6019b
   languageName: node
   linkType: hard
 
@@ -12639,8 +12655,8 @@ __metadata:
     "@mui/material": "npm:^7.3.6"
     "@mui/material-nextjs": "npm:^7.3.6"
     "@mui/utils": "npm:^7.3.6"
-    "@mui/x-data-grid": "npm:^7.29.12"
-    "@mui/x-date-pickers": "npm:^7.29.4"
+    "@mui/x-data-grid": "npm:^8.0.0"
+    "@mui/x-date-pickers": "npm:^8.0.0"
     "@tanstack/react-query": "npm:^5.77.0"
     "@tanstack/react-query-devtools": "npm:^5.77.0"
     "@types/accept-language-parser": "npm:^1.5.3"
