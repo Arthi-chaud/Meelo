@@ -17,9 +17,9 @@
  */
 
 import { HttpService } from "@nestjs/axios";
-import { Scrobbler } from "src/prisma/generated/client";
 import md5 from "md5";
 import Logger from "src/logger/logger";
+import { Scrobbler } from "src/prisma/generated/client";
 import {
 	EnablingScrobblerFailedException,
 	MissingScrobblerSettingsException,

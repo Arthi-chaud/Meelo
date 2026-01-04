@@ -19,7 +19,6 @@
 import { createReadStream } from "node:fs";
 import { basename } from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "src/prisma/generated/client";
 import archiver from "archiver";
 import type { Response } from "express";
 import mime from "mime";
@@ -34,6 +33,7 @@ import IllustrationRepository from "src/illustration/illustration.repository";
 import LabelService from "src/label/label.service";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,

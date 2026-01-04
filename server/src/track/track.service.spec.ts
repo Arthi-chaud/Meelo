@@ -1,5 +1,4 @@
 import type { TestingModule } from "@nestjs/testing";
-import { RipSource, TrackType } from "src/prisma/generated/client";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
@@ -14,6 +13,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import LibraryModule from "src/library/library.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
+import { RipSource, TrackType } from "src/prisma/generated/client";
 import type { File, Library, Track } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";

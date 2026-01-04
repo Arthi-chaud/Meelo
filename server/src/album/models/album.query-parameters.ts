@@ -22,13 +22,13 @@ import {
 	PartialType,
 	PickType,
 } from "@nestjs/swagger";
-import { AlbumType } from "src/prisma/generated/client";
 import { IsEnum, IsOptional } from "class-validator";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { EnumFilter, Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import { AlbumType } from "src/prisma/generated/client";
 import { Album } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";

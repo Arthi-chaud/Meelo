@@ -1,6 +1,5 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import { IllustrationType } from "src/prisma/generated/client";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
@@ -9,6 +8,7 @@ import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
+import { IllustrationType } from "src/prisma/generated/client";
 import type { Artist } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";

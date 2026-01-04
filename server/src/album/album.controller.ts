@@ -26,7 +26,6 @@ import {
 	Query,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { AlbumType } from "src/prisma/generated/client";
 import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
@@ -50,6 +49,7 @@ import LabelService from "src/label/label.service";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { AlbumType } from "src/prisma/generated/client";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
 import AlbumService from "./album.service";

@@ -17,11 +17,11 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "src/prisma/generated/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { Prisma } from "src/prisma/generated/client";
 import type {
 	ExternalMetadata,
 	ExternalMetadataSource,

@@ -17,12 +17,6 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import {
-	AlbumType,
-	Prisma,
-	SongType,
-	TrackType,
-} from "src/prisma/generated/client";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
@@ -42,6 +36,12 @@ import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ParserService from "src/parser/parser.service";
+import {
+	AlbumType,
+	Prisma,
+	SongType,
+	TrackType,
+} from "src/prisma/generated/client";
 import type { SongWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
