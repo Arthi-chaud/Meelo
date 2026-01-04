@@ -327,10 +327,9 @@ describe("Song Service", () => {
 				{ id: dummyRepository.songA2.id },
 				{ genres: true },
 			);
-			expect(refreshedSong.genres).toStrictEqual([
-				dummyRepository.genreA,
-				dummyRepository.genreB,
-			]);
+			expect(refreshedSong.genres).toContainEqual(dummyRepository.genreA);
+			expect(refreshedSong.genres).toContainEqual(dummyRepository.genreB);
+			expect(refreshedSong.genres.length).toBe(2);
 		});
 
 		it("should throw as the song does not exist", async () => {

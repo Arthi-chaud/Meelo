@@ -34,6 +34,7 @@ import ReleaseService from "src/release/release.service";
 import SettingsService from "src/settings/settings.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
+import { removeUndefinedFields } from "src/utils/count-defined-fields";
 import {
 	IllustrationNotFoundException,
 	MissingIllustrationResourceIdException,
@@ -126,7 +127,9 @@ export default class IllustrationRepository {
 		dto: IllustrationDownloadDto,
 		userId: number | null, // Can be null if we want to save anything but a playlist's image
 	): Promise<IllustrationResponse> {
-		const resourceKeys = Object.keys(dto).filter((k) => k !== "url");
+		const resourceKeys = Object.keys(removeUndefinedFields(dto)).filter(
+			(k) => k !== "url",
+		);
 		if (resourceKeys.length !== 1) {
 			throw new MissingIllustrationResourceIdException();
 		}

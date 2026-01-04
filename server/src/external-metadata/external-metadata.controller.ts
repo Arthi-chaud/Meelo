@@ -31,6 +31,7 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import ReleaseService from "src/release/release.service";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
+import countDefinedFields from "src/utils/count-defined-fields";
 import ExternalMetadataService from "./external-metadata.service";
 import { CreateExternalMetadataDto } from "./models/external-metadata.dto";
 import type ExternalMetadataQueryParameters from "./models/external-metadata.query-parameters";
@@ -86,10 +87,9 @@ export default class ExternalMetadataController {
 	@Role(Roles.Default, Roles.Microservice)
 	@Get()
 	async getExternalMetadataEntry(@Query() where: Selector) {
-		const selectorSize = Object.keys(where).length;
-		if (selectorSize !== 1) {
+		if (countDefinedFields(where) !== 1) {
 			throw new InvalidRequestException(
-				`Expected at least one query parameter. Got ${selectorSize}`,
+				`Expected at least one query parameter.`,
 			);
 		}
 		return this.externalMetadataService.get(
