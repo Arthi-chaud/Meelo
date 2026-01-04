@@ -1,1 +1,12 @@
-{}
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Přidat do playlistu",
+			"modalTitle": "Vyberte seznam skladeb"
+		},
+		"album": {
+			"changeType": "Změnit typ alba",
+			"goToAlbum": "Přejít do alba"
+		}
+	}
+}
