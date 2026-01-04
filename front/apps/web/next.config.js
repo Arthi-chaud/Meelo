@@ -24,7 +24,14 @@ const config = {
 		];
 		return config;
 	},
-	transpilePackages: ["models", "api", "state", "utils", "ui"],
+	transpilePackages: [
+		"models",
+		"api",
+		"state",
+		"utils",
+		"ui",
+		"@mui/x-data-grid",
+	],
 	experimental: {
 		externalDir: true,
 	},
