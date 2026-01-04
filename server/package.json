@@ -108,37 +108,5 @@
 		"type-fest": "5.3.1",
 		"typescript": "^5.9.3"
 	},
-	"jest": {
-		"testTimeout": 150000,
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"ts"
-		],
-		"roots": [
-			"<rootDir>",
-			"src"
-		],
-		"modulePaths": [
-			"<rootDir>",
-			"src"
-		],
-		"modulePathIgnorePatterns": [
-			"<rootDir>/dist"
-		],
-		"testRegex": ".*\\.spec\\.ts$",
-		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
-		},
-		"collectCoverageFrom": [
-			"<rootDir>/src/**/*.(t|j)s"
-		],
-		"coverageDirectory": "coverage",
-		"coverageReporters": [
-			"lcov"
-		],
-		"testEnvironment": "node",
-		"testSequencer": "<rootDir>/test/sequencer.ts"
-	},
 	"packageManager": "yarn@4.4.0"
 }
