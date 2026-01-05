@@ -4147,40 +4147,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:5.77.0":
-  version: 5.77.0
-  resolution: "@tanstack/query-core@npm:5.77.0"
-  checksum: 10c0/87827a9d06ca577191ac34eed624bd62634623d08abd65359ba2390394b88b8e0faa332b193f5e9a36de3adb92ef87be3149e9b74ceb407b396c05b84b64939b
+"@tanstack/query-core@npm:5.90.16":
+  version: 5.90.16
+  resolution: "@tanstack/query-core@npm:5.90.16"
+  checksum: 10c0/f6a4827feeed2b4118323056bbda8d5099823202d1f29b538204ae2591be4e80f2946f3311eed30fefe866643f431c04b560457f03415d40caf2f353ba1efac0
   languageName: node
   linkType: hard
 
-"@tanstack/query-devtools@npm:5.76.0":
-  version: 5.76.0
-  resolution: "@tanstack/query-devtools@npm:5.76.0"
-  checksum: 10c0/2bee4a39c083a0260bd15e98f02d39f078d363430b74da313260ff37deb4b416d874e3a58f4691698f848076532eaf104ff2843a016aec6186dd1c39c5dd3d6f
+"@tanstack/query-devtools@npm:5.92.0":
+  version: 5.92.0
+  resolution: "@tanstack/query-devtools@npm:5.92.0"
+  checksum: 10c0/3e41da3c47881b6190d954b60cc0f93f11251ff3066b68b7312eee5696ff114ce078309ed7ec80cd85a5b7a56ed0360fb2048d204ec459ab05f4a3c11268f6ce
   languageName: node
   linkType: hard
 
-"@tanstack/react-query-devtools@npm:^5.77.0":
-  version: 5.77.0
-  resolution: "@tanstack/react-query-devtools@npm:5.77.0"
+"@tanstack/react-query-devtools@npm:^5.91.2":
+  version: 5.91.2
+  resolution: "@tanstack/react-query-devtools@npm:5.91.2"
   dependencies:
-    "@tanstack/query-devtools": "npm:5.76.0"
+    "@tanstack/query-devtools": "npm:5.92.0"
   peerDependencies:
-    "@tanstack/react-query": ^5.77.0
+    "@tanstack/react-query": ^5.90.14
     react: ^18 || ^19
-  checksum: 10c0/43839e0fdd9c6664dbd5b883e04ccb181c2b7019279d2245fd0e4fff5b09e1739d91676b661481fb6f5cf0a8dc768388701dfd7df91489897d53390400bd6d83
+  checksum: 10c0/afb267583d5df1311cf184095f97211df8d769be22cf5966d9ba0defbe341cdd728d035213df7b377483f8721f86dbaff9fab809c97b587c7d97620953e40d68
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.77.0":
-  version: 5.77.0
-  resolution: "@tanstack/react-query@npm:5.77.0"
+"@tanstack/react-query@npm:^5.90.14":
+  version: 5.90.16
+  resolution: "@tanstack/react-query@npm:5.90.16"
   dependencies:
-    "@tanstack/query-core": "npm:5.77.0"
+    "@tanstack/query-core": "npm:5.90.16"
   peerDependencies:
     react: ^18 || ^19
-  checksum: 10c0/b59aa3217f95d6d5c731ee4aba6528eca6320aa8bc69ea046f91bdb3feaa1605ae4f707445c09dc8914ce923c4deb6a4cbd8250e30f6b0a109eb09820aebd7a7
+  checksum: 10c0/03bd2aa23187003b45dc3d4b465a68f19806369283487a004acd6dd2ad8ba1fa0ec343da616cb1c43c342609202d0776fee68867246caa5ad6915f090539c168
   languageName: node
   linkType: hard
 
@@ -4850,7 +4850,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api@workspace:packages/api"
   dependencies:
-    "@tanstack/react-query": "npm:^5.77.0"
+    "@tanstack/react-query": "npm:^5.90.14"
     jotai: "npm:^2.16.0"
     react: "npm:19.1.0"
     type-fest: "npm:^4.41.0"
@@ -9399,7 +9399,7 @@ __metadata:
     "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.2.0"
     "@shopify/react-native-skia": "npm:2.4.7"
-    "@tanstack/react-query": "npm:^5.77.0"
+    "@tanstack/react-query": "npm:^5.90.14"
     "@types/lodash": "npm:^4"
     "@types/react": "npm:~19.1.10"
     api: "workspace:^"
@@ -12648,8 +12648,8 @@ __metadata:
     "@mui/utils": "npm:^7.3.6"
     "@mui/x-data-grid": "npm:^8.23.0"
     "@mui/x-date-pickers": "npm:^8.23.0"
-    "@tanstack/react-query": "npm:^5.77.0"
-    "@tanstack/react-query-devtools": "npm:^5.77.0"
+    "@tanstack/react-query": "npm:^5.90.14"
+    "@tanstack/react-query-devtools": "npm:^5.91.2"
     "@types/accept-language-parser": "npm:^1.5.3"
     "@types/d3-array": "npm:^3.2.2"
     "@types/node": "npm:18.19.130"
