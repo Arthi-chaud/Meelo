@@ -336,7 +336,9 @@
 				"de": "German",
 				"id": "Indonesian",
 				"it": "Italian",
-				"ru": "Russian"
+				"ru": "Russian",
+				"cs": "Czech",
+				"sk": "Slovak"
 			},
 			"versions": "Versions",
 			"language": "Language",
