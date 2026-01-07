@@ -24,7 +24,7 @@ jobs:
       server: ${{ steps.filter.outputs.server }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -44,7 +44,7 @@ jobs:
       DATABASE_URL: "postgresql://test:test@postgres:5432/test?schema=public"
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-server
       - name: Install Dependencies
@@ -62,7 +62,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-server
       - name: Install Dependencies
@@ -103,7 +103,7 @@ jobs:
           MEILI_MASTER_KEY: 1234
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-server
       - name: Install Dependencies
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.server == 'true' && always() }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Downlad Coverage artifact
         uses: actions/download-artifact@v5
         with:
@@ -146,7 +146,7 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: ./.github/actions/dockerize
         with:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
