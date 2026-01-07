@@ -90,7 +90,6 @@
 		"@types/get-pixels": "^3",
 		"@types/jest": "^30.0.0",
 		"@types/md5": "^2",
-		"@types/multer": "^2.0.0",
 		"@types/normalize-path": "^3.0.0",
 		"@types/passport-jwt": "^3.0.7",
 		"@types/passport-local": "^1.0.34",
