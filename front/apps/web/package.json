@@ -58,5 +58,5 @@
 		"@types/uuid": "^9.0.8",
 		"typescript": "5.3.3"
 	},
-	"packageManager": "yarn@4.4.0"
+	"packageManager": "yarn@4.12.0"
 }
