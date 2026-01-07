@@ -3996,14 +3996,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amqp-connection-manager@npm:^4.1.14":
-  version: 4.1.14
-  resolution: "amqp-connection-manager@npm:4.1.14"
+"amqp-connection-manager@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "amqp-connection-manager@npm:5.0.0"
   dependencies:
     promise-breaker: "npm:^6.0.0"
   peerDependencies:
     amqplib: "*"
-  checksum: 10c0/09b9638d88fe63cbbd001407a1f5280572426d96cbdbe66fe1d43a2d0ea60705d77b69da45fed2807fa3aa1f0c65a6d51ed43f3fd363ff9ad1338a3d35b94f9b
+  checksum: 10c0/5dfbbe07c5f58dad96bbeb4a8cbf8d6736672d5e2d82630dee0fecd9d1e437fea8a07f893ed71b88ef1777f833d63d26dc4daf4ac4604367bcc6167fac971f77
   languageName: node
   linkType: hard
 
@@ -7889,7 +7889,7 @@ __metadata:
     "@types/pg": "npm:^8"
     "@types/slug": "npm:^5.0.3"
     "@types/supertest": "npm:^6.0.3"
-    amqp-connection-manager: "npm:^4.1.14"
+    amqp-connection-manager: "npm:^5.0.0"
     amqplib: "npm:^0.10.4"
     archiver: "npm:^7.0.0"
     axios: "npm:^1.12.1"
