@@ -26,7 +26,6 @@
 		"cookies-next": "^5.1.0",
 		"core-js": "^3.47.0",
 		"d3-array": "^3.2.0",
-		"format-duration": "^3.0.0",
 		"hls.js": "^1.6.15",
 		"i18next": "^25.0.0",
 		"jotai": "^2.16.0",

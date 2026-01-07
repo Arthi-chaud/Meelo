@@ -12796,7 +12796,6 @@ __metadata:
     cookies-next: "npm:^5.1.0"
     core-js: "npm:^3.47.0"
     d3-array: "npm:^3.2.0"
-    format-duration: "npm:^3.0.0"
     hls.js: "npm:^1.6.15"
     i18next: "npm:^25.0.0"
     jotai: "npm:^2.16.0"
