@@ -7066,10 +7066,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"format-duration@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "format-duration@npm:2.0.0"
-  checksum: 10c0/450cb87b1671e87b94b2a36adebbc7cc80d6fd2ae8a7dee12c11a3ca424229956d2f430eeeeaac184220a72ea140d98574e086211d11cdb0e1d0b3cae1ab017e
+"format-duration@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "format-duration@npm:3.0.2"
+  checksum: 10c0/2873fa124fc75b9d240651707c6f664feb0c4f53015c8d261c6d8b9c37d937303338f994ab66463e4875da60ed93f14bdd60bbccaeaf8ffabe91bc09e0e96cef
   languageName: node
   linkType: hard
 
@@ -12658,7 +12658,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "utils@workspace:packages/utils"
   dependencies:
-    format-duration: "npm:^2.0.0"
+    format-duration: "npm:^3.0.0"
     i18next: "npm:^25.0.0"
     jest: "npm:^30.2.0"
     typescript: "npm:5.3.3"
@@ -12796,7 +12796,6 @@ __metadata:
     cookies-next: "npm:^5.1.0"
     core-js: "npm:^3.47.0"
     d3-array: "npm:^3.2.0"
-    format-duration: "npm:^2.0.0"
     hls.js: "npm:^1.6.15"
     i18next: "npm:^25.0.0"
     jotai: "npm:^2.16.0"

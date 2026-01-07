@@ -2,7 +2,7 @@
 	"name": "utils",
 	"sideEffects": false,
 	"dependencies": {
-		"format-duration": "^2.0.0",
+		"format-duration": "^3.0.0",
 		"i18next": "^25.0.0"
 	},
 	"devDependencies": {
