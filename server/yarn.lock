@@ -3297,12 +3297,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multer@npm:^1.4.12":
-  version: 1.4.12
-  resolution: "@types/multer@npm:1.4.12"
+"@types/multer@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@types/multer@npm:2.0.0"
   dependencies:
     "@types/express": "npm:*"
-  checksum: 10c0/1250a32a66b7c5929cc5b005dae4ad0768ded9b6b52ba6f90931ff39b4ed775b09a0fd9d880f0836bcac16a9a7febed6a479c6bf108a52a244c4c53badb82a7b
+  checksum: 10c0/375b0e77c4675c2ff27d1170e469df48dced928cc9fcd077ead111a20d0f2c01921fd25e20e25426604d6d3e311b37da2bc03ce47523d06adafba5c4b8077b67
   languageName: node
   linkType: hard
 
@@ -7808,7 +7808,7 @@ __metadata:
     "@types/get-pixels": "npm:^3"
     "@types/jest": "npm:^30.0.0"
     "@types/md5": "npm:^2"
-    "@types/multer": "npm:^1.4.12"
+    "@types/multer": "npm:^2.0.0"
     "@types/normalize-path": "npm:^3.0.0"
     "@types/passport-jwt": "npm:^3.0.7"
     "@types/passport-local": "npm:^1.0.34"
