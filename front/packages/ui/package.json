@@ -8,5 +8,5 @@
 		"@types/react": "*",
 		"typescript": "5.3.3"
 	},
-	"packageManager": "yarn@4.4.0"
+	"packageManager": "yarn@4.12.0"
 }
