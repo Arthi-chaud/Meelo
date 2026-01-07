@@ -5900,15 +5900,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookies-next@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "cookies-next@npm:5.1.0"
+"cookies-next@npm:^6.0.0":
+  version: 6.1.1
+  resolution: "cookies-next@npm:6.1.1"
   dependencies:
     cookie: "npm:^1.0.1"
   peerDependencies:
     next: ">=15.0.0"
     react: ">= 16.8.0"
-  checksum: 10c0/0769e18dcaa2d9b4c51593014a8a7e360dbe809c54fdfc61310b8b53edd670ee6bdf01593067dcf81760827956cb17c07786efe22bb3d94b23e0dd388457fddb
+  checksum: 10c0/09b53c819b532c70de4645c615b308652ab529c56f52b00aaa16bbc6caea2be8de6fbb2187ef882ea39831fc4b445d90898990f21ee3ccd9a124fadd31320391
   languageName: node
   linkType: hard
 
@@ -12793,7 +12793,7 @@ __metadata:
     "@types/uuid": "npm:^11.0.0"
     accept-language-parser: "npm:^1.5.0"
     blurhash: "npm:^2.0.5"
-    cookies-next: "npm:^5.1.0"
+    cookies-next: "npm:^6.0.0"
     core-js: "npm:^3.47.0"
     d3-array: "npm:^3.2.0"
     hls.js: "npm:^1.6.15"
