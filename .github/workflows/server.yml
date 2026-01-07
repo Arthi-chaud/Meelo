@@ -114,7 +114,7 @@ jobs:
         run: yarn --cwd server test --coverage --ci --no-cache --maxConcurrency=1
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report-server
           path: ./server/coverage
@@ -126,7 +126,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: coverage-report-server
           path: ./server/coverage
