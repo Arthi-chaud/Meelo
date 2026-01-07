@@ -3355,14 +3355,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-jwt@npm:^3.0.7":
-  version: 3.0.8
-  resolution: "@types/passport-jwt@npm:3.0.8"
+"@types/passport-jwt@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "@types/passport-jwt@npm:4.0.1"
   dependencies:
-    "@types/express": "npm:*"
     "@types/jsonwebtoken": "npm:*"
     "@types/passport-strategy": "npm:*"
-  checksum: 10c0/ebf3305a7537fd3388f3673e0767aa319689fd4a99f34cb8369087d056d6e76816cdfdc06b89019b772923c1c73eee55435a0e25014efcc3f2e38b58666e090b
+  checksum: 10c0/0ced0eaa7bb379d674821108d9bc6758223f1a5f2b9790ec78d3eaaccce6a58a424cf8ed22b53d813740ec53d929e21d92cf794ef0fb30c732866750763c0d7a
   languageName: node
   linkType: hard
 
@@ -7849,7 +7848,7 @@ __metadata:
     "@types/jest": "npm:^30.0.0"
     "@types/md5": "npm:^2"
     "@types/normalize-path": "npm:^3.0.0"
-    "@types/passport-jwt": "npm:^3.0.7"
+    "@types/passport-jwt": "npm:^4.0.0"
     "@types/passport-local": "npm:^1.0.34"
     "@types/pg": "npm:^8"
     "@types/slug": "npm:^5.0.3"
