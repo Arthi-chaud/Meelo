@@ -3146,7 +3146,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.13":
+"@types/express-serve-static-core@npm:^5.0.0":
+  version: 5.1.0
+  resolution: "@types/express-serve-static-core@npm:5.1.0"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/qs": "npm:*"
+    "@types/range-parser": "npm:*"
+    "@types/send": "npm:*"
+  checksum: 10c0/1918233c68a0c69695f78331af1aed5fb5190f91da6309318f700adeb78573be840b5d206cb8eda804b65a9989fdeccdaaf84c1e95adc3615052749224b64519
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:*":
   version: 4.17.15
   resolution: "@types/express@npm:4.17.15"
   dependencies:
@@ -3155,6 +3167,17 @@ __metadata:
     "@types/qs": "npm:*"
     "@types/serve-static": "npm:*"
   checksum: 10c0/a230500a0bcf47d090a6a254873325145ad29fb7513c1688aa7376d3ac3cddf4e6478e77e7c0273349260f26b2767ff403368b8ec4e3e72a6dc17159ba1bddb2
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^5.0.0":
+  version: 5.0.6
+  resolution: "@types/express@npm:5.0.6"
+  dependencies:
+    "@types/body-parser": "npm:*"
+    "@types/express-serve-static-core": "npm:^5.0.0"
+    "@types/serve-static": "npm:^2"
+  checksum: 10c0/f1071e3389a955d4f9a38aae38634121c7cd9b3171ba4201ec9b56bd534aba07866839d278adc0dda05b942b05a901a02fd174201c3b1f70ce22b10b6c68f24b
   languageName: node
   linkType: hard
 
@@ -3175,6 +3198,13 @@ __metadata:
     "@types/ndarray": "npm:*"
     "@types/node": "npm:*"
   checksum: 10c0/9f62a416ddebaaf8691e1cb39bb1ca93b311dc186bf003884dceb5ad96c0cd174f2e14dd292963b95e4532211519414f31d860458fc9ab25a80286b3cff367bd
+  languageName: node
+  linkType: hard
+
+"@types/http-errors@npm:*":
+  version: 2.0.5
+  resolution: "@types/http-errors@npm:2.0.5"
+  checksum: 10c0/00f8140fbc504f47356512bd88e1910c2f07e04233d99c88c854b3600ce0523c8cd0ba7d1897667243282eb44c59abb9245959e2428b9de004f93937f52f7c15
   languageName: node
   linkType: hard
 
@@ -3400,6 +3430,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/send@npm:*":
+  version: 1.2.1
+  resolution: "@types/send@npm:1.2.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/7673747f8c2d8e67f3b1b3b57e9d4d681801a4f7b526ecf09987bb9a84a61cf94aa411c736183884dc762c1c402a61681eb1ef200d8d45d7e5ec0ab67ea5f6c1
+  languageName: node
+  linkType: hard
+
 "@types/serve-static@npm:*":
   version: 1.15.0
   resolution: "@types/serve-static@npm:1.15.0"
@@ -3407,6 +3446,16 @@ __metadata:
     "@types/mime": "npm:*"
     "@types/node": "npm:*"
   checksum: 10c0/2bdf7561c74175cc57c912d360fe763af0fc77a078f67d22cb515fa5b23db937314ffe1b5f96ca77c5e9de55b9d94277b7a3d288ff07067d6b2f83d004027430
+  languageName: node
+  linkType: hard
+
+"@types/serve-static@npm:^2":
+  version: 2.2.0
+  resolution: "@types/serve-static@npm:2.2.0"
+  dependencies:
+    "@types/http-errors": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/a3c6126bdbf9685e6c7dc03ad34639666eff32754e912adeed9643bf3dd3aa0ff043002a7f69039306e310d233eb8e160c59308f95b0a619f32366bbc48ee094
   languageName: node
   linkType: hard
 
@@ -7794,7 +7843,7 @@ __metadata:
     "@types/chroma-js": "npm:^3"
     "@types/cookie-parser": "npm:^1.4.3"
     "@types/damerau-levenshtein": "npm:^1.0.0"
-    "@types/express": "npm:^4.17.13"
+    "@types/express": "npm:^5.0.0"
     "@types/get-image-colors": "npm:^4.0.2"
     "@types/get-pixels": "npm:^3"
     "@types/jest": "npm:^30.0.0"
