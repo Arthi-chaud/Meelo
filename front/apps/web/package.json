@@ -31,7 +31,7 @@
 		"jotai": "^2.16.0",
 		"material-ui-confirm": "^4.0.0",
 		"mui-react-hook-form-plus": "^1.5.1",
-		"next": "15.5.7",
+		"next": "16.1.1",
 		"react": "19.1.0",
 		"react-beautiful-dnd": "^13.1.1",
 		"react-blurhash": "^0.3.0",

@@ -311,7 +311,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		return entriesQuery.data.map((entry) => ({
 			...entry,
 			release: releases.find(
-				(release) => release!.id === entry.master.releaseId,
+				(release) => release?.id === entry.master.releaseId,
 			)!,
 		}));
 	}, [entriesQuery.data, masterTracksReleaseQueries]);

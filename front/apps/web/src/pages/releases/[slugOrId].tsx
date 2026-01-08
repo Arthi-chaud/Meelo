@@ -501,9 +501,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													artist: artists.data.find(
 														(artist) =>
 															artist.id ===
-															(track.song ??
-																track.video)!
-																.artistId,
+															(
+																track.song ??
+																track.video
+															)?.artistId,
 													)!,
 												}),
 											);
