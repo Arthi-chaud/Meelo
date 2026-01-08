@@ -1,4 +1,4 @@
-FROM node:18-alpine3.18
+FROM node:24-alpine3.23
 WORKDIR /app
 ENV VERSION=dev
 ENV NEXT_PUBLIC_VERSION=dev
