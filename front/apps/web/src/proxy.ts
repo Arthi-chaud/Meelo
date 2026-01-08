@@ -25,7 +25,7 @@ import { UserAccessTokenStorageKey } from "@/utils/constants";
 import { getAPI_ } from "~/api";
 import { accessTokenAtom } from "~/state/user";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;
 	const accessToken = request.cookies.get(UserAccessTokenStorageKey)?.value;
 	const queryClient = new QueryClient();
