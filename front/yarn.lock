@@ -4929,7 +4929,7 @@ __metadata:
     jotai: "npm:^2.16.0"
     react: "npm:19.1.0"
     type-fest: "npm:^4.41.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
     yup: "npm:^1.7.1"
   languageName: unknown
   linkType: soft
@@ -7554,7 +7554,7 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
     react: "npm:19.1.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
   peerDependencies:
     i18next: ^23.16.8 || ^25.0.0
     react-i18next: ^12.3.1 || ^16.0.0
@@ -8831,7 +8831,7 @@ __metadata:
   dependencies:
     "@biomejs/biome": "npm:2.3.8"
     jest: "npm:^30.2.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -9576,7 +9576,7 @@ __metadata:
   resolution: "models@workspace:packages/models"
   dependencies:
     type-fest: "npm:^4.41.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
     yup: "npm:^1.7.1"
   languageName: unknown
   linkType: soft
@@ -11844,7 +11844,7 @@ __metadata:
   dependencies:
     jotai: "npm:^2.16.0"
     react: "npm:19.1.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -12334,17 +12334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.3.3":
-  version: 5.3.3
-  resolution: "typescript@npm:5.3.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/e33cef99d82573624fc0f854a2980322714986bc35b9cb4d1ce736ed182aeab78e2cb32b385efa493b2a976ef52c53e20d6c6918312353a91850e2b76f1ea44f
-  languageName: node
-  linkType: hard
-
-"typescript@npm:~5.9.2":
+"typescript@npm:5.9.3, typescript@npm:~5.9.2":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
   bin:
@@ -12354,17 +12344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>":
-  version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
   bin:
@@ -12389,7 +12369,7 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
     "@wandersonalwes/iconsax-react": "npm:0.0.10"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -12652,7 +12632,7 @@ __metadata:
     format-duration: "npm:^3.0.0"
     i18next: "npm:^25.0.0"
     jest: "npm:^30.2.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -12794,7 +12774,7 @@ __metadata:
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.6.0"
     type-fest: "npm:^4.41.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.9.3"
     usehooks-ts: "npm:^2.16.0"
     uuid: "npm:^13.0.0"
   languageName: unknown

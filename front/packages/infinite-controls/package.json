@@ -6,7 +6,7 @@
 	},
 	"devDependencies": {
 		"@types/react": "*",
-		"typescript": "5.3.3"
+		"typescript": "5.9.3"
 	},
 	"peerDependencies": {
 		"i18next": "^23.16.8 || ^25.0.0",
