@@ -10460,14 +10460,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "react-error-boundary@npm:4.1.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
+"react-error-boundary@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "react-error-boundary@npm:6.0.2"
   peerDependencies:
-    react: ">=16.13.1"
-  checksum: 10c0/0737e5259bed40ce14eb0823b3c7b152171921f2179e604f48f3913490cdc594d6c22d43d7abb4ffb1512c832850228db07aa69d3b941db324953a5e393cb399
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  checksum: 10c0/3cfa405114739883a501cf89fce4cd7e26fb30fc5bb9ce4a9306982aa26fdb452ce6b065a416fe15a41fa7bfddba960bc6847a843e95f194e624fa4c322f3f5b
   languageName: node
   linkType: hard
 
@@ -12776,7 +12775,7 @@ __metadata:
     react-beautiful-dnd: "npm:^13.1.1"
     react-blurhash: "npm:^0.3.0"
     react-dom: "npm:19.1.0"
-    react-error-boundary: "npm:^4.1.2"
+    react-error-boundary: "npm:^6.0.2"
     react-hook-form: "npm:^7.68.0"
     react-hot-toast: "npm:^2.6.0"
     react-i18next: "npm:^16.0.0"
