@@ -67,7 +67,7 @@
 		"react-native-video": "^7.0.0-alpha.7",
 		"react-native-worklets": "^0.5.1",
 		"state": "workspace:^",
-		"type-fest": "^4.41.0",
+		"type-fest": "^5.3.1",
 		"ui": "workspace:^",
 		"utils": "workspace:^"
 	},
