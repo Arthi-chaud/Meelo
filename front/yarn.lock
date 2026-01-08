@@ -9565,7 +9565,7 @@ __metadata:
     react-native-worklets: "npm:^0.5.1"
     state: "workspace:^"
     type-fest: "npm:^4.41.0"
-    typescript: "npm:~5.9.2"
+    typescript: "npm:5.9.3"
     ui: "workspace:^"
     utils: "workspace:^"
   languageName: unknown
@@ -12334,7 +12334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.9.3, typescript@npm:~5.9.2":
+"typescript@npm:5.9.3":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
   bin:
@@ -12344,7 +12344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
   bin:

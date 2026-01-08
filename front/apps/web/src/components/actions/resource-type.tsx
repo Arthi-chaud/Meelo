@@ -122,7 +122,7 @@ const ChangeResourceType = <
 const ChangeSongType = (s: Song, client: QueryClient) =>
 	ChangeResourceType(
 		s,
-		SongType.filter((t) => t !== "Unknown"),
+		SongType.filter((t) => t !== "Unknown") as SongType[], // NOTE: to avoid error about s.type possibly being unknown
 		(type) => songTypeToTranslationKey(type, false),
 		"actions.song.changeType",
 		client,
