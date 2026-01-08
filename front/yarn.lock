@@ -4928,7 +4928,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.90.14"
     jotai: "npm:^2.16.0"
     react: "npm:19.1.0"
-    type-fest: "npm:^4.41.0"
+    type-fest: "npm:^5.0.0"
     typescript: "npm:5.9.3"
     yup: "npm:^1.7.1"
   languageName: unknown
@@ -9564,7 +9564,7 @@ __metadata:
     react-native-video: "npm:^7.0.0-alpha.7"
     react-native-worklets: "npm:^0.5.1"
     state: "workspace:^"
-    type-fest: "npm:^4.41.0"
+    type-fest: "npm:^5.0.0"
     typescript: "npm:5.9.3"
     ui: "workspace:^"
     utils: "workspace:^"
@@ -9575,7 +9575,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "models@workspace:packages/models"
   dependencies:
-    type-fest: "npm:^4.41.0"
+    type-fest: "npm:^5.0.0"
     typescript: "npm:5.9.3"
     yup: "npm:^1.7.1"
   languageName: unknown
@@ -12087,6 +12087,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tagged-tag@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "tagged-tag@npm:1.0.0"
+  checksum: 10c0/91d25c9ffb86a91f20522cefb2cbec9b64caa1febe27ad0df52f08993ff60888022d771e868e6416cf2e72dab68449d2139e8709ba009b74c6c7ecd4000048d1
+  languageName: node
+  linkType: hard
+
 "tar@npm:^6.1.11, tar@npm:^6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
@@ -12327,10 +12334,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.41.0":
-  version: 4.41.0
-  resolution: "type-fest@npm:4.41.0"
-  checksum: 10c0/f5ca697797ed5e88d33ac8f1fec21921839871f808dc59345c9cf67345bfb958ce41bd821165dbf3ae591cedec2bf6fe8882098dfdd8dc54320b859711a2c1e4
+"type-fest@npm:^5.0.0":
+  version: 5.3.1
+  resolution: "type-fest@npm:5.3.1"
+  dependencies:
+    tagged-tag: "npm:^1.0.0"
+  checksum: 10c0/3282cf11f5e8708321c109b5a72967702cf4c3b928b4d77f5819600b23915dc6a6b8f16cde4182cfbad308973ed3eeea544825cafe9657634ac1f331dc940315
   languageName: node
   linkType: hard
 
@@ -12773,7 +12782,7 @@ __metadata:
     react-i18next: "npm:^16.0.0"
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.6.0"
-    type-fest: "npm:^4.41.0"
+    type-fest: "npm:^5.0.0"
     typescript: "npm:5.9.3"
     usehooks-ts: "npm:^2.16.0"
     uuid: "npm:^13.0.0"
