@@ -12609,14 +12609,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"usehooks-ts@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "usehooks-ts@npm:2.16.0"
+"usehooks-ts@npm:^3.0.0":
+  version: 3.1.1
+  resolution: "usehooks-ts@npm:3.1.1"
   dependencies:
     lodash.debounce: "npm:^4.0.8"
   peerDependencies:
-    react: ^16.8.0  || ^17 || ^18
-  checksum: 10c0/0b7babf09b587cf7af71644dd603ee2efd820ec173c414af1c2afc2c61decc357738b093cabb6a881ac97d8a4e614723ee20096bddd459779f3a0786f4e6b2bf
+    react: ^16.8.0  || ^17 || ^18 || ^19 || ^19.0.0-rc
+  checksum: 10c0/8bbebf52b063f2e705eb27364f08ec2eff987b9e8d28d82a28248652dd89ef53cb514e1f2ee1cbc6ac6e083a8dce86310301c3e92a99902b98c32a26381202d7
   languageName: node
   linkType: hard
 
@@ -12784,7 +12784,7 @@ __metadata:
     react-use: "npm:^17.6.0"
     type-fest: "npm:^5.3.1"
     typescript: "npm:5.9.3"
-    usehooks-ts: "npm:^2.16.0"
+    usehooks-ts: "npm:^3.0.0"
     uuid: "npm:^13.0.0"
   languageName: unknown
   linkType: soft
