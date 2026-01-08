@@ -63,7 +63,7 @@ export default function MyDocument(
 				<link rel="apple-touch-icon" href="/favicon-black.ico" />
 			</Head>
 			<body style={{ height: "100lvh" }}>
-				<InitColorSchemeScript defaultMode="system" />
+				<InitColorSchemeScript defaultMode="system" attribute="class" />
 				<Main />
 				<NextScript />
 			</body>
