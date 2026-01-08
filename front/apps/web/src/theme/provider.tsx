@@ -28,7 +28,7 @@ import { DarkTheme, GlobalTheme, LightTheme } from "./theme";
 
 const theme = responsiveFontSizes(
 	createTheme({
-		cssVariables: true,
+		cssVariables: { colorSchemeSelector: "class" },
 		colorSchemes: {
 			light: { palette: LightTheme },
 			dark: { palette: DarkTheme },
