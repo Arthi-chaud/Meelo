@@ -29,7 +29,7 @@
 		"hls.js": "^1.6.15",
 		"i18next": "^25.0.0",
 		"jotai": "^2.16.0",
-		"material-ui-confirm": "^3.0.7",
+		"material-ui-confirm": "^4.0.0",
 		"mui-react-hook-form-plus": "^1.5.1",
 		"next": "15.5.7",
 		"react": "19.1.0",
