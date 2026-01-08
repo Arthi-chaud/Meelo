@@ -62,7 +62,7 @@ services:
       - SSR_SERVER_URL=http://server:4000
       - PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
       - SSR_SCANNER_URL=http://scanner:8133
-      - PUBLIC_MATCHER_URL=http://{PUBLIC_URL}/matcher
+      - PUBLIC_MATCHER_URL=${PUBLIC_URL}/matcher
       - SSR_MATCHER_URL=http://matcher:6789
   matcher:
     image: arthichaud/meelo-matcher:${TAG}
