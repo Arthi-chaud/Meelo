@@ -146,8 +146,8 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.DiscIndex = int64(discValue)
 	})
 
-	ParseTag(tags, []string{"date", "tory", "tyer"}, func(value string) {
-		// iTunes purchases use an ISO format
+	// TODO "date" / "year" is for release, not album
+	ParseTag(tags, []string{"originaldate", "date", "originalyear", "year", "tory", "tyer"}, func(value string) {
 		for _, format := range []string{"2006", time.DateOnly, time.DateTime, time.RFC3339} {
 			date, err := time.Parse(format, value)
 			if err == nil {
@@ -155,15 +155,6 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 			}
 		}
 	})
-	if metadata.ReleaseDate == nil {
-		ParseTag(tags, []string{"year"}, func(value string) {
-			// MP3s only store year(?)
-			date, err := time.Parse("2006", value)
-			if err == nil {
-				metadata.ReleaseDate = &date
-			}
-		})
-	}
 
 	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {
 		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
