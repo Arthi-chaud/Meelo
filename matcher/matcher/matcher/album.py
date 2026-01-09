@@ -64,9 +64,13 @@ async def match_and_post_album(album_id: int, album_name: str, reuseSources: boo
                 f"Matched with {len(res.metadata.sources)} providers for album {album_name}"
             )
             await context.client.post_external_metadata(res.metadata)
-
         if old_release_date and res.release_date:
-            if abs(res.release_date.year - old_release_date.year) > 2:
+            if old_release_date.month != 1 and old_release_date.day != 1:
+                logging.info(
+                    "Ignoring matched release date as API already provides it."
+                )
+                res.release_date = None
+            elif abs(res.release_date.year - old_release_date.year) > 2:
                 logging.info(
                     f"Release date found ({res.release_date.year}) is too far from the one from the API ({old_release_date.year})."
                 )
