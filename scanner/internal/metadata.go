@@ -33,8 +33,10 @@ type Metadata struct {
 	Name string `validate:"required"`
 	// Sort name of the track
 	SortName string
-	// Release date of the track
-	ReleaseDate *time.Time
+	// Release date of the album
+	AlbumReleaseDate *time.Time
+	// Release date of the release
+	ReleaseReleaseDate *time.Time
 	// Index of the track on the disc
 	Index int64
 	// Index of the disc the track is on
@@ -116,9 +118,13 @@ func Merge(m1 Metadata, m2 Metadata) (Metadata, error) {
 			fmt.Errorf("source: %+v", m2))
 	}
 	// dates do not seem to be overwritten correctly
-	if m1.ReleaseDate != nil && (*m1.ReleaseDate).Year() == 1 {
-		m1.ReleaseDate = m2.ReleaseDate
+	if m1.AlbumReleaseDate != nil && (*m1.AlbumReleaseDate).Year() == 1 {
+		m1.AlbumReleaseDate = m2.AlbumReleaseDate
 	}
+	if m1.ReleaseReleaseDate != nil && (*m1.ReleaseReleaseDate).Year() == 1 {
+		m1.ReleaseReleaseDate = m2.ReleaseReleaseDate
+	}
+
 	if m1.Index == -1 && m2.Index != -1 {
 		m1.Index = m2.Index
 	}

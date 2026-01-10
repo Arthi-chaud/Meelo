@@ -139,8 +139,11 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	if len(m.SortName) > 0 {
 		mp.WriteField("sortName", m.SortName)
 	}
-	if m.ReleaseDate != nil {
-		mp.WriteField("releaseDate", (*m.ReleaseDate).Format(time.RFC3339))
+	if m.AlbumReleaseDate != nil {
+		mp.WriteField("albumReleaseDate", (*m.AlbumReleaseDate).Format(time.RFC3339))
+	}
+	if m.ReleaseReleaseDate != nil {
+		mp.WriteField("releaseReleaseDate", (*m.ReleaseReleaseDate).Format(time.RFC3339))
 	}
 	if m.Index >= 0 {
 		mp.WriteField("index", strconv.FormatInt(m.Index, 10))
