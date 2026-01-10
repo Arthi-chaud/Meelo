@@ -16,6 +16,8 @@ import (
 
 type parseTagFn func(string)
 
+var dateFormats []string = []string{time.DateOnly, "2006", time.DateTime, time.RFC3339}
+
 // Tries to get each tag by key one after the other. If it success, calls function and returns
 func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
 	for _, key := range keys {
@@ -146,12 +148,22 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.DiscIndex = int64(discValue)
 	})
 
-	// TODO "date" / "year" is for release, not album
-	ParseTag(tags, []string{"originaldate", "date", "originalyear", "year", "tory", "tyer"}, func(value string) {
-		for _, format := range []string{"2006", time.DateOnly, time.DateTime, time.RFC3339} {
+	ParseTag(tags, []string{"originaldate", "originalyear", "tory", "tor", "xdor", "tdor"}, func(value string) {
+		for _, format := range dateFormats {
 			date, err := time.Parse(format, value)
 			if err == nil {
-				metadata.ReleaseDate = &date
+				metadata.AlbumReleaseDate = &date
+				return
+			}
+		}
+	})
+
+	ParseTag(tags, []string{"date", "year", "tye", "tyer", "tdrl"}, func(value string) {
+		for _, format := range dateFormats {
+			date, err := time.Parse(format, value)
+			if err == nil {
+				metadata.ReleaseReleaseDate = &date
+				return
 			}
 		}
 	})

@@ -137,14 +137,24 @@ export default class Metadata {
 	sortName?: string;
 
 	/**
-	 * Release date of the track
+	 * Release date of the parent album
 	 */
 	@ApiPropertyOptional()
 	@IsDefined()
 	@IsOptional()
 	@IsDate()
 	@Type(() => Date)
-	releaseDate?: Date;
+	albumReleaseDate?: Date;
+
+	/**
+	 * Release date of the parent release
+	 */
+	@ApiPropertyOptional()
+	@IsDefined()
+	@IsOptional()
+	@IsDate()
+	@Type(() => Date)
+	releaseReleaseDate?: Date;
 
 	/**
 	 * Index of the track on the disc

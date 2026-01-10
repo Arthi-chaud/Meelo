@@ -71,7 +71,15 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 	if index := regex.SubexpIndex("Year"); index != -1 && len(matches[index]) > 0 {
 		date, err := time.Parse("2006", matches[index])
 		if err == nil {
-			metadata.ReleaseDate = &date
+			metadata.ReleaseReleaseDate = &date
+		} else {
+			errors = append(errors, fmt.Errorf("invalid year: '%s'", matches[index]))
+		}
+	}
+	if index := regex.SubexpIndex("OriginalYear"); index != -1 && len(matches[index]) > 0 {
+		date, err := time.Parse("2006", matches[index])
+		if err == nil {
+			metadata.AlbumReleaseDate = &date
 		} else {
 			errors = append(errors, fmt.Errorf("invalid year: '%s'", matches[index]))
 		}
