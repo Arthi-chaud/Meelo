@@ -332,6 +332,7 @@
 			},
 			"keyboardBindings": "Raccourcis Clavier",
 			"lang": {
+				"cs": "tchèque",
 				"da": "Danois",
 				"de": "Allemand",
 				"en": "Anglais",
@@ -340,7 +341,8 @@
 				"it": "Italien",
 				"pt": "Portugais",
 				"pt_br": "Portugais (Brésil)",
-				"ru": "Russe"
+				"ru": "Russe",
+				"sk": "slovaque"
 			},
 			"language": "Langue",
 			"notifications": "Notifications",
