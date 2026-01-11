@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"start:dev": "next dev",
-		"build": "next build",
+		"build": "next build --webpack",
 		"start:prod": "next start",
 		"test": "jest -i",
 		"test:cov": "jest -i --coverage"
