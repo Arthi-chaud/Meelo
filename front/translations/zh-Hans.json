@@ -1,1 +1,17 @@
-{}
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "添加到播放列表",
+			"modalTitle": "选择播放列表"
+		},
+		"album": {
+			"changeType": "更改专辑类型",
+			"goToAlbum": "前往专辑"
+		},
+		"archive": "档案",
+		"artist": {
+			"seeAlbums": "查看专辑",
+			"seeSongs": "查看歌曲"
+		}
+	}
+}
