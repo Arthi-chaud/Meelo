@@ -54,6 +54,13 @@ type Metadata struct {
 	Genres []string
 	// Discogs ID of the parent release
 	DiscogsId string
+	// AcoustId Id
+	AcoustId string
+	// MusicBrainz IDs
+	ArtistMbid      string
+	AlbumArtistMbid string
+	AlbumMbid       string
+	SongMbid        string
 	// Name of the label that published thed release
 	Label                   string
 	IllustrationLocation    IllustrationLocation

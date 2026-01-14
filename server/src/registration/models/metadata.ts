@@ -229,8 +229,33 @@ export default class Metadata {
 	@IsOptional()
 	discogsId?: string;
 
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	artistMbid?: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	albumArtistMbid?: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	albumMbid?: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	songMbid?: string;
+
+	@ApiProperty()
+	@IsString()
+	@IsOptional()
+	acoustid?: string;
+
 	/**
-	 * Fingerprint (AcoustID) of the file
+	 * Fingerprint of the file
 	 */
 	@ApiPropertyOptional()
 	@IsString()

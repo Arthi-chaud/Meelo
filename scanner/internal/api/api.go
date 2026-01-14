@@ -173,6 +173,21 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	if len(m.DiscogsId) > 0 {
 		mp.WriteField("discogsId", m.DiscogsId)
 	}
+	if len(m.ArtistMbid) > 0 {
+		mp.WriteField("artistMbid", m.ArtistMbid)
+	}
+	if len(m.AlbumArtistMbid) > 0 {
+		mp.WriteField("albumArtistMbid", m.AlbumArtistMbid)
+	}
+	if len(m.AlbumMbid) > 0 {
+		mp.WriteField("albumMbid", m.AlbumMbid)
+	}
+	if len(m.SongMbid) > 0 {
+		mp.WriteField("songMbid", m.SongMbid)
+	}
+	if len(m.AcoustId) > 0 {
+		mp.WriteField("acoustid", m.AcoustId)
+	}
 	mp.WriteField("registrationDate", m.RegistrationDate.Format(time.RFC3339))
 	mp.WriteField("checksum", m.Checksum)
 	mp.WriteField("path", m.Path)
