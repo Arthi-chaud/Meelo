@@ -26,6 +26,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import LabelModule from "src/label/label.module";
 import LibraryModule from "src/library/library.module";
 import ParserModule from "src/parser/parser.module";
+import PrismaModule from "src/prisma/prisma.module";
 import ReleaseModule from "src/release/release.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
@@ -41,6 +42,7 @@ import { RegistrationService } from "./registration.service";
 	exports: [RegistrationService],
 	imports: [
 		ParserModule,
+		PrismaModule,
 		forwardRef(() => SettingsModule),
 		forwardRef(() => LibraryModule),
 		forwardRef(() => SongModule),

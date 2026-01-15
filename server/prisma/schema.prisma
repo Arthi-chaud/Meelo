@@ -156,6 +156,8 @@ model Album {
     genres           Genre[]
     illustration     AlbumIllustration?
 
+    localIdentifiers LocalIdentifiers?
+
     searchHistory SearchHistory[]
 
     @@unique([slug, artistId])
@@ -188,6 +190,8 @@ model Artist {
     /// @description Related Illustration
     illustrationId   Int?              @unique
     illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
+
+    localIdentifiers LocalIdentifiers?
 
     searchHistory SearchHistory[]
     videos        Video[]
@@ -279,6 +283,8 @@ model Release {
     /// @description the ID of the label of the release
     labelId          Int?
 
+    localIdentifiers LocalIdentifiers?
+
     @@unique([albumId, slug])
     @@map("releases")
 }
@@ -349,6 +355,8 @@ model Song {
     videos           Video[]
     /// @description Beats per minute
     bpm              Float?
+
+    localIdentifiers LocalIdentifiers?
 
     @@unique([slug, artistId])
     @@map("songs")
@@ -592,6 +600,24 @@ model Provider {
     illustration    Illustration?            @relation(fields: [illustrationId], references: [id], onDelete: NoAction)
 
     @@map("providers")
+}
+
+model LocalIdentifiers {
+    /// @description Unique entry identifier
+    /// @example 123
+    id            Int      @id @default(autoincrement())
+    musicbrainzId String?
+    discogsId     String?
+    songId        Int?     @unique
+    song          Song?    @relation(fields: [songId], references: [id], onDelete: Cascade)
+    artistId      Int?     @unique
+    artist        Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+    albumId       Int?     @unique
+    album         Album?   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    releaseId     Int?     @unique
+    release       Release? @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+    @@map("local_identifiers")
 }
 
 model ExternalMetadata {
