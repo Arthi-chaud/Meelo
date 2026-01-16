@@ -606,7 +606,11 @@ model LocalIdentifiers {
     /// @description Unique entry identifier
     /// @example 123
     id            Int      @id @default(autoincrement())
+    /// @description MusicBrainz ID found in local metadata
+    /// @example 00000000-0000-0000-0000-000000000000
     musicbrainzId String?
+    /// @example r1234567
+    /// @description Discogs ID found in local metadata (usually for releases)
     discogsId     String?
     songId        Int?     @unique
     song          Song?    @relation(fields: [songId], references: [id], onDelete: Cascade)

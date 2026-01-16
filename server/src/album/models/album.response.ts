@@ -26,6 +26,10 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
+import {
+	LocalIdentifiersResponse,
+	ResponseWithLocalIdentifiers,
+} from "src/local-identifiers/local-identifiers.response";
 import { Album, type AlbumWithRelations, type Genre } from "src/prisma/models";
 import {
 	type ReleaseResponse,
@@ -37,6 +41,7 @@ import ResponseBuilderInterceptor from "src/response/interceptors/response.inter
 export class AlbumResponse extends IntersectionType(
 	OmitType(Album, ["sortSlug", "nameSlug"]),
 	IllustratedResponse,
+	ResponseWithLocalIdentifiers,
 	class {
 		artist?: ArtistResponse | null;
 		master?: ReleaseResponse;
@@ -88,6 +93,9 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 			master: album.master
 				? await this.releaseResponseBuilder.buildResponse(album.master)
 				: album.master,
+			localIdentifiers: LocalIdentifiersResponse.from(
+				album.localIdentifiers,
+			),
 		};
 	}
 }

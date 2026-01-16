@@ -95,9 +95,12 @@ namespace ArtistQueryParameters {
 		"albums",
 		"songs",
 		"illustration",
+		"localIdentifiers",
 	] as const;
-	export const AvailableAtomicIncludes =
-		filterAtomicRelationInclude(AvailableIncludes);
+	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
+		AvailableIncludes,
+		["localIdentifiers"],
+	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
