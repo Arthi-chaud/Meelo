@@ -112,15 +112,19 @@ class API:
         return API._to_page(response, Provider)
 
     async def get_album(self, album_id: int, token: str | None = None) -> Album:
-        json = await self._get(f"/albums/{album_id}?with=artist", token)
+        json = await self._get(
+            f"/albums/{album_id}?with=artist,localIdentifiers", token
+        )
         return Album.schema().load(json)
 
     async def get_artist(self, artist_id: int, token: str | None = None) -> Artist:
-        json = await self._get(f"/artists/{artist_id}", token)
+        json = await self._get(f"/artists/{artist_id}?with=localIdentifiers", token)
         return Artist.schema().load(json)
 
     async def get_song(self, song_id: int, token: str | None = None) -> Song:
-        json = await self._get(f"/songs/{song_id}?with=artist,featuring,master", token)
+        json = await self._get(
+            f"/songs/{song_id}?with=artist,featuring,master,localIdentifiers", token
+        )
         return Song.schema().load(json)
 
     async def get_file(self, file_id: int) -> File:

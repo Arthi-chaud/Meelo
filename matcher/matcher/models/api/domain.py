@@ -11,9 +11,17 @@ from matcher.providers.domain import AlbumType
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
+class LocalIdentifiers(DataClassJsonMixin):
+    musicbrainz_id: Optional[str] = None
+    discogs_id: Optional[str] = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
 class Artist(DataClassJsonMixin):
     id: int
     name: str
+    local_identifiers: Optional[LocalIdentifiers] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -24,6 +32,7 @@ class Album(DataClassJsonMixin):
     artist: Optional[Artist] = None
     type: AlbumType = AlbumType.OTHER
     release_date: Optional[str] = None
+    local_identifiers: Optional[LocalIdentifiers] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -41,6 +50,7 @@ class Song(DataClassJsonMixin):
     artist: Artist
     featuring: List[Artist]
     master: Optional[Track] = None
+    local_identifiers: Optional[LocalIdentifiers] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
