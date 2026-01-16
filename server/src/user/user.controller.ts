@@ -31,7 +31,6 @@ import {
 	Request,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import type { User } from "@prisma/client";
 import { Admin, Public, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import {
@@ -40,6 +39,7 @@ import {
 } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import type { User } from "src/prisma/generated/client";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SettingsService from "src/settings/settings.service";
 import UserCreateDTO from "./models/create-user.dto";

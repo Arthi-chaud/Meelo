@@ -24,7 +24,7 @@ jobs:
       front: ${{ steps.filter.outputs.front }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}
@@ -113,7 +113,7 @@ jobs:
           eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
 
       - name: Upload APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: ${{ env.APK_NAME }}

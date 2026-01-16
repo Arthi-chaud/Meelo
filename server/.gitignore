@@ -26,6 +26,7 @@ coverage/
 test/assets/metadata
 
 src/prisma/models
+src/prisma/generated
 .yarn/*
 !.yarn/patches
 !.yarn/plugins

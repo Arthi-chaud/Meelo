@@ -26,9 +26,9 @@ import {
 	Request,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Scrobbler, User } from "@prisma/client";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
+import { Scrobbler, User } from "src/prisma/generated/client";
 import { EnableLastFMDTO, LastFMAuthUrlResponse } from "./models/lastfm.dto";
 import { EnableListenBrainzDTO } from "./models/listenbrainz.dto";
 import ScrobblerService from "./scrobbler.service";

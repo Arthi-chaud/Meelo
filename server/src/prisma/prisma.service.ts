@@ -16,21 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	type INestApplication,
-	Injectable,
-	type OnModuleDestroy,
-	type OnModuleInit,
-} from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "src/prisma/generated/client";
 
 @Injectable()
 export default class PrismaService
 	extends PrismaClient
 	implements OnModuleInit, OnModuleDestroy
 {
-	async onModuleInit() {
-		await this.$connect();
+	constructor() {
+		const adapter = new PrismaPg({
+			connectionString: process.env.DATABASE_URL,
+		});
+		super({ adapter });
+
 		this.$extends({
 			query: {
 				album: {
@@ -70,10 +70,7 @@ export default class PrismaService
 	async onModuleDestroy() {
 		await this.$disconnect();
 	}
-
-	async enableShutdownHooks(app: INestApplication) {
-		this.$on("beforeExit", async () => {
-			await app.close();
-		});
+	async onModuleInit() {
+		await this.$connect();
 	}
 }

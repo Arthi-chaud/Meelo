@@ -1,6 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
-import { User } from "@prisma/client";
 import ArtistModule from "src/artist/artist.module";
+import { User } from "src/prisma/generated/client";
 import type { Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";

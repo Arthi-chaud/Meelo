@@ -67,7 +67,7 @@ export function union<TCast extends yup.Maybe<unknown>, C, O>(
 			// The real magic
 			return schemas.some((s) => s.isValidSync(value));
 		},
-	}) as yup.MixedSchema<TCast, C, O>;
+	}) as unknown as yup.MixedSchema<TCast, C, O>;
 }
 
 // We need this as re-hydrared dates are still strings

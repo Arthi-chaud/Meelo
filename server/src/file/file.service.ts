@@ -17,7 +17,6 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -25,6 +24,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type Identifier from "src/identifier/models/identifier";
 import LibraryService from "src/library/library.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import type { File } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";

@@ -17,7 +17,7 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { Scrobbler } from "@prisma/client";
+import { Scrobbler } from "src/prisma/generated/client";
 
 export default class ScrobblersResponse {
 	@ApiProperty({

@@ -29,7 +29,6 @@ import {
 	Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { User } from "@prisma/client";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -39,9 +38,11 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { User } from "src/prisma/generated/client";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
 import SongQueryParameters from "src/song/models/song.query-params";
+import countDefinedFields from "src/utils/count-defined-fields";
 import {
 	CreatePlaylistDTO,
 	CreatePlaylistEntryDTO,
@@ -212,7 +213,7 @@ export default class PlaylistController {
 		playlistEntryDTO: CreatePlaylistEntryDTO,
 		@Req() req: Express.Request,
 	) {
-		if (Object.entries(playlistEntryDTO).length !== 1) {
+		if (countDefinedFields(playlistEntryDTO) !== 1) {
 			throw new InvalidRequestException("Expected exactly one field");
 		}
 		if (playlistEntryDTO.songId) {

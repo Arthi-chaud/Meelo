@@ -18,7 +18,6 @@
 
 import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { VideoType } from "@prisma/client";
 import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -36,6 +35,7 @@ import TransformIdentifier from "src/identifier/identifier.transform";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { VideoType } from "src/prisma/generated/client";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import { formatIdentifier } from "src/repository/repository.utils";
 import Response, { ResponseType } from "src/response/response.decorator";

@@ -25,7 +25,14 @@ export const ExternalMetadataSource = yup.object({
 	providerIcon: yup.string().required(),
 });
 
-const CommonExternalMetadata = yup.object({
+export const ExternalProvider = yup.object({
+	id: yup.number().required(),
+	name: yup.string().required(),
+	illustrationId: yup.number().required(),
+});
+export type ExternalProvider = yup.InferType<typeof ExternalProvider>;
+
+export const CommonExternalMetadata = yup.object({
 	description: yup.string().required().nullable(),
 	sources: yup.array(ExternalMetadataSource.required()).required(),
 });

@@ -26,6 +26,7 @@
 			"label": "Download",
 			"warning": "Downloading copyrighted material you don't own is not authorized. Please proceed if, and only if, you own the original content."
 		},
+		"editExternalLinks": "Edit External Links",
 		"genre": {
 			"startRadio": "Start Genre Radio"
 		},
@@ -204,6 +205,10 @@
 		"confirm": "Confirm",
 		"done": "Done",
 		"edit": "Edit",
+		"editExternalLinks": {
+			"addLink": "Add Link",
+			"saveLinks": "Save Links"
+		},
 		"illustration": {
 			"url": "Enter URL of the new illustration"
 		},
@@ -331,7 +336,9 @@
 				"de": "German",
 				"id": "Indonesian",
 				"it": "Italian",
-				"ru": "Russian"
+				"ru": "Russian",
+				"cs": "Czech",
+				"sk": "Slovak"
 			},
 			"versions": "Versions",
 			"language": "Language",
@@ -383,7 +390,8 @@
 		"refreshLocalMetadata": "Refresh Local Metadata",
 		"refreshExternalMetadata": "Refresh External Metadata",
 		"refreshMetadataForm": {
-			"forceLabel": "Force refresh if files have not changed"
+			"forceLabel": "Force refresh if files have not changed",
+			"reuseLabel": "Reuse known sources"
 		},
 		"scan": "Scan",
 		"scanLibraries": "Scan Libraries"

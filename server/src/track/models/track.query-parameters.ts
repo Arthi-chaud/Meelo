@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { TrackType } from "@prisma/client";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
 import { Filter } from "src/filter/filter";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
+import type { TrackType } from "src/prisma/generated/client";
 import type { Track } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";

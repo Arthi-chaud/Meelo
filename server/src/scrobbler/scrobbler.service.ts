@@ -19,9 +19,9 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { Scrobbler } from "@prisma/client";
 import { MeeloException } from "src/exceptions/meelo-exception";
 import Logger from "src/logger/logger";
+import { Scrobbler } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import ScrobblersResponse from "./models/scrobblers.response";
 import {

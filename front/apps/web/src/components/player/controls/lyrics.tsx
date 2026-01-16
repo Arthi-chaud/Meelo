@@ -27,14 +27,16 @@ export const LyricsComponent = ({
 	progress,
 	setProgress,
 	playerIsExpanded,
+	trackIsVideo,
 }: {
 	lyrics: Lyrics | null | undefined;
 	songName?: string;
 	progress?: MutableRefObject<number | null>;
 	setProgress: (newProgress: number) => void;
 	playerIsExpanded: boolean;
+	trackIsVideo: boolean;
 }) => {
-	if (lyrics?.synced && progress) {
+	if (lyrics?.synced && progress && !trackIsVideo) {
 		return (
 			<SyncedLyricsComponent
 				syncedLyrics={lyrics.synced}

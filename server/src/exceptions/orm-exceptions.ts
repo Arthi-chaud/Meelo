@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/prisma/generated/client";
 
 /**
  * Exception which, if caught by the global filter will return a 500 HTTP response

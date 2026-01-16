@@ -19,12 +19,6 @@
 import * as path from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import {
-	type Illustration,
-	IllustrationType,
-	type Library,
-	TrackType,
-} from "@prisma/client";
-import {
 	InvalidRequestException,
 	NotFoundException,
 } from "src/exceptions/meelo-exception";
@@ -36,6 +30,12 @@ import IllustrationService from "src/illustration/illustration.service";
 import { LibraryNotFoundException } from "src/library/library.exceptions";
 import LibraryService from "src/library/library.service";
 import Logger from "src/logger/logger";
+import {
+	type Illustration,
+	IllustrationType,
+	type Library,
+	TrackType,
+} from "src/prisma/generated/client";
 import MetadataService from "src/registration/metadata.service";
 import SettingsService from "src/settings/settings.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";

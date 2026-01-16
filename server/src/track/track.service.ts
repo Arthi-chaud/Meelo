@@ -17,7 +17,6 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
@@ -29,6 +28,7 @@ import type Identifier from "src/identifier/models/identifier";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import LibraryService from "src/library/library.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";
@@ -270,12 +270,13 @@ export default class TrackService {
 				},
 			});
 		}
-		if (where.artist) {
+		if (where.artist !== undefined) {
 			query.push({
 				release: {
-					album: filterToPrisma(where.artist, (a) =>
+					// NOTE: Not sure why the null cast is necessary
+					album: filterToPrisma(where.artist!, (a) =>
 						AlbumService.formatManyWhereInput({
-							artist: { is: a },
+							artist: { is: a! },
 						}),
 					),
 				},

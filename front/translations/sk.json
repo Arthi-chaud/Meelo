@@ -1,0 +1,12 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Pridať do zoznamu skladieb",
+			"modalTitle": "Vyberte zoznam skladieb"
+		},
+		"album": {
+			"changeType": "Zmeniť typ albumu",
+			"goToAlbum": "Prejsť do albumu"
+		}
+	}
+}

@@ -17,7 +17,6 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IllustrationType } from "@prisma/client";
 import { IsDefined, IsEnum, IsIn, IsNumber, IsString } from "class-validator";
 import {
 	HasMimeType,
@@ -25,6 +24,7 @@ import {
 	MaxFileSize,
 	type MemoryStoredFile,
 } from "nestjs-form-data";
+import { IllustrationType } from "src/prisma/generated/client";
 
 export default class IllustrationRegistrationDto {
 	@IsFile()

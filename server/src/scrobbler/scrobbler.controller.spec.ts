@@ -1,4 +1,3 @@
-import { Scrobbler } from ".prisma/client";
 import {
 	HttpStatus,
 	INestApplication,
@@ -10,6 +9,7 @@ import { TestingModule } from "@nestjs/testing";
 import { AppProviders, applyMiddlewares } from "src/app.plugins";
 import AuthenticationModule from "src/authentication/authentication.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
+import { Scrobbler } from "src/prisma/generated/client";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";

@@ -1,4 +1,4 @@
-import { type File, SongType, VideoType } from "@prisma/client";
+import { type File, SongType, VideoType } from "src/prisma/generated/client";
 import type {
 	Album,
 	Artist,

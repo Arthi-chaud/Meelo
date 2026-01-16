@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { SongGroup } from "@prisma/client";
+import type { SongGroup } from "src/prisma/generated/client";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type Slug from "src/slug/slug";

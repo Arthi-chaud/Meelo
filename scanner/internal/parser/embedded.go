@@ -16,6 +16,8 @@ import (
 
 type parseTagFn func(string)
 
+var dateFormats []string = []string{time.DateOnly, "2006", time.DateTime, time.RFC3339}
+
 // Tries to get each tag by key one after the other. If it success, calls function and returns
 func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
 	for _, key := range keys {
@@ -146,24 +148,25 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.DiscIndex = int64(discValue)
 	})
 
-	ParseTag(tags, []string{"date", "tory", "tyer"}, func(value string) {
-		// iTunes purchases use an ISO format
-		for _, format := range []string{"2006", time.DateOnly, time.DateTime, time.RFC3339} {
+	ParseTag(tags, []string{"originaldate", "originalyear", "tory", "tor", "xdor", "tdor"}, func(value string) {
+		for _, format := range dateFormats {
 			date, err := time.Parse(format, value)
 			if err == nil {
-				metadata.ReleaseDate = &date
+				metadata.AlbumReleaseDate = &date
+				return
 			}
 		}
 	})
-	if metadata.ReleaseDate == nil {
-		ParseTag(tags, []string{"year"}, func(value string) {
-			// MP3s only store year(?)
-			date, err := time.Parse("2006", value)
+
+	ParseTag(tags, []string{"date", "year", "tye", "tyer", "tdrl"}, func(value string) {
+		for _, format := range dateFormats {
+			date, err := time.Parse(format, value)
 			if err == nil {
-				metadata.ReleaseDate = &date
+				metadata.ReleaseReleaseDate = &date
+				return
 			}
-		})
-	}
+		}
+	})
 
 	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {
 		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {

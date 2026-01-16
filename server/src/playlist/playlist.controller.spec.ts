@@ -6,10 +6,10 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { TestingModule } from "@nestjs/testing";
-import { IllustrationType, type Playlist } from "@prisma/client";
 import { AppProviders, applyMiddlewares } from "src/app.plugins";
 import AuthenticationModule from "src/authentication/authentication.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import { IllustrationType, type Playlist } from "src/prisma/generated/client";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import SettingsModule from "src/settings/settings.module";

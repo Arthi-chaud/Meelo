@@ -17,17 +17,18 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma, type Video } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum/dist";
 import AlbumService from "src/album/album.service";
 import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma, type Video } from "src/prisma/generated/client";
 import type { Artist, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";
 import SongService from "src/song/song.service";
+import countDefinedFields from "src/utils/count-defined-fields";
 import VideoService from "src/video/video.service";
 import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
 import {
@@ -50,7 +51,7 @@ export class SearchHistoryService {
 		dto: CreateSearchHistoryEntry,
 		userId: number,
 	): Promise<void> {
-		if (Object.entries(dto).length !== 1) {
+		if (countDefinedFields(dto) !== 1) {
 			throw new InvalidCreateHistoryEntryException(dto);
 		}
 		await this.prismaService.searchHistory.deleteMany({

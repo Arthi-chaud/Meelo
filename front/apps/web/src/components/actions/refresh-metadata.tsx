@@ -40,6 +40,7 @@ const RefreshMetadataActionContent = ({
 	close: () => void;
 }) => {
 	const [force, setForce] = useState(false);
+	const [reuseSources, setReuseSources] = useState(true);
 	const api = useAPI();
 	const canRefreshLocalMetadata = resourceType !== "artist";
 	const canRefreshExternalMetadata = ["artist", "song", "album"].includes(
@@ -93,33 +94,54 @@ const RefreshMetadataActionContent = ({
 				<Divider />
 			)}
 			{canRefreshExternalMetadata && (
-				<Button
-					fullWidth
-					variant="contained"
-					onClick={() => {
-						toast
-							.promise(
-								api.refreshExternalMetadata({
-									[`${resourceType}Id`]: resourceId,
-								}),
-								{
-									loading: t(
-										"toasts.refreshMetadata.started",
+				<>
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<Checkbox
+							checked={reuseSources}
+							onClick={() => setReuseSources((f) => !f)}
+						/>
+						{t("tasks.refreshMetadataForm.reuseLabel")}
+					</Box>
+					<Button
+						fullWidth
+						variant="contained"
+						onClick={() => {
+							toast
+								.promise(
+									api.refreshExternalMetadata(
+										{
+											[`${resourceType}Id` as "artistId"]:
+												resourceId,
+										},
+										reuseSources,
 									),
-									success: "Metadata Refreshed!",
-									error: t("toasts.refreshMetadata.failed"),
-								},
-							)
-							.then(async () => {
-								await queryClient.client.invalidateQueries({
-									queryKey: ["api", "external-metadata"],
+									{
+										loading: t(
+											"toasts.refreshMetadata.started",
+										),
+										success: "Metadata Refreshed!",
+										error: t(
+											"toasts.refreshMetadata.failed",
+										),
+									},
+								)
+								.then(async () => {
+									await queryClient.client.invalidateQueries({
+										queryKey: ["api", "external-metadata"],
+									});
 								});
-							});
-						close();
-					}}
-				>
-					{t("tasks.refreshExternalMetadata")}
-				</Button>
+							close();
+						}}
+					>
+						{t("tasks.refreshExternalMetadata")}
+					</Button>
+				</>
 			)}
 		</Stack>
 	);

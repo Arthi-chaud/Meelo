@@ -1,5 +1,4 @@
 import type { TestingModule } from "@nestjs/testing";
-import { type Video, VideoType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
@@ -8,6 +7,7 @@ import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
+import { type Video, VideoType } from "src/prisma/generated/client";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";

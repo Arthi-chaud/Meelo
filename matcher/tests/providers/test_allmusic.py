@@ -18,6 +18,12 @@ async def ctx():
 
 
 class TestAllMusic:
+    def test_is_album_url(self, ctx):
+        provider: AllMusicProvider = (
+            Context().get().get_provider_or_raise(AllMusicProvider)
+        )
+        assert provider.is_album_url("https://www.allmusic.com/album/mw0000356345")
+
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_rating_and_release_date(self, ctx):
         provider: AllMusicProvider = (

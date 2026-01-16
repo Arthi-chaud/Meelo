@@ -1,5 +1,6 @@
-FROM golang:1.24.1-alpine
-RUN go install github.com/bokwoon95/wgo@latest ; go install github.com/swaggo/swag/cmd/swag@latest
+FROM golang:1.25.5-alpine
+RUN go install github.com/bokwoon95/wgo@latest && \
+    go install github.com/swaggo/swag/cmd/swag@latest
 
 RUN apk update && apk upgrade && apk add ffmpeg chromaprint mailcap make cmake sudo curl pkgconf g++ linux-headers
 
@@ -7,11 +8,11 @@ WORKDIR /app
 
 COPY go.mod go.sum .
 RUN go get -u gocv.io/x/gocv
-WORKDIR /go/pkg/mod/gocv.io/x/gocv@v0.42.0
+WORKDIR /go/pkg/mod/gocv.io/x/
 ENV CGO_ENABLED=1
-RUN make install
+RUN cd gocv@* \
+    && make install
 
 WORKDIR /app
 ENV VERSION=dev
-ENV CGO_ENABLED=1
 CMD ["wgo", "-xdir", "./app/docs", "swag", "init", "-d", "app", "-o", "./app/docs", "::", "go", "run", "./app"]

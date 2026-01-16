@@ -65,7 +65,7 @@ export default class FileManagerService {
 	async getFileBuffer(filePath: string): Promise<Buffer> {
 		return fs.promises
 			.readFile(filePath)
-			.then((content) => Buffer.from(content));
+			.then((content) => Buffer.from(content.buffer));
 	}
 
 	/**

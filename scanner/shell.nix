@@ -7,7 +7,8 @@ pkgs.mkShell {
     golangci-lint
     gopls
     chromaprint
-    pkgs.opencv4
+    opencv4
+    pkg-config
   ];
   shellHook = ''
     export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${pkgs.opencv4}/lib/pkgconfig";  

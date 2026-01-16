@@ -17,11 +17,11 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";

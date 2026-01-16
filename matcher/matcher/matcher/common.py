@@ -153,8 +153,8 @@ async def get_sources_from_musicbrainz(
             if "url" not in rel:
                 continue
             if rel["type"] == "wikidata":
-                wikidata_id = rel["url"]["resource"].replace(
-                    "https://www.wikidata.org/wiki/", ""
+                wikidata_id = rel["url"]["resource"].removeprefix(
+                    "https://www.wikidata.org/wiki/"
                 )
                 continue
             providers = [

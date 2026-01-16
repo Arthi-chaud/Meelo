@@ -17,11 +17,11 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { AlbumType, TrackType } from "@prisma/client";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
+import { AlbumType, TrackType } from "src/prisma/generated/client";
 import type { File } from "src/prisma/models";
 import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";
@@ -55,6 +55,23 @@ export default class MetadataService {
 		private labelService: LabelService,
 	) {}
 
+	private dateIsYearOnly(d: Date): boolean {
+		return d.getMonth() === 0 && d.getDate() === 0;
+	}
+
+	private shouldOverwriteDate(
+		oldD: Date | null,
+		newD: Date | null | undefined,
+	): newD is Date {
+		if (!newD) {
+			return false;
+		}
+		if (!oldD) {
+			return true;
+		}
+		return this.dateIsYearOnly(oldD);
+	}
+
 	/**
 	 * Pushed the metadata to the database, calling vairous repositories
 	 * @param metadata the metadata instance to push
@@ -62,6 +79,7 @@ export default class MetadataService {
 	 * @param overwrite if true, will overwrite the existing track
 	 */
 	async registerMetadata(metadata: Metadata, file: File, overwrite = false) {
+		metadata.albumReleaseDate ??= metadata.releaseReleaseDate;
 		const genres = await Promise.all(
 			(metadata.genres ?? []).map((genre) =>
 				this.genreService.getOrCreate({ name: genre }),
@@ -210,6 +228,7 @@ export default class MetadataService {
 							? { id: albumArtist?.id }
 							: undefined,
 						registeredAt: file.registerDate,
+						releaseDate: metadata.albumReleaseDate,
 					},
 					{ releases: true },
 				)
@@ -232,7 +251,9 @@ export default class MetadataService {
 						{
 							name: parsedReleaseName.parsedName,
 							extensions: parsedReleaseName.extensions,
-							releaseDate: metadata.releaseDate,
+							releaseDate:
+								metadata.releaseReleaseDate ??
+								metadata.albumReleaseDate,
 							album: { id: album.id },
 							label: label ? { id: label?.id } : undefined,
 							registeredAt: file.registerDate,
@@ -284,12 +305,24 @@ export default class MetadataService {
 				);
 			}
 			if (
-				!release.releaseDate ||
-				(metadata.releaseDate &&
-					release.releaseDate < metadata.releaseDate)
+				this.shouldOverwriteDate(
+					album.releaseDate,
+					metadata.albumReleaseDate,
+				)
+			) {
+				await this.albumService.update(
+					{ releaseDate: metadata.albumReleaseDate },
+					{ id: album.id },
+				);
+			}
+			if (
+				this.shouldOverwriteDate(
+					release.releaseDate,
+					metadata.releaseReleaseDate,
+				)
 			) {
 				await this.releaseService.update(
-					{ releaseDate: metadata.releaseDate },
+					{ releaseDate: metadata.releaseReleaseDate },
 					{ id: release.id },
 				);
 			}

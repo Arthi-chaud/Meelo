@@ -17,7 +17,7 @@ services:
       test: ["CMD-SHELL", "wget -qO- localhost:4000"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
     volumes:
       - ./server/src:/app/src
       - ./server/prisma:/app/prisma
@@ -50,7 +50,7 @@ services:
       test: ["CMD-SHELL", "wget -qO- localhost:8133"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
     ports:
       - "8133:8133"
     environment:
@@ -132,7 +132,7 @@ services:
           "http://0.0.0.0:7700/health",
         ]
       timeout: 5s
-      retries: 5
+      retries: 10
   transcoder:
     image: ghcr.io/zoriya/kyoo_transcoder:master
     ports:
@@ -158,12 +158,12 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     env_file:
       - .env
   mq:
     hostname: meelo-mq
-    image: rabbitmq:4.0-alpine
+    image: rabbitmq:4.2-alpine
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}

@@ -29,7 +29,6 @@ import {
 	Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { SongType, type User } from "@prisma/client";
 import { IsNumber, IsOptional, IsPositive } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
@@ -53,6 +52,7 @@ import { LyricsService } from "src/lyrics/lyrics.service";
 import type { LyricsResponse } from "src/lyrics/models/lyrics.response";
 import LyricsDto from "src/lyrics/models/update-lyrics.dto";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { SongType, type User } from "src/prisma/generated/client";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import ReleaseService from "src/release/release.service";

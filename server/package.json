@@ -22,29 +22,30 @@
 	},
 	"dependencies": {
 		"@nestjs/axios": "^4.0.1",
-		"@nestjs/common": "^11.1.9",
+		"@nestjs/common": "^11.1.11",
 		"@nestjs/config": "^4.0.2",
-		"@nestjs/core": "^11.1.9",
+		"@nestjs/core": "^11.1.11",
 		"@nestjs/jwt": "^11.0.2",
-		"@nestjs/microservices": "^11.1.9",
+		"@nestjs/microservices": "^11.1.11",
 		"@nestjs/passport": "^11.0.5",
-		"@nestjs/platform-express": "^11.1.9",
+		"@nestjs/platform-express": "^11.1.11",
 		"@nestjs/schedule": "^6.1.0",
 		"@nestjs/swagger": "^11.2.3",
-		"@prisma/client": "^6.2.1",
-		"amqp-connection-manager": "^4.1.14",
+		"@prisma/adapter-pg": "^7.2.0",
+		"@prisma/client": "^7.2.0",
+		"amqp-connection-manager": "^5.0.0",
 		"amqplib": "^0.10.4",
-		"archiver": "^5.3.1",
+		"archiver": "^7.0.0",
 		"axios": "^1.12.1",
 		"bcrypt": "^6.0.0",
 		"blurhash": "^2.0.5",
 		"class-transformer": "^0.5.1",
-		"class-validator": "^0.14.0",
+		"class-validator": "^0.14.3",
 		"cookie-parser": "^1.4.7",
 		"damerau-levenshtein": "^1.0.8",
 		"fs": "^0.0.1-security",
 		"get-rgba-palette": "^2.0.1",
-		"helmet": "^6.2.0",
+		"helmet": "^8.0.0",
 		"http-proxy-middleware": "^3.0.5",
 		"jimp": "^1.6.0",
 		"md5": "^2.3.0",
@@ -54,11 +55,12 @@
 		"nestjs-meilisearch": "^3.0.0",
 		"normalize-path": "^3.0.0",
 		"passport": "^0.7.0",
-		"passport-jwt": "^4.0.0",
+		"passport-jwt": "^4.0.1",
 		"passport-local": "^1.0.0",
-		"prisma": "^6.2.1",
+		"pg": "^8.16.3",
+		"prisma": "^7.2.0",
 		"prisma-error-enum": "^0.1.3",
-		"prisma-json-types-generator": "^3.2.2",
+		"prisma-json-types-generator": "^4.0.1",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
 		"slug": "^5.3.0"
@@ -76,69 +78,34 @@
 		"@biomejs/biome": "2.3.8",
 		"@nestjs/cli": "^11.0.14",
 		"@nestjs/schematics": "^11.0.9",
-		"@nestjs/testing": "^11.1.9",
+		"@nestjs/testing": "^11.1.11",
 		"@types/amqplib": "^0",
-		"@types/archiver": "^6.0.2",
+		"@types/archiver": "^7.0.0",
 		"@types/bcrypt": "^6.0.0",
 		"@types/chroma-js": "^3",
 		"@types/cookie-parser": "^1.4.3",
 		"@types/damerau-levenshtein": "^1.0.0",
-		"@types/express": "^4.17.13",
+		"@types/express": "^5.0.0",
 		"@types/get-image-colors": "^4.0.2",
 		"@types/get-pixels": "^3",
 		"@types/jest": "^30.0.0",
 		"@types/md5": "^2",
-		"@types/multer": "^1.4.12",
 		"@types/normalize-path": "^3.0.0",
-		"@types/passport-jwt": "^3.0.7",
+		"@types/passport-jwt": "^4.0.0",
 		"@types/passport-local": "^1.0.34",
+		"@types/pg": "^8",
 		"@types/slug": "^5.0.3",
 		"@types/supertest": "^6.0.3",
 		"jest": "^30.2.0",
-		"prisma-types-generator": "^1.3.2",
+		"prisma-types-generator": "patch:prisma-types-generator@npm%3A1.3.2#~/.yarn/patches/prisma-types-generator-npm-1.3.2-d91e9d4063.patch",
 		"source-map-support": "^0.5.20",
 		"supertest": "^7.1.4",
 		"ts-jest": "^29.4.6",
 		"ts-loader": "^9.5.2",
 		"ts-node": "^10.0.0",
-		"tsconfig-paths": "^3.10.1",
-		"type-fest": "^4.24.0",
-		"typescript": "^4.3.5"
+		"tsconfig-paths": "^4.2.0",
+		"type-fest": "5.3.1",
+		"typescript": "^5.9.3"
 	},
-	"jest": {
-		"testTimeout": 150000,
-		"moduleFileExtensions": [
-			"js",
-			"json",
-			"ts"
-		],
-		"roots": [
-			"<rootDir>",
-			"src"
-		],
-		"modulePaths": [
-			"<rootDir>",
-			"src"
-		],
-		"modulePathIgnorePatterns": [
-			"<rootDir>/dist"
-		],
-		"testRegex": ".*\\.spec\\.ts$",
-		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
-		},
-		"collectCoverageFrom": [
-			"<rootDir>/src/**/*.(t|j)s"
-		],
-		"coverageDirectory": "coverage",
-		"coverageReporters": [
-			"lcov"
-		],
-		"testEnvironment": "node",
-		"testSequencer": "<rootDir>/test/sequencer.ts"
-	},
-	"prisma": {
-		"schema": "prisma/schema.prisma"
-	},
-	"packageManager": "yarn@4.4.0"
+	"packageManager": "yarn@4.12.0"
 }

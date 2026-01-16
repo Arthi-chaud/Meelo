@@ -1,6 +1,7 @@
 import asyncio
+from dataclasses import dataclass
 from typing import Annotated
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Query, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 import logging
@@ -32,7 +33,9 @@ async def consume(message: DeliveredMessage, channel: AbstractChannel):
         await channel.basic_ack(delivery_tag)
 
 
-async def match(resourceType: str, resourceName: str, resourceId: int):
+async def match(
+    resourceType: str, resourceName: str, resourceId: int, reuseSources=False
+):
     async with match_lock:
         ctx = Context.get()
         ctx.current_item = CurrentItem(
@@ -43,15 +46,15 @@ async def match(resourceType: str, resourceName: str, resourceId: int):
             ctx.clear_handled_items_count()
         match resourceType:
             case "artist":
-                await match_and_post_artist(resourceId, resourceName)
+                await match_and_post_artist(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case "album":
-                await match_and_post_album(resourceId, resourceName)
+                await match_and_post_album(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case "song":
-                await match_and_post_song(resourceId, resourceName)
+                await match_and_post_song(resourceId, resourceName, reuseSources)
                 ctx.increment_handled_items_count()
                 pass
             case _:
@@ -94,55 +97,59 @@ class QueueResponse(BaseModel):
     pending_items: int
 
 
+@dataclass
 class ErrorResponse(Exception):
     message: str
-
-    def __init__(self, msg: str):
-        self.message = msg
+    status: int
 
 
 @app.exception_handler(ErrorResponse)
 async def error_handler(_: Request, exc: ErrorResponse):
-    return JSONResponse({"message": exc.message}, status_code=401)
+    return JSONResponse({"message": exc.message}, status_code=exc.status)
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 async def get_user_token(req: Request) -> str:
-    tokenHeader = req.headers.get("Auhtorization")
+    tokenHeader = req.headers.get("Authorization")
     tokenCookie = req.cookies.get("access_token")
     if tokenHeader is not None:
         tokenHeader = tokenHeader.removesuffix("Bearer ")
     token = tokenCookie or tokenHeader
     if not token:
-        raise ErrorResponse("Missing token")
+        raise ErrorResponse("Missing token", status.HTTP_401_UNAUTHORIZED)
     return token
 
 
 async def get_user(token: Annotated[str, Depends(get_user_token)]) -> User:
     user = await Context.get().client.get_user(token)
     if user is None:
-        raise ErrorResponse("Invalid token")
+        raise ErrorResponse("Invalid token", status.HTTP_400_BAD_REQUEST)
     if not user.enabled:
-        raise ErrorResponse("User is not enabled")
+        raise ErrorResponse("User is not enabled", status.HTTP_401_UNAUTHORIZED)
     return user
 
 
 async def get_admin_user(user: Annotated[User, Depends(get_user)]) -> User:
     if not user.admin:
-        raise ErrorResponse("User is not an admin")
+        raise ErrorResponse("User is not an admin", status.HTTP_401_UNAUTHORIZED)
     return user
 
 
 @app.get("/", tags=["Endpoints"])
-async def status() -> StatusResponse:
+async def matcher_status() -> StatusResponse:
     return StatusResponse(
         message="Matcher is alive.", version=Context.get().settings.version
     )
 
 
-@app.get("/queue", summary="Get info on the task queue", tags=["Endpoints"])
+@app.get(
+    "/queue",
+    summary="Get info on the task queue",
+    tags=["Endpoints"],
+    response_model=QueueResponse,
+)
 async def queue(
     _: Annotated[User, Depends(get_admin_user)],
 ) -> QueueResponse:
@@ -158,6 +165,7 @@ class MatchDTO(BaseModel):
     artistId: int | None = None
     albumId: int | None = None
     songId: int | None = None
+    reuseSources: bool
 
 
 @app.post(
@@ -171,18 +179,53 @@ async def rematch(
     dto: MatchDTO,
 ) -> None:
     if not dto.artistId and not dto.albumId and not dto.songId:
-        raise ErrorResponse("Empty DTO")
+        raise ErrorResponse("Empty DTO", status.HTTP_400_BAD_REQUEST)
     # Intentionally not checking if more than one field is set in the DTO
     ctx = Context.get()
     try:
         if dto.artistId:
             artist = await ctx.client.get_artist(dto.artistId, token)
-            await match("artist", artist.name, artist.id)
+            await match("artist", artist.name, artist.id, reuseSources=dto.reuseSources)
         if dto.albumId:
             album = await ctx.client.get_album(dto.albumId, token)
-            await match("album", album.name, album.id)
+            await match("album", album.name, album.id, reuseSources=dto.reuseSources)
         if dto.songId:
             song = await ctx.client.get_song(dto.songId, token)
-            await match("song", song.name, song.id)
+            await match("song", song.name, song.id, reuseSources=dto.reuseSources)
     except Exception as e:
-        raise ErrorResponse(e.__str__())
+        raise ErrorResponse(e.__str__(), status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ResolvedUrlResponse(BaseModel):
+    url: str
+    providerId: int
+
+
+@app.get(
+    "/resolve-url",
+    summary="Get the provider from a resource's URL",
+    response_model=ResolvedUrlResponse,
+    tags=["Endpoints"],
+)
+async def resolve_url(
+    _: Annotated[User, Depends(get_admin_user)],
+    url: Annotated[str, Query()],
+    resource_type: Annotated[str, Query()],
+):
+    context = Context.get()
+    res = None
+    if resource_type not in ["artist", "album", "song"]:
+        raise ErrorResponse("Invalid resource type", status.HTTP_400_BAD_REQUEST)
+    for p in context.get_providers():
+        if (
+            (resource_type == "artist" and p.is_artist_url(url))
+            or (resource_type == "album" and p.is_album_url(url))
+            or (resource_type == "song" and p.is_song_url(url))
+        ):
+            res = p
+            break
+    if res is None:
+        raise ErrorResponse(
+            "No provider recognises this url", status.HTTP_404_NOT_FOUND
+        )
+    return ResolvedUrlResponse(url=url, providerId=res.api_model.id)

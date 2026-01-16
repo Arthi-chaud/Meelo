@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Artist, Song, Video } from "@prisma/client";
 import type { AlbumModel } from "src/album/models/album.model";
+import type { Artist, Song, Video } from "src/prisma/generated/client";
 
 // Use this is you have a union type and need to identify what type is actually is
 export function getSearchResourceType(

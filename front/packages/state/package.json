@@ -3,10 +3,10 @@
 	"sideEffects": false,
 	"dependencies": {
 		"jotai": "^2.16.0",
-		"react": "18.2.0"
+		"react": "19.1.0"
 	},
 	"devDependencies": {
-		"typescript": "5.3.3"
+		"typescript": "5.9.3"
 	},
-	"packageManager": "yarn@4.4.0"
+	"packageManager": "yarn@4.12.0"
 }

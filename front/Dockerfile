@@ -1,6 +1,6 @@
 ARG VERSION=unknown
 # Source : https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
-FROM node:18-alpine3.18 AS base
+FROM node:24-alpine3.23 AS base
 FROM base AS builder
 ARG VERSION
 

@@ -24,3 +24,23 @@ T = TypeVar("T")
 async def asyncify(f: Callable[[], T] | Any, *kwargs) -> T:
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, f, *kwargs)
+
+
+def normalise_url_for_parse(url: str) -> str:
+    if url.startswith("http://") or url.startswith("https://"):
+        return url
+    return f"https://{url}"
+
+
+def removeprefix_or_none(s: str, p: str) -> str | None:
+    res = s.removeprefix(p)
+    if res != s:
+        return res
+    return None
+
+
+def removesuffix_or_none(s: str, p: str) -> str | None:
+    res = s.removesuffix(p)
+    if res != s:
+        return res
+    return None

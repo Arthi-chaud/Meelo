@@ -17,7 +17,6 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Playlist, Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
@@ -25,6 +24,7 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import IllustrationRepository from "src/illustration/illustration.repository";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Playlist, Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseQueryParameters from "src/release/models/release.query-parameters";
 import {

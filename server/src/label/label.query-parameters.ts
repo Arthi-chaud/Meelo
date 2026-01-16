@@ -16,10 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Label } from "@prisma/client";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Filter } from "src/filter/filter";
+import { Label } from "src/prisma/generated/client";
 import Slug from "src/slug/slug";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { RequireExactlyOne } from "type-fest";

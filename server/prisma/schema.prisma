@@ -1,13 +1,12 @@
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL")
 }
 
 generator client {
-    provider        = "prisma-client-js"
-    engineType      = "binary"
-    binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
-    previewFeatures = ["fullTextSearchPostgres", "views"]
+    provider        = "prisma-client"
+    output          = "../src/prisma/generated"
+    moduleFormat    = "cjs"
+    previewFeatures = ["views"]
 }
 
 generator json {

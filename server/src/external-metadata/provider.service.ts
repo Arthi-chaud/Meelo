@@ -17,10 +17,10 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import type { Provider } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import {

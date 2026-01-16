@@ -309,22 +309,14 @@ export const ExpandedPlayerControls = (
 					)}
 				</Box>
 				<Container maxWidth="md" disableGutters>
-					<Stack spacing={3} sx={{ width: "100%" }}>
-						<Grid
-							container
-							sx={{
-								...playerTextStyle,
-								width: "100%",
-								flexGrow: 1,
-								display: "flex",
-								justifyContent: "center",
-							}}
-						>
+					<Stack spacing={4} sx={{ width: "100%" }}>
+						<Grid container>
 							<Grid
-								size={{ xs: 1 }}
+								size={1}
 								sx={{
 									display: "flex",
-									justifyContent: "end",
+									justifyContent: "flex-end",
+									alignItems: "center",
 								}}
 							>
 								{props.track?.type === "Video" && (
@@ -334,82 +326,141 @@ export const ExpandedPlayerControls = (
 								)}
 							</Grid>
 							<Grid
-								size={{ xs: 10 }}
+								size={10}
 								sx={{
 									...playerTextStyle,
 									display: "flex",
-									justifyContent: "center",
+									flexDirection: "column",
+									gap: { xs: 0.5, md: 0 },
 								}}
 							>
-								{props.artist && props.track ? (
-									<Link
-										href={
-											props.track.releaseId
-												? `/releases/${props.track.releaseId}`
-												: props.track.songId
-													? `/songs/${props.track.songId}/lyrics`
-													: {}
-										}
-										style={{
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-										}}
-									>
-										<Button
-											onClick={() =>
-												props.track &&
-												props.onExpand(false)
+								<Box
+									sx={{
+										...playerTextStyle,
+										display: "flex",
+										justifyContent: "center",
+									}}
+								>
+									{props.artist && props.track ? (
+										<Link
+											href={
+												props.track.releaseId
+													? `/releases/${props.track.releaseId}`
+													: props.track.songId
+														? `/songs/${props.track.songId}/lyrics`
+														: {}
 											}
-											sx={{
-												textTransform: "none",
-												color: "inherit",
-												width: "100%",
+											style={{
+												overflow: "hidden",
+												textOverflow: "ellipsis",
 											}}
 										>
-											<Typography
+											<Button
+												onClick={() =>
+													props.track &&
+													props.onExpand(false)
+												}
 												sx={{
-													fontWeight: "bold",
-													...playerTextStyle,
+													textTransform: "none",
+													color: "inherit",
+													width: "100%",
 												}}
 											>
-												{props.track?.name}
-											</Typography>
-										</Button>
-									</Link>
-								) : (
-									<Skeleton
-										animation={
-											props.playlistLoading
-												? "wave"
-												: false
-										}
-										width={"70%"}
-									/>
-								)}
-							</Grid>
-							<Grid size={{ xs: 1 }}>
-								{
-									props.track && props.artist ? (
-										<ReleaseTrackContextualMenu
-											artist={props.artist}
-											track={{
-												...props.track,
-												song: props.track.songId
-													? (parentSong.data ?? null)
-													: null,
-											}}
-											onSelect={() =>
-												props.onExpand(false)
-											}
-										/>
+												<Typography
+													sx={{
+														fontWeight: "bold",
+														...playerTextStyle,
+													}}
+												>
+													{props.track?.name}
+												</Typography>
+											</Button>
+										</Link>
 									) : (
-										<IconButton disabled>
-											<ContextualMenuIcon />
-										</IconButton>
-									)
+										<Skeleton
+											animation={
+												props.playlistLoading
+													? "wave"
+													: false
+											}
+											width={"70%"}
+										/>
+									)}
+								</Box>
 
-									// To avoid slight shift on loaded
-								}
+								<Box
+									sx={{
+										...playerTextStyle,
+										display: "flex",
+										justifyContent: "center",
+									}}
+								>
+									{props.track && props.artist ? (
+										<Link
+											href={`/artists/${props.artist.slug}`}
+											style={{
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+											}}
+										>
+											<Button
+												onClick={() =>
+													props.onExpand(false)
+												}
+												sx={{
+													textTransform: "none",
+													color: "inherit",
+													width: "100%",
+												}}
+											>
+												<Typography
+													sx={{ ...playerTextStyle }}
+												>
+													{formatArtists(
+														props.artist,
+														props.featuring ??
+															parentSong.data
+																?.featuring,
+													)}
+												</Typography>
+											</Button>
+										</Link>
+									) : (
+										<Skeleton
+											animation={
+												props.playlistLoading
+													? "wave"
+													: false
+											}
+											sx={{ margin: 1.5 }}
+											width={"50%"}
+										/>
+									)}
+								</Box>
+							</Grid>
+							<Grid
+								size={1}
+								sx={{
+									display: "flex",
+									alignItems: "center",
+								}}
+							>
+								{props.track && props.artist ? (
+									<ReleaseTrackContextualMenu
+										artist={props.artist}
+										track={{
+											...props.track,
+											song: props.track.songId
+												? (parentSong.data ?? null)
+												: null,
+										}}
+										onSelect={() => props.onExpand(false)}
+									/>
+								) : (
+									<IconButton disabled>
+										<ContextualMenuIcon />
+									</IconButton>
+								)}
 							</Grid>
 						</Grid>
 						<Grid
@@ -422,40 +473,22 @@ export const ExpandedPlayerControls = (
 							<Grid size={1}>
 								<IconButton />
 							</Grid>
-							{props.track && props.artist ? (
-								<Link
-									href={`/artists/${props.artist.slug}`}
-									style={{
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-									}}
-								>
-									<Button
-										onClick={() => props.onExpand(false)}
-										sx={{
-											textTransform: "none",
-											color: "inherit",
-											width: "100%",
-										}}
-									>
-										<Typography sx={{ ...playerTextStyle }}>
-											{formatArtists(
-												props.artist,
-												props.featuring ??
-													parentSong.data?.featuring,
-											)}
-										</Typography>
-									</Button>
-								</Link>
-							) : (
-								<Skeleton
-									animation={
-										props.playlistLoading ? "wave" : false
-									}
-									sx={{ margin: 1 }}
-									width={"50%"}
+							<Stack
+								spacing={{ xs: 7, sm: 5 }}
+								sx={{
+									justifyContent: "center",
+									display: "flex",
+								}}
+								direction="row"
+							>
+								<PreviousButton onClick={props.onRewind} />
+								<PlayButton
+									onPause={props.onPause}
+									onPlay={props.onPlay}
+									isPlaying={props.playing}
 								/>
-							)}
+								<SkipButton onClick={props.onSkipTrack} />
+							</Stack>
 							<Grid size={1}>
 								<VolumeButton
 									disabled={!props.track}
@@ -464,22 +497,6 @@ export const ExpandedPlayerControls = (
 								/>
 							</Grid>
 						</Grid>
-						<Stack
-							spacing={{ xs: 7, sm: 5 }}
-							sx={{
-								justifyContent: "center",
-								display: "flex",
-							}}
-							direction="row"
-						>
-							<PreviousButton onClick={props.onRewind} />
-							<PlayButton
-								onPause={props.onPause}
-								onPlay={props.onPlay}
-								isPlaying={props.playing}
-							/>
-							<SkipButton onClick={props.onSkipTrack} />
-						</Stack>
 						<Container maxWidth={false}>
 							<PlayerSlider
 								onSlide={props.onSlide}
@@ -508,6 +525,7 @@ export const ExpandedPlayerControls = (
 						progress={props.progress}
 						setProgress={props.onSlide}
 						playerIsExpanded={props.expanded}
+						trackIsVideo={props.track?.type === "Video"}
 					/>
 				</Box>
 			)}

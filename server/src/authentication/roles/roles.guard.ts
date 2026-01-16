@@ -22,12 +22,12 @@ import {
 	Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import type { User } from "@prisma/client";
 import {
 	InsufficientPermissionsException,
 	MissingApiKeyPermissionsException,
 	UnauthorizedAnonymousRequestException,
 } from "src/authentication/authentication.exception";
+import type { User } from "src/prisma/generated/client";
 import SettingsService from "src/settings/settings.service";
 import UserService from "src/user/user.service";
 import ApiKeyService from "../api_key.service";

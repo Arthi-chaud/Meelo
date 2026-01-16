@@ -18,7 +18,6 @@
 
 import { join } from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IllustrationType } from "@prisma/client";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type ProviderQueryParameters from "src/external-metadata/models/provider.query-parameters";
@@ -27,6 +26,7 @@ import Logger from "src/logger/logger";
 import type PlaylistQueryParameters from "src/playlist/models/playlist.query-parameters";
 import { UnallowedPlaylistUpdate } from "src/playlist/playlist.exceptions";
 import PlaylistService from "src/playlist/playlist.service";
+import { IllustrationType } from "src/prisma/generated/client";
 import type { Illustration } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -34,6 +34,7 @@ import ReleaseService from "src/release/release.service";
 import SettingsService from "src/settings/settings.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
 import TrackService from "src/track/track.service";
+import { removeUndefinedFields } from "src/utils/count-defined-fields";
 import {
 	IllustrationNotFoundException,
 	MissingIllustrationResourceIdException,
@@ -126,7 +127,9 @@ export default class IllustrationRepository {
 		dto: IllustrationDownloadDto,
 		userId: number | null, // Can be null if we want to save anything but a playlist's image
 	): Promise<IllustrationResponse> {
-		const resourceKeys = Object.keys(dto).filter((k) => k !== "url");
+		const resourceKeys = Object.keys(removeUndefinedFields(dto)).filter(
+			(k) => k !== "url",
+		);
 		if (resourceKeys.length !== 1) {
 			throw new MissingIllustrationResourceIdException();
 		}

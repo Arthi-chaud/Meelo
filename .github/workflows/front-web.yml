@@ -24,7 +24,7 @@ jobs:
       front: ${{ steps.filter.outputs.front }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -59,7 +59,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.front == 'true' && always() }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       # - name: Downlad Coverage artifact
       #   uses: actions/download-artifact@v4
       #   with:
@@ -94,7 +94,7 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: ./.github/actions/dockerize
         with: 
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}

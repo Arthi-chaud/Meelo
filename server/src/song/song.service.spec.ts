@@ -1,5 +1,4 @@
 import type { TestingModule } from "@nestjs/testing";
-import { type Artist, SongType } from "@prisma/client";
 import AlbumModule from "src/album/album.module";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
@@ -10,6 +9,7 @@ import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import { LyricsService } from "src/lyrics/lyrics.service";
 import ParserModule from "src/parser/parser.module";
+import { type Artist, SongType } from "src/prisma/generated/client";
 import type { Song } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -327,10 +327,9 @@ describe("Song Service", () => {
 				{ id: dummyRepository.songA2.id },
 				{ genres: true },
 			);
-			expect(refreshedSong.genres).toStrictEqual([
-				dummyRepository.genreA,
-				dummyRepository.genreB,
-			]);
+			expect(refreshedSong.genres).toContainEqual(dummyRepository.genreA);
+			expect(refreshedSong.genres).toContainEqual(dummyRepository.genreB);
+			expect(refreshedSong.genres.length).toBe(2);
 		});
 
 		it("should throw as the song does not exist", async () => {

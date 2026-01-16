@@ -1,8 +1,8 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { Provider } from "@prisma/client";
 import ArtistModule from "src/artist/artist.module";
 import FileModule from "src/file/file.module";
+import type { Provider } from "src/prisma/generated/client";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import request from "supertest";

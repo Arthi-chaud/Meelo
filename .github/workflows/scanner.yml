@@ -28,7 +28,7 @@ jobs:
       scanner: ${{ steps.filter.outputs.scanner }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Go
         uses: ./.github/actions/cache-scanner
       - name: Install Dependencies and Build
@@ -57,7 +57,7 @@ jobs:
     needs: [Build]
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Go
         uses: ./.github/actions/cache-scanner
       - uses: Jerome1337/gofmt-action@v1.0.5
@@ -71,7 +71,7 @@ jobs:
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup Go
         uses: ./.github/actions/cache-scanner
       - run: apt-get update -y && apt-get install -y ffmpeg
@@ -81,7 +81,7 @@ jobs:
         run: go test ./... -coverprofile=coverage.out
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report-scanner
           path: ./scanner/coverage.out
@@ -91,9 +91,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: coverage-report-scanner
           path: ./scanner
@@ -113,7 +113,7 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: ./.github/actions/dockerize
         with:
           docker-username: ${{ secrets.DOCKERHUB_USERNAME }}

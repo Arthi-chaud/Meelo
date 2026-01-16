@@ -2,12 +2,12 @@
 	"name": "utils",
 	"sideEffects": false,
 	"dependencies": {
-		"format-duration": "^2.0.0",
-		"i18next": "^23.16.8"
+		"format-duration": "^3.0.0",
+		"i18next": "^25.0.0"
 	},
 	"devDependencies": {
 		"jest": "^30.2.0",
-		"typescript": "5.3.3"
+		"typescript": "5.9.3"
 	},
-	"packageManager": "yarn@4.4.0"
+	"packageManager": "yarn@4.12.0"
 }

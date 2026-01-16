@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import List
 
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.models.match_result import ArtistMatchResult
@@ -12,13 +13,24 @@ from ..context import Context
 from . import common
 
 
-async def match_and_post_artist(artist_id: int, artist_name: str):
+async def match_and_post_artist(artist_id: int, artist_name: str, reuseSources: bool):
+    async def match():
+        if not reuseSources:
+            return await match_artist(artist_id, artist_name, None)
+        previous_metadata = await context.client.get_artist_external_metadata(artist_id)
+        previous_sources = previous_metadata.sources if previous_metadata else []
+        return await match_artist(
+            artist_id,
+            artist_name,
+            previous_sources,
+        )
+
     try:
-        res = await match_artist(artist_id, artist_name)
         context = Context.get()
+        res = await match()
         if len(res.metadata.sources):
             logging.info(
-                f"Matched with {len(res.metadata.sources)} providers for artist {artist_name}"
+                f"Matched with {len(res.metadata.sources)} providers for artist {artist_name}{' using known sources' if reuseSources else ''}"
             )
             await context.client.post_external_metadata(res.metadata)
         if res.illustration_url:
@@ -30,22 +42,40 @@ async def match_and_post_artist(artist_id: int, artist_name: str):
         logging.error(e)
 
 
-async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
+async def match_artist(
+    artist_id: int,
+    artist_name: str,
+    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
+) -> ArtistMatchResult:
     context = Context.get()
-    (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
-        lambda mb: mb.search_artist(artist_name),
-        lambda mb, mbid: mb.get_artist(mbid),
-        lambda mb, mbid: mb.get_artist_url_from_id(mbid),
-    )
-    # Link using Wikidata
-    sources_ids = [source.provider_id for source in external_sources]
-    if wikidata_id:
-        external_sources = external_sources + await common.get_sources_from_wikidata(
-            wikidata_id,
-            [p for p in context.get_providers() if p.api_model.id not in sources_ids],
-            lambda p: p.get_wikidata_artist_relation_key(),
-            lambda p, artist_id: p.get_artist_url_from_id(artist_id),
+
+    async def resolve_sources():
+        (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
+            lambda mb: mb.search_artist(artist_name),
+            lambda mb, mbid: mb.get_artist(mbid),
+            lambda mb, mbid: mb.get_artist_url_from_id(mbid),
         )
+        # Link using Wikidata
+        sources_ids = [source.provider_id for source in external_sources]
+        if wikidata_id:
+            external_sources = (
+                external_sources
+                + await common.get_sources_from_wikidata(
+                    wikidata_id,
+                    [
+                        p
+                        for p in context.get_providers()
+                        if p.api_model.id not in sources_ids
+                    ],
+                    lambda p: p.get_wikidata_artist_relation_key(),
+                    lambda p, artist_id: p.get_artist_url_from_id(artist_id),
+                )
+            )
+        return external_sources
+
+    external_sources = (
+        sources_to_reuse if sources_to_reuse is not None else (await resolve_sources())
+    )
 
     res = ArtistMatchResult(
         ExternalMetadataDto(
@@ -63,6 +93,8 @@ async def match_artist(artist_id: int, artist_name: str) -> ArtistMatchResult:
         source: ExternalMetadataSourceDto | None,
         provider: BaseProviderBoilerplate,
     ):
+        if source is None and sources_to_reuse is not None:
+            return
         (source, artist) = await common.resolve_data_from_source(
             source,
             provider,

@@ -17,12 +17,12 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import type { Video } from "@prisma/client";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import AlbumService from "src/album/album.service";
 import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
+import type { Video } from "src/prisma/generated/client";
 import type { Artist, Song } from "src/prisma/models";
 import SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";

@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import {

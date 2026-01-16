@@ -24,7 +24,7 @@ runs:
   using: "composite"
   steps:
     - name: Check out the repo
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: Get Tag
       shell: bash
       if: ${{ github.event_name == 'release' }}

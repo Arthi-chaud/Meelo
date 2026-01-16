@@ -26,6 +26,7 @@
 			"label": "Télécharger",
 			"warning": "Il est interdit de télécharger du contenu sans en posséder l'original. Ne téléchargez pas si vous ne le possédez pas légalement."
 		},
+		"editExternalLinks": "Modifier les Liens Externes",
 		"genre": {
 			"startRadio": "Allumer la radio avec ce genre"
 		},
@@ -206,6 +207,10 @@
 		"confirm": "Confirmer",
 		"done": "OK",
 		"edit": "Changer",
+		"editExternalLinks": {
+			"addLink": "Ajouter un Lien",
+			"saveLinks": "Sauvegarder"
+		},
 		"illustration": {
 			"url": "Entrez l'URL de la nouvelle illustration"
 		},
@@ -385,7 +390,8 @@
 		"refreshLocalMetadata": "Rafraîchir les métadonnées locales",
 		"refreshMetadata": "Rafraîchir les métadonnées",
 		"refreshMetadataForm": {
-			"forceLabel": "Force le scan si les fichiers n'ont pas changé"
+			"forceLabel": "Force le scan si les fichiers n'ont pas changé",
+			"reuseLabel": "Réutiliser les sources connues"
 		},
 		"scan": "Scanner",
 		"scanLibraries": "Scanner les Bibliothèques"

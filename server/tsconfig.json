@@ -1,17 +1,19 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
+		"moduleResolution": "node",
 		"declaration": true,
 		"removeComments": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
-		"target": "es2017",
+		"target": "es2023",
 		"sourceMap": true,
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"paths": {
-			"*": ["*", "src/*"]
+			"*": ["*", "src/*"],
+			"~/*": ["src/*"]
 		},
 		"incremental": true,
 		"skipLibCheck": true,
@@ -25,13 +27,7 @@
 		"alwaysStrict": true,
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
-		"allowJs": true,
-		"plugins": [
-			{
-				"name": "typescript-plugin-css-modules"
-			}
-		]
+		"allowJs": true
 	},
-	"include": ["./src/**/*.ts", "./prisma/types.d.ts"],
-	"lib": ["dom"]
+	"include": ["./src/**/*.ts", "./prisma/types.d.ts"]
 }

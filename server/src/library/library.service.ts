@@ -17,13 +17,13 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
 import normalize from "normalize-path";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import FileService from "src/file/file.service";
 import { HousekeepingService } from "src/housekeeping/housekeeping.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
+import { Prisma } from "src/prisma/generated/client";
 import type { Library } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import { RegistrationService } from "src/registration/registration.service";
