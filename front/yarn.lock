@@ -9659,7 +9659,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     models: "workspace:^"
     react: "npm:19.1.0"
-    react-hook-form: "npm:^7.68.0"
+    react-hook-form: "npm:^7.70.0"
     react-i18next: "npm:^12.3.1"
     react-native: "npm:0.81.4"
     react-native-awesome-slider: "npm:^2.9.0"
@@ -10601,12 +10601,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.68.0":
-  version: 7.69.0
-  resolution: "react-hook-form@npm:7.69.0"
+"react-hook-form@npm:^7.70.0":
+  version: 7.71.1
+  resolution: "react-hook-form@npm:7.71.1"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10c0/99440aac1edbbda1f1704e31bea72dd75130d09593f5fce037596d381fb3dbf5a9864b28f49ecd52bd6dfabceb437905578fe2efc20c69411500fbdbc8647df6
+  checksum: 10c0/6c8fc0fa740d299481de3ed32bae98f7c6331240822c602363e5cd221746d875dc3c5e65d0039902b7f7a44dc9ac9a4932e00e9ad9af3051bed1987858ce78c7
   languageName: node
   linkType: hard
 
@@ -12968,7 +12968,7 @@ __metadata:
     react-blurhash: "npm:^0.3.0"
     react-dom: "npm:19.1.0"
     react-error-boundary: "npm:^4.0.10"
-    react-hook-form: "npm:^7.68.0"
+    react-hook-form: "npm:^7.70.0"
     react-hot-toast: "npm:^2.6.0"
     react-i18next: "npm:^12.3.1"
     react-infinite-scroller: "npm:^1.2.6"
