@@ -50,12 +50,15 @@ export const EditExternalLinksAction = (
 		const queryClient = useQueryClient();
 		const onSubmit = useCallback(
 			async (links: ValidatedFormField[]) => {
-				if (!oldExternalMetadata) {
+				if (oldExternalMetadata === undefined) {
 					return;
 				}
 				const newMetadata: CreateExternalMetadataDto<CommonExternalMetadata> =
 					{
-						...oldExternalMetadata,
+						...(oldExternalMetadata ?? {
+							description: null,
+							[`${resourceType}Id`]: resourceId,
+						}),
 						sources: links,
 					};
 				await queryClient.api.submitExternalMetadata(newMetadata);
@@ -159,15 +162,15 @@ export const EditExternalLinksForm = ({
 		<>
 			<DialogTitle>{t("actions.editExternalLinks")}</DialogTitle>
 			<form
-				onSubmit={handleSubmit(({ urls }) =>
+				onSubmit={handleSubmit(({ urls }) => {
 					onSave(
 						// NOTE: Urls shouldn't be filtered out
 						urls.filter(
 							(u): u is ValidatedFormField =>
 								u.providerId !== null,
 						),
-					),
-				)}
+					);
+				})}
 				style={{ width: "100%", height: "100%" }}
 			>
 				<DialogContent>
