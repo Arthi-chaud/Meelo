@@ -1,3 +1,5 @@
+import logging
+from matcher.models.api.domain import LocalIdentifiers
 from matcher.models.api.dto import ExternalMetadataSourceDto
 from matcher.providers.base import BaseFeature
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -7,6 +9,7 @@ from typing import Any, Awaitable, Callable, List, Type, TypeVar
 from ..providers.wikidata import WikidataProvider
 from ..providers.musicbrainz import MusicBrainzProvider
 from ..providers.wikipedia import WikipediaProvider
+from ..providers.discogs import DiscogsProvider
 
 
 def get_provider_from_external_source(dto: ExternalMetadataSourceDto):
@@ -124,6 +127,7 @@ async def get_sources_from_wikidata(
 
 
 async def get_sources_from_musicbrainz(
+    local_identifiers: LocalIdentifiers,
     mb_search_resource: Callable[[BaseProviderBoilerplate], Awaitable[Any]],
     mb_get_resource: Callable[[BaseProviderBoilerplate, str], Awaitable[Any]],
     mb_get_url_from_id: Callable[[BaseProviderBoilerplate, str], str | None],
@@ -133,18 +137,53 @@ async def get_sources_from_musicbrainz(
     if mb_provider is None:
         return (None, [])
     wikidata_id: str | None = None
-    mbEntry = await mb_search_resource(mb_provider)
+
+    resource_mbid: str | None = None
+    remaining_providers = [
+        p for p in context.get_providers() if p.api_model.id != mb_provider.api_model.id
+    ]
     external_sources = []
-    if mbEntry is None:
-        return (None, [])
-    resource_url = mb_get_url_from_id(mb_provider, mbEntry.id)
-    if resource_url:
+    if local_identifiers.musicbrainz_id is not None:
+        logging.debug("Using local identifier for MusicBrainz")
+        resource_mbid = local_identifiers.musicbrainz_id
+    else:
+        mb_entry = await mb_search_resource(mb_provider)
+        if mb_entry is not None:
+            resource_mbid = mb_entry.id
+
+    if local_identifiers.discogs_id is not None:
+        discogs_provider = context.get_provider(DiscogsProvider)
+        discogs_url: str | None = None
+        if discogs_provider is not None:
+            logging.debug("Using local identifier for Discogs")
+            discogs_url = mb_get_url_from_id(
+                discogs_provider, local_identifiers.discogs_id
+            )
+        if discogs_provider is not None and discogs_url is not None:
+            remaining_providers = [
+                p
+                for p in remaining_providers
+                if p.api_model.id != discogs_provider.api_model.id
+            ]
+            external_sources.append(
+                ExternalMetadataSourceDto(
+                    discogs_url,
+                    discogs_provider.api_model.id,
+                )
+            )
+
+    if resource_mbid is None:
+        return (None, external_sources)
+    resource_mbid_url = mb_get_url_from_id(mb_provider, resource_mbid)
+    if resource_mbid_url is not None:
         external_sources.append(
-            ExternalMetadataSourceDto(resource_url, mb_provider.api_model.id)
+            ExternalMetadataSourceDto(
+                resource_mbid_url,
+                mb_provider.api_model.id,
+            )
         )
-    remaining_providers = context.get_providers()
     try:
-        resource = await mb_get_resource(mb_provider, mbEntry.id)
+        resource = await mb_get_resource(mb_provider, resource_mbid)
         if "relations" not in resource.keys():
             return (wikidata_id, external_sources)
         for rel in resource["relations"]:

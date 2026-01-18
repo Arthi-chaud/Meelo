@@ -16,7 +16,12 @@ from matcher.providers.features import (
 )
 
 
-async def match_and_post_song(song_id: int, song_name: str, reuseSources: bool):
+async def match_and_post_song(
+    song_id: int,
+    song_name: str,
+    local_identifiers: common.LocalIdentifiers,
+    reuseSources: bool,
+):
     try:
         context = Context.get()
         song = await context.client.get_song(song_id)
@@ -30,6 +35,7 @@ async def match_and_post_song(song_id: int, song_name: str, reuseSources: bool):
                     [f.name for f in song.featuring],
                     song.master.duration if song.master else None,
                     source_file.fingerprint if source_file else None,
+                    local_identifiers,
                     None,
                 )
 
@@ -43,6 +49,7 @@ async def match_and_post_song(song_id: int, song_name: str, reuseSources: bool):
                 [f.name for f in song.featuring],
                 song.master.duration if song.master else None,
                 source_file.fingerprint if source_file else None,
+                local_identifiers,
                 previous_sources,
             )
 
@@ -80,6 +87,7 @@ async def match_song(
     featuring: List[str],
     duration: int | None,
     acoustid: str | None,
+    local_identifiers: common.LocalIdentifiers,
     sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
 ) -> SongMatchResult:
     need_genres = Context.get().settings.push_genres
@@ -98,6 +106,7 @@ async def match_song(
 
     async def resolve_sources():
         (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
+            local_identifiers,
             lambda mb: mb_search(mb),
             lambda mb, mbid: mb.get_song(mbid),
             lambda mb, mbid: mb.get_song_url_from_id(mbid),

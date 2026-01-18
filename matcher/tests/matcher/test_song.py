@@ -3,6 +3,7 @@ import pytest
 import pytest_asyncio
 from matcher.context import Context
 from matcher.matcher.song import match_song
+from matcher.models.api.domain import LocalIdentifiers
 from tests.matcher.common import MatcherTestUtils
 
 
@@ -20,7 +21,13 @@ class TestMatchSong:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_song_with_featuring_artist(self, ctx):
         res = await match_song(
-            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None, None
+            1,
+            "It Should Be Easy",
+            "Britney Spears",
+            ["will.i.am"],
+            None,
+            None,
+            LocalIdentifiers(),
         )
         # Genres
         assert "Pop" in res.genres
@@ -67,7 +74,13 @@ class TestMatchSong:
         context = Context.get()
         context.settings.push_genres = False
         res = await match_song(
-            1, "It Should Be Easy", "Britney Spears", ["will.i.am"], None, None
+            1,
+            "It Should Be Easy",
+            "Britney Spears",
+            ["will.i.am"],
+            None,
+            None,
+            LocalIdentifiers(),
         )
         # Teardown
         context.settings.push_genres = True

@@ -13,6 +13,7 @@ from matcher.matcher.album import match_and_post_album
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
 from matcher.api import User
+from matcher.models.api.domain import LocalIdentifiers
 from matcher.mq import (
     connect_mq,
     stop_mq,
@@ -44,22 +45,44 @@ async def match(
         ctx.pending_items_count = await get_queue_size()
         if ctx.pending_items_count == 0:
             ctx.clear_handled_items_count()
-        match resourceType:
-            case "artist":
-                await match_and_post_artist(resourceId, resourceName, reuseSources)
-                ctx.increment_handled_items_count()
-                pass
-            case "album":
-                await match_and_post_album(resourceId, resourceName, reuseSources)
-                ctx.increment_handled_items_count()
-                pass
-            case "song":
-                await match_and_post_song(resourceId, resourceName, reuseSources)
-                ctx.increment_handled_items_count()
-                pass
-            case _:
-                logging.warning("No handler for resource with type " + resourceType)
-                pass
+        default_local_identifiers = LocalIdentifiers()
+        try:
+            match resourceType:
+                case "artist":
+                    artist = await ctx.client.get_artist(resourceId)
+                    await match_and_post_artist(
+                        resourceId,
+                        artist.name,
+                        artist.local_identifiers or default_local_identifiers,
+                        reuseSources,
+                    )
+                    ctx.increment_handled_items_count()
+                    pass
+                case "album":
+                    album = await ctx.client.get_album(resourceId)
+                    await match_and_post_album(
+                        resourceId,
+                        album.name,
+                        album.local_identifiers or default_local_identifiers,
+                        reuseSources,
+                    )
+                    ctx.increment_handled_items_count()
+                    pass
+                case "song":
+                    song = await ctx.client.get_song(resourceId)
+                    await match_and_post_song(
+                        resourceId,
+                        resourceName,
+                        song.local_identifiers or default_local_identifiers,
+                        reuseSources,
+                    )
+                    ctx.increment_handled_items_count()
+                    pass
+                case _:
+                    logging.warning("No handler for resource with type " + resourceType)
+                    pass
+        except Exception:
+            pass
         ctx.current_item = None
 
 

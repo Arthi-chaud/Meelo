@@ -607,7 +607,7 @@ model LocalIdentifiers {
     /// @example 123
     id            Int      @id @default(autoincrement())
     /// @description MusicBrainz ID found in local metadata
-    /// @example 00000000-0000-0000-0000-000000000000
+    /// @example "53b106e7-0cc6-42cc-ac95-ed8d30a3a98e"
     musicbrainzId String?
     /// @example r1234567
     /// @description Discogs ID found in local metadata (usually for releases)

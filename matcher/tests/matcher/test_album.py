@@ -3,6 +3,7 @@ import pytest
 import pytest_asyncio
 import datetime
 from matcher.matcher.album import match_album
+from matcher.models.api.domain import LocalIdentifiers
 from matcher.providers.domain import AlbumType
 from tests.matcher.common import MatcherTestUtils
 from matcher.context import Context
@@ -21,7 +22,11 @@ class TestMatchAlbum:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album(self, ctx):
         res = await match_album(
-            1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
+            1,
+            "Confessions on a Dancefloor",
+            "Madonna",
+            AlbumType.STUDIO,
+            LocalIdentifiers(),
         )
         # Type
         assert res.album_type is None
@@ -84,7 +89,11 @@ class TestMatchAlbum:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album2(self, ctx):
         res = await match_album(
-            1, "The Tortured Poets Department", "Taylor Swift", AlbumType.STUDIO
+            1,
+            "The Tortured Poets Department",
+            "Taylor Swift",
+            AlbumType.STUDIO,
+            LocalIdentifiers(),
         )
         # Type
         assert res.album_type is None
@@ -130,7 +139,9 @@ class TestMatchAlbum:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_no_rating(self, ctx):
-        res = await match_album(1, "Aéromusical", "Superbus", AlbumType.STUDIO)
+        res = await match_album(
+            1, "Aéromusical", "Superbus", AlbumType.STUDIO, LocalIdentifiers()
+        )
         # Rating
         assert res.metadata.rating is None
         # Release date
@@ -166,7 +177,11 @@ class TestMatchAlbum:
         context = Context.get()
         context.settings.push_genres = False
         res = await match_album(
-            1, "Confessions on a Dancefloor", "Madonna", AlbumType.STUDIO
+            1,
+            "Confessions on a Dancefloor",
+            "Madonna",
+            AlbumType.STUDIO,
+            LocalIdentifiers(),
         )
         # Teardown
         context.settings.push_genres = True
@@ -179,7 +194,7 @@ class TestMatchAlbum:
         context = Context.get()
         context.settings.push_genres = False
         res = await match_album(
-            1, "(How to Live) as Ghosts", "10 Years", AlbumType.LIVE
+            1, "(How to Live) as Ghosts", "10 Years", AlbumType.LIVE, LocalIdentifiers()
         )
         # Teardown
         context.settings.push_genres = True
