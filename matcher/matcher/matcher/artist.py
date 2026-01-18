@@ -2,6 +2,7 @@ import asyncio
 import logging
 from typing import List
 
+from matcher.models.api.domain import LocalIdentifiers
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.models.match_result import ArtistMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -13,15 +14,21 @@ from ..context import Context
 from . import common
 
 
-async def match_and_post_artist(artist_id: int, artist_name: str, reuseSources: bool):
+async def match_and_post_artist(
+    artist_id: int,
+    artist_name: str,
+    local_identifiers: LocalIdentifiers,
+    reuseSources: bool,
+):
     async def match():
         if not reuseSources:
-            return await match_artist(artist_id, artist_name, None)
+            return await match_artist(artist_id, artist_name, local_identifiers, None)
         previous_metadata = await context.client.get_artist_external_metadata(artist_id)
         previous_sources = previous_metadata.sources if previous_metadata else []
         return await match_artist(
             artist_id,
             artist_name,
+            local_identifiers,
             previous_sources,
         )
 
@@ -45,12 +52,14 @@ async def match_and_post_artist(artist_id: int, artist_name: str, reuseSources: 
 async def match_artist(
     artist_id: int,
     artist_name: str,
+    local_identifiers: LocalIdentifiers,
     sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
 ) -> ArtistMatchResult:
     context = Context.get()
 
     async def resolve_sources():
         (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
+            local_identifiers,
             lambda mb: mb.search_artist(artist_name),
             lambda mb, mbid: mb.get_artist(mbid),
             lambda mb, mbid: mb.get_artist_url_from_id(mbid),

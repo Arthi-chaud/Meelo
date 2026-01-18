@@ -129,9 +129,9 @@ model Album {
     /// @description String identifier
     /// @example my-artist-my-album
     slug             String             @unique
-	nameSlug         String
-	sortName         String
-	sortSlug         String
+    nameSlug         String
+    sortName         String
+    sortSlug         String
     /// @description The date of the first release of the album
     releaseDate      DateTime?
     /// @description The date the album was registered
@@ -156,6 +156,8 @@ model Album {
     genres           Genre[]
     illustration     AlbumIllustration?
 
+    localIdentifiers LocalIdentifiers?
+
     searchHistory SearchHistory[]
 
     @@unique([slug, artistId])
@@ -173,8 +175,8 @@ model Artist {
     /// @description Unique string identifer
     /// @example my-artist
     slug             String            @unique
-    sortName         String           
-    sortSlug         String            
+    sortName         String
+    sortSlug         String
     /// @description Array of Albums where the artist is the main one
     albums           Album[]
     /// @description Array of Songs by the artist
@@ -188,6 +190,8 @@ model Artist {
     /// @description Related Illustration
     illustrationId   Int?              @unique
     illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
+
+    localIdentifiers LocalIdentifiers?
 
     searchHistory SearchHistory[]
     videos        Video[]
@@ -255,7 +259,7 @@ model Release {
     /// @description String identifier
     /// @example my-artist-my-release-deluxe-edition
     slug             String                   @unique
-	nameSlug         String
+    nameSlug         String
     /// @description The date of the release
     releaseDate      DateTime?
     /// @description The tracks on the release
@@ -278,6 +282,8 @@ model Release {
     label            Label?                   @relation(fields: [labelId], references: [id])
     /// @description the ID of the label of the release
     labelId          Int?
+
+    localIdentifiers LocalIdentifiers?
 
     @@unique([albumId, slug])
     @@map("releases")
@@ -309,9 +315,9 @@ model Song {
     /// @description String identifier
     /// @example my-artist-my-song
     slug             String            @unique
-	nameSlug         String
-    sortName         String           
-    sortSlug         String            
+    nameSlug         String
+    sortName         String
+    sortSlug         String
     /// @description The main artist of the song
     artist           Artist            @relation("MainSongArtist", fields: [artistId], references: [id])
     /// @description Unique numeric identifier of the main artist
@@ -349,6 +355,8 @@ model Song {
     videos           Video[]
     /// @description Beats per minute
     bpm              Float?
+
+    localIdentifiers LocalIdentifiers?
 
     @@unique([slug, artistId])
     @@map("songs")
@@ -592,6 +600,28 @@ model Provider {
     illustration    Illustration?            @relation(fields: [illustrationId], references: [id], onDelete: NoAction)
 
     @@map("providers")
+}
+
+model LocalIdentifiers {
+    /// @description Unique entry identifier
+    /// @example 123
+    id            Int      @id @default(autoincrement())
+    /// @description MusicBrainz ID found in local metadata
+    /// @example "53b106e7-0cc6-42cc-ac95-ed8d30a3a98e"
+    musicbrainzId String?
+    /// @example r1234567
+    /// @description Discogs ID found in local metadata (usually for releases)
+    discogsId     String?
+    songId        Int?     @unique
+    song          Song?    @relation(fields: [songId], references: [id], onDelete: Cascade)
+    artistId      Int?     @unique
+    artist        Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+    albumId       Int?     @unique
+    album         Album?   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    releaseId     Int?     @unique
+    release       Release? @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+    @@map("local_identifiers")
 }
 
 model ExternalMetadata {

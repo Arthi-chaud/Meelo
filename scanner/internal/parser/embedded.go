@@ -157,6 +157,21 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 			}
 		}
 	})
+	ParseTag(tags, []string{"musicbrainz artist id"}, func(value string) {
+		metadata.ArtistMbid = value
+	})
+	ParseTag(tags, []string{"musicbrainz album artist id"}, func(value string) {
+		metadata.AlbumArtistMbid = value
+	})
+	ParseTag(tags, []string{"musicbrainz release group id"}, func(value string) {
+		metadata.AlbumMbid = value
+	})
+	ParseTag(tags, []string{"musicbrainz track id"}, func(value string) {
+		metadata.SongMbid = value
+	})
+	ParseTag(tags, []string{"acoustid id"}, func(value string) {
+		metadata.AcoustId = value
+	})
 
 	ParseTag(tags, []string{"date", "year", "tye", "tyer", "tdrl"}, func(value string) {
 		for _, format := range dateFormats {

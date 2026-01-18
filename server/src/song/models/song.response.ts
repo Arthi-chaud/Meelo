@@ -26,6 +26,10 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
+import {
+	LocalIdentifiersResponse,
+	ResponseWithLocalIdentifiers,
+} from "src/local-identifiers/local-identifiers.response";
 import { LyricsResponse } from "src/lyrics/models/lyrics.response";
 import { Song, type SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
@@ -38,6 +42,7 @@ import TrackService from "src/track/track.service";
 export class SongResponse extends IntersectionType(
 	OmitType(Song, ["sortSlug", "nameSlug"]),
 	IllustratedResponse,
+	ResponseWithLocalIdentifiers,
 	class {
 		lyrics?: LyricsResponse | null;
 		artist?: ArtistResponse;
@@ -98,6 +103,10 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			illustration: song.illustration
 				? IllustrationResponse.from(song.illustration)
 				: song.illustration,
+
+			localIdentifiers: LocalIdentifiersResponse.from(
+				song.localIdentifiers,
+			),
 		};
 	}
 }

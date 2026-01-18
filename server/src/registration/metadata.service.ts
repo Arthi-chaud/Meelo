@@ -23,6 +23,7 @@ import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import { AlbumType, TrackType } from "src/prisma/generated/client";
 import type { File } from "src/prisma/models";
+import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
@@ -53,6 +54,7 @@ export default class MetadataService {
 		private videoService: VideoService,
 		@Inject(forwardRef(() => LabelService))
 		private labelService: LabelService,
+		private prismaService: PrismaService,
 	) {}
 
 	private dateIsYearOnly(d: Date): boolean {
@@ -262,6 +264,14 @@ export default class MetadataService {
 						{ album: true },
 					)
 				: undefined;
+		await this.saveLocalIdentifiers(
+			metadata,
+			songArtist.id,
+			albumArtist?.id,
+			album?.id,
+			song?.id,
+			release?.id,
+		);
 		const track: TrackQueryParameters.CreateInput = {
 			name: video ? videoName : parsedTrackName.parsedName,
 			mixed: parsedTrackName.mixed || releaseIsMixed,
@@ -355,5 +365,82 @@ export default class MetadataService {
 			}
 			return res;
 		});
+	}
+
+	private async saveLocalIdentifiers(
+		metadata: Metadata,
+		songArtistId: number,
+		albumArtistId: number | undefined,
+		albumId: number | undefined,
+		songId: number | undefined,
+		releaseId: number | undefined,
+	) {
+		const promises: Promise<any>[] = [];
+
+		promises.push(
+			this.prismaService.localIdentifiers.upsert({
+				create: {
+					musicbrainzId: metadata.artistMbid ?? null,
+					artistId: songArtistId,
+				},
+				update: { musicbrainzId: metadata.artistMbid ?? null },
+				where: { artistId: songArtistId },
+			}),
+		);
+
+		if (albumArtistId && albumArtistId !== songArtistId) {
+			promises.push(
+				this.prismaService.localIdentifiers.upsert({
+					create: {
+						musicbrainzId: metadata.albumArtistMbid ?? null,
+						artistId: albumArtistId,
+					},
+					update: { musicbrainzId: metadata.albumArtistMbid ?? null },
+					where: { artistId: albumArtistId },
+				}),
+			);
+		}
+
+		if (albumId) {
+			promises.push(
+				this.prismaService.localIdentifiers.upsert({
+					create: {
+						musicbrainzId: metadata.albumMbid ?? null,
+						albumId,
+					},
+					update: { musicbrainzId: metadata.albumMbid ?? null },
+					where: { albumId },
+				}),
+			);
+		}
+
+		if (releaseId) {
+			promises.push(
+				this.prismaService.localIdentifiers.upsert({
+					create: {
+						discogsId: metadata.discogsId ?? null,
+						releaseId,
+					},
+					update: {
+						discogsId: metadata.discogsId ?? null,
+					},
+					where: { releaseId },
+				}),
+			);
+		}
+
+		if (songId) {
+			promises.push(
+				this.prismaService.localIdentifiers.upsert({
+					create: {
+						musicbrainzId: metadata.songMbid ?? null,
+						songId,
+					},
+					update: { musicbrainzId: metadata.songMbid ?? null },
+					where: { songId },
+				}),
+			);
+		}
+		await Promise.all(promises);
 	}
 }

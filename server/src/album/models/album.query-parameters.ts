@@ -109,10 +109,11 @@ namespace AlbumQueryParameters {
 		"master",
 		"genres",
 		"illustration",
+		"localIdentifiers",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["genres"],
+		["genres", "localIdentifiers"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 

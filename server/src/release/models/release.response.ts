@@ -27,6 +27,10 @@ import {
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
 import {
+	LocalIdentifiersResponse,
+	ResponseWithLocalIdentifiers,
+} from "src/local-identifiers/local-identifiers.response";
+import {
 	Disc,
 	Label,
 	Release,
@@ -39,6 +43,7 @@ class DiscResponse extends OmitType(Disc, ["id", "releaseId"]) {}
 export class ReleaseResponse extends IntersectionType(
 	Release,
 	IllustratedResponse,
+	ResponseWithLocalIdentifiers,
 	class {
 		album?: AlbumResponse;
 		label?: Label | null;
@@ -83,6 +88,9 @@ export class ReleaseResponseBuilder extends ResponseBuilderInterceptor<
 				? IllustrationResponse.from(release.illustration)
 				: release.illustration,
 			label: release.label,
+			localIdentifiers: LocalIdentifiersResponse.from(
+				release.localIdentifiers,
+			),
 		};
 	}
 }

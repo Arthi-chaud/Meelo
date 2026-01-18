@@ -21,7 +21,12 @@ from ..context import Context
 OVERRIDABLE_ALBUM_TYPES = [AlbumType.STUDIO, AlbumType.LIVE]
 
 
-async def match_and_post_album(album_id: int, album_name: str, reuseSources: bool):
+async def match_and_post_album(
+    album_id: int,
+    album_name: str,
+    local_identifiers: common.LocalIdentifiers,
+    reuseSources: bool,
+):
     try:
 
         async def match():
@@ -31,6 +36,7 @@ async def match_and_post_album(album_id: int, album_name: str, reuseSources: boo
                     album_name,
                     album.artist.name if album.artist else None,
                     album.type,
+                    local_identifiers,
                     None,
                 )
             previous_metadata = await context.client.get_album_external_metadata(
@@ -42,6 +48,7 @@ async def match_and_post_album(album_id: int, album_name: str, reuseSources: boo
                 album_name,
                 album.artist.name if album.artist else None,
                 album.type,
+                local_identifiers,
                 previous_sources,
             )
 
@@ -100,6 +107,7 @@ async def match_album(
     album_name: str,
     artist_name: str | None,
     type: AlbumType,
+    local_identifiers: common.LocalIdentifiers,
     sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
 ) -> AlbumMatchResult:
     need_genres = Context.get().settings.push_genres
@@ -110,6 +118,7 @@ async def match_album(
 
     async def resolve_sources():
         (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
+            local_identifiers,
             lambda mb: mb.search_album(album_name, artist_name),
             lambda mb, mbid: mb.get_album(mbid),
             lambda mb, mbid: mb.get_album_url_from_id(mbid),

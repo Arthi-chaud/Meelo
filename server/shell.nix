@@ -6,5 +6,6 @@ pkgs.mkShell {
     nodejs_24
     yarn-berry
     biome
+    prisma-language-server
   ];
 }

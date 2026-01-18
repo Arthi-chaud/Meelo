@@ -104,10 +104,11 @@ namespace ReleaseQueryParameters {
 		"illustration",
 		"discs",
 		"label",
+		"localIdentifiers",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["discs"],
+		["discs", "localIdentifiers"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 

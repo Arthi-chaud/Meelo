@@ -1,6 +1,6 @@
 import asyncio
 from matcher.context import Context
-from matcher.matcher.artist import match_artist
+from matcher.matcher.artist import LocalIdentifiers, match_artist
 from tests.matcher.common import MatcherTestUtils
 import pytest
 import pytest_asyncio
@@ -18,7 +18,7 @@ async def ctx():
 class TestMatchArtist:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_artist(self, ctx):
-        res = await match_artist(1, "Madonna")
+        res = await match_artist(1, "Madonna", LocalIdentifiers())
         # Illustration
         assert res.illustration_url is not None
         assert "discogs" in res.illustration_url or "genius.com" in res.illustration_url
@@ -57,7 +57,7 @@ class TestMatchArtist:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_artist_with_special_char(self, ctx):
         await MatcherTestUtils.reset_sessions()
-        res = await match_artist(1, "P!nk")
+        res = await match_artist(1, "P!nk", LocalIdentifiers())
 
         # Illustration
         assert res.illustration_url is not None
@@ -94,7 +94,7 @@ class TestMatchArtist:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_artist_with_placeholder_image(self, ctx):
-        res = await match_artist(1, "Peplab")
+        res = await match_artist(1, "Peplab", LocalIdentifiers())
         # Illustration
         assert res.illustration_url is not None
         # We want to get Discogs' image, not genius' as it's a placeholder
@@ -118,4 +118,24 @@ class TestMatchArtist:
         assert (
             mb.url
             == "https://musicbrainz.org/artist/ccccf1ba-c503-48d7-8c8c-f7c80c3347d4"
+        )
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_artist_using_local_identifiers(self, ctx):
+        res = await match_artist(
+            1,
+            "AAAAAAAAA",
+            LocalIdentifiers(
+                musicbrainz_id="79239441-bfd5-4981-a70c-55c3f15c1287", discogs_id="8760"
+            ),
+        )
+
+        ### Discogs
+        [discogs] = [p for p in res.metadata.sources if "discogs" in p.url]
+        assert discogs.url == "https://www.discogs.com/artist/8760"
+        ### Musicbrainz
+        [mb] = [p for p in res.metadata.sources if "musicbrainz" in p.url]
+        assert (
+            mb.url
+            == "https://musicbrainz.org/artist/79239441-bfd5-4981-a70c-55c3f15c1287"
         )

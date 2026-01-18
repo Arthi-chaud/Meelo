@@ -22,12 +22,17 @@ import {
 	IllustratedResponse,
 	IllustrationResponse,
 } from "src/illustration/models/illustration.response";
-import { Artist, type ArtistWithRelations } from "src/prisma/models";
+import {
+	LocalIdentifiersResponse,
+	ResponseWithLocalIdentifiers,
+} from "src/local-identifiers/local-identifiers.response";
+import { Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ArtistResponse extends IntersectionType(
 	OmitType(Artist, ["sortSlug"]),
 	IllustratedResponse,
+	ResponseWithLocalIdentifiers,
 ) {}
 
 @Injectable()
@@ -48,6 +53,9 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 			illustration: artist.illustration
 				? IllustrationResponse.from(artist.illustration)
 				: artist.illustration,
+			localIdentifiers: LocalIdentifiersResponse.from(
+				artist.localIdentifiers,
+			),
 		};
 	}
 }
