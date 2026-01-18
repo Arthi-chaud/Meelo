@@ -625,6 +625,10 @@ export default class SongService extends SearchableRepositoryService {
 			data: { songId: destSong.id },
 			where: { songId: sourceSong.id },
 		});
+		await this.prismaService.video.updateMany({
+			data: { songId: destSong.id },
+			where: { songId: sourceSong.id },
+		});
 		await this.housekeeping();
 	}
 
