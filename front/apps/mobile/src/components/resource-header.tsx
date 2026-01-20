@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import { type ComponentProps, useLayoutEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { ArtistWithRelations } from "@/models/artist";
@@ -43,6 +43,7 @@ export const ArtistHeader = ({
 			circleIllustration
 			title={artist?.name}
 			subtitle={null}
+			vertical
 			contextMenu={contextMenu}
 		/>
 	);
@@ -55,6 +56,7 @@ type Props = {
 	title: string | undefined;
 	contextMenu?: ContextMenuBuilder;
 	subtitle: string | undefined | null;
+	vertical?: boolean;
 };
 
 export const ResourceHeader = ({
@@ -64,7 +66,15 @@ export const ResourceHeader = ({
 	illustrationProps,
 	contextMenu,
 	subtitle,
+	vertical,
 }: Props) => {
+	vertical ??= false;
+	styles.useVariants({ vertical });
+	const gutterRef = useRef<View>(null);
+	const [gutterWidth, setGutterWidth] = useState(0);
+	useLayoutEffect(() => {
+		gutterRef.current?.measure((_, __, width) => setGutterWidth(width));
+	}, [setGutterWidth, title, contextMenu]);
 	return (
 		<View style={styles.root}>
 			<View style={styles.avatar}>
@@ -76,43 +86,98 @@ export const ResourceHeader = ({
 					useBlurhash
 				/>
 			</View>
-			<View style={styles.text}>
-				<LoadableText
-					content={title}
-					skeletonWidth={10}
-					numberOfLines={2}
-					variant={subtitle !== null ? "h3" : "h2"}
-				/>
-				{subtitle !== null && (
-					<LoadableText
-						content={subtitle}
-						skeletonWidth={10}
-						numberOfLines={1}
-						variant="h5"
-					/>
+			<View style={styles.secondary}>
+				{contextMenu && vertical && (
+					<View style={{ width: gutterWidth }} />
 				)}
+				<View style={styles.texts}>
+					<LoadableText
+						content={title}
+						skeletonWidth={10}
+						numberOfLines={2}
+						style={styles.text}
+						variant={subtitle !== null ? "h3" : "h2"}
+					/>
+					{subtitle !== null && (
+						<LoadableText
+							content={subtitle}
+							skeletonWidth={10}
+							style={styles.text}
+							numberOfLines={1}
+							variant="h5"
+						/>
+					)}
+				</View>
+				<View ref={gutterRef}>
+					{contextMenu && title && (
+						<ContextMenuButton builder={contextMenu} />
+					)}
+				</View>
 			</View>
-			{contextMenu && <ContextMenuButton builder={contextMenu} />}
 		</View>
 	);
 };
 
 const styles = StyleSheet.create((theme) => ({
 	root: {
-		width: "100%",
-		flexDirection: "row",
-		alignItems: "center",
 		padding: theme.gap(2),
 		gap: theme.gap(3),
-		display: "flex",
+		width: "100%",
+		variants: {
+			vertical: {
+				true: {
+					flexDirection: "column",
+					alignItems: "center",
+					paddingVertical: theme.gap(3.5),
+				},
+				false: {
+					flexDirection: "row",
+					alignItems: "center",
+				},
+			},
+		},
 	},
 	avatar: {
-		width: "100%",
-		maxWidth: 120, //arbitrary
+		width: 120, //arbitrary
 		aspectRatio: 1,
+		variants: {
+			vertical: {
+				true: {},
+				false: {},
+			},
+		},
 	},
 	text: {
-		flex: { xs: 2, sm: 3, md: 5, xl: 12 },
+		variants: {
+			vertical: {
+				true: { textAlign: "center" },
+				false: {},
+			},
+		},
+	},
+	texts: {
 		gap: theme.gap(2),
+		flex: 1,
+		justifyContent: "center",
+		variants: {
+			vertical: {
+				true: { alignItems: "center" },
+				false: { alignItems: "flex-start" },
+			},
+		},
+	},
+	secondary: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		gap: theme.gap(1),
+		variants: {
+			vertical: {
+				true: { width: "100%" },
+				false: {
+					flex: { xs: 2, sm: 3, md: 5, xl: 12 },
+				},
+			},
+		},
 	},
 }));
