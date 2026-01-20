@@ -140,9 +140,9 @@ const SyncedLyrics = ({
 			}
 		>
 			<View style={[styles.syncedLyrics]}>
-				{syncedLyricsWithEnd.map(({ timestamp, content }) => (
+				{syncedLyricsWithEnd.map(({ timestamp, content }, idx) => (
 					<SyncedLyric
-						key={timestamp}
+						key={idx}
 						content={content ?? " "}
 						active={currentLyric?.timestamp === timestamp}
 						onLayout={(e) => {
