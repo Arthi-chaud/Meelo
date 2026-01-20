@@ -31,6 +31,7 @@ import { ArtistHeader } from "~/components/resource-header";
 import { Row } from "~/components/row";
 import { SafeFlashList } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
+import { useQueryErrorModal } from "~/hooks/error";
 import type { Sorting } from "~/utils/sorting";
 
 const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
@@ -99,9 +100,8 @@ export default function ArtistView() {
 	const { id: artistId } = useLocalSearchParams<{ id: string }>();
 	const { t } = useTranslation();
 
-	const { data: artist } = useQuery(() =>
-		getArtist(artistId, ["illustration"]),
-	);
+	const artistQuery = useQuery(() => getArtist(artistId, ["illustration"]));
+	const { data: artist } = artistQuery;
 	const topSongs = useInfiniteQuery(() =>
 		getSongs(
 			{ artist: artistId },
@@ -294,6 +294,7 @@ export default function ArtistView() {
 			: []) satisfies ArtistPageSection[]),
 	];
 	useSetKeyIllustration(artist ?? undefined);
+	useQueryErrorModal([artistQuery]);
 	return (
 		<SafeFlashList
 			data={sections}

@@ -41,6 +41,7 @@ import { VideoTile } from "~/components/item/resource/video";
 import { Row } from "~/components/row";
 import { SectionHeader } from "~/components/section-header";
 import { SongGrid } from "~/components/song-grid";
+import { useQueryErrorModal } from "~/hooks/error";
 import { Text } from "~/primitives/text";
 import { Header } from "./header";
 import {
@@ -115,17 +116,18 @@ const renderSection = (section: ReleasePageSection) => {
 };
 
 export default function ReleasePage({ releaseId }: { releaseId: string }) {
-	const { data: release } = useQuery(() =>
+	const releaseQuery = useQuery(() =>
 		getRelease(releaseId, ["illustration", "discs", "label"]),
 	);
+	const { data: release } = releaseQuery;
 
-	const { data: album } = useQuery(
+	const albumQuery = useQuery(
 		(albumId) => getAlbum(albumId, ["artist"]),
 		release?.albumId,
 	);
-	const { data: discs } = useQuery(() =>
-		releaseTracklistQuery(releaseId, false),
-	);
+	const { data: album } = albumQuery;
+	const discsQuery = useQuery(() => releaseTracklistQuery(releaseId, false));
+	const { data: discs } = discsQuery;
 	const {
 		isMixed,
 		tracks: tracks_,
@@ -174,6 +176,7 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 		...postSections,
 	];
 
+	useQueryErrorModal([releaseQuery, albumQuery, discsQuery]);
 	useSetKeyIllustration(release);
 	return (
 		<FlashList

@@ -174,8 +174,10 @@
 	},
 	"errors": {
 		"errorOccured": "Oups… Une erreur est survenue",
+		"goBack": "Retour",
 		"oops": "Oups",
-		"pageNotFound": "Oups… Lien invalide"
+		"pageNotFound": "Oups… Lien invalide",
+		"tryAgain": "Réessayer"
 	},
 	"fileInfo": {
 		"bitRate": "Débit",

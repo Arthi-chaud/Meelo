@@ -173,8 +173,10 @@
 	},
 	"errors": {
 		"errorOccured": "Oops… An error occured",
+		"goBack": "Go Back",
 		"oops": "Oops",
-		"pageNotFound": "Oops… Page not found"
+		"pageNotFound": "Oops… Page not found",
+		"tryAgain": "Try Again"
 	},
 	"fileInfo": {
 		"bitRate": "Bit Rate",

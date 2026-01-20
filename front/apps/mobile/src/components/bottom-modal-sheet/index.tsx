@@ -4,13 +4,17 @@ import {
 	BottomSheetModal,
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ReactNode, useCallback, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { BlurView } from "~/components/blur-view";
 
-type ModalAtom = { content: () => ReactNode; onDismiss?: () => void };
+type ModalAtom = {
+	content: () => ReactNode;
+	onDismiss?: () => void;
+	cannotBeDismissed?: boolean;
+};
 
 const modalAtom = atom<ModalAtom | null>(null);
 
@@ -65,13 +69,14 @@ export const Modal = () => {
 
 // The expanded player uses this as well
 export const ModalBackdrop = (props: BottomSheetBackdropProps) => {
+	const modal = useAtomValue(modalAtom);
 	return (
 		<BottomSheetBackdrop
 			{...props}
 			opacity={0.4}
 			disappearsOnIndex={-1}
 			appearsOnIndex={0}
-			pressBehavior={"close"}
+			pressBehavior={modal?.cannotBeDismissed ? "none" : "close"}
 		/>
 	);
 };

@@ -105,6 +105,7 @@ export const FullscreenIcon: Icon = Iconsax.Maximize4;
 export const PlusIcon: Icon = Iconsax.Add;
 export const MinusIcon: Icon = Iconsax.Minus;
 export const DoneIcon: Icon = Iconsax.TickSquare;
+export const RetryIcon: Icon = Iconsax.ArrowRotateLeft;
 
 export const EmptyStateIcon: Icon = Iconsax.SearchStatus1;
 
