@@ -16,7 +16,7 @@ require (
 	github.com/swaggo/swag v1.16.3
 	github.com/u2takey/ffmpeg-go v0.5.0
 	gocv.io/x/gocv v0.43.0
-	gopkg.in/vansante/go-ffprobe.v2 v2.2.0
+	gopkg.in/vansante/go-ffprobe.v2 v2.3.0
 )
 
 require (
