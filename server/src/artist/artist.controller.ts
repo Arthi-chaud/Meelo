@@ -21,6 +21,7 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import { DefaultRoleAndMicroservice } from "src/authentication/roles/roles.decorators";
 import TransformFilter, { Filter } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
@@ -121,6 +122,7 @@ export default class ArtistController {
 	@Response({
 		handler: ArtistResponseBuilder,
 	})
+	@DefaultRoleAndMicroservice()
 	@Get(":idOrSlug")
 	async get(
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
