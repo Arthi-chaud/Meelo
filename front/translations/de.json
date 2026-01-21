@@ -14,6 +14,7 @@
 			"seeSongs": "Zeige Songs"
 		},
 		"changeIllutration": "Ändere Illustration",
+		"connectToNewServer": "Verbinde einen Meelo-Server",
 		"create": "Erstellen",
 		"delete": "Lösche",
 		"deleteFromPlaylist": "Lösche aus Playlist",
@@ -25,9 +26,14 @@
 			"label": "Herunterladen",
 			"warning": "Das Herunterladen von geschütztem Material Dritter ist unzulässig. Bitte fahre nur fort, wenn Du Rechte an den Inhalten besitzt."
 		},
+		"editExternalLinks": "Externe Links bearbeiten",
+		"genre": {
+			"startRadio": "Start Genre Radio"
+		},
 		"goBackHome": "Zurück zum Beginn",
 		"goToArtist": "Zum Interpreten",
-		"goToRelease": "",
+		"goToPlaylist": "Zur Playlist",
+		"goToRelease": "Zur Veröffentlichung",
 		"goToSettingsPage": "Zu den Einstellungen",
 		"library": {
 			"create": "Neue Bibliothek",
@@ -46,6 +52,7 @@
 		"release": {
 			"setAllTracksAsMaster": "Bestimme alle Tracks zum Master"
 		},
+		"seeArtists": "Zu den Künstlern",
 		"setAsMaster": "Beatimme zum Master",
 		"share": "Teile",
 		"song": {
@@ -61,6 +68,7 @@
 			"seeRelatedVideos": "Ähnliche Videos sehen",
 			"seeSongInfo": "Song Info"
 		},
+		"switchServer": "Geschaltet Server",
 		"track": {
 			"reassignTrack": "Ordne Track neu zu",
 			"seeTrackInfo": "Track Info"
@@ -130,9 +138,9 @@
 				"albumCount": "Albumanzahl",
 				"artistName": "Künstlername",
 				"bitrate": "Bitrate",
-				"bpm": "",
+				"bpm": "BPM",
 				"creationDate": "Erstellungsdatum",
-				"discIndex": "",
+				"discIndex": "Disc Index",
 				"entryCount": "Anzahl der Einträge",
 				"name": "Titel",
 				"registrationDate": "Registrierungsdatum",
@@ -147,9 +155,9 @@
 			"sortBy": "Sortieren nach"
 		},
 		"sections": {
-			"about": "",
+			"about": "Um",
 			"extras": "Extras",
-			"featuredOnPlaylists": "",
+			"featuredOnPlaylists": "Vorgestellt auf",
 			"livePerformances": "Live Performances",
 			"musicVideos": "Musik Videos"
 		},
@@ -170,12 +178,12 @@
 	},
 	"fileInfo": {
 		"bitRate": "Bitrate",
-		"bpm": "",
+		"bpm": "BPM",
 		"duration": "Dauer",
-		"extension": "",
+		"extension": "Verlängerung",
 		"name": "Name",
 		"path": "Pfad",
-		"registrationDate": "",
+		"registrationDate": "Registrierungsdatum",
 		"type": "Typ",
 		"unknown": "Unbekannt"
 	},
@@ -197,6 +205,13 @@
 		"confirm": "Bestätigen",
 		"done": "Erledigt",
 		"edit": "Bearbeiten",
+		"editExternalLinks": {
+			"addLink": "Link hinzufügen",
+			"saveLinks": "Links speichern"
+		},
+		"illustration": {
+			"url": "Geben Sie die URL der neuen Illustration ein"
+		},
 		"library": {
 			"nameIsRequired": "Name ist erforderlich",
 			"nameOfLibrary": "Name der Bibliothek",
@@ -205,12 +220,13 @@
 		},
 		"playlist": {
 			"allowPlaylistChanges": "Erlaube anderen Nutzern diese Playlist zu aktualisieren",
-			"playlistIsPublic": "Erlaube anderen Nutzern diese Playlist zu sehen"
+			"playlistIsPublic": "Erlaube anderen Nutzern diese Playlist zu sehen",
+			"reorder": "Neu bestellen"
 		},
 		"scrobblers": {
 			"listenbrainz": {
 				"instanceUrlHelperText": "Leer lassen um die öffentliche Instanz zu nutzen (https://api.listenbrainz.org)/",
-				"instanceUrlLabel": "",
+				"instanceUrlLabel": "ListenBrainz' API URL",
 				"tokenHelperText": "Erhalte dein Benutzertoken hier: https://listenbrainz.org/settings/",
 				"tokenIsRequired": "Token ist erforderlich",
 				"tokenLabel": "ListenBrainz Benutzer Token eintragen"
@@ -246,13 +262,14 @@
 		"album_plural": "Alben",
 		"artist": "Künstler",
 		"artist_plural": "Künstler",
-		"disc": "",
+		"disc": "Scheibe",
 		"externalLink_plural": "Externer Link",
 		"genre_plural": "Genres",
+		"label": "Plattenlabel",
 		"library_plural": "Bibliotheken",
 		"lyrics": "Liedtexte",
 		"playlist": "Playlist",
-		"playlist_plural": "",
+		"playlist_plural": "Wiedergabelisten",
 		"song": "Lied",
 		"song_plural": "Lieder",
 		"track_plural": "Tracks",
@@ -262,7 +279,7 @@
 		"video_plural": "Videos"
 	},
 	"nav": {
-		"browse": "",
+		"browse": "Durchsuchen",
 		"compilations": "Zusammenstellungen",
 		"home": "Home",
 		"more": "Mehr",
@@ -272,13 +289,17 @@
 	},
 	"player": {
 		"loadNextSongs": "Nächste Lieder laden",
-		"saveQueueAsPlaylist": "Warteschlange als Playlist speichern"
+		"saveQueueAsPlaylist": "Warteschlange als Playlist speichern",
+		"stream": {
+			"directStream": "Direktstream",
+			"transcode": "Transkodierung"
+		}
 	},
 	"search": {
 		"all": "Alle"
 	},
 	"settings": {
-		"interface": "",
+		"interface": "Schnittstelle",
 		"libraries": {
 			"nameColumn": "",
 			"tasks": {
@@ -288,13 +309,15 @@
 				"pending": "Ausstehend"
 			}
 		},
+		"manageFromWebApp": "Bibliotheken und Benutzer über die Web App verwalten",
 		"ui": {
 			"account": {
-				"changePassword": "Passwort ändern"
+				"changePassword": "Passwort ändern",
+				"header": "Konto"
 			},
 			"autoMode": "Auto-Modus",
 			"colorScheme": "Thema",
-			"crossfade": "",
+			"crossfade": "Überblendung",
 			"external": {
 				"encounteredABug": "Du bist auf einen Fehler gestoßen?",
 				"enjoyingTheProject": "Erfreust du dich an diesem Projekt?",
@@ -304,6 +327,8 @@
 			},
 			"keyboardBindings": "Tastaturabkürzungen",
 			"lang": {
+				"cs": "tschechisch",
+				"da": "dänisch",
 				"de": "Deutsch",
 				"en": "Englisch",
 				"fr": "Französisch",
@@ -311,19 +336,20 @@
 				"it": "Italienisch",
 				"pt": "Portugiesisch",
 				"pt_br": "Portugiesisch (Brasilien)",
-				"ru": "Russisch"
+				"ru": "Russisch",
+				"sk": "slowakisch"
 			},
 			"language": "Sprache",
 			"notifications": "Benachrichtigungen",
 			"notifyOnTrackChange": "Benachrichtige bei Track Änderung",
-			"openKeyboarBindingsModalByTypingQuestionMark": "",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Die Liste der Tastaturbelegungen erhalten Sie durch Eingabe von '?'",
 			"permissions": "Zugriffsrechte",
 			"playback": "Wiedergabe",
 			"project": "Projekt",
 			"scrobblers": {
-				"connect_scrobblers": "",
-				"header": "",
-				"no_scrobblers_enabled": ""
+				"connect_scrobblers": "Scrobbler verbinden",
+				"header": "Scrobbler",
+				"no_scrobblers_enabled": "Keine Scrobbling-Dienste verfügbar"
 			},
 			"useDarkTheme": "Benutze Dunkelmodus",
 			"useSystemLanguage": "Verwende Systemsprache",
@@ -331,7 +357,7 @@
 			"versions": "Versionen"
 		},
 		"users": {
-			"admin": "",
+			"admin": "Administrator",
 			"enabled": "Aktiviert",
 			"nameColumn": "Name",
 			"you": "Du"
@@ -344,31 +370,36 @@
 	"songType": {
 		"acappella": "",
 		"acoustic": "Akustik",
-		"clean": "",
-		"demo": "",
+		"clean": "Sauber",
+		"demo": "Demo",
 		"edit": "Bearbeiten",
-		"instrumental": "",
+		"instrumental": "Instrumental",
 		"live": "",
 		"medley": "",
-		"nonMusic": "",
-		"original": "",
-		"remix": "",
+		"nonMusic": "Nicht-Musik",
+		"original": "Original",
+		"remix": "Remix",
 		"unknown": "Unbekannt"
 	},
 	"tasks": {
-		"clean": "",
-		"cleanLibraries": "",
+		"clean": "Sauber",
+		"cleanLibraries": "Saubere Bibliotheken",
 		"refresh": "Aktualisieren",
+		"refreshExternalMetadata": "Externe Metadaten aktualisieren",
+		"refreshLocalMetadata": "Lokale Metadaten aktualisieren",
 		"refreshMetadata": "Metadaten aktualisieren",
 		"refreshMetadataForm": {
-			"forceLabel": "Aktualisierung erzwingen, wenn Dateien nicht geändert wurden"
+			"forceLabel": "Aktualisierung erzwingen, wenn Dateien nicht geändert wurden",
+			"reuseLabel": "Wiederverwendung bekannter Quellen"
 		},
-		"scan": "",
+		"scan": "Scan",
 		"scanLibraries": "Scanne Bibliotheken"
 	},
 	"toasts": {
 		"auth": {
-			"accountCreated": "Herzlichen Glückwunsch! Dein Meelo-Account wurde erstellt. Du musst nun darauf warten, dass der Administrator deinen Account freigibt"
+			"accountCreated": "Herzlichen Glückwunsch! Dein Meelo-Account wurde erstellt. Du musst nun darauf warten, dass der Administrator deinen Account freigibt",
+			"serverSwitchSuccessful": "Serverwechsel erfolgreich",
+			"signinFailed": "Verbindung zum Server konnte nicht hergestellt werden"
 		},
 		"leaveWillStopPlaybackAlert": "Wenn Sie die Website verlassen, wird die Wiedergabe gestoppt.",
 		"library": {
@@ -383,9 +414,10 @@
 		"linkCopied": "Link in Zwischenablage kopiert",
 		"player": {
 			"networkError": "Es scheint Netzwerkprobleme zu geben…",
-			"playbackError": ""
+			"playbackError": "Das Format des Titels wird von diesem Browser nicht unterstützt. Überspringen…"
 		},
 		"playlist": {
+			"addedToPlaylist": "Erfolgreich zur Playlist hinzugefügt!",
 			"itemDeletionSuccess": "Löschen erfolgreich",
 			"reorderFail": "Playlist Umsortierung gescheitert",
 			"reorderSuccess": "Playlist umsortiert!"
@@ -394,16 +426,16 @@
 			"failed": "Oops... Metadaten Aktualisierung gescheitert",
 			"started": "Metadaten aktualisieren... (Eventuell musst Du die Seite neu laden)"
 		},
-		"releaseSetAsMaster": "",
+		"releaseSetAsMaster": "Als Master Version festgelegt",
 		"scrobblers": {
 			"linking": "Account verknüpfen...",
 			"linkingListenBrainzFailed": "Verknüpfung mit ListenBrainz Account nicht möglich",
 			"linkingSuccessful": "ListenBrainz erfolgreich verknüpft",
 			"unlinking": "Account trennen...",
-			"unlinkingFailed": "",
-			"unlinkingSuccessful": ""
+			"unlinkingFailed": "Scrobbler konnte nicht entkoppelt werden",
+			"unlinkingSuccessful": "Scrobbler erfolgreich entkoppelt"
 		},
-		"trackSetAsMaster": "",
+		"trackSetAsMaster": "Spur als Master festgelegt",
 		"tracksUpdated": "Tracks erfolgreich aktualisiert",
 		"users": {
 			"deleted": "Benutzer geschlöscht",
@@ -416,15 +448,15 @@
 		}
 	},
 	"track": {
-		"bonusTrack": "",
+		"bonusTrack": "Bonus Track",
 		"mixed": "Gemischt",
-		"remastered": ""
+		"remastered": "Remastered"
 	},
 	"videoType": {
-		"advert": "",
+		"advert": "Hinweisen",
 		"behindTheScenes": "Hinter den Kulissen",
 		"documentary": "Dokumentation",
-		"interview": "",
+		"interview": "Interview",
 		"live": "",
 		"lyricsVideo": "Liedtext Video",
 		"musicVideo": "Musik Video",
