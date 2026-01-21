@@ -24,6 +24,7 @@ import {
 import { GenreChip } from "~/components/item/resource/genre";
 import { LoadableText } from "~/components/loadable_text";
 import { SongHeader } from "~/components/resource-header";
+import { useQueryErrorModal } from "~/hooks/error";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
@@ -46,7 +47,7 @@ export default function SongPage() {
 		}
 		return tabQuery;
 	});
-	const { data: song } = useQuery(() =>
+	const songQuery = useQuery(() =>
 		getSong(id, [
 			"artist",
 			"illustration",
@@ -55,6 +56,8 @@ export default function SongPage() {
 			"master",
 		]),
 	);
+	const { data: song } = songQuery;
+	useQueryErrorModal([songQuery]);
 	useSetKeyIllustration(song);
 	const playButtonCallback = useCallback(() => {
 		if (!song) {

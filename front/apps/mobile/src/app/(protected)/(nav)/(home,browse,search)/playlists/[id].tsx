@@ -33,6 +33,7 @@ import { usePlaylistContextMenu } from "~/components/context-menu/resource/playl
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
 import * as Haptics from "~/haptics";
+import { useQueryErrorModal } from "~/hooks/error";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
@@ -93,6 +94,7 @@ export default function PlaylistView() {
 	const onShuffle = useCallback(() => {
 		playTracks({ tracks: shuffle(tracksForPlayer) });
 	}, [playlistEntries]);
+
 	return (
 		<View style={[styles.root, rootStyle]}>
 			<Header
@@ -127,8 +129,11 @@ const Header = ({
 	onPlay?: () => void;
 }) => {
 	const { t } = useTranslation();
-	const { data: playlist } = useQuery(() => playlistQuery(playlistId));
+	const playlistQ = useQuery(() => playlistQuery(playlistId));
+	const { data: playlist } = playlistQ;
 	const contextMenu = usePlaylistContextMenu(playlist);
+
+	useQueryErrorModal([playlistQ]);
 	return (
 		<>
 			<ResourceHeader
