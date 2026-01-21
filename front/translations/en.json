@@ -340,7 +340,9 @@
 				"it": "Italian",
 				"ru": "Russian",
 				"cs": "Czech",
-				"sk": "Slovak"
+				"sk": "Slovak",
+				"zh_Hans": "Chinese (Simplified)",
+				"zh_Hant": "Chinese (Traditional)"
 			},
 			"versions": "Versions",
 			"language": "Language",
