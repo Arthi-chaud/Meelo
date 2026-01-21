@@ -27,6 +27,8 @@ import pt from "./pt.json";
 import pt_br from "./pt-BR.json";
 import ru from "./ru.json";
 import sk from "./sk.json";
+import zh_Hans from "./zh-Hans.json";
+import zh_Hant from "./zh-Hant.json";
 
 export default Object.entries({
 	en,
@@ -40,6 +42,8 @@ export default Object.entries({
 	pt_br,
 	cs,
 	sk,
+	zh_Hans,
+	zh_Hant,
 }).reduce(
 	(rest, [key, value]) => ({ ...rest, [key]: { translation: value } }),
 	{},
@@ -57,5 +61,7 @@ export const Languages = [
 	"pt_br",
 	"cs",
 	"sk",
+	"zh_Hant",
+	"zh_Hans",
 ] as const;
 export type Language = (typeof Languages)[number];
