@@ -7928,7 +7928,7 @@ __metadata:
     ts-loader: "npm:^9.5.2"
     ts-node: "npm:^10.0.0"
     tsconfig-paths: "npm:^4.2.0"
-    type-fest: "npm:5.3.1"
+    type-fest: "npm:5.4.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
@@ -10492,12 +10492,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:5.3.1":
-  version: 5.3.1
-  resolution: "type-fest@npm:5.3.1"
+"type-fest@npm:5.4.0":
+  version: 5.4.0
+  resolution: "type-fest@npm:5.4.0"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/3282cf11f5e8708321c109b5a72967702cf4c3b928b4d77f5819600b23915dc6a6b8f16cde4182cfbad308973ed3eeea544825cafe9657634ac1f331dc940315
+  checksum: 10c0/be786ce335612aa621d686657f7531740767fefee704c8a9fa2871d2f6ae85b39963d29d655cf34474ba413ee1209e1cf94c2c37a8174728eca2289b5bd7e277
   languageName: node
   linkType: hard
 
