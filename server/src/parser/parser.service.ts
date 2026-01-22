@@ -270,6 +270,7 @@ export default class ParserService {
 				artistName.split(/\s*,\s*/).map(async (s) => {
 					const splitted = s
 						.split(/\s+&\s+/)
+						.flatMap((t) => t.split(/\s*;s*/))
 						.flatMap((t) => t.split(/\s+vs\.\s+/i))
 						.flatMap((t) => t.split(/\s+vs\s+/i));
 
