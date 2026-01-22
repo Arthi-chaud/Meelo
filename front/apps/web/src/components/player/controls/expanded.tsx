@@ -274,6 +274,7 @@ export const ExpandedPlayerControls = (
 						height: "58%", // 7 /12
 						padding: 3,
 						overflow: "hidden",
+						maxHeight: "700px",
 						display: "flex",
 						width: "100%",
 						justifyContent: "center",
