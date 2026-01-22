@@ -343,6 +343,8 @@ describe("Parser Service", () => {
 			["Madonna", undefined, []],
 			["Everything But The Girl", undefined, []],
 			["Iggy Azalea & Tyga", "Iggy Azalea", ["Tyga"]],
+			["Iggy Azalea;Tyga", "Iggy Azalea", ["Tyga"]],
+			["Iggy Azalea ; Tyga", "Iggy Azalea", ["Tyga"]],
 			["Clean Bandit feat. Jess Glyne", "Clean Bandit", ["Jess Glyne"]],
 			["Clean Bandit (feat. Jess Glyne)", "Clean Bandit", ["Jess Glyne"]],
 			["Clean Bandit Feat. Jess Glyne", "Clean Bandit", ["Jess Glyne"]],
