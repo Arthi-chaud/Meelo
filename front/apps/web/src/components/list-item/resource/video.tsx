@@ -78,9 +78,15 @@ const VideoItem = <T extends VideoType>({
 				<Illustration
 					illustration={video?.illustration}
 					fallback={<VideoIcon />}
+					imgProps={{
+						aspectRatio: 16 / 9,
+						overflow: "hidden",
+						objectFit: "cover",
+					}}
 					quality="low"
 				/>
 			}
+			iconIsThumbnail
 			title={video?.name}
 			onClick={
 				video &&
