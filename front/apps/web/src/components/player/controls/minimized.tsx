@@ -146,13 +146,29 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 					overflow: "hidden",
 				}}
 			>
-				<Grid sx={{ minWidth: "52px" }}>
+				<Grid
+					sx={
+						props.track?.type === "Video"
+							? { minWidth: "90px", aspectRatio: 16 / 9 }
+							: { minWidth: "52px" }
+					}
+				>
 					{props.track ? (
 						<Illustration
 							illustration={props.track?.illustration ?? null}
 							quality="low"
 							fallback={<TrackIcon />}
-							imgProps={{ borderRadius: 4 }}
+							imgProps={{
+								borderRadius: 4,
+								aspectRatio:
+									props.track.type === "Video"
+										? 16 / 9
+										: undefined,
+								objectFit:
+									props.track.type === "Video"
+										? "cover"
+										: undefined,
+							}}
 						/>
 					) : (
 						<Skeleton
