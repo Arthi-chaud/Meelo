@@ -37,6 +37,7 @@ type ListItemProps = {
 	trailing?: ReactNode;
 	href?: string;
 	onClick?: () => void;
+	iconIsThumbnail?: boolean;
 };
 
 const textStyle = {
@@ -84,7 +85,13 @@ const ListItem = (props: ListItemProps) => {
 					href: props.href,
 				}}
 			>
-				<ListItemAvatar sx={{ marginRight: 2 }}>
+				<ListItemAvatar
+					sx={{
+						marginRight: 2,
+						aspectRatio: props.iconIsThumbnail ? 16 / 9 : undefined,
+						minWidth: props.iconIsThumbnail ? "90px" : undefined,
+					}}
+				>
 					{props.icon}
 				</ListItemAvatar>
 				<Box
