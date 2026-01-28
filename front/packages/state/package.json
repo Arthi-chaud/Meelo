@@ -3,7 +3,7 @@
 	"sideEffects": false,
 	"dependencies": {
 		"jotai": "^2.16.0",
-		"react": "19.1.0"
+		"react": "19.2.3"
 	},
 	"devDependencies": {
 		"typescript": "5.9.3"

@@ -2,7 +2,7 @@
 	"name": "infinite-controls",
 	"sideEffects": false,
 	"dependencies": {
-		"react": "19.1.0"
+		"react": "19.2.3"
 	},
 	"devDependencies": {
 		"@types/react": "*",
