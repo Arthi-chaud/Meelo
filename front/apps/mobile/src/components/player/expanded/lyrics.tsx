@@ -15,6 +15,7 @@ import { generateArray } from "@/utils/gen-list";
 import { useQuery } from "~/api";
 import { EmptyState } from "~/components/empty-state";
 import { LoadableText } from "~/components/loadable_text";
+import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
@@ -29,31 +30,58 @@ import {
 export const Lyrics = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const trackIsVideoOnly = currentTrack?.track.songId === null;
+	const [shouldUseSyncedLyrics, preferSyncedLyrics] = useState(true);
 	const { data: song } = useQuery(
 		getSongWithLyrics,
 		currentTrack?.track.songId ?? undefined,
 	);
+	const canUseSyncedLyrics = !!(
+		song?.lyrics?.synced && currentTrack?.track.type === "Audio"
+	);
 	return (
 		<View style={styles.root}>
 			<Divider h />
+			{canUseSyncedLyrics && (
+				<View style={styles.toggleButton}>
+					<Button
+						size="small"
+						title={
+							shouldUseSyncedLyrics
+								? "Plain Lyrics"
+								: "Synced Lyrics"
+						}
+						onPress={() => preferSyncedLyrics((p) => !p)}
+					/>
+				</View>
+			)}
 			{song?.lyrics === null || trackIsVideoOnly ? (
 				<View style={styles.emptyStateContainer}>
 					<EmptyState icon={LyricsIcon} text="emptyState.lyrics" />
 				</View>
-			) : song?.lyrics.synced && currentTrack?.track.type === "Audio" ? (
-				<SyncedLyrics syncedLyrics={song.lyrics.synced} />
+			) : canUseSyncedLyrics && shouldUseSyncedLyrics ? (
+				<SyncedLyrics syncedLyrics={song.lyrics.synced!} />
 			) : (
-				<PlainLyrics plainLyrics={song?.lyrics.plain} />
+				<PlainLyrics
+					plainLyrics={song?.lyrics.plain}
+					hasToggle={canUseSyncedLyrics}
+				/>
 			)}
 		</View>
 	);
 };
 
-const PlainLyrics = ({ plainLyrics }: { plainLyrics: string | undefined }) => {
+const PlainLyrics = ({
+	plainLyrics,
+	hasToggle,
+}: {
+	plainLyrics: string | undefined;
+	hasToggle: boolean;
+}) => {
 	const lines: (string | undefined)[] = useMemo(
 		() => plainLyrics?.split("\n") ?? generateArray(20),
 		[plainLyrics],
 	);
+	styles.useVariants({ hasToggle });
 	return (
 		<BottomSheetScrollView contentContainerStyle={styles.plainLyrics}>
 			{lines.map((line, idx) => (
@@ -204,7 +232,19 @@ const SyncedLyric = ({
 
 const styles = StyleSheet.create((theme) => ({
 	root: { width: "100%", flex: 1, maxWidth: breakpoints.md },
-	plainLyrics: { paddingVertical: theme.gap(2), gap: theme.gap(0.5) },
+	plainLyrics: {
+		paddingVertical: theme.gap(2),
+		gap: theme.gap(0.5),
+		variants: {
+			hasToggle: { true: { paddingBottom: theme.gap(6) }, false: {} },
+		},
+	},
+	toggleButton: {
+		position: "absolute",
+		bottom: theme.gap(1.5),
+		right: theme.gap(0.5),
+		zIndex: 10,
+	},
 	syncedLyrics: {
 		height: "100%",
 		gap: theme.gap(2),
