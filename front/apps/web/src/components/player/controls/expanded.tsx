@@ -513,7 +513,8 @@ export const ExpandedPlayerControls = (
 					sx={{
 						height: "100%",
 						width: "100%",
-						overflowY: "scroll",
+						overflow: "hidden",
+						position: "relative",
 						marginLeft: 2,
 						paddingRight: 3,
 						alignSelf: "center",

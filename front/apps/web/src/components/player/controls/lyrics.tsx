@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { type MutableRefObject, useEffect, useRef, useState } from "react";
 import type { Lyrics, SyncedLyric } from "@/models/lyrics";
 import LyricsBox from "~/components/lyrics";
@@ -36,33 +36,74 @@ export const LyricsComponent = ({
 	playerIsExpanded: boolean;
 	trackIsVideo: boolean;
 }) => {
-	if (lyrics?.synced && progress && !trackIsVideo) {
-		return (
-			<SyncedLyricsComponent
-				syncedLyrics={lyrics.synced}
-				progress={progress}
-				setProgress={setProgress}
-				playerIsExpanded={playerIsExpanded}
-			/>
-		);
+	const canUseSyncedLyrics = lyrics?.synced && progress && !trackIsVideo;
+	const [preferSyncedLyrics, setPreferSyncedLyrics] = useState(true);
+
+	useEffect(() => {
+		setPreferSyncedLyrics(true);
+	}, [playerIsExpanded]);
+	if (lyrics === undefined) {
+		return null;
 	}
 	return (
-		<Box
-			sx={{
-				overflowY: "scroll",
-				marginLeft: 1,
-				paddingY: 2,
-				paddingRight: 3,
-				alignSelf: "center",
-			}}
-		>
-			{
-				<LyricsBox
-					lyrics={lyrics?.plain.split("\n") ?? null}
-					songName={songName}
-				/>
-			}
-		</Box>
+		<>
+			{canUseSyncedLyrics && (
+				<Box
+					sx={{
+						position: "absolute",
+						bottom: 0,
+						paddingBottom: 2,
+						paddingX: 2,
+						zIndex: 100,
+						display: "flex",
+						justifyContent: "flex-end",
+						width: "100%",
+					}}
+				>
+					<Button
+						variant="contained"
+						onClickCapture={(e) => {
+							setPreferSyncedLyrics((p) => !p);
+							e.stopPropagation();
+							e.preventDefault();
+						}}
+					>
+						{preferSyncedLyrics ? "Plain lyrics" : "Synced lyrics"}
+					</Button>
+				</Box>
+			)}
+			<Box
+				sx={{
+					overflowY:
+						preferSyncedLyrics && canUseSyncedLyrics
+							? "hidden"
+							: "scroll",
+					height: "100%",
+					...(preferSyncedLyrics && canUseSyncedLyrics
+						? {}
+						: {
+								marginLeft: 1,
+								paddingY: 2,
+								paddingRight: 3,
+								alignSelf: "center",
+							}),
+				}}
+			>
+				{preferSyncedLyrics && canUseSyncedLyrics ? (
+					<SyncedLyricsComponent
+						syncedLyrics={lyrics.synced!}
+						progress={progress}
+						setProgress={setProgress}
+						playerIsExpanded={playerIsExpanded}
+					/>
+				) : (
+					<LyricsBox
+						lyrics={lyrics?.plain.split("\n") ?? null}
+						songName={songName}
+					/>
+				)}
+			</Box>
+		</>
 	);
 };
 
@@ -83,7 +124,6 @@ const SyncedLyricsComponent = ({
 		useState<SyncedLyricWithNext[]>();
 	const [currentLyricIndex, setCurrentLyricIndex] = useState<number>(-1);
 	const intervalRef = useRef<NodeJS.Timeout>(null);
-
 	// Do this async-ly, to avoid lag
 	useEffect(() => {
 		const sortedLyrics = syncedLyrics.toSorted(
@@ -110,34 +150,42 @@ const SyncedLyricsComponent = ({
 			return;
 		}
 		intervalRef.current = setInterval(() => {
-			const progressValue = progress.current;
-			if (progressValue === null || syncedLyricsWithNext === undefined) {
-				return;
-			}
-			const currentLyric = syncedLyricsWithNext.at(currentLyricIndex);
-			if (
-				currentLyric &&
-				currentLyric.timestamp <= progressValue &&
-				(currentLyric.next ? progressValue < currentLyric.next : true)
-			) {
-				return;
-			}
+			setCurrentLyricIndex((currentLyricIndex) => {
+				const progressValue = progress.current;
+				if (
+					progressValue === null ||
+					syncedLyricsWithNext === undefined
+				) {
+					return currentLyricIndex;
+				}
+				const currentLyric = syncedLyricsWithNext.at(currentLyricIndex);
+				if (
+					currentLyric &&
+					currentLyric.timestamp <= progressValue &&
+					(currentLyric.next
+						? progressValue < currentLyric.next
+						: true)
+				) {
+					return currentLyricIndex;
+				}
 
-			const nextLyricIndex = syncedLyricsWithNext?.findIndex(
-				(entry) =>
-					entry.timestamp <= progressValue &&
-					(entry.next ? progressValue < entry.next : true),
-			);
-			if (nextLyricIndex === undefined) {
-				return;
-			}
-
-			document.getElementById(`lyric-${nextLyricIndex}`)?.scrollIntoView({
-				behavior: "smooth",
-				block: "center",
-				inline: "center",
+				const nextLyricIndex = syncedLyricsWithNext?.findIndex(
+					(entry) =>
+						entry.timestamp <= progressValue &&
+						(entry.next ? progressValue < entry.next : true),
+				);
+				if (nextLyricIndex === undefined) {
+					return currentLyricIndex;
+				}
+				document
+					.getElementById(`lyric-${nextLyricIndex}`)
+					?.scrollIntoView({
+						behavior: "smooth",
+						block: "center",
+						inline: "center",
+					});
+				return nextLyricIndex;
 			});
-			setCurrentLyricIndex(nextLyricIndex);
 		}, 100);
 		return () => {
 			if (intervalRef.current) {
