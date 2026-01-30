@@ -96,9 +96,16 @@ function MyApp({
 											}
 											return <InternalError />;
 										}}
-										onError={(error: Error) => {
+										onError={(error) => {
 											if (errorType) {
-												toast.error(error.message);
+												toast.error(
+													error instanceof Error
+														? error.message
+														: ((
+																error as any
+															)?.toString() ??
+																"Error"),
+												);
 											}
 											if (
 												error instanceof
