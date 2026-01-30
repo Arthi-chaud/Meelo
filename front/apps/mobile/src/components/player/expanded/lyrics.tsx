@@ -1,5 +1,5 @@
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type LayoutChangeEvent, ScrollView, View } from "react-native";
 import Animated, {
@@ -16,10 +16,15 @@ import { useQuery } from "~/api";
 import { EmptyState } from "~/components/empty-state";
 import { LoadableText } from "~/components/loadable_text";
 import { Divider } from "~/primitives/divider";
+import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { breakpoints } from "~/theme";
 import { getSongWithLyrics } from "../queries";
-import { currentTrackAtom, progressAtom } from "../state";
+import {
+	currentTrackAtom,
+	progressAtom,
+	requestedProgressAtom,
+} from "../state";
 
 export const Lyrics = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
@@ -84,6 +89,7 @@ const SyncedLyrics = ({
 	const [currentLyric, setCurrentLyric] = useState<SyncedLyricWithEnd | null>(
 		null,
 	);
+	const requestProgress = useSetAtom(requestedProgressAtom);
 	useEffect(() => {
 		setSyncedLyricsWithEnd(
 			syncedLyrics.map((l, index) => ({
@@ -145,6 +151,7 @@ const SyncedLyrics = ({
 						key={idx}
 						content={content ?? " "}
 						active={currentLyric?.timestamp === timestamp}
+						onPress={() => requestProgress(timestamp)}
 						onLayout={(e) => {
 							// Need to store it in a variable
 							// to avoid access after free of e
@@ -172,10 +179,12 @@ const SyncedLyric = ({
 	content,
 	active,
 	onLayout,
+	onPress,
 }: {
 	content: string;
 	active: boolean;
 	onLayout: (e: LayoutChangeEvent) => void;
+	onPress: () => void;
 }) => {
 	const theme = useAnimatedTheme();
 	const opacityOnActive = useAnimatedStyle(
@@ -185,9 +194,11 @@ const SyncedLyric = ({
 		[active],
 	);
 	return (
-		<Animated.View style={opacityOnActive} onLayout={onLayout}>
-			<Text variant="h2" color="primary" content={content} />
-		</Animated.View>
+		<Pressable onPress={onPress} onLayout={onLayout}>
+			<Animated.View style={opacityOnActive}>
+				<Text variant="h2" color="primary" content={content} />
+			</Animated.View>
+		</Pressable>
 	);
 };
 

@@ -9,6 +9,7 @@ import Animated, {
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
+import type { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 
@@ -19,6 +20,7 @@ type Props = {
 	disabled?: boolean;
 	disableRequestAnimationFrame?: boolean;
 	style?: ComponentProps<typeof TouchableOpacity>["style"];
+	onLayout?: ViewProps["onLayout"];
 };
 
 // Wrapper around TouchableOpacity
@@ -29,6 +31,7 @@ export const Pressable = ({
 	disabled,
 	onLongPress,
 	disableRequestAnimationFrame,
+	onLayout,
 }: Props) => {
 	const opacity = useSharedValue(1);
 	const animatedTheme = useAnimatedTheme();
@@ -62,6 +65,7 @@ export const Pressable = ({
 			onPressOut={!disabled ? onPressEnd : undefined}
 			onPress={!disabled ? onPress_ : undefined}
 			onLongPress={!disabled ? onLongPress : undefined}
+			onLayout={onLayout}
 		>
 			<Animated.View style={[styles.root, animatedStyle, style]}>
 				{children}
