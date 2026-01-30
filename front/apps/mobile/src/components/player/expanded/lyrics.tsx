@@ -1,6 +1,7 @@
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { type LayoutChangeEvent, ScrollView, View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
@@ -28,6 +29,7 @@ import {
 } from "../state";
 
 export const Lyrics = () => {
+	const { t } = useTranslation();
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const trackIsVideoOnly = currentTrack?.track.songId === null;
 	const [shouldUseSyncedLyrics, preferSyncedLyrics] = useState(true);
@@ -47,8 +49,8 @@ export const Lyrics = () => {
 						size="small"
 						title={
 							shouldUseSyncedLyrics
-								? "Plain Lyrics"
-								: "Synced Lyrics"
+								? t("player.plainLyrics")
+								: t("player.syncedLyrics")
 						}
 						onPress={() => preferSyncedLyrics((p) => !p)}
 					/>

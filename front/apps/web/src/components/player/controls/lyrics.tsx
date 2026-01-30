@@ -18,6 +18,7 @@
 
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Lyrics, SyncedLyric } from "@/models/lyrics";
 import LyricsBox from "~/components/lyrics";
 
@@ -36,6 +37,7 @@ export const LyricsComponent = ({
 	playerIsExpanded: boolean;
 	trackIsVideo: boolean;
 }) => {
+	const { t } = useTranslation();
 	const canUseSyncedLyrics = lyrics?.synced && progress && !trackIsVideo;
 	const [preferSyncedLyrics, setPreferSyncedLyrics] = useState(true);
 
@@ -68,7 +70,9 @@ export const LyricsComponent = ({
 							e.preventDefault();
 						}}
 					>
-						{preferSyncedLyrics ? "Plain lyrics" : "Synced lyrics"}
+						{preferSyncedLyrics
+							? t("player.plainLyrics")
+							: t("player.syncedLyrics")}
 					</Button>
 				</Box>
 			)}

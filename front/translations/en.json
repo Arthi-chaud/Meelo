@@ -292,11 +292,13 @@
 	},
 	"player": {
 		"loadNextSongs": "Load next songs",
+		"plainLyrics": "Plain Lyrics",
 		"saveQueueAsPlaylist": "Save queue as playlist",
 		"stream": {
 			"directStream": "Direct Stream",
 			"transcode": "Transcode"
-		}
+		},
+		"syncedLyrics": "Synced Lyrics"
 	},
 	"search": {
 		"all": "All"
