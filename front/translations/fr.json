@@ -294,11 +294,13 @@
 	},
 	"player": {
 		"loadNextSongs": "Charger les morceaux suivants",
+		"plainLyrics": "Paroles simples",
 		"saveQueueAsPlaylist": "Sauvegarder la playlist",
 		"stream": {
 			"directStream": "Streamer en direct",
 			"transcode": "Transcoder"
-		}
+		},
+		"syncedLyrics": "Paroles synchronisées"
 	},
 	"search": {
 		"all": "Tous"
