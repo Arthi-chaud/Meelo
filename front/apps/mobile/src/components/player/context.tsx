@@ -9,10 +9,21 @@ import {
 	VideoPlayer,
 } from "react-native-video";
 import type API from "@/api";
+import type { QueryClient } from "@/api/hook";
 import { getSettings } from "@/api/queries";
-import { cursorAtom, skipTrackAtom, type TrackState } from "@/state/player";
+import {
+	cursorAtom,
+	playlistAtom,
+	skipTrackAtom,
+	type TrackState,
+} from "@/state/player";
 import formatArtists from "@/utils/format-artists";
-import { useAPI, useQuery, useQueryClient } from "~/api";
+import { getAPI, useQuery, useQueryClient } from "~/api";
+import {
+	downloadFile,
+	getDownloadStatus,
+	useDownloadManager,
+} from "~/downloads";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -32,7 +43,8 @@ const _canUseHLSAtom = atom(false);
 export const canUseHLSAtom = atom((get) => get(_canUseHLSAtom));
 
 export const PlayerContext = () => {
-	const api = useAPI();
+	const queryClient = useQueryClient();
+	const api = queryClient.api;
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const setPlayer = useSetAtom(videoPlayerAtom);
 	const cursor = useAtomValue(cursorAtom);
@@ -44,19 +56,28 @@ export const PlayerContext = () => {
 	const play = useSetAtom(playAtom);
 	const pause = useSetAtom(pauseAtom);
 	const [markedAsPlayed, setMarkedAsPlayed] = useState(false);
-	const queryClient = useQueryClient();
 	const setProgress = useSetAtom(progressAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const setDuration = useSetAtom(durationAtom);
 	const currentTrack = useAtomValue(currentTrackAtom);
-	const onProgressRef = useRef<(d: onProgressData) => void>(null);
+	const playlist = useAtomValue(playlistAtom);
+	const onProgressRef = useRef<any>(null);
 	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
 	const [canUseHLS, setCanUseHLS] = useAtom(_canUseHLSAtom);
 	const { data: settings } = useQuery(getSettings);
 
+	const { download } = useDownloadManager();
+
 	useEffect(() => {
 		setCanUseHLS(settings?.transcoderAvailable === true);
 	}, [settings]);
+	useEffect(() => {
+		const queue = playlist.slice(cursor === -1 ? 0 : cursor, 5 + cursor);
+		for (const track of queue) {
+			if (track.track.type === "Audio")
+				download(track.track.sourceFileId);
+		}
+	}, [playlist, cursor]);
 	useEffect(() => {
 		if (!playerRef.current) {
 			return;
@@ -95,58 +116,62 @@ export const PlayerContext = () => {
 			return;
 		}
 		if (playerRef.current === null) {
-			playerRef.current = new VideoPlayer(mkSource(currentTrack, api));
-			playerRef.current.showNotificationControls = true;
-			playerRef.current.playInBackground = true;
-			playerRef.current.addEventListener(
-				"onPlaybackStateChange",
-				(e: onPlaybackStateChangeData) => {
-					if (e.isBuffering) {
-						setIsBuffering(true);
-						return;
+			mkSource(queryClient, currentTrack).then((source) => {
+				playerRef.current = new VideoPlayer(source);
+				playerRef.current.showNotificationControls = true;
+				playerRef.current.playInBackground = true;
+				playerRef.current.addEventListener(
+					"onPlaybackStateChange",
+					(e: onPlaybackStateChangeData) => {
+						if (e.isBuffering) {
+							setIsBuffering(true);
+							return;
+						}
+						setIsBuffering(false);
+						setRequestedProgress(null);
+						if (e.isPlaying) {
+							play();
+						} else {
+							pause();
+						}
+					},
+				);
+				playerRef.current.addEventListener("onEnd", () => {
+					skipTrack(queryClient);
+				});
+				playerRef.current.addEventListener(
+					"onLoad",
+					(data: onLoadData) => {
+						if (!Number.isNaN(data.duration)) {
+							setDuration(data.duration);
+						} else {
+							setDuration(currentTrack.track.duration);
+						}
+					},
+				);
+				playerRef.current.volume = 1;
+				playerRef.current.addEventListener("onError", (e) => {
+					if (
+						!isHLS &&
+						e.code === "source/unsupported-content-type" &&
+						canUseHLS
+					) {
+						setIsHLS(true);
 					}
-					setIsBuffering(false);
-					setRequestedProgress(null);
-					if (e.isPlaying) {
-						play();
-					} else {
-						pause();
-					}
-				},
-			);
-			playerRef.current.addEventListener("onEnd", () => {
-				skipTrack(queryClient);
+					// biome-ignore lint/suspicious/noConsole: For debug
+					console.error(e);
+				});
+				playerRef.current.play();
+				play();
+				setPlayer(playerRef.current);
 			});
-			playerRef.current.addEventListener("onLoad", (data: onLoadData) => {
-				if (!Number.isNaN(data.duration)) {
-					setDuration(data.duration);
-				} else {
-					setDuration(currentTrack.track.duration);
-				}
-			});
-			playerRef.current.volume = 1;
-			playerRef.current.addEventListener("onError", (e) => {
-				if (
-					!isHLS &&
-					e.code === "source/unsupported-content-type" &&
-					canUseHLS
-				) {
-					setIsHLS(true);
-				}
-				// biome-ignore lint/suspicious/noConsole: For debug
-				console.error(e);
-			});
-			playerRef.current.play();
-			play();
-			setPlayer(playerRef.current);
 		} else {
-			playerRef.current.pause();
-			playerRef.current
-				.replaceSourceAsync(mkSource(currentTrack, api))
-				.then(() => {
+			mkSource(queryClient, currentTrack).then((source) =>
+				playerRef.current?.replaceSourceAsync(source).then(() => {
 					playerRef.current?.play();
 					play();
-				});
+				}),
+			);
 		}
 	}, [currentTrack]);
 
@@ -165,12 +190,13 @@ export const PlayerContext = () => {
 			return;
 		}
 		const timestamp = playerRef.current?.currentTime;
-		playerRef.current
-			.replaceSourceAsync(mkSource(currentTrack, api, isHLS))
-			.then(() => {
-				playerRef.current!.seekTo(timestamp);
+
+		mkSource(queryClient, currentTrack, isHLS).then((source) =>
+			playerRef.current?.replaceSourceAsync(source).then(() => {
 				playerRef.current!.play();
-			});
+				playerRef.current!.seekTo(timestamp);
+			}),
+		);
 	}, [isHLS]);
 
 	useEffect(() => {
@@ -201,16 +227,39 @@ export const PlayerContext = () => {
 
 const clientId = uuid.v4();
 
-const mkSource = (
+const mkSource = async (
+	queryClient: QueryClient,
+	st: TrackState,
+	useHLS: boolean = false,
+) => {
+	const api = getAPI();
+	const [dlStatus, localPath] = await getDownloadStatus(
+		st.track.sourceFileId,
+	);
+	const shouldDownload = !useHLS && st.track.type === "Audio";
+	if (!shouldDownload || dlStatus !== "downloaded") {
+		if (shouldDownload) {
+			await downloadFile(queryClient)(st.track.sourceFileId);
+		}
+		return _mkSource(st, api, useHLS);
+	}
+
+	return _mkSource(st, api, false, localPath);
+};
+
+const _mkSource = (
 	{ track, artist, featuring }: TrackState,
 	api: API,
 	useTranscoding = false,
+	localPath?: string,
 ): VideoConfig => ({
-	uri: useTranscoding
-		? api.getTranscodeStreamURL(track.sourceFileId, track.type)
-		: api.getDirectStreamURL(track.sourceFileId),
+	uri:
+		localPath ??
+		(useTranscoding
+			? api.getTranscodeStreamURL(track.sourceFileId, track.type)
+			: api.getDirectStreamURL(track.sourceFileId)),
 	headers: {
-		Authorization: `Bearer ${api.accessToken}`,
+		...api.getAuthHeaders(),
 		...(useTranscoding
 			? {
 					"X-CLIENT-ID": clientId,

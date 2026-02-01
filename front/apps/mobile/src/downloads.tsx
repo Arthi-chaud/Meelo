@@ -37,7 +37,7 @@ export const downloadFile =
 				.get(downloadsAtom)
 				.downloadedFiles.find(
 					(f) =>
-						f.fileId == sourceFileId &&
+						f.fileId === sourceFileId &&
 						f.instanceUrl === queryClient.api.urls.api,
 				)
 		) {
@@ -72,7 +72,8 @@ export const downloadFile =
 				instanceUrl: queryClient.api.urls.api,
 			} satisfies DownloadedFile,
 		})
-			.error((e) => console.error("Download error: " + e.error))
+			// biome-ignore lint/suspicious/noConsole: debug
+			.error((e) => console.error(`Download error: ${e.error}`))
 			.done(() => {
 				const dls = store.get(downloadsAtom);
 				dls.downloadedFiles.push(task.metadata as DownloadedFile);
@@ -95,7 +96,7 @@ export const getDownloadStatus = async (
 			(f) => f.fileId === sourceFileId && instanceUrl === f.instanceUrl,
 		);
 	if (downloaded) {
-		if (!new FileSystem.File("file://" + downloaded.localPath).exists) {
+		if (!new FileSystem.File(`file://${downloaded.localPath}`).exists) {
 			store.set(downloadsAtom, {
 				downloadedFiles: store
 					.get(downloadsAtom)
