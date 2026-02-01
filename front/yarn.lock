@@ -3016,6 +3016,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kesha-antonov/react-native-background-downloader@npm:^4.5.2":
+  version: 4.5.2
+  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.5.2"
+  peerDependencies:
+    react-native: ">=0.57.0"
+  checksum: 10c0/77a04696da3348015a23ffd782d5ded3ae5bc8ae8c218b7b386a5d83b8c9abc299e31a7b0d7d5c726db93e1f35a52baa8df3c4ec1d28b4f2b2b9b6d4e9644646
+  languageName: node
+  linkType: hard
+
 "@mui/core-downloads-tracker@npm:^7.3.6":
   version: 7.3.6
   resolution: "@mui/core-downloads-tracker@npm:7.3.6"
@@ -6488,7 +6497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-file-system@npm:~19.0.21":
+"expo-file-system@npm:^19.0.21, expo-file-system@npm:~19.0.21":
   version: 19.0.21
   resolution: "expo-file-system@npm:19.0.21"
   peerDependencies:
@@ -9160,6 +9169,7 @@ __metadata:
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@expo/config-plugins": "npm:^54.0.4"
     "@gorhom/bottom-sheet": "npm:^5.2.8"
+    "@kesha-antonov/react-native-background-downloader": "npm:^4.5.2"
     "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.2.0"
     "@shopify/react-native-skia": "npm:2.4.7"
@@ -9175,6 +9185,7 @@ __metadata:
     expo-constants: "npm:~18.0.13"
     expo-dev-client: "npm:~6.0.20"
     expo-device: "npm:~8.0.10"
+    expo-file-system: "npm:^19.0.21"
     expo-font: "npm:~14.0.10"
     expo-haptics: "npm:~15.0.8"
     expo-linear-gradient: "npm:^15.0.8"
