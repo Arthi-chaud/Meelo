@@ -590,6 +590,12 @@ export default class API {
 		});
 	}
 
+	getAuthHeaders(): Record<string, string> {
+		return {
+			Authorization: `Bearer ${this.accessToken}`,
+		};
+	}
+
 	async fetch<ReturnType, Keys extends readonly string[]>({
 		route,
 		parameters,
@@ -614,7 +620,7 @@ export default class API {
 				headers: this.accessToken
 					? {
 							...header,
-							Authorization: `Bearer ${this.accessToken}`,
+							...this.getAuthHeaders(),
 						}
 					: header,
 			},

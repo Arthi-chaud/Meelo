@@ -182,9 +182,7 @@ export const ExternalMetadataSourceComponent = ({
 									"original",
 								)
 							: undefined,
-						headers: {
-							Authorization: `Bearer ${api.accessToken}`,
-						},
+						headers: api.getAuthHeaders(),
 					}}
 					style={styles.externalLinkIcon}
 				/>

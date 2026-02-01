@@ -142,9 +142,7 @@ export const Illustration = ({
 									setLoadStatus("error");
 								}}
 								source={{
-									headers: {
-										Authorization: `Bearer ${api.accessToken}`,
-									},
+									headers: api.getAuthHeaders(),
 									uri: api.getIllustrationURL(
 										illustration.url,
 										quality,
