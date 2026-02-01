@@ -7335,7 +7335,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^25.0.0":
+"i18next@npm:^25.8.0":
   version: 25.8.0
   resolution: "i18next@npm:25.8.0"
   dependencies:
@@ -9185,7 +9185,7 @@ __metadata:
     expo-status-bar: "npm:~3.0.9"
     expo-system-ui: "npm:~6.0.9"
     expo-web-browser: "npm:~15.0.10"
-    i18next: "npm:^25.0.0"
+    i18next: "npm:^25.8.0"
     iconsax-react-nativejs: "npm:^0.0.8"
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
@@ -12287,7 +12287,7 @@ __metadata:
   resolution: "utils@workspace:packages/utils"
   dependencies:
     format-duration: "npm:^3.0.0"
-    i18next: "npm:^25.0.0"
+    i18next: "npm:^25.8.0"
     jest: "npm:^30.2.0"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -12415,7 +12415,7 @@ __metadata:
     core-js: "npm:^3.47.0"
     d3-array: "npm:^3.2.0"
     hls.js: "npm:^1.6.15"
-    i18next: "npm:^25.0.0"
+    i18next: "npm:^25.8.0"
     jotai: "npm:^2.16.0"
     material-ui-confirm: "npm:^4.0.0"
     mui-react-hook-form-plus: "npm:^1.5.1"

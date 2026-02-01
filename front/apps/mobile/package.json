@@ -38,7 +38,7 @@
 		"expo-status-bar": "~3.0.9",
 		"expo-system-ui": "~6.0.9",
 		"expo-web-browser": "~15.0.10",
-		"i18next": "^25.0.0",
+		"i18next": "^25.8.0",
 		"iconsax-react-nativejs": "^0.0.8",
 		"infinite-controls": "workspace:^",
 		"intl-pluralrules": "^2.0.1",
