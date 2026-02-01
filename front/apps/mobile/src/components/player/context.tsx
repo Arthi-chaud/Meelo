@@ -78,13 +78,11 @@ export const PlayerContext = () => {
 				api.setSongAsPlayed(currentTrack.track.songId);
 			}
 		};
-		if (onProgressRef.current)
-			playerRef.current.removeEventListener(
-				"onProgress",
-				onProgressRef.current,
-			);
-		playerRef.current.addEventListener("onProgress", onProgress);
-		onProgressRef.current = onProgress;
+		if (onProgressRef.current) onProgressRef?.current.remove?.();
+		onProgressRef.current = playerRef.current.addEventListener(
+			"onProgress",
+			onProgress,
+		);
 	}, [markedAsPlayed, currentTrack, playerRef.current?.isPlaying]);
 	useEffect(() => {
 		setMarkedAsPlayed(false);
