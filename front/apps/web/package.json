@@ -27,7 +27,7 @@
 		"core-js": "^3.47.0",
 		"d3-array": "^3.2.0",
 		"hls.js": "^1.6.15",
-		"i18next": "^25.0.0",
+		"i18next": "^25.8.0",
 		"jotai": "^2.16.0",
 		"material-ui-confirm": "^4.0.0",
 		"mui-react-hook-form-plus": "^1.5.1",
