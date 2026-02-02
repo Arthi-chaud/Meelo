@@ -26,11 +26,18 @@ type SyncedLyric struct {
 
 func (_ SyncedLyrics) isLyrics() {}
 
+func (l *PlainLyrics) Sanitize() {
+	for i, entry := range *l {
+		(*l)[i] = strings.TrimSuffix(entry, "\r")
+	}
+}
+
 func (l SyncedLyrics) ToPlain() PlainLyrics {
-	res := make([]string, len(l))
+	var res PlainLyrics = make([]string, len(l))
 	for i, entry := range l {
 		res[i] = entry.Content
 	}
+	res.Sanitize()
 	return res
 }
 
