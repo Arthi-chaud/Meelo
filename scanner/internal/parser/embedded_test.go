@@ -82,3 +82,12 @@ func TestEmbeddedOpus(t *testing.T) {
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "Title", m.Name)
 }
+
+func TestEmbeddedLyricsNonStandardLyricsTag(t *testing.T) {
+	path := p.Join("../..", "testdata", "uslt.mp3")
+	m, err := parseMetadataFromEmbeddedTags(path, getTestConfig())
+
+	assert.Len(t, err, 0)
+	assert.Equal(t, "[Intro]", m.PlainLyrics[0])
+	assert.Equal(t, "Spinning around, spinning around", m.PlainLyrics[1])
+}

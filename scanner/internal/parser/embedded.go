@@ -33,6 +33,20 @@ func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
 	}
 }
 
+func ParsePrefixedTag(t ffprobe.Tags, prefixes []string, fun parseTagFn) {
+	for key, value := range t {
+		for _, prefix := range prefixes {
+			if strings.HasPrefix(key, prefix) {
+				var s string = value.(string)
+				if len(s) > 0 {
+					fun(s)
+					return
+				}
+			}
+		}
+	}
+}
+
 func CollectTags(probeData *ffprobe.ProbeData) ffprobe.Tags {
 	var tags ffprobe.Tags = make(ffprobe.Tags)
 	// In some format (e.g. opus)
@@ -127,15 +141,13 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.Index = int64(trackValue)
 	})
 	ParseTag(tags, []string{"lyrics", "uslt"}, func(value string) {
-		parsedLyrics := internal.ParseLyrics(value)
-		switch l := parsedLyrics.(type) {
-		case internal.PlainLyrics:
-			metadata.PlainLyrics = l
-		case internal.SyncedLyrics:
-			metadata.SyncedLyrics = l
-			metadata.PlainLyrics = l.ToPlain()
-		}
+		parseLyrics(value, &metadata)
 	})
+	if metadata.PlainLyrics == nil && len(metadata.SyncedLyrics) == 0 {
+		ParsePrefixedTag(tags, []string{"lyrics-", "uslt::"}, func(value string) {
+			parseLyrics(value, &metadata)
+		})
+	}
 	ParseTag(tags, []string{"bpm", "tbp"}, func(value string) {
 		bpm, err := strconv.ParseFloat(value, 64)
 		if err == nil {
@@ -190,4 +202,16 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		}
 	}
 	return metadata, errors
+}
+
+func parseLyrics(value string, metadata *internal.Metadata) {
+	parsedLyrics := internal.ParseLyrics(value)
+	switch l := parsedLyrics.(type) {
+	case internal.PlainLyrics:
+		l.Sanitize()
+		metadata.PlainLyrics = l
+	case internal.SyncedLyrics:
+		metadata.SyncedLyrics = l
+		metadata.PlainLyrics = l.ToPlain()
+	}
 }
