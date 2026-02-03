@@ -17,11 +17,13 @@ import {
 	skipTrackAtom,
 	type TrackState,
 } from "@/state/player";
+import { store } from "@/state/store";
 import formatArtists from "@/utils/format-artists";
 import { getAPI, useQuery, useQueryClient } from "~/api";
 import {
 	downloadFile,
 	getDownloadStatus,
+	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
 import {
@@ -72,7 +74,11 @@ export const PlayerContext = () => {
 		setCanUseHLS(settings?.transcoderAvailable === true);
 	}, [settings]);
 	useEffect(() => {
-		const queue = playlist.slice(cursor === -1 ? 0 : cursor, 5 + cursor);
+		const prefetchCount = store.get(queuePrefetchCountAtom);
+		const queue = playlist.slice(
+			cursor === -1 ? 0 : cursor,
+			prefetchCount + cursor,
+		);
 		for (const track of queue) {
 			if (track.track.type === "Audio")
 				download(track.track.sourceFileId);

@@ -36,8 +36,10 @@ import {
 	CheckIcon,
 	DeleteIcon,
 	ExpandMoreIcon,
+	MinusIcon,
 	MoreIcon,
 	OpenExternalIcon,
+	PlusIcon,
 	UncheckIcon,
 } from "@/ui/icons";
 import { getAPI_, useQuery, useQueryClient } from "~/api";
@@ -47,7 +49,7 @@ import { LoadableText } from "~/components/loadable_text";
 import { useLoginForm } from "~/components/login-form";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
-import { useDownloadManager } from "~/downloads";
+import { queuePrefetchCountAtom, useDownloadManager } from "~/downloads";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
@@ -90,6 +92,9 @@ const useResetAllTabs = () => {
 };
 
 export default function SettingsView() {
+	const [queuePrefetchCount, setQueuePrefetchCount] = useAtom(
+		queuePrefetchCountAtom,
+	);
 	const { wipeCache, cachedFilesCount } = useDownloadManager();
 	const resetAllTabs = useResetAllTabs();
 	const queryClient = useQueryClient();
@@ -241,6 +246,40 @@ export default function SettingsView() {
 					content={t("settings.cache.header")}
 					skeletonWidth={0}
 				/>
+
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.cache.prefetchCount")}
+						variant="h5"
+					/>
+					<View style={styles.prefetchCountRow}>
+						<Button
+							icon={MinusIcon}
+							size="small"
+							disabled={queuePrefetchCount === 0}
+							onPress={() =>
+								setQueuePrefetchCount(
+									Math.max(0, queuePrefetchCount - 1),
+								)
+							}
+						/>
+						<Text
+							content={queuePrefetchCount.toString()}
+							variant="h5"
+							color="secondary"
+						/>
+						<Button
+							icon={PlusIcon}
+							size="small"
+							disabled={queuePrefetchCount === 15}
+							onPress={() =>
+								setQueuePrefetchCount(
+									Math.min(15, queuePrefetchCount + 1),
+								)
+							}
+						/>
+					</View>
+				</View>
 
 				<View style={styles.sectionRow}>
 					<Text
@@ -428,4 +467,5 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	versionNumber: { color: theme.colors.text.secondary },
 	instanceButtonContainer: { paddingHorizontal: theme.gap(1) },
+	prefetchCountRow: { flexDirection: "row", gap: theme.gap(1) },
 }));

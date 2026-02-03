@@ -48,6 +48,18 @@ const getPersistedDownloads = (): Downloads => {
 	}
 };
 
+const PrefetchKey = "prefetch-count";
+
+const _queuePrefetchCount = atom(storage.getNumber(PrefetchKey) ?? 5);
+
+export const queuePrefetchCountAtom = atom(
+	(get) => get(_queuePrefetchCount),
+	(_, set, data: number) => {
+		set(_queuePrefetchCount, data);
+		storage.set(PrefetchKey, data);
+	},
+);
+
 const __downloads = atom(getPersistedDownloads());
 
 const _downloadsAtom = atom(
