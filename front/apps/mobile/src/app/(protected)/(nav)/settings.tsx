@@ -47,13 +47,14 @@ import { LoadableText } from "~/components/loadable_text";
 import { useLoginForm } from "~/components/login-form";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
+import { useDownloadManager } from "~/downloads";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import { showSuccessToast } from "~/primitives/toast";
+import { showErrorToast, showSuccessToast } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import {
@@ -89,6 +90,7 @@ const useResetAllTabs = () => {
 };
 
 export default function SettingsView() {
+	const { wipeCache, cachedFilesCount } = useDownloadManager();
 	const resetAllTabs = useResetAllTabs();
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
@@ -228,6 +230,52 @@ export default function SettingsView() {
 								lng: item,
 							})
 						}
+					/>
+				</View>
+			</View>
+
+			<Divider h />
+			<View style={styles.section}>
+				<SectionHeader
+					style={styles.sectionHeader}
+					content={t("settings.cache.header")}
+					skeletonWidth={0}
+				/>
+
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.cache.cachedTracks")}
+						variant="h5"
+					/>
+					<Text
+						content={cachedFilesCount.toString()}
+						variant="h5"
+						color="secondary"
+					/>
+				</View>
+
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.cache.clearCache")}
+						variant="h5"
+					/>
+
+					<Button
+						icon={DeleteIcon}
+						size="small"
+						onPress={() => {
+							const err = wipeCache();
+							if (err) {
+								// biome-ignore lint/suspicious/noConsole: For debug
+								console.error(err.message ?? err.toString());
+								showErrorToast({
+									text: t("toasts.clearCache.error"),
+								});
+							}
+							showSuccessToast({
+								text: t("toasts.clearCache.success"),
+							});
+						}}
 					/>
 				</View>
 			</View>

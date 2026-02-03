@@ -304,6 +304,11 @@
 		"all": "All"
 	},
 	"settings": {
+		"cache": {
+			"header": "Cache",
+			"cachedTracks": "Cached Tracks",
+			"clearCache": "Clear Cache"
+		},
 		"interface": "Interface",
 		"libraries": {
 			"nameColumn": "Name",
@@ -407,6 +412,10 @@
 			"accountCreated": "Congrats! Your Meelo account has been created. You now have to wait for the admin to enable your account",
 			"serverSwitchSuccessful": "Successfully switched server",
 			"signinFailed": "Could not connect to server"
+		},
+		"clearCache": {
+			"success": "Cache cleared",
+			"error": "Failed to clear cache"
 		},
 		"leaveWillStopPlaybackAlert": "Leaving the website will stop playback.",
 		"library": {
