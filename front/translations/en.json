@@ -308,6 +308,7 @@
 			"header": "Cache",
 			"cachedTracks": "Cached Tracks",
 			"clearCache": "Clear Cache",
+			"maxCachedTracks": "Max Cached Tracks",
 			"prefetchCount": "Prefetch Count"
 		},
 		"interface": "Interface",

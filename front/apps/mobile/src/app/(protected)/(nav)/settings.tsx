@@ -49,7 +49,12 @@ import { LoadableText } from "~/components/loadable_text";
 import { useLoginForm } from "~/components/login-form";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
-import { queuePrefetchCountAtom, useDownloadManager } from "~/downloads";
+import {
+	downloadsAtom,
+	maxCachedCountAtom,
+	queuePrefetchCountAtom,
+	useDownloadManager,
+} from "~/downloads";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
@@ -95,7 +100,9 @@ export default function SettingsView() {
 	const [queuePrefetchCount, setQueuePrefetchCount] = useAtom(
 		queuePrefetchCountAtom,
 	);
-	const { wipeCache, cachedFilesCount } = useDownloadManager();
+	const { downloadedFiles } = useAtomValue(downloadsAtom);
+	const [maxCachedCount, setMaxCachedCount] = useAtom(maxCachedCountAtom);
+	const { wipeCache } = useDownloadManager();
 	const resetAllTabs = useResetAllTabs();
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
@@ -249,10 +256,44 @@ export default function SettingsView() {
 
 				<View style={styles.sectionRow}>
 					<Text
+						content={t("settings.cache.maxCachedTracks")}
+						variant="h5"
+					/>
+					<View style={styles.subrow}>
+						<Button
+							icon={MinusIcon}
+							size="small"
+							disabled={maxCachedCount === 20}
+							onPress={() =>
+								setMaxCachedCount(
+									Math.max(20, maxCachedCount - 5),
+								)
+							}
+						/>
+						<Text
+							content={maxCachedCount.toString()}
+							variant="h5"
+							color="secondary"
+						/>
+						<Button
+							icon={PlusIcon}
+							size="small"
+							disabled={maxCachedCount === 100}
+							onPress={() =>
+								setMaxCachedCount(
+									Math.min(100, maxCachedCount + 5),
+								)
+							}
+						/>
+					</View>
+				</View>
+
+				<View style={styles.sectionRow}>
+					<Text
 						content={t("settings.cache.prefetchCount")}
 						variant="h5"
 					/>
-					<View style={styles.prefetchCountRow}>
+					<View style={styles.subrow}>
 						<Button
 							icon={MinusIcon}
 							size="small"
@@ -282,22 +323,17 @@ export default function SettingsView() {
 				</View>
 
 				<View style={styles.sectionRow}>
-					<Text
-						content={t("settings.cache.cachedTracks")}
-						variant="h5"
-					/>
-					<Text
-						content={cachedFilesCount.toString()}
-						variant="h5"
-						color="secondary"
-					/>
-				</View>
-
-				<View style={styles.sectionRow}>
-					<Text
-						content={t("settings.cache.clearCache")}
-						variant="h5"
-					/>
+					<View style={styles.subrow}>
+						<Text
+							content={t("settings.cache.clearCache")}
+							variant="h5"
+						/>
+						<Text
+							content={`(${downloadedFiles.length.toString()} ${t("models.track_plural")})`}
+							variant="h5"
+							color="secondary"
+						/>
+					</View>
 
 					<Button
 						icon={DeleteIcon}
@@ -467,5 +503,5 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	versionNumber: { color: theme.colors.text.secondary },
 	instanceButtonContainer: { paddingHorizontal: theme.gap(1) },
-	prefetchCountRow: { flexDirection: "row", gap: theme.gap(1) },
+	subrow: { flexDirection: "row", gap: theme.gap(1) },
 }));

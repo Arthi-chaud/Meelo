@@ -6,7 +6,7 @@ import {
 	setConfig,
 } from "@kesha-antonov/react-native-background-downloader";
 import * as FileSystem from "expo-file-system";
-import { atom, useAtomValue } from "jotai";
+import { atom } from "jotai";
 import { useEffect, useMemo } from "react";
 import * as yup from "yup";
 import type { QueryClient } from "@/api/hook";
@@ -60,6 +60,18 @@ export const queuePrefetchCountAtom = atom(
 	},
 );
 
+const MaxCachedCountKey = "max-cached-count";
+
+const _maxCachedCount = atom(storage.getNumber(MaxCachedCountKey) ?? 20);
+
+export const maxCachedCountAtom = atom(
+	(get) => get(_maxCachedCount),
+	(_, set, data: number) => {
+		set(_maxCachedCount, data);
+		storage.set(MaxCachedCountKey, data);
+	},
+);
+
 const __downloads = atom(getPersistedDownloads());
 
 const _downloadsAtom = atom(
@@ -90,8 +102,33 @@ export const DownloadManager = () => {
 	return null;
 };
 
+const deleteOldestFiles = (fileCount: number) => {
+	if (fileCount <= 0) {
+		return;
+	}
+	const files = store.get(_downloadsAtom).downloadedFiles;
+	const orderedByDate = files.sort(
+		(fa, fb) => fa.downloadDate.getTime() - fb.downloadDate.getTime(),
+	);
+	for (const f of orderedByDate.slice(0, fileCount)) {
+		try {
+			new FileSystem.File(`file://${f.localPath}`).delete();
+		} catch {}
+	}
+	store.set(_downloadsAtom, {
+		downloadedFiles: orderedByDate.slice(fileCount),
+	});
+};
+
 export const downloadFile =
 	(queryClient: QueryClient) => async (sourceFileId: number) => {
+		const dlCount = store.get(_downloadsAtom).downloadedFiles.length;
+		const maxDlCount = store.get(maxCachedCountAtom);
+		if (dlCount >= maxDlCount) {
+			deleteOldestFiles(
+				Math.ceil(maxDlCount / 5) + (maxDlCount - dlCount),
+			);
+		}
 		if (
 			store
 				.get(downloadsAtom)
@@ -190,26 +227,9 @@ const wipeCache = (): Error | null => {
 	return null;
 };
 
-const getCachedFileCount = () => {
-	const dir = new FileSystem.Directory(`file://${cacheDirectory}`);
-	if (!dir.exists) {
-		return 0;
-	}
-	try {
-		return dir.list().length;
-	} catch {
-		return 0;
-	}
-};
-
 export const useDownloadManager = () => {
 	const queryClient = useQueryClient();
-	const downloads = useAtomValue(downloadsAtom);
 	const download_ = useMemo(() => downloadFile(queryClient), [queryClient]);
-	const cachedFilesCount = useMemo(
-		() => getCachedFileCount(),
-		[downloads.downloadedFiles.length],
-	);
 
-	return { download: download_, wipeCache, cachedFilesCount };
+	return { download: download_, wipeCache };
 };
