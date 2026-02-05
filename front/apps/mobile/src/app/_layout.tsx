@@ -44,6 +44,7 @@ import { UnistylesRuntime } from "react-native-unistyles";
 import { DefaultQueryOptions } from "@/api/query";
 import { BackgroundGradient } from "~/components/background-gradient";
 import { Modal } from "~/components/bottom-modal-sheet";
+import { DownloadManager } from "~/downloads";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { ToastManager } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
@@ -123,6 +124,7 @@ export default function RootLayout() {
 					<ColorSchemeProvider>
 						<BottomSheetModalProvider>
 							<KeyboardProvider>
+								<DownloadManager />
 								<Stack
 									screenOptions={{
 										animation: "none",

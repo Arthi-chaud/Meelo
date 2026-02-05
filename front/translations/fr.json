@@ -306,6 +306,11 @@
 		"all": "Tous"
 	},
 	"settings": {
+		"cache": {
+			"header": "Cache",
+			"cachedTracks": "Pistes en cache",
+			"clearCache": "Vider le cache"
+		},
 		"interface": "Interface",
 		"libraries": {
 			"nameColumn": "Nom",
@@ -407,6 +412,10 @@
 			"accountCreated": "Votre compte a été créé. Contactez l'administrateur pour qu'il l'active",
 			"serverSwitchSuccessful": "Connection au serveur réussie",
 			"signinFailed": "Echec de la connexion au server"
+		},
+		"clearCache": {
+			"success": "Cache vidé",
+			"error": "Echec: cache non vidé"
 		},
 		"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
 		"library": {

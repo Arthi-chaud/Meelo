@@ -3016,6 +3016,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kesha-antonov/react-native-background-downloader@npm:^4.5.2":
+  version: 4.5.2
+  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.5.2"
+  peerDependencies:
+    react-native: ">=0.57.0"
+  checksum: 10c0/77a04696da3348015a23ffd782d5ded3ae5bc8ae8c218b7b386a5d83b8c9abc299e31a7b0d7d5c726db93e1f35a52baa8df3c4ec1d28b4f2b2b9b6d4e9644646
+  languageName: node
+  linkType: hard
+
 "@mui/core-downloads-tracker@npm:^7.3.6":
   version: 7.3.6
   resolution: "@mui/core-downloads-tracker@npm:7.3.6"
@@ -6488,7 +6497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-file-system@npm:~19.0.21":
+"expo-file-system@npm:^19.0.21, expo-file-system@npm:~19.0.21":
   version: 19.0.21
   resolution: "expo-file-system@npm:19.0.21"
   peerDependencies:
@@ -9160,6 +9169,7 @@ __metadata:
     "@expo-google-fonts/rubik": "npm:^0.3.0"
     "@expo/config-plugins": "npm:^54.0.4"
     "@gorhom/bottom-sheet": "npm:^5.2.8"
+    "@kesha-antonov/react-native-background-downloader": "npm:^4.5.2"
     "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.2.0"
     "@shopify/react-native-skia": "npm:2.4.7"
@@ -9175,6 +9185,7 @@ __metadata:
     expo-constants: "npm:~18.0.13"
     expo-dev-client: "npm:~6.0.20"
     expo-device: "npm:~8.0.10"
+    expo-file-system: "npm:^19.0.21"
     expo-font: "npm:~14.0.10"
     expo-haptics: "npm:~15.0.8"
     expo-linear-gradient: "npm:^15.0.8"
@@ -9211,7 +9222,7 @@ __metadata:
     react-native-toast-message: "npm:^2.3.3"
     react-native-unistyles: "npm:3.0.21"
     react-native-uuid: "npm:^2.0.3"
-    react-native-video: "npm:^7.0.0-alpha.7"
+    react-native-video: "npm:^7.0.0-beta.3"
     react-native-worklets: "npm:^0.5.1"
     state: "workspace:^"
     type-fest: "npm:^5.4.1"
@@ -10434,14 +10445,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-video@npm:^7.0.0-alpha.7":
-  version: 7.0.0-alpha.7
-  resolution: "react-native-video@npm:7.0.0-alpha.7"
+"react-native-video@npm:^7.0.0-beta.3":
+  version: 7.0.0-beta.4
+  resolution: "react-native-video@npm:7.0.0-beta.4"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: ">=0.27.2"
-  checksum: 10c0/39e3767d32f0292b8f4bcaa51815ba851a2d6ddc727e9bab4a3af70779661e47eb540dcf20fc3bc1c7e5c4c748436e21697afbe2c61515f6e80bf88e76a952fb
+  checksum: 10c0/66ea2eb392504348e72942060712e127067b8c4653a392d03b7fee2117af11aac0c091e44e856449ada9c181ea73ac5b34e511286d0296b2d94a9b70ac984201
   languageName: node
   linkType: hard
 

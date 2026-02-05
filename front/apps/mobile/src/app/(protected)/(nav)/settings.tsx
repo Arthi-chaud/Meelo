@@ -36,8 +36,10 @@ import {
 	CheckIcon,
 	DeleteIcon,
 	ExpandMoreIcon,
+	MinusIcon,
 	MoreIcon,
 	OpenExternalIcon,
+	PlusIcon,
 	UncheckIcon,
 } from "@/ui/icons";
 import { getAPI_, useQuery, useQueryClient } from "~/api";
@@ -47,13 +49,19 @@ import { LoadableText } from "~/components/loadable_text";
 import { useLoginForm } from "~/components/login-form";
 import { SafeScrollView } from "~/components/safe-view";
 import { SectionHeader } from "~/components/section-header";
+import {
+	downloadsAtom,
+	maxCachedCountAtom,
+	queuePrefetchCountAtom,
+	useDownloadManager,
+} from "~/downloads";
 import { useColorScheme } from "~/hooks/color-scheme";
 import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import { showSuccessToast } from "~/primitives/toast";
+import { showErrorToast, showSuccessToast } from "~/primitives/toast";
 import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import {
@@ -89,6 +97,12 @@ const useResetAllTabs = () => {
 };
 
 export default function SettingsView() {
+	const [queuePrefetchCount, setQueuePrefetchCount] = useAtom(
+		queuePrefetchCountAtom,
+	);
+	const { downloadedFiles } = useAtomValue(downloadsAtom);
+	const [maxCachedCount, setMaxCachedCount] = useAtom(maxCachedCountAtom);
+	const { wipeCache } = useDownloadManager();
 	const resetAllTabs = useResetAllTabs();
 	const queryClient = useQueryClient();
 	const { data: user } = useQuery(getCurrentUserStatus);
@@ -228,6 +242,115 @@ export default function SettingsView() {
 								lng: item,
 							})
 						}
+					/>
+				</View>
+			</View>
+
+			<Divider h />
+			<View style={styles.section}>
+				<SectionHeader
+					style={styles.sectionHeader}
+					content={t("settings.cache.header")}
+					skeletonWidth={0}
+				/>
+
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.cache.maxCachedTracks")}
+						variant="h5"
+					/>
+					<View style={styles.subrow}>
+						<Button
+							icon={MinusIcon}
+							size="small"
+							disabled={maxCachedCount === 20}
+							onPress={() =>
+								setMaxCachedCount(
+									Math.max(20, maxCachedCount - 5),
+								)
+							}
+						/>
+						<Text
+							content={maxCachedCount.toString()}
+							variant="h5"
+							color="secondary"
+						/>
+						<Button
+							icon={PlusIcon}
+							size="small"
+							disabled={maxCachedCount === 100}
+							onPress={() =>
+								setMaxCachedCount(
+									Math.min(100, maxCachedCount + 5),
+								)
+							}
+						/>
+					</View>
+				</View>
+
+				<View style={styles.sectionRow}>
+					<Text
+						content={t("settings.cache.prefetchCount")}
+						variant="h5"
+					/>
+					<View style={styles.subrow}>
+						<Button
+							icon={MinusIcon}
+							size="small"
+							disabled={queuePrefetchCount === 0}
+							onPress={() =>
+								setQueuePrefetchCount(
+									Math.max(0, queuePrefetchCount - 1),
+								)
+							}
+						/>
+						<Text
+							content={queuePrefetchCount.toString()}
+							variant="h5"
+							color="secondary"
+						/>
+						<Button
+							icon={PlusIcon}
+							size="small"
+							disabled={queuePrefetchCount === 15}
+							onPress={() =>
+								setQueuePrefetchCount(
+									Math.min(15, queuePrefetchCount + 1),
+								)
+							}
+						/>
+					</View>
+				</View>
+
+				<View style={styles.sectionRow}>
+					<View style={styles.subrow}>
+						<Text
+							content={t("settings.cache.clearCache")}
+							variant="h5"
+						/>
+						<Text
+							content={`(${downloadedFiles.length.toString()} ${t("models.track_plural")})`}
+							variant="h5"
+							color="secondary"
+						/>
+					</View>
+
+					<Button
+						icon={DeleteIcon}
+						size="small"
+						onPress={() => {
+							const err = wipeCache();
+							if (err) {
+								// biome-ignore lint/suspicious/noConsole: For debug
+								console.error(err.message ?? err.toString());
+								showErrorToast({
+									text: t("toasts.clearCache.error"),
+								});
+							}
+							showSuccessToast({
+								text: t("toasts.clearCache.success"),
+							});
+						}}
 					/>
 				</View>
 			</View>
@@ -380,4 +503,5 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	versionNumber: { color: theme.colors.text.secondary },
 	instanceButtonContainer: { paddingHorizontal: theme.gap(1) },
+	subrow: { flexDirection: "row", gap: theme.gap(1) },
 }));
