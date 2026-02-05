@@ -18,6 +18,7 @@ const DownloadedFile = yup.object({
 	fileId: yup.number().required(),
 	downloadDate: yup.date().required(),
 	instanceUrl: yup.string().required(),
+	cached: yup.boolean().required(),
 	localPath: yup.string().required(),
 });
 const Downloads = yup.object({
@@ -38,7 +39,6 @@ const getPersistedDownloads = (): Downloads => {
 	}
 	try {
 		const dls = Downloads.validateSync(JSON.parse(stringDls));
-
 		return dls;
 	} catch (e) {
 		// biome-ignore lint/suspicious/noConsole: For debug
@@ -119,7 +119,8 @@ const deleteOldestFiles = (fileCount: number) => {
 };
 
 export const downloadFile =
-	(queryClient: QueryClient) => async (sourceFileId: number) => {
+	(queryClient: QueryClient) =>
+	async (sourceFileId: number, forCache: boolean = true) => {
 		if (
 			store
 				.get(downloadsAtom)
@@ -136,7 +137,7 @@ export const downloadFile =
 		const maxDlCount = store.get(maxCachedCountAtom);
 		if (dlCount >= maxDlCount) {
 			deleteOldestFiles(
-				Math.ceil(maxDlCount / 5) + (maxDlCount - dlCount),
+				Math.ceil(maxDlCount / 5) + (dlCount - maxDlCount),
 			);
 		}
 		const taskId = sourceFileId.toString();
@@ -156,6 +157,7 @@ export const downloadFile =
 				localPath: destFileName,
 				downloadDate: new Date(),
 				instanceUrl: queryClient.api.urls.api,
+				cached: forCache,
 			} satisfies DownloadedFile,
 		})
 			// biome-ignore lint/suspicious/noConsole: debug
