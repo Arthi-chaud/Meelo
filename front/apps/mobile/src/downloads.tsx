@@ -10,10 +10,9 @@ import { atom, useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
 import * as yup from "yup";
 import type { QueryClient } from "@/api/hook";
-import { getSourceFile } from "@/api/queries";
 import { store } from "@/state/store";
 import { storage } from "~/utils/storage";
-import { getAPI, useQueryClient } from "./api";
+import { getAPI, useAPI, useQueryClient } from "./api";
 
 const DownloadedFile = yup.object({
 	fileId: yup.number().required(),
@@ -85,8 +84,7 @@ const _downloadsAtom = atom(
 export const downloadsAtom = atom((get) => get(__downloads));
 
 export const DownloadManager = () => {
-	const queryClient = useQueryClient();
-	// TODO: schedule backgorund that cleans the cache if it's too old?
+	const api = useAPI();
 	useEffect(() => {
 		setConfig({
 			maxParallelDownloads: 5,
@@ -97,8 +95,8 @@ export const DownloadManager = () => {
 		getExistingDownloadTasks().then((tasks) =>
 			Promise.all(tasks.map((t) => t.stop())),
 		);
-		setConfig({ headers: queryClient.api.getAuthHeaders() });
-	}, [queryClient]);
+		setConfig({ headers: api.getAuthHeaders() });
+	}, [api]);
 	return null;
 };
 
@@ -122,13 +120,6 @@ const deleteOldestFiles = (fileCount: number) => {
 
 export const downloadFile =
 	(queryClient: QueryClient) => async (sourceFileId: number) => {
-		const dlCount = store.get(_downloadsAtom).downloadedFiles.length;
-		const maxDlCount = store.get(maxCachedCountAtom);
-		if (dlCount >= maxDlCount) {
-			deleteOldestFiles(
-				Math.ceil(maxDlCount / 5) + (maxDlCount - dlCount),
-			);
-		}
 		if (
 			store
 				.get(downloadsAtom)
@@ -140,20 +131,18 @@ export const downloadFile =
 		) {
 			return null;
 		}
-		const sourceFile = await queryClient
-			.fetchQuery(getSourceFile(sourceFileId))
-			.catch(() => null);
-		if (!sourceFile) {
-			return null;
+
+		const dlCount = store.get(_downloadsAtom).downloadedFiles.length;
+		const maxDlCount = store.get(maxCachedCountAtom);
+		if (dlCount >= maxDlCount) {
+			deleteOldestFiles(
+				Math.ceil(maxDlCount / 5) + (maxDlCount - dlCount),
+			);
 		}
-		const fileExtension = sourceFile.path.split(".").at(-1);
-		if (!fileExtension) {
-			return null;
-		}
-		const taskId = sourceFile.id.toString();
+		const taskId = sourceFileId.toString();
 
 		const serverHostname = new URL(queryClient.api.urls.api).hostname;
-		const destFileName = `${cacheDirectory}/${serverHostname}-${sourceFile.id}.${fileExtension}`;
+		const destFileName = `${cacheDirectory}/${serverHostname}-${sourceFileId}`;
 		const currentTasks = await getExistingDownloadTasks();
 		if (currentTasks.find((t) => t.id === taskId)) {
 			return null;
@@ -161,9 +150,9 @@ export const downloadFile =
 		const task = createDownloadTask({
 			id: taskId,
 			destination: destFileName,
-			url: queryClient.api.getDirectStreamURL(sourceFile.id),
+			url: queryClient.api.getDirectStreamURL(sourceFileId),
 			metadata: {
-				fileId: sourceFile.id,
+				fileId: sourceFileId,
 				localPath: destFileName,
 				downloadDate: new Date(),
 				instanceUrl: queryClient.api.urls.api,

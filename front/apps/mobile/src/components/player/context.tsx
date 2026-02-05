@@ -77,7 +77,7 @@ export const PlayerContext = () => {
 		const prefetchCount = store.get(queuePrefetchCountAtom);
 		const queue = playlist.slice(
 			cursor === -1 ? 0 : cursor,
-			prefetchCount + cursor,
+			prefetchCount + 1 + cursor, // NOTE: add one to include current song
 		);
 		for (const track of queue) {
 			if (track.track.type === "Audio")
