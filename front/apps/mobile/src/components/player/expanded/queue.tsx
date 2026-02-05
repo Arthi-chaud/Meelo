@@ -14,9 +14,10 @@ import {
 	skipTrackAtom,
 	type TrackState,
 } from "@/state/player";
-import { DeleteIcon } from "@/ui/icons";
+import { DeleteIcon, DownloadIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { ListItem } from "~/components/item/list-item";
+import { useIsDownloaded } from "~/downloads";
 import * as Haptics from "~/haptics";
 import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
@@ -97,6 +98,7 @@ const QueueItem = ({
 	onDrag: () => void;
 	onDelete: () => void;
 }) => {
+	const isDownloaded = useIsDownloaded(track.sourceFileId);
 	return (
 		<ListItem
 			title={track.name}
@@ -109,9 +111,18 @@ const QueueItem = ({
 			}}
 			onPress={onPress}
 			trailing={
-				<Pressable onPress={onDelete}>
-					<Icon icon={DeleteIcon} style={styles.deleteIcon} />
-				</Pressable>
+				<View style={styles.trailingRow}>
+					{isDownloaded && (
+						<Icon
+							icon={DownloadIcon}
+							variant="Bold"
+							style={styles.downloadedIcon}
+						/>
+					)}
+					<Pressable onPress={onDelete}>
+						<Icon icon={DeleteIcon} style={styles.deleteIcon} />
+					</Pressable>
+				</View>
 			}
 		/>
 	);
@@ -119,5 +130,7 @@ const QueueItem = ({
 
 const styles = StyleSheet.create((theme) => ({
 	root: { width: "100%", flex: 1, maxWidth: breakpoints.md },
+	trailingRow: { flexDirection: "row", gap: theme.gap(1) },
 	deleteIcon: { color: theme.colors.error },
+	downloadedIcon: { color: theme.colors.divider },
 }));

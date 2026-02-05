@@ -6,7 +6,7 @@ import {
 	setConfig,
 } from "@kesha-antonov/react-native-background-downloader";
 import * as FileSystem from "expo-file-system";
-import { atom } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
 import * as yup from "yup";
 import type { QueryClient } from "@/api/hook";
@@ -232,4 +232,15 @@ export const useDownloadManager = () => {
 	const download_ = useMemo(() => downloadFile(queryClient), [queryClient]);
 
 	return { download: download_, wipeCache };
+};
+
+export const useIsDownloaded = (sourceFileId: number | null | undefined) => {
+	const downloads = useAtomValue(downloadsAtom);
+	const isDownloaded = useMemo(() => {
+		if (!sourceFileId) {
+			return false;
+		}
+		return downloads.downloadedFiles.find((f) => f.fileId === sourceFileId);
+	}, [sourceFileId, downloads]);
+	return isDownloaded;
 };
