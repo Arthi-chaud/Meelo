@@ -4862,7 +4862,7 @@ __metadata:
   resolution: "api@workspace:packages/api"
   dependencies:
     "@tanstack/react-query": "npm:^5.90.14"
-    jotai: "npm:^2.16.0"
+    jotai: "npm:^2.17.0"
     react: "npm:19.1.0"
     type-fest: "npm:^5.4.1"
     typescript: "npm:5.9.3"
@@ -8264,7 +8264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:^2.16.0":
+"jotai@npm:^2.17.0":
   version: 2.17.1
   resolution: "jotai@npm:2.17.1"
   peerDependencies:
@@ -9189,7 +9189,7 @@ __metadata:
     iconsax-react-nativejs: "npm:^0.0.8"
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
-    jotai: "npm:^2.16.0"
+    jotai: "npm:^2.17.0"
     lodash: "npm:^4.17.21"
     models: "workspace:^"
     react: "npm:19.1.0"
@@ -11481,7 +11481,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "state@workspace:packages/state"
   dependencies:
-    jotai: "npm:^2.16.0"
+    jotai: "npm:^2.17.0"
     react: "npm:19.1.0"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -12416,7 +12416,7 @@ __metadata:
     d3-array: "npm:^3.2.0"
     hls.js: "npm:^1.6.15"
     i18next: "npm:^25.8.0"
-    jotai: "npm:^2.16.0"
+    jotai: "npm:^2.17.0"
     material-ui-confirm: "npm:^4.0.0"
     mui-react-hook-form-plus: "npm:^1.5.1"
     next: "npm:16.1.1"
