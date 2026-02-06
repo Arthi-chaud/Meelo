@@ -224,7 +224,7 @@ export default function SettingsView() {
 						header={t("settings.ui.language")}
 						closeOnSelect
 						values={Languages}
-						isSelected={(item) => lng === item}
+						selected={lng}
 						buttonProps={{
 							title: t(
 								`settings.ui.lang.${i18next.language as "en"}`,
@@ -234,9 +234,9 @@ export default function SettingsView() {
 							iconPosition: "right",
 							size: "small",
 						}}
-						onSelect={(selected) => {
-							setLng(selected);
-						}}
+						isSelected={(l, selectedLng) => l === selectedLng}
+						onItemSelect={(l) => l}
+						onSave={setLng}
 						formatItem={(item) =>
 							t(`settings.ui.lang.${item}`, {
 								lng: item,

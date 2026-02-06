@@ -188,8 +188,10 @@ export const SelectTranscodingButton = ({
 				width: "fitContent",
 			}}
 			values={fields}
-			onSelect={onPress}
-			isSelected={(v) => (v === fields[0] ? !useHLS : useHLS)}
+			selected={useHLS ? fields[0] : fields[1]}
+			isSelected={(v, _) => (v === fields[0] ? !useHLS : useHLS)}
+			onItemSelect={(v) => v}
+			onSave={onPress}
 			formatItem={(v) => t(v)}
 		/>
 	);

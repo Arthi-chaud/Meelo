@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type Album from "@/models/album";
 import { AlbumType } from "@/models/album";
@@ -139,32 +139,20 @@ export const useChangeTypeModal = <Type extends string>(
 	return { openModal };
 };
 
-// We don't dismiss the modal when an item is clicked
 export const ChangeTypeModal = <T extends string>({
 	types,
 	translate,
 	onSelect,
 	selectedType,
 }: ChangeTypeModal<T>) => {
-	const [selectedTypeState, setSelectedState] = useState(selectedType);
 	const { t } = useTranslation();
-	const onPress = useCallback(
-		(t: T) => {
-			if (t !== selectedTypeState) {
-				onSelect(t);
-				setSelectedState(t);
-			}
-		},
-		[onSelect, selectedTypeState],
-	);
-	useEffect(() => {
-		setSelectedState(selectedType);
-	}, [selectedType]);
 	return (
 		<SelectBottomModalContent
 			values={types}
-			onSelect={onPress}
-			isSelected={(v) => selectedTypeState === v}
+			selected={selectedType ?? types[0]}
+			onSave={onSelect}
+			onItemSelect={(v) => v}
+			isSelected={(v, st) => st === v}
 			formatItem={(v) => t(translate(v))}
 		/>
 	);
