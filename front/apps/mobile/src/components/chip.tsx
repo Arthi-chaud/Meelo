@@ -59,6 +59,8 @@ const styles = StyleSheet.create((theme) => ({
 		gap: theme.gap(1),
 		justifyContent: "center",
 		alignItems: "center",
+		borderWidth: 1,
+		borderColor: theme.colors.text.primary,
 		variants: {
 			disabled: {
 				true: { opacity: 0.5 },
@@ -67,12 +69,8 @@ const styles = StyleSheet.create((theme) => ({
 			filled: {
 				true: {
 					backgroundColor: theme.colors.text.primary,
-					borderWidth: 0,
 				},
-				false: {
-					borderColor: theme.colors.text.primary,
-					borderWidth: 1,
-				},
+				false: {},
 			},
 		},
 		paddingVertical: theme.gap(0.5),

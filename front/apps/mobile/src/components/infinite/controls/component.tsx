@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
-import type { SortControl } from "@/infinite-controls/sort";
+import type { SelectedSort, SortControl } from "@/infinite-controls/sort";
 import { AscIcon, DescIcon, GridIcon, ListIcon } from "@/ui/icons";
 import type { Action } from "~/actions";
 import { SelectModalButton } from "~/components/bottom-modal-sheet/select";
@@ -16,14 +16,13 @@ type Props<SortingKey extends string> = {
 	actions?: Omit<Action, "href">[];
 };
 
-export const Controls = <S extends string>({
+export const Controls = <SortingKey extends string>({
 	layout,
 	sort,
 	filters,
 	actions,
-}: Props<S>) => {
+}: Props<SortingKey>) => {
 	const { t } = useTranslation();
-	const OrderIcon = sort?.selected.order === "desc" ? DescIcon : AscIcon;
 	return (
 		<View style={styles.row}>
 			<View style={styles.row}>
@@ -31,7 +30,6 @@ export const Controls = <S extends string>({
 					<SelectModalButton
 						header={t("browsing.controls.filter.header")}
 						key={idx}
-						closeOnSelect
 						buttonProps={{
 							title: t(filter.buttonLabel),
 							icon: filter.buttonIcon as any,
@@ -40,37 +38,43 @@ export const Controls = <S extends string>({
 							iconPosition: "right",
 						}}
 						values={filter.values ?? []}
-						isSelected={(item) =>
-							filter.multipleChoice
-								? filter.selected.includes(item)
-								: filter.selected === item
-						}
-						formatItem={(item) => t(filter.formatItem(item))}
-						onSelect={(selected) => {
+						selected={filter.selected}
+						onItemSelect={(selected, st) => {
 							if (filter.multipleChoice) {
-								const selectedKeys = filter.selected.includes(
-									selected,
-								)
-									? filter.selected.filter(
-											(k) => k !== selected,
-										)
-									: [selected, ...filter.selected];
-								filter.onUpdate(selectedKeys);
+								return st.includes(selected)
+									? st.filter((k: any) => k !== selected)
+									: [selected, ...st];
 							} else {
-								filter.onUpdate(
-									filter.selected === selected
-										? null
-										: selected,
-								);
+								return st === selected ? null : selected;
 							}
 						}}
+						isSelected={(item, st) =>
+							filter.multipleChoice
+								? st.includes(item)
+								: st === item
+						}
+						formatItem={(item) => t(filter.formatItem(item))}
+						onSave={(selected) => filter.onUpdate(selected)}
 					/>
 				))}
 				{sort && (
 					<SelectModalButton
 						header={t("browsing.controls.sortBy")}
-						closeOnSelect
 						values={sort.sortingKeys}
+						selected={sort.selected}
+						onItemSelect={(
+							sortingKey,
+							st,
+						): SelectedSort<SortingKey> => {
+							if (sortingKey === st.sort) {
+								return {
+									sort: sortingKey,
+									order: st.order === "asc" ? "desc" : "asc",
+								};
+							} else {
+								return { sort: sortingKey, order: "asc" };
+							}
+						}}
 						formatItem={(item) => t(sort.formatItem(item))}
 						buttonProps={{
 							title: t(sort.formatItem(sort.selected.sort)),
@@ -82,21 +86,11 @@ export const Controls = <S extends string>({
 									: DescIcon,
 							iconPosition: "left",
 						}}
-						isSelected={(item) => sort.selected.sort === item}
-						checkIcon={OrderIcon}
-						onSelect={(selected: S) => {
-							if (selected === sort.selected.sort) {
-								sort.onUpdate({
-									sort: selected,
-									order:
-										sort.selected.order === "asc"
-											? "desc"
-											: "asc",
-								});
-							} else {
-								sort.onUpdate({ sort: selected, order: "asc" });
-							}
-						}}
+						isSelected={(item, st) => st.sort === item}
+						checkIcon={({ order }) =>
+							order === "desc" ? DescIcon : AscIcon
+						}
+						onSave={(selected) => sort.onUpdate(selected)}
 					/>
 				)}
 				{layout && (

@@ -1,12 +1,17 @@
 import { useState } from "react";
 import type { Order } from "@/models/sorting";
 
+export type SelectedSort<SortingKey extends string> = {
+	sort: SortingKey;
+	order: Order;
+};
+
 export type SortControl<SortingKey extends string> = {
 	formatItem: (k: SortingKey) => TranslationKey;
 	// returns the label of the menu + icon
 	buttonLabel: TranslationKey;
 	sortingKeys: readonly SortingKey[];
-	selected: { sort: SortingKey; order: Order };
+	selected: SelectedSort<SortingKey>;
 	onUpdate: (p: { sort: SortingKey; order: Order }) => void;
 };
 

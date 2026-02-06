@@ -1,57 +1,93 @@
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
-import { type ComponentProps, useCallback } from "react";
+import { type ComponentProps, useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { Icon as IconType } from "@/ui/icons";
+import { CheckIcon, CloseIcon, type Icon as IconType } from "@/ui/icons";
 import { Chip } from "~/components/chip";
 import { Button } from "~/primitives/button";
 import { Text } from "~/primitives/text";
 import { useModal } from ".";
 
-type Props<T> = {
+type Props<T, S> = {
 	header?: string;
 	values: readonly T[];
-	isSelected: (item: T) => boolean;
-	onSelect: (item: T) => void;
+	selected: S;
+	checkIcon?: (st: S) => IconType;
+	isSelected: (item: T, state: S) => boolean;
+	onSave: (selected: S) => void;
 	formatItem: (item: T) => string;
-	checkIcon?: IconType;
+	onItemSelect: (item: T, state: S) => S;
 	closeOnSelect?: boolean;
 };
 
-export const SelectBottomModalContent = <T,>({
+export const SelectBottomModalContent = <T, S>({
 	header,
 	values,
-	isSelected,
-	onSelect,
+	selected,
+	onItemSelect,
+	onSave,
 	formatItem,
+	isSelected,
 	checkIcon,
-	closeOnSelect: dismissOnSelect,
-}: Props<T>) => {
+	closeOnSelect,
+}: Props<T, S>) => {
+	const [selectedState, setSelectedState] = useState<S>(selected);
+	styles.useVariants({ hasButtons: !closeOnSelect });
+
 	const { dismiss } = useBottomSheetModal();
+	useEffect(() => {
+		setSelectedState(selected);
+	}, [selected]);
 	const onPress = useCallback(
 		(t: T) => {
-			if (dismissOnSelect) {
-				dismiss();
-			}
-			onSelect(t);
+			setSelectedState((st) => {
+				const st1 = onItemSelect(t, st);
+				if (closeOnSelect) {
+					onSave(st1);
+					dismiss();
+				}
+				return st1;
+			});
 		},
-		[onSelect, dismiss],
+		[onSave, setSelectedState, onItemSelect, dismiss],
 	);
 	return (
 		<View style={styles.root}>
-			{header && (
-				<View style={styles.header}>
-					<Text content={header} variant="h4" />
-				</View>
-			)}
+			<View style={styles.header}>
+				{!closeOnSelect && (
+					<Button
+						icon={CloseIcon}
+						size="small"
+						onPress={() => {
+							dismiss();
+						}}
+					/>
+				)}
+				{header && <Text content={header} variant="h4" />}
+
+				{!closeOnSelect && (
+					<Button
+						icon={CheckIcon}
+						size="small"
+						onPress={() => {
+							onSave(selectedState);
+							dismiss();
+						}}
+					/>
+				)}
+			</View>
 			<View style={styles.grid}>
 				{values.map((value, idx) => (
 					<Chip
-						filled={isSelected(value)}
+						filled={isSelected(value, selectedState)}
 						key={idx}
 						title={formatItem(value)}
 						onPress={() => onPress(value)}
-						icon={isSelected(value) ? checkIcon : undefined}
+						icon={
+							isSelected(value, selectedState)
+								? checkIcon?.(selectedState)
+								: undefined
+						}
 					/>
 				))}
 			</View>
@@ -61,7 +97,23 @@ export const SelectBottomModalContent = <T,>({
 
 const styles = StyleSheet.create((theme) => ({
 	root: { width: "100%" },
-	header: { width: "100%", alignItems: "center" },
+	header: {
+		width: "100%",
+		alignItems: "center",
+		flexDirection: "row",
+		variants: {
+			hasButtons: {
+				true: {
+					justifyContent: "space-between",
+				},
+				false: {
+					justifyContent: "center",
+				},
+			},
+		},
+		gap: theme.gap(1),
+		paddingHorizontal: theme.gap(1),
+	},
 	grid: {
 		padding: theme.gap(2),
 		paddingBottom: theme.gap(3),
@@ -72,10 +124,10 @@ const styles = StyleSheet.create((theme) => ({
 	},
 }));
 
-export const SelectModalButton = <T,>({
+export const SelectModalButton = <T, S>({
 	buttonProps,
 	...props
-}: Props<T> & {
+}: Props<T, S> & {
 	buttonProps: Omit<
 		ComponentProps<typeof Button>,
 		"propagateToParent" | "onPress"
