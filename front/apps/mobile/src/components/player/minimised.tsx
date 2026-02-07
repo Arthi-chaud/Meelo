@@ -6,8 +6,7 @@ import Animated, {
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
-import { StyleSheet } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { playlistLoadingAtom, skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
@@ -20,6 +19,7 @@ import * as Haptics from "~/haptics";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { animations } from "~/theme";
 import { videoPlayerAtom } from "./context";
 import { expandPlayerAtom } from "./expanded/state";
 import { getTrackForContextMenu } from "./queries";
@@ -122,6 +122,7 @@ export const MinimisedPlayer = () => {
 };
 
 const ProgressBar = () => {
+	const { theme } = useUnistyles();
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const firstIllustrationColor = useMemo(
 		() => currentTrack?.track.illustration?.colors.at(0) ?? undefined,
@@ -129,7 +130,6 @@ const ProgressBar = () => {
 	);
 	const progress = useAtomValue(progressAtom);
 	const duration = useAtomValue(durationAtom);
-	const animatedTheme = useAnimatedTheme();
 	// Progress bar (color and width)
 	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const progressWidth = useSharedValue<`${number}%`>(`0%`);
@@ -138,13 +138,12 @@ const ProgressBar = () => {
 			currentTrack
 				? `${Math.min((progress * 100) / (duration ?? 1), 100)}%`
 				: `0%`,
-			animatedTheme.value.animations.progress,
+			animations.progress,
 		);
 	}, [progress, currentTrack]);
 	const progressStyle = useAnimatedStyle(
 		() => ({
-			backgroundColor:
-				accentColor ?? animatedTheme.value.colors.text.primary,
+			backgroundColor: accentColor ?? theme.colors.text.primary,
 			width: progressWidth.value,
 		}),
 		[firstIllustrationColor, progress],

@@ -8,7 +8,6 @@ import Animated, {
 	withSpring,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import type { SyncedLyric as SyncedLyricModel } from "@/models/lyrics";
 import { store } from "@/state/store";
 import { LyricsIcon } from "@/ui/icons";
@@ -20,7 +19,7 @@ import { Button } from "~/primitives/button";
 import { Divider } from "~/primitives/divider";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import { breakpoints } from "~/theme";
+import { animations, breakpoints } from "~/theme";
 import { getSongWithLyrics } from "../queries";
 import {
 	currentTrackAtom,
@@ -216,10 +215,9 @@ const SyncedLyric = ({
 	onLayout: (e: LayoutChangeEvent) => void;
 	onPress: () => void;
 }) => {
-	const theme = useAnimatedTheme();
 	const opacityOnActive = useAnimatedStyle(
 		() => ({
-			opacity: withSpring(active ? 1 : 0.4, theme.value.animations.fades),
+			opacity: withSpring(active ? 1 : 0.4, animations.fades),
 		}),
 		[active],
 	);

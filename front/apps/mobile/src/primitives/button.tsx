@@ -31,9 +31,9 @@ import Animated, {
 	withSpring,
 } from "react-native-reanimated";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import type { RequireExactlyOne } from "type-fest";
 import type { Icon as IconType } from "@/ui/icons";
+import { animations } from "~/theme";
 import { Icon } from "./icon";
 
 type ButtonProps = UnistylesVariants<typeof styles> & {
@@ -58,10 +58,9 @@ type ButtonProps = UnistylesVariants<typeof styles> & {
 	);
 
 export const Button = (props: ButtonProps) => {
-	const theme = useAnimatedTheme();
 	const scale = useSharedValue<number>(1);
 	const handlePress = useCallback(() => {
-		scale.value = theme.value.animations.pressable.scaleOnPress;
+		scale.value = animations.pressable.scaleOnPress;
 	}, []);
 	const handleRelease = useCallback(() => {
 		scale.value = 1;
@@ -70,8 +69,8 @@ export const Button = (props: ButtonProps) => {
 		transform: [
 			{
 				scale: withSpring(scale.value, {
-					damping: theme.value.animations.pressable.damping,
-					stiffness: theme.value.animations.pressable.stiffness,
+					damping: animations.pressable.damping,
+					stiffness: animations.pressable.stiffness,
 				}),
 			},
 		],

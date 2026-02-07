@@ -3,6 +3,28 @@ import { StyleSheet } from "react-native-unistyles";
 import { store } from "@/state/store";
 import { colorSchemePreference } from "~/state/color-scheme";
 
+export const animations = {
+	fades: {
+		stiffness: 430,
+		damping: 220,
+	},
+	progress: {
+		stiffness: 500,
+		damping: 100,
+	},
+	pressable: {
+		scaleOnPress: 0.98,
+		damping: 15,
+		stiffness: 200,
+	},
+	skeleton: {
+		minOpacity: 0.4,
+		pulse: {
+			duration: 800,
+		},
+	},
+};
+
 const baseTheme = {
 	gap: (n: number) => n * 8,
 	// TODO Use font size from device
@@ -22,27 +44,7 @@ const baseTheme = {
 		},
 	},
 
-	animations: {
-		fades: {
-			stiffness: 430,
-			damping: 220,
-		},
-		progress: {
-			stiffness: 500,
-			damping: 100,
-		},
-		pressable: {
-			scaleOnPress: 0.98,
-			damping: 15,
-			stiffness: 200,
-		},
-		skeleton: {
-			minOpacity: 0.4,
-			pulse: {
-				duration: 800,
-			},
-		},
-	},
+	animations,
 	borderRadius: 8, // TODO Normalise?
 	fontStyles: {
 		light: {

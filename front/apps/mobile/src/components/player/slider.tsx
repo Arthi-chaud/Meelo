@@ -4,7 +4,7 @@ import { View } from "react-native";
 import { Slider as AwesomeSlider } from "react-native-awesome-slider";
 import { useSharedValue, withSpring } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import { animations } from "~/theme";
 import {
 	durationAtom,
 	isBufferingAtom,
@@ -24,14 +24,13 @@ export const Slider = ({ sliderColor, trackColor }: Props) => {
 	const progressShared = useSharedValue(progress);
 	const minValueShared = useSharedValue(0);
 	const maxValueShared = useSharedValue(duration ?? 1);
-	const animatedTheme = useAnimatedTheme();
 	const isBuffering = useAtomValue(isBufferingAtom);
 	useEffect(() => {
 		maxValueShared.value = duration ?? 1;
 		progressShared.value =
 			isBuffering && requestedProgress
 				? requestedProgress
-				: withSpring(progress, animatedTheme.value.animations.progress);
+				: withSpring(progress, animations.progress);
 	}, [progress, duration, isBuffering, requestedProgress]);
 	return (
 		<View style={styles.root}>
