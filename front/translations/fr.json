@@ -56,7 +56,7 @@
 		"setAsMaster": "Promouvoir",
 		"share": "Partager",
 		"song": {
-			"changeType": "Changer le type",
+			"changeType": "Changer le type du morceau",
 			"mergeSong": {
 				"label": "Fusionner le morceau",
 				"modalTitle": "Choisissez une chanson",
@@ -75,7 +75,7 @@
 		},
 		"update": "Mettre à jour",
 		"video": {
-			"changeType": "Change le type"
+			"changeType": "Change le type de la vidéo"
 		},
 		"warningModalTitle": "Attention"
 	},
