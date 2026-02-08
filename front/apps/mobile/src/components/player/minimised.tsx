@@ -6,7 +6,8 @@ import Animated, {
 	useSharedValue,
 	withTiming,
 } from "react-native-reanimated";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
+import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { VideoView } from "react-native-video";
 import { playlistLoadingAtom, skipTrackAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
@@ -122,7 +123,7 @@ export const MinimisedPlayer = () => {
 };
 
 const ProgressBar = () => {
-	const { theme } = useUnistyles();
+	const animatedTheme = useAnimatedTheme();
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const firstIllustrationColor = useMemo(
 		() => currentTrack?.track.illustration?.colors.at(0) ?? undefined,
@@ -143,7 +144,8 @@ const ProgressBar = () => {
 	}, [progress, currentTrack]);
 	const progressStyle = useAnimatedStyle(
 		() => ({
-			backgroundColor: accentColor ?? theme.colors.text.primary,
+			backgroundColor:
+				accentColor ?? animatedTheme.value.colors.text.primary,
 			width: progressWidth.value,
 		}),
 		[firstIllustrationColor, progress],
