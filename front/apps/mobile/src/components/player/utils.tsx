@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { getSong } from "@/api/queries";
@@ -20,7 +20,7 @@ export const ColorBackground = () => {
 	);
 	const backgroundColorSV = useSharedValue("transparent");
 	useEffect(() => {
-		backgroundColorSV.value = withSpring(
+		backgroundColorSV.value = withTiming(
 			firstIllustrationColor ?? "transparent",
 			animations.fades,
 		);

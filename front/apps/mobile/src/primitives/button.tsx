@@ -28,7 +28,7 @@ import {
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import type { RequireExactlyOne } from "type-fest";
@@ -68,10 +68,7 @@ export const Button = (props: ButtonProps) => {
 	const animatedStyle = useAnimatedStyle(() => ({
 		transform: [
 			{
-				scale: withSpring(scale.value, {
-					damping: animations.pressable.damping,
-					stiffness: animations.pressable.stiffness,
-				}),
+				scale: withTiming(scale.value, animations.pressable.config),
 			},
 		],
 	}));

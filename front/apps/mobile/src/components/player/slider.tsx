@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { View } from "react-native";
 import { Slider as AwesomeSlider } from "react-native-awesome-slider";
-import { useSharedValue, withSpring } from "react-native-reanimated";
+import { useSharedValue, withTiming } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { animations } from "~/theme";
 import {
@@ -30,7 +30,7 @@ export const Slider = ({ sliderColor, trackColor }: Props) => {
 		progressShared.value =
 			isBuffering && requestedProgress
 				? requestedProgress
-				: withSpring(progress, animations.progress);
+				: withTiming(progress, animations.progress);
 	}, [progress, duration, isBuffering, requestedProgress]);
 	return (
 		<View style={styles.root}>

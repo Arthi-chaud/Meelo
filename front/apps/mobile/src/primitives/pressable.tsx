@@ -1,5 +1,9 @@
 import { type ComponentProps, useCallback } from "react";
-import { type GestureResponderEvent, Pressable as P } from "react-native";
+import {
+	type GestureResponderEvent,
+	Pressable as P,
+	type View,
+} from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -7,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import type { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { StyleSheet } from "react-native-unistyles";
+import { animations } from "~/theme";
 
 type Props = {
 	onPress: (e: GestureResponderEvent) => void;
@@ -14,7 +19,7 @@ type Props = {
 	children: React.ReactNode;
 	disabled?: boolean;
 	disableRequestAnimationFrame?: boolean;
-	style?: ComponentProps<typeof P>["style"];
+	style?: ComponentProps<typeof View>["style"];
 	onLayout?: ViewProps["onLayout"];
 };
 
@@ -40,10 +45,13 @@ export const Pressable = ({
 		[onPress],
 	);
 	const onPressStart = useCallback(() => {
-		opacity.value = withTiming(0.5, {});
+		opacity.value = withTiming(
+			animations.pressable.opacityOnPress,
+			animations.pressable.config,
+		);
 	}, []);
 	const onPressEnd = useCallback(() => {
-		opacity.value = withTiming(1);
+		opacity.value = withTiming(1, animations.pressable.config);
 	}, []);
 	const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 	const pressIn = disabled ? undefined : onPressStart;

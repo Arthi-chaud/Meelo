@@ -1,27 +1,22 @@
 import { Appearance } from "react-native";
+import { Easing } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { store } from "@/state/store";
 import { colorSchemePreference } from "~/state/color-scheme";
 
 export const animations = {
 	fades: {
-		stiffness: 430,
-		damping: 220,
+		easing: Easing.quad,
+		duration: 200,
 	},
 	progress: {
-		stiffness: 500,
-		damping: 100,
+		easing: Easing.linear,
+		duration: 500,
 	},
 	pressable: {
 		scaleOnPress: 0.98,
-		damping: 15,
-		stiffness: 200,
-	},
-	skeleton: {
-		minOpacity: 0.4,
-		pulse: {
-			duration: 800,
-		},
+		opacityOnPress: 0.6,
+		config: { duration: 200 },
 	},
 };
 

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { type LayoutChangeEvent, ScrollView, View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import type { SyncedLyric as SyncedLyricModel } from "@/models/lyrics";
@@ -217,7 +217,7 @@ const SyncedLyric = ({
 }) => {
 	const opacityOnActive = useAnimatedStyle(
 		() => ({
-			opacity: withSpring(active ? 1 : 0.4, animations.fades),
+			opacity: withTiming(active ? 1 : 0.4, animations.fades),
 		}),
 		[active],
 	);

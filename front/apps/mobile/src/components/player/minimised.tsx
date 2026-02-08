@@ -4,7 +4,7 @@ import { Pressable as RNPRessable, View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
@@ -134,7 +134,7 @@ const ProgressBar = () => {
 	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const progressWidth = useSharedValue<`${number}%`>(`0%`);
 	useEffect(() => {
-		progressWidth.value = withSpring(
+		progressWidth.value = withTiming(
 			currentTrack
 				? `${Math.min((progress * 100) / (duration ?? 1), 100)}%`
 				: `0%`,

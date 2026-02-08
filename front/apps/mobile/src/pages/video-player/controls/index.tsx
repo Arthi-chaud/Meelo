@@ -8,7 +8,7 @@ import {
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { ScopedTheme, StyleSheet } from "react-native-unistyles";
 import { animations } from "~/theme";
@@ -33,7 +33,7 @@ export const Controls = (props: Props) => {
 	);
 	const opacityStyle = useAnimatedStyle(() => {
 		return {
-			opacity: withSpring(opacity.value, animations.fades),
+			opacity: withTiming(opacity.value, animations.fades),
 		};
 	});
 	useEffect(() => {
