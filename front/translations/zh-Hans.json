@@ -8,10 +8,312 @@
 			"changeType": "更改专辑类型",
 			"goToAlbum": "前往专辑"
 		},
-		"archive": "档案",
+		"archive": "归档",
 		"artist": {
 			"seeAlbums": "查看专辑",
 			"seeSongs": "查看歌曲"
+		},
+		"connectToNewServer": "连接一个 Meelo 服务器",
+		"create": "创建",
+		"delete": "删除",
+		"deleteFromPlaylist": "从列表中删除",
+		"deleteUser": {
+			"label": "删除用户",
+			"warning": "您即将删除一名用户。此操作无法撤销。"
+		},
+		"download": {
+			"label": "下载",
+			"warning": "下载您不拥有版权的受保护内容是不被授权的。请仅在您拥有原始内容版权的情况下继续操作。"
+		},
+		"editExternalLinks": "编辑外部链接",
+		"goBackHome": "返回主页",
+		"goToArtist": "转到艺人",
+		"goToPlaylist": "转到播放列表",
+		"goToSettingsPage": "转到设置",
+		"library": {
+			"create": "新建库",
+			"delete": "删除库",
+			"deletionWarning": "您即将删除库。此操作无法撤销"
+		},
+		"logout": "登出",
+		"playback": {
+			"play": "播放",
+			"playAfter": "稍后播放",
+			"playAll": "播放全部",
+			"playNext": "下一首播放"
+		},
+		"share": "分享",
+		"song": {
+			"changeType": "更改歌曲分类",
+			"mergeSong": {
+				"modalTitle": "选择歌曲",
+				"warningBeforeMerging": "所有曲目将重新分配到所选歌曲，原歌曲将被删除。您的文件不会被修改或删"
+			},
+			"seeLyrics": "查看歌词",
+			"seeOtherVersions": "查看其它版本",
+			"seeRelatedTracks": "查看关联曲目",
+			"seeRelatedVideos": "查看关联视频",
+			"seeSongInfo": "歌曲信息"
+		},
+		"switchServer": "切换服务器",
+		"track": {
+			"seeTrackInfo": "曲目信息"
+		},
+		"update": "更新",
+		"video": {
+			"changeType": "更改视频分类"
 		}
+	},
+	"album": {
+		"relatedAlbums": "关联专辑",
+		"showAllTracks": "显示所有曲目",
+		"showOnlyExclusiveTracks": ""
+	},
+	"auth": {
+		"connectButton": "连接到服务器",
+		"loginButton": "登入",
+		"signin": "已有帐户？登入",
+		"signup": "新来的？注册",
+		"signupButton": "注册"
+	},
+	"browsing": {
+		"controls": {
+			"backToTop": "回到顶部",
+			"filter": {
+				"allLibraries": "所有资料库",
+				"allTypes": "所有分类",
+				"header": "筛选"
+			},
+			"order": "顺序",
+			"showAllSongs": "显示所有版本",
+			"sort": {
+				"addDate": "添加日期",
+				"creationDate": "创建日期",
+				"name": "标题",
+				"releaseDate": "发布日期",
+				"totalPlayCount": "总播放次数"
+			},
+			"sortBy": "排序依据"
+		},
+		"sections": {
+			"about": "关于"
+		},
+		"seeAll": "查看全部"
+	},
+	"emptyState": {
+		"default": "什么也没找到…",
+		"lyrics": "没有可跟唱的歌词 :(",
+		"playlist": "这个播放列表里还没有歌曲…快去添加吧！",
+		"playlists": "这个播放列表里还没有歌曲…快去创建吧！"
+	},
+	"errors": {
+		"errorOccured": "啊哦... 出了点错误",
+		"goBack": "返回",
+		"tryAgain": "重试"
+	},
+	"fileInfo": {
+		"bitRate": "比特率",
+		"extension": "扩展",
+		"name": "文件名",
+		"path": "路径",
+		"type": "分类",
+		"unknown": "未知"
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "确认",
+			"instanceUrl": "实例地址",
+			"instanceUrlIsRequired": "未找到实例地址",
+			"password": "密码",
+			"passwordIsRequired": "请输入密码",
+			"passwordTooShort": "密码长度过短",
+			"passwordsAreDifferent": "密码输入不匹配",
+			"pleaseConfirm": "请确认密码",
+			"username": "用户名",
+			"usernameIsRequired": "请输入用户名",
+			"usernameTooShort": "用户名长度过短"
+		},
+		"cancel": "取消",
+		"confirm": "确认",
+		"done": "完成",
+		"edit": "编辑",
+		"editExternalLinks": {
+			"addLink": "添加链接",
+			"saveLinks": "保存链接"
+		},
+		"illustration": {
+			"url": "输入新插图的网址"
+		},
+		"library": {
+			"nameIsRequired": "请输入名称",
+			"nameOfLibrary": "资料库名称",
+			"pathIsRequired": "请输入路径",
+			"pathOfLibrary": "资料库位置"
+		},
+		"playlist": {
+			"allowPlaylistChanges": "允许其他用户更新此播放列表",
+			"playlistIsPublic": "允许其他用户查看此播放列表"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "若您使用公共实例 (https://api.listenbrainz.org) 请留空",
+				"instanceUrlLabel": "ListenBrainz' API 地址",
+				"tokenHelperText": "获取您的用户令牌：https://listenbrainz.org/settings/",
+				"tokenIsRequired": "请输入令牌",
+				"tokenLabel": "输入 ListenBrainz 用户令牌"
+			}
+		}
+	},
+	"home": {
+		"featuredAlbums": "推荐专辑",
+		"latestAlbums": "最新专辑",
+		"mostPlayedSongs": "最多播放歌曲",
+		"newlyAddedAlbums": "最近添加的专辑",
+		"newlyAddedArtists": "最近添加的艺人",
+		"topGenres": "热门分类",
+		"topLabels": "热门厂牌"
+	},
+	"keyboardBindings": {
+		"goToSearchPage": "转到搜索页",
+		"goToSettingsPage": "转到设置",
+		"modalTitle": "键盘快捷键",
+		"openClosePlayer": "开启/关闭播放器",
+		"playPauseWhenExpanded": "播放/暂停 （当播放器已开启）"
+	},
+	"misc": {
+		"loading": "加载中",
+		"no": "否",
+		"yes": "是"
+	},
+	"models": {
+		"album": "专辑",
+		"externalLink_plural": "外部链接",
+		"lyrics": "歌词",
+		"playlist": ""
+	},
+	"nav": {
+		"browse": "浏览",
+		"home": "主页",
+		"more": "更多",
+		"search": "搜索",
+		"settings": "设置"
+	},
+	"search": {
+		"all": "全部"
+	},
+	"settings": {
+		"cache": {
+			"clearCache": "清理缓存",
+			"header": "缓存"
+		},
+		"interface": "界面",
+		"libraries": {
+			"nameColumn": "名称"
+		},
+		"manageFromWebApp": "在网页app管理资料库和用户",
+		"ui": {
+			"account": {
+				"changePassword": "修改密码",
+				"header": "账户"
+			},
+			"colorScheme": "主题",
+			"external": {
+				"enjoyingTheProject": "喜欢这个项目吗？",
+				"openAnIssue": "在 GitHub 上提交问题！",
+				"readTheDoc": "浏览用户文档",
+				"starOnGithub": "在 Github 为 Meelo 点颗星！"
+			},
+			"keyboardBindings": "键盘快捷键",
+			"lang": {
+				"zh_Hans": "简体中文",
+				"zh_Hant": "繁体中文"
+			},
+			"language": "语言",
+			"notifications": "通知",
+			"permissions": "权限",
+			"scrobblers": {
+				"connect_scrobblers": "连接追踪器",
+				"header": "追踪器",
+				"no_scrobblers_enabled": "暂无可用的音乐追踪服务"
+			},
+			"useDarkTheme": "使用暗色主题",
+			"useSystemLanguage": "使用系统语言",
+			"useSystemTheme": "使用系统主题"
+		},
+		"users": {
+			"admin": "管理员",
+			"enabled": "启用",
+			"nameColumn": "名称",
+			"you": "您"
+		}
+	},
+	"song": {
+		"infoTab": "信息"
+	},
+	"tasks": {
+		"refresh": "刷新",
+		"refreshExternalMetadata": "刷新外部元数据",
+		"refreshLocalMetadata": "刷新本地元数据",
+		"refreshMetadata": "刷新元数据",
+		"refreshMetadataForm": {
+			"forceLabel": "文件未修改时仍强制刷新"
+		},
+		"scan": "扫描",
+		"scanLibraries": "扫描资料库"
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": "恭喜！您的 Meelo 账户已创建。现在您需要等待管理员启用您的帐户",
+			"serverSwitchSuccessful": "成功切换服务器",
+			"signinFailed": "无法连接到服务器"
+		},
+		"clearCache": {
+			"error": "缓存清理失败",
+			"success": "缓存清理完成"
+		},
+		"library": {
+			"created": "已创建资料库",
+			"creationFail": "创建资料库失败",
+			"deleted": "已删除资料库",
+			"deletionFail": "删除资料库失败",
+			"deletionRunning": "资料库删除中…",
+			"loadFail": "无法加载资料库",
+			"updated": "资料库已更新"
+		},
+		"linkCopied": "链接已复制到剪贴板",
+		"player": {
+			"networkError": "网络连接出现问题…",
+			"playbackError": "当前曲目格式不受浏览器支持，跳过中…"
+		},
+		"playlist": {
+			"addedToPlaylist": "成功添加到播放列表！",
+			"itemDeletionSuccess": "成功删除"
+		},
+		"refreshMetadata": {
+			"failed": "啊哦... 刷新元数据失败",
+			"started": "正在刷新元数据... （您可能需要刷新下页面）"
+		},
+		"scrobblers": {
+			"linking": "绑定账户中...",
+			"linkingListenBrainzFailed": "无法链接到 ListenBrainz 账户",
+			"linkingSuccessful": "成功与 ListenBrainz 链接",
+			"unlinking": "账户解绑中...",
+			"unlinkingFailed": "无法解绑追踪器",
+			"unlinkingSuccessful": "已成功解绑追踪器"
+		},
+		"users": {
+			"deleted": "已删除该用户",
+			"deletionFail": "删除该用户失败",
+			"nowAdmin": "该用户已成为管理员，可以执行管理操作",
+			"nowDisabled": "已禁用该用户",
+			"nowEnabled": "已启用该用户",
+			"nowNotAdmin": "该用户已不再是管理员",
+			"updateFail": "更新该用户失败"
+		}
+	},
+	"videoType": {
+		"behindTheScenes": "幕后",
+		"documentary": "纪录片",
+		"interview": "访谈"
 	}
 }
