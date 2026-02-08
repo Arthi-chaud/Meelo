@@ -296,7 +296,12 @@ const IllustrationOrVideo = () => {
 };
 
 const styles = StyleSheet.create((theme, _rt) => ({
-	root: { width: "100%", height: "100%", display: "flex" },
+	root: {
+		width: "100%",
+		height: "100%",
+		display: "flex",
+		alignItems: "center",
+	},
 	illustrationContainer: {
 		width: "100%",
 		aspectRatio: 1,
@@ -316,7 +321,11 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		justifyContent: "space-evenly",
 		alignItems: "center",
 	},
-	textColumn: { gap: theme.gap(1.5), alignItems: "center" },
+	textColumn: {
+		gap: theme.gap(1.5),
+		alignItems: "center",
+		maxWidth: breakpoints.sm,
+	},
 	sliderContainer: {
 		width: "100%",
 		maxWidth: breakpoints.md,
