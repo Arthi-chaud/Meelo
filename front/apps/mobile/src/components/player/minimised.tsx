@@ -4,7 +4,7 @@ import { Pressable as RNPRessable, View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
@@ -20,6 +20,7 @@ import * as Haptics from "~/haptics";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
+import { animations } from "~/theme";
 import { videoPlayerAtom } from "./context";
 import { expandPlayerAtom } from "./expanded/state";
 import { getTrackForContextMenu } from "./queries";
@@ -122,6 +123,7 @@ export const MinimisedPlayer = () => {
 };
 
 const ProgressBar = () => {
+	const animatedTheme = useAnimatedTheme();
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const firstIllustrationColor = useMemo(
 		() => currentTrack?.track.illustration?.colors.at(0) ?? undefined,
@@ -129,16 +131,15 @@ const ProgressBar = () => {
 	);
 	const progress = useAtomValue(progressAtom);
 	const duration = useAtomValue(durationAtom);
-	const animatedTheme = useAnimatedTheme();
 	// Progress bar (color and width)
 	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const progressWidth = useSharedValue<`${number}%`>(`0%`);
 	useEffect(() => {
-		progressWidth.value = withSpring(
+		progressWidth.value = withTiming(
 			currentTrack
 				? `${Math.min((progress * 100) / (duration ?? 1), 100)}%`
 				: `0%`,
-			animatedTheme.value.animations.progress,
+			animations.progress,
 		);
 	}, [progress, currentTrack]);
 	const progressStyle = useAnimatedStyle(

@@ -30,10 +30,11 @@ import {
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import { animations } from "~/theme";
 
 type TextInputProps = RNTextInputProps & {
 	error?: string;
@@ -100,16 +101,16 @@ export const TextInput = ({
 		props.value === undefined || !props.value.length,
 	);
 	const animatedTheme = useAnimatedTheme();
-	const springConfig = { damping: 100, stiffness: 500 };
+	const springConfig = animations.fades;
 	const { handleOnBlur, handleOnFocus } = inModal
 		? useKeyboardFocusEvents()
 		: { handleOnFocus: () => {}, handleOnBlur: () => {} };
 	const innerlabelStyle = useAnimatedStyle(() => {
 		const labelIsRaised = isFocused.value || !isEmpty.value;
 		return {
-			opacity: withSpring(labelIsRaised ? 0 : 1, springConfig),
+			opacity: withTiming(labelIsRaised ? 0 : 1, springConfig),
 			fontSize: 16,
-			color: withSpring(
+			color: withTiming(
 				error
 					? animatedTheme.value.colors.error
 					: animatedTheme.value.colors.text.secondary,
@@ -120,9 +121,9 @@ export const TextInput = ({
 	const topLabelStyle = useAnimatedStyle(() => {
 		const labelIsRaised = isFocused.value || !isEmpty.value;
 		return {
-			opacity: withSpring(labelIsRaised ? 1 : 0, springConfig),
+			opacity: withTiming(labelIsRaised ? 1 : 0, springConfig),
 			fontSize: 16,
-			color: withSpring(
+			color: withTiming(
 				error
 					? animatedTheme.value.colors.error
 					: animatedTheme.value.colors.text.primary,
@@ -135,7 +136,7 @@ export const TextInput = ({
 	});
 
 	const animatedContainerStyle = useAnimatedStyle(() => ({
-		borderWidth: withSpring(isFocused.value ? 3 : 1, springConfig),
+		borderWidth: withTiming(isFocused.value ? 3 : 1, springConfig),
 	}));
 	styles.useVariants({ error: !!error });
 	return (

@@ -34,7 +34,7 @@ import {
 } from "react-native";
 import Animated, {
 	useAnimatedStyle,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
@@ -56,6 +56,7 @@ import { bottomTabBarHeightAtom } from "~/hooks/root-view-style";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { currentInstanceAtom, popCurrentInstanceAtom } from "~/state/user";
+import { animations } from "~/theme";
 
 //TODO DRY: The header style for settings is very similar to the shared routed ones.
 //TODO I suspect that the setting header style is not updated when theme changes because we don't use withUnistyles
@@ -125,11 +126,7 @@ export default function ProtectedLayout() {
 	);
 	const showPlayer = !queueIsEmpty || queueIsInfinite;
 	const playerPresence = useAnimatedStyle(() => {
-		const style = {
-			stiffness: 1110,
-			damping: 510,
-		};
-		return { opacity: withSpring(showPlayer ? 1 : 0, style) };
+		return { opacity: withTiming(showPlayer ? 1 : 0, animations.fades) };
 	}, [showPlayer]);
 	if (user.error || !currentInstance) {
 		if (currentInstance) popCurrentInstance();

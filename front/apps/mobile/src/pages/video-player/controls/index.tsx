@@ -8,10 +8,10 @@ import {
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
-	withSpring,
+	withTiming,
 } from "react-native-reanimated";
 import { ScopedTheme, StyleSheet } from "react-native-unistyles";
-import { useAnimatedTheme } from "react-native-unistyles/reanimated";
+import { animations } from "~/theme";
 import { Bottom } from "./bottom";
 import { NavigationBar } from "./nav-bar";
 import { PlaybackControls } from "./playback";
@@ -19,7 +19,6 @@ import { PlaybackControls } from "./playback";
 type Props = { style: ViewStyle; close: () => void };
 export const Controls = (props: Props) => {
 	const opacity = useSharedValue(1);
-	const animatedTheme = useAnimatedTheme();
 	const timer = useRef(0);
 	const hideControlsAfterDelay = useCallback(
 		(delay?: number) => {
@@ -34,10 +33,7 @@ export const Controls = (props: Props) => {
 	);
 	const opacityStyle = useAnimatedStyle(() => {
 		return {
-			opacity: withSpring(
-				opacity.value,
-				animatedTheme.value.animations.fades,
-			),
+			opacity: withTiming(opacity.value, animations.fades),
 		};
 	});
 	useEffect(() => {
