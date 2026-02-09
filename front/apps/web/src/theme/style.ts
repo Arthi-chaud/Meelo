@@ -21,6 +21,10 @@ const Styles = {
 		color: "inherit",
 		textDecoration: "none",
 	},
+	":root": {
+		// To hide the background of scrollbars on firefox
+		scrollbarColor: "gray transparent",
+	},
 	/* width */
 	"::-webkit-scrollbar": {
 		width: "8px",
