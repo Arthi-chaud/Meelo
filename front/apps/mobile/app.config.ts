@@ -76,6 +76,7 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 	],
 	experiments: {
 		typedRoutes: true,
+		reactCompiler: true,
 	},
 	extra: {
 		router: {},
