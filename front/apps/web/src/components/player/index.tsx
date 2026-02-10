@@ -40,6 +40,7 @@ import {
 	skipTrackAtom,
 	type TrackState,
 } from "@/state/player";
+import formatArtists from "@/utils/format-artists";
 import { useQueryClient } from "~/api";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
@@ -399,7 +400,10 @@ const Player = () => {
 			if (typeof navigator.mediaSession !== "undefined") {
 				navigator.mediaSession.metadata = new MediaMetadata({
 					title: currentTrack.track.name,
-					artist: currentTrack.artist.name,
+					artist: formatArtists(
+						currentTrack.artist,
+						currentTrack.featuring,
+					),
 					artwork: newIllustrationURL
 						? [
 								{
