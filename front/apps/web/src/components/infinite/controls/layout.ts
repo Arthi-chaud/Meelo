@@ -19,6 +19,7 @@
 import { useRouter } from "next/router";
 import { useLayoutControl as useLayoutControlBase } from "@/infinite-controls/layout";
 import { type LayoutOption, LayoutOptions } from "@/models/layout";
+import { useLayoutPreference } from "~/state/layout-preferences";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 // Hook to get Layout data to pass to Controls
@@ -30,6 +31,9 @@ export const useLayoutControl = ({
 	enableToggle: boolean;
 }) => {
 	const router = useRouter();
+	const [layoutPreference, setLayoutPreference] = useLayoutPreference(
+		router.route,
+	);
 	return useLayoutControlBase({
 		hook: () => {
 			const router = useRouter();
@@ -40,10 +44,12 @@ export const useLayoutControl = ({
 			);
 			return layoutQuery;
 		},
-		defaultLayout,
+		defaultLayout: layoutPreference.layout ?? defaultLayout,
+		defaultItemSize: layoutPreference.itemSize,
 		enableToggle,
 		onUpdate: (p) => {
 			setQueryParam([["view", p.layout]], router);
+			setLayoutPreference(p);
 		},
 	});
 };

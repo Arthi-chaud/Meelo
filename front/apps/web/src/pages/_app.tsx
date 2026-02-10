@@ -38,6 +38,11 @@ import { ModalSlot } from "~/components/modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n";
+import {
+	LayoutPreferenceKey,
+	layoutPreferenceAtom,
+	loadLayoutPreferences,
+} from "~/state/layout-preferences";
 import { accessTokenAtom } from "~/state/user";
 import ThemeProvider from "~/theme/provider";
 
@@ -149,15 +154,20 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 			queries: DefaultQueryOptions,
 		},
 	});
-	const accessToken: string | undefined = (appContext.ctx.req as any)
-		?.cookies[UserAccessTokenStorageKey];
+	const cookies = (appContext.ctx.req as any)?.cookies ?? {};
 
+	const accessToken: string | undefined = cookies[UserAccessTokenStorageKey];
 	if (!accessToken) {
 		// Disable SSR if user is not authentified
 		return { pageProps: {} };
 	}
+
 	const api = getAPI_(accessToken);
 	store.set(accessTokenAtom, accessToken);
+
+	const layoutPrefs = loadLayoutPreferences(cookies[LayoutPreferenceKey]);
+	store.set(layoutPreferenceAtom, layoutPrefs);
+
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
 
