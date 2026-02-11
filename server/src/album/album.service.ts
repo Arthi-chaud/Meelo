@@ -541,7 +541,7 @@ export default class AlbumService extends SearchableRepositoryService {
 			case "name":
 				return [
 					{ sortSlug: sortingParameter.order },
-					{ artist: { slug: "asc" } },
+					{ artist: { sortSlug: "asc" } },
 					{ id: "asc" },
 				];
 			case "artistName":
@@ -564,7 +564,7 @@ export default class AlbumService extends SearchableRepositoryService {
 							nulls: "last",
 						},
 					},
-					{ artist: { slug: "asc" } },
+					{ artist: { sortSlug: "asc" } },
 					{ sortSlug: "asc" },
 					{ id: "asc" },
 				];

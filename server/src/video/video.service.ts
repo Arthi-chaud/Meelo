@@ -569,7 +569,7 @@ export default class VideoService extends SearchableRepositoryService {
 			case "name":
 				sort.push(
 					{ sortSlug: sortingParameter.order },
-					{ artist: { slug: "asc" } },
+					{ artist: { sortSlug: "asc" } },
 					{ id: "asc" },
 				);
 				break;
@@ -581,7 +581,7 @@ export default class VideoService extends SearchableRepositoryService {
 				break;
 			case "artistName":
 				sort.push(
-					{ artist: { slug: sortingParameter.order } },
+					{ artist: { sortSlug: sortingParameter.order } },
 					{ sortSlug: "asc" },
 					{ id: "asc" },
 				);
@@ -620,7 +620,7 @@ export default class VideoService extends SearchableRepositoryService {
 					},
 					{
 						artist: {
-							slug: "asc",
+							sortSlug: "asc",
 						},
 					},
 				);

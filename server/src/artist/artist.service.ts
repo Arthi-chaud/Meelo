@@ -418,12 +418,12 @@ export default class ArtistService extends SearchableRepositoryService {
 			case "albumCount":
 				return [
 					{ albums: { _count: sortingParameter.order } },
-					{ slug: "asc" },
+					{ sortSlug: "asc" },
 				];
 			case "songCount":
 				return [
 					{ songs: { _count: sortingParameter.order } },
-					{ slug: "asc" },
+					{ sortSlug: "asc" },
 				];
 			case "addDate":
 				return [

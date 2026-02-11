@@ -439,7 +439,7 @@ export default class SongService extends SearchableRepositoryService {
 			case "name":
 				sort.push(
 					{ sortSlug: sortingParameter.order },
-					{ artist: { slug: "asc" } },
+					{ artist: { sortSlug: "asc" } },
 				);
 				break;
 			case "bpm":
@@ -471,7 +471,7 @@ export default class SongService extends SearchableRepositoryService {
 						},
 					},
 					{ sortSlug: "asc" },
-					{ artist: { slug: "asc" } },
+					{ artist: { sortSlug: "asc" } },
 				);
 				break;
 			case "releaseDate":
@@ -497,7 +497,7 @@ export default class SongService extends SearchableRepositoryService {
 					},
 					{
 						artist: {
-							slug: "asc",
+							sortSlug: "asc",
 						},
 					},
 				);

@@ -230,7 +230,7 @@ export default class ReleaseService {
 			case "name":
 				return [
 					{ nameSlug: sortingParameter.order },
-					{ album: { artist: { slug: "asc" } } },
+					{ album: { artist: { sortSlug: "asc" } } },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ tracks: { _count: "asc" } },
 					{ id: "asc" },
@@ -239,7 +239,7 @@ export default class ReleaseService {
 				return [
 					{ tracks: { _count: sortingParameter.order } },
 					{ nameSlug: "asc" },
-					{ album: { artist: { slug: "asc" } } },
+					{ album: { artist: { sortSlug: "asc" } } },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ id: "asc" },
 				];
@@ -247,7 +247,7 @@ export default class ReleaseService {
 				return [
 					{ registeredAt: sortingParameter.order },
 					{ nameSlug: "asc" },
-					{ album: { artist: { slug: "asc" } } },
+					{ album: { artist: { sortSlug: "asc" } } },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ tracks: { _count: "asc" } },
 					{ id: "asc" },
@@ -261,7 +261,7 @@ export default class ReleaseService {
 						},
 					},
 					{ nameSlug: "asc" },
-					{ album: { artist: { slug: "asc" } } },
+					{ album: { artist: { sortSlug: "asc" } } },
 					{ tracks: { _count: "asc" } },
 					{ id: "asc" },
 				];
