@@ -19,9 +19,52 @@
 import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
-import { Orders } from "@/models/sorting";
-import { useViewPreference } from "~/state/view-preferences";
+import { Orders, type SortingParameters } from "@/models/sorting";
+import {
+	getViewPreference,
+	useViewPreference,
+	type ViewPreference,
+} from "~/state/view-preferences";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
+
+export const ssrGetSortingParameter = <SortingKey extends string>(
+	sortingKeys: readonly SortingKey[],
+	router: {
+		query: ParsedUrlQuery;
+		pathname: string;
+	},
+	defaultValue?: SortingParameters<SortingKey[]>,
+) => {
+	return getSortingParameter(
+		sortingKeys,
+		router,
+		getViewPreference(router.pathname),
+		defaultValue,
+	);
+};
+
+// Using the view preference atom and the query parameters, identifies what the SortingParamaters should be
+const getSortingParameter = <SortingKey extends string>(
+	sortingKeys: readonly SortingKey[],
+	router: {
+		query: ParsedUrlQuery;
+	},
+	viewPreference: ViewPreference,
+	defaultValue?: SortingParameters<SortingKey[]>,
+) => {
+	const order =
+		getOrderQuery(router) ??
+		parseQueryParam(viewPreference?.sort?.order, Orders) ??
+		defaultValue?.order ??
+		"asc";
+	const sortBy =
+		getSortQuery(router, sortingKeys) ??
+		parseQueryParam(viewPreference?.sort?.sortBy, sortingKeys) ??
+		defaultValue?.sortBy ??
+		sortingKeys[0];
+	return { sortBy, order };
+	// NOTE: Do not change the order of the fields, for SSR and query key match
+};
 
 // Hook to get Sorting data to pass to Controls
 export const useSortControl = <SortingKey extends string>({
@@ -37,15 +80,13 @@ export const useSortControl = <SortingKey extends string>({
 		hook: () => {
 			const router = useRouter();
 			const [viewPreference] = useViewPreference(router.route);
-			const order =
-				getOrderQuery(router) ??
-				parseQueryParam(viewPreference?.sort?.order, Orders) ??
-				"asc";
-			const sort =
-				getSortQuery_(router, sortingKeys) ??
-				parseQueryParam(viewPreference?.sort?.sortBy, sortingKeys) ??
-				sortingKeys[0];
-			return { sort, order };
+			const { order, sortBy } = getSortingParameter(
+				sortingKeys,
+				router,
+				viewPreference,
+				{ order: "asc", sortBy: sortingKeys[0] },
+			);
+			return { sort: sortBy, order };
 		},
 		sortingKeys,
 		translate,
@@ -69,14 +110,9 @@ export const getOrderQuery = (router: { query: ParsedUrlQuery }) =>
 	// biome-ignore lint/complexity/useLiteralKeys: Clarity
 	parseQueryParam(router.query["order"], Orders);
 
-const getSortQuery_ = <SortKey extends string>(
+export const getSortQuery = <SortKey extends string>(
 	router: { query: ParsedUrlQuery },
 	sortingKeys: readonly SortKey[],
 ) =>
 	// biome-ignore lint/complexity/useLiteralKeys: Clarity
 	parseQueryParam(router.query["sort"], sortingKeys);
-
-export const getSortQuery = <SortKey extends string>(
-	router: { query: ParsedUrlQuery },
-	sortingKeys: readonly SortKey[],
-) => getSortQuery_(router, sortingKeys) ?? sortingKeys[0];

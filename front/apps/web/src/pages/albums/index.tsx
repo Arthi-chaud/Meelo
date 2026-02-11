@@ -5,18 +5,14 @@ import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAlbums } from "@/api/queries";
 import { AlbumSortingKeys } from "@/models/album";
 import { Head } from "~/components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "~/components/infinite/controls/sort";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 
 const isCompilationPage = ({ asPath }: { asPath?: string }) =>
 	asPath?.includes("/compilations") ?? false;
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, AlbumSortingKeys);
+	const sort = ssrGetSortingParameter(AlbumSortingKeys, context);
 
 	return {
 		infiniteQueries: [
@@ -26,7 +22,7 @@ const prepareSSR = (context: NextPageContext) => {
 						? "compilations"
 						: undefined,
 				},
-				{ sortBy, order },
+				sort,
 				["artist", "illustration"],
 			),
 		],

@@ -4,18 +4,14 @@ import type { GetPropsTypesFrom, Page } from "ssr";
 import { getArtists } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
 import { Head } from "~/components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "~/components/infinite/controls/sort";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, ArtistSortingKeys);
+	const sort = ssrGetSortingParameter(ArtistSortingKeys, context);
 
 	return {
-		infiniteQueries: [getArtists({}, { sortBy, order }, ["illustration"])],
+		infiniteQueries: [getArtists({}, sort, ["illustration"])],
 	};
 };
 

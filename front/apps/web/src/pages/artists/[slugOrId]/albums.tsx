@@ -22,10 +22,12 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAlbums, getArtist } from "@/api/queries";
+import { AlbumSortingKeys } from "@/models/album";
 import { getYear } from "@/utils/date";
 import { useQuery } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import getSlugOrId from "~/utils/getSlugOrId";
@@ -40,6 +42,7 @@ const artistQuery = (artistIdentifier: string | number) =>
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
+	const sort = ssrGetSortingParameter(AlbumSortingKeys, context, defaultSort);
 
 	return {
 		additionalProps: {
@@ -47,7 +50,7 @@ const prepareSSR = (context: NextPageContext) => {
 		},
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
-			getAlbums({ artist: artistIdentifier }, defaultSort, [
+			getAlbums({ artist: artistIdentifier }, sort, [
 				"artist",
 				"illustration",
 			]),
