@@ -2,15 +2,17 @@ import { getCookie, setCookie } from "cookies-next";
 import { atom, useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import type { ItemSize, LayoutOption } from "@/models/layout";
+import type { SortingParameters } from "@/models/sorting";
 
 export type ViewPreference = {
 	layout?: Partial<{
 		layout: LayoutOption;
 		itemSize: ItemSize;
 	}>;
+	sort?: Partial<SortingParameters<any>>;
 };
 
-// The key being the route to use the layout preference on
+// The key being the route to use the view preference on
 export type ViewPreferences = Record<string, ViewPreference>;
 
 export const ViewPreferenceKey = "view_preferences";

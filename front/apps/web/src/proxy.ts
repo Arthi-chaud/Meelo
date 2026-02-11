@@ -29,13 +29,13 @@ export async function proxy(request: NextRequest) {
 	const { pathname, origin } = request.nextUrl;
 	const accessToken = request.cookies.get(UserAccessTokenStorageKey)?.value;
 	const queryClient = new QueryClient();
+
 	if (accessToken) {
 		store.set(accessTokenAtom, accessToken);
 	} else {
 		// Disable SSR if user is not authentified
 		return NextResponse.redirect(`${origin}/`);
 	}
-
 	const api = getAPI_(accessToken);
 	if (pathname === "/scrobblers/lastfm/callback_handler") {
 		const lastfmToken = request.nextUrl.searchParams.get("token");

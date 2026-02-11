@@ -20,6 +20,7 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import { Orders } from "@/models/sorting";
+import { useViewPreference } from "~/state/view-preferences";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 // Hook to get Sorting data to pass to Controls
@@ -31,13 +32,19 @@ export const useSortControl = <SortingKey extends string>({
 	translate: (s: SortingKey) => TranslationKey;
 }) => {
 	const router = useRouter();
+	const [, setViewPreference] = useViewPreference(router.route);
 	return useSortControlBase({
 		hook: () => {
 			const router = useRouter();
-			const order = getOrderQuery(router) ?? "asc";
-			const sort = getSortQuery(router, sortingKeys);
-			// Note: getSortQuery does not return  null,
-			// falling back on the first key in the key list
+			const [viewPreference] = useViewPreference(router.route);
+			const order =
+				getOrderQuery(router) ??
+				parseQueryParam(viewPreference?.sort?.order, Orders) ??
+				"asc";
+			const sort =
+				getSortQuery_(router, sortingKeys) ??
+				parseQueryParam(viewPreference?.sort?.sortBy, sortingKeys) ??
+				sortingKeys[0];
 			return { sort, order };
 		},
 		sortingKeys,
@@ -50,6 +57,10 @@ export const useSortControl = <SortingKey extends string>({
 				],
 				router,
 			);
+			setViewPreference((vp) => {
+				vp.sort = { sortBy: p.sort, order: p.order };
+				return vp;
+			});
 		},
 	});
 };
@@ -58,9 +69,14 @@ export const getOrderQuery = (router: { query: ParsedUrlQuery }) =>
 	// biome-ignore lint/complexity/useLiteralKeys: Clarity
 	parseQueryParam(router.query["order"], Orders);
 
-export const getSortQuery = <SortKey extends string>(
+const getSortQuery_ = <SortKey extends string>(
 	router: { query: ParsedUrlQuery },
 	sortingKeys: readonly SortKey[],
 ) =>
 	// biome-ignore lint/complexity/useLiteralKeys: Clarity
-	parseQueryParam(router.query["sort"], sortingKeys) ?? sortingKeys[0];
+	parseQueryParam(router.query["sort"], sortingKeys);
+
+export const getSortQuery = <SortKey extends string>(
+	router: { query: ParsedUrlQuery },
+	sortingKeys: readonly SortKey[],
+) => getSortQuery_(router, sortingKeys) ?? sortingKeys[0];
