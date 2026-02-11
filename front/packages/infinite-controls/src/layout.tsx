@@ -26,6 +26,7 @@ type State = { layout: LayoutOption; itemSize: ItemSize };
 // Hook to get Layout data to pass to Controls
 export const useLayoutControl = ({
 	defaultLayout,
+	defaultItemSize,
 	enableToggle,
 	onUpdate,
 	hook,
@@ -34,11 +35,12 @@ export const useLayoutControl = ({
 	defaultLayout: LayoutOption;
 	enableToggle: boolean;
 	onUpdate: LayoutControl["onUpdate"];
+	defaultItemSize?: ItemSize;
 }) => {
 	const layout = hook();
 	const [layoutState, setLayoutState] = useState<State>(() => ({
 		layout: !enableToggle ? defaultLayout : (layout ?? defaultLayout),
-		itemSize: "m",
+		itemSize: defaultItemSize ?? "m",
 	}));
 	const control: LayoutControl = {
 		layout: layoutState.layout,
