@@ -38,12 +38,12 @@ import { ModalSlot } from "~/components/modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n";
-import {
-	LayoutPreferenceKey,
-	layoutPreferenceAtom,
-	loadLayoutPreferences,
-} from "~/state/layout-preferences";
 import { accessTokenAtom } from "~/state/user";
+import {
+	loadViewPreferences,
+	ViewPreferenceKey,
+	viewPreferenceAtom,
+} from "~/state/view-preferences";
 import ThemeProvider from "~/theme/provider";
 
 export interface MyAppProps extends AppProps {
@@ -165,8 +165,8 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	const api = getAPI_(accessToken);
 	store.set(accessTokenAtom, accessToken);
 
-	const layoutPrefs = loadLayoutPreferences(cookies[LayoutPreferenceKey]);
-	store.set(layoutPreferenceAtom, layoutPrefs);
+	const layoutPrefs = loadViewPreferences(cookies[ViewPreferenceKey]);
+	store.set(viewPreferenceAtom, layoutPrefs);
 
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
