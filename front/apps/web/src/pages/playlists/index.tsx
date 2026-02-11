@@ -22,20 +22,14 @@ import type { GetPropsTypesFrom, Page } from "ssr";
 import { getPlaylists } from "@/api/queries";
 import { PlaylistSortingKeys } from "@/models/playlist";
 import { Head } from "~/components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "~/components/infinite/controls/sort";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import InfinitePlaylistView from "~/components/infinite/resource/playlist";
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, PlaylistSortingKeys);
+	const sort = ssrGetSortingParameter(PlaylistSortingKeys, context);
 
 	return {
-		infiniteQueries: [
-			getPlaylists({}, { sortBy, order }, ["illustration"]),
-		],
+		infiniteQueries: [getPlaylists({}, sort, ["illustration"])],
 	};
 };
 

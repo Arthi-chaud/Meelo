@@ -3,6 +3,7 @@ import { atom, useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import type { ItemSize, LayoutOption } from "@/models/layout";
 import type { SortingParameters } from "@/models/sorting";
+import { store } from "@/state/store";
 
 export type ViewPreference = {
 	layout?: Partial<{
@@ -58,3 +59,7 @@ export const useViewPreference = (route: string) => {
 	);
 	return [preference, updatePreference] as const;
 };
+
+// To be used in SSR
+export const getViewPreference = (route: string): ViewPreference =>
+	store.get(_viewPreferences)[route] ?? {};

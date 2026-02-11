@@ -25,10 +25,7 @@ import { VideoSortingKeys } from "@/models/video";
 import { useQuery } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "~/components/infinite/controls/sort";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import InfiniteVideoView from "~/components/infinite/resource/video";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import getSlugOrId from "~/utils/getSlugOrId";
@@ -38,18 +35,17 @@ const artistQuery = (identifier: string | number) =>
 
 const prepareSSR = (context: NextPageContext) => {
 	const artistIdentifier = getSlugOrId(context.query);
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, VideoSortingKeys);
+	const sort = ssrGetSortingParameter(VideoSortingKeys, context);
 
 	return {
-		additionalProps: { artistIdentifier, order, sortBy },
+		additionalProps: { artistIdentifier },
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
-			getVideos(
-				{ artist: artistIdentifier },
-				{ sortBy: sortBy, order: order },
-				["artist", "master", "illustration"],
-			),
+			getVideos({ artist: artistIdentifier }, sort, [
+				"artist",
+				"master",
+				"illustration",
+			]),
 		],
 	};
 };

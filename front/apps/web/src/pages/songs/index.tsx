@@ -4,20 +4,15 @@ import type { GetPropsTypesFrom, Page } from "ssr";
 import { getSongGroups, getSongs } from "@/api/queries";
 import { SongSortingKeys } from "@/models/song";
 import { Head } from "~/components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "~/components/infinite/controls/sort";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, SongSortingKeys);
+	const sort = ssrGetSortingParameter(SongSortingKeys, context);
 
 	return {
-		additionalProps: { order, sortBy },
 		infiniteQueries: [
-			getSongs({}, { sortBy, order }, [
+			getSongs({}, sort, [
 				"artist",
 				"featuring",
 				"master",

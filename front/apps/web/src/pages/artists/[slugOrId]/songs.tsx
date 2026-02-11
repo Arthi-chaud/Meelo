@@ -30,10 +30,7 @@ import formatArtists from "@/utils/format-artists";
 import { getAPI, useQuery, useQueryClient } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
-import {
-	getOrderQuery,
-	getSortQuery,
-} from "~/components/infinite/controls/sort";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
 import { HybridInfiniteSongView } from "~/components/infinite/resource/song";
 import ArtistRelationPageHeader from "~/components/relation-page-header/resource/artist";
 import getSlugOrId from "~/utils/getSlugOrId";
@@ -49,8 +46,7 @@ const prepareSSR = async (
 	queryClient: QueryClient,
 ) => {
 	const artistIdentifier = getSlugOrId(context.query);
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, SongSortingKeys);
+	const sort = ssrGetSortingParameter(SongSortingKeys, context);
 	const api = getAPI();
 	const songs = await queryClient.fetchInfiniteQuery(
 		toTanStackInfiniteQuery(api, () =>
@@ -59,14 +55,14 @@ const prepareSSR = async (
 					[isRareSongsPage(context) ? "rare" : "artist"]:
 						artistIdentifier,
 				},
-				{ sortBy, order },
+				sort,
 				["artist", "featuring", "master", "illustration"],
 			),
 		),
 	);
 
 	return {
-		additionalProps: { artistIdentifier, sortBy, order },
+		additionalProps: { artistIdentifier },
 		queries: [
 			artistQuery(artistIdentifier),
 			...songs.pages

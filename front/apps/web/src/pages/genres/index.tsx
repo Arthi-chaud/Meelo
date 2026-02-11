@@ -28,19 +28,17 @@ import type { IllustratedResource } from "@/models/illustration";
 import { Head } from "~/components/head";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
-	getOrderQuery,
-	getSortQuery,
+	ssrGetSortingParameter,
 	useSortControl,
 } from "~/components/infinite/controls/sort";
 import InfiniteGrid from "~/components/infinite/grid";
 import { GenreTile } from "~/components/tile/resource/genre";
 
 const prepareSSR = (context: NextPageContext) => {
-	const order = getOrderQuery(context) ?? "asc";
-	const sortBy = getSortQuery(context, GenreSortingKeys);
+	const sort = ssrGetSortingParameter(GenreSortingKeys, context);
 
 	return {
-		infiniteQueries: [getGenres({}, { sortBy, order })],
+		infiniteQueries: [getGenres({}, sort)],
 	};
 };
 
