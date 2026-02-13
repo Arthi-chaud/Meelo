@@ -16,8 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRoute } from "@react-navigation/native";
 import { useLayoutControl as useLayoutControlBase } from "@/infinite-controls/layout";
 import type { LayoutOption } from "@/models/layout";
+import { useViewPreference } from "~/state/view-preferences";
 
 // Hook to get Layout data to pass to Controls
 export const useLayoutControl = ({
@@ -27,12 +29,18 @@ export const useLayoutControl = ({
 	defaultLayout: LayoutOption;
 	enableToggle: boolean;
 }) => {
+	const route = useRoute();
+	const [_, setPrefs] = useViewPreference(route.name);
 	return useLayoutControlBase({
 		hook: () => {
-			return null;
+			const route = useRoute();
+			const [{ layout }] = useViewPreference(route.name);
+			return layout?.layout ?? null;
 		},
 		defaultLayout,
 		enableToggle,
-		onUpdate: () => {},
+		onUpdate: (layout) => {
+			setPrefs((p) => ({ ...p, layout }));
+		},
 	});
 };
