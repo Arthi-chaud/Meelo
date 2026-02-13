@@ -1,6 +1,6 @@
 import Image from "@d11/react-native-fast-image";
 import { openBrowserAsync } from "expo-web-browser";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -13,7 +13,7 @@ import type {
 import { ExpandLessIcon, ExpandMoreIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useAPI } from "~/api";
-import { Icon } from "~/primitives/icon";
+import { Button } from "~/primitives/button";
 import { Pressable } from "~/primitives/pressable";
 import { Text, TextSkeleton } from "~/primitives/text";
 import { LoadableText } from "./loadable_text";
@@ -43,6 +43,15 @@ export const ExternalMetadataDescriptionSection = ({
 	if (externalMetadata?.description === null) {
 		return null;
 	}
+	useEffect(() => {
+		expand((isExpanded_) => {
+			if (!externalMetadata || externalMetadata.description === null) {
+				return null;
+			}
+
+			return isExpanded_ || false;
+		});
+	}, [externalMetadata?.description]);
 	return (
 		<View style={[styles.root, style]}>
 			<SectionHeader
@@ -50,15 +59,11 @@ export const ExternalMetadataDescriptionSection = ({
 				content={externalMetadata === undefined ? undefined : heading}
 				trailing={
 					isExpanded !== null ? (
-						<Pressable
+						<Button
+							size="small"
 							onPress={() => expand((expanded) => !expanded)}
-						>
-							<Icon
-								icon={
-									isExpanded ? ExpandLessIcon : ExpandMoreIcon
-								}
-							/>
-						</Pressable>
+							icon={isExpanded ? ExpandLessIcon : ExpandMoreIcon}
+						/>
 					) : undefined
 				}
 			/>
@@ -85,10 +90,10 @@ export const ExternalMetadataDescriptionSection = ({
 							}
 							onTextLayout={(e) => {
 								if (
-									e.nativeEvent.lines.length >
+									e.nativeEvent.lines.length <
 									DescriptionLineCount
 								) {
-									expand(false);
+									expand(null);
 								}
 							}}
 						/>
