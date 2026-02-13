@@ -32,6 +32,10 @@ import {
 	toTanStackQuery,
 } from "@/api/query";
 import { store } from "@/state/store";
+import {
+	loadViewPreferences,
+	ViewPreferenceKey,
+} from "@/state/view-preference";
 import { getAPI_ } from "~/api";
 import { KeyboardBindingModal } from "~/components/keyboard-bindings-modal";
 import { ModalSlot } from "~/components/modal";
@@ -39,11 +43,7 @@ import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n";
 import { accessTokenAtom } from "~/state/user";
-import {
-	loadViewPreferences,
-	ViewPreferenceKey,
-	viewPreferenceAtom,
-} from "~/state/view-preferences";
+import { viewPreferenceAtom } from "~/state/view-preferences";
 import ThemeProvider from "~/theme/provider";
 
 export interface MyAppProps extends AppProps {
