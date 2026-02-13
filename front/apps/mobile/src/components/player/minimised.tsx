@@ -55,69 +55,97 @@ export const MinimisedPlayer = () => {
 		currentTrack?.track.id,
 	);
 
+	const scale = useSharedValue<number>(1);
+	const handlePress = useCallback(() => {
+		scale.value = animations.pressable.scaleOnPress;
+	}, []);
+	const onPressOut = useCallback(() => {
+		scale.value = 1;
+	}, []);
+	const pressStyle = useAnimatedStyle(() => ({
+		transform: [
+			{
+				scale: withTiming(scale.value, animations.pressable.config),
+			},
+		],
+	}));
+
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
+	const onPress = useCallback(() => {
+		handlePress();
+		expandPlayer();
+	}, [expandPlayer, handlePress]);
 	const onLongPress = useCallback(() => {
+		handlePress();
 		openContextMenu();
 		Haptics.onContextMenuOpen();
-	}, [openContextMenu]);
+	}, [openContextMenu, handlePress]);
 	styles.useVariants({ loading: isLoading });
 	return (
 		<RNPRessable
 			android_disableSound
-			style={styles.root}
-			onPress={expandPlayer}
+			onPress={onPress}
+			onPressOut={onPressOut}
 			onLongPress={onLongPress}
 		>
-			<ColorBackground />
-			<View style={styles.content}>
-				<View style={styles.illustration}>
-					{currentTrack?.track.type === "Video" && player ? (
-						<View style={styles.videoContainer}>
-							<VideoView
-								player={player}
-								resizeMode="cover"
-								style={styles.video}
+			<Animated.View style={[styles.root, pressStyle]}>
+				<ColorBackground />
+				<View style={styles.content}>
+					<View style={styles.illustration}>
+						{currentTrack?.track.type === "Video" && player ? (
+							<View style={styles.videoContainer}>
+								<VideoView
+									player={player}
+									resizeMode="cover"
+									style={styles.video}
+								/>
+							</View>
+						) : (
+							<Illustration
+								illustration={currentTrack?.track.illustration}
+								normalizedThumbnail={isVideo}
+								variant="center"
+								useBlurhash
+								quality={isVideo ? "medium" : "low"}
 							/>
-						</View>
-					) : (
-						<Illustration
-							illustration={currentTrack?.track.illustration}
-							normalizedThumbnail={isVideo}
-							variant="center"
-							useBlurhash
-							quality={isVideo ? "medium" : "low"}
+						)}
+					</View>
+					<View style={styles.text}>
+						<LoadableText
+							content={currentTrack?.track.name}
+							numberOfLines={1}
+							variant="h6"
+							skeletonWidth={15}
 						/>
-					)}
+						<LoadableText
+							content={formattedArtistName}
+							numberOfLines={1}
+							variant="body"
+							skeletonWidth={15}
+						/>
+					</View>
+					<View style={styles.controls}>
+						<Pressable
+							onPress={rewindTrack}
+							style={styles.rewindButton}
+						>
+							<Icon
+								icon={RewindIcon}
+								style={styles.controlButton}
+							/>
+						</Pressable>
+						<PlayButton />
+						<Pressable onPress={onSkip}>
+							<Icon
+								icon={ForwardIcon}
+								style={styles.controlButton}
+							/>
+						</Pressable>
+					</View>
 				</View>
-				<View style={styles.text}>
-					<LoadableText
-						content={currentTrack?.track.name}
-						numberOfLines={1}
-						variant="h6"
-						skeletonWidth={15}
-					/>
-					<LoadableText
-						content={formattedArtistName}
-						numberOfLines={1}
-						variant="body"
-						skeletonWidth={15}
-					/>
-				</View>
-				<View style={styles.controls}>
-					<Pressable
-						onPress={rewindTrack}
-						style={styles.rewindButton}
-					>
-						<Icon icon={RewindIcon} style={styles.controlButton} />
-					</Pressable>
-					<PlayButton />
-					<Pressable onPress={onSkip}>
-						<Icon icon={ForwardIcon} style={styles.controlButton} />
-					</Pressable>
-				</View>
-			</View>
-			<ProgressBar />
+				<ProgressBar />
+			</Animated.View>
 		</RNPRessable>
 	);
 };
