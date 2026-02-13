@@ -16,8 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useRoute } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
+import { useViewPreference } from "~/state/view-preferences";
 import type { Sorting } from "~/utils/sorting";
 
 export const useSortControl = <SortingKey extends string>({
@@ -27,15 +29,22 @@ export const useSortControl = <SortingKey extends string>({
 	sortingKeys: readonly SortingKey[];
 	translate: (s: SortingKey) => TranslationKey;
 }) => {
+	const route = useRoute();
+	const [_, setPrefs] = useViewPreference(route.name);
 	return useSortControlBase({
 		hook: () => {
-			let { sort, order } = useLocalSearchParams<Sorting<SortingKey>>();
-			sort ??= sortingKeys[0];
-			order ??= "asc";
-			return { sort, order };
+			const route = useRoute();
+			const { sort, order } = useLocalSearchParams<Sorting<SortingKey>>();
+			const [prefs] = useViewPreference(route.name);
+			return {
+				sort: sort ?? prefs.sort?.sortBy ?? sortingKeys[0],
+				order: order ?? prefs.sort?.order ?? "asc",
+			};
 		},
 		sortingKeys,
 		translate,
-		onUpdate: () => {},
+		onUpdate: ({ sort: sortBy, order }) => {
+			setPrefs((p) => ({ ...p, sort: { order, sortBy } }));
+		},
 	});
 };
