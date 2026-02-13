@@ -20,11 +20,8 @@ import type { ParsedUrlQuery } from "node:querystring";
 import { useRouter } from "next/router";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import { Orders, type SortingParameters } from "@/models/sorting";
-import {
-	getViewPreference,
-	useViewPreference,
-	type ViewPreference,
-} from "~/state/view-preferences";
+import type { ViewPreference } from "@/state/view-preference";
+import { getViewPreference, useViewPreference } from "~/state/view-preferences";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
 
 export const ssrGetSortingParameter = <SortingKey extends string>(
