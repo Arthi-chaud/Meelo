@@ -1,0 +1,23 @@
+{
+	"name": "meelo",
+	"private": true,
+	"scripts": {
+		"start:web:dev": "yarn workspace web run start:dev",
+		"start:web:prod": "yarn workspace web run start:prod",
+		"tsc:web": "yarn workspace web run tsc",
+		"tsc:all": "yarn workspaces foreach -A --exclude 'meelo' run tsc",
+		"build:web": "yarn workspace web build",
+		"lint": "biome lint .",
+		"format": "biome format ."
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"devDependencies": {
+		"@biomejs/biome": "2.3.8",
+		"jest": "^30.2.0",
+		"typescript": "5.9.3"
+	},
+	"packageManager": "yarn@4.12.0"
+}

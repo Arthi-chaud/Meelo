@@ -1,0 +1,30 @@
+/* For Background transition */
+@property --gradientColor1 {
+	syntax: "<color>";
+	initial-value: #000000;
+	inherits: true;
+}
+
+@property --gradientColor2 {
+	syntax: "<color>";
+	initial-value: #000000;
+	inherits: true;
+}
+
+@property --gradientColor3 {
+	syntax: "<color>";
+	initial-value: #000000;
+	inherits: true;
+}
+
+@property --gradientColor4 {
+	syntax: "<color>";
+	initial-value: #000000;
+	inherits: true;
+}
+
+@property --gradientColor5 {
+	syntax: "<color>";
+	initial-value: #000000;
+	inherits: true;
+}

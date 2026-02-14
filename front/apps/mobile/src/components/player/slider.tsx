@@ -1,0 +1,65 @@
+import { useAtom, useAtomValue } from "jotai";
+import { useEffect } from "react";
+import { View } from "react-native";
+import { Slider as AwesomeSlider } from "react-native-awesome-slider";
+import { useSharedValue, withTiming } from "react-native-reanimated";
+import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { animations } from "~/theme";
+import {
+	durationAtom,
+	isBufferingAtom,
+	progressAtom,
+	requestedProgressAtom,
+} from "./state";
+
+type Props = {
+	sliderColor: string | undefined;
+	trackColor: string | undefined;
+};
+
+export const Slider = ({ sliderColor, trackColor }: Props) => {
+	const progress = useAtomValue(progressAtom);
+	const [requestedProgress, setProgress] = useAtom(requestedProgressAtom);
+	const duration = useAtomValue(durationAtom);
+	const progressShared = useSharedValue(progress);
+	const minValueShared = useSharedValue(0);
+	const maxValueShared = useSharedValue(duration ?? 1);
+	const isBuffering = useAtomValue(isBufferingAtom);
+	useEffect(() => {
+		maxValueShared.value = duration ?? 1;
+		progressShared.value =
+			isBuffering && requestedProgress
+				? requestedProgress
+				: withTiming(progress, animations.progress);
+	}, [progress, duration, isBuffering, requestedProgress]);
+	return (
+		<View style={styles.root}>
+			<Slider_
+				theme={{
+					minimumTrackTintColor: sliderColor,
+					maximumTrackTintColor: trackColor,
+				}}
+				onSlidingComplete={(newProgress) => {
+					setProgress(newProgress);
+				}}
+				minimumValue={minValueShared}
+				progress={progressShared}
+				maximumValue={maxValueShared}
+			/>
+		</View>
+	);
+};
+
+const Slider_ = withUnistyles(AwesomeSlider, (theme) => ({
+	thumbWidth: 0,
+	sliderHeight: theme.gap(1),
+	renderThumb: () => null,
+	renderBubble: () => null,
+	containerStyle: {
+		borderRadius: theme.borderRadius,
+	},
+}));
+
+const styles = StyleSheet.create(() => ({
+	root: { flexDirection: "row" },
+}));

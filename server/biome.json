@@ -1,0 +1,36 @@
+{
+	"root": false,
+	"extends": "//",
+	"formatter": {
+		"lineWidth": 80
+	},
+	"files": {
+		"includes": ["**", "!**/src/prisma/models", "!dist"]
+	},
+	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		}
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"useEnumInitializers": "off",
+				"noNonNullAssertion": "off",
+				"useImportType": "off",
+				"noRestrictedImports": {
+					"options": {
+						"paths": {
+							"fluent-ffmpeg": "Use Ffmpeg Service",
+							"fs": "Use FileManager Service",
+							"node:fs": "Use FileManager Service",
+							"src/pagination/paginated-response.decorator": "Do not use the decorator directly. Use 'Response' decorator from 'src/response/response.decorator.ts'",
+							"src/pagination/models/paginated-response": "Do not use the class directly. Use 'Response' decorator from 'src/response/response.decorator.ts'"
+						}
+					}
+				}
+			},
+			"nursery": {}
+		}
+	}
+}

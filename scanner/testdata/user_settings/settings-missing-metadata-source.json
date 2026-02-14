@@ -1,0 +1,12 @@
+{
+	"trackRegex": [
+		"^([\\/\\\\]+.*)*[\\/\\\\]*(?P<Artist>.+)[\\/\\\\]+(?P<Album>.+)[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$",
+		"^([\\/\\\\]+.*)*[\\/\\\\]*(?P<Artist>.+)[\\/\\\\]+(?P<Album>.+)(\\s*\\((?P<Year>\\d{4})\\))[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$"
+	],
+	"metadata": {
+		"order": "only"
+	},
+	"compilations": {
+		"useID3CompTag": true
+	}
+}

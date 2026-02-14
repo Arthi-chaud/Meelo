@@ -1,0 +1,12 @@
+{
+	"name": "ui",
+	"sideEffects": false,
+	"dependencies": {
+		"@wandersonalwes/iconsax-react": "0.0.10"
+	},
+	"devDependencies": {
+		"@types/react": "*",
+		"typescript": "5.9.3"
+	},
+	"packageManager": "yarn@4.12.0"
+}

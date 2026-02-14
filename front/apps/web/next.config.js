@@ -1,0 +1,56 @@
+/** @type {import('next').NextConfig} */
+const config = {
+	output: "standalone",
+	reactStrictMode: false,
+	images: { localPatterns: [{ pathname: "/api/**" }] },
+	i18n: {
+		locales: ["en", "fr"],
+		defaultLocale: "en",
+	},
+	async redirects() {
+		return [
+			{
+				source: "/songs/:slug",
+				destination: "/songs/:slug/lyrics",
+				permanent: true,
+			},
+		];
+	},
+	transpilePackages: [
+		"models",
+		"api",
+		"state",
+		"utils",
+		"ui",
+		"@mui/x-data-grid",
+	],
+	experimental: {
+		externalDir: true,
+	},
+};
+
+if (process.env.NODE_ENV !== "production") {
+	config.rewrites = async () => [
+		{
+			source: "/api/:path*",
+			destination: process.env.SSR_SERVER_URL
+				? `${process.env.SSR_SERVER_URL}/:path*`
+				: "/api/:path*",
+		},
+		{
+			source: "/scanner/:path*",
+			destination: process.env.SSR_SCANNER_URL
+				? `${process.env.SSR_SCANNER_URL}/:path*`
+				: "/scanner/:path*",
+		},
+
+		{
+			source: "/matcher/:path*",
+			destination: process.env.SSR_MATCHER_URL
+				? `${process.env.SSR_MATCHER_URL}/:path*`
+				: "/matcher/:path*",
+		},
+	];
+}
+
+module.exports = config;

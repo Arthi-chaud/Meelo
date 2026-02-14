@@ -1,0 +1,467 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Pridať do zoznamu skladieb",
+			"modalTitle": "Vyberte zoznam skladieb"
+		},
+		"album": {
+			"changeType": "Zmeniť typ albumu",
+			"goToAlbum": "Prejsť do albumu"
+		},
+		"archive": "Archív",
+		"artist": {
+			"seeAlbums": "Zobraziť albumy",
+			"seeSongs": "Zobraziť skladby"
+		},
+		"changeIllutration": "Zmena ilustrácie",
+		"connectToNewServer": "Pripojte sa k serveru Meelo",
+		"create": "Vytvoriť",
+		"delete": "Odstrániť",
+		"deleteFromPlaylist": "Odstrániť zo zoznamu skladieb",
+		"deleteUser": {
+			"label": "Odstrániť používateľa",
+			"warning": "Chystáte sa odstrániť používateľa. Túto akciu nie je možné vrátiť späť."
+		},
+		"download": {
+			"label": "Stiahnuť",
+			"warning": "Sťahovanie materiálu chráneného autorskými právami, ktorý nevlastníte, nie je povolené. Pokračujte, prosím, iba ak vlastníte pôvodný obsah."
+		},
+		"editExternalLinks": "Upraviť externé odkazy",
+		"genre": {
+			"startRadio": "Spustiť žánrové rádio"
+		},
+		"goBackHome": "Späť domov",
+		"goToArtist": "Prejsť na interpreta",
+		"goToPlaylist": "Prejsť na zoznam skladieb",
+		"goToRelease": "Prejsť na vydanie",
+		"goToSettingsPage": "Prejdite do nastavení",
+		"library": {
+			"create": "Vytvoriť knižnicu",
+			"delete": "Odstrániť knižnicu",
+			"deletionWarning": "Chystáte sa odstrániť knižnicu. Túto akciu nie je možné vrátiť späť"
+		},
+		"logout": "Odhlásiť sa",
+		"new": "Nové",
+		"playback": {
+			"play": "Prehrať",
+			"playAfter": "Prehrať po",
+			"playAll": "Prehrať všetko",
+			"playNext": "Prehrať ďalej",
+			"shuffle": "Náhodne"
+		},
+		"release": {
+			"setAllTracksAsMaster": "Nastaviť všetky stopy ako Master"
+		},
+		"seeArtists": "Prejsť na umelcov",
+		"setAsMaster": "Nastaviť ako hlavného",
+		"share": "Zdieľať",
+		"song": {
+			"changeType": "Zmeniť typ skladby",
+			"mergeSong": {
+				"label": "Zlúčiť skladby",
+				"modalTitle": "Vyberte skladbu",
+				"warningBeforeMerging": "Všetky skladby budú priradené k vybranej skladbe a stará skladba bude vymazaná. Vaše súbory nebudú upravené ani odstránené"
+			},
+			"seeLyrics": "Zobraziť texty piesní",
+			"seeOtherVersions": "Zobraziť ďalšie verzie",
+			"seeRelatedTracks": "Zobraziť súvisiace skladby",
+			"seeRelatedVideos": "Zobraziť súvisiace videá",
+			"seeSongInfo": "Informácie o skladbe"
+		},
+		"switchServer": "Prepnúť server",
+		"track": {
+			"reassignTrack": "Znovu priradiť skladbu",
+			"seeTrackInfo": "Informácie o skladbe"
+		},
+		"update": "Aktualizácia",
+		"video": {
+			"changeType": "Zmeniť typ videa"
+		},
+		"warningModalTitle": "POZOR"
+	},
+	"album": {
+		"bonusTracks": "Bonusové skladby",
+		"onThisAlbum": "Predstavení umelci",
+		"otherAlbumReleases": "Ďalšie vydania toho istého albumu",
+		"relatedAlbums": "Súvisiace albumy",
+		"showAllTracks": "Zobraziť všetky skladby",
+		"showOnlyExclusiveTracks": "Zobraziť iba exkluzívne skladby"
+	},
+	"albumType": {
+		"compilation": "Kompilácia",
+		"compilation_plural": "Kompilácie",
+		"ep": "EP",
+		"ep_plural": "EPs",
+		"liveRecording": "Živé nahrávanie",
+		"liveRecording_plural": "Živé albumy",
+		"remixAlbum": "Remixovaný album",
+		"remixAlbum_plural": "Remixy",
+		"single": "Jednotlivec",
+		"single_plural": "Samostatný",
+		"soundtrack": "Soundtrack",
+		"soundtrack_plural": "Soundtrackové albumy",
+		"studioRecording": "Štúdiové nahrávanie",
+		"studioRecording_plural": "Štúdiové albumy",
+		"videoAlbum": "Videoalbum",
+		"videoAlbum_plural": "Videoalbumy"
+	},
+	"artist": {
+		"appearsOn": "Zobrazuje sa na",
+		"rareSongs": "Vzácne piesne",
+		"topSongs": "Najlepšie skladby",
+		"topVideos": "Najlepšie videá"
+	},
+	"auth": {
+		"connectButton": "Pripojte sa k serveru",
+		"loginButton": "Prihlásenie",
+		"signin": "Už máte účet? Prihlásiť sa",
+		"signup": "Ste tu nový? Registrácia",
+		"signupButton": "Registrácia"
+	},
+	"browsing": {
+		"controls": {
+			"asc": "Vzostupne",
+			"backToTop": "Späť na začiatok",
+			"changeLayout": "Zmeniť rozloženie",
+			"desc": "Popis",
+			"filter": {
+				"allLibraries": "Všetky knižnice",
+				"allTypes": "Všetky typy",
+				"header": "Filter",
+				"nTypes": "{{n}} Typy"
+			},
+			"groupVersions": "Skupinové verzie",
+			"order": "Objednávka",
+			"showAllSongs": "Zobraziť všetky verzie",
+			"sort": {
+				"addDate": "Pridať dátum",
+				"albumCount": "Počet albumov",
+				"artistName": "Meno interpreta",
+				"bitrate": "Bitová rýchlosť",
+				"bpm": "BPM",
+				"creationDate": "Dátum vytvorenia",
+				"discIndex": "Index disku",
+				"entryCount": "Počet záznamov",
+				"name": "Názov",
+				"registrationDate": "Dátum registrácie",
+				"releaseDate": "Dátum vydania",
+				"releaseName": "Názov vydania",
+				"songCount": "Počet skladieb",
+				"totalPlayCount": "Celkový počet prehratí",
+				"trackCount": "Počet skladieb",
+				"trackIndex": "Index skladieb",
+				"userPlayCount": "Osobný počet prehratí"
+			},
+			"sortBy": "Zoradiť podľa"
+		},
+		"sections": {
+			"about": "O nás",
+			"extras": "Doplnky",
+			"featuredOnPlaylists": "Odporúčané",
+			"livePerformances": "Živé vystúpenia",
+			"musicVideos": "Hudobné videá"
+		},
+		"seeAll": "Zobraziť všetko"
+	},
+	"compilationArtistLabel": "Kompilácia",
+	"emptyState": {
+		"default": "Nič sa tu nenájde…",
+		"home": "Vau, je tu ticho…",
+		"lyrics": "Žiadny text na spievanie :(",
+		"playlist": "V tomto playliste zatiaľ nie sú žiadne skladby…!",
+		"playlists": "Zatiaľ nie sú k dispozícii žiadne zoznamy skladieb…!"
+	},
+	"errors": {
+		"errorOccured": "Ups… Vyskytla sa chyba",
+		"oops": "Ups",
+		"pageNotFound": "Ups… Stránka sa nenašla"
+	},
+	"fileInfo": {
+		"bitRate": "Bitová rýchlosť",
+		"bpm": "BPM",
+		"duration": "Dĺžka",
+		"extension": "Rozšírenie",
+		"name": "Meno",
+		"path": "Cesta",
+		"registrationDate": "Dátum registrácie",
+		"type": "Typ",
+		"unknown": "Neznámy"
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "Potvrdiť",
+			"instanceUrl": "URL inštancie",
+			"instanceUrlIsRequired": "Chýba URL adresa inštancie",
+			"password": "Heslo",
+			"passwordIsRequired": "Vyžaduje sa heslo",
+			"passwordTooShort": "Heslo je príliš krátke",
+			"passwordsAreDifferent": "Heslá sú odlišné",
+			"pleaseConfirm": "Prosím, potvrďte heslo",
+			"username": "Používateľské meno",
+			"usernameIsRequired": "Používateľské meno je povinné",
+			"usernameTooShort": "Používateľské meno je príliš krátke"
+		},
+		"cancel": "Zrušiť",
+		"confirm": "Potvrdiť",
+		"done": "Hotovo",
+		"edit": "Upraviť",
+		"editExternalLinks": {
+			"addLink": "Pridať odkaz",
+			"saveLinks": "Uložiť odkazy"
+		},
+		"illustration": {
+			"url": "Zadajte URL adresu novej ilustrácie"
+		},
+		"library": {
+			"nameIsRequired": "Meno je povinné",
+			"nameOfLibrary": "Názov knižnice",
+			"pathIsRequired": "Cesta je povinná",
+			"pathOfLibrary": "Cesta knižnice"
+		},
+		"playlist": {
+			"allowPlaylistChanges": "Povoliť ostatným používateľom aktualizovať tento playlist",
+			"playlistIsPublic": "Povoliť ostatným používateľom zobraziť tento zoznam skladieb",
+			"reorder": "Zmeniť poradie"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Ak používate verejnú inštanciu (https://api.listenbrainz.org), nechajte prázdne",
+				"instanceUrlLabel": "URL adresa API rozhrania ListenBrainz",
+				"tokenHelperText": "Získajte svoj používateľský token tu: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Vyžaduje sa token",
+				"tokenLabel": "Zadajte používateľský token ListenBrainz"
+			}
+		}
+	},
+	"home": {
+		"featuredAlbums": "Odporúčané albumy",
+		"latestAlbums": "Najnovšie albumy",
+		"mostPlayedSongs": "Najhranejšie skladby",
+		"newlyAddedAlbums": "Novo pridané albumy",
+		"newlyAddedArtists": "Novo pridaní umelci",
+		"newlyAddedReleases": "Novo pridané vydania",
+		"topGenres": "Najlepšie žánre",
+		"topLabels": "Najlepšie štítky"
+	},
+	"keyboardBindings": {
+		"closePlayer": "Zatvoriť prehrávač",
+		"goToSearchPage": "Prejsť na stránku vyhľadávania",
+		"goToSettingsPage": "Prejdite do nastavení",
+		"modalTitle": "Klávesové skratky",
+		"openClosePlayer": "Otvoriť / Zatvoriť prehrávač",
+		"openModalShortcutDescription": "Otvoriť / Zatvoriť toto modálne okno",
+		"playPauseWhenExpanded": "Prehrať / Pozastaviť (keď je prehrávač otvorený)"
+	},
+	"misc": {
+		"loading": "Načítava sa",
+		"no": "Nie",
+		"yes": "Áno"
+	},
+	"models": {
+		"album": "Album",
+		"album_plural": "Albumy",
+		"artist": "Umelec",
+		"artist_plural": "Umelci",
+		"disc": "Disk",
+		"externalLink_plural": "Externé odkazy",
+		"genre": "Žáner",
+		"genre_plural": "Žánre",
+		"label": "Nahrávacia spoločnosť",
+		"library_plural": "Knižnice",
+		"lyrics": "Texty piesní",
+		"playlist": "Zoznam skladieb",
+		"playlist_plural": "Zoznamy skladieb",
+		"song": "Pieseň",
+		"song_plural": "Piesne",
+		"track_plural": "Skladby",
+		"user_plural": "Používatelia",
+		"versions": "Verzie",
+		"video": "Video",
+		"video_plural": "Videá"
+	},
+	"nav": {
+		"browse": "Prehliadať",
+		"compilations": "Kompilácie",
+		"home": "Domov",
+		"more": "Viac",
+		"musicVideos": "Hudobné videá",
+		"search": "Hľadať",
+		"settings": "Nastavenia"
+	},
+	"player": {
+		"loadNextSongs": "Načítať ďalšie skladby",
+		"saveQueueAsPlaylist": "Uložiť front ako playlist",
+		"stream": {
+			"directStream": "Priamy stream",
+			"transcode": "Prekódovať"
+		}
+	},
+	"search": {
+		"all": "Všetky"
+	},
+	"settings": {
+		"interface": "Rozhranie",
+		"libraries": {
+			"nameColumn": "Meno",
+			"tasks": {
+				"current": "Súčasný",
+				"label": "Úlohy",
+				"none": "Žiadne",
+				"pending": "Čaká sa na spracovanie"
+			}
+		},
+		"manageFromWebApp": "Spravujte knižnice a používateľov z webovej aplikácie",
+		"ui": {
+			"account": {
+				"changePassword": "Zmeniť heslo",
+				"header": "Účet"
+			},
+			"autoMode": "Automatický režim",
+			"colorScheme": "Téma",
+			"crossfade": "Prelínanie",
+			"external": {
+				"encounteredABug": "Narazili ste na chybu?",
+				"enjoyingTheProject": "Páči sa vám projekt?",
+				"openAnIssue": "Otvorte problém na GitHube!",
+				"readTheDoc": "Prečítajte si používateľskú dokumentáciu",
+				"starOnGithub": "Dajte hviezdičku Meelo na GitHub!"
+			},
+			"keyboardBindings": "Klávesové skratky",
+			"lang": {
+				"cs": "Čeština",
+				"da": "Dánčina",
+				"de": "Nemčina",
+				"en": "Angličtina",
+				"fr": "Francúzština",
+				"id": "Indonézština",
+				"it": "Taliančina",
+				"pt": "Portugalčina",
+				"pt_br": "Portugalčina (Brazília)",
+				"ru": "Ruština",
+				"sk": "Slovenčina"
+			},
+			"language": "Jazyk",
+			"notifications": "Upozornenia",
+			"notifyOnTrackChange": "Upozorniť na zmenu v pláne",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Zoznam klávesových skratiek zobrazíte zadaním '?'",
+			"permissions": "Povolenia",
+			"playback": "Prehrávanie",
+			"project": "Projekt",
+			"scrobblers": {
+				"connect_scrobblers": "Pripojte sa k Scrobblerom",
+				"header": "Scrobbleri",
+				"no_scrobblers_enabled": "Nie sú k dispozícii žiadne služby scrobblingu"
+			},
+			"useDarkTheme": "Použiť tmavú tému",
+			"useSystemLanguage": "Použiť systémový jazyk",
+			"useSystemTheme": "Použiť systémovú tému",
+			"versions": "Verzie"
+		},
+		"users": {
+			"admin": "Administrátor",
+			"enabled": "Povolené",
+			"nameColumn": "Meno",
+			"you": "Ty"
+		}
+	},
+	"song": {
+		"infoTab": "Informácie",
+		"songType": "Typ skladby"
+	},
+	"songType": {
+		"acappella": "A kapela",
+		"acoustic": "Akustické",
+		"clean": "Čistý",
+		"demo": "Demo",
+		"edit": "Upraviť",
+		"instrumental": "Inštrumentálna",
+		"live": "Naživo",
+		"medley": "Zmes/Megamix",
+		"nonMusic": "Nehudobné",
+		"original": "Originál",
+		"remix": "Remix",
+		"unknown": "Neznámy"
+	},
+	"tasks": {
+		"clean": "Prázdny",
+		"cleanLibraries": "Prázdne knižnice",
+		"refresh": "Obnoviť",
+		"refreshExternalMetadata": "Obnoviť externé metadáta",
+		"refreshLocalMetadata": "Obnoviť lokálne metadáta",
+		"refreshMetadata": "Obnoviť metadáta",
+		"refreshMetadataForm": {
+			"forceLabel": "Vynútiť obnovenie, ak sa súbory nezmenili",
+			"reuseLabel": "Znovu použiť známe zdroje"
+		},
+		"scan": "Skenovať",
+		"scanLibraries": "Skenovanie knižníc"
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": "Gratulujeme! Váš účet Meelo bol vytvorený. Teraz musíte počkať, kým ho administrátor aktivuje",
+			"serverSwitchSuccessful": "Server bol úspešne prepnutý",
+			"signinFailed": "Nepodarilo sa pripojiť k serveru"
+		},
+		"leaveWillStopPlaybackAlert": "Opustením webovej stránky sa prehrávanie zastaví.",
+		"library": {
+			"created": "Knižnica vytvorená",
+			"creationFail": "Vytvorenie knižnice zlyhalo",
+			"deleted": "Knižnica bola odstránená",
+			"deletionFail": "Odstránenie knižnice zlyhalo",
+			"deletionRunning": "Odstraňuje sa knižnica…",
+			"loadFail": "Knižnice sa nepodarilo načítať",
+			"updated": "Knižnica aktualizovaná"
+		},
+		"linkCopied": "Odkaz skopírovaný do schránky",
+		"player": {
+			"networkError": "Zdá sa, že sú nejaké problémy so sieťou…",
+			"playbackError": "Tento prehliadač nepodporuje formát skladby. Preskakuje sa…"
+		},
+		"playlist": {
+			"addedToPlaylist": "Úspešne pridané do zoznamu skladieb!",
+			"itemDeletionSuccess": "Úspešné odstránenie",
+			"reorderFail": "Zmena poradia zoznamu skladieb zlyhala",
+			"reorderSuccess": "Zoradenie playlistu bolo zmenené!"
+		},
+		"refreshMetadata": {
+			"failed": "Ups… Obnovenie metadát zlyhalo",
+			"started": "Obnovujú sa metadáta… (Možno bude potrebné obnoviť stránku)"
+		},
+		"releaseSetAsMaster": "Uvoľniť nastavené ako hlavné",
+		"scrobblers": {
+			"linking": "Prepájanie účtu...",
+			"linkingListenBrainzFailed": "Nepodarilo sa prepojiť účet ListenBrainz",
+			"linkingSuccessful": "ListenBrainz bol úspešne prepojený",
+			"unlinking": "Odpojenie účtu...",
+			"unlinkingFailed": "Nepodarilo sa odpojiť Scrobbler",
+			"unlinkingSuccessful": "Scrobbler bol úspešne odpojený"
+		},
+		"trackSetAsMaster": "Skladba nastavená ako hlavná",
+		"tracksUpdated": "Trasy boli úspešne aktualizované",
+		"users": {
+			"deleted": "Používateľ bol odstránený",
+			"deletionFail": "Odstránenie používateľa zlyhalo",
+			"nowAdmin": "Používateľ je teraz administrátorom a môže spúšťať administratívne úlohy",
+			"nowDisabled": "Používateľ je teraz deaktivovaný",
+			"nowEnabled": "Používateľ je teraz povolený",
+			"nowNotAdmin": "Používateľ už nie je administrátor",
+			"updateFail": "Aktualizácia používateľa zlyhala"
+		}
+	},
+	"track": {
+		"bonusTrack": "Bonusová skladba",
+		"mixed": "Zmiešané",
+		"remastered": "Remastrované"
+	},
+	"videoType": {
+		"advert": "Reklama",
+		"behindTheScenes": "V zákulisí",
+		"documentary": "Dokumentácia",
+		"interview": "Rozhovor",
+		"live": "Naživo",
+		"lyricsVideo": "Video s textom piesne",
+		"musicVideo": "Hudobné video",
+		"other": "Iné",
+		"photoGallery": "Fotogaléria"
+	}
+}

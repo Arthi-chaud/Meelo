@@ -1,0 +1,186 @@
+# This compose allows to build the whole project in a "production"-like environment
+services:
+  server:
+    init: true
+    build:
+      context: ./server
+      args:
+        - VERSION=local
+    expose:
+      - 4000
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+      mq:
+        condition: service_healthy
+    volumes:
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}
+    env_file:
+      - .env
+    environment:
+      - TRANSCODER_URL=http://transcoder:7666
+      - MEILI_HOST=http://meilisearch:7700
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:4000"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+  front:
+    build:
+      context: ./front
+      args:
+        - VERSION=local
+    expose:
+      - 3000
+    depends_on:
+      server:
+        condition: service_healthy
+      scanner:
+        condition: service_healthy
+    environment:
+      - PUBLIC_SERVER_URL=${PUBLIC_URL}/api
+      - SSR_SERVER_URL=http://server:4000
+      - PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
+      - SSR_SCANNER_URL=http://scanner:8133
+      - PUBLIC_MATCHER_URL=${PUBLIC_URL}/matcher
+      - SSR_MATCHER_URL=http://matcher:6789
+  scanner:
+    build:
+      context: ./scanner
+      args:
+        - VERSION=local
+    expose:
+      - 8133
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- localhost:8133"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - INTERNAL_DATA_DIR=${INTERNAL_DATA_DIR}
+      - API_KEYS=${API_KEYS}
+    volumes:
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
+  matcher:
+    build:
+      context: ./matcher
+      args:
+        - VERSION=local
+    restart: on-failure
+    expose:
+      - 6789
+    depends_on:
+      server:
+        condition: service_healthy
+      mq:
+        condition: service_healthy
+    environment:
+      - API_URL=http://server:4000
+      - INTERNAL_CONFIG_DIR=${INTERNAL_CONFIG_DIR}
+      - API_KEYS=${API_KEYS}
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@mq:5672
+    volumes:
+      - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
+  transcoder:
+    image: ghcr.io/zoriya/kyoo_transcoder:master
+    restart: on-failure
+    cpus: 1
+    expose:
+      - 7666
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - GOCODER_SAFE_PATH=${INTERNAL_DATA_DIR}
+      - PGUSER=${POSTGRES_USER}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=${POSTGRES_DB}
+      - PGHOST=db
+      - PGPORT=5432
+    volumes:
+      - ${DATA_DIR}:${INTERNAL_DATA_DIR}:ro
+      - transcoder_cache:/cache
+  db:
+    image: postgres:alpine3.14
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    env_file:
+      - .env
+    volumes:
+      - db:/var/lib/postgresql/data
+  meilisearch:
+    image: getmeili/meilisearch:v1.5
+    restart: on-failure
+    expose:
+      - 7700
+    volumes:
+      - search:/meili_data
+    environment:
+      - MEILI_ENV=production
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - MEILI_LOG_LEVEL=WARN
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--spider",
+          "http://0.0.0.0:7700/health",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  mq:
+    image: rabbitmq:4.2-alpine
+    hostname: meelo-mq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+  nginx:
+    restart: on-failure
+    image: nginx:1.29.4-alpine
+    depends_on:
+      server:
+        condition: service_started
+      front:
+        condition: service_started
+    ports:
+      - ${PORT:-5000}:5000
+    environment:
+      - PORT=5000
+      - FRONT_URL=http://front:3000
+      - SERVER_URL=http://server:4000
+      - SCANNER_URL=http://scanner:8133
+      - MATCHER_URL=http://matcher:6789
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/meelo.conf.template:ro
+volumes:
+  db:
+  config:
+  data:
+  search:
+  transcoder_cache:
+  rabbitmq_data:

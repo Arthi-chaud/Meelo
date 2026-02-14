@@ -1,0 +1,12 @@
+{
+	"name": "state",
+	"sideEffects": false,
+	"dependencies": {
+		"jotai": "^2.17.0",
+		"react": "19.1.0"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3"
+	},
+	"packageManager": "yarn@4.12.0"
+}

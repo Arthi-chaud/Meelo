@@ -1,0 +1,13 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "新增到播放列表",
+			"modalTitle": "選擇播放列表"
+		},
+		"album": {
+			"changeType": "更改專輯類型",
+			"goToAlbum": "前往專輯"
+		},
+		"archive": "檔案"
+	}
+}

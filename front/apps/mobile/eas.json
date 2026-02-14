@@ -1,0 +1,31 @@
+{
+	"cli": {
+		"version": ">= 10.2.2"
+	},
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"env": {
+				"APP_VARIANT": "development"
+			}
+		},
+		"preview": {
+			"distribution": "internal",
+			"env": {
+				"APP_VARIANT": "preview"
+			}
+		},
+		"production": {
+			"android": {
+				"buildType": "apk"
+			},
+			"env": {
+				"APP_VARIANT": "production"
+			}
+		}
+	},
+	"submit": {
+		"production": {}
+	}
+}

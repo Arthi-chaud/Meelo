@@ -1,0 +1,47 @@
+{
+	"root": false,
+	"extends": "//",
+	"formatter": {
+		"lineWidth": 80
+	},
+	"files": {
+		"includes": [
+			"**",
+			"!**/.next/**",
+			"!**/translations/**/*.json",
+			"!**/android/**"
+		]
+	},
+	"linter": {
+		"rules": {
+			"style": {
+				"noNonNullAssertion": "off",
+				"noRestrictedImports": {
+					"options": {
+						"paths": {
+							"format-duration": "Use wrapper from 'theme/provider'",
+							"@mui/icons-material": "Use icons in 'src/components/icons'"
+						}
+					}
+				}
+			},
+			"performance": {
+				"noAccumulatingSpread": "off"
+			},
+			"suspicious": {
+				"noExtraNonNullAssertion": "warn",
+				"noExplicitAny": "off",
+				"noConsole": "error",
+				"noArrayIndexKey": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "off",
+				"useHookAtTopLevel": "off"
+			},
+			"complexity": {
+				"noForEach": "off"
+			},
+			"nursery": {}
+		}
+	}
+}

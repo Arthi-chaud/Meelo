@@ -1,0 +1,21 @@
+{
+	"trackRegex": [
+		"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+Unknown Album[\\/\\\\]+(?P<Track>.*)\\..*$",
+		"^([\\/\\\\]+.*)*[\\/\\\\]+(?P<AlbumArtist>.+)[\\/\\\\]+(?P<Album>.+)(\\s+\\((?P<Year>\\d{4})\\))?[\\/\\\\]+((?P<Disc>[0-9]+)-)?(?P<Index>[0-9]+)\\s+(?P<Track>.*)\\..*$"
+	],
+	"metadata": {
+		"source": "embedded",
+		"order": "only",
+		"useExternalProviderGenres": true
+	},
+	"providers": {
+		"musicbrainz": {}
+	},
+	"compilations": {
+		"useID3CompTag": true,
+		"artists": [
+			"Various Artists"
+		]
+	},
+	"useEmbeddedThumbnails": false
+}

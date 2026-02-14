@@ -1,0 +1,12 @@
+{
+	"name": "models",
+	"sideEffects": false,
+	"dependencies": {
+		"type-fest": "^5.4.1",
+		"yup": "^1.7.1"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3"
+	},
+	"packageManager": "yarn@4.12.0"
+}

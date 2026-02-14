@@ -1,0 +1,467 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Přidat do playlistu",
+			"modalTitle": "Vyberte seznam skladeb"
+		},
+		"album": {
+			"changeType": "Změnit typ alba",
+			"goToAlbum": "Přejít do alba"
+		},
+		"archive": "Archiv",
+		"artist": {
+			"seeAlbums": "Zobrazit alba",
+			"seeSongs": "Viz písně"
+		},
+		"changeIllutration": "Změna ilustrace",
+		"connectToNewServer": "Připojte se k serveru Meelo",
+		"create": "Vytvořit",
+		"delete": "Vymazat",
+		"deleteFromPlaylist": "Smazat ze seznamu skladeb",
+		"deleteUser": {
+			"label": "Smazat uživatele",
+			"warning": "Chystáte se smazat uživatele. Tuto akci nelze vrátit zpět."
+		},
+		"download": {
+			"label": "Stáhnout",
+			"warning": "Stahování materiálu chráněného autorskými právy, který nevlastníte, není povoleno. Pokračujte prosím pouze tehdy, pokud vlastníte původní obsah."
+		},
+		"editExternalLinks": "Upravit externí odkazy",
+		"genre": {
+			"startRadio": "Spustit žánrové rádio"
+		},
+		"goBackHome": "Zpět domů",
+		"goToArtist": "Přejít na interpreta",
+		"goToPlaylist": "Přejít na seznam skladeb",
+		"goToRelease": "Přejít k vydání",
+		"goToSettingsPage": "Přejděte do Nastavení",
+		"library": {
+			"create": "Vytvořit knihovnu",
+			"delete": "Smazat knihovnu",
+			"deletionWarning": "Chystáte se smazat knihovnu. Tuto akci nelze vrátit zpět"
+		},
+		"logout": "Odhlásit se",
+		"new": "Nový",
+		"playback": {
+			"play": "Přehrát",
+			"playAfter": "Přehrát po",
+			"playAll": "Přehrát vše",
+			"playNext": "Přehrát další",
+			"shuffle": "Náhodně"
+		},
+		"release": {
+			"setAllTracksAsMaster": "Nastavit všechny stopy jako hlavní"
+		},
+		"seeArtists": "Přejít na Umělce",
+		"setAsMaster": "Nastavit jako hlavní",
+		"share": "Sdílet",
+		"song": {
+			"changeType": "Změnit typ skladby",
+			"mergeSong": {
+				"label": "Sloučit písně",
+				"modalTitle": "Vyberte skladbu",
+				"warningBeforeMerging": "Všechny skladby budou znovu přiřazeny k vybrané skladbě a stará skladba bude smazána. Vaše soubory nebudou upraveny ani odstraněny"
+			},
+			"seeLyrics": "Zobrazit texty písní",
+			"seeOtherVersions": "Zobrazit další verze",
+			"seeRelatedTracks": "Zobrazit související skladby",
+			"seeRelatedVideos": "Zobrazit související videa",
+			"seeSongInfo": "Informace o skladbě"
+		},
+		"switchServer": "Přepnout server",
+		"track": {
+			"reassignTrack": "Znovu přiřadit skladbu",
+			"seeTrackInfo": "Informace o skladbě"
+		},
+		"update": "Aktualizovat",
+		"video": {
+			"changeType": "Změnit typ videa"
+		},
+		"warningModalTitle": "Varování"
+	},
+	"album": {
+		"bonusTracks": "Bonusové skladby",
+		"onThisAlbum": "Doporučení umělci",
+		"otherAlbumReleases": "Další vydání stejného alba",
+		"relatedAlbums": "Související alba",
+		"showAllTracks": "Zobrazit všechny skladby",
+		"showOnlyExclusiveTracks": "Zobrazit pouze exkluzivní skladby"
+	},
+	"albumType": {
+		"compilation": "Sestavení",
+		"compilation_plural": "Kompilace",
+		"ep": "EP",
+		"ep_plural": "EPs",
+		"liveRecording": "Živý záznam",
+		"liveRecording_plural": "Živá alba",
+		"remixAlbum": "Remixové album",
+		"remixAlbum_plural": "Remixy",
+		"single": "Singl",
+		"single_plural": "Singl",
+		"soundtrack": "Soundtrack",
+		"soundtrack_plural": "Soundtracková alba",
+		"studioRecording": "Studiové nahrávání",
+		"studioRecording_plural": "Studiová alba",
+		"videoAlbum": "Videoalbum",
+		"videoAlbum_plural": "Videoalba"
+	},
+	"artist": {
+		"appearsOn": "Zobrazuje se na",
+		"rareSongs": "Vzácné písně",
+		"topSongs": "Nejlepší skladby",
+		"topVideos": "Nejlepší videa"
+	},
+	"auth": {
+		"connectButton": "Připojení k serveru",
+		"loginButton": "Přihlášení",
+		"signin": "Již máte účet? Přihlásit se",
+		"signup": "Jste tu noví? Registrace",
+		"signupButton": "Registrace"
+	},
+	"browsing": {
+		"controls": {
+			"asc": "Vzestupně",
+			"backToTop": "Zpět nahoru",
+			"changeLayout": "Změnit rozvržení",
+			"desc": "Popis",
+			"filter": {
+				"allLibraries": "Všechny knihovny",
+				"allTypes": "Všechny typy",
+				"header": "Filtr",
+				"nTypes": "{{n}} Typy"
+			},
+			"groupVersions": "Skupinové verze",
+			"order": "Další",
+			"showAllSongs": "Zobrazit všechny verze",
+			"sort": {
+				"addDate": "Přidat datum",
+				"albumCount": "Počet alb",
+				"artistName": "Jméno umělce",
+				"bitrate": "Bitova rychlost",
+				"bpm": "BPM",
+				"creationDate": "Datum vytvoření",
+				"discIndex": "Index disku",
+				"entryCount": "Počet záznamů",
+				"name": "Titul",
+				"registrationDate": "Datum registrace",
+				"releaseDate": "Datum vydání",
+				"releaseName": "Název vydání",
+				"songCount": "Počet skladeb",
+				"totalPlayCount": "Celkový počet přehrání",
+				"trackCount": "Počet skladeb",
+				"trackIndex": "Index skladeb",
+				"userPlayCount": "Osobní počet přehrání"
+			},
+			"sortBy": "Seřadit podle"
+		},
+		"sections": {
+			"about": "O",
+			"extras": "Doplňky",
+			"featuredOnPlaylists": "Doporučeno",
+			"livePerformances": "Živá vystoupení",
+			"musicVideos": "Hudební videa"
+		},
+		"seeAll": "Zobrazit vše"
+	},
+	"compilationArtistLabel": "Sestavení",
+	"emptyState": {
+		"default": "Nic se tu nenajde…",
+		"home": "Páni, tady je ticho…",
+		"lyrics": "Žádný text ke zpívání :(",
+		"playlist": "V tomto playlistu zatím nejsou žádné skladby…!",
+		"playlists": "Zatím nejsou žádné playlisty…!"
+	},
+	"errors": {
+		"errorOccured": "Jejda… Došlo k chybě",
+		"oops": "Jejda",
+		"pageNotFound": "Jejda… Stránka nenalezena"
+	},
+	"fileInfo": {
+		"bitRate": "Bitová rychlost",
+		"bpm": "BPM",
+		"duration": "Trvání",
+		"extension": "Rozšíření",
+		"name": "Jméno",
+		"path": "Cesta",
+		"registrationDate": "Datum registrace",
+		"type": "Typ",
+		"unknown": "Neznámý"
+	},
+	"form": {
+		"auth": {
+			"confirmPasswordField": "Potvrdit",
+			"instanceUrl": "URL instance",
+			"instanceUrlIsRequired": "Chybí adresa URL instance",
+			"password": "Heslo",
+			"passwordIsRequired": "Je vyžadováno heslo",
+			"passwordTooShort": "Heslo je příliš krátké",
+			"passwordsAreDifferent": "Heslo se liší",
+			"pleaseConfirm": "Prosím, potvrďte heslo",
+			"username": "Uživatelské jméno",
+			"usernameIsRequired": "Uživatelské jméno je vyžadováno",
+			"usernameTooShort": "Uživatelské jméno je příliš krátké"
+		},
+		"cancel": "Zrušit",
+		"confirm": "Potvrdit",
+		"done": "Hotovo",
+		"edit": "Upravit",
+		"editExternalLinks": {
+			"addLink": "Přidat odkaz",
+			"saveLinks": "Uložit odkazy"
+		},
+		"illustration": {
+			"url": "Zadejte URL adresu nové ilustrace"
+		},
+		"library": {
+			"nameIsRequired": "Jméno je povinné",
+			"nameOfLibrary": "Název knihovny",
+			"pathIsRequired": "Cesta je povinná",
+			"pathOfLibrary": "Cesta knihovnou"
+		},
+		"playlist": {
+			"allowPlaylistChanges": "Povolit ostatním uživatelům aktualizovat tento playlist",
+			"playlistIsPublic": "Povolit ostatním uživatelům zobrazení tohoto playlistu",
+			"reorder": "Znovu uspořádat"
+		},
+		"scrobblers": {
+			"listenbrainz": {
+				"instanceUrlHelperText": "Pokud používáte veřejnou instanci (https://api.listenbrainz.org), nechte pole prázdné",
+				"instanceUrlLabel": "URL adresa API ListenBrainz",
+				"tokenHelperText": "Získejte svůj uživatelský token zde: https://listenbrainz.org/settings/",
+				"tokenIsRequired": "Je vyžadován token",
+				"tokenLabel": "Zadejte uživatelský token ListenBrainz"
+			}
+		}
+	},
+	"home": {
+		"featuredAlbums": "Doporučená alba",
+		"latestAlbums": "Nejnovější alba",
+		"mostPlayedSongs": "Nejhranější skladby",
+		"newlyAddedAlbums": "Nově přidaná alba",
+		"newlyAddedArtists": "Nově přidaní umělci",
+		"newlyAddedReleases": "Nově přidané verze",
+		"topGenres": "Nejlepší žánry",
+		"topLabels": "Nejlepší štítky"
+	},
+	"keyboardBindings": {
+		"closePlayer": "Zavřít přehrávač",
+		"goToSearchPage": "Přejít na stránku vyhledávání",
+		"goToSettingsPage": "Přejděte do Nastavení",
+		"modalTitle": "Klávesové zkratky",
+		"openClosePlayer": "Otevřít / Zavřít přehrávač",
+		"openModalShortcutDescription": "Otevřít / Zavřít toto modální okno",
+		"playPauseWhenExpanded": "Přehrát / Pozastavit (když je přehrávač otevřený)"
+	},
+	"misc": {
+		"loading": "Načítání",
+		"no": "Žádný",
+		"yes": "Ano"
+	},
+	"models": {
+		"album": "Album",
+		"album_plural": "Alba",
+		"artist": "Umělec",
+		"artist_plural": "Umělci",
+		"disc": "Disk",
+		"externalLink_plural": "Externí odkazy",
+		"genre": "Žánr",
+		"genre_plural": "Žánry",
+		"label": "Nahrávací společnost",
+		"library_plural": "Knihovny",
+		"lyrics": "Text",
+		"playlist": "Seznam skladeb",
+		"playlist_plural": "Seznamy skladeb",
+		"song": "Píseň",
+		"song_plural": "Písně",
+		"track_plural": "Skladby",
+		"user_plural": "Uživatelé",
+		"versions": "Verze",
+		"video": "Video",
+		"video_plural": "Videa"
+	},
+	"nav": {
+		"browse": "Prohlížet",
+		"compilations": "Kompilace",
+		"home": "Domov",
+		"more": "Více",
+		"musicVideos": "Hudební videa",
+		"search": "Vyhledávání",
+		"settings": "Nastavení"
+	},
+	"player": {
+		"loadNextSongs": "Načíst další skladby",
+		"saveQueueAsPlaylist": "Uložit frontu jako playlist",
+		"stream": {
+			"directStream": "Přímý stream",
+			"transcode": "Překódovat"
+		}
+	},
+	"search": {
+		"all": "Vše"
+	},
+	"settings": {
+		"interface": "Rozhraní",
+		"libraries": {
+			"nameColumn": "Jméno",
+			"tasks": {
+				"current": "Proud",
+				"label": "Úkoly",
+				"none": "Žádný",
+				"pending": "Čeká na vyřízení"
+			}
+		},
+		"manageFromWebApp": "Správa knihoven a uživatelů z webové aplikace",
+		"ui": {
+			"account": {
+				"changePassword": "Změnit heslo",
+				"header": "Účet"
+			},
+			"autoMode": "Automatický režim",
+			"colorScheme": "Téma",
+			"crossfade": "Prolínání",
+			"external": {
+				"encounteredABug": "Narazili jste na chybu?",
+				"enjoyingTheProject": "Baví tě projekt?",
+				"openAnIssue": "Otevřete problém na GitHubu!",
+				"readTheDoc": "Přečtěte si uživatelskou dokumentaci",
+				"starOnGithub": "Dejte hvězdu Meelovi na GitHubu!"
+			},
+			"keyboardBindings": "Klávesové zkratky",
+			"lang": {
+				"cs": "čeština",
+				"da": "dánština",
+				"de": "Německy",
+				"en": "angličtina",
+				"fr": "francouzština",
+				"id": "indonéština",
+				"it": "italština",
+				"pt": "portugalština",
+				"pt_br": "Portugalština (Brazílie)",
+				"ru": "ruština",
+				"sk": "slovensky"
+			},
+			"language": "Jazyk",
+			"notifications": "Oznámení",
+			"notifyOnTrackChange": "Upozornit na změnu, která je na cestě",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Seznam klávesových zkratek zobrazíte zadáním '?'",
+			"permissions": "Oprávnění",
+			"playback": "Přehrávání",
+			"project": "Projekt",
+			"scrobblers": {
+				"connect_scrobblers": "Připojte se ke Scrobblers",
+				"header": "Scrobbleři",
+				"no_scrobblers_enabled": "Žádné služby scrobblingu nejsou k dispozici"
+			},
+			"useDarkTheme": "Použít tmavý motiv",
+			"useSystemLanguage": "Použít systémový jazyk",
+			"useSystemTheme": "Použít systémový motiv",
+			"versions": "Verze"
+		},
+		"users": {
+			"admin": "Správce",
+			"enabled": "Povoleno",
+			"nameColumn": "Jméno",
+			"you": "Vy"
+		}
+	},
+	"song": {
+		"infoTab": "Informace",
+		"songType": "Typ skladby"
+	},
+	"songType": {
+		"acappella": "A kapela",
+		"acoustic": "Akustický",
+		"clean": "vyčistit",
+		"demo": "Demo",
+		"edit": "Upravit",
+		"instrumental": "Instrumentální",
+		"live": "živě",
+		"medley": "Směs/Megamix",
+		"nonMusic": "Nehudební",
+		"original": "Originál",
+		"remix": "Remix",
+		"unknown": "Neznámý"
+	},
+	"tasks": {
+		"clean": "vyčistit",
+		"cleanLibraries": "vyčistit knihovny",
+		"refresh": "Obnovit",
+		"refreshExternalMetadata": "Obnovit externí metadata",
+		"refreshLocalMetadata": "Obnovit lokální metadata",
+		"refreshMetadata": "Obnovit metadata",
+		"refreshMetadataForm": {
+			"forceLabel": "Vynutit aktualizaci, pokud se soubory nezměnily",
+			"reuseLabel": "Znovu použijte známé zdroje"
+		},
+		"scan": "Skenovat",
+		"scanLibraries": "Skenování knihoven"
+	},
+	"toasts": {
+		"auth": {
+			"accountCreated": "Gratulujeme! Váš účet Meelo byl vytvořen. Nyní musíte počkat, až ho administrátor aktivuje",
+			"serverSwitchSuccessful": "Úspěšně přepnut server",
+			"signinFailed": "Nepodařilo se připojit k serveru"
+		},
+		"leaveWillStopPlaybackAlert": "Opuštěním webové stránky se přehrávání zastaví.",
+		"library": {
+			"created": "Knihovna vytvořena",
+			"creationFail": "Vytvoření knihovny se nezdařilo",
+			"deleted": "Knihovna smazána",
+			"deletionFail": "Smazání knihovny se nezdařilo",
+			"deletionRunning": "Mazání knihovny…",
+			"loadFail": "Knihovny se nepodařilo načíst",
+			"updated": "Knihovna aktualizována"
+		},
+		"linkCopied": "Odkaz zkopírován do schránky",
+		"player": {
+			"networkError": "Zdá se, že došlo k nějakým problémům se sítí…",
+			"playbackError": "Formát skladby není tímto prohlížečem podporován. Přeskakuji…"
+		},
+		"playlist": {
+			"addedToPlaylist": "Úspěšně přidáno do playlistu!",
+			"itemDeletionSuccess": "Smazání úspěšné",
+			"reorderFail": "Změna pořadí playlistu selhala",
+			"reorderSuccess": "Seznam skladeb byl přeřazen!"
+		},
+		"refreshMetadata": {
+			"failed": "Jejda… Aktualizace metadat se nezdařilo",
+			"started": "Aktualizace metadat… (Možná bude nutné stránku aktualizovat)"
+		},
+		"releaseSetAsMaster": "Uvolnit sadu jako hlavní",
+		"scrobblers": {
+			"linking": "Propojování účtu...",
+			"linkingListenBrainzFailed": "Nepodařilo se propojit účet ListenBrainz",
+			"linkingSuccessful": "ListenBrainz byl úspěšně propojen",
+			"unlinking": "Odpojování účtu...",
+			"unlinkingFailed": "Nepodařilo se odpojit Scrobbler",
+			"unlinkingSuccessful": "Scrobbler byl úspěšně odpojen"
+		},
+		"trackSetAsMaster": "Stopa nastavena jako hlavní",
+		"tracksUpdated": "Skladby byly úspěšně aktualizovány",
+		"users": {
+			"deleted": "Uživatel smazán",
+			"deletionFail": "Smazání uživatele se nezdařilo",
+			"nowAdmin": "Uživatel je nyní administrátorem a může spouštět administrativní úlohy",
+			"nowDisabled": "Uživatel je nyní deaktivován",
+			"nowEnabled": "Uživatel je nyní povolen",
+			"nowNotAdmin": "Uživatel již není administrátorem",
+			"updateFail": "Aktualizace uživatele selhala"
+		}
+	},
+	"track": {
+		"bonusTrack": "Bonusová skladba",
+		"mixed": "Smíšený",
+		"remastered": "Remasterované"
+	},
+	"videoType": {
+		"advert": "Reklama",
+		"behindTheScenes": "V zákulisí",
+		"documentary": "Dokumentace",
+		"interview": "Rozhovor",
+		"live": "živě",
+		"lyricsVideo": "Video s textem písně",
+		"musicVideo": "Hudební video",
+		"other": "Ostatní",
+		"photoGallery": "Fotogalerie"
+	}
+}

@@ -1,0 +1,28 @@
+server {
+	listen ${PORT} default_server;
+	listen [::]:${PORT} default_server;
+	access_log off;
+	server_name _;
+
+	location = /api {
+	    return 302 /api/;
+	}
+	location /api/ {
+	    proxy_pass ${SERVER_URL}/;
+	}
+	location = /scanner {
+	    return 302 /scanner/;
+	}
+	location /scanner/ {
+	    proxy_pass ${SCANNER_URL}/;
+	}
+	location = /matcher {
+	    return 302 /matcher/;
+	}
+	location /matcher/ {
+	    proxy_pass ${MATCHER_URL}/;
+	}
+	location / {
+		proxy_pass ${FRONT_URL};
+	}
+}

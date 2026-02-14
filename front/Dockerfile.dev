@@ -1,0 +1,21 @@
+FROM node:24-alpine3.23
+WORKDIR /app
+ENV VERSION=dev
+ENV NEXT_PUBLIC_VERSION=dev
+
+COPY ./.yarnrc.yml ./*.lock  ./
+COPY ./.yarn ./.yarn
+COPY package.json tsconfig.base.json ./
+COPY apps/web/*.json apps/web/
+COPY packages/*.json packages/
+COPY packages/api/*.json packages/api/
+COPY packages/models/*.json packages/models/
+COPY packages/state/*.json packages/state/
+COPY packages/utils/*.json packages/utils/
+
+RUN yarn install
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD yarn && cd apps/web && yarn run start:dev

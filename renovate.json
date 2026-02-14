@@ -1,0 +1,121 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:recommended"
+	],
+	"schedule": [
+		"on wednesday"
+	],
+	"labels": [
+		"Dependencies",
+		"release-note-ignore"
+	],
+	"minimumReleaseAge": "7 days",
+	"separateMinorPatch": true,
+	"prHourlyLimit": 5,
+	"patch": {
+		"enabled": false
+	},
+	"packageRules": [
+		{
+			"matchDatasources": [
+				"docker"
+			],
+			"matchPackagePatterns": [
+				"meilisearch"
+			],
+			"allowedVersions": "<=1.5"
+		},
+		{
+			"matchDatasources": [
+				"docker"
+			],
+			"matchPackagePatterns": [
+				"postgres"
+			],
+			"allowedVersions": "3.14"
+		},
+		{
+			"matchPackageNames": [
+				"/@nestjs/"
+			],
+			"groupName": "nestjs",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/^expo$/",
+				"/expo-/",
+				"/@expo\//",
+				"react-native"
+			],
+			"groupName": "expo",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/@mui\//"
+			],
+			"groupName": "mui",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/^i18next$/",
+				"/^react-i18next$/"
+			],
+			"groupName": "i18next",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/@prisma\//",
+				"/prisma-/",
+				"/^prisma$/"
+			],
+			"groupName": "prisma",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/^jest/",
+				"/^ts-jest@/"
+			],
+			"groupName": "jest",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/@tanstack\//"
+			],
+			"groupName": "react-query",
+			"schedule": [
+				"* * 1 * *"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"/^slug$/",
+				"/^@types/slug$/"
+			],
+			"groupName": "slug",
+			"enabled": false
+		}
+	],
+	"postUpdateOptions": [
+		"gomodTidy",
+		"gomodUpdateImportPaths"
+	]
+}

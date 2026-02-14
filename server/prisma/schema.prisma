@@ -1,0 +1,864 @@
+datasource db {
+    provider = "postgresql"
+}
+
+generator client {
+    provider        = "prisma-client"
+    output          = "../src/prisma/generated"
+    moduleFormat    = "cjs"
+    previewFeatures = ["views"]
+}
+
+generator json {
+    provider = "prisma-json-types-generator"
+}
+
+generator classes {
+    provider                        = "prisma-types-generator"
+    output                          = "../src/prisma/models"
+    outputToNestJsResourceStructure = "false"
+    flatResourceStructure           = "false"
+    exportRelationModifierClasses   = "true"
+    reExport                        = "true"
+    dtoSuffix                       = ""
+    entityPrefix                    = ""
+    entitySuffix                    = "WithRelations"
+    classValidation                 = "true"
+    fileNamingStyle                 = "camel"
+    noDependencies                  = "false"
+    excludeEntity                   = "false"
+    excludePlainDto                 = "false"
+    excludeCreateDto                = "false"
+    excludeUpdateDto                = "false"
+    excludeConnectDto               = "true"
+    definiteAssignmentAssertion     = "true"
+}
+
+/////// Models
+
+model User {
+    /// @description Unique numeric user identifier
+    /// @example 123
+    id            Int             @id @default(autoincrement())
+    /// @description the username
+    name          String          @unique
+    /// @description the hashed password of the user\'s account
+    password      String
+    /// @description Indicates if the user is allowed to use the application
+    enabled       Boolean         @default(false)
+    /// @description Indicates if the user is an admin or not
+    admin         Boolean         @default(false)
+    /// @description the history of song played
+    playHistory   PlayHistory[]
+    searchHistory SearchHistory[]
+    playlists     Playlist[]
+    scrobblers    UserScrobbler[]
+
+    @@map("users")
+}
+
+enum Scrobbler {
+    LastFM
+    ListenBrainz
+
+    @@map("scrobblers")
+}
+
+model UserScrobbler {
+    userId             Int
+    user               User      @relation(fields: [userId], references: [id])
+    /// @description The last time we uploaded scrobbles
+    lastScrobblingDate DateTime?
+    scrobbler          Scrobbler
+    /// ![PrismaJson.LastFMData | PrismaJson.ListenBrainzData]
+    /// Note: specifying namespace is necessary at least for the 2nd item,
+    // because of a bug in the typing lib
+    data               Json
+
+    @@id([scrobbler, userId])
+    @@map("user_scrobbler")
+}
+
+model Genre {
+    /// @description Unique numeric Genre identifier
+    /// @example 123
+    id     Int     @id @default(autoincrement())
+    /// @description The name of the genre
+    /// @example My Genre
+    name   String  @db.Citext()
+    /// @description Unique string identifier
+    /// @example my-genre
+    slug   String  @unique
+    /// @description The songs from this genre
+    songs  Song[]
+    /// @description The albums from this genre
+    albums Album[]
+
+    @@map("genres")
+}
+
+enum AlbumType {
+    /// Describes is an original collection of studio recordings
+    StudioRecording
+    /// Describes a collection of live recordings
+    LiveRecording
+    /// Describes a collection of recordings that do not come from a common studio album or artist
+    Compilation
+    /// Describes a collection of track, usually below 10, that are related to a single song, of songs from a common era
+    Single
+    /// Extended Play, usually a short studio album. See #1042
+    EP
+    /// Describe a collection of tracks coming from another project's soundtrack
+    Soundtrack
+    /// Describe a collection of remixed tracks from the same artist
+    RemixAlbum
+    /// Describe a collection of video tracks from the same artist
+    VideoAlbum
+
+    @@map("album-types")
+}
+
+/// An album is a record of releases.
+model Album {
+    /// @description Unique numeric Album identifier
+    /// @example 123
+    id               Int                @id @default(autoincrement())
+    /// @description The title of the album
+    /// @example My Album
+    name             String             @db.Citext()
+    /// @description String identifier
+    /// @example my-artist-my-album
+    slug             String             @unique
+    nameSlug         String
+    sortName         String
+    sortSlug         String
+    /// @description The date of the first release of the album
+    releaseDate      DateTime?
+    /// @description The date the album was registered
+    registeredAt     DateTime           @default(now())
+    /// @description The main/most used release of the Album, by default the first one
+    master           Release?           @relation("Master", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main release, if there is one
+    /// @example 123
+    masterId         Int?               @unique
+    /// @description Collections of related releases
+    releases         Release[]          @relation("Releases")
+    /// @description Describes the type of the album
+    type             AlbumType          @default(StudioRecording)
+    /// @description The artist of the album
+    artist           Artist?            @relation(fields: [artistId], references: [id])
+    /// @description Unique numeric identifier of the main artist, if there is one
+    /// @example 123
+    artistId         Int?
+    /// @description additional Metadata from external providers
+    externalMetadata ExternalMetadata?
+    /// @description The genres of the album
+    genres           Genre[]
+    illustration     AlbumIllustration?
+
+    localIdentifiers LocalIdentifiers?
+
+    searchHistory SearchHistory[]
+
+    @@unique([slug, artistId])
+    @@map("albums")
+}
+
+/// An artist is a person who has albums
+model Artist {
+    /// @description Unique numeric Artist identifier
+    /// @example 123
+    id               Int               @id @default(autoincrement())
+    /// @description The name of the artist
+    /// @example My Artist
+    name             String            @db.Citext()
+    /// @description Unique string identifer
+    /// @example my-artist
+    slug             String            @unique
+    sortName         String
+    sortSlug         String
+    /// @description Array of Albums where the artist is the main one
+    albums           Album[]
+    /// @description Array of Songs by the artist
+    songs            Song[]            @relation("MainSongArtist")
+    /// @description Array of Songs by the artist features in
+    featuredOn       Song[]            @relation("ArtistToSong")
+    /// @description The date the artist was registered
+    registeredAt     DateTime          @default(now())
+    /// @description additional Metadata from external providers
+    externalMetadata ExternalMetadata?
+    /// @description Related Illustration
+    illustrationId   Int?              @unique
+    illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
+
+    localIdentifiers LocalIdentifiers?
+
+    searchHistory SearchHistory[]
+    videos        Video[]
+
+    @@map("artists")
+}
+
+/// A file represent the source file from which a track is imported
+model File {
+    /// @description Unique numeric File identifier
+    /// @example 123
+    id           Int      @id @default(autoincrement())
+    /// @description The path of the file, relate to the parent library
+    /// @example path/to/file
+    path         String
+    /// @description Checksum of the file
+    checksum     String
+    /// @description Date of the file\'s registration
+    registerDate DateTime
+    /// @description Track from the file
+    track        Track?
+    /// @descrption Library the file is registered under
+    library      Library  @relation(fields: [libraryId], references: id)
+    /// @description Unique numeric identifier of the library it is been registered under
+    /// @example 123
+    libraryId    Int
+    /// @description Fingerprint of the file, used for AcoustID 
+    fingerprint  String?
+
+    @@unique([path, libraryId])
+    @@map("files")
+}
+
+/// A Library groups files under a given path
+model Library {
+    /// @description Unique numeric Library identifier
+    /// @example 123
+    id    Int    @id @default(autoincrement())
+    /// @description The name of the library, whose slug will be built from
+    /// @example My Library
+    name  String @unique @db.Citext()
+    /// @descrption Slug of the library, based on its name
+    /// @example my-library
+    slug  String @unique
+    /// @description Path of the library
+    /// @example path/to/library
+    path  String @unique
+    /// @descriptionFiles from the library
+    files File[]
+
+    @@map("libraries")
+}
+
+/// A release is 'an instance' of an Album
+model Release {
+    /// @description Unique numeric Release identifier
+    /// @example 123
+    id               Int                      @id @default(autoincrement())
+    /// @description The title of the release
+    /// @example My Album
+    name             String                   @db.Citext()
+    /// @description The Extensions of the release
+    /// @example ["Deluxe Edition"]
+    extensions       String[]
+    /// @description String identifier
+    /// @example my-artist-my-release-deluxe-edition
+    slug             String                   @unique
+    nameSlug         String
+    /// @description The date of the release
+    releaseDate      DateTime?
+    /// @description The tracks on the release
+    tracks           Track[]
+    /// @description The reference Album
+    album            Album                    @relation("Releases", fields: [albumId], references: [id])
+    /// @description Unique numeric identifier of the parent album
+    /// @example 123
+    albumId          Int
+    masterOf         Album?                   @relation("Master")
+    /// @description The date the release was registered
+    registeredAt     DateTime                 @default(now())
+    /// @description The related Illustrations
+    illustrations    ReleaseIllustration[]
+    /// @description additional Metadata from external providers
+    externalMetadata ExternalMetadata?
+    illustration     ReleaseMainIllustration?
+    discs            Disc[]
+    /// @description the label that the release was published under
+    label            Label?                   @relation(fields: [labelId], references: [id])
+    /// @description the ID of the label of the release
+    labelId          Int?
+
+    localIdentifiers LocalIdentifiers?
+
+    @@unique([albumId, slug])
+    @@map("releases")
+}
+
+model Label {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id       Int       @id @default(autoincrement())
+    /// @description The name of the label 
+    /// @example My Label
+    name     String    @db.Citext()
+    /// @description Unique string identifier
+    /// @example my-label
+    slug     String    @unique
+    releases Release[]
+
+    @@map("labels")
+}
+
+/// A song is described by a title, an artist, and 'instanciated' by Tracks
+model Song {
+    /// @description Unique numeric Song identifier
+    /// @example 123
+    id               Int               @id @default(autoincrement())
+    /// @description Name of the song
+    /// @example My Song
+    name             String            @db.Citext()
+    /// @description String identifier
+    /// @example my-artist-my-song
+    slug             String            @unique
+    nameSlug         String
+    sortName         String
+    sortSlug         String
+    /// @description The main artist of the song
+    artist           Artist            @relation("MainSongArtist", fields: [artistId], references: [id])
+    /// @description Unique numeric identifier of the main artist
+    /// @example 123
+    artistId         Int
+    /// @description The main artist of the song
+    featuring        Artist[]          @relation("ArtistToSong")
+    /// @description The main/most used track of the song, by default the first one
+    master           Track?            @relation("SongMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main track, if there is one
+    /// @example 123
+    masterId         Int?              @unique
+    /// @description Related tracks
+    tracks           Track[]
+    /// @description The lyrics of the song
+    lyrics           Lyrics?
+    /// @description The type of the song
+    type             SongType          @default(Unknown)
+    /// @description The date the song was registered
+    registeredAt     DateTime          @default(now())
+    /// @description The ID of the Group the song belongs to
+    groupId          Int
+    /// @description The Group the song belongs to
+    group            SongGroup         @relation(fields: [groupId], references: [id])
+    /// @description The genres of the song
+    genres           Genre[]
+    /// @description additional Metadata from external providers
+    externalMetadata ExternalMetadata?
+    /// @description List of relations to playlists
+    playlists        PlaylistEntry[]
+    /// @description the history of play
+    playHistory      PlayHistory[]
+    searchHistory    SearchHistory[]
+    illustration     SongIllustration?
+    videos           Video[]
+    /// @description Beats per minute
+    bpm              Float?
+
+    localIdentifiers LocalIdentifiers?
+
+    @@unique([slug, artistId])
+    @@map("songs")
+}
+
+model Video {
+    /// @description Unique numeric Video identifier
+    /// @example 123
+    id       Int        @id @default(autoincrement())
+    /// @description String identifier
+    /// @example my-artist-my-video
+    slug     String     @unique
+    sortName String
+    sortSlug String
+    /// Title of the video
+    name     String
+    /// The main artist of the video
+    artist   Artist     @relation(fields: [artistId], references: [id])
+    artistId Int
+    /// @description If set, the video is likely to be a music video for that song 
+    song     Song?      @relation(fields: [songId], references: [id], onDelete: Restrict)
+    songId   Int?
+    /// @description The song group the video is relared to (it could be a making-of for the song\'s music video)
+    group    SongGroup? @relation(fields: [groupId], references: [id], onDelete: Restrict)
+    groupId  Int?
+    /// @description The tracks for that video (just like for a song)
+    tracks   Track[]
+
+    /// @description The date the video was registered
+    registeredAt DateTime @default(now())
+
+    type          VideoType
+    /// @description The main/most used track of the video, by default the first one
+    master        Track?             @relation("VideoMaster", fields: [masterId], references: [id], onDelete: SetNull)
+    /// @description Unique numeric identifier of the main track, if there is one
+    /// @example 123
+    masterId      Int?               @unique
+    illustration  VideoIllustration?
+    searchHistory SearchHistory[]
+
+    @@map("videos")
+}
+
+enum VideoType {
+    MusicVideo
+    LyricsVideo
+    Live
+    BehindTheScenes
+    Interview
+    Advert
+    PhotoGallery
+    Documentary
+    Other
+
+    @@map("video-types")
+}
+
+model SongGroup {
+    /// @description Unique numeric Song identifier
+    /// @example 123
+    id       Int     @id @default(autoincrement())
+    /// @description String notation of the group
+    /// @example kylie-minogue-all-the-lovers
+    slug     String  @unique
+    /// @description Song that belong to this group
+    versions Song[]
+    /// @description Videos related to this group (music videos, behind-the-scenes, etc.)
+    videos   Video[]
+
+    @@map("song_groups")
+}
+
+/// A type of song
+enum SongType {
+    /// The original, album version of the song
+    Original
+    /// A live rendition of the song
+    Live
+    /// An acoustic rendition of the song
+    Acoustic
+    /// A Remix/Dub of the song 
+    Remix
+    /// The instrumental version of the song
+    Instrumental
+    /// The acapella version of the song
+    Acappella
+    /// The edit of the original version of the song
+    Edit
+    /// The clean version of the song
+    Clean
+    /// A demo of the song
+    Demo
+    /// Interviews, Documentary, Photo Galleries, etc.
+    NonMusic
+    /// A combination of 2+ songs
+    Medley
+    /// Used for migrations
+    Unknown
+
+    @@map("song-types")
+}
+
+/// Enumeration of the different sources of a track rip
+enum RipSource {
+    /// Extracted from an Audio CD
+    CD
+    /// Extracted from a DVD
+    DVD
+    /// Extracted from a Blu-Ray disc
+    BluRay
+    /// Ripped from an Audio Tape
+    Cassette
+    /// Ripped from an Vinyl Record
+    Vinyl
+    /// Digital source
+    Digital
+    /// Other rip source
+    Other
+
+    @@map("rip-sources")
+}
+
+/// The lyrics of a song
+model Lyrics {
+    /// @description Unique numeric Lyrics identifier
+    /// @example 123
+    id     Int    @id @default(autoincrement())
+    /// @description The lyrics of the song
+    /// @example Hello\\nWorld
+    plain  String
+    /// ![SyncedLyrics]
+    synced Json?
+    /// @description The parent song
+    song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+    /// @description Unique numeric identifier of the related song
+    /// @example 123
+    songId Int    @unique
+
+    @@map("lyrics")
+}
+
+/// Enumeration of forms a Track can be
+enum TrackType {
+    /// Audio, sound but no video
+    Audio
+    /// Video, for example: Music Video
+    Video
+
+    @@map("track-types")
+}
+
+view Disc {
+    id        Int     @unique
+    // Index of the disc
+    index     Int?
+    // Name of the disc
+    name      String?
+    // ID of the parent release
+    releaseId Int
+    release   Release @relation(fields: [releaseId], references: [id])
+
+    @@map("discs")
+}
+
+/// An track is an 'instance' of a song
+model Track {
+    /// @description Unique numeric Track identifier
+    /// @example 123
+    id                       Int                @id @default(autoincrement())
+    /// @description The reference song
+    song                     Song?              @relation(fields: [songId], references: [id], onDelete: Restrict)
+    /// @description Unique numeric identifier of the parent song
+    /// @example 123
+    songId                   Int?
+    /// @description The parent release the track can be found on
+    release                  Release?           @relation(fields: [releaseId], references: [id])
+    /// @description Unique numeric identifier of the parent release
+    /// @example 123
+    releaseId                Int?
+    /// @description The display name of the track
+    /// @example My Song (Album Version)
+    name                     String
+    /// @description The index of the disc the track is on
+    /// @example 1
+    discIndex                Int?
+    /// @description The name of the disc, if it has one (not to be confused with the release name) 
+    discName                 String?
+    /// @description The index of the track on the disc
+    /// @example 2
+    trackIndex               Int?
+    /// @description Type of track (Audio or Video)
+    type                     TrackType
+    /// @description Bitrate, in kbps
+    /// @example 320
+    bitrate                  Int?
+    /// @description The type of source the track is ripped from
+    ripSource                RipSource?
+    /// @description The duration in seconds of the track
+    /// @example 120
+    duration                 Int?
+    /// @description If it is a "Bonus" track
+    /// @example false
+    isBonus                  Boolean            @default(false)
+    /// @description If the track has been remastered
+    /// @example false
+    isRemastered             Boolean            @default(false)
+    /// @description The track from the file
+    sourceFile               File               @relation(fields: [sourceFileId], references: [id])
+    /// @description Unique numeric identifier of the source file
+    /// @example 123
+    sourceFileId             Int                @unique
+    masterOfSong             Song?              @relation("SongMaster")
+    masterOfVideo            Video?             @relation("VideoMaster")
+    illustration             TrackIllustration?
+    thumbnailId              Int?               @unique
+    /// @description (For internal use) Thumbnail for the track (only for video tracks)
+    thumbnail                Illustration?      @relation(fields: [thumbnailId], references: [id], name: "track_thumbnail")
+    // Illustration if track is not attached to a release
+    standaloneIllustrationId Int?               @unique
+    standaloneIllustration   Illustration?      @relation(fields: [standaloneIllustrationId], references: [id], name: "track_standalone_illustration")
+    video                    Video?             @relation(fields: [videoId], references: [id], onDelete: Restrict)
+    videoId                  Int?
+    /// @description If true, the track fades with the previous and next tracks of the release
+    mixed                    Boolean            @default(false)
+
+    @@map("tracks")
+}
+
+model Provider {
+    /// @description Unique numeric Provider identifier
+    /// @example 123
+    id              Int                      @id @default(autoincrement())
+    /// @description the name of the provider
+    name            String                   @unique
+    /// @description Unique string identifer
+    /// @example music-brainz
+    slug            String                   @unique
+    metadataSources ExternalMetadataSource[]
+    /// @description represents the icon of the provider
+    illustrationId  Int?
+    illustration    Illustration?            @relation(fields: [illustrationId], references: [id], onDelete: NoAction)
+
+    @@map("providers")
+}
+
+model LocalIdentifiers {
+    /// @description Unique entry identifier
+    /// @example 123
+    id            Int      @id @default(autoincrement())
+    /// @description MusicBrainz ID found in local metadata
+    /// @example "53b106e7-0cc6-42cc-ac95-ed8d30a3a98e"
+    musicbrainzId String?
+    /// @example r1234567
+    /// @description Discogs ID found in local metadata (usually for releases)
+    discogsId     String?
+    songId        Int?     @unique
+    song          Song?    @relation(fields: [songId], references: [id], onDelete: Cascade)
+    artistId      Int?     @unique
+    artist        Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+    albumId       Int?     @unique
+    album         Album?   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    releaseId     Int?     @unique
+    release       Release? @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+    @@map("local_identifiers")
+}
+
+model ExternalMetadata {
+    /// @description Unique entry identifier
+    /// @example 123
+    id          Int                      @id @default(autoincrement())
+    /// @description Short text about the related resource
+    description String?
+    /// @description A number, between 0 and 100 (Albums only)
+    rating      Int?
+    sources     ExternalMetadataSource[]
+    songId      Int?                     @unique
+    song        Song?                    @relation(fields: [songId], references: [id], onDelete: Cascade)
+    artistId    Int?                     @unique
+    artist      Artist?                  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+    albumId     Int?                     @unique
+    album       Album?                   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    releaseId   Int?                     @unique
+    release     Release?                 @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+    @@map("external_metadata")
+}
+
+model ExternalMetadataSource {
+    /// @description Unique entry identifier
+    /// @example 123
+    id                 Int              @id @default(autoincrement())
+    /// @description The Provider
+    provider           Provider         @relation(fields: [providerId], references: [id], onDelete: Cascade)
+    /// @description Unique numeric identifier of the provider
+    /// @example 123
+    providerId         Int
+    /// @description URL to the source of the metadata
+    url                String
+    externalMetadataId Int
+    externalMetadata   ExternalMetadata @relation(fields: [externalMetadataId], references: [id], onDelete: Cascade)
+
+    @@unique([providerId, externalMetadataId])
+    @@map("external_metadata_sources")
+}
+
+/// A Playlist connects songs together, in an ordered way
+model Playlist {
+    /// @description Unique numeric Playlist identifier
+    /// @example 123
+    id             Int             @id @default(autoincrement())
+    /// @description The name of the playlist
+    /// @example My Playlist
+    /// @minLength 1
+    name           String          @db.Citext()
+    /// @description Unique string identifer
+    /// @example my-playlist-user-id
+    /// @minLength 1
+    slug           String          @unique
+    /// @description The date the playlist was created
+    createdAt      DateTime        @default(now())
+    /// @description Array of external IDs
+    entries        PlaylistEntry[]
+    /// @description The owner of the playlist
+    ownerId        Int
+    owner          User            @relation(fields: ownerId, references: id, onDelete: Cascade)
+    /// @description If true, can be seen/accessed by other users
+    isPublic       Boolean
+    /// @description If true, non-owers of the playlist can modify it
+    allowChanges   Boolean
+    /// @description Related Illustration
+    illustrationId Int?            @unique
+    illustration   Illustration?   @relation(fields: [illustrationId], references: [id])
+
+    @@map("playlists")
+}
+
+model PlaylistEntry {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id         Int      @id @default(autoincrement())
+    /// @description The Identifier of the song
+    songId     Int
+    song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+    /// @description The Identifier of the parent playlist 
+    playlistId Int
+    playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+    /// @minimum 0
+    /// @description The index of the entry in the playlist, starting at 0
+    index      Int
+
+    @@map("playlist_entries")
+}
+
+model ReleaseIllustration {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id             Int          @id @default(autoincrement())
+    hash           String
+    /// @description Related Release\'s Identifier
+    /// @example 123
+    releaseId      Int
+    release        Release      @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+    /// @description The index of the disc. If null, the illustration is the \'main\' one
+    disc           Int?
+    /// @description The index of the track.
+    track          Int?
+    illustrationId Int          @unique
+    illustration   Illustration @relation(fields: [illustrationId], references: [id], onDelete: Cascade)
+
+    @@unique([releaseId, disc, track])
+    @@map("release_illustrations")
+}
+
+model PlayHistory {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id       Int      @id @default(autoincrement())
+    /// @description The date the song was played
+    playedAt DateTime @default(now())
+    /// @description The User that listened to a song
+    /// @example 123
+    userId   Int
+    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    /// @description The Song that was played
+    /// @example 123
+    songId   Int
+    song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+    @@map("play_history")
+}
+
+model SearchHistory {
+    id       Int      @id @default(autoincrement())
+    searchAt DateTime @default(now())
+    song     Song?    @relation(fields: [songId], references: [id], onDelete: Cascade)
+    songId   Int?
+    album    Album?   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    albumId  Int?
+    artist   Artist?  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+    artistId Int?
+    video    Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+    videoId  Int?
+
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
+
+    @@unique([songId, albumId, artistId, videoId, userId])
+    @@map("search_history")
+}
+
+enum IllustrationType {
+    /// Ex: An album cover
+    Cover
+    /// Ex: Image of an artist
+    Avatar
+    /// Ex: Thumbnail of a video
+    Thumbnail
+    /// Ex: Icon of a provider
+    Icon
+}
+
+model Illustration {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id              Int                  @id @default(autoincrement())
+    artist          Artist?
+    playlist        Playlist?
+    release         ReleaseIllustration?
+    /// @description Blurhash value of the illustration. See https://github.com/woltapp/blurhash for more info.
+    /// @example LEHV6nWB2yk8pyo0adR*.7kCMdnj
+    blurhash        String
+    /// @description List of dominant colors in the image
+    /// @example ['#FFFFFF', '#123123', '#F0F0F0']
+    colors          String[]
+    /// @description Aspect Ratio of the image
+    /// @example 0.33
+    aspectRatio     Float                @default(1)
+    type            IllustrationType
+    Provider        Provider[]
+    ThumbnailTrack  Track?               @relation("track_thumbnail")
+    StandaloneTrack Track?               @relation("track_standalone_illustration")
+
+    @@map("illustrations")
+}
+
+view TrackIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    trackId     Int              @unique
+    track       Track            @relation(fields: [trackId], references: [id])
+
+    @@map("track_illustrations_view")
+}
+
+view ReleaseMainIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    releaseId   Int              @unique
+    release     Release          @relation(fields: [releaseId], references: [id])
+
+    @@map("release_illustrations_view")
+}
+
+view AlbumIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    albumId     Int              @unique
+    album       Album            @relation(fields: [albumId], references: [id])
+
+    @@map("album_illustrations_view")
+}
+
+view SongIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    songId      Int              @unique
+    song        Song             @relation(fields: [songId], references: [id])
+
+    @@map("song_illustrations_view")
+}
+
+view VideoIllustration {
+    id          Int
+    blurhash    String
+    colors      String[]
+    aspectRatio Float            @default(1)
+    type        IllustrationType
+    videoId     Int              @unique
+    video       Video            @relation(fields: [videoId], references: [id])
+
+    @@map("video_illustrations_view")
+}

@@ -1,0 +1,16 @@
+pika
+dataclasses-json
+jsons
+aiormq
+unittest2
+python3-discogs-client
+python-dotenv
+beautifulsoup4
+python-slugify
+fastapi[standard]==0.128.0
+asyncio
+aiohttp
+pytest
+pytest-asyncio
+aiohttp-client-cache
+pytest-rerunfailures

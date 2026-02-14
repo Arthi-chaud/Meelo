@@ -1,0 +1,15 @@
+{
+	"name": "api",
+	"sideEffects": false,
+	"dependencies": {
+		"@tanstack/react-query": "^5.90.14",
+		"jotai": "^2.17.0",
+		"react": "19.1.0",
+		"type-fest": "^5.4.1",
+		"yup": "^1.7.1"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3"
+	},
+	"packageManager": "yarn@4.12.0"
+}

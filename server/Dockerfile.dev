@@ -1,0 +1,19 @@
+FROM node:24-alpine3.23 AS base
+RUN apk update && apk add openssl
+
+FROM base AS builder
+WORKDIR /app
+COPY ./*.json ./
+COPY ./*.lock ./
+COPY .yarn ./.yarn
+COPY .yarnrc.yml ./
+RUN corepack enable
+RUN yarn
+COPY ./prisma ./prisma
+COPY ./prisma.config.ts ./prisma.config.ts
+ENV VERSION=dev
+
+CMD yarn							\
+	&& yarn build					\
+	&& yarn run prisma migrate dev	\
+	&& yarn start:dev

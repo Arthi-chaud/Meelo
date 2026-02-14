@@ -1,0 +1,24 @@
+{
+	"extends": ["../../tsconfig.base.json"],
+	"compilerOptions": {
+		"baseUrl": "src/",
+		"paths": {
+			"~/*": ["./*"],
+			"@/models/*": ["../../../packages/models/src/*"],
+			"@/utils/*": ["../../../packages/utils/src/*"],
+			"@/api": ["../../../packages/api/src/index"],
+			"@/api/*": ["../../../packages/api/src/*"],
+			"@/state/*": ["../../../packages/state/src/*"],
+			"@/ui/*": ["../../../packages/ui/src/*"],
+			"@/infinite-controls/*": [
+				"../../../packages/infinite-controls/src/*"
+			]
+		}
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"../../packages/utils/src/*.d.ts"
+	]
+}
