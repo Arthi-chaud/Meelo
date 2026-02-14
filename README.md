@@ -100,12 +100,6 @@ Any questions about this? Open a discussion [here](https://github.com/Arthi-chau
 
 :hammer: Would you like to contribute to Meelo? Feel free to [open a pull request](https://github.com/Arthi-chaud/Meelo/compare).
 
-## :sparkling_heart: Sponsors
-
-Many thanks to the people who support the project!
-
-<!-- sponsors --><!-- sponsors -->
-
 ---
 
 Get ready to make the most out of you music collection!
