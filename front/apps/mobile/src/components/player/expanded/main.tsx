@@ -24,6 +24,7 @@ import { useArtistContextMenu } from "~/components/context-menu/resource/artist"
 import { useTrackContextMenu } from "~/components/context-menu/resource/track";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import { usePickArtistModal } from "~/components/pick-artist";
 import * as Haptics from "~/haptics";
 import { useAccentColor } from "~/hooks/accent-color";
 import { Button } from "~/primitives/button";
@@ -260,17 +261,38 @@ const ArtistNameButton = () => {
 		};
 	}, [currentTrack, artistIllustration]);
 	const artistContextMenu = useArtistContextMenu(artist);
+	const { openModal: openPickArtistModal } = usePickArtistModal(
+		currentTrack
+			? [currentTrack.artist, ...(currentTrack.featuring ?? [])]
+			: undefined,
+	);
 	const { openContextMenu } = useContextMenu(artistContextMenu);
 	const onPress = useCallback(() => {
 		if (!currentTrack) {
 			return;
 		}
-		dismiss();
-		router.navigate(`/artists/${currentTrack?.artist.id}`);
+		if (
+			currentTrack.featuring !== undefined &&
+			currentTrack.featuring.length > 0
+		) {
+			openPickArtistModal();
+		} else {
+			dismiss();
+			router.navigate(`/artists/${currentTrack?.artist.id}`);
+		}
 	}, [currentTrack]);
 	const onLongPress = useCallback(() => {
-		openContextMenu();
 		Haptics.onContextMenuOpen();
+
+		if (
+			currentTrack &&
+			currentTrack.featuring !== undefined &&
+			currentTrack.featuring.length > 0
+		) {
+			openPickArtistModal();
+		} else {
+			openContextMenu();
+		}
 	}, [openContextMenu]);
 	const formattedArtistName = useFormattedArtistName();
 	return (
