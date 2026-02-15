@@ -1,12 +1,12 @@
 import { BottomSheetView, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { type ComponentProps, useCallback } from "react";
+import { type ComponentProps, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
-import { getArtist } from "@/api/queries";
+import { getIllustration } from "@/api/queries";
 import { skipTrackAtom } from "@/state/player";
 import {
 	ForwardIcon,
@@ -248,10 +248,17 @@ const ArtistNameButton = () => {
 	const router = useRouter();
 	const { dismiss } = useBottomSheetModal();
 	const currentTrack = useAtomValue(currentTrackAtom);
-	const { data: artist } = useQuery(
-		(artistId) => getArtist(artistId, ["illustration"]),
-		currentTrack?.artist.id,
+	const { data: artistIllustration } = useQuery(
+		getIllustration,
+		currentTrack?.artist.illustrationId ?? undefined,
 	);
+	const artist = useMemo(() => {
+		if (!currentTrack?.artist) return null;
+		return {
+			...currentTrack.artist,
+			illustration: artistIllustration ?? null,
+		};
+	}, [currentTrack, artistIllustration]);
 	const artistContextMenu = useArtistContextMenu(artist);
 	const { openContextMenu } = useContextMenu(artistContextMenu);
 	const onPress = useCallback(() => {
