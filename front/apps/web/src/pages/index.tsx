@@ -195,8 +195,10 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		return true;
 	}, [queries, featuredAlbums]);
 	const illustrations = queries
-		.flatMap((query) => query.items ?? [])
-		.map(({ illustration }) => illustration)
+		.flatMap(
+			(query) =>
+				query.items?.map(({ illustration }) => illustration) ?? [],
+		)
 		.filter((illustration) => illustration !== null);
 	const selectedIllustrationColor = useMemo(() => {
 		return illustrations.at(

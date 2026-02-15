@@ -39,6 +39,7 @@ import {
 } from "@/models/external-metadata";
 import File from "@/models/file";
 import Genre, { type GenreSortingKeys } from "@/models/genre";
+import Illustration from "@/models/illustration";
 import Label, { type LabelSortingKeys } from "@/models/label";
 import Library from "@/models/library";
 import type { MatchableResourceType } from "@/models/matcher";
@@ -87,6 +88,15 @@ import type API from ".";
 import { Service } from ".";
 
 type Identifier = number | string;
+
+export const getIllustration = (
+	illustrationId: number,
+): Query<Illustration> => {
+	return _mkSimpleQuery({
+		route: `/illustrations/${illustrationId}/info`,
+		validator: Illustration,
+	});
+};
 
 /// Artists
 
