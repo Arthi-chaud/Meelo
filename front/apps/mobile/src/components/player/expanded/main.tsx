@@ -267,33 +267,30 @@ const ArtistNameButton = () => {
 			: undefined,
 	);
 	const { openContextMenu } = useContextMenu(artistContextMenu);
+	const shouldUsePickArtistModal = useMemo(
+		() => (currentTrack?.featuring?.length ?? 0) !== 0,
+		[currentTrack],
+	);
 	const onPress = useCallback(() => {
 		if (!currentTrack) {
 			return;
 		}
-		if (
-			currentTrack.featuring !== undefined &&
-			currentTrack.featuring.length > 0
-		) {
+		if (shouldUsePickArtistModal) {
 			openPickArtistModal();
 		} else {
 			dismiss();
 			router.navigate(`/artists/${currentTrack?.artist.id}`);
 		}
-	}, [currentTrack]);
+	}, [currentTrack, shouldUsePickArtistModal, openPickArtistModal]);
 	const onLongPress = useCallback(() => {
 		Haptics.onContextMenuOpen();
 
-		if (
-			currentTrack &&
-			currentTrack.featuring !== undefined &&
-			currentTrack.featuring.length > 0
-		) {
+		if (shouldUsePickArtistModal) {
 			openPickArtistModal();
 		} else {
 			openContextMenu();
 		}
-	}, [openContextMenu]);
+	}, [openContextMenu, openPickArtistModal, shouldUsePickArtistModal]);
 	const formattedArtistName = useFormattedArtistName();
 	return (
 		<Pressable onPress={onPress} onLongPress={onLongPress}>
