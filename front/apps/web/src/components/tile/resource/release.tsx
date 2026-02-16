@@ -53,6 +53,7 @@ const ReleaseTile = (props: {
 				<Illustration
 					illustration={props.release?.illustration}
 					quality="medium"
+					alignBottom
 					fallback={<AlbumIcon />}
 				/>
 			}

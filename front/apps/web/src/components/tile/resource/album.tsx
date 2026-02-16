@@ -58,6 +58,7 @@ const AlbumTile = (props: {
 				<Illustration
 					illustration={props.album?.illustration}
 					quality="medium"
+					alignBottom
 					fallback={<AlbumIcon />}
 				/>
 			}
