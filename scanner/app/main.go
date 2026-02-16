@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	_ "github.com/Arthi-chaud/Meelo/scanner/app/docs"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/swaggo/echo-swagger"
@@ -25,17 +28,24 @@ const ApiHealthckechAttemptCount = 5
 func main() {
 	setupLogger()
 	c := config.GetConfig()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
 	s := ScannerContext{
 		config: &c,
 		worker: tasks.NewWorker(),
 	}
-	e := setupEcho(&s)
+	sc := echo.StartConfig{
+		Address: ":8133",
+	}
+	e := setupEcho(&s, &sc)
 
 	waitForApi(c)
 
 	s.worker.StartWorker(&c)
 	go WatchLibraries(&s)
-	e.Logger.Fatal(e.Start(":8133"))
+	if err := sc.Start(ctx, e); err != nil {
+		log.Fatal().Err(err)
+	}
 }
 
 func setupLogger() {
@@ -43,10 +53,11 @@ func setupLogger() {
 }
 
 // Sets up echo endpoints
-func setupEcho(s *ScannerContext) *echo.Echo {
+func setupEcho(s *ScannerContext, sc *echo.StartConfig) *echo.Echo {
 	e := echo.New()
-	e.HideBanner = true
-	e.HidePort = true
+
+	sc.HideBanner = true
+	sc.HidePort = true
 
 	e.GET("/", s.Status)
 	e.GET("/tasks", s.Tasks)

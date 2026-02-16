@@ -9,7 +9,7 @@ import (
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/api"
 	t "github.com/Arthi-chaud/Meelo/scanner/internal/tasks"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	"github.com/rs/zerolog/log"
 )
 
@@ -37,7 +37,7 @@ func logTaskAdded(task t.Task) {
 // @Produce		json
 // @Success		200	{object}	ScannerStatus
 // @Router	    / [get]
-func (s *ScannerContext) Status(c echo.Context) error {
+func (s *ScannerContext) Status(c *echo.Context) error {
 	version := os.Getenv("VERSION")
 	if version == "" {
 		version = "unknown"
@@ -50,7 +50,7 @@ func (s *ScannerContext) Status(c echo.Context) error {
 // @Produce		json
 // @Success		200 {object} ScannerTaskStatus
 // @Router	    /tasks [get]
-func (s *ScannerContext) Tasks(c echo.Context) error {
+func (s *ScannerContext) Tasks(c *echo.Context) error {
 	currentTask, progressValue, pendingTasks := s.worker.GetCurrentTasks()
 	formattedCurentTask := &currentTask.Name
 	progressPtr := &progressValue
@@ -74,7 +74,7 @@ func (s *ScannerContext) Tasks(c echo.Context) error {
 // @Success		202	{object}	ScannerStatus
 // @Router	    /scan [post]
 // @Security JWT
-func (s *ScannerContext) ScanAll(c echo.Context) error {
+func (s *ScannerContext) ScanAll(c *echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
@@ -96,7 +96,7 @@ func (s *ScannerContext) ScanAll(c echo.Context) error {
 // @Router	    /scan/{libraryId} [post]
 // @Param		libraryId path string true "Library Slug or ID"
 // @Security JWT
-func (s *ScannerContext) Scan(c echo.Context) error {
+func (s *ScannerContext) Scan(c *echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
@@ -116,7 +116,7 @@ func (s *ScannerContext) Scan(c echo.Context) error {
 // @Success		202	{object}	ScannerStatus
 // @Router	    /clean [post]
 // @Security JWT
-func (s *ScannerContext) Clean(c echo.Context) error {
+func (s *ScannerContext) Clean(c *echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
@@ -138,7 +138,7 @@ func (s *ScannerContext) Clean(c echo.Context) error {
 // @Router	    /clean/{libraryId} [post]
 // @Param		libraryId path string true "Library Slug or ID"
 // @Security JWT
-func (s *ScannerContext) CleanLibrary(c echo.Context) error {
+func (s *ScannerContext) CleanLibrary(c *echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
@@ -165,7 +165,7 @@ func (s *ScannerContext) CleanLibrary(c echo.Context) error {
 // @Param			song	query		string		false	"refresh files from song"
 // @Param			track	query		string		false	"refresh file from track"
 // @Param			force	query		boolean		false	"force metadata refresh, even if files have not changed (default: false)"
-func (s *ScannerContext) Refresh(c echo.Context) error {
+func (s *ScannerContext) Refresh(c *echo.Context) error {
 	if !s.userIsAdmin(c) {
 		return userIsNotAdminResponse(c)
 	}
@@ -198,7 +198,7 @@ func (s *ScannerContext) Refresh(c echo.Context) error {
 }
 
 // Checks that the requesting user
-func (s *ScannerContext) userIsAdmin(c echo.Context) bool {
+func (s *ScannerContext) userIsAdmin(c *echo.Context) bool {
 	userToken := getUserToken(c)
 	if userToken == "" {
 		return false
@@ -211,11 +211,11 @@ func (s *ScannerContext) userIsAdmin(c echo.Context) bool {
 	return user.Admin
 }
 
-func userIsNotAdminResponse(c echo.Context) error {
+func userIsNotAdminResponse(c *echo.Context) error {
 	return c.JSON(http.StatusUnauthorized, ScannerStatus{Message: "User must be admin to run tasks."})
 }
 
-func getUserToken(c echo.Context) string {
+func getUserToken(c *echo.Context) string {
 	jwts := c.Request().Header["Authorization"]
 	if len(jwts) == 0 {
 		return ""
