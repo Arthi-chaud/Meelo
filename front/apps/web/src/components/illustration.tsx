@@ -45,6 +45,7 @@ type IllustrationProps = {
 	quality: IllustrationQuality;
 
 	imgProps?: ImageProps["style"];
+	alignBottom?: boolean;
 } & RequireExactlyOne<{
 	/**
 	 * URL of the illustration to display
@@ -84,7 +85,7 @@ const Illustration = (props: IllustrationProps) => {
 				position: "relative",
 				aspectRatio: props.aspectRatio?.toString() ?? "1",
 				justifyContent: "center",
-				alignItems: "center",
+				alignItems: props.alignBottom ? "end" : "center",
 				display: "flex",
 			}}
 		>
