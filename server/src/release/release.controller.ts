@@ -44,7 +44,10 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
 import ReleaseQueryParameters from "./models/release.query-parameters";
-import { ReleaseResponseBuilder } from "./models/release.response";
+import {
+	ReleaseResponseBuilder,
+	ReleaseStats,
+} from "./models/release.response";
 import ReleaseService from "./release.service";
 
 class Selector {
@@ -158,11 +161,22 @@ export default class ReleaseController {
 	}
 
 	@ApiOperation({
+		summary: "Get Stats of Release",
+	})
+	@Get(":idOrSlug/stats")
+	async getReleaseStats(
+		@IdentifierParam(ReleaseService)
+		where: ReleaseQueryParameters.WhereInput,
+	): Promise<ReleaseStats> {
+		return this.releaseService.getReleaseStats(where);
+	}
+
+	@ApiOperation({
 		summary: "Download an archive of the release",
 	})
 	@ApiOkResponse({ description: "A ZIP Binary" })
 	@Get(":idOrSlug/archive")
-	async getReleaseArcive(
+	async getReleaseArchive(
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 		@Res() response: ExpressResponse,

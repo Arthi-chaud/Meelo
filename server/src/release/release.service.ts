@@ -43,6 +43,7 @@ import Slug from "src/slug/slug";
 import TrackService from "src/track/track.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
 import type ReleaseQueryParameters from "./models/release.query-parameters";
+import { ReleaseStats } from "./models/release.response";
 import {
 	MasterReleaseNotFoundException,
 	ReleaseAlreadyExists,
@@ -430,6 +431,34 @@ export default class ReleaseService {
 				throw new UnhandledORMErrorException(error, where);
 			})
 			.then((res) => res.count);
+	}
+
+	async getReleaseStats(
+		release: ReleaseQueryParameters.WhereInput,
+	): Promise<ReleaseStats> {
+		const where = { release: ReleaseService.formatWhereInput(release) };
+		const {
+			_sum: { duration },
+		} = await this.prismaService.track.aggregate({
+			_sum: { duration: true },
+			where,
+		});
+
+		const {
+			_avg: { bitrate },
+		} = await this.prismaService.track.aggregate({
+			_avg: { bitrate: true },
+			where: { ...where, type: "Audio" },
+		});
+
+		const trackCount = await this.prismaService.track.count({ where });
+		const discCount = await this.prismaService.disc.count({ where });
+		return {
+			totalDuration: duration ?? 0,
+			discCount,
+			trackCount,
+			averageBitrate: bitrate ? Math.floor(bitrate) : null,
+		};
 	}
 
 	/**

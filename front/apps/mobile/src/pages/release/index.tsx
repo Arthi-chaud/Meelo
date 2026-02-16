@@ -10,6 +10,7 @@ import {
 	getGenres,
 	getPlaylists,
 	getRelease,
+	getReleaseTracklist,
 } from "@/api/queries";
 import type Album from "@/models/album";
 import type Genre from "@/models/genre";
@@ -119,6 +120,9 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 	const releaseQuery = useQuery(() =>
 		getRelease(releaseId, ["illustration", "discs", "label"]),
 	);
+	const { items: tracks } = useInfiniteQuery(() =>
+		getReleaseTracklist(releaseId),
+	);
 	const { data: release } = releaseQuery;
 
 	const albumQuery = useQuery(
@@ -151,38 +155,39 @@ export default function ReleasePage({ releaseId }: { releaseId: string }) {
 		tracks: tracks_ ?? [],
 		albumArtistId: album?.artistId,
 	});
-	const sections: ReleasePageSection[] = [
-		{
-			type: "header",
-			props: {
-				isMixed: isMixed,
-				release: release,
-				album: album,
-				tracks: tracks,
-				totalDuration: totalDuration,
-			},
-		},
-		{
-			type: "tracklist",
-			props: {
-				// Note: We wait for the album to be loaded to avoid a shift in the tracklist
-				// if the song artist isn't the album's
-				albumArtistId: album?.artistId,
-				tracks: album ? tracks : undefined,
-				tracklist: album ? (tracklist as any) : undefined, // TODO Avoid cast
-				discs: album ? release?.discs : undefined,
-			},
-		},
-		...postSections,
-	];
+	// const sections: ReleasePageSection[] = [
+	// 	{
+	// 		type: "tracklist",
+	// 		props: {
+	// 			// Note: We wait for the album to be loaded to avoid a shift in the tracklist
+	// 			// if the song artist isn't the album's
+	// 			albumArtistId: album?.artistId,
+	// 			tracks: album ? tracks : undefined,
+	// 			tracklist: album ? (tracklist as any) : undefined, // TODO Avoid cast
+	// 			discs: album ? release?.discs : undefined,
+	// 		},
+	// 	},
+	// 	...postSections,
+	// ];
 
 	useQueryErrorModal([releaseQuery, albumQuery, discsQuery]);
 	useSetKeyIllustration(release);
 	return (
 		<FlashList
-			data={sections}
-			getItemType={({ type }) => type}
-			renderItem={({ item }) => renderSection(item)}
+			// ListHeaderComponent={
+			// 	<Header
+			// 		{...{
+			// 			isMixed,
+			// 			release,
+			// 			album,
+			// 			tracks,
+			// 			totalDuration,
+			// 		}}
+			// 	/>
+			// }
+			data={tracks}
+			// getItemType={({ type }) => type}
+			// renderItem={({ item }) => renderSection(item)}
 		/>
 	);
 }

@@ -55,6 +55,7 @@ import {
 import {
 	type ReleaseInclude,
 	type ReleaseSortingKeys,
+	ReleaseStats,
 	ReleaseWithRelations,
 } from "@/models/release";
 import { ScrobblersStatus } from "@/models/scrobblers";
@@ -351,6 +352,15 @@ export const getReleaseTracklist = <I extends SongInclude | never = never>(
 		include,
 		filter: { exclusive: exclusiveOnly ? "true" : undefined },
 		validator: PaginatedResponse(TracklistItemWithRelations(include ?? [])),
+	});
+};
+
+export const getReleaseStats = (
+	slugOrId: string | number,
+): Query<ReleaseStats> => {
+	return _mkSimplePaginatedQuery({
+		route: `/releases/${slugOrId.toString()}/stats`,
+		validator: ReleaseStats,
 	});
 };
 
