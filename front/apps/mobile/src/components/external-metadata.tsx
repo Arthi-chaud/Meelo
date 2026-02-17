@@ -40,9 +40,6 @@ export const ExternalMetadataDescriptionSection = ({
 	// If null, no need to be able to expand.
 	// If boolean, reflect whether the line clamp is enabled
 	const [isExpanded, expand] = useState<boolean | null>(null);
-	if (externalMetadata?.description === null) {
-		return null;
-	}
 	useEffect(() => {
 		expand((isExpanded_) => {
 			if (!externalMetadata || externalMetadata.description === null) {
@@ -52,6 +49,10 @@ export const ExternalMetadataDescriptionSection = ({
 			return isExpanded_ || false;
 		});
 	}, [externalMetadata?.description]);
+
+	if (externalMetadata?.description === null) {
+		return null;
+	}
 	return (
 		<View style={[styles.root, style]}>
 			<SectionHeader
@@ -82,7 +83,7 @@ export const ExternalMetadataDescriptionSection = ({
 				) : (
 					externalMetadata.description !== null && (
 						<Text
-							content={externalMetadata.description}
+							content={externalMetadata.description.trimEnd()}
 							variant="body"
 							style={styles.descriptionText}
 							numberOfLines={

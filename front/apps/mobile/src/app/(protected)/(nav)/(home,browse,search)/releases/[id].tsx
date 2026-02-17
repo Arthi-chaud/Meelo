@@ -1,16 +1,14 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import Animated, {
+import {
 	interpolate,
 	useAnimatedScrollHandler,
 	useAnimatedStyle,
 	useSharedValue,
 } from "react-native-reanimated";
 import { HeaderBackground } from "~/components/navigation";
-import { useRootViewStyle } from "~/hooks/root-view-style";
 import ReleasePage from "~/pages/release";
 
 export default function Page() {
-	const rootStyle = useRootViewStyle();
 	const { id: releaseId } = useLocalSearchParams<{ id: string }>();
 	const scrollY = useSharedValue(0);
 	const scrollHandler = useAnimatedScrollHandler({
@@ -39,13 +37,7 @@ export default function Page() {
 				}}
 			/>
 
-			<Animated.ScrollView
-				onScroll={scrollHandler}
-				scrollEventThrottle={16}
-				contentContainerStyle={rootStyle}
-			>
-				<ReleasePage releaseId={releaseId} />
-			</Animated.ScrollView>
+			<ReleasePage releaseId={releaseId} scrollHandler={scrollHandler} />
 		</>
 	);
 }
