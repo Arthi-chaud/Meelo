@@ -35,10 +35,12 @@ import ReleaseService from "src/release/release.service";
 import {
 	formatIdentifier,
 	formatPaginationParameters,
+	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
 import type SongQueryParameters from "src/song/models/song.query-params";
 import SongService from "src/song/song.service";
+import { shuffle } from "src/utils/shuffle";
 import VideoService from "src/video/video.service";
 import type TrackQueryParameters from "./models/track.query-parameters";
 import {
@@ -442,30 +444,66 @@ export default class TrackService {
 		pagination?: PaginationParameters,
 		exclusiveOnly?: boolean,
 		include?: SongQueryParameters.RelationInclude,
+		shuffleSeed?: number,
 	) {
+		let where_: TrackQueryParameters.ManyWhereInput = exclusiveOnly
+			? { exclusiveOn: where }
+			: { release: { is: where } };
+		let shuffledIds: number[] = [];
+		if (shuffleSeed !== undefined) {
+			shuffledIds = await this.getManyRandomIds(
+				where_,
+				shuffleSeed,
+				pagination,
+			);
+			where_ = { tracks: shuffledIds.map((id) => ({ id })) };
+		}
 		const tracks = await this.prismaService.track.findMany({
-			where: TrackService.formatManyWhereInput(
-				exclusiveOnly
-					? { exclusiveOn: where }
-					: { release: { is: where } },
-			),
-			orderBy: [
-				{ discIndex: { sort: "asc", nulls: "last" } },
-				{ trackIndex: { sort: "asc", nulls: "last" } },
-			],
-			...formatPaginationParameters(pagination),
+			where: TrackService.formatManyWhereInput(where_),
+			...(shuffleSeed === undefined
+				? {
+						orderBy: [
+							{ discIndex: { sort: "asc", nulls: "last" } },
+							{ trackIndex: { sort: "asc", nulls: "last" } },
+						],
+						...formatPaginationParameters(pagination),
+					}
+				: {}),
 			include: {
 				illustration: true,
 				song: { include: include },
 				video: { include: { artist: include?.artist ?? false } },
 			},
 		});
-
 		if (tracks.length === 0) {
 			await this.releaseService.get(where);
 		}
 
+		if (shuffleSeed !== undefined) {
+			return sortItemsUsingOrderedIdList(shuffledIds, tracks);
+		}
 		return tracks;
+	}
+
+	private async getManyRandomIds(
+		where: TrackQueryParameters.ManyWhereInput,
+		shuffleSeed: number,
+		pagination?: PaginationParameters,
+	) {
+		const ids = await this.prismaService.track
+			.findMany({
+				where: TrackService.formatManyWhereInput(where),
+				select: { id: true },
+				orderBy: { id: "asc" },
+				cursor: pagination?.afterId
+					? { id: pagination.afterId }
+					: undefined,
+			})
+			.then((items) => items.map(({ id }) => id));
+		return shuffle(shuffleSeed, ids).slice(
+			pagination?.skip ?? 0,
+			pagination?.take,
+		);
 	}
 
 	async update(

@@ -14,7 +14,6 @@ import type Genre from "@/models/genre";
 import type Label from "@/models/label";
 import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
-import type { TracklistItemWithRelations } from "@/models/tracklist";
 import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
 import { useBSidesAndExtras, useVideos } from "@/ui/pages/release";
@@ -42,6 +41,7 @@ import {
 	releaseBSidesQuery,
 	releatedVideos,
 } from "./queries";
+import type { TrackType } from "./tracklist";
 
 export const Footer = ({
 	album,
@@ -52,7 +52,7 @@ export const Footer = ({
 	album: Album | undefined;
 	release: ReleaseWithRelations<"label"> | undefined;
 	albumArtistId: number | undefined | null;
-	tracks: TracklistItemWithRelations<"artist" | "featuring">[];
+	tracks: TrackType[];
 }) => {
 	const releaseId = release?.id;
 	const playTracks = useSetAtom(playTracksAtom);

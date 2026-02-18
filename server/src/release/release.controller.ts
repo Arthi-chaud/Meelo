@@ -23,6 +23,7 @@ import {
 	Get,
 	Inject,
 	ParseBoolPipe,
+	ParseIntPipe,
 	Query,
 	Res,
 } from "@nestjs/common";
@@ -151,12 +152,20 @@ export default class ReleaseController {
 		exclusiveOnly: boolean,
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
+
+		@Query(
+			"random",
+			new ParseIntPipe({ optional: true }),
+			new DefaultValuePipe(undefined),
+		)
+		random: number | undefined,
 	) {
 		return this.trackService.getTracklist(
 			where,
 			paginationParameters,
 			exclusiveOnly,
 			include,
+			random,
 		);
 	}
 

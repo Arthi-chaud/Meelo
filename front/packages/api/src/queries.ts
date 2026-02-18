@@ -329,7 +329,11 @@ export const getTrack = <I extends TrackInclude | never = never>(
 };
 
 export const getTracks = <I extends TrackInclude | never = never>(
-	filter: { song?: string | number; library?: Identifier[] },
+	filter: {
+		song?: string | number;
+		library?: Identifier[];
+		release?: string | number;
+	},
 	sort?: SortingParameters<typeof TrackSortingKeys>,
 	include?: I[],
 ): InfiniteQuery<TrackWithRelations<I>> => {
@@ -346,11 +350,12 @@ export const getReleaseTracklist = <I extends SongInclude | never = never>(
 	slugOrId: string | number,
 	exclusiveOnly = false,
 	include?: I[],
+	random?: number,
 ): InfiniteQuery<TracklistItemWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
 		route: `/releases/${slugOrId.toString()}/tracklist`,
 		include,
-		filter: { exclusive: exclusiveOnly ? "true" : undefined },
+		filter: { exclusive: exclusiveOnly ? "true" : undefined, random },
 		validator: PaginatedResponse(TracklistItemWithRelations(include ?? [])),
 	});
 };

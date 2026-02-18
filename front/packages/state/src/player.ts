@@ -104,6 +104,7 @@ export const playFromInfiniteQuery = atom(
 		query: InfiniteQuery<any, TrackState & Resource>,
 		queryClient: QueryClient,
 		afterId?: number,
+		startAtId?: number,
 	) => {
 		set(_playerState, {
 			loading: true,
@@ -136,7 +137,12 @@ export const playFromInfiniteQuery = atom(
 			}
 			set(_playerState, {
 				loading: false,
-				cursor: 0,
+				cursor: startAtId
+					? Math.max(
+							0,
+							items.findIndex((i) => i.id === startAtId),
+						)
+					: 0,
 				playlist: items,
 				infinite:
 					items.length < queryClient.api.pageSize

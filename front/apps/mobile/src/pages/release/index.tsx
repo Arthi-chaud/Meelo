@@ -1,22 +1,22 @@
 import { FlashList } from "@shopify/flash-list";
+import { useSetAtom } from "jotai";
 import { useMemo } from "react";
 import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
-import {
-	getAlbum,
-	getRelease,
-	getReleaseStats,
-	getReleaseTracklist,
-} from "@/api/queries";
+import { getAlbum, getRelease, getReleaseStats } from "@/api/queries";
+import { transformPage } from "@/api/query";
 import type { ReleaseStats } from "@/models/release";
+import { playFromInfiniteQuery } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
-import { useInfiniteQuery, useQuery } from "~/api";
+import { getRandomNumber } from "@/utils/random";
+import { useInfiniteQuery, useQuery, useQueryClient } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { useQueryErrorModal } from "~/hooks/error";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Divider } from "~/primitives/divider";
 import { Footer } from "./footer";
 import { Header } from "./header";
+import { releaseTracklistQuery } from "./queries";
 import { DiscDivider, TrackItem, type TrackType } from "./tracklist";
 
 export default function ReleasePage({
@@ -28,6 +28,8 @@ export default function ReleasePage({
 }) {
 	const rootStyle = useRootViewStyle();
 	const { rt } = useUnistyles();
+	const queryClient = useQueryClient();
+	const playFromTracklist = useSetAtom(playFromInfiniteQuery);
 	const releaseQuery = useQuery(() =>
 		getRelease(releaseId, ["illustration", "discs", "label"]),
 	);
@@ -39,13 +41,15 @@ export default function ReleasePage({
 	const { data: album } = albumQuery;
 	const releaseStatsQuery = useQuery(() => getReleaseStats(releaseId));
 	const { data: releaseStats } = releaseStatsQuery;
-	const { items: tracks_, fetchNextPage } = useInfiniteQuery(() =>
-		getReleaseTracklist(releaseId, false, [
-			"artist",
-			"featuring",
-			"illustration",
-		]),
-	);
+	const query = (random?: number) => releaseTracklistQuery(releaseId, random);
+	const queryForPlayer = (random?: number) =>
+		transformPage(query(random), ({ song, video, ...track }) => ({
+			id: track.id,
+			track,
+			artist: song?.artist ?? video!.artist,
+			featuring: song?.featuring ?? [],
+		}));
+	const { items: tracks_, fetchNextPage } = useInfiniteQuery(() => query());
 	const { isMixed, tracklist } = useTracklist(tracks_, releaseStats);
 
 	useQueryErrorModal([releaseQuery, albumQuery, releaseStatsQuery]);
@@ -62,10 +66,13 @@ export default function ReleasePage({
 					release={release}
 					album={album}
 					playButtonCallback={() => {
-						//TODO
+						playFromTracklist(queryForPlayer(), queryClient);
 					}}
 					shuffleButtonCallback={() => {
-						//TODO
+						playFromTracklist(
+							queryForPlayer(getRandomNumber()),
+							queryClient,
+						);
 					}}
 					totalDuration={releaseStats?.totalDuration}
 				/>
@@ -82,7 +89,7 @@ export default function ReleasePage({
 			ListFooterComponentStyle={styles.footer}
 			onEndReached={fetchNextPage}
 			onEndReachedThreshold={rt.screen.height / 2}
-			renderItem={({ item }) => {
+			renderItem={({ item, index }) => {
 				if (typeof item === "string") {
 					const discName = item;
 					return (
@@ -90,7 +97,12 @@ export default function ReleasePage({
 							discName={discName}
 							discs={release?.discs ?? []}
 							onPress={() => {
-								// TODO
+								playFromTracklist(
+									queryForPlayer(),
+									queryClient,
+									undefined,
+									(tracklist.at(index + 1) as TrackType).id,
+								);
 							}}
 						/>
 					);
@@ -103,7 +115,12 @@ export default function ReleasePage({
 							albumArtistId={album?.artistId}
 							maxTrackIndex={releaseStats?.trackCount ?? 10}
 							onPress={() => {
-								// TODO
+								playFromTracklist(
+									queryForPlayer(),
+									queryClient,
+									undefined,
+									track.id,
+								);
 							}}
 						/>
 
@@ -119,7 +136,10 @@ export default function ReleasePage({
 const useTracklist = (
 	tracks: TrackType[] | undefined,
 	stats: ReleaseStats | undefined,
-): { tracklist: (string | TrackType | undefined)[]; isMixed: boolean } => {
+): {
+	tracklist: (string | TrackType | undefined)[];
+	isMixed: boolean;
+} => {
 	const showDiscDivider = stats ? stats.discCount > 1 : false;
 	return useMemo(() => {
 		if (tracks === undefined) {
@@ -129,20 +149,15 @@ const useTracklist = (
 		const res = tracks
 			?.filter((t) => t !== undefined)
 			.flatMap((track, index, tracks) => {
-				const t: TrackType = {
-					...track,
-					song: track.song,
-					video: track.video,
-				};
 				isMixed = isMixed && track.mixed;
 				if (
 					showDiscDivider &&
 					(index === 0 ||
 						tracks[index - 1].discIndex !== track.discIndex)
 				) {
-					return [track.discIndex?.toString() ?? "?", t];
+					return [track.discIndex?.toString() ?? "?", track];
 				}
-				return [t];
+				return [track];
 			});
 		return { tracklist: res, isMixed };
 	}, [stats, tracks]);

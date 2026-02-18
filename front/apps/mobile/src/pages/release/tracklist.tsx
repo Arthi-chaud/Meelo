@@ -18,9 +18,8 @@ import * as Haptics from "~/haptics";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 
-export type TrackType = TracklistItemWithRelations<
-	"artist" | "illustration" | "featuring"
->;
+export type TrackType = TracklistItemWithRelations<"artist" | "featuring">;
+
 export const TrackItem = ({
 	track,
 	onPress,
