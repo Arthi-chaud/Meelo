@@ -7,8 +7,6 @@ import {
 	getSongs,
 	getVideos,
 } from "@/api/queries";
-import type Tracklist from "@/models/tracklist";
-import type { TracklistItemWithRelations } from "@/models/tracklist";
 
 export const releatedVideos = (albumId: number) =>
 	getVideos({ album: albumId }, undefined, [
@@ -39,36 +37,14 @@ export const relatedAlbumsQuery = (albumId: number) =>
 
 export const releaseTracklistQuery = (
 	releaseIdentifier: number | string,
-	exclusiveOnly: boolean,
-) => {
-	const query = getReleaseTracklist(releaseIdentifier, exclusiveOnly, [
-		"artist",
-		"featuring",
-	]);
-	return {
-		key: query.key,
-		exec: (api: API) => () =>
-			query
-				.exec(api)({ pageSize: 10000 })
-				.then(({ items }) => {
-					return items.reduce(
-						(prev, item) => {
-							const itemKey = item.discIndex ?? "?";
-							return {
-								...prev,
-								[item.discIndex ?? "?"]: [
-									...(prev[itemKey] ?? []),
-									item,
-								],
-							};
-						},
-						{} as Tracklist<
-							TracklistItemWithRelations<"artist" | "featuring">
-						>,
-					);
-				}),
-	};
-};
+	random?: number,
+) =>
+	getReleaseTracklist(
+		releaseIdentifier,
+		false,
+		["artist", "featuring"],
+		random,
+	);
 
 export const artistsOnAlbumQuery = (albumId: number) => {
 	const query = getArtists({ album: albumId }, undefined, ["illustration"]);

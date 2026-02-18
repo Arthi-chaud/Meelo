@@ -1,14 +1,11 @@
 import { useRouter } from "expo-router";
-import { useSetAtom } from "jotai";
-import { shuffle } from "lodash";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { getAlbumExternalMetadata } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import type { ReleaseWithRelations } from "@/models/release";
-import { playTracksAtom, type TrackState } from "@/state/player";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { formatReleaseDate, useReleaseDate } from "@/ui/pages/release";
 import formatDuration from "@/utils/format-duration";
@@ -28,20 +25,21 @@ export const Header = ({
 	album,
 	totalDuration,
 	isMixed,
-	tracks,
+	playButtonCallback,
+	shuffleButtonCallback,
 }: {
 	isMixed: boolean | undefined;
 	release: ReleaseWithRelations<"illustration"> | undefined;
-	tracks: TrackState[];
 	album: AlbumWithRelations<"artist"> | undefined;
 	totalDuration: number | null | undefined;
+	playButtonCallback: () => void;
+	shuffleButtonCallback: () => void;
 }) => {
 	const { rt: _rt } = useUnistyles();
 	const router = useRouter();
 	const contextMenu = useReleaseContextMenu(
 		release && album ? { ...release, album } : undefined,
 	);
-	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
 	const releaseDate = useReleaseDate(release, album);
 	const { data: externalMetadata } = useQuery(
@@ -59,13 +57,6 @@ export const Header = ({
 		return release.extensions;
 	}, [release, isMixed]);
 
-	const playAlbum = useCallback(() => {
-		playTracks({ tracks });
-	}, [tracks]);
-
-	const shuffleAlbum = useCallback(() => {
-		playTracks({ tracks: shuffle(tracks) });
-	}, [tracks]);
 	return (
 		<View style={styles.root}>
 			<View style={styles.illustrationAndStats}>
@@ -147,13 +138,13 @@ export const Header = ({
 				<View style={styles.playbackControls}>
 					<Pressable
 						style={styles.playbackControl}
-						onPress={playAlbum}
+						onPress={playButtonCallback}
 					>
 						<Icon icon={PlayIcon} />
 					</Pressable>
 					<Pressable
 						style={styles.playbackControl}
-						onPress={shuffleAlbum}
+						onPress={shuffleButtonCallback}
 					>
 						<Icon icon={ShuffleIcon} />
 					</Pressable>

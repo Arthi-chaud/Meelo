@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IntersectionType, OmitType } from "@nestjs/swagger";
+import { ApiProperty, IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	type AlbumResponse,
 	AlbumResponseBuilder,
@@ -39,6 +39,26 @@ import {
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 class DiscResponse extends OmitType(Disc, ["id", "releaseId"]) {}
+
+export class ReleaseStats {
+	@ApiProperty({
+		description: "The average bitrate of the audio tracks on the release",
+		nullable: true,
+		type: "number",
+	})
+	averageBitrate: number | null;
+
+	@ApiProperty({ description: "The total runtime of the release" })
+	totalDuration: number;
+
+	@ApiProperty({ description: "The number of tracks on the release" })
+	trackCount: number;
+
+	@ApiProperty({
+		description: "The number of discs on the release (inc. disc w/o index)",
+	})
+	discCount: number;
+}
 
 export class ReleaseResponse extends IntersectionType(
 	Release,

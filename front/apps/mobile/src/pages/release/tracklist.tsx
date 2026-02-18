@@ -1,149 +1,26 @@
-import { useAtomValue, useSetAtom } from "jotai";
-import { Fragment, useCallback, useMemo } from "react";
+import { useAtomValue } from "jotai";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { RequireAtLeastOne } from "type-fest";
 import type { Disc } from "@/models/disc";
-import type { SongWithRelations } from "@/models/song";
-import type { TrackWithRelations } from "@/models/track";
-import type TracklistType from "@/models/tracklist";
-import type { VideoWithRelations } from "@/models/video";
-import { playTracksAtom, type TrackState } from "@/state/player";
+import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { PlayIcon, VideoIcon } from "@/ui/icons";
 import { formatDiscName } from "@/ui/pages/release";
 import formatArtists from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
-import { generateArray } from "@/utils/gen-list";
 import { ContextMenuButton, useContextMenu } from "~/components/context-menu";
 import { useSongContextMenu } from "~/components/context-menu/resource/song";
 import { useVideoContextMenu } from "~/components/context-menu/resource/video";
 import { LoadableText } from "~/components/loadable_text";
 import { currentTrackAtom } from "~/components/player/state";
 import * as Haptics from "~/haptics";
-import { Divider } from "~/primitives/divider";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 
-type TrackType = TrackWithRelations<"illustration"> &
-	RequireAtLeastOne<{
-		song: SongWithRelations<"artist" | "featuring">;
-		video: VideoWithRelations<"artist">;
-	}>;
+export type TrackType = TracklistItemWithRelations<"artist" | "featuring">;
 
-const SkeletonTracklist = {
-	disc: generateArray(10, undefined),
-} satisfies TracklistType<TrackType | undefined>;
-
-export const Tracklist = ({
-	tracklist,
-	discs,
-	tracks,
-	albumArtistId,
-}: {
-	albumArtistId: number | undefined | null;
-	discs: Disc[] | undefined;
-	tracks: TrackState[] | undefined;
-	tracklist: TracklistType<TrackType | undefined> | undefined;
-}) => {
-	const playTracks = useSetAtom(playTracksAtom);
-	const { t } = useTranslation();
-	const maxTrackIndex = useMemo(() => {
-		return tracks?.length
-			? Math.max(...tracks.map(({ track }) => track.trackIndex ?? 0))
-			: 10;
-	}, [tracks]);
-	const showDiscName = useMemo(() => {
-		if (!tracklist) {
-			return false;
-		}
-		return Object.keys(tracklist).length > 1;
-	}, [tracklist]);
-	const playDisc = useCallback(
-		(discIndex: string) => {
-			if (!tracklist) {
-				return;
-			}
-			const discTracks = tracklist[discIndex]
-				.filter((t) => t !== undefined)
-				.map(({ song, video, ...track }) => ({
-					track,
-					featuring: song?.featuring ?? [],
-					artist: (song ?? video)!.artist,
-				}));
-			playTracks({ tracks: discTracks });
-		},
-		[tracklist],
-	);
-	// Callback on tracklist item press
-	// Will add all the other tracks to the queue
-	const playTrack = useCallback(
-		(trackId: number) => {
-			if (!tracks) {
-				return;
-			}
-			const cursor = tracks.findIndex(
-				({ track }) => track.id === trackId,
-			);
-			playTracks({ tracks, cursor });
-		},
-		[tracks],
-	);
-	return (
-		<View style={styles.root}>
-			{Object.entries(tracklist ?? SkeletonTracklist).map(
-				([discName, tracks]) => {
-					return (
-						<Fragment key={discName}>
-							{showDiscName && (
-								<View key={discName} style={styles.discLabel}>
-									<Pressable
-										disabled={!tracklist}
-										onPress={() => {
-											playDisc(discName);
-										}}
-									>
-										<LoadableText
-											variant="subtitle"
-											skeletonWidth={6}
-											content={
-												!tracklist
-													? undefined
-													: formatDiscName(
-															discName,
-															discs,
-															t,
-														)
-											}
-										/>
-									</Pressable>
-								</View>
-							)}
-							<View style={styles.tracks}>
-								{tracks.map((track, idx) => (
-									<Fragment key={idx}>
-										<TrackItem
-											track={track}
-											onPress={() =>
-												track && playTrack(track.id)
-											}
-											albumArtistId={albumArtistId}
-											maxTrackIndex={maxTrackIndex}
-										/>
-										{/* TODO I dont like that the divier isn't centered with the track name */}
-										<Divider h withInsets />
-									</Fragment>
-								))}
-							</View>
-						</Fragment>
-					);
-				},
-			)}
-		</View>
-	);
-};
-
-const TrackItem = ({
+export const TrackItem = ({
 	track,
 	onPress,
 	maxTrackIndex,
@@ -272,15 +149,34 @@ const TrackItem = ({
 
 const UnknownDurationPlaceholderLength = formatDuration(null).length;
 
+export const DiscDivider = ({
+	discName,
+	discs,
+	onPress,
+}: {
+	discName: string;
+	discs: Disc[];
+	onPress: () => void;
+}) => {
+	const { t } = useTranslation();
+	return (
+		<View style={styles.discLabel}>
+			<Pressable onPress={onPress}>
+				<LoadableText
+					variant="subtitle"
+					skeletonWidth={6}
+					content={formatDiscName(discName, discs, t)}
+				/>
+			</Pressable>
+		</View>
+	);
+};
+
 const styles = StyleSheet.create((theme) => ({
-	root: {
-		paddingTop: theme.gap(2),
-		// To compensate the bottomPadding of 'tracks' style
-		paddingBottom: theme.gap(1),
-	},
 	discLabel: {
 		flexDirection: "row",
-		paddingBottom: theme.gap(1),
+		paddingTop: theme.gap(1.5),
+		paddingBottom: theme.gap(0.5),
 		paddingHorizontal: theme.gap(1),
 	},
 	tracks: {

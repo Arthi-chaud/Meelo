@@ -92,3 +92,12 @@ export const ReleaseSortingKeys = [
 	"trackCount",
 	"addDate",
 ] as const;
+
+export const ReleaseStats = yup.object({
+	totalDuration: yup.number().required(),
+	discCount: yup.number().required(),
+	trackCount: yup.number().required(),
+	averageBitrate: yup.number().required().nullable(),
+});
+
+export type ReleaseStats = yup.InferType<typeof ReleaseStats>;

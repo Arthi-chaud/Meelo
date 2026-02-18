@@ -23,6 +23,7 @@ import {
 	Get,
 	Inject,
 	ParseBoolPipe,
+	ParseIntPipe,
 	Query,
 	Res,
 } from "@nestjs/common";
@@ -44,7 +45,10 @@ import SongQueryParameters from "src/song/models/song.query-params";
 import { TrackResponseBuilder } from "src/track/models/track.response";
 import TrackService from "src/track/track.service";
 import ReleaseQueryParameters from "./models/release.query-parameters";
-import { ReleaseResponseBuilder } from "./models/release.response";
+import {
+	ReleaseResponseBuilder,
+	ReleaseStats,
+} from "./models/release.response";
 import ReleaseService from "./release.service";
 
 class Selector {
@@ -148,13 +152,32 @@ export default class ReleaseController {
 		exclusiveOnly: boolean,
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
+
+		@Query(
+			"random",
+			new ParseIntPipe({ optional: true }),
+			new DefaultValuePipe(undefined),
+		)
+		random: number | undefined,
 	) {
 		return this.trackService.getTracklist(
 			where,
 			paginationParameters,
 			exclusiveOnly,
 			include,
+			random,
 		);
+	}
+
+	@ApiOperation({
+		summary: "Get Stats of Release",
+	})
+	@Get(":idOrSlug/stats")
+	async getReleaseStats(
+		@IdentifierParam(ReleaseService)
+		where: ReleaseQueryParameters.WhereInput,
+	): Promise<ReleaseStats> {
+		return this.releaseService.getReleaseStats(where);
 	}
 
 	@ApiOperation({
@@ -162,7 +185,7 @@ export default class ReleaseController {
 	})
 	@ApiOkResponse({ description: "A ZIP Binary" })
 	@Get(":idOrSlug/archive")
-	async getReleaseArcive(
+	async getReleaseArchive(
 		@IdentifierParam(ReleaseService)
 		where: ReleaseQueryParameters.WhereInput,
 		@Res() response: ExpressResponse,
