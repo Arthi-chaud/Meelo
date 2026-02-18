@@ -15,6 +15,7 @@ import {
 	type TrackState,
 } from "@/state/player";
 import { DeleteIcon, DownloadIcon } from "@/ui/icons";
+import formatArtists from "@/utils/format-artists";
 import { useQueryClient } from "~/api";
 import { ListItem } from "~/components/item/list-item";
 import { useIsDownloaded } from "~/downloads";
@@ -88,7 +89,7 @@ export const Queue = () => {
 };
 
 const QueueItem = ({
-	track: { track, artist },
+	track: { track, artist, featuring },
 	onPress,
 	onDelete,
 	onDrag,
@@ -102,7 +103,7 @@ const QueueItem = ({
 	return (
 		<ListItem
 			title={track.name}
-			subtitle={artist.name}
+			subtitle={formatArtists(artist, featuring)}
 			onLongPress={onDrag}
 			illustration={track.illustration}
 			illustrationProps={{
