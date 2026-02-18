@@ -100,6 +100,18 @@ Any questions about this? Open a discussion [here](https://github.com/Arthi-chau
 
 :hammer: Would you like to contribute to Meelo? Feel free to [open a pull request](https://github.com/Arthi-chaud/Meelo/compare).
 
+## 💖 Our Sponsors
+
+Thanks to the amazing folks who support this project:
+
+<p align="center">
+  <a href="https://github.com/Laflamme">
+    <img src="https://avatars.githubusercontent.com/u/3687644?v=4" height="40"/>
+  </a>
+</p>
+
+Want to support Meelo? [Become a sponsor](https://github.com/sponsors/Arthi-chaud)
+
 ---
 
 Get ready to make the most out of you music collection!
