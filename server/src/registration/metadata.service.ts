@@ -257,7 +257,6 @@ export default class MetadataService {
 								metadata.releaseReleaseDate ??
 								metadata.albumReleaseDate,
 							album: { id: album.id },
-							label: label ? { id: label?.id } : undefined,
 							registeredAt: file.registerDate,
 							discogsId: metadata.discogsId,
 						},
@@ -299,6 +298,12 @@ export default class MetadataService {
 			video: video ? { id: video.id } : undefined,
 		};
 		if (release && album) {
+			if (label) {
+				this.releaseService.update(
+					{ label: { id: label.id } },
+					{ id: release.id },
+				);
+			}
 			if (
 				albumArtist === undefined &&
 				release.album.type === AlbumType.StudioRecording

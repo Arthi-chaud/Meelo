@@ -300,3 +300,28 @@ class TestMusicbrainz:
         assert "Electro" in genres
         assert "Synth-Pop" in genres
         assert "Ballad" in genres
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_labels(self, ctx, subtests):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+
+        scenarios: List[Tuple[str, str, List[str]]] = [
+            ("Neon Night", "a0487250-54b0-3eb9-8523-097e5018d777", ["London Records"]),
+            ("Girl", "0b0772d5-eef0-3138-9eb0-fa6668ddc30f", ["Warner Music UK"]),
+            (
+                "B in the mix",
+                "a1b16f9c-7b93-3351-9453-0f3545a5f989",
+                ["Jive", "Zomba"],
+            ),
+        ]
+
+        for [album_name, mbid, expected] in scenarios:
+            with subtests.test("Get Album Labels", album_name=album_name):
+                album = await provider.get_album(mbid)
+                labels = await provider.get_album_labels(album)
+                assert labels is not None
+                for label in labels:
+                    assert label in expected
+                assert len(labels) == len(expected)

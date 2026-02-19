@@ -11,6 +11,7 @@ from matcher.context import Context
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
+    GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumUrlFromIdFeature,
     GetArtistFeature,
@@ -99,6 +100,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
+            GetAlbumLabelsFeature(lambda album: self._get_album_labels(album)),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
             SearchAlbumFeature(
@@ -303,6 +305,38 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
         )
         return res
+
+    async def _get_album_labels(self, album: Any) -> List[str] | None:
+        try:
+            album_id = album["id"]
+            res = await self._fetch("/release", {"query": f"rgid:{album_id}"})
+            releases = [
+                r
+                for r in res["releases"]
+                # date can be an empty string
+                if "date" in r and r["date"] and "label-info" in r
+            ]
+            releases = sorted(releases, key=lambda r: r["date"])
+            for date_length in [10, 7, 4]:
+                sorted_releases = [r for r in releases if len(r["date"]) == date_length]
+                if not sorted_releases:
+                    continue
+                first_release = sorted_releases[0]
+                original_releases = [
+                    r for r in sorted_releases if r["date"] == first_release["date"]
+                ]
+                labels = []
+                for release in original_releases:
+                    for label in release["label-info"]:
+                        label_name = label["label"]["name"]
+                        if (
+                            any([c for c in label_name if c.isascii()])
+                            and label_name not in labels
+                        ):
+                            labels.append(label_name)
+                return labels
+        except Exception:
+            return None
 
     def _get_album_release_date(self, album: Any) -> date | None:
         str_release_date = album.get("first-release-date")

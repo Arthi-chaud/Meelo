@@ -376,7 +376,14 @@ export default class ReleaseService {
 		const updatedRelease = await this.prismaService.release
 			.update({
 				data: {
-					...what,
+					releaseDate: what.releaseDate,
+					label: what.label
+						? {
+								connect: LabelService.formatWhereInput(
+									what.label,
+								),
+							}
+						: undefined,
 				},
 				where: ReleaseService.formatWhereInput(where),
 			})

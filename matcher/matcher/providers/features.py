@@ -97,6 +97,10 @@ class GetAlbumGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
     pass
 
 
+class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
+    pass
+
+
 class GetAlbumTypeFeature(BaseFeature[Any, Awaitable[AlbumType | None]]):
     pass
 
