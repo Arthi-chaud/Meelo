@@ -11,6 +11,7 @@ import { generateArray } from "@/utils/gen-list";
 import { getRandomNumber } from "@/utils/random";
 import { useInfiniteQuery, useQuery, useQueryClient } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import type { PageScrollProps } from "~/components/fading-header";
 import { useQueryErrorModal } from "~/hooks/error";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Divider } from "~/primitives/divider";
@@ -21,10 +22,10 @@ import { DiscDivider, TrackItem, type TrackType } from "./tracklist";
 
 export default function ReleasePage({
 	releaseId,
-	scrollHandler,
+	scrollProps,
 }: {
 	releaseId: string;
-	scrollHandler?: any;
+	scrollProps: PageScrollProps;
 }) {
 	const rootStyle = useRootViewStyle();
 	const { rt } = useUnistyles();
@@ -56,8 +57,7 @@ export default function ReleasePage({
 	useSetKeyIllustration(release);
 	return (
 		<AFlashList
-			onScroll={scrollHandler}
-			scrollEventThrottle={16}
+			{...scrollProps}
 			contentContainerStyle={rootStyle}
 			data={tracklist}
 			ListHeaderComponent={() => (
