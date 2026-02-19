@@ -123,6 +123,7 @@ const styles = StyleSheet.create((theme) => ({
 				default: {},
 			},
 			variant: {
+				text: { elevation: 0 },
 				outlined: {
 					borderColor: theme.colors.button,
 					backgroundColor: theme.colors.background,
@@ -170,6 +171,7 @@ const styles = StyleSheet.create((theme) => ({
 			},
 			disabled: { true: {}, default: {} },
 			variant: {
+				text: {},
 				outlined: {},
 				filled: {},
 			},
@@ -188,6 +190,7 @@ const styles = StyleSheet.create((theme) => ({
 			},
 			disabled: { true: {}, default: {} },
 			variant: {
+				text: {},
 				outlined: {},
 				filled: {},
 			},
@@ -211,6 +214,9 @@ const styles = StyleSheet.create((theme) => ({
 			},
 			disabled: { true: {}, default: {} },
 			variant: {
+				text: {
+					color: theme.colors.text.primary,
+				},
 				outlined: {
 					color: theme.colors.text.primary,
 				},

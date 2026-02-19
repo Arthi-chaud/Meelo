@@ -140,6 +140,7 @@ const WithFullScreenAndTranscodeButton = ({
 				<View style={styles.videoButton}>
 					<Button
 						size="small"
+						variant="text"
 						icon={FullscreenIcon}
 						onPress={onFullscreenPress}
 						width="fitContent"
@@ -185,6 +186,7 @@ export const SelectTranscodingButton = ({
 			buttonProps={{
 				disabled: !canUseHLS,
 				size: "small",
+				variant: "text",
 				icon: SettingsIcon,
 				width: "fitContent",
 			}}
