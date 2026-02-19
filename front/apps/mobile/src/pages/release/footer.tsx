@@ -7,6 +7,7 @@ import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbumExternalMetadata,
 	getGenres,
+	getLabels,
 	getPlaylists,
 } from "@/api/queries";
 import type Album from "@/models/album";
@@ -16,7 +17,7 @@ import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
 import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
-import { useBSidesAndExtras, useVideos } from "@/ui/pages/release";
+import { useBSidesAndExtras, useLabels, useVideos } from "@/ui/pages/release";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import {
@@ -96,6 +97,10 @@ export const Footer = ({
 		album?.id,
 	);
 
+	const { items: albumLabels } = useInfiniteQuery(
+		(albumId) => getLabels({ album: albumId }),
+		album?.id,
+	);
 	const { items: genres } = useInfiniteQuery(
 		(albumId) => getGenres({ album: albumId }),
 		album?.id,
@@ -106,6 +111,7 @@ export const Footer = ({
 		album?.type,
 		tracks,
 	);
+	const labels = useLabels(release, albumLabels);
 	const onVideoPress = useCallback(
 		(
 			videoId: number,
@@ -123,11 +129,8 @@ export const Footer = ({
 	);
 	return (
 		<View>
-			{release?.label && (
-				<RecordLabelSection
-					style={styles.section}
-					label={release.label}
-				/>
+			{labels.length !== 0 && (
+				<RecordLabelSection style={styles.section} labels={labels} />
 			)}
 			<GenreRow genres={genres} style={styles.section} />
 			<SongGrid
@@ -291,16 +294,18 @@ const ExtraSection = ({
 
 const RecordLabelSection = ({
 	style,
-	label,
+	labels,
 }: {
 	style: ViewStyle;
-	label: Label;
+	labels: Label[];
 }) => {
 	const { t } = useTranslation();
 	return (
 		<View style={[style, styles.labelSection]}>
 			<Text content={`${t("models.label")}:`} variant="subtitle" />
-			<LabelChip label={label} />
+			{labels.map((label) => (
+				<LabelChip key={label.slug} label={label} />
+			))}
 		</View>
 	);
 };
