@@ -37,7 +37,7 @@ import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { Fragment, type ReactNode, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import type API from "@/api";
@@ -47,6 +47,7 @@ import {
 	getAlbums,
 	getArtists,
 	getGenres,
+	getLabels,
 	getPlaylists,
 	getRelease,
 	getReleases,
@@ -62,6 +63,7 @@ import { PlayIcon, ShuffleIcon, StarIcon } from "@/ui/icons";
 import {
 	formatReleaseDate,
 	useBSidesAndExtras,
+	useLabels,
 	useReleaseDate,
 	useTracklist,
 	useVideos,
@@ -251,6 +253,11 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		relatedReleasesQuery,
 		release.data?.albumId,
 	);
+
+	const albumLabels = useInfiniteQuery(
+		(albumId) => getLabels({ album: albumId }),
+		release.data?.albumId,
+	);
 	const relatedPlaylists = useInfiniteQuery(
 		relatedPlaylistsQuery,
 		release.data?.albumId,
@@ -277,9 +284,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		album.data?.type,
 		tracks ?? [],
 	);
-	const label = useMemo(() => {
-		return release.data?.label;
-	}, [release.data]);
+	const labels = useLabels(release.data, albumLabels.items);
 	const releaseDate = useReleaseDate(release.data, album.data);
 	const illustration = useMemo(
 		() => release.data?.illustration,
@@ -659,12 +664,12 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					sx={{
 						display: "flex",
 						justifyContent: "right",
-						paddingTop: label !== null ? 1 : 2,
+						paddingTop: labels.length ? 1 : 2,
 					}}
 				>
-					{!album.data || label === undefined ? (
+					{!album.data || labels.length === 0 ? (
 						<Skeleton width={"100px"} />
-					) : label ? (
+					) : labels.length ? (
 						<Typography
 							sx={{
 								color: "text.disabled",
@@ -673,15 +678,22 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							{album.data.releaseDate
 								? `${getYear(album.data.releaseDate)} - `
 								: undefined}
-							<Link
-								href={`/labels/${release.data?.label?.slug}`}
-								style={{
-									textDecoration: "underline",
-									textDecorationColor: "text.disabled",
-								}}
-							>
-								{release.data?.label?.name}
-							</Link>
+
+							{labels.map((label, idx) => (
+								<Fragment key={label.slug}>
+									<Link
+										href={`/labels/${label.slug}`}
+										style={{
+											textDecoration: "underline",
+											textDecorationColor:
+												"text.disabled",
+										}}
+									>
+										{label.name}
+									</Link>
+									{idx < labels.length - 1 ? ",  " : ""}
+								</Fragment>
+							))}
 						</Typography>
 					) : null}
 				</Box>

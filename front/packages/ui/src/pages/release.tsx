@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import type Album from "@/models/album";
 import type { AlbumType } from "@/models/album";
 import type { Disc } from "@/models/disc";
+import type Label from "@/models/label";
 import type Release from "@/models/release";
+import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
 import type Tracklist from "@/models/tracklist";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
@@ -181,10 +183,23 @@ export const useReleaseDate = (
 	}, [release, album]);
 };
 
+export const useLabels = (
+	release: ReleaseWithRelations<"label"> | undefined,
+	labels: Label[] | undefined,
+): Label[] => {
+	if (release?.label) {
+		return [
+			release.label,
+			...(labels?.filter((l) => l.id !== release.label?.id) ?? []),
+		];
+	}
+	return labels ?? [];
+};
+
 export const formatDiscName = (
 	discIndex: string,
 	discs: Disc[] | undefined,
-	//@ts-ignore
+	//@ts-expect-error
 	t: (s: TranslationKey) => string,
 ) => {
 	const disc = discs?.find((d) =>
