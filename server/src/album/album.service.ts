@@ -30,6 +30,7 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import { enumFilterToPrisma, filterToPrisma } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
+import LabelService from "src/label/label.service";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import ParserService from "src/parser/parser.service";
@@ -498,32 +499,73 @@ export default class AlbumService extends SearchableRepositoryService {
 		if (where.label?.and) {
 			query.push({
 				AND: where.label.and.map((label) => ({
-					releases: {
-						some: ReleaseService.formatManyWhereInput({
-							label: { is: label },
-						}),
-					},
+					OR: [
+						{
+							labels: {
+								some: LabelService.formatWhereInput(label),
+							},
+						},
+						{
+							releases: {
+								some: ReleaseService.formatManyWhereInput({
+									label: { is: label },
+								}),
+							},
+						},
+					],
 				})),
 			});
 		} else if (where.label?.not) {
 			query.push({
 				AND: [
 					{
-						releases: {
-							none: ReleaseService.formatManyWhereInput({
-								label: { is: where.label.not },
-							}),
-						},
+						AND: [
+							{
+								labels: {
+									none: LabelService.formatWhereInput(
+										where.label.not,
+									),
+								},
+							},
+							{
+								releases: {
+									none: ReleaseService.formatManyWhereInput({
+										label: { is: where.label.not },
+									}),
+								},
+							},
+						],
 					},
 				],
 			});
 		} else if (where.label) {
 			query.push({
-				releases: {
-					some: ReleaseService.formatManyWhereInput({
-						label: where.label,
-					}),
-				},
+				OR: [
+					{
+						labels: where.label.is
+							? {
+									some: LabelService.formatWhereInput(
+										where.label.is,
+									),
+								}
+							: {
+									some: {
+										OR: where.label.or.map((label) =>
+											LabelService.formatWhereInput(
+												label,
+											),
+										),
+									},
+								},
+					},
+					{
+						releases: {
+							some: ReleaseService.formatManyWhereInput({
+								label: where.label,
+							}),
+						},
+					},
+				],
 			});
 		}
 		return { AND: query };
@@ -603,6 +645,23 @@ export default class AlbumService extends SearchableRepositoryService {
 							}
 						: undefined,
 					releaseDate: what.releaseDate ?? undefined,
+
+					labels: what.labels
+						? {
+								connectOrCreate: what.labels
+									.map((label) => [
+										label,
+										new Slug(label).toString(),
+									])
+									.map(([labelName, labelSlug]) => ({
+										where: { slug: labelSlug },
+										create: {
+											name: labelName,
+											slug: labelSlug,
+										},
+									})),
+							}
+						: undefined,
 					genres: what.genres
 						? {
 								connectOrCreate: what.genres

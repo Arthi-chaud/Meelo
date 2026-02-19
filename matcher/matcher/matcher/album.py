@@ -10,6 +10,7 @@ from matcher.providers.domain import AlbumType
 from matcher.providers.features import (
     GetAlbumDescriptionFeature,
     GetAlbumGenresFeature,
+    GetAlbumLabelsFeature,
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
@@ -28,6 +29,8 @@ async def match_and_post_album(
     reuseSources: bool,
 ):
     try:
+        context = Context.get()
+        album = await context.client.get_album(album_id)
 
         async def match():
             if not reuseSources:
@@ -52,8 +55,6 @@ async def match_and_post_album(
                 previous_sources,
             )
 
-        context = Context.get()
-        album = await context.client.get_album(album_id)
         res = await match()
         # We only care about the new album type if the previous type is Studio or live (see #1089)
         album_type = (
@@ -89,14 +90,18 @@ async def match_and_post_album(
             logging.info(f"Found {len(res.genres)} genres for album {album_name}")
         if album_type != album.type and album_type != AlbumType.OTHER:
             logging.info(f"Found type for album {album_name}: {album_type.value}")
+
+        if res.labels:
+            logging.info(f"Found {len(res.labels)} labels for album {album_name}")
         if (
             res.release_date
             or res.genres
+            or res.labels
             or (album_type != album.type)
             and album_type != AlbumType.OTHER
         ):
             await context.client.post_album_update(
-                album_id, res.release_date, res.genres, album_type
+                album_id, res.release_date, res.genres, (res.labels or None), album_type
             )
     except Exception as e:
         logging.error(e)
@@ -158,6 +163,7 @@ async def match_album(
         None,
         None,
         [],
+        [],
     )
 
     async def provider_task(
@@ -192,6 +198,13 @@ async def match_album(
                 lambda: res.release_date is None,
                 lambda get_release_date: get_release_date.run(album),
                 lambda release_data: res.set_release_date_if_none(release_data),
+            ),
+            common.bind_feature_to_result(
+                GetAlbumLabelsFeature,
+                provider,
+                lambda: len(res.labels) == 0,
+                lambda get_labels: get_labels.run(album),
+                lambda labels: res.push_labels(labels),
             ),
             common.bind_feature_to_result(
                 GetAlbumRatingFeature,
