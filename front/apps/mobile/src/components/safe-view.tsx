@@ -6,6 +6,7 @@ import {
 	type ViewProps,
 	type ViewStyle,
 } from "react-native";
+import Animated from "react-native-reanimated";
 
 import { useRootViewStyle } from "~/hooks/root-view-style";
 
@@ -16,7 +17,7 @@ export const SafeFlashList = <T,>(
 ) => {
 	const { paddingTop, ...rootStyle } = useRootViewStyle();
 	return (
-		<FlashList
+		<AnimatedFlashlist
 			{...props}
 			contentContainerStyle={[
 				...(props.contentContainerStyle ?? []),
@@ -31,6 +32,8 @@ export const SafeFlashList = <T,>(
 		/>
 	);
 };
+
+const AnimatedFlashlist = Animated.createAnimatedComponent(FlashList);
 
 // ScrollView that adds padding at the top and bottom to avoid header + tabbar
 export const SafeScrollView = (
