@@ -154,6 +154,8 @@ model Album {
     externalMetadata ExternalMetadata?
     /// @description The genres of the album
     genres           Genre[]
+    /// @description The record labels related to the album
+    labels           Label[]
     illustration     AlbumIllustration?
 
     localIdentifiers LocalIdentifiers?
@@ -300,6 +302,7 @@ model Label {
     /// @example my-label
     slug     String    @unique
     releases Release[]
+    albums   Album[]
 
     @@map("labels")
 }
