@@ -33,4 +33,4 @@ type Label = yup.InferType<typeof Label>;
 
 export default Label;
 
-export const LabelSortingKeys = ["name", "releaseCount"] as const;
+export const LabelSortingKeys = ["name", "albumCount"] as const;

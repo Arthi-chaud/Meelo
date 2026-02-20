@@ -35,7 +35,7 @@ namespace LabelQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ["id", "name", "releaseCount"] as const;
+	export const SortingKeys = ["id", "name", "albumCount"] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 }
