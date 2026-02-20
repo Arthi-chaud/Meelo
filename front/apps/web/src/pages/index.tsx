@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Grid, Skeleton, Stack } from "@mui/material";
+import { Box, Chip, Grid, Stack } from "@mui/material";
 import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
 import Link from "next/link";
@@ -327,44 +327,32 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 
-					<HomePageSection
-						heading={t("home.topLabels")}
-						queryData={topLabels}
-						render={(labels) => (
-							<TileRow
-								tiles={labels.map((label, index) => (
-									<Box
-										sx={{ paddingBottom: 2 }}
-										key={`label-${label?.id}-${index}`}
-									>
+					{topLabels.items?.length ? (
+						<HomePageSection
+							heading={t("home.topLabels")}
+							queryData={topLabels}
+							render={(labels) => (
+								<Stack
+									direction={"row"}
+									gap={2}
+									sx={{
+										paddingY: 1,
+										alignItems: "center",
+										overflowX: "scroll",
+									}}
+								>
+									{labels.map((label, index) => (
 										<Link
-											href={
-												label
-													? `/labels/${label.slug}`
-													: {}
-											}
+											key={`label-${label?.id}-${index}`}
+											href={`/labels/${label?.slug}`}
 										>
-											<Button
-												variant="outlined"
-												size="large"
-												sx={{
-													width: "100%",
-													textTransform: "none",
-												}}
-											>
-												{!label ? (
-													<Skeleton width={"50px"} />
-												) : (
-													label.name
-												)}
-											</Button>
+											<Chip label={label?.name} />
 										</Link>
-									</Box>
-								))}
-								windowSize={tileRowWindowSize}
-							/>
-						)}
-					/>
+									))}
+								</Stack>
+							)}
+						/>
+					) : null}
 					<HomePageSection
 						heading={t("home.mostPlayedSongs")}
 						queryData={mostListenedSongs}
