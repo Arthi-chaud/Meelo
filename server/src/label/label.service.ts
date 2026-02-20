@@ -253,9 +253,8 @@ export default class LabelService {
 	async housekeeping() {
 		const { count: deletedCount } =
 			await this.prismaService.label.deleteMany({
-				where: { releases: { none: {} } },
+				where: { releases: { none: {} }, albums: { none: {} } },
 			});
-
 		if (deletedCount) {
 			this.logger.warn(`Deleted ${deletedCount} labels`);
 		}
