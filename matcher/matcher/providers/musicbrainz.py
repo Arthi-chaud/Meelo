@@ -264,7 +264,10 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 r
                 for r in ordered_releases
                 if (
-                    to_slug(r["artist-credit"][0]["name"]) == artist_slug
+                    (
+                        to_slug(r["artist-credit"][0]["artist"]["name"]) == artist_slug
+                        or to_slug(r["artist-credit"][0]["name"]) == artist_slug
+                    )
                     if artist_name
                     # Album artist is 'Various Artist'
                     else (
