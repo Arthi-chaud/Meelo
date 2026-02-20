@@ -65,6 +65,8 @@ class TestMusicbrainz:
                 "5f2a4d8a-3511-4656-9c9a-0ad5c604a421",
             ),
             ("Protection", "Massive Attack", "ded46e46-788d-3c1f-b21b-9f5e9c37b1bc"),
+            # also use full artist name to match
+            ("Disco", "Kylie Minogue", "f01db7e3-63bb-4856-9581-0bf3b472447e"),
             (
                 "Revolution In Me",
                 "Siobhan Donaghy",
