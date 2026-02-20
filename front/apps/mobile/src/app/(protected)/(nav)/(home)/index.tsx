@@ -25,12 +25,12 @@ import {
 	getAlbums,
 	getArtists,
 	getGenres,
+	getLabels,
 	getReleases,
 	getSongs,
 } from "@/api/queries";
 import type { AlbumSortingKey, AlbumWithRelations } from "@/models/album";
 import type { ArtistSortingKey, ArtistWithRelations } from "@/models/artist";
-import type Genre from "@/models/genre";
 import type { SongSortingKey } from "@/models/song";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery } from "~/api";
@@ -38,6 +38,7 @@ import { useSetKeyIllustration } from "~/components/background-gradient";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
+import { LabelChip } from "~/components/item/resource/label";
 import ReleaseTile from "~/components/item/resource/release";
 import { Row, type RowProps } from "~/components/row";
 import { SafeFlashList } from "~/components/safe-view";
@@ -51,13 +52,13 @@ const styles = StyleSheet.create((theme) => ({
 		paddingBottom: theme.gap(1),
 	},
 	title: { paddingLeft: theme.gap(2) },
-	genreRow: {
+	chipRow: {
 		alignItems: "center",
 		paddingHorizontal: theme.gap(2),
 		paddingVertical: theme.gap(1),
 		marginBottom: theme.gap(1),
 	},
-	genreChip: {
+	chip: {
 		paddingLeft: theme.gap(1.5),
 		alignItems: "center",
 	},
@@ -65,7 +66,7 @@ const styles = StyleSheet.create((theme) => ({
 
 type HomePageSection =
 	| { type: "tileRow"; props: RowProps<any> }
-	| { type: "genreRow"; props: FlashListProps<Genre | undefined> }
+	| { type: "chipRow"; props: FlashListProps<any | undefined> }
 	| { type: "songGrid"; props: SongGridProps };
 
 const renderHomePageSection = (s: HomePageSection) => {
@@ -74,7 +75,7 @@ const renderHomePageSection = (s: HomePageSection) => {
 			return <SongGrid {...s.props} />;
 		case "tileRow":
 			return <Row {...s.props} />;
-		case "genreRow":
+		case "chipRow":
 			return <FlashList {...s.props} />;
 	}
 };
@@ -107,6 +108,10 @@ export default function Root() {
 
 	const topGenres = useInfiniteQuery(() =>
 		getGenres({}, { sortBy: "songCount", order: "desc" }),
+	);
+
+	const topLabels = useInfiniteQuery(() =>
+		getLabels({}, { sortBy: "albumCount", order: "desc" }),
 	);
 
 	useSetKeyIllustration(newlyAddedAlbums.items?.at(0));
@@ -210,29 +215,62 @@ export default function Root() {
 			},
 		},
 		{
-			type: "genreRow",
+			type: "chipRow",
 			props: {
 				horizontal: true,
-				data: topGenres.items ?? generateArray(3, undefined),
+				data: topGenres.items ?? generateArray(1, undefined),
 
 				ListHeaderComponent: (
 					<Text content={t("home.topGenres")} variant="h4" />
 				),
 				CellRendererComponent: (props) => {
 					return (
-						<View
-							{...props}
-							style={[styles.genreChip, props.style]}
-						/>
+						<View {...props} style={[styles.chip, props.style]} />
 					);
 				},
 				renderItem: ({ item: genre, index }) => (
 					<GenreChip genre={genre} key={genre?.slug ?? index} />
 				),
 
-				contentContainerStyle: styles.genreRow,
+				contentContainerStyle: styles.chipRow,
 			},
 		},
+
+		...(topLabels.items?.length
+			? [
+					{
+						type: "chipRow",
+						props: {
+							horizontal: true,
+							data:
+								topLabels.items ?? generateArray(1, undefined),
+
+							ListHeaderComponent: (
+								<Text
+									content={t("home.topLabels")}
+									variant="h4"
+								/>
+							),
+							CellRendererComponent: (props) => {
+								return (
+									<View
+										{...props}
+										style={[styles.chip, props.style]}
+									/>
+								);
+							},
+							renderItem: ({ item: label, index }) => (
+								<LabelChip
+									label={label}
+									key={label?.slug ?? index}
+								/>
+							),
+
+							contentContainerStyle: styles.chipRow,
+						},
+					} as HomePageSection,
+				]
+			: []),
 		{
 			type: "songGrid",
 			props: {
