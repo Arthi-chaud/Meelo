@@ -6,6 +6,7 @@ from .features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
+    GetAlbumLabelsFeature,
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
@@ -126,6 +127,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     async def get_album_genres(self, album: Any) -> List[str] | None:
         f = self.get_feature(GetAlbumGenresFeature)
+        return await f.run(album) if f else None
+
+    async def get_album_labels(self, album: Any) -> List[str] | None:
+        f = self.get_feature(GetAlbumLabelsFeature)
         return await f.run(album) if f else None
 
     async def get_album_release_date(self, album: Any) -> date | None:

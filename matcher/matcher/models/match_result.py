@@ -37,6 +37,7 @@ class AlbumMatchResult:
     release_date: date | None
     album_type: AlbumType | None
     genres: List[str]
+    labels: List[str]
 
     def set_album_type_if_none(self, album_type: AlbumType):
         self.album_type = self.album_type or album_type
@@ -46,6 +47,11 @@ class AlbumMatchResult:
 
     def push_genres(self, genres: List[str]):
         self.genres = self.genres + [g for g in genres if g not in self.genres]
+
+    def push_labels(self, labels: List[str]):
+        self.labels = self.labels + [
+            label for label in labels if label not in self.labels
+        ]
 
 
 @dataclass

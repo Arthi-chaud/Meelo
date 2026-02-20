@@ -109,6 +109,11 @@ export default class LabelService {
 			query.push({
 				AND: [
 					{
+						albums: {
+							none: AlbumService.formatWhereInput(
+								where.album.not,
+							),
+						},
 						releases: {
 							none: ReleaseService.formatManyWhereInput({
 								album: { is: where.album.not },
@@ -119,23 +124,54 @@ export default class LabelService {
 			});
 		} else if (where.album?.and) {
 			query.push({
-				AND: where.album.and.map((artist) => ({
-					releases: {
-						some: ReleaseService.formatManyWhereInput({
-							album: { is: artist },
-						}),
-					},
+				AND: where.album.and.map((album) => ({
+					OR: [
+						{
+							albums: {
+								some: AlbumService.formatWhereInput(album),
+							},
+						},
+						{
+							releases: {
+								some: ReleaseService.formatManyWhereInput({
+									album: { is: album },
+								}),
+							},
+						},
+					],
 				})),
 			});
 		} else if (where.album) {
 			query.push({
 				AND: [
 					{
-						releases: {
-							some: ReleaseService.formatManyWhereInput({
-								album: where.album,
-							}),
-						},
+						OR: [
+							{
+								albums: where.album.or
+									? {
+											some: {
+												OR: where.album.or.map(
+													(album) =>
+														AlbumService.formatWhereInput(
+															album,
+														),
+												),
+											},
+										}
+									: {
+											some: AlbumService.formatWhereInput(
+												where.album.is,
+											),
+										},
+							},
+							{
+								releases: {
+									some: ReleaseService.formatManyWhereInput({
+										album: where.album,
+									}),
+								},
+							},
+						],
 					},
 				],
 			});
@@ -217,9 +253,8 @@ export default class LabelService {
 	async housekeeping() {
 		const { count: deletedCount } =
 			await this.prismaService.label.deleteMany({
-				where: { releases: { none: {} } },
+				where: { releases: { none: {} }, albums: { none: {} } },
 			});
-
 		if (deletedCount) {
 			this.logger.warn(`Deleted ${deletedCount} labels`);
 		}

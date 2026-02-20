@@ -88,6 +88,7 @@ namespace AlbumQueryParameters {
 	) {
 		master?: ReleaseQueryParameters.WhereInput;
 		genres?: string[];
+		labels?: string[];
 	}
 
 	/**

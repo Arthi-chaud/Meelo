@@ -1,12 +1,14 @@
 import { FlashList } from "@shopify/flash-list";
 import { useSetAtom } from "jotai";
-import { useCallback, useMemo } from "react";
+import { type JSX, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, type ViewStyle } from "react-native";
+import { FlatList, View, type ViewStyle } from "react-native";
+import type { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbumExternalMetadata,
 	getGenres,
+	getLabels,
 	getPlaylists,
 } from "@/api/queries";
 import type Album from "@/models/album";
@@ -16,7 +18,7 @@ import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
 import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
-import { useBSidesAndExtras, useVideos } from "@/ui/pages/release";
+import { useBSidesAndExtras, useLabels, useVideos } from "@/ui/pages/release";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import {
@@ -96,6 +98,10 @@ export const Footer = ({
 		album?.id,
 	);
 
+	const { items: albumLabels } = useInfiniteQuery(
+		(albumId) => getLabels({ album: albumId }),
+		album?.id,
+	);
 	const { items: genres } = useInfiniteQuery(
 		(albumId) => getGenres({ album: albumId }),
 		album?.id,
@@ -106,6 +112,7 @@ export const Footer = ({
 		album?.type,
 		tracks,
 	);
+	const labels = useLabels(release, albumLabels);
 	const onVideoPress = useCallback(
 		(
 			videoId: number,
@@ -123,12 +130,7 @@ export const Footer = ({
 	);
 	return (
 		<View>
-			{release?.label && (
-				<RecordLabelSection
-					style={styles.section}
-					label={release.label}
-				/>
-			)}
+			<LabelRow labels={labels} style={styles.section} />
 			<GenreRow genres={genres} style={styles.section} />
 			<SongGrid
 				hideIfEmpty={true}
@@ -289,19 +291,23 @@ const ExtraSection = ({
 	);
 };
 
-const RecordLabelSection = ({
+const LabelRow = ({
 	style,
-	label,
+	labels,
 }: {
 	style: ViewStyle;
-	label: Label;
+	labels: Label[] | undefined;
 }) => {
-	const { t } = useTranslation();
+	if (labels?.length === 0) {
+		return null;
+	}
 	return (
-		<View style={[style, styles.labelSection]}>
-			<Text content={`${t("models.label")}:`} variant="subtitle" />
-			<LabelChip label={label} />
-		</View>
+		<ChipRow
+			items={labels}
+			style={style}
+			title="models.label"
+			renderItem={(label) => <LabelChip label={label} />}
+		/>
 	);
 };
 
@@ -312,25 +318,46 @@ const GenreRow = ({
 	genres: Genre[] | undefined;
 	style?: ViewStyle;
 }) => {
+	return (
+		<ChipRow
+			items={genres}
+			style={style}
+			title="models.genre_plural"
+			renderItem={(genre) => <GenreChip genre={genre} />}
+		/>
+	);
+};
+
+const ChipRow = <T,>({
+	items,
+	style,
+	title,
+	renderItem,
+}: {
+	items: T[] | undefined;
+	style?: ViewStyle;
+	title: TranslationKey;
+	renderItem: (item: T | undefined) => JSX.Element;
+}) => {
 	const { t } = useTranslation();
-	if (genres?.length === 0) {
+	if (items?.length === 0) {
 		return null;
 	}
+
+	// Solution to #1406
+	const FList = items?.length === 1 ? FlatList : FlashList;
 	return (
-		<FlashList
+		<FList
 			horizontal
-			contentContainerStyle={styles.genreRow}
+			contentContainerStyle={styles.chipRow}
 			style={style}
-			data={genres ?? generateArray(2)}
-			CellRendererComponent={(props) => (
-				<View {...props} style={[props.style, styles.genreChip]} />
+			data={items ?? generateArray(1)}
+			CellRendererComponent={(props: ViewProps) => (
+				<View {...props} style={[props.style, styles.chip]} />
 			)}
-			renderItem={({ item: genre }) => <GenreChip genre={genre} />}
+			renderItem={({ item }) => renderItem(item)}
 			ListHeaderComponent={
-				<Text
-					content={`${t("models.genre_plural")}:`}
-					variant="subtitle"
-				/>
+				<Text content={`${t(title)}:`} variant="subtitle" />
 			}
 		/>
 	);
@@ -345,11 +372,11 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		alignItems: "flex-start",
 	},
-	genreRow: {
+	chipRow: {
 		paddingHorizontal: theme.gap(2),
 		alignItems: "center",
 	},
-	genreChip: { paddingLeft: theme.gap(1) },
+	chip: { paddingLeft: theme.gap(1) },
 	extraSection: { width: "100%" },
 	labelSection: {
 		flexDirection: "row",

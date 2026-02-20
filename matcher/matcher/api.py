@@ -151,11 +151,13 @@ class API:
         album_id: int,
         release_date: date | None,
         genres: List[str] | None,
+        labels: List[str] | None,
         type: AlbumType | None,
     ):
         dto = UpdateAlbumDto(
             release_date=release_date.isoformat() if release_date else None,
             genres=genres,
+            labels=labels,
             type=type.value if type else None,
         )
         await self._put(f"/albums/{album_id}", json=dto.to_dict())

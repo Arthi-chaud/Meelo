@@ -54,11 +54,11 @@ export class HousekeepingService {
 		await this.videoService.housekeeping();
 		await this.songService.housekeeping();
 		await this.releaseService.housekeeping();
-		await this.labelService.housekeeping();
 		await this.albumService.housekeeping();
 		await this.artistService.housekeeping();
 		await this.genresService.housekeeping();
 		await this.playlistService.housekeeping();
+		await this.labelService.housekeeping();
 		await this.resolveMasters();
 	}
 

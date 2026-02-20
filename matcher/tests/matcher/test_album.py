@@ -30,6 +30,8 @@ class TestMatchAlbum:
         )
         # Type
         assert res.album_type is None
+        # Labels
+        assert "Warner Bros. Records" in res.labels
         # Genres
         assert len(res.genres) == 7
         assert "Pop" in res.genres

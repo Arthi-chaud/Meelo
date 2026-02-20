@@ -75,7 +75,9 @@ namespace ReleaseQueryParameters {
 	/**
 	 * Parameters to update a Release
 	 */
-	export type UpdateInput = Partial<Pick<CreateInput, "releaseDate">>;
+	export type UpdateInput = Partial<
+		Pick<CreateInput, "releaseDate" | "label">
+	>;
 
 	/**
 	 * Parameters to update the master release of an album

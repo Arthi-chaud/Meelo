@@ -9,6 +9,7 @@ class UpdateAlbumDto(DataClassJsonMixin):
     # str should be iso 8601
     release_date: Optional[str] = None
     genres: Optional[List[str]] = None
+    labels: Optional[List[str]] = None
     type: Optional[str] = None
 
 

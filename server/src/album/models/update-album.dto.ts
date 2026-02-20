@@ -37,6 +37,13 @@ export default class UpdateAlbumDTO {
 	genres?: string[];
 
 	@ApiProperty({
+		description: "The labels of the album",
+		isArray: true,
+	})
+	@IsOptional()
+	labels?: string[];
+
+	@ApiProperty({
 		description: "The original release date of the album",
 	})
 	@IsOptional()
