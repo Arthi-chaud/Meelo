@@ -90,7 +90,7 @@ const albumRecommendations = (seed: number) =>
 
 const topGenresQuery = getGenres({}, { sortBy: "songCount", order: "desc" });
 
-const topLabelsQuery = getLabels({}, { sortBy: "releaseCount", order: "desc" });
+const topLabelsQuery = getLabels({}, { sortBy: "albumCount", order: "desc" });
 
 const HomePageSection = <T,>(props: {
 	heading: string | ReactNode;
