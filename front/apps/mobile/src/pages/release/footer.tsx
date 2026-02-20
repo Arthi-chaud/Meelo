@@ -1,8 +1,9 @@
 import { FlashList } from "@shopify/flash-list";
 import { useSetAtom } from "jotai";
-import { useCallback, useMemo } from "react";
+import { type JSX, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, type ViewStyle } from "react-native";
+import { FlatList, View, type ViewStyle } from "react-native";
+import type { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbumExternalMetadata,
@@ -129,7 +130,7 @@ export const Footer = ({
 	);
 	return (
 		<View>
-			<RecordLabelSection style={styles.section} labels={labels} />
+			<LabelRow labels={labels} style={styles.section} />
 			<GenreRow genres={genres} style={styles.section} />
 			<SongGrid
 				hideIfEmpty={true}
@@ -290,24 +291,23 @@ const ExtraSection = ({
 	);
 };
 
-const RecordLabelSection = ({
+const LabelRow = ({
 	style,
 	labels,
 }: {
 	style: ViewStyle;
 	labels: Label[] | undefined;
 }) => {
-	const { t } = useTranslation();
 	if (labels?.length === 0) {
 		return null;
 	}
 	return (
-		<View style={[style, styles.labelSection]}>
-			<Text content={`${t("models.label")}:`} variant="subtitle" />
-			{(labels ?? generateArray(1)).map((label: Label | undefined) => (
-				<LabelChip key={label?.slug ?? "skeleton"} label={label} />
-			))}
-		</View>
+		<ChipRow
+			items={labels}
+			style={style}
+			title="models.label"
+			renderItem={(label) => <LabelChip label={label} />}
+		/>
 	);
 };
 
@@ -318,25 +318,46 @@ const GenreRow = ({
 	genres: Genre[] | undefined;
 	style?: ViewStyle;
 }) => {
+	return (
+		<ChipRow
+			items={genres}
+			style={style}
+			title="models.genre_plural"
+			renderItem={(genre) => <GenreChip genre={genre} />}
+		/>
+	);
+};
+
+const ChipRow = <T,>({
+	items,
+	style,
+	title,
+	renderItem,
+}: {
+	items: T[] | undefined;
+	style?: ViewStyle;
+	title: TranslationKey;
+	renderItem: (item: T | undefined) => JSX.Element;
+}) => {
 	const { t } = useTranslation();
-	if (genres?.length === 0) {
+	if (items?.length === 0) {
 		return null;
 	}
+
+	// Solution to #1406
+	const FList = items?.length === 1 ? FlatList : FlashList;
 	return (
-		<FlashList
+		<FList
 			horizontal
-			contentContainerStyle={styles.genreRow}
+			contentContainerStyle={styles.chipRow}
 			style={style}
-			data={genres ?? generateArray(2)}
-			CellRendererComponent={(props) => (
-				<View {...props} style={[props.style, styles.genreChip]} />
+			data={items ?? generateArray(1)}
+			CellRendererComponent={(props: ViewProps) => (
+				<View {...props} style={[props.style, styles.chip]} />
 			)}
-			renderItem={({ item: genre }) => <GenreChip genre={genre} />}
+			renderItem={({ item }) => renderItem(item)}
 			ListHeaderComponent={
-				<Text
-					content={`${t("models.genre_plural")}:`}
-					variant="subtitle"
-				/>
+				<Text content={`${t(title)}:`} variant="subtitle" />
 			}
 		/>
 	);
@@ -351,11 +372,11 @@ const styles = StyleSheet.create((theme) => ({
 		flex: 1,
 		alignItems: "flex-start",
 	},
-	genreRow: {
+	chipRow: {
 		paddingHorizontal: theme.gap(2),
 		alignItems: "center",
 	},
-	genreChip: { paddingLeft: theme.gap(1) },
+	chip: { paddingLeft: theme.gap(1) },
 	extraSection: { width: "100%" },
 	labelSection: {
 		flexDirection: "row",
