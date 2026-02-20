@@ -664,10 +664,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					sx={{
 						display: "flex",
 						justifyContent: "right",
-						paddingTop: labels.length ? 1 : 2,
+						paddingTop: labels?.length ? 1 : 2,
 					}}
 				>
-					{!album.data || labels.length === 0 ? (
+					{!album.data || labels === undefined ? (
 						<Skeleton width={"100px"} />
 					) : labels.length ? (
 						<Typography

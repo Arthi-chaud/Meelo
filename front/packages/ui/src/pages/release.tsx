@@ -186,7 +186,10 @@ export const useReleaseDate = (
 export const useLabels = (
 	release: ReleaseWithRelations<"label"> | undefined,
 	labels: Label[] | undefined,
-): Label[] => {
+): Label[] | undefined => {
+	if (labels === undefined || release === undefined) {
+		return undefined;
+	}
 	if (release?.label) {
 		return [
 			release.label,
@@ -199,7 +202,7 @@ export const useLabels = (
 export const formatDiscName = (
 	discIndex: string,
 	discs: Disc[] | undefined,
-	//@ts-expect-error
+	//@ts-ignore
 	t: (s: TranslationKey) => string,
 ) => {
 	const disc = discs?.find((d) =>

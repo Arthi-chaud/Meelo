@@ -129,9 +129,7 @@ export const Footer = ({
 	);
 	return (
 		<View>
-			{labels.length !== 0 && (
-				<RecordLabelSection style={styles.section} labels={labels} />
-			)}
+			<RecordLabelSection style={styles.section} labels={labels} />
 			<GenreRow genres={genres} style={styles.section} />
 			<SongGrid
 				hideIfEmpty={true}
@@ -297,14 +295,17 @@ const RecordLabelSection = ({
 	labels,
 }: {
 	style: ViewStyle;
-	labels: Label[];
+	labels: Label[] | undefined;
 }) => {
 	const { t } = useTranslation();
+	if (labels?.length === 0) {
+		return null;
+	}
 	return (
 		<View style={[style, styles.labelSection]}>
 			<Text content={`${t("models.label")}:`} variant="subtitle" />
-			{labels.map((label) => (
-				<LabelChip key={label.slug} label={label} />
+			{(labels ?? generateArray(1)).map((label: Label | undefined) => (
+				<LabelChip key={label?.slug ?? "skeleton"} label={label} />
 			))}
 		</View>
 	);
