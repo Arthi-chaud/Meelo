@@ -321,7 +321,7 @@
 				"pending": "Pending"
 			}
 		},
-		"manageFromWebApp": "Mange libraries and users from the web app",
+		"manageFromWebApp": "Manage libraries and users from the web app",
 		"ui": {
 			"account": {
 				"header": "Account",
