@@ -15,11 +15,29 @@ RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
 	&& tar xzf ./actions-runner-linux-${PLATFORM}-${RUNNER_VERSION}.tar.gz
 RUN chown -R docker ~docker && /home/docker/actions-runner/bin/installdependencies.sh
 
-# TODO Add Dependencies
+RUN apt update
+RUN apt install -y --no-install-recommends \
+	git \
+	openjdk-17-jdk openjdk-17-jre
 
 COPY start.sh start.sh
 RUN chmod +x start.sh
+
 USER docker
+
+# Install node 24
+ENV NVM_DIR=/home/docker/.nvm
+ENV NODE_VERSION=24.13.1
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash \
+	&& . ~/.nvm/nvm.sh \
+	&& nvm install ${NODE_VERSION} \
+	&& nvm use ${NODE_VERSION}
+ENV PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# Install yarn + expo/eas
+RUN npm install -g corepack
+RUN npm install -g eas-cli
+
 
 ENTRYPOINT ["./start.sh"]
 
