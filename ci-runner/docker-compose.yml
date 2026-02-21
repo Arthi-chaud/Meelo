@@ -1,0 +1,10 @@
+services:
+  meelo-ci-runner:
+    build: .
+    env_file: .env
+    # deploy:
+    #   mode: replicated
+    #   replicas: 1
+    #   resources:
+    #     reservations:
+    #       memory: 14G
