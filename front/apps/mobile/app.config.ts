@@ -13,6 +13,7 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 	android: {
 		icon: "./assets/icon-black.png",
 		edgeToEdgeEnabled: true,
+		userInterfaceStyle: "automatic",
 		package: IS_DEV ? "dev.arthichaud.meelo.dev" : "dev.artichaud.meelo",
 		permissions: [
 			"android.permission.FOREGROUND_SERVICE",
@@ -20,6 +21,7 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 		],
 	},
 	ios: {
+		userInterfaceStyle: "automatic",
 		bundleIdentifier: "com.arthichaud.meelo",
 		infoPlist: {
 			UIViewControllerBasedStatusBarAppearance: true,
