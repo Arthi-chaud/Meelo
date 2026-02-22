@@ -1,10 +1,10 @@
 import { Stack } from "expo-router";
-import { type ComponentProps, useMemo } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Icon as MeeloIcon } from "~/components/meelo";
-import { BackButton, HeaderBackground } from "~/components/navigation";
+import { useScreenOptions } from "~/utils/screen-options";
 
 export const unstable_settings = {
 	home: {
@@ -35,19 +35,7 @@ const SharedRoutes: {
 
 export default function Layout({ segment }: { segment: string }) {
 	const { t } = useTranslation();
-	// Cant memo-ise this, we need this to be updated when theme changes
-	const screenOptions = {
-		animation: "none", //TODO slide_from_right without flicker
-		animationTypeForReplace: "pop",
-		freezeOnBlur: true,
-		contentStyle: [styles.screen],
-		// headerStyle: styles.header,
-		headerTitleStyle: styles.headerTitle,
-		headerLeft: () => <BackButton />,
-		headerBackground: () => <HeaderBackground />,
-		headerTransparent: true,
-		headerTintColor: styles.headerTitle.color,
-	} satisfies ComponentProps<typeof Stack>["screenOptions"];
+	const screenOptions = useScreenOptions();
 	const screenProps = useMemo(() => {
 		switch (segment) {
 			case "(home)": {
