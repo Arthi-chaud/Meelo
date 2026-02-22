@@ -1,5 +1,6 @@
 name: "Front (Mobile)"
 on:
+  workflow_dispatch:
   pull_request:
     branches: [main]
   push:
@@ -36,20 +37,19 @@ jobs:
               - 'front/packages/**'
               - '.github/workflows/front-mobile.yml'
               - '.github/actions/cache-front/**'
-  # TODO Does not work, reports errors about unknown props
-  # Typecheck:
-  #   needs: changes
-  #   if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out the repo
-  #       uses: actions/checkout@v5
-  #     - name: Restore Dependencies
-  #       uses: ./.github/actions/cache-front
-  #     - name: Install Dependencies
-  #       run: yarn workspaces focus mobile
-  #     - name: Run tsc
-  #       run: yarn workspace mobile tsc
+  Typecheck:
+    needs: changes
+    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v6
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-front
+      - name: Install Dependencies
+        run: yarn install
+      - name: Run tsc
+        run: yarn workspace mobile tsc
   Biome:
     needs: changes
     # Note: We don't need Biome to be run, however, since Build needs it
@@ -66,10 +66,11 @@ jobs:
       - name: Run Linter
         run: yarn run -T biome ci . ../../packages
   Build:
-    needs: [Biome]
+    needs: [Biome, Typecheck]
     permissions:
       contents: write
-    if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
+    # Only run if manually requested, pushed on main or on release
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -100,17 +101,20 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-      - name: Build
+      - name: Remove unused packages
         run: |
-          export DISABLE_SVG=1 # For fast image
           # Source: https://github.com/apache/flink/blob/master/tools/azure-pipelines/free_disk_space.sh
           sudo apt-get remove -y '^llvm-.*' ;
           sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell ;
           sudo apt-get autoremove -y ;
           sudo apt-get clean ;
           rm -rf /usr/share/dotnet/
-
-          eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
+      - uses: nick-fields/retry@v3
+        name: Build
+        with:
+          timeout_seconds: 7200 # 2 hours, large
+          max_attempts: 6
+          command: DISABLE_SVG=1 eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v6
