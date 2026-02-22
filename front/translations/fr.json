@@ -307,9 +307,9 @@
 	},
 	"settings": {
 		"cache": {
-			"header": "Cache",
 			"cachedTracks": "Pistes en cache",
-			"clearCache": "Vider le cache"
+			"clearCache": "Vider le cache",
+			"header": "Cache"
 		},
 		"interface": "Interface",
 		"libraries": {
@@ -414,8 +414,8 @@
 			"signinFailed": "Echec de la connexion au server"
 		},
 		"clearCache": {
-			"success": "Cache vidé",
-			"error": "Echec: cache non vidé"
+			"error": "Echec: cache non vidé",
+			"success": "Cache vidé"
 		},
 		"leaveWillStopPlaybackAlert": "Quitter le site arrêtera la lecture du morceau.",
 		"library": {
