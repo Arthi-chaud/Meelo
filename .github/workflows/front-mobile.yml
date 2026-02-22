@@ -39,7 +39,7 @@ jobs:
               - '.github/actions/cache-front/**'
   Typecheck:
     needs: changes
-    if: ${{ needs.changes.outputs.front == 'true' && github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'release' || (needs.changes.outputs.front == 'true' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -109,12 +109,9 @@ jobs:
           sudo apt-get autoremove -y ;
           sudo apt-get clean ;
           rm -rf /usr/share/dotnet/
-      - uses: nick-fields/retry@v3
-        name: Build
-        with:
-          timeout_seconds: 7200 # 2 hours, large
-          max_attempts: 6
-          command: DISABLE_SVG=1 eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
+      - name: Build
+        run: |
+          DISABLE_SVG=1 eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v6
