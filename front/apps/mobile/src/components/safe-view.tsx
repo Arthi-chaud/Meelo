@@ -1,4 +1,4 @@
-import { FlashList, type FlashListProps } from "@shopify/flash-list";
+import type { FlashListProps } from "@shopify/flash-list";
 import {
 	ScrollView,
 	type ScrollViewProps,
@@ -6,9 +6,8 @@ import {
 	type ViewProps,
 	type ViewStyle,
 } from "react-native";
-import Animated from "react-native-reanimated";
-
 import { useRootViewStyle } from "~/hooks/root-view-style";
+import { AnimatedFlashlist } from "./animated";
 
 export const SafeFlashList = <T,>(
 	props: Omit<FlashListProps<T>, "contentContainerStyle"> & {
@@ -32,8 +31,6 @@ export const SafeFlashList = <T,>(
 		/>
 	);
 };
-
-const AnimatedFlashlist = Animated.createAnimatedComponent(FlashList);
 
 // ScrollView that adds padding at the top and bottom to avoid header + tabbar
 export const SafeScrollView = (
