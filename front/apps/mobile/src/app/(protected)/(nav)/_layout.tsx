@@ -177,7 +177,7 @@ export default function ProtectedLayout() {
 				/>
 				<TabTrigger
 					name="settings"
-					href="/(protected)/(nav)/settings"
+					href="/(protected)/(nav)/(settings)"
 				/>
 			</TabList>
 		</Tabs>
