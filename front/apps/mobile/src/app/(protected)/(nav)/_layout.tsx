@@ -134,7 +134,7 @@ export default function ProtectedLayout() {
 	}
 	//TODO Proper handling of when user is loading
 	return (
-		<Tabs options={{ screenOptions: { freezeOnBlur: true } }}>
+		<Tabs>
 			<TabSlot style={styles.screen} />
 			<View style={styles.footer} onLayout={onLayout}>
 				<View style={styles.player}>
