@@ -49,7 +49,7 @@ import { TextInput } from "~/primitives/text_input";
 type SearchFilter = ReturnType<typeof useSearchTypeFilterControl>[0];
 
 export default function SearchView() {
-	const timeoutRef = useRef<number>(null);
+	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const api = useAPI();
 	const [filter, filterControl] = useSearchTypeFilterControl();
 	const playTrack = useSetAtom(playTrackAtom);

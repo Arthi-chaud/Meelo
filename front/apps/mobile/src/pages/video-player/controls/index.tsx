@@ -19,7 +19,7 @@ import { PlaybackControls } from "./playback";
 type Props = { style: ViewStyle; close: () => void };
 export const Controls = (props: Props) => {
 	const opacity = useSharedValue(1);
-	const timer = useRef(0);
+	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const hideControlsAfterDelay = useCallback(
 		(delay?: number) => {
 			if (timer.current) {
