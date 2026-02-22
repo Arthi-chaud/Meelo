@@ -1,7 +1,5 @@
-import { FlashList } from "@shopify/flash-list";
 import { useSetAtom } from "jotai";
 import { useMemo } from "react";
-import Animated from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { getAlbum, getRelease, getReleaseStats } from "@/api/queries";
 import { transformPage } from "@/api/query";
@@ -10,6 +8,7 @@ import { playFromInfiniteQuery } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
 import { getRandomNumber } from "@/utils/random";
 import { useInfiniteQuery, useQuery, useQueryClient } from "~/api";
+import { AnimatedFlashlist } from "~/components/animated";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import type { PageScrollProps } from "~/components/fading-header";
 import { useQueryErrorModal } from "~/hooks/error";
@@ -56,7 +55,7 @@ export default function ReleasePage({
 	useQueryErrorModal([releaseQuery, albumQuery, releaseStatsQuery]);
 	useSetKeyIllustration(release);
 	return (
-		<AFlashList
+		<AnimatedFlashlist
 			{...scrollProps}
 			contentContainerStyle={rootStyle}
 			data={tracklist}
@@ -162,7 +161,6 @@ const useTracklist = (
 		return { tracklist: res, isMixed };
 	}, [stats, tracks]);
 };
-const AFlashList = Animated.createAnimatedComponent(FlashList);
 
 const styles = StyleSheet.create((theme) => ({
 	header: {
