@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import type { AddToPlaylistPayload } from "@/api";
 import { getPlaylists } from "@/api/queries";
+import type { PlaylistWithRelations } from "@/models/playlist";
 import { AddIcon, PlaylistIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useQuery, useQueryClient } from "~/api";
@@ -37,6 +38,8 @@ export const useAddToPlaylistAction = (
 		nestedModal: true,
 	};
 };
+
+type PlaylistItemType = PlaylistWithRelations<"illustration">;
 
 const ChoosePlaylistModal = ({
 	payload,
@@ -77,6 +80,7 @@ const ChoosePlaylistModal = ({
 		};
 	});
 	const queryClient = useQueryClient();
+	const items: PlaylistItemType[] | undefined = playlists?.items;
 	return (
 		<BottomSheetFlatList
 			style={styles.root}
@@ -97,8 +101,12 @@ const ChoosePlaylistModal = ({
 					<Divider h />
 				</>
 			}
-			data={playlists?.items ?? generateArray(3)}
-			renderItem={({ item: playlist }) => (
+			data={items ?? generateArray(1, undefined)}
+			renderItem={({
+				item: playlist,
+			}: {
+				item: PlaylistItemType | undefined;
+			}) => (
 				<PlaylistItem
 					playlist={playlist}
 					onPress={() =>
