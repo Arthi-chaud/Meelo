@@ -1,6 +1,6 @@
 import { FlashList } from "@shopify/flash-list";
 import { useSetAtom } from "jotai";
-import { type JSX, useCallback, useMemo } from "react";
+import { type ComponentProps, type JSX, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, View, type ViewStyle } from "react-native";
 import type { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
@@ -45,7 +45,53 @@ import {
 } from "./queries";
 import type { TrackType } from "./tracklist";
 
-export const Footer = ({
+export type FooterSection =
+	| { type: "footer-top-padding"; props: ComponentProps<typeof View> }
+	| {
+			type: "chip-row";
+			props: ComponentProps<typeof ChipRow>;
+	  }
+	| {
+			type: "row";
+			props: ComponentProps<typeof Row>;
+	  }
+	| {
+			type: "song-grid";
+			props: ComponentProps<typeof SongGrid>;
+	  }
+	| {
+			type: "extra-section";
+			props: ComponentProps<typeof ExtraSection>;
+	  }
+	| {
+			type: "external-description";
+			props: ComponentProps<typeof ExternalMetadataDescriptionSection>;
+	  }
+	| {
+			type: "external-source";
+			props: ComponentProps<typeof ExternalMetadataSourcesSection>;
+	  };
+
+export const renderFooterSection = ({ type, props }: FooterSection) => {
+	switch (type) {
+		case "footer-top-padding":
+			return <View {...props} />;
+		case "chip-row":
+			return <ChipRow {...props} />;
+		case "row":
+			return <Row {...props} />;
+		case "song-grid":
+			return <SongGrid {...props} />;
+		case "extra-section":
+			return <ExtraSection {...props} />;
+		case "external-source":
+			return <ExternalMetadataSourcesSection {...props} />;
+		case "external-description":
+			return <ExternalMetadataDescriptionSection {...props} />;
+	}
+};
+
+export const useFooter = ({
 	album,
 	release,
 	albumArtistId,
@@ -55,7 +101,7 @@ export const Footer = ({
 	release: ReleaseWithRelations<"label"> | undefined;
 	albumArtistId: number | undefined | null;
 	tracks: TrackType[];
-}) => {
+}): FooterSection[] => {
 	const releaseId = release?.id;
 	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
@@ -128,118 +174,224 @@ export const Footer = ({
 		},
 		[playTracks],
 	);
-	return (
-		<View>
-			<LabelRow labels={labels} style={styles.section} />
-			<GenreRow genres={genres} style={styles.section} />
-			<SongGrid
-				hideIfEmpty={true}
-				style={styles.section}
-				header={t("album.bonusTracks")}
-				// Avoid shift when bsides are loaded before main artist
-				songs={albumArtistId === undefined ? undefined : bSides}
-				parentArtistId={albumArtistId ?? undefined}
-				subtitle={
-					!bSides
-						? null
-						: (song) =>
-								song.artistId === albumArtistId &&
-								song.featuring.length === 0
-									? null
-									: "artists"
-				}
-			/>
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.otherAlbumReleases")}
-				items={relatedReleases}
-				render={(release) => <ReleaseTile release={release} />}
-			/>
 
-			{(
+	const labelsRow: FooterSection | null = useMemo(() => {
+		if (labels?.length !== 0) {
+			return {
+				type: "chip-row",
+				props: {
+					items: labels,
+					style: styles.section,
+					title: "models.label",
+					renderItem: (label) => <LabelChip label={label as Label} />,
+				},
+			};
+		}
+		return null;
+	}, [genres]);
+	const genreRow: FooterSection | null = useMemo(() => {
+		if (genres?.length !== 0) {
+			return {
+				type: "chip-row",
+				props: {
+					items: genres,
+					style: styles.section,
+					title: "models.genre_plural",
+					renderItem: (genre) => <GenreChip genre={genre as Genre} />,
+				},
+			};
+		}
+		return null;
+	}, [genres]);
+	const bonusTracks: FooterSection = useMemo(
+		() => ({
+			type: "song-grid",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.bonusTracks"),
+				// Avoid shift when bsides are loaded before main artist
+				songs: albumArtistId === undefined ? undefined : bSides,
+				parentArtistId: albumArtistId ?? undefined,
+				subtitle: !bSides
+					? null
+					: (song) =>
+							song.artistId === albumArtistId &&
+							song.featuring.length === 0
+								? null
+								: "artists",
+			},
+		}),
+		[albumArtistId, bSides],
+	);
+	const releasesSection: FooterSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.otherAlbumReleases"),
+				items: relatedReleases,
+				render: (release) => <ReleaseTile release={release as any} />, // TODO avoid cast
+			},
+		}),
+		[relatedReleases],
+	);
+
+	const videoSections: FooterSection[] = useMemo(
+		() =>
+			(
 				[
 					["musicVideos", videos],
 					["livePerformances", liveVideos],
 				] as const
-			).map(([label, items]) => (
-				<Row
-					key={label}
-					hideIfEmpty={true}
-					items={videoItems === undefined ? undefined : items}
-					header={t(`browsing.sections.${label}`)}
-					style={styles.section}
-					render={(video) => (
-						<VideoTile
-							onPress={() =>
-								video && onVideoPress(video.id, items)
-							}
-							illustrationProps={{
-								normalizedThumbnail: true,
-							}}
-							video={video as any}
-							subtitle="duration"
-						/>
-					)}
-				/>
-			))}
+			).map(
+				([label, items]) =>
+					({
+						type: "row",
+						props: {
+							hideIfEmpty: true,
+							items: videoItems === undefined ? undefined : items,
+							header: t(`browsing.sections.${label}`),
+							style: styles.section,
+							render: (video) => (
+								<VideoTile
+									onPress={() =>
+										video && onVideoPress(video.id, items)
+									}
+									illustrationProps={{
+										normalizedThumbnail: true,
+									}}
+									video={video as any}
+									subtitle="duration"
+								/>
+							),
+						},
+					}) satisfies FooterSection,
+			),
+		[videos, videoItems, liveVideos],
+	);
 
-			{(videoItems === undefined ||
-				bSidesItems === undefined ||
-				videoExtras.length > 0 ||
-				audioExtras.length > 0) && (
-				<ExtraSection
-					audioExtras={audioExtras}
-					videoExtras={videoExtras}
-					onVideoPress={(id: number) => onVideoPress(id, videoExtras)}
-				/>
-			)}
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.relatedAlbums")}
-				items={relatedAlbums}
-				render={(album) => (
+	const extraSection: FooterSection | null = useMemo(() => {
+		if (
+			videoItems === undefined ||
+			bSidesItems === undefined ||
+			videoExtras.length > 0 ||
+			audioExtras.length > 0
+		) {
+			return {
+				type: "extra-section",
+				props: {
+					audioExtras: audioExtras,
+					videoExtras: videoExtras,
+					onVideoPress: (id: number) => onVideoPress(id, videoExtras),
+				},
+			};
+		}
+		return null;
+	}, [videoItems, bSidesItems, videoExtras, audioExtras]);
+
+	const relatedAlbumsSection: FooterSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.relatedAlbums"),
+				items: relatedAlbums,
+				render: (album) => (
 					<AlbumTile album={album as any} subtitle="year" />
-				)}
-			/>
-
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("album.onThisAlbum")}
-				items={
+				),
+			},
+		}),
+		[relatedAlbums],
+	);
+	const relatedArtistsSection: FooterSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.onThisAlbum"),
+				items:
 					// We don't want to list them until we know who the album artist is
 					albumArtistId === undefined
 						? undefined
 						: featuringArtists?.filter(
 								({ id }) => id !== albumArtistId,
-							)
-				}
-				render={(artist) => <ArtistTile artist={artist} />}
-			/>
+							),
+				render: (artist) => <ArtistTile artist={artist as any} />,
+			},
+		}),
+		[albumArtistId, featuringArtists],
+	);
+	const playlistsSection: FooterSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("browsing.sections.featuredOnPlaylists"),
+				items: relatedPlaylists,
+				render: (playlist) => (
+					<PlaylistTile playlist={playlist as any} />
+				),
+			},
+		}),
+		[relatedPlaylists],
+	);
+	const externalMetadataSections: FooterSection[] = useMemo(() => {
+		if (externalMetadata !== null) {
+			return [
+				{
+					type: "external-description",
+					props: {
+						externalMetadata: externalMetadata,
+						style: styles.section,
+					},
+				},
 
-			<Row
-				hideIfEmpty
-				style={styles.section}
-				header={t("browsing.sections.featuredOnPlaylists")}
-				items={relatedPlaylists}
-				render={(playlist) => <PlaylistTile playlist={playlist} />}
-			/>
-			{externalMetadata !== null && (
-				<>
-					<ExternalMetadataDescriptionSection
-						externalMetadata={externalMetadata}
-						style={styles.section}
-					/>
-
-					<ExternalMetadataSourcesSection
-						externalMetadata={externalMetadata}
-						style={styles.section}
-					/>
-				</>
-			)}
-		</View>
+				{
+					type: "external-source",
+					props: {
+						externalMetadata: externalMetadata,
+						style: styles.section,
+					},
+				},
+			];
+		}
+		return [];
+	}, [externalMetadata]);
+	return useMemo(
+		() =>
+			[
+				{
+					type: "footer-top-padding",
+					props: { style: styles.footerTopPadding },
+				},
+				labelsRow,
+				genreRow,
+				bonusTracks,
+				releasesSection,
+				...videoSections,
+				extraSection,
+				relatedAlbumsSection,
+				relatedArtistsSection,
+				playlistsSection,
+				...externalMetadataSections,
+			].filter((s): s is FooterSection => s !== null),
+		[
+			labelsRow,
+			genreRow,
+			bonusTracks,
+			releasesSection,
+			videoSections,
+			extraSection,
+			relatedAlbumsSection,
+			relatedArtistsSection,
+			playlistsSection,
+			externalMetadataSections,
+		],
 	);
 };
 
@@ -288,43 +440,6 @@ const ExtraSection = ({
 			/>
 			<SongGrid hideIfEmpty subtitle={() => null} songs={audioExtras} />
 		</View>
-	);
-};
-
-const LabelRow = ({
-	style,
-	labels,
-}: {
-	style: ViewStyle;
-	labels: Label[] | undefined;
-}) => {
-	if (labels?.length === 0) {
-		return null;
-	}
-	return (
-		<ChipRow
-			items={labels}
-			style={style}
-			title="models.label"
-			renderItem={(label) => <LabelChip label={label} />}
-		/>
-	);
-};
-
-const GenreRow = ({
-	genres,
-	style,
-}: {
-	genres: Genre[] | undefined;
-	style?: ViewStyle;
-}) => {
-	return (
-		<ChipRow
-			items={genres}
-			style={style}
-			title="models.genre_plural"
-			renderItem={(genre) => <GenreChip genre={genre} />}
-		/>
 	);
 };
 
@@ -388,4 +503,5 @@ const styles = StyleSheet.create((theme) => ({
 	labelText: {
 		textDecorationLine: "underline",
 	},
+	footerTopPadding: { paddingTop: theme.gap(2) },
 }));
