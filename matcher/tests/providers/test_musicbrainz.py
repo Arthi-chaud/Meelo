@@ -312,6 +312,8 @@ class TestMusicbrainz:
         scenarios: List[Tuple[str, str, List[str]]] = [
             ("Neon Night", "a0487250-54b0-3eb9-8523-097e5018d777", ["London Records"]),
             ("Girl", "0b0772d5-eef0-3138-9eb0-fa6668ddc30f", ["Warner Music UK"]),
+            # Ignore placeholder label (e.g. [no label])
+            ("To Hell With It", "a09cac39-38c3-4973-8302-7f8210dcbcc7", ["Parlophone"]),
             (
                 "B in the mix",
                 "a1b16f9c-7b93-3351-9453-0f3545a5f989",
