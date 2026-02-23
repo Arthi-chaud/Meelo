@@ -335,6 +335,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                         if (
                             any([c for c in label_name if c.isascii()])
                             and label_name not in labels
+                            and label_name != "[no label]"  # Placeholder
                         ):
                             labels.append(label_name)
                 return labels
