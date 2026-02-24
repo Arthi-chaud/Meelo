@@ -36,7 +36,7 @@ export const ErrorModal = ({
 						title={t("actions.goToSettingsPage")}
 						onPress={() => {
 							dismiss();
-							router.navigate("/settings");
+							router.navigate("/(protected)/(nav)/(settings)");
 						}}
 					/>
 				)}
