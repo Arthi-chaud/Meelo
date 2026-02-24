@@ -4281,13 +4281,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/d3-array@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "@types/d3-array@npm:3.2.2"
-  checksum: 10c0/6137cb97302f8a4f18ca22c0560c585cfcb823f276b23d89f2c0c005d72697ec13bca671c08e68b4b0cabd622e3f0e91782ee221580d6774074050be96dd7028
-  languageName: node
-  linkType: hard
-
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.6
   resolution: "@types/graceful-fs@npm:4.1.6"
@@ -5925,15 +5918,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3-array@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "d3-array@npm:3.2.0"
-  dependencies:
-    internmap: "npm:1 - 2"
-  checksum: 10c0/5e3d831b2b4ae3ba1cf50dbdf4f16f794f8aa3013ee327c50970f3206a87849eba612667255f0451685abe599c437fcff65d72fbff3e38ecfb433372f5c27c73
-  languageName: node
-  linkType: hard
-
 "debug@npm:2.6.9, debug@npm:^2.6.9":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
@@ -7485,13 +7469,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"internmap@npm:1 - 2":
-  version: 2.0.3
-  resolution: "internmap@npm:2.0.3"
-  checksum: 10c0/8cedd57f07bbc22501516fbfc70447f0c6812871d471096fad9ea603516eacc2137b633633daf432c029712df0baefd793686388ddf5737e3ea15074b877f7ed
-  languageName: node
-  linkType: hard
-
 "intl-pluralrules@npm:^2.0.1":
   version: 2.0.1
   resolution: "intl-pluralrules@npm:2.0.1"
@@ -8587,13 +8564,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "lodash@npm:4.17.21"
-  checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
-  languageName: node
-  linkType: hard
-
 "log-symbols@npm:^2.2.0":
   version: 2.2.0
   resolution: "log-symbols@npm:2.2.0"
@@ -9201,7 +9171,6 @@ __metadata:
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
     jotai: "npm:^2.17.0"
-    lodash: "npm:^4.17.21"
     models: "workspace:^"
     react: "npm:19.1.0"
     react-hook-form: "npm:^7.71.1"
@@ -12414,7 +12383,6 @@ __metadata:
     "@tanstack/react-query": "npm:^5.90.14"
     "@tanstack/react-query-devtools": "npm:^5.91.2"
     "@types/accept-language-parser": "npm:^1.5.3"
-    "@types/d3-array": "npm:^3.2.2"
     "@types/node": "npm:24.10.4"
     "@types/react": "npm:~19.1.10"
     "@types/react-beautiful-dnd": "npm:^13.1.3"
@@ -12424,7 +12392,6 @@ __metadata:
     blurhash: "npm:^2.0.5"
     cookies-next: "npm:^6.0.0"
     core-js: "npm:^3.47.0"
-    d3-array: "npm:^3.2.0"
     hls.js: "npm:^1.6.15"
     i18next: "npm:^25.8.0"
     jotai: "npm:^2.17.0"
