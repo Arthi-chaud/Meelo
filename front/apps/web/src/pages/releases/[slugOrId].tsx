@@ -32,7 +32,6 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import type { QueryClient } from "@tanstack/react-query";
-import { shuffle } from "d3-array";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import Link from "next/link";
@@ -73,6 +72,7 @@ import { ParentScrollableDivId } from "@/utils/constants";
 import { getYear } from "@/utils/date";
 import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
+import { shuffle } from "@/utils/random";
 import { getAPI, useInfiniteQuery, useQuery } from "~/api";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";

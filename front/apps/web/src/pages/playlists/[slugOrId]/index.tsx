@@ -18,7 +18,6 @@
 
 import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
 import { type QueryClient, useMutation } from "@tanstack/react-query";
-import { shuffle } from "d3-array";
 import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import type { NextPageContext } from "next";
@@ -56,6 +55,7 @@ import {
 } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import { generateArray } from "@/utils/gen-list";
+import { shuffle } from "@/utils/random";
 import { getAPI, useQueries, useQuery, useQueryClient } from "~/api";
 import { DeletePlaylistAction } from "~/components/actions/playlist";
 import PlaylistContextualMenu from "~/components/contextual-menu/resource/playlist";
