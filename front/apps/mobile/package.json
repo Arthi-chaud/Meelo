@@ -45,7 +45,6 @@
 		"infinite-controls": "workspace:^",
 		"intl-pluralrules": "^2.0.1",
 		"jotai": "^2.17.0",
-		"lodash": "^4.17.21",
 		"models": "workspace:^",
 		"react": "19.1.0",
 		"react-hook-form": "^7.71.1",

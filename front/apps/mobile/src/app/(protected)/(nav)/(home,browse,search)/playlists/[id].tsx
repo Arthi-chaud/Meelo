@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useSetAtom } from "jotai";
-import { shuffle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -15,7 +14,7 @@ import {
 	getPlaylistEntries,
 } from "@/api/queries";
 import type { PlaylistEntryWithRelations } from "@/models/playlist";
-import { playTracksAtom } from "@/state/player";
+import { emptyPlaylistAtom, playTracksAtom } from "@/state/player";
 import {
 	DoneIcon,
 	EditIcon,
@@ -25,6 +24,7 @@ import {
 	ShuffleIcon,
 } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
+import { shuffle } from "@/utils/random";
 import { useUpdatePlaylistFormModal } from "~/actions/playlist/create-update";
 import { useDeletePlaylistAction } from "~/actions/playlist/delete";
 import { useUpdateIllustrationAction } from "~/actions/update-illustration";
@@ -50,6 +50,7 @@ const playlistQuery = (playlistId: string | number) =>
 export default function PlaylistView() {
 	const rootStyle = useRootViewStyle();
 	const queryClient = useQueryClient();
+	const emptyPlaylist = useSetAtom(emptyPlaylistAtom);
 	const { id: playlistId } = useLocalSearchParams<{ id: string }>();
 	const playTracks = useSetAtom(playTracksAtom);
 
@@ -92,15 +93,20 @@ export default function PlaylistView() {
 		[playlistEntries],
 	);
 	const onShuffle = useCallback(() => {
+		emptyPlaylist();
 		playTracks({ tracks: shuffle(tracksForPlayer) });
 	}, [playlistEntries]);
+	const onPlay = useCallback(() => {
+		emptyPlaylist();
+		onItemPress(0);
+	}, [onItemPress, emptyPlaylist]);
 
 	return (
 		<View style={[styles.root, rootStyle]}>
 			<Header
 				playlistId={playlistId}
 				{...(playlistEntries && !isReordering
-					? { onPlay: () => onItemPress(0), onShuffle: onShuffle }
+					? { onPlay, onShuffle }
 					: {})}
 			/>
 			<Divider h />
