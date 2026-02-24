@@ -133,6 +133,9 @@ const RefreshMetadataActionContent = ({
 								)
 								.then(async () => {
 									await queryClient.client.invalidateQueries({
+										queryKey: ["labels"],
+									});
+									await queryClient.client.invalidateQueries({
 										queryKey: ["api", "external-metadata"],
 									});
 								});
