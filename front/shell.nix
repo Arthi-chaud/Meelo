@@ -7,7 +7,14 @@ pkgs.mkShell {
     biome
     yarn-berry
     watchman
-    nodePackages.eas-cli
+    cocoapods
     # TODO android toolstack
   ];
+  shellHook = ''
+    unset CC
+    unset CXX
+    unset LD
+    unset LDFLAGS
+    export PATH=/usr/bin:/bin:/usr/sbin:/sbin:`git rev-parse --show-toplevel`/front/node_modules/.bin:$PATH
+  '';
 }
