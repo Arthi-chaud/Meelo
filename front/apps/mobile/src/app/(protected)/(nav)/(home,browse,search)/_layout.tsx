@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Icon as MeeloIcon } from "~/components/meelo";
 import { useScreenOptions } from "~/utils/screen-options";
@@ -42,7 +42,10 @@ export default function Layout({ segment }: { segment: string }) {
 				return {
 					options: {
 						headerTitle: t("nav.home"),
-						headerLeft: () => <MeeloIcon style={styles.icon} />,
+						headerLeft:
+							Platform.OS !== "ios"
+								? () => <MeeloIcon style={styles.icon} />
+								: undefined,
 					},
 				};
 			}
