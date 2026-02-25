@@ -29,7 +29,12 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 	},
 	plugins: [
 		"expo-router",
-		"@kesha-antonov/react-native-background-downloader",
+		[
+			"@kesha-antonov/react-native-background-downloader",
+			{
+				skipMmkvDependency: true,
+			},
+		],
 		[
 			"expo-screen-orientation",
 			{
