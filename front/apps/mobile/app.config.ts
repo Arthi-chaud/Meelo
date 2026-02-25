@@ -28,6 +28,7 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 		},
 		userInterfaceStyle: "automatic",
 		bundleIdentifier: "com.arthichaud.meelo",
+		supportsTablet: true,
 		infoPlist: {
 			UIViewControllerBasedStatusBarAppearance: true,
 		},
