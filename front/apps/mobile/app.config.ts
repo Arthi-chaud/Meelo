@@ -21,6 +21,11 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 		],
 	},
 	ios: {
+		icon: {
+			dark: "./assets/icon-black.png",
+			light: "./assets/icon-white.png",
+			tinted: "./assets/icon-white.png",
+		},
 		userInterfaceStyle: "automatic",
 		bundleIdentifier: "com.arthichaud.meelo",
 		infoPlist: {
