@@ -16,7 +16,7 @@ import { Bottom } from "./bottom";
 import { NavigationBar } from "./nav-bar";
 import { PlaybackControls } from "./playback";
 
-type Props = { style: ViewStyle; close: () => void };
+type Props = { style: ViewStyle[]; close: () => void };
 export const Controls = (props: Props) => {
 	const opacity = useSharedValue(1);
 	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,8 +51,11 @@ export const Controls = (props: Props) => {
 	}, []);
 	return (
 		<ScopedTheme name="dark">
-			<Animated.View style={[styles.root, opacityStyle, props.style]}>
-				<Pressable style={styles.pressable} onPress={onPress}>
+			<Pressable
+				style={[styles.pressable, ...props.style]}
+				onPress={onPress}
+			>
+				<Animated.View style={[styles.root, opacityStyle]}>
 					<NavigationBar
 						style={styles.navigationHeader}
 						close={props.close}
@@ -61,14 +64,14 @@ export const Controls = (props: Props) => {
 						<PlaybackControls />
 					</View>
 					<Bottom style={styles.bottomControls} />
-				</Pressable>
-			</Animated.View>
+				</Animated.View>
+			</Pressable>
 		</ScopedTheme>
 	);
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: { heigth: "100%", width: "100%" },
+	root: { width: "100%", height: "100%" },
 	pressable: { height: "100%", width: "100%" },
 	navigationHeader: { position: "absolute", top: 0 },
 	playbackControls: {
@@ -82,9 +85,6 @@ const styles = StyleSheet.create((theme) => ({
 	bottomControls: {
 		position: "absolute",
 		bottom: 0,
-		left: 0,
-		right: 0,
 		padding: theme.gap(2),
-		paddingBottom: theme.gap(3), // For safe area
 	},
 }));
