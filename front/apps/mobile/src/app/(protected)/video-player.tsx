@@ -4,7 +4,11 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import { setStatusBarHidden } from "expo-status-bar";
 import { useAtom, useAtomValue } from "jotai";
 import { useCallback, useEffect } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Platform } from "react-native";
+import {
+	SafeAreaView,
+	useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { videoPlayerAtom } from "~/components/player/context";
@@ -21,7 +25,7 @@ export default function FullscreenVideoPlayer() {
 	const closePlayer = useCallback(() => {
 		if (isMobile) {
 			ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT,
+				ScreenOrientation.OrientationLock.PORTRAIT_UP,
 			).then(() => router.back());
 		} else router.back();
 	}, [isMobile]);
@@ -33,8 +37,11 @@ export default function FullscreenVideoPlayer() {
 			// Allowing mobiles to use landscape mode
 			ScreenOrientation.unlockAsync();
 		}
-		setStatusBarHidden(true);
+		if (Platform.OS !== "ios") {
+			setStatusBarHidden(true);
+		}
 	}, []);
+	const insets = useSafeAreaInsets();
 	return (
 		<>
 			<Stack.Screen
@@ -47,7 +54,13 @@ export default function FullscreenVideoPlayer() {
 				}}
 			/>
 			<SafeAreaView style={styles.root}>
-				<Controls style={styles.controls} close={closePlayer} />
+				<Controls
+					style={[
+						styles.controls,
+						{ top: insets.top, bottom: insets.bottom },
+					]}
+					close={closePlayer}
+				/>
 				{player && (
 					<VideoView
 						player={player}
@@ -63,11 +76,8 @@ export default function FullscreenVideoPlayer() {
 const styles = StyleSheet.create(() => ({
 	root: { flex: 1, backgroundColor: "#000000" },
 	controls: {
+		alignSelf: "center",
 		position: "absolute",
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
 		zIndex: 1,
 	},
 }));

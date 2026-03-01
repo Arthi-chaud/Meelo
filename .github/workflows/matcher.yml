@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v6
       - name: Restore Dependencies
         uses: ./.github/actions/cache-matcher
-      - uses: jakebailey/pyright-action@v2
+      - uses: jakebailey/pyright-action@v3
         with:
           working-directory: "./matcher/matcher"
   Lint:
