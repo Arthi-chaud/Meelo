@@ -39,10 +39,10 @@ import { generateArray } from "@/utils/gen-list";
 import { getRandomNumber } from "@/utils/random";
 import { getAPI, useInfiniteQuery, useQueries, type useQuery } from "~/api";
 import { GoToSettingsAction } from "~/components/actions/link";
+import AlbumHighlightCard from "~/components/album-highlight-card";
 import { EmptyState } from "~/components/empty-state";
 import Fade from "~/components/fade";
 import { useGradientBackground } from "~/components/gradient-background";
-import AlbumHighlightCard from "~/components/highlight-card/resource/album";
 import SectionHeader from "~/components/section-header";
 import SongGrid from "~/components/song-grid";
 import AlbumTile from "~/components/tile/resource/album";
@@ -271,6 +271,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									>
 										<AlbumHighlightCard
 											album={album}
+											genres={album?.genres}
 											externalMetadata={
 												featuredAlbumsExternalMetadata.find(
 													({ data }) =>
