@@ -3618,8 +3618,8 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^8.26.0":
-  version: 8.26.0
-  resolution: "@mui/x-data-grid@npm:8.26.0"
+  version: 8.27.3
+  resolution: "@mui/x-data-grid@npm:8.27.3"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
@@ -3640,13 +3640,13 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10c0/f0197581052f24ee96149f3f03adbcb6de3d7f6fa420105a849fcf68228bced8702e045359063210f1cb7542007da0e8125a34d0d755decf6307d2e7213dd5e4
+  checksum: 10c0/ce4771d2c8d1d92b66a550ad970e7c142e699d33964a4e9d71fb72bb07f095f6a1ef64ac3a962d41a719316da2922f073defb6b123c335523e2381350030a783
   languageName: node
   linkType: hard
 
 "@mui/x-date-pickers@npm:^8.26.0":
-  version: 8.26.0
-  resolution: "@mui/x-date-pickers@npm:8.26.0"
+  version: 8.27.2
+  resolution: "@mui/x-date-pickers@npm:8.27.2"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
@@ -3688,7 +3688,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/b2d28e10529cb0eb3e6413960658fb8f1c608066abd4365fab895adab66fa777846418e25cd91f04d47fc037d08abee114d9dde029b663532aefcede02c98175
+  checksum: 10c0/41f2cbb3048ab431baf0d6d9ca4764b2aa75cd9627a93209c1136f0292e1311b076ea3613a8b74aff0eb1a704dc89b9fb9a88346f3290d6d3671fe5e0687a6fb
   languageName: node
   linkType: hard
 
