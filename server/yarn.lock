@@ -7991,7 +7991,7 @@ __metadata:
     passport-local: "npm:^1.0.0"
     prisma: "npm:7.3.0"
     prisma-error-enum: "npm:^0.1.3"
-    prisma-json-types-generator: "npm:4.1.0"
+    prisma-json-types-generator: "npm:4.1.1"
     prisma-types-generator: "patch:prisma-types-generator@npm%3A1.3.2#~/.yarn/patches/prisma-types-generator-npm-1.3.2-d91e9d4063.patch"
     reflect-metadata: "npm:^0.2.2"
     rxjs: "npm:^7.8.1"
@@ -9138,9 +9138,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prisma-json-types-generator@npm:4.1.0":
-  version: 4.1.0
-  resolution: "prisma-json-types-generator@npm:4.1.0"
+"prisma-json-types-generator@npm:4.1.1":
+  version: 4.1.1
+  resolution: "prisma-json-types-generator@npm:4.1.1"
   dependencies:
     "@prisma/generator-helper": "npm:^7.2.0"
     semver: "npm:^7.7.3"
@@ -9152,7 +9152,7 @@ __metadata:
     typescript: ^5.9.3
   bin:
     prisma-json-types-generator: index.js
-  checksum: 10c0/54220ecd93bfafcd43d6dee2d3592b94cca53f9022acf00c917aeffb7e47684caad2eda010786820fd76e29db8ce782d8509cf2300485dd8318a0ca4c3e7d85b
+  checksum: 10c0/e2303689db58bdd238647c520319b54458618d255449a0db5a8fb86f7eced8d67ba92fe04101a22c75fc354b8bca8c2dc46c874e3438e8f9ad82d1170d151061
   languageName: node
   linkType: hard
 
