@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Buffer } from "buffer";
 import { atom } from "jotai";
+import base64 from "react-native-base64";
 import * as yup from "yup";
 import { storage } from "~/utils/storage";
 
@@ -69,9 +69,7 @@ const restoreCurrentInstanceFromLocalStorage = () => {
 		return null;
 	}
 	try {
-		const currentInstance = JSON.parse(
-			Buffer.from(currentInstanceStr, "base64").toString("utf-8"),
-		);
+		const currentInstance = JSON.parse(base64.decode(currentInstanceStr));
 		return validateInstance(currentInstance);
 	} catch {
 		return null;
@@ -84,9 +82,7 @@ const restoreOtherInstancesFromLocalStorage = () => {
 		return [];
 	}
 	try {
-		const otherInstances = JSON.parse(
-			Buffer.from(otherInstancesStr, "base64").toString("utf-8"),
-		);
+		const otherInstances = JSON.parse(base64.decode(otherInstancesStr));
 		if (!Array.isArray(otherInstances)) {
 			return [];
 		}
@@ -106,7 +102,7 @@ const _otherInstancesAtom = atom<MeeloInstance[]>(
 );
 
 const serialiseInstance = (i: MeeloInstance | MeeloInstance[]) => {
-	return Buffer.from(JSON.stringify(i), "utf-8").toString("base64");
+	return base64.encode(JSON.stringify(i));
 };
 
 export const currentInstanceAtom = atom<

@@ -14,9 +14,13 @@ export const colorSchemePreference = atom<
 	(get) => get(_colorSchemePreference),
 	(_, set, newColorScheme) => {
 		storage.set(ColorSchemeKey, newColorScheme);
+		const appearanceColorScheme = Appearance.getColorScheme();
 		const actualColorScheme =
 			newColorScheme === "system"
-				? (Appearance.getColorScheme() ?? "light")
+				? appearanceColorScheme === "unspecified" ||
+					!appearanceColorScheme
+					? "light"
+					: appearanceColorScheme
 				: newColorScheme;
 		UnistylesRuntime.setTheme(actualColorScheme);
 		set(_colorSchemePreference, newColorScheme);

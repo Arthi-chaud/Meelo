@@ -129,7 +129,9 @@ StyleSheet.configure({
 		initialTheme: () => {
 			const pref = store.get(colorSchemePreference);
 			if (pref === "system") {
-				return Appearance.getColorScheme() ?? "light";
+				const appearance = Appearance.getColorScheme();
+				if (appearance === "unspecified") return "light";
+				return appearance ?? "light";
 			}
 			return pref;
 		},

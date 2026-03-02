@@ -8,7 +8,8 @@ export const useColorScheme = () => {
 	const rnColorScheme = useRNColorScheme();
 	const actualColorScheme = useMemo(() => {
 		if (colorSchemePref === "system") {
-			return rnColorScheme ?? "light";
+			if (rnColorScheme === "unspecified") return "light";
+			return rnColorScheme;
 		}
 		return colorSchemePref;
 	}, [rnColorScheme, colorSchemePref]);

@@ -9,10 +9,8 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 	icon: "./assets/icon-black.png",
 	scheme: "mobile",
 	userInterfaceStyle: "automatic",
-	newArchEnabled: true,
 	android: {
 		icon: "./assets/icon-black.png",
-		edgeToEdgeEnabled: true,
 		userInterfaceStyle: "automatic",
 		package: IS_DEV ? "dev.arthichaud.meelo.dev" : "dev.artichaud.meelo",
 		permissions: [
