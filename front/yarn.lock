@@ -3624,7 +3624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^8.26.0":
+"@mui/x-data-grid@npm:^8.27.1":
   version: 8.27.3
   resolution: "@mui/x-data-grid@npm:8.27.3"
   dependencies:
@@ -3651,7 +3651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.26.0":
+"@mui/x-date-pickers@npm:^8.27.0":
   version: 8.27.2
   resolution: "@mui/x-date-pickers@npm:8.27.2"
   dependencies:
@@ -14695,8 +14695,8 @@ __metadata:
     "@mui/material": "npm:^7.3.8"
     "@mui/material-nextjs": "npm:^7.3.8"
     "@mui/utils": "npm:^7.3.8"
-    "@mui/x-data-grid": "npm:^8.26.0"
-    "@mui/x-date-pickers": "npm:^8.26.0"
+    "@mui/x-data-grid": "npm:^8.27.1"
+    "@mui/x-date-pickers": "npm:^8.27.0"
     "@tanstack/react-query": "npm:^5.90.21"
     "@tanstack/react-query-devtools": "npm:^5.91.3"
     "@types/accept-language-parser": "npm:^1.5.3"
