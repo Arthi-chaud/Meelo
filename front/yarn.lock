@@ -3463,7 +3463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material-nextjs@npm:^7.3.6":
+"@mui/material-nextjs@npm:^7.3.8":
   version: 7.3.8
   resolution: "@mui/material-nextjs@npm:7.3.8"
   dependencies:
@@ -3486,7 +3486,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^7.3.6":
+"@mui/material@npm:^7.3.8":
   version: 7.3.8
   resolution: "@mui/material@npm:7.3.8"
   dependencies:
@@ -3604,7 +3604,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^7.3.5, @mui/utils@npm:^7.3.6, @mui/utils@npm:^7.3.8":
+"@mui/utils@npm:^7.3.5, @mui/utils@npm:^7.3.8":
   version: 7.3.8
   resolution: "@mui/utils@npm:7.3.8"
   dependencies:
@@ -14692,9 +14692,9 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.14.0"
-    "@mui/material": "npm:^7.3.6"
-    "@mui/material-nextjs": "npm:^7.3.6"
-    "@mui/utils": "npm:^7.3.6"
+    "@mui/material": "npm:^7.3.8"
+    "@mui/material-nextjs": "npm:^7.3.8"
+    "@mui/utils": "npm:^7.3.8"
     "@mui/x-data-grid": "npm:^8.26.0"
     "@mui/x-date-pickers": "npm:^8.26.0"
     "@tanstack/react-query": "npm:^5.90.21"
