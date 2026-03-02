@@ -8877,7 +8877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^25.8.0":
+"i18next@npm:^25.8.11":
   version: 25.8.13
   resolution: "i18next@npm:25.8.13"
   dependencies:
@@ -8987,8 +8987,8 @@ __metadata:
     react: "npm:19.1.0"
     typescript: "npm:5.9.3"
   peerDependencies:
-    i18next: ^23.16.8 || ^25.0.0
-    react-i18next: ^12.3.1 || ^16.0.0
+    i18next: ^25.8.11
+    react-i18next: ^16.5.4
   languageName: unknown
   linkType: soft
 
@@ -10990,7 +10990,7 @@ __metadata:
     expo-status-bar: "npm:~3.0.9"
     expo-system-ui: "npm:~6.0.9"
     expo-web-browser: "npm:~15.0.10"
-    i18next: "npm:^25.8.0"
+    i18next: "npm:^25.8.11"
     iconsax-react-nativejs: "npm:^0.0.8"
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
@@ -10998,7 +10998,7 @@ __metadata:
     models: "workspace:^"
     react: "npm:19.1.0"
     react-hook-form: "npm:^7.71.1"
-    react-i18next: "npm:^16.0.0"
+    react-i18next: "npm:^16.5.4"
     react-native: "npm:0.81.5"
     react-native-awesome-slider: "npm:^2.9.0"
     react-native-blurhash: "patch:react-native-blurhash@npm%3A2.1.1#~/.yarn/patches/react-native-blurhash-npm-2.1.1-baca87b7fa.patch"
@@ -12143,7 +12143,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^16.0.0":
+"react-i18next@npm:^16.5.4":
   version: 16.5.4
   resolution: "react-i18next@npm:16.5.4"
   dependencies:
@@ -14559,7 +14559,7 @@ __metadata:
   resolution: "utils@workspace:packages/utils"
   dependencies:
     format-duration: "npm:^3.0.0"
-    i18next: "npm:^25.8.0"
+    i18next: "npm:^25.8.11"
     jest: "npm:^30.2.0"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14710,7 +14710,7 @@ __metadata:
     cookies-next: "npm:^6.0.0"
     core-js: "npm:^3.47.0"
     hls.js: "npm:^1.6.15"
-    i18next: "npm:^25.8.0"
+    i18next: "npm:^25.8.11"
     jotai: "npm:^2.17.0"
     material-ui-confirm: "npm:^4.0.0"
     mui-react-hook-form-plus: "npm:^1.5.1"
@@ -14722,7 +14722,7 @@ __metadata:
     react-error-boundary: "npm:^6.0.2"
     react-hook-form: "npm:^7.71.1"
     react-hot-toast: "npm:^2.6.0"
-    react-i18next: "npm:^16.0.0"
+    react-i18next: "npm:^16.5.4"
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.6.0"
     type-fest: "npm:^5.4.1"
