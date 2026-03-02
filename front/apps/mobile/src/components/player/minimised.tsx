@@ -1,6 +1,11 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
-import { Pressable as RNPRessable, View } from "react-native";
+import { View } from "react-native";
+import {
+	Directions,
+	Gesture,
+	GestureDetector,
+} from "react-native-gesture-handler";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -56,7 +61,7 @@ export const MinimisedPlayer = () => {
 	);
 
 	const scale = useSharedValue<number>(1);
-	const handlePress = useCallback(() => {
+	const onPressIn = useCallback(() => {
 		scale.value = animations.pressable.scaleOnPress;
 	}, []);
 	const onPressOut = useCallback(() => {
@@ -69,84 +74,103 @@ export const MinimisedPlayer = () => {
 			},
 		],
 	}));
-
+	const skipGesture = Gesture.Fling()
+		.runOnJS(true)
+		.direction(Directions.LEFT)
+		.onEnd(() => {
+			skipTrack(queryClient);
+		});
+	const rewindGesture = Gesture.Fling()
+		.runOnJS(true)
+		.direction(Directions.RIGHT)
+		.onEnd(() => {
+			rewindTrack();
+		});
+	const tapGesture = Gesture.Tap()
+		.runOnJS(true)
+		.onTouchesDown(() => onPressIn())
+		.onEnd(() => {
+			expandPlayer();
+			onPressOut();
+		});
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
-	const onPress = useCallback(() => {
-		handlePress();
-		expandPlayer();
-	}, [expandPlayer, handlePress]);
-	const onLongPress = useCallback(() => {
-		handlePress();
-		openContextMenu();
-		Haptics.onContextMenuOpen();
-	}, [openContextMenu, handlePress]);
+	const longTapGesture = Gesture.LongPress()
+		.runOnJS(true)
+		.onTouchesDown(() => onPressIn())
+		.onStart(() => {
+			openContextMenu();
+			Haptics.onContextMenuOpen();
+		})
+		.onFinalize(() => {
+			onPressOut();
+		});
+	const gesture = Gesture.Race(
+		skipGesture,
+		rewindGesture,
+		tapGesture,
+		longTapGesture,
+	);
 	styles.useVariants({ loading: isLoading });
 	return (
-		<RNPRessable
-			android_disableSound
-			onPress={onPress}
-			onPressOut={onPressOut}
-			onLongPress={onLongPress}
-		>
-			<Animated.View style={[styles.root, pressStyle]}>
-				<ColorBackground />
-				<View style={styles.content}>
-					<View style={styles.illustration}>
-						{currentTrack?.track.type === "Video" && player ? (
-							<View style={styles.videoContainer}>
-								<VideoView
-									player={player}
-									resizeMode="cover"
-									style={styles.video}
+		<Animated.View style={[styles.root, pressStyle]}>
+			<ColorBackground />
+			<View style={styles.surface}>
+				<GestureDetector gesture={gesture}>
+					<View style={styles.infos}>
+						<View style={styles.illustration}>
+							{currentTrack?.track.type === "Video" && player ? (
+								<View style={styles.videoContainer}>
+									<VideoView
+										player={player}
+										resizeMode="cover"
+										style={styles.video}
+									/>
+								</View>
+							) : (
+								<Illustration
+									illustration={
+										currentTrack?.track.illustration
+									}
+									normalizedThumbnail={isVideo}
+									variant="center"
+									useBlurhash
+									quality={isVideo ? "medium" : "low"}
 								/>
-							</View>
-						) : (
-							<Illustration
-								illustration={currentTrack?.track.illustration}
-								normalizedThumbnail={isVideo}
-								variant="center"
-								useBlurhash
-								quality={isVideo ? "medium" : "low"}
+							)}
+						</View>
+
+						<View style={styles.text}>
+							<LoadableText
+								content={currentTrack?.track.name}
+								numberOfLines={1}
+								variant="h6"
+								skeletonWidth={15}
 							/>
-						)}
-					</View>
-					<View style={styles.text}>
-						<LoadableText
-							content={currentTrack?.track.name}
-							numberOfLines={1}
-							variant="h6"
-							skeletonWidth={15}
-						/>
-						<LoadableText
-							content={formattedArtistName}
-							numberOfLines={1}
-							variant="body"
-							skeletonWidth={15}
-						/>
-					</View>
-					<View style={styles.controls}>
-						<Pressable
-							onPress={rewindTrack}
-							style={styles.rewindButton}
-						>
-							<Icon
-								icon={RewindIcon}
-								style={styles.controlButton}
+							<LoadableText
+								content={formattedArtistName}
+								numberOfLines={1}
+								variant="body"
+								skeletonWidth={15}
 							/>
-						</Pressable>
-						<PlayButton />
-						<Pressable onPress={onSkip}>
-							<Icon
-								icon={ForwardIcon}
-								style={styles.controlButton}
-							/>
-						</Pressable>
+						</View>
 					</View>
+				</GestureDetector>
+				<View style={styles.controls}>
+					<Pressable
+						onPress={rewindTrack}
+						style={styles.rewindButton}
+					>
+						<Icon icon={RewindIcon} style={styles.controlButton} />
+					</Pressable>
+					<PlayButton />
+					<Pressable onPress={onSkip}>
+						<Icon icon={ForwardIcon} style={styles.controlButton} />
+					</Pressable>
 				</View>
-				<ProgressBar />
-			</Animated.View>
-		</RNPRessable>
+			</View>
+			<ProgressBar />
+		</Animated.View>
 	);
 };
 
@@ -209,15 +233,20 @@ const styles = StyleSheet.create((theme) => ({
 			loading: { true: {}, false: {} },
 		},
 	},
-	content: {
+	surface: {
 		flexDirection: "row",
-		gap: theme.gap(1),
 		padding: theme.gap(0.75),
 		paddingBottom: theme.gap(0.75 + 1 / 3),
 		variants: {
 			loading: { true: {}, false: {} },
 		},
 	},
+	infos: {
+		flex: 1,
+		flexDirection: "row",
+		gap: theme.gap(1),
+	},
+
 	text: {
 		justifyContent: "space-evenly",
 		flex: 1,
@@ -263,7 +292,7 @@ const styles = StyleSheet.create((theme) => ({
 	controls: {
 		flexDirection: "row",
 		gap: theme.gap(2),
-		paddingHorizontal: theme.gap(1),
+		paddingRight: theme.gap(1),
 		alignItems: "center",
 		variants: {
 			loading: { true: {}, false: {} },
