@@ -11,7 +11,7 @@ import { getRandomNumber } from "@/utils/random";
 import { useInfiniteQuery, useQuery, useQueryClient } from "~/api";
 import { AnimatedFlashlist } from "~/components/animated";
 import { useSetKeyIllustration } from "~/components/background-gradient";
-import type { PageScrollProps } from "~/components/fading-header";
+import type { PageScrollProps } from "~/components/header";
 import { useQueryErrorModal } from "~/hooks/error";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { Divider } from "~/primitives/divider";

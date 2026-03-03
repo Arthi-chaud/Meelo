@@ -25,7 +25,7 @@ import {
 	ExternalMetadataDescriptionSection,
 	ExternalMetadataSourcesSection,
 } from "~/components/external-metadata";
-import { FadingHeader } from "~/components/fading-header";
+import { FadingHeader } from "~/components/header";
 import { AlbumTile } from "~/components/item/resource/album";
 import { VideoTile } from "~/components/item/resource/video";
 import { ArtistHeader } from "~/components/resource-header";

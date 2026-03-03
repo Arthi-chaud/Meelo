@@ -4,6 +4,7 @@ import {
 	CreatePlaylist,
 	useCreatePlaylistFormModal,
 } from "~/actions/playlist/create-update";
+import { StaticHeader } from "~/components/header";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
@@ -25,19 +26,21 @@ export default function PlaylistsView() {
 	const Item = layout === "list" ? PlaylistItem : PlaylistTile;
 
 	return (
-		<InfiniteView
-			layout={layout}
-			controls={{
-				actions: [CreatePlaylist(openFormModal)],
-				sort: sortControl,
-				layout: layoutControl,
-			}}
-			query={getPlaylists(
-				{},
-				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["illustration"],
-			)}
-			render={(playlist) => <Item playlist={playlist} />}
-		/>
+		<StaticHeader>
+			<InfiniteView
+				layout={layout}
+				controls={{
+					actions: [CreatePlaylist(openFormModal)],
+					sort: sortControl,
+					layout: layoutControl,
+				}}
+				query={getPlaylists(
+					{},
+					{ sortBy: sort ?? "name", order: order ?? "asc" },
+					["illustration"],
+				)}
+				render={(playlist) => <Item playlist={playlist} />}
+			/>
+		</StaticHeader>
 	);
 }

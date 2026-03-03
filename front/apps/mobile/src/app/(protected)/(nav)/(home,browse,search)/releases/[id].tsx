@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { FadingHeader } from "~/components/fading-header";
+import { FadingHeader } from "~/components/header";
 import ReleasePage from "~/pages/release";
 
 export default function Page() {

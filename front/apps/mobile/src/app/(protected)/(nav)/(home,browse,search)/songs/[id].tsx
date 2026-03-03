@@ -21,6 +21,7 @@ import {
 	ExternalMetadataDescription,
 	ExternalMetadataSourceComponent,
 } from "~/components/external-metadata";
+import { StaticHeader } from "~/components/header";
 import { GenreChip } from "~/components/item/resource/genre";
 import { LoadableText } from "~/components/loadable_text";
 import { SongHeader } from "~/components/resource-header";
@@ -72,41 +73,43 @@ export default function SongPage() {
 	}, [song]);
 
 	return (
-		<View style={{ paddingTop }}>
-			<View style={styles.content}>
-				<SongHeader song={song} />
-				<View style={styles.playButton}>
-					<Button
-						title="Play"
-						width="fill"
-						icon={PlayIcon}
-						disabled={!song}
-						onPress={playButtonCallback}
-						containerStyle={styles.playButtonContent}
+		<StaticHeader>
+			<View style={{ paddingTop }}>
+				<View style={styles.content}>
+					<SongHeader song={song} />
+					<View style={styles.playButton}>
+						<Button
+							title="Play"
+							width="fill"
+							icon={PlayIcon}
+							disabled={!song}
+							onPress={playButtonCallback}
+							containerStyle={styles.playButtonContent}
+						/>
+					</View>
+					<TabComponent
+						currentTab={currentTab}
+						enabled={!!song}
+						setCurrentTab={setCurrentTab}
 					/>
+					<Divider h withInsets />
+					{song && (
+						<ScrollView
+							style={styles.content}
+							contentContainerStyle={{ paddingBottom }}
+						>
+							{currentTab === "lyrics" && (
+								<LyricsView
+									lyrics={song?.lyrics}
+									songName={song?.name}
+								/>
+							)}
+							{currentTab === "infos" && <InfoView song={song} />}
+						</ScrollView>
+					)}
 				</View>
-				<TabComponent
-					currentTab={currentTab}
-					enabled={!!song}
-					setCurrentTab={setCurrentTab}
-				/>
-				<Divider h withInsets />
-				{song && (
-					<ScrollView
-						style={styles.content}
-						contentContainerStyle={{ paddingBottom }}
-					>
-						{currentTab === "lyrics" && (
-							<LyricsView
-								lyrics={song?.lyrics}
-								songName={song?.name}
-							/>
-						)}
-						{currentTab === "infos" && <InfoView song={song} />}
-					</ScrollView>
-				)}
 			</View>
-		</View>
+		</StaticHeader>
 	);
 }
 

@@ -30,6 +30,7 @@ import { useDeletePlaylistAction } from "~/actions/playlist/delete";
 import { useUpdateIllustrationAction } from "~/actions/update-illustration";
 import { useAPI, useQuery, useQueryClient } from "~/api";
 import { usePlaylistContextMenu } from "~/components/context-menu/resource/playlist";
+import { StaticHeader } from "~/components/header";
 import { SongItem } from "~/components/item/resource/song";
 import { ResourceHeader } from "~/components/resource-header";
 import * as Haptics from "~/haptics";
@@ -102,26 +103,28 @@ export default function PlaylistView() {
 	}, [onItemPress, emptyPlaylist]);
 
 	return (
-		<View style={[styles.root, rootStyle]}>
-			<Header
-				playlistId={playlistId}
-				{...(playlistEntries && !isReordering
-					? { onPlay, onShuffle }
-					: {})}
-			/>
-			<Divider h />
-			<Items
-				playlistId={playlistId}
-				playlistEntries={playlistEntries?.items}
-				isReordering={isReordering}
-				startReordering={() => setIsReordering(true)}
-				onReorderingEnd={(entryIds) => {
-					setIsReordering(false);
-					reorderEntries.mutate(entryIds);
-				}}
-				onItemPress={onItemPress}
-			/>
-		</View>
+		<StaticHeader>
+			<View style={[styles.root, rootStyle]}>
+				<Header
+					playlistId={playlistId}
+					{...(playlistEntries && !isReordering
+						? { onPlay, onShuffle }
+						: {})}
+				/>
+				<Divider h />
+				<Items
+					playlistId={playlistId}
+					playlistEntries={playlistEntries?.items}
+					isReordering={isReordering}
+					startReordering={() => setIsReordering(true)}
+					onReorderingEnd={(entryIds) => {
+						setIsReordering(false);
+						reorderEntries.mutate(entryIds);
+					}}
+					onItemPress={onItemPress}
+				/>
+			</View>
+		</StaticHeader>
 	);
 }
 

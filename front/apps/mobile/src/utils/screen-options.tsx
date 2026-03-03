@@ -1,7 +1,7 @@
 import type { Stack } from "expo-router";
 import type { ComponentProps } from "react";
 import { useUnistyles } from "react-native-unistyles";
-import { BackButton, HeaderBackground } from "~/components/navigation";
+import { BackButton } from "~/components/navigation";
 
 export const useScreenOptions = () => {
 	const { theme } = useUnistyles();
@@ -24,7 +24,6 @@ export const useScreenOptions = () => {
 		// headerStyle: styles.header,
 		headerTitleStyle: styles.headerTitle,
 		headerLeft: () => <BackButton />,
-		headerBackground: () => <HeaderBackground />,
 		headerTransparent: true,
 		headerTintColor: styles.headerTitle.color,
 	} satisfies ComponentProps<typeof Stack>["screenOptions"];

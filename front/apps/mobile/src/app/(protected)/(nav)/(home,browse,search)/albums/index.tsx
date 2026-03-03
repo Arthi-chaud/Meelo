@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { getAlbums, getArtist, getGenre, getLabel } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { useQuery } from "~/api";
+import { StaticHeader } from "~/components/header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -67,20 +68,19 @@ export default function AlbumBrowseView() {
 	const { data: label } = useQuery((labelId) => getLabel(labelId), labelId);
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
 	return (
-		<>
-			<Stack.Screen
-				options={{
-					headerTitle: genreId
-						? (genre?.name ?? "")
-						: labelId
-							? (label?.name ?? "")
-							: t(
-									compilations
-										? "nav.compilations"
-										: "models.album_plural",
-								),
-				}}
-			/>
+		<StaticHeader
+			options={{
+				headerTitle: genreId
+					? (genre?.name ?? "")
+					: labelId
+						? (label?.name ?? "")
+						: t(
+								compilations
+									? "nav.compilations"
+									: "models.album_plural",
+							),
+			}}
+		>
 			<InfiniteView
 				layout={layout}
 				header={artistId ? <ArtistHeader artist={artist} /> : undefined}
@@ -108,6 +108,6 @@ export default function AlbumBrowseView() {
 					/>
 				)}
 			/>
-		</>
+		</StaticHeader>
 	);
 }

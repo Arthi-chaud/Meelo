@@ -35,6 +35,7 @@ import type { SongSortingKey } from "@/models/song";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import { StaticHeader } from "~/components/header";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
@@ -292,11 +293,13 @@ export default function Root() {
 		},
 	];
 	return (
-		<SafeFlashList
-			data={sections}
-			getItemType={(t) => t.type}
-			renderItem={({ item }) => renderHomePageSection(item)}
-			contentContainerStyle={[styles.main]}
-		/>
+		<StaticHeader>
+			<SafeFlashList
+				data={sections}
+				getItemType={(t) => t.type}
+				renderItem={({ item }) => renderHomePageSection(item)}
+				contentContainerStyle={[styles.main]}
+			/>
+		</StaticHeader>
 	);
 }

@@ -41,6 +41,7 @@ import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
 import { useAPI, useQueryClient } from "~/api";
+import { StaticHeader } from "~/components/header";
 import { useSearchTypeFilterControl } from "~/components/infinite/controls/filters";
 import { InfiniteView } from "~/components/infinite/view";
 import { SearchResultItem } from "~/components/item/resource/search-result";
@@ -112,37 +113,39 @@ export default function SearchView() {
 	);
 
 	return (
-		<InfiniteView
-			header={
-				<View style={styles.searchHeader}>
-					<TextInput
-						inModal={false}
-						autoCorrect={false}
-						autoCapitalize={"none"}
-						placeholder={t("nav.search")}
-						onChangeText={debounceSearch}
+		<StaticHeader>
+			<InfiniteView
+				header={
+					<View style={styles.searchHeader}>
+						<TextInput
+							inModal={false}
+							autoCorrect={false}
+							autoCapitalize={"none"}
+							placeholder={t("nav.search")}
+							onChangeText={debounceSearch}
+						/>
+					</View>
+				}
+				// NOTE: Since the original type of the query is SearchResult, it does not have an id,
+				// that's why it complains
+				query={
+					query as unknown as InfiniteQuery<
+						Resource,
+						IllustratedSearchResultWithId
+					>
+				}
+				controls={{
+					filters: searchValue.trim() === "" ? [] : [filterControl],
+				}}
+				render={(item) => (
+					<SearchResultItem
+						searchResult={item}
+						onPress={() => onSearchResultPress(item)}
 					/>
-				</View>
-			}
-			// NOTE: Since the original type of the query is SearchResult, it does not have an id,
-			// that's why it complains
-			query={
-				query as unknown as InfiniteQuery<
-					Resource,
-					IllustratedSearchResultWithId
-				>
-			}
-			controls={{
-				filters: searchValue.trim() === "" ? [] : [filterControl],
-			}}
-			render={(item) => (
-				<SearchResultItem
-					searchResult={item}
-					onPress={() => onSearchResultPress(item)}
-				/>
-			)}
-			layout="list"
-		/>
+				)}
+				layout="list"
+			/>
+		</StaticHeader>
 	);
 }
 

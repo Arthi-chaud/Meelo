@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { getArtists, getLabel } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
 import { useQuery } from "~/api";
+import { StaticHeader } from "~/components/header";
 import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
@@ -52,19 +53,21 @@ export default function ArtistBrowseView() {
 		}
 	}, [labelId, label]);
 	return (
-		<InfiniteView
-			layout={layout}
-			controls={{
-				layout: layoutControl,
-				sort: sortControl,
-				filters: [libraryFilterControl],
-			}}
-			query={getArtists(
-				{ library: libraries, label: labelId },
-				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["illustration"],
-			)}
-			render={(artist) => <Item artist={artist} />}
-		/>
+		<StaticHeader>
+			<InfiniteView
+				layout={layout}
+				controls={{
+					layout: layoutControl,
+					sort: sortControl,
+					filters: [libraryFilterControl],
+				}}
+				query={getArtists(
+					{ library: libraries, label: labelId },
+					{ sortBy: sort ?? "name", order: order ?? "asc" },
+					["illustration"],
+				)}
+				render={(artist) => <Item artist={artist} />}
+			/>
+		</StaticHeader>
 	);
 }
