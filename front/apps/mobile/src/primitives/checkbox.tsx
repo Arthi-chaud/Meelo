@@ -1,9 +1,6 @@
-import CommunityCheckBox from "@react-native-community/checkbox";
+import { Checkbox } from "expo-checkbox";
 import { withUnistyles } from "react-native-unistyles";
 
-export const CheckBox = withUnistyles(CommunityCheckBox, (theme) => ({
-	tintColors: {
-		true: theme.colors.text.primary,
-		false: theme.colors.text.primary,
-	},
+export const CheckBox = withUnistyles(Checkbox, (theme) => ({
+	color: theme.colors.text.primary,
 }));

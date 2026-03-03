@@ -4508,20 +4508,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/checkbox@npm:^0.5.20":
-  version: 0.5.20
-  resolution: "@react-native-community/checkbox@npm:0.5.20"
-  peerDependencies:
-    react: "*"
-    react-native: ">= 0.62"
-    react-native-windows: ">=0.62"
-  peerDependenciesMeta:
-    react-native-windows:
-      optional: true
-  checksum: 10c0/ee6176dfc882330fb84c871290ed1398d445c64dd689a4c311e4b1e5d6d7e1c540c9678467a0c5e57579640dc1decde322b77835cdd386976be957fb2c636287
-  languageName: node
-  linkType: hard
-
 "@react-native/assets-registry@npm:0.83.2":
   version: 0.83.2
   resolution: "@react-native/assets-registry@npm:0.83.2"
@@ -7784,6 +7770,20 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/d96968b137e92208a5bcafdf30499ccbf1879528945d017c0c26f981bdbc327da6884728eabe16138ef3b2283188b6ffa2599485f0df5d2a09674738472aae06
+  languageName: node
+  linkType: hard
+
+"expo-checkbox@npm:^55.0.3":
+  version: 55.0.3
+  resolution: "expo-checkbox@npm:55.0.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/2ea733cbbe01c9873bdc5978411d9d6e4270ca4b58eae3f51ebef00edef21754df41aff96e195ace792248a6fd1baf8bf0868c916f746fa236fbd39991dd3abb
   languageName: node
   linkType: hard
 
@@ -11384,7 +11384,6 @@ __metadata:
     "@expo/config-plugins": "npm:^55.0.6"
     "@gorhom/bottom-sheet": "npm:^5.2.8"
     "@kesha-antonov/react-native-background-downloader": "npm:^4.5.3"
-    "@react-native-community/checkbox": "npm:^0.5.20"
     "@shopify/flash-list": "npm:2.2.2"
     "@shopify/react-native-skia": "npm:2.4.21"
     "@tanstack/react-query": "npm:^5.90.21"
@@ -11398,6 +11397,7 @@ __metadata:
     expo-asset: "npm:~55.0.8"
     expo-blur: "npm:~55.0.8"
     expo-build-properties: "npm:~55.0.9"
+    expo-checkbox: "npm:^55.0.3"
     expo-constants: "npm:~55.0.7"
     expo-dev-client: "npm:~55.0.10"
     expo-device: "npm:~55.0.9"
