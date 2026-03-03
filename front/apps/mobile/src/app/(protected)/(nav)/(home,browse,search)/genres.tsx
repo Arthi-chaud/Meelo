@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { getGenres } from "@/api/queries";
 import { transformPage } from "@/api/query";
 import { GenreSortingKeys } from "@/models/genre";
+import { StaticHeader } from "~/components/header";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { GenreItem } from "~/components/item/resource/genre";
@@ -20,13 +21,15 @@ export default function GenreList() {
 	}, [sort, order]);
 
 	return (
-		<InfiniteView
-			layout={"list"}
-			controls={{
-				sort: sortControl,
-			}}
-			query={query}
-			render={(genre) => <GenreItem genre={genre} />}
-		/>
+		<StaticHeader>
+			<InfiniteView
+				layout={"list"}
+				controls={{
+					sort: sortControl,
+				}}
+				query={query}
+				render={(genre) => <GenreItem genre={genre} />}
+			/>
+		</StaticHeader>
 	);
 }

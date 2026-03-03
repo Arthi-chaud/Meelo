@@ -1,5 +1,6 @@
 import { useNavigation } from "expo-router";
-import { Pressable, type ViewStyle } from "react-native";
+import type { RefObject } from "react";
+import { Pressable, type View, type ViewStyle } from "react-native";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BackIcon } from "@/ui/icons";
@@ -20,9 +21,15 @@ export const BackButton = () => {
 	);
 };
 
-export const HeaderBackground = ({ style }: { style?: ViewStyle[] }) => (
+export const HeaderBackground = ({
+	blurTarget,
+	style,
+}: {
+	blurTarget: RefObject<View | null>;
+	style?: ViewStyle[];
+}) => (
 	<Animated.View style={[styles.headerBgContainer, style]}>
-		<BlurView style={styles.headerBgContent} />
+		<BlurView blurTarget={blurTarget} style={styles.headerBgContent} />
 	</Animated.View>
 );
 

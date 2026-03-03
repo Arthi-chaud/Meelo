@@ -13,6 +13,7 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
+import { StaticHeader } from "~/components/header";
 import { ListItem } from "~/components/item/list-item";
 import { SafeView } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
@@ -64,23 +65,25 @@ export default function BrowseList() {
 	const router = useRouter();
 	const { t } = useTranslation();
 	return (
-		<SafeView style={[styles.root]}>
-			{tabs.map(({ title, href, icon }) => (
-				<Fragment key={title}>
-					<ListItem
-						leading={
-							<View style={styles.icon}>
-								<IconComponent icon={icon} />
-							</View>
-						}
-						title={t(title)}
-						subtitle={null}
-						onPress={() => router.navigate(href)}
-					/>
-					<Divider h withInsets />
-				</Fragment>
-			))}
-		</SafeView>
+		<StaticHeader>
+			<SafeView style={[styles.root]}>
+				{tabs.map(({ title, href, icon }) => (
+					<Fragment key={title}>
+						<ListItem
+							leading={
+								<View style={styles.icon}>
+									<IconComponent icon={icon} />
+								</View>
+							}
+							title={t(title)}
+							subtitle={null}
+							onPress={() => router.navigate(href)}
+						/>
+						<Divider h withInsets />
+					</Fragment>
+				))}
+			</SafeView>
+		</StaticHeader>
 	);
 }
 

@@ -33,6 +33,7 @@ import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
 import type { Action } from "~/actions";
 import { useQuery, useQueryClient } from "~/api";
+import { StaticHeader } from "~/components/header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -189,30 +190,32 @@ export default function SongBrowseView() {
 		} satisfies Action;
 	}, [getQueryForPlayer, queryClient]);
 	return (
-		<InfiniteView
-			layout={"list"}
-			header={
-				(artistId ?? rareArtistId) !== undefined ? (
-					<ArtistHeader artist={artist} />
-				) : versionsOfSongId !== undefined ? (
-					<SongHeader song={song} />
-				) : undefined
-			}
-			controls={{
-				sort: sortControl,
-				filters: [libraryFilterControl, songTypeFilterControl],
-				actions: [playAction, shuffleAction],
-			}}
-			query={query}
-			render={(songItem, idx, songs) => (
-				<SongItem
-					song={songItem}
-					parentArtistId={artist?.id ?? song?.artistId}
-					onPress={() => onItemPress(idx, songs)}
-					subtitle={subtitle(song)}
-					illustrationProps={{}}
-				/>
-			)}
-		/>
+		<StaticHeader>
+			<InfiniteView
+				layout={"list"}
+				header={
+					(artistId ?? rareArtistId) !== undefined ? (
+						<ArtistHeader artist={artist} />
+					) : versionsOfSongId !== undefined ? (
+						<SongHeader song={song} />
+					) : undefined
+				}
+				controls={{
+					sort: sortControl,
+					filters: [libraryFilterControl, songTypeFilterControl],
+					actions: [playAction, shuffleAction],
+				}}
+				query={query}
+				render={(songItem, idx, songs) => (
+					<SongItem
+						song={songItem}
+						parentArtistId={artist?.id ?? song?.artistId}
+						onPress={() => onItemPress(idx, songs)}
+						subtitle={subtitle(song)}
+						illustrationProps={{}}
+					/>
+				)}
+			/>
+		</StaticHeader>
 	);
 }

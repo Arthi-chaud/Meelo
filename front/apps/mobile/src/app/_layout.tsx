@@ -30,13 +30,14 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import i18next from "i18next";
 import { Provider } from "jotai";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { initReactI18next } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { store } from "@/state/store";
 import "intl-pluralrules";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BlurTargetView } from "expo-blur";
 import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -113,6 +114,7 @@ export default function RootLayout() {
 			lock.then(() => SplashScreen.hideAsync());
 		}
 	}, [loaded, error]);
+	const blurTarget = useRef(null);
 
 	if (!loaded) {
 		return null;
@@ -125,44 +127,50 @@ export default function RootLayout() {
 						<BottomSheetModalProvider>
 							<KeyboardProvider>
 								<DownloadManager />
-								<Stack
-									screenOptions={{
-										animation: "none",
-										animationTypeForReplace: "pop",
-										headerShown: false,
-										contentStyle: {
-											flex: 1,
-										},
-										statusBarStyle:
-											actualColorScheme === "light"
-												? "dark"
-												: "light",
-									}}
+								<BlurTargetView
+									ref={blurTarget}
+									style={{ flex: 1 }}
 								>
-									<Stack.Screen
-										name="(protected)"
-										options={{
+									<Stack
+										screenOptions={{
+											animation: "none",
+											animationTypeForReplace: "pop",
+											headerShown: false,
 											contentStyle: {
-												backgroundColor: "transparent",
+												flex: 1,
 											},
+											statusBarStyle:
+												actualColorScheme === "light"
+													? "dark"
+													: "light",
 										}}
-									/>
+									>
+										<Stack.Screen
+											name="(protected)"
+											options={{
+												contentStyle: {
+													backgroundColor:
+														"transparent",
+												},
+											}}
+										/>
 
-									<Stack.Screen
-										name="auth"
-										options={{
-											contentStyle: {
-												backgroundColor:
-													(actualColorScheme ===
-													"dark"
-														? appThemes.dark
-														: appThemes.light
-													).colors.background,
-											},
-										}}
-									/>
-								</Stack>
-								<Modal />
+										<Stack.Screen
+											name="auth"
+											options={{
+												contentStyle: {
+													backgroundColor:
+														(actualColorScheme ===
+														"dark"
+															? appThemes.dark
+															: appThemes.light
+														).colors.background,
+												},
+											}}
+										/>
+									</Stack>
+								</BlurTargetView>
+								<Modal blurTarget={blurTarget} />
 							</KeyboardProvider>
 						</BottomSheetModalProvider>
 						<BackgroundGradient />

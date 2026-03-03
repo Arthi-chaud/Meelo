@@ -5,10 +5,16 @@ import {
 	BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { type ReactNode, useCallback, useEffect, useRef } from "react";
+import {
+	type ReactNode,
+	type RefObject,
+	useCallback,
+	useEffect,
+	useRef,
+} from "react";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import { BlurView } from "~/components/blur-view";
+import { BlurView } from "../blur-view";
 
 type ModalAtom = {
 	content: () => ReactNode;
@@ -26,7 +32,11 @@ export const useModal = (p: ModalAtom) => {
 	return { openModal };
 };
 
-export const Modal = () => {
+export const Modal = ({
+	blurTarget,
+}: {
+	blurTarget: RefObject<View | null>;
+}) => {
 	const [modalContent, setModalContent] = useAtom(modalAtom);
 	const onClose = useCallback(() => {
 		modalContent?.onDismiss?.();
@@ -53,7 +63,7 @@ export const Modal = () => {
 			onDismiss={onClose}
 			backgroundComponent={() => (
 				<View style={styles.modalBackground}>
-					<BlurView style={{ flex: 1 }} />
+					<BlurView blurTarget={blurTarget} style={{ flex: 1 }} />
 				</View>
 			)}
 			keyboardBehavior="interactive"

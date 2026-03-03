@@ -5,6 +5,7 @@ import { getArtist, getSong, getTracks } from "@/api/queries";
 import { TrackSortingKeys, type TrackWithRelations } from "@/models/track";
 import { playTrackAtom } from "@/state/player";
 import { useQuery, useQueryClient } from "~/api";
+import { StaticHeader } from "~/components/header";
 import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
@@ -38,30 +39,34 @@ export default function TracksView() {
 		[queryClient],
 	);
 	return (
-		<InfiniteView
-			layout={"list"}
-			header={
-				songId !== undefined ? <SongHeader song={song} /> : undefined
-			}
-			controls={{
-				sort: sortControl,
-				filters: [libraryFilterControl],
-			}}
-			query={getTracks(
-				{
-					song: songId,
-					library: libraries,
-				},
-				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["illustration", "release", "song", "video"],
-			)}
-			render={(track) => (
-				<TrackItem
-					onPress={() => track && onItemPress(track)}
-					track={track}
-					illustrationProps={{}}
-				/>
-			)}
-		/>
+		<StaticHeader>
+			<InfiniteView
+				layout={"list"}
+				header={
+					songId !== undefined ? (
+						<SongHeader song={song} />
+					) : undefined
+				}
+				controls={{
+					sort: sortControl,
+					filters: [libraryFilterControl],
+				}}
+				query={getTracks(
+					{
+						song: songId,
+						library: libraries,
+					},
+					{ sortBy: sort ?? "name", order: order ?? "asc" },
+					["illustration", "release", "song", "video"],
+				)}
+				render={(track) => (
+					<TrackItem
+						onPress={() => track && onItemPress(track)}
+						track={track}
+						illustrationProps={{}}
+					/>
+				)}
+			/>
+		</StaticHeader>
 	);
 }

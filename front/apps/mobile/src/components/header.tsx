@@ -1,5 +1,6 @@
-import { Stack } from "expo-router";
-import type { ReactNode } from "react";
+import { BlurTargetView } from "expo-blur";
+import { type ScreenProps, Stack } from "expo-router";
+import { type ReactNode, useRef } from "react";
 import {
 	interpolate,
 	type ScrollHandlerProcessed,
@@ -36,6 +37,7 @@ export const FadingHeader = ({
 		}),
 		[],
 	);
+	const blurRef = useRef(null);
 
 	return (
 		<>
@@ -43,12 +45,37 @@ export const FadingHeader = ({
 				options={{
 					headerBackground: () => (
 						<HeaderBackground
+							blurTarget={blurRef}
 							style={[{ opacity: 0 }, headerStyle]}
 						/>
 					),
 				}}
 			/>
-			{children({ onScroll: scrollHandler, scrollEventThrottle: 16 })}
+			<BlurTargetView ref={blurRef} style={{ flex: 1 }}>
+				{children({ onScroll: scrollHandler, scrollEventThrottle: 16 })}
+			</BlurTargetView>
 		</>
+	);
+};
+
+export const StaticHeader = ({
+	children,
+	options,
+}: {
+	children: any;
+	options?: ScreenProps["options"];
+}) => {
+	const r = useRef(null);
+	return (
+		<Stack.Screen
+			options={{
+				headerBackground: () => <HeaderBackground blurTarget={r} />,
+				...options,
+			}}
+		>
+			<BlurTargetView style={{ flex: 1 }} ref={r}>
+				{children}
+			</BlurTargetView>
+		</Stack.Screen>
 	);
 };

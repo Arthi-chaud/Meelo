@@ -29,6 +29,7 @@ import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
 import type { Action } from "~/actions";
 import { useQuery, useQueryClient } from "~/api";
+import { StaticHeader } from "~/components/header";
 import {
 	useLibraryFiltersControl,
 	useTypeFiltersControl,
@@ -132,32 +133,36 @@ export default function VideoBrowseView() {
 		} satisfies Action;
 	}, [getQueryForPlayer, queryClient]);
 	return (
-		<InfiniteView
-			layout={layout}
-			header={
-				artistId ? (
-					<ArtistHeader artist={artist} />
-				) : songId ? (
-					<SongHeader song={song} />
-				) : undefined
-			}
-			controls={{
-				layout: layoutControl,
-				sort: sortControl,
-				filters: [libraryFilterControl, albumTypeFilterControl],
-				actions: [playAction, shuffleAction],
-			}}
-			query={query}
-			render={(video, idx, videos) => (
-				<Item
-					video={video}
-					onPress={() => video && onItemPress(idx, videos)}
-					subtitle={artistId || songId ? "duration" : "artistName"}
-					illustrationProps={{
-						normalizedThumbnail: true,
-					}}
-				/>
-			)}
-		/>
+		<StaticHeader>
+			<InfiniteView
+				layout={layout}
+				header={
+					artistId ? (
+						<ArtistHeader artist={artist} />
+					) : songId ? (
+						<SongHeader song={song} />
+					) : undefined
+				}
+				controls={{
+					layout: layoutControl,
+					sort: sortControl,
+					filters: [libraryFilterControl, albumTypeFilterControl],
+					actions: [playAction, shuffleAction],
+				}}
+				query={query}
+				render={(video, idx, videos) => (
+					<Item
+						video={video}
+						onPress={() => video && onItemPress(idx, videos)}
+						subtitle={
+							artistId || songId ? "duration" : "artistName"
+						}
+						illustrationProps={{
+							normalizedThumbnail: true,
+						}}
+					/>
+				)}
+			/>
+		</StaticHeader>
 	);
 }

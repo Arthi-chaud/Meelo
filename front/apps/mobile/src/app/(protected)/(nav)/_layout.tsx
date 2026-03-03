@@ -17,6 +17,7 @@
  */
 
 import { useQuery as useTanStackQuery } from "@tanstack/react-query";
+import { BlurTargetView } from "expo-blur";
 import { Redirect } from "expo-router";
 import {
 	TabList,
@@ -48,7 +49,7 @@ import {
 	SettingsIcon,
 } from "@/ui/icons";
 import { useAPI } from "~/api";
-import { BlurView } from "~/components/blur-view";
+import { BlurView, bvTarget } from "~/components/blur-view";
 import { PlayerContext } from "~/components/player/context";
 import { ExpandedPlayerSlot } from "~/components/player/expanded/slot";
 import { MinimisedPlayer } from "~/components/player/minimised";
@@ -86,14 +87,11 @@ const styles = StyleSheet.create((theme) => ({
 		paddingBottom: theme.gap(4),
 		flexDirection: "row",
 		backgroundColor: "transparent",
-		justifyContent: "space-around",
-	},
-	tabBarBackground: {
-		...StyleSheet.absoluteFillObject,
+
 		borderTopLeftRadius: theme.borderRadius,
 		borderTopRightRadius: theme.borderRadius,
 		overflow: "hidden",
-		backgroundColor: "transparent",
+		justifyContent: "space-around",
 	},
 	hiddenTabList: { display: "none" },
 	player: {
@@ -135,7 +133,9 @@ export default function ProtectedLayout() {
 	//TODO Proper handling of when user is loading
 	return (
 		<Tabs>
-			<TabSlot style={styles.screen} />
+			<BlurTargetView ref={bvTarget} style={{ flex: 1 }}>
+				<TabSlot style={styles.screen} />
+			</BlurTargetView>
 			<View style={styles.footer} onLayout={onLayout}>
 				<View style={styles.player}>
 					{/* TODO blur behing player, like iOS */}
@@ -147,9 +147,7 @@ export default function ProtectedLayout() {
 				</View>
 				<ExpandedPlayerSlot />
 				<PlayerContext />
-				<View style={styles.tabBar}>
-					<BlurView style={styles.tabBarBackground} />
-
+				<BlurView blurTarget={bvTarget} style={styles.tabBar}>
 					<TabTrigger name="(home)" asChild>
 						<TabButton icon={HomeIcon} />
 					</TabTrigger>
@@ -162,7 +160,7 @@ export default function ProtectedLayout() {
 					<TabTrigger name="settings" asChild>
 						<TabButton icon={SettingsIcon} />
 					</TabTrigger>
-				</View>
+				</BlurView>
 			</View>
 			{/* Shrug https://docs.expo.dev/router/advanced/custom-tabs/#multiple-tab-bars */}
 			<TabList style={styles.hiddenTabList}>
