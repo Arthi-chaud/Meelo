@@ -66,7 +66,6 @@ export const Header = ({
 							illustration={release?.illustration}
 							quality="original"
 							dropShadow
-							useBlurhash
 						/>
 					</View>
 				</View>

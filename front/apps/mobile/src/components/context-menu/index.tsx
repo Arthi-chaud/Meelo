@@ -98,7 +98,6 @@ const ContextMenuHeader = ({ header }: { header: ContextMenuHeader }) => {
 					illustration={header.illustration}
 					quality={isThumbnail ? "medium" : "low"}
 					{...(header.illustrationProps ?? {
-						useBlurhash: true,
 						variant: "center",
 					})}
 				/>

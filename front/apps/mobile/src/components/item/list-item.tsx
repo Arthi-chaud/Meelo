@@ -94,7 +94,6 @@ export const ListItem = ({
 					<IllustrationComponent
 						{...illustrationProps}
 						illustration={illustration}
-						useBlurhash={illustrationProps?.useBlurhash ?? false}
 						variant={illustrationProps?.variant ?? "center"}
 						quality="low"
 					/>

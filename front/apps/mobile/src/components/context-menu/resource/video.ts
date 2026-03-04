@@ -47,7 +47,6 @@ export const useVideoContextMenu = (
 				illustration: video?.illustration,
 				illustrationProps: {
 					normalizedThumbnail: true,
-					useBlurhash: true,
 				},
 			},
 			items: video

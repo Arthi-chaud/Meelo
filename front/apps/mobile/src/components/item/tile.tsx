@@ -98,7 +98,6 @@ export const Tile = ({
 				<Illustration
 					illustration={illustration}
 					{...props.illustrationProps}
-					useBlurhash={props.illustrationProps?.useBlurhash ?? false}
 					quality="medium"
 				/>
 			</View>
