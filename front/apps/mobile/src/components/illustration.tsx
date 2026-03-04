@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Image from "@d11/react-native-fast-image";
+import { Image } from "expo-image";
 import { useEffect, useMemo, useState } from "react";
 import { View, type ViewStyle } from "react-native";
-import { Blurhash } from "react-native-blurhash";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -30,6 +29,7 @@ import type { IllustrationQuality } from "@/models/illustration";
 import type { Icon as IconType } from "@/ui/icons";
 import { useAPI } from "~/api";
 import { Icon } from "~/primitives/icon";
+import { animations } from "~/theme";
 
 type Props = {
 	illustration: IllustrationModel | undefined | null;
@@ -38,10 +38,6 @@ type Props = {
 	quality: IllustrationQuality;
 	normalizedThumbnail?: boolean;
 	variant?: "fill" | "circle" | "center";
-	// If false, the blurhash will not be ecoded/displayed.
-	// Instead it will use the color from the illustration model as a place holder
-	// To enhance performance in infinite lists
-	useBlurhash?: boolean;
 	style?: ViewStyle;
 };
 
@@ -50,7 +46,6 @@ export const Illustration = ({
 	fallbackIcon,
 	quality,
 	variant,
-	useBlurhash,
 	dropShadow = false,
 	normalizedThumbnail,
 	style,
@@ -75,20 +70,13 @@ export const Illustration = ({
 	const [loadStatus, setLoadStatus] = useState<"done" | "loading" | "error">(
 		"loading",
 	);
-	const imageOpacity = useSharedValue(0);
 	const fallbackOpacity = useSharedValue(0);
 
-	const imageOpacityStyle = useAnimatedStyle(() => ({
-		opacity: imageOpacity.value,
-	}));
 	const fallbackOpacityStyle = useAnimatedStyle(() => ({
 		opacity: fallbackOpacity.value,
 	}));
 
 	useEffect(() => {
-		// Whatever the new illustration props is,
-		// we need to reset the blurhash and the image
-		imageOpacity.value = 0;
 		if (illustration === null) {
 			fallbackOpacity.value = 1;
 		} else {
@@ -103,54 +91,34 @@ export const Illustration = ({
 					{
 						aspectRatio: innerAspectRatio,
 					},
-					styles.innerContainer(
-						!useBlurhash ? illustration?.colors.at(0) : undefined,
-					),
+					styles.innerContainer,
 					styles.shadow,
 				]}
 			>
 				{illustration && loadStatus !== "error" && (
-					<>
-						{useBlurhash && (
-							<View style={[styles.slot]}>
-								<Blurhash
-									decodeAsync
-									style={[
-										styles.slotContent,
-										styles.blurhash,
-									]}
-									blurhash={illustration.blurhash}
-									decodeWidth={16}
-									decodeHeight={16}
-								/>
-							</View>
-						)}
-
-						<Animated.View style={[imageOpacityStyle, styles.slot]}>
-							<Image
-								style={[styles.slotContent]}
-								onLoad={() => {
-									imageOpacity.value = 1;
-									setLoadStatus("done");
-								}}
-								resizeMode={
-									variant === "circle" || normalizedThumbnail
-										? "cover"
-										: "contain"
-								}
-								onError={() => {
-									setLoadStatus("error");
-								}}
-								source={{
-									headers: api.getAuthHeaders(),
-									uri: api.getIllustrationURL(
-										illustration.url,
-										quality,
-									),
-								}}
-							/>
-						</Animated.View>
-					</>
+					<Animated.View style={[styles.slot]}>
+						<Image
+							style={[styles.slotContent]}
+							placeholder={{
+								blurhash: illustration.blurhash,
+							}}
+							recyclingKey={illustration.id?.toString()}
+							onLoad={() => setLoadStatus("done")}
+							contentFit={"cover"}
+							placeholderContentFit={"cover"}
+							onError={() => {
+								setLoadStatus("error");
+							}}
+							transition={animations.fades.duration}
+							source={{
+								headers: api.getAuthHeaders(),
+								uri: api.getIllustrationURL(
+									illustration.url,
+									quality,
+								),
+							}}
+						/>
+					</Animated.View>
 				)}
 				{(!illustration || loadStatus === "error") && (
 					<Animated.View
@@ -190,8 +158,8 @@ const styles = StyleSheet.create((theme) => ({
 			},
 		},
 	},
-	innerContainer: (illustrationColor: string | undefined) => ({
-		backgroundColor: illustrationColor ?? theme.colors.skeleton,
+	innerContainer: {
+		backgroundColor: theme.colors.skeleton,
 		borderRadius: theme.borderRadius,
 		variants: {
 			imageType: {
@@ -203,7 +171,7 @@ const styles = StyleSheet.create((theme) => ({
 				default: {},
 			},
 		},
-	}),
+	},
 	blurhash: {
 		backgroundColor: theme.colors.skeleton,
 	},

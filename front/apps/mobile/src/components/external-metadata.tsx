@@ -1,4 +1,4 @@
-import Image from "@d11/react-native-fast-image";
+import { Image } from "expo-image";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -180,7 +180,7 @@ export const ExternalMetadataSourceComponent = ({
 		>
 			{source ? (
 				<Image
-					resizeMode="contain"
+					contentFit="contain"
 					source={{
 						uri: source
 							? api.getIllustrationURL(
