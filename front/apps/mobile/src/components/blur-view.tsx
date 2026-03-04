@@ -10,7 +10,7 @@ export const BlurView = withUnistyles(
 	(theme) =>
 		({
 			tint: theme.name === "light" ? "light" : "dark",
-			blurMethod: "dimezisBlurView",
+			blurMethod: "dimezisBlurViewSdk31Plus",
 			intensity: 80,
 		}) as const,
 );

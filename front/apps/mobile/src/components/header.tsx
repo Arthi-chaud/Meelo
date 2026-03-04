@@ -20,8 +20,10 @@ export type PageScrollProps = {
 // To be used only on top-level, screen components
 export const FadingHeader = ({
 	children,
+	options,
 }: {
 	children: (props: PageScrollProps) => ReactNode;
+	options?: ScreenProps["options"];
 }) => {
 	const scrollY = useSharedValue(0);
 	const scrollHandler = useAnimatedScrollHandler({
@@ -49,6 +51,7 @@ export const FadingHeader = ({
 							style={[{ opacity: 0 }, headerStyle]}
 						/>
 					),
+					...options,
 				}}
 			/>
 			<BlurTargetView ref={blurRef} style={{ flex: 1 }}>
