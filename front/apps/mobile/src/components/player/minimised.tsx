@@ -134,7 +134,6 @@ export const MinimisedPlayer = () => {
 									}
 									normalizedThumbnail={isVideo}
 									variant="center"
-									useBlurhash
 									quality={isVideo ? "medium" : "low"}
 								/>
 							)}

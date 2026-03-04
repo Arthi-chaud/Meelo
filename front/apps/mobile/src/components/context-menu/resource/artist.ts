@@ -20,7 +20,7 @@ export const useArtistContextMenu = (
 		return {
 			header: {
 				illustration: artist?.illustration,
-				illustrationProps: { variant: "circle", useBlurhash: true },
+				illustrationProps: { variant: "circle" },
 				title: artist?.name,
 				subtitle: null,
 			},

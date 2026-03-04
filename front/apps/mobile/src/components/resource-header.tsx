@@ -83,7 +83,6 @@ export const ResourceHeader = ({
 					{...illustrationProps}
 					quality="medium"
 					variant={circleIllustration ? "circle" : "center"}
-					useBlurhash
 				/>
 			</View>
 			<View style={styles.secondary}>
