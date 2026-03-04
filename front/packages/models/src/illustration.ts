@@ -21,6 +21,7 @@ import type Resource from "./resource";
 
 const Illustration = yup
 	.object({
+		id: yup.number().required(),
 		// URL to the illustration
 		url: yup.string().required(),
 		/**

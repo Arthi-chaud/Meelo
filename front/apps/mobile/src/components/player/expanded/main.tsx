@@ -117,7 +117,10 @@ const ProgressControls = () => {
 					)}
 				/>
 			</View>
-			<Slider sliderColor={accentColor} trackColor={`${accentColor}30`} />
+			<Slider
+				sliderColor={accentColor}
+				trackColor={accentColor ? `${accentColor}30` : undefined}
+			/>
 		</View>
 	);
 };
