@@ -58,14 +58,13 @@ You'll need a 'clean' collection: either with embedded metadata or standard file
 > [!NOTE]  
 > Meelo is shipped though Docker images. You might need to know a bit about Regexes.
 
-## :iphone: Android App
+## :iphone: Mobile App
 
-Meelo now has an Android app :tada:. However, it is still in alpha and lacks some important features.
+Meelo now has an Android app :tada:. You can download the latest stable APK on the release page. 
 
-Go [here](https://github.com/Arthi-chaud/Meelo/discussions/1130) for more information.
-You can find the known issues and the list of missing/upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22)
+You can find the known issues and the list of missing/upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22).
 
-While the app is in alpha, we recommend using the web app. With its responsive design, it works perfectly on mobile devices.
+🤫 An iOS app will be available through TestFlight soon. It lacks important features and still has many bugs. Check out [this issue](https://github.com/Arthi-chaud/Meelo/issues/1229) for more info.
 
 ## :camera: Screenshots
 
