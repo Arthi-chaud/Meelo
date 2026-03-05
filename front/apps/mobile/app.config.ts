@@ -1,8 +1,8 @@
-import type { ExpoConfig } from "expo/config";
+import type { ConfigContext, ExpoConfig } from "expo/config";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 
-module.exports = (_: ExpoConfig): ExpoConfig => ({
+export default (_: ConfigContext): ExpoConfig => ({
 	name: IS_DEV ? "Meelo (Dev)" : "Meelo",
 	slug: "meelo",
 	version: "1.0.0",
@@ -75,6 +75,7 @@ module.exports = (_: ExpoConfig): ExpoConfig => ({
 				],
 			},
 		],
+		// Comment me out when building ios
 		"./plugins/withMediaServicePlugin.ts",
 		[
 			// https://docs.thewidlarzgroup.com/react-native-video/docs/v7/configuration/expo-plugin
