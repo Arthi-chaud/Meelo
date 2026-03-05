@@ -65,6 +65,7 @@ export const Header = ({
 						<Illustration
 							illustration={release?.illustration}
 							quality="original"
+							variant="center"
 							dropShadow
 						/>
 					</View>
@@ -199,7 +200,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		},
 	},
 	headerText: {
-		textAlign: "center",
+		textAlign: { xs: "center", [HalfHorizontalLayout]: "left" },
 		maxWidth: breakpoints.sm,
 	},
 	headerArtistName: {
@@ -209,6 +210,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 	},
 	headerExtensionAndStat: {
 		gap: theme.gap(0.5),
+		alignItems: { xs: "center", [HalfHorizontalLayout]: "flex-start" },
 	},
 	headerAlbumStat: {
 		flexDirection: "row",
