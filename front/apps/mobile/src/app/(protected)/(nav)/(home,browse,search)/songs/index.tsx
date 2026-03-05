@@ -211,7 +211,7 @@ export default function SongBrowseView() {
 						song={songItem}
 						parentArtistId={artist?.id ?? song?.artistId}
 						onPress={() => onItemPress(idx, songs)}
-						subtitle={subtitle(song)}
+						subtitle={subtitle(songItem)}
 						illustrationProps={{}}
 					/>
 				)}
