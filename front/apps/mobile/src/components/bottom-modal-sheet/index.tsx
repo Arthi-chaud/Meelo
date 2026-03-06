@@ -13,6 +13,7 @@ import {
 	useRef,
 } from "react";
 import { View } from "react-native";
+import { ReduceMotion } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BlurView } from "../blur-view";
 
@@ -57,6 +58,7 @@ export const Modal = ({
 		<BottomSheetModal
 			ref={modalRef}
 			enableDynamicSizing
+			overrideReduceMotion={ReduceMotion.Never}
 			// Note: When a ctx menu is open from the expanded player, we don't want to 'switch'
 			stackBehavior="push"
 			handleIndicatorStyle={styles.handleIndicator}
