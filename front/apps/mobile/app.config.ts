@@ -6,7 +6,6 @@ export default (_: ConfigContext): ExpoConfig => ({
 	name: IS_DEV ? "Meelo (Dev)" : "Meelo",
 	slug: "meelo",
 	version: "1.0.0",
-	icon: "./assets/icon-black.png",
 	scheme: "mobile",
 	userInterfaceStyle: "automatic",
 	android: {
@@ -19,11 +18,7 @@ export default (_: ConfigContext): ExpoConfig => ({
 		],
 	},
 	ios: {
-		icon: {
-			dark: "./assets/icon-black.png",
-			light: "./assets/icon-white.png",
-			tinted: "./assets/icon-white.png",
-		},
+		icon: "./assets/icon.icon",
 		userInterfaceStyle: "automatic",
 		bundleIdentifier: "com.arthichaud.meelo",
 		supportsTablet: true,
