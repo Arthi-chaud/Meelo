@@ -9,7 +9,8 @@
 			"**",
 			"!**/.next/**",
 			"!**/translations/**/*.json",
-			"!**/android/**"
+			"!**/android/**",
+			"!**/assets/**"
 		]
 	},
 	"linter": {
