@@ -4,11 +4,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ComponentProps, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import {
-	StyleSheet,
-	useUnistyles,
-	withUnistyles,
-} from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getIllustration } from "@/api/queries";
 import { skipTrackAtom } from "@/state/player";
