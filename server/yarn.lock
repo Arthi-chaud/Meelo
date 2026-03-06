@@ -3158,9 +3158,9 @@ __metadata:
   linkType: hard
 
 "@types/damerau-levenshtein@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@types/damerau-levenshtein@npm:1.0.0"
-  checksum: 10c0/9c8f347d69eada1503824905b46e9d66c2a12c53f0c49c60d195e21f2705b727497d486e12ec594d404dc798003c13d98f7281a9d6e728938e6fed01330dafe8
+  version: 1.0.2
+  resolution: "@types/damerau-levenshtein@npm:1.0.2"
+  checksum: 10c0/af4cab10a75324faebe3ac2f939b258fb2085e9f4228b4caedf539e7d2b60cf7610474df595e2d35a7e3a5577914c6dd5091721fb398a03a3418bbde04c304e1
   languageName: node
   linkType: hard
 
