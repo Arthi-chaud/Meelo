@@ -3142,11 +3142,11 @@ __metadata:
   linkType: hard
 
 "@types/cookie-parser@npm:^1.4.3":
-  version: 1.4.3
-  resolution: "@types/cookie-parser@npm:1.4.3"
-  dependencies:
-    "@types/express": "npm:*"
-  checksum: 10c0/7e4d92d48e05c8310e5fa0d3a386be626b68ef75b62dbaed2dedaa140b10dabbea2efe4c8e1f6b902e337f5f0fd3e17a788b0f357eccefac44eaaf2dcfbd46af
+  version: 1.4.10
+  resolution: "@types/cookie-parser@npm:1.4.10"
+  peerDependencies:
+    "@types/express": "*"
+  checksum: 10c0/5e2c0e0fd9cb47eae5bd7cd73768b36b7711594cbd07969a03f015118d57b832291726d9cb7bd350c9e3a1707e5e2f082e7e0635e8ce335474897ab940d55771
   languageName: node
   linkType: hard
 
