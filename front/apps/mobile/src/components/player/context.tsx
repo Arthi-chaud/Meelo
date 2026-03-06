@@ -124,6 +124,8 @@ export const PlayerContext = () => {
 		if (playerRef.current === null) {
 			mkSource(queryClient, currentTrack).then((source) => {
 				playerRef.current = new VideoPlayer(source);
+				playerRef.current.mixAudioMode = "doNotMix";
+				playerRef.current.ignoreSilentSwitchMode = "ignore";
 				playerRef.current.showNotificationControls = true;
 				playerRef.current.playInBackground = true;
 				playerRef.current.addEventListener(
@@ -276,7 +278,7 @@ const _mkSource = (
 		title: track.name,
 		artist: formatArtists(artist, featuring),
 		imageUri: track.illustration
-			? api.getIllustrationURL(track.illustration.url, "high", true)
+			? api.getIllustrationURL(track.illustration.url, "original", true)
 			: undefined,
 	},
 });
