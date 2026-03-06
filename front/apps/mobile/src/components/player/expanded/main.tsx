@@ -4,7 +4,11 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ComponentProps, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
-import { StyleSheet, useUnistyles } from "react-native-unistyles";
+import {
+	StyleSheet,
+	useUnistyles,
+	withUnistyles,
+} from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getIllustration } from "@/api/queries";
 import { skipTrackAtom } from "@/state/player";
@@ -99,6 +103,7 @@ const ProgressControls = () => {
 	const accentColor = useAccentColor(currentTrack?.track.illustration);
 	const progress = useAtomValue(progressAtom);
 	const duration = useAtomValue(durationAtom);
+	const { theme } = useUnistyles();
 
 	//Note: the progress/duration atoms are not cleared correctly when there is not track playing
 	return (
@@ -119,7 +124,9 @@ const ProgressControls = () => {
 			</View>
 			<Slider
 				sliderColor={accentColor}
-				trackColor={accentColor ? `${accentColor}30` : undefined}
+				trackColor={
+					accentColor ? `${accentColor}30` : theme.colors.skeleton
+				}
 			/>
 		</View>
 	);
