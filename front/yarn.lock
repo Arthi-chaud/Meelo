@@ -5147,9 +5147,9 @@ __metadata:
   linkType: hard
 
 "@types/accept-language-parser@npm:^1.5.3":
-  version: 1.5.3
-  resolution: "@types/accept-language-parser@npm:1.5.3"
-  checksum: 10c0/9e86065c84564ce469496b5f1329b72feddcd52d7d106772febd74284d7c9b7e07759b778af76e32e3f92e90c3a6a7308f2738ca145ae1c85574f5c30ba328c2
+  version: 1.5.8
+  resolution: "@types/accept-language-parser@npm:1.5.8"
+  checksum: 10c0/acd6909999f8761d812e2eb8878bcb22c270937560766f6ba404f98e9b2c76144b4c556c76f78c0b0387ff1c2bef8665dae69c617d6ef87cd32c957f53e8b446
   languageName: node
   linkType: hard
 
