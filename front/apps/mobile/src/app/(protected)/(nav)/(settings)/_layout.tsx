@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
 import { useScreenOptions } from "~/utils/screen-options";
 
 export default function Layout() {
@@ -13,7 +12,7 @@ export default function Layout() {
 				options={{
 					headerTitle: t("nav.settings"),
 					// TODO IDK why we canGoBack when we are at the index
-					headerLeft: () => <View />,
+					headerLeft: () => null,
 				}}
 			/>
 		</Stack>

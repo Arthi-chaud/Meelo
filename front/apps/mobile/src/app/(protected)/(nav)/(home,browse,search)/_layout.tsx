@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, View } from "react-native";
+import { Platform } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { Icon as MeeloIcon } from "~/components/meelo";
 import { useScreenOptions } from "~/utils/screen-options";
@@ -45,7 +45,7 @@ export default function Layout({ segment }: { segment: string }) {
 						headerLeft:
 							Platform.OS !== "ios"
 								? () => <MeeloIcon style={styles.icon} />
-								: undefined,
+								: () => null,
 					},
 				};
 			}
@@ -54,7 +54,7 @@ export default function Layout({ segment }: { segment: string }) {
 					options: {
 						headerTitle: t("nav.browse"),
 						// TODO IDK why we canGoBack when we are at the browse's index
-						headerLeft: () => <View />,
+						headerLeft: () => null,
 					},
 				};
 			}
@@ -63,7 +63,7 @@ export default function Layout({ segment }: { segment: string }) {
 					options: {
 						headerTitle: t("nav.search"),
 						// TODO IDK why we canGoBack when we are at the browse's index
-						headerLeft: () => <View />,
+						headerLeft: () => null,
 					},
 				};
 			}
