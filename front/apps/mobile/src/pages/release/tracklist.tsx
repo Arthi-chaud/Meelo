@@ -184,7 +184,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	leadingIcon: {
 		color: theme.colors.text.secondary,
-		size: theme.fontSize.rem(1.4),
+		size: theme.fontSize.rem(1.3),
 	},
 	trackVideoIconContainer: {
 		// This override the gap of trackButton
