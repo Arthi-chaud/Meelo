@@ -21,6 +21,7 @@ import { useCallback } from "react";
 import {
 	findNodeHandle,
 	type NativeSyntheticEvent,
+	Platform,
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
 	type TextInputFocusEventData,
@@ -74,7 +75,9 @@ const styles = StyleSheet.create((theme) => ({
 	placeholder: {
 		marginLeft: theme.gap(1),
 		position: "absolute",
-		marginTop: theme.gap(2),
+		// NOTE: BUG: Dirty hack to make sure the placeholder is actually centered on iOS
+		// probably has to do w/ line height
+		marginTop: theme.gap(Platform.OS === "ios" ? 0.75 : 2),
 	},
 	input: {
 		variants: {
