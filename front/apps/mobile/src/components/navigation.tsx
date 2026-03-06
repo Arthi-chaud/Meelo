@@ -1,6 +1,6 @@
 import { useNavigation } from "expo-router";
 import type { RefObject } from "react";
-import { Pressable, type View, type ViewStyle } from "react-native";
+import { Platform, Pressable, type View, type ViewStyle } from "react-native";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BackIcon } from "@/ui/icons";
@@ -34,7 +34,13 @@ export const HeaderBackground = ({
 );
 
 const styles = StyleSheet.create((theme) => ({
-	backButtonContainer: { paddingRight: theme.gap(2), paddingLeft: 0 },
+	backButtonContainer: {
+		// On Android, the title is right next to the back button, so we need spacing between the two
+		// On iOS, the back button is in a LiquidGlass container (and the title isn't inside it), so we dont need that padding.
+		// The padding is to align the icon in the center
+		paddingRight: theme.gap(Platform.OS === "ios" ? 0.25 : 2),
+		paddingLeft: 0,
+	},
 	headerBgContainer: {
 		position: "absolute",
 		height: "100%",

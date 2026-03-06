@@ -21,9 +21,9 @@ export const useScreenOptions = () => {
 		animationTypeForReplace: "pop",
 		freezeOnBlur: true,
 		contentStyle: [styles.screen],
-		// headerStyle: styles.header,
 		headerTitleStyle: styles.headerTitle,
 		headerLeft: () => <BackButton />,
+		headerBackButtonDisplayMode: "minimal",
 		headerTransparent: true,
 		headerTintColor: styles.headerTitle.color,
 	} satisfies ComponentProps<typeof Stack>["screenOptions"];
