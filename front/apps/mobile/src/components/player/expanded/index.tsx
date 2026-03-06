@@ -90,7 +90,10 @@ const Footer = ({
 					] as const
 				).map(([tab, icon]) => (
 					<Pressable
-						onPress={() => onTabChange(tab)}
+						onPress={() => {
+							// Like a toggle
+							onTabChange(tab === selectedTab ? "main" : tab);
+						}}
 						key={tab}
 						disabled={tab === "lyrics" && lyricsTabIsDisabled}
 					>
