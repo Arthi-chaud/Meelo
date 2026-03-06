@@ -1,428 +1,484 @@
 {
 	"actions": {
 		"addToPlaylist": {
-			"label": "Tambah ke Playlist",
-			"modalTitle": "Pilih Playlist"
+			"label": "Tambahkan ke Playlist",
+			"modalTitle": "Pilih playlist"
 		},
 		"album": {
-			"changeType": "Ubah Jenius Album",
-			"goToAlbum": "Ke Album"
+			"changeType": "Ubah Jenis Album",
+			"goToAlbum": "Buka Album"
 		},
-		"archive": "Arsipkan",
+		"archive": "Arsip",
 		"artist": {
-			"seeAlbums": "Tampilkan Album",
-			"seeSongs": "Tampilkan lagu"
+			"seeAlbums": "Lihat Album",
+			"seeSongs": "Lihat Lagu"
 		},
-		"changeIllutration": "Ubah Gambar Ilustrasi",
+		"changeIllutration": "Ubah Ilustrasi",
+		"connectToNewServer": "Hubungkan server Meelo",
 		"create": "Buat",
 		"delete": "Hapus",
 		"deleteFromPlaylist": "Hapus dari Playlist",
 		"deleteUser": {
 			"label": "Hapus Pengguna",
-			"warning": "Kamu akan menghapus pengguna. Tindakan ini tidak dapat dibatalkan."
+			"warning": "Anda akan menghapus pengguna. Tindakan ini tidak dapat dibatalkan."
 		},
 		"download": {
 			"label": "Unduh",
-			"warning": "Dilarang mengunduh materi berhak cipta yang bukan milik Anda. Lanjutkan hanya jika Anda benar-benar memiliki konten aslinya."
+			"warning": "Mengunduh materi berhak cipta yang bukan milik Anda tidak diizinkan. Lanjutkan hanya jika Anda memiliki konten aslinya."
+		},
+		"editExternalLinks": "Ubah Tautan Eksternal",
+		"genre": {
+			"startRadio": "Mulai Radio Genre"
 		},
 		"goBackHome": "Kembali ke Beranda",
-		"goToArtist": "Ke Artis",
-		"goToRelease": "",
-		"goToSettingsPage": "Pergi ke Pengaturan",
+		"goToArtist": "Buka Artis",
+		"goToPlaylist": "Buka Playlist",
+		"goToRelease": "Buka Rilis",
+		"goToSettingsPage": "Buka Pengaturan",
 		"library": {
-			"create": "Buat Koleksi",
-			"delete": "Hapus Koleksi",
-			"deletionWarning": "Kamu akan menghapus koleksi ini. Tindakan ini tidak dapat dibatalkan"
+			"create": "Buat Pustaka",
+			"delete": "Hapus Pustaka",
+			"deletionWarning": "Anda akan menghapus pustaka. Tindakan ini tidak dapat dibatalkan"
 		},
 		"logout": "Keluar",
-		"new": "Buat",
+		"new": "Baru",
 		"playback": {
 			"play": "Putar",
-			"playAfter": "Putar Setelah",
+			"playAfter": "Putar Setelahnya",
 			"playAll": "Putar Semua",
-			"playNext": "Putar Selanjutnya",
+			"playNext": "Putar Berikutnya",
 			"shuffle": "Acak"
 		},
 		"release": {
-			"setAllTracksAsMaster": "Tetapkan Semua Lagu sebagai Master"
+			"setAllTracksAsMaster": "Tetapkan semua trek sebagai Master"
 		},
+		"seeArtists": "Buka Artis",
 		"setAsMaster": "Tetapkan sebagai Master",
 		"share": "Bagikan",
 		"song": {
 			"changeType": "Ubah Jenis Lagu",
 			"mergeSong": {
 				"label": "Gabungkan Lagu",
-				"modalTitle": "Pilih Lagu",
-				"warningBeforeMerging": "Semua track akan dipindahkan ke lagu yang dipilih, dan lagu lama akan dihapus. File Anda tidak akan diubah atau dihapus"
+				"modalTitle": "Pilih lagu",
+				"warningBeforeMerging": "Semua trek akan dipindahkan ke lagu yang dipilih, dan lagu lama akan dihapus. File Anda tidak akan dimodifikasi atau dihapus"
 			},
 			"seeLyrics": "Lihat Lirik",
 			"seeOtherVersions": "Lihat Versi Lain",
-			"seeRelatedTracks": "Lihat Lagu Terkait",
-			"seeRelatedVideos": "",
-			"seeSongInfo": "Informasi Lagu"
+			"seeRelatedTracks": "Lihat Trek Terkait",
+			"seeRelatedVideos": "Lihat Video Terkait",
+			"seeSongInfo": "Info Lagu"
 		},
+		"switchServer": "Ganti Server",
 		"track": {
-			"reassignTrack": "",
-			"seeTrackInfo": ""
+			"reassignTrack": "Pindahkan Trek",
+			"seeTrackInfo": "Info Trek"
 		},
-		"update": "",
+		"update": "Perbarui",
 		"video": {
-			"changeType": ""
+			"changeType": "Ubah Jenis Video"
 		},
-		"warningModalTitle": ""
+		"warningModalTitle": "Peringatan"
 	},
 	"album": {
-		"bonusTracks": "",
-		"onThisAlbum": "",
-		"otherAlbumReleases": "",
-		"relatedAlbums": "",
-		"showAllTracks": "",
-		"showOnlyExclusiveTracks": ""
+		"bonusTracks": "Trek Bonus",
+		"onThisAlbum": "Artis Unggulan",
+		"otherAlbumReleases": "Rilis lain dari album yang sama",
+		"relatedAlbums": "Album Terkait",
+		"showAllTracks": "Tampilkan semua trek",
+		"showOnlyExclusiveTracks": "Tampilkan hanya trek eksklusif"
 	},
 	"albumType": {
-		"compilation": "",
-		"compilation_plural": "",
-		"ep": "",
-		"ep_plural": "",
-		"liveRecording": "",
-		"liveRecording_plural": "",
-		"remixAlbum": "",
-		"remixAlbum_plural": "",
-		"single": "",
-		"single_plural": "",
-		"soundtrack": "",
-		"soundtrack_plural": "",
-		"studioRecording": "",
-		"studioRecording_plural": "",
-		"videoAlbum": "",
-		"videoAlbum_plural": ""
+		"compilation": "Kompilasi",
+		"compilation_plural": "Kompilasi",
+		"ep": "EP",
+		"ep_plural": "EP",
+		"liveRecording": "Rekaman Live",
+		"liveRecording_plural": "Album Live",
+		"remixAlbum": "Album Remix",
+		"remixAlbum_plural": "Remix",
+		"single": "Single",
+		"single_plural": "Single",
+		"soundtrack": "Soundtrack",
+		"soundtrack_plural": "Album Soundtrack",
+		"studioRecording": "Rekaman Studio",
+		"studioRecording_plural": "Album Studio",
+		"videoAlbum": "Album Video",
+		"videoAlbum_plural": "Album Video"
 	},
 	"artist": {
-		"appearsOn": "",
-		"rareSongs": "",
-		"topSongs": "",
-		"topVideos": ""
+		"appearsOn": "Tampil Di",
+		"rareSongs": "Lagu Langka",
+		"topSongs": "Lagu Teratas",
+		"topVideos": "Video Teratas"
 	},
 	"auth": {
-		"loginButton": "",
-		"signin": "",
-		"signup": "",
-		"signupButton": ""
+		"connectButton": "Hubungkan ke server",
+		"loginButton": "Masuk",
+		"signin": "Sudah punya akun? Masuk",
+		"signup": "Baru di sini? Daftar",
+		"signupButton": "Daftar"
 	},
 	"browsing": {
 		"controls": {
-			"asc": "",
-			"backToTop": "",
-			"changeLayout": "",
-			"desc": "",
+			"asc": "Naik",
+			"backToTop": "Kembali ke Atas",
+			"changeLayout": "Ubah tata letak",
+			"desc": "Turun",
 			"filter": {
-				"allLibraries": "",
-				"allTypes": "",
-				"nTypes": ""
+				"allLibraries": "Semua Pustaka",
+				"allTypes": "Semua Jenis",
+				"header": "Filter",
+				"nTypes": "{{n}} Jenis"
 			},
-			"groupVersions": "",
-			"order": "",
-			"showAllSongs": "",
+			"groupVersions": "Kelompokkan Versi",
+			"order": "Urutan",
+			"showAllSongs": "Tampilkan Semua Versi",
 			"sort": {
-				"addDate": "",
-				"albumCount": "",
-				"artistName": "",
-				"bitrate": "",
-				"bpm": "",
-				"creationDate": "",
-				"discIndex": "",
-				"entryCount": "",
-				"name": "",
-				"registrationDate": "",
-				"releaseDate": "",
-				"releaseName": "",
-				"songCount": "",
-				"totalPlayCount": "",
-				"trackCount": "",
-				"trackIndex": "",
-				"userPlayCount": ""
+				"addDate": "Tanggal Penambahan",
+				"albumCount": "Jumlah Album",
+				"artistName": "Nama Artis",
+				"bitrate": "Bitrate",
+				"bpm": "BPM",
+				"creationDate": "Tanggal Pembuatan",
+				"discIndex": "Indeks Disc",
+				"entryCount": "Jumlah Entri",
+				"name": "Judul",
+				"registrationDate": "Tanggal Pendaftaran",
+				"releaseDate": "Tanggal Rilis",
+				"releaseName": "Nama Rilis",
+				"songCount": "Jumlah Lagu",
+				"totalPlayCount": "Total Jumlah Putar",
+				"trackCount": "Jumlah Trek",
+				"trackIndex": "Indeks Trek",
+				"userPlayCount": "Jumlah Putar Pribadi"
 			},
-			"sortBy": ""
+			"sortBy": "Urutkan Berdasarkan"
 		},
 		"sections": {
-			"about": "",
-			"extras": "",
-			"featuredOnPlaylists": "",
-			"livePerformances": "",
-			"musicVideos": ""
+			"about": "Tentang",
+			"extras": "Ekstra",
+			"featuredOnPlaylists": "Tampil Di",
+			"livePerformances": "Penampilan Live",
+			"musicVideos": "Video Musik"
 		},
-		"seeAll": ""
+		"seeAll": "Lihat Semua"
 	},
-	"compilationArtistLabel": "",
+	"compilationArtistLabel": "Kompilasi",
 	"emptyState": {
-		"default": "",
-		"home": "",
-		"lyrics": "",
-		"playlist": "",
-		"playlists": ""
+		"default": "Tidak ada yang ditemukan di sini…",
+		"home": "Wah, sunyi sekali di sini…",
+		"lyrics": "Tidak ada lirik untuk dinyanyikan :(",
+		"playlist": "Belum ada lagu dalam playlist ini!",
+		"playlists": "Belum ada playlist!"
 	},
 	"errors": {
-		"errorOccured": "",
-		"oops": "",
-		"pageNotFound": ""
+		"errorOccured": "Ups… Terjadi kesalahan",
+		"goBack": "Kembali",
+		"oops": "Ups",
+		"pageNotFound": "Ups… Halaman tidak ditemukan",
+		"tryAgain": "Coba Lagi"
 	},
 	"fileInfo": {
-		"bitRate": "",
-		"bpm": "",
-		"duration": "",
-		"extension": "",
-		"name": "",
-		"path": "",
-		"registrationDate": "",
-		"type": "",
-		"unknown": ""
+		"bitRate": "Bit Rate",
+		"bpm": "BPM",
+		"duration": "Durasi",
+		"extension": "Ekstensi",
+		"name": "Nama",
+		"path": "Jalur",
+		"registrationDate": "Tanggal Pendaftaran",
+		"type": "Jenis",
+		"unknown": "Tidak Diketahui"
 	},
 	"form": {
 		"auth": {
-			"confirmPasswordField": "",
-			"instanceUrl": "",
-			"instanceUrlIsRequired": "",
-			"password": "",
-			"passwordIsRequired": "",
-			"passwordTooShort": "",
-			"passwordsAreDifferent": "",
-			"pleaseConfirm": "",
-			"username": "",
-			"usernameIsRequired": "",
-			"usernameTooShort": ""
+			"confirmPasswordField": "Konfirmasi",
+			"instanceUrl": "URL Instans",
+			"instanceUrlIsRequired": "URL Instans tidak ada",
+			"password": "Kata Sandi",
+			"passwordIsRequired": "Kata sandi wajib diisi",
+			"passwordTooShort": "Kata sandi terlalu pendek",
+			"passwordsAreDifferent": "Kata sandi berbeda",
+			"pleaseConfirm": "Harap konfirmasi kata sandi",
+			"username": "Nama Pengguna",
+			"usernameIsRequired": "Nama pengguna wajib diisi",
+			"usernameTooShort": "Nama pengguna terlalu pendek"
 		},
-		"cancel": "",
-		"confirm": "",
-		"done": "",
-		"edit": "",
+		"cancel": "Batal",
+		"confirm": "Konfirmasi",
+		"done": "Selesai",
+		"edit": "Ubah",
+		"editExternalLinks": {
+			"addLink": "Tambah Tautan",
+			"saveLinks": "Simpan Tautan"
+		},
+		"illustration": {
+			"url": "Masukkan URL ilustrasi baru"
+		},
 		"library": {
-			"nameIsRequired": "",
-			"nameOfLibrary": "",
-			"pathIsRequired": "",
-			"pathOfLibrary": ""
+			"nameIsRequired": "Nama wajib diisi",
+			"nameOfLibrary": "Nama pustaka",
+			"pathIsRequired": "Jalur wajib diisi",
+			"pathOfLibrary": "Jalur pustaka"
 		},
 		"playlist": {
-			"allowPlaylistChanges": "",
-			"playlistIsPublic": ""
+			"allowPlaylistChanges": "Izinkan pengguna lain memperbarui playlist ini",
+			"playlistIsPublic": "Izinkan pengguna lain melihat playlist ini",
+			"reorder": "Susun Ulang"
 		},
 		"scrobblers": {
 			"listenbrainz": {
-				"instanceUrlHelperText": "",
-				"instanceUrlLabel": "",
-				"tokenHelperText": "",
-				"tokenIsRequired": "",
-				"tokenLabel": ""
+				"instanceUrlHelperText": "Biarkan kosong jika Anda menggunakan instans publik (https://api.listenbrainz.org)",
+				"instanceUrlLabel": "URL API ListenBrainz",
+				"tokenHelperText": "Dapatkan token pengguna Anda di sini: [https://listenbrainz.org/settings/](https://listenbrainz.org/settings/)",
+				"tokenIsRequired": "Token wajib diisi",
+				"tokenLabel": "Masukkan Token Pengguna ListenBrainz"
 			}
 		}
 	},
 	"home": {
-		"featuredAlbums": "",
-		"latestAlbums": "",
-		"mostPlayedSongs": "",
-		"newlyAddedAlbums": "",
-		"newlyAddedArtists": "",
-		"newlyAddedReleases": "",
-		"topGenres": "",
-		"topLabels": ""
+		"featuredAlbums": "Album Unggulan",
+		"latestAlbums": "Album Terbaru",
+		"mostPlayedSongs": "Lagu Paling Banyak Diputar",
+		"newlyAddedAlbums": "Album Baru Ditambahkan",
+		"newlyAddedArtists": "Artis Baru Ditambahkan",
+		"newlyAddedReleases": "Rilis Baru Ditambahkan",
+		"topGenres": "Genre Teratas",
+		"topLabels": "Label Teratas"
 	},
 	"keyboardBindings": {
-		"closePlayer": "",
-		"goToSearchPage": "",
-		"goToSettingsPage": "",
-		"modalTitle": "",
-		"openClosePlayer": "",
-		"openModalShortcutDescription": "",
-		"playPauseWhenExpanded": ""
+		"closePlayer": "Tutup Pemutar",
+		"goToSearchPage": "Buka halaman Pencarian",
+		"goToSettingsPage": "Buka Pengaturan",
+		"modalTitle": "Pintasan Keyboard",
+		"openClosePlayer": "Buka / Tutup Pemutar",
+		"openModalShortcutDescription": "Buka / Tutup modal ini",
+		"playPauseWhenExpanded": "Putar / Jeda (Saat pemutar terbuka)"
 	},
 	"misc": {
-		"loading": "",
-		"no": "",
-		"yes": ""
+		"loading": "Memuat",
+		"no": "Tidak",
+		"yes": "Ya"
 	},
 	"models": {
-		"album": "",
-		"album_plural": "",
-		"artist": "",
-		"artist_plural": "",
-		"disc": "",
-		"externalLink_plural": "",
-		"genre_plural": "",
-		"library_plural": "",
-		"lyrics": "",
-		"playlist": "",
-		"playlist_plural": "",
-		"song": "",
-		"song_plural": "",
-		"track_plural": "",
-		"user_plural": "",
-		"versions": "",
-		"video": "",
-		"video_plural": ""
+		"album": "Album",
+		"album_plural": "Album",
+		"artist": "Artis",
+		"artist_plural": "Artis",
+		"disc": "Disc",
+		"externalLink_plural": "Tautan Eksternal",
+		"genre": "Genre",
+		"genre_plural": "Genre",
+		"label": "Label Rekaman",
+		"library_plural": "Pustaka",
+		"lyrics": "Lirik",
+		"playlist": "Playlist",
+		"playlist_plural": "Playlist",
+		"song": "Lagu",
+		"song_plural": "Lagu",
+		"track_plural": "Trek",
+		"user_plural": "Pengguna",
+		"versions": "Versi",
+		"video": "Video",
+		"video_plural": "Video"
 	},
 	"nav": {
-		"browse": "",
-		"compilations": "",
-		"home": "",
-		"more": "",
-		"musicVideos": "",
-		"search": "",
-		"settings": ""
+		"browse": "Jelajahi",
+		"compilations": "Kompilasi",
+		"home": "Beranda",
+		"more": "Lainnya",
+		"musicVideos": "Video Musik",
+		"search": "Cari",
+		"settings": "Pengaturan"
 	},
 	"player": {
-		"loadNextSongs": "",
-		"saveQueueAsPlaylist": ""
+		"loadNextSongs": "Muat lagu berikutnya",
+		"plainLyrics": "Lirik Biasa",
+		"saveQueueAsPlaylist": "Simpan antrean sebagai playlist",
+		"stream": {
+			"directStream": "Streaming Langsung",
+			"transcode": "Transkode"
+		},
+		"syncedLyrics": "Lirik Tersinkronisasi"
 	},
 	"search": {
-		"all": ""
+		"all": "Semua"
 	},
 	"settings": {
-		"interface": "",
+		"cache": {
+			"cachedTracks": "Trek Tersimpan di Cache",
+			"clearCache": "Hapus Cache",
+			"header": "Cache",
+			"maxCachedTracks": "Maksimum Trek di Cache",
+			"prefetchCount": "Jumlah Prefetch"
+		},
+		"interface": "Antarmuka",
 		"libraries": {
-			"nameColumn": "",
+			"nameColumn": "Nama",
 			"tasks": {
-				"current": "",
-				"label": "",
-				"none": "",
-				"pending": ""
+				"current": "Saat Ini",
+				"label": "Tugas",
+				"none": "Tidak Ada",
+				"pending": "Tertunda"
 			}
 		},
+		"manageFromWebApp": "Kelola pustaka dan pengguna dari aplikasi web",
 		"ui": {
-			"autoMode": "",
-			"colorScheme": "",
-			"crossfade": "",
+			"account": {
+				"changePassword": "Ubah Kata Sandi",
+				"header": "Akun"
+			},
+			"autoMode": "Mode Otomatis",
+			"colorScheme": "Tema",
+			"crossfade": "Crossfade",
 			"external": {
-				"encounteredABug": "",
-				"enjoyingTheProject": "",
-				"openAnIssue": "",
-				"readTheDoc": "",
-				"starOnGithub": ""
+				"encounteredABug": "Menemukan bug?",
+				"enjoyingTheProject": "Menikmati proyek ini?",
+				"openAnIssue": "Buka isu di GitHub!",
+				"readTheDoc": "Baca dokumentasi pengguna",
+				"starOnGithub": "Beri bintang Meelo di GitHub!"
 			},
-			"keyboardBindings": "",
+			"keyboardBindings": "Pintasan Keyboard",
 			"lang": {
-				"de": "",
-				"en": "",
-				"fr": "",
-				"id": "",
-				"it": "",
-				"pt_br": "",
-				"ru": ""
+				"cs": "Ceko",
+				"da": "Denmark",
+				"de": "Jerman",
+				"en": "Inggris",
+				"fr": "Prancis",
+				"id": "Indonesia",
+				"it": "Italia",
+				"pt": "Portugis",
+				"pt_br": "Portugis (Brasil)",
+				"ru": "Rusia",
+				"sk": "Slovak",
+				"zh_Hans": "Tionghoa (Sederhana)",
+				"zh_Hant": "Tionghoa (Tradisional)"
 			},
-			"language": "",
-			"notifications": "",
-			"notifyOnTrackChange": "",
-			"openKeyboarBindingsModalByTypingQuestionMark": "",
-			"permissions": "",
-			"playback": "",
-			"project": "",
+			"language": "Bahasa",
+			"notifications": "Notifikasi",
+			"notifyOnTrackChange": "Beri Tahu saat Trek Berganti",
+			"openKeyboarBindingsModalByTypingQuestionMark": "Akses daftar Pintasan Keyboard dengan mengetik '?'",
+			"permissions": "Izin",
+			"playback": "Pemutaran",
+			"project": "Proyek",
 			"scrobblers": {
-				"connect_scrobblers": "",
-				"header": "",
-				"no_scrobblers_enabled": ""
+				"connect_scrobblers": "Hubungkan Scrobbler",
+				"header": "Scrobbler",
+				"no_scrobblers_enabled": "Tidak ada layanan scrobbling yang tersedia"
 			},
-			"useDarkTheme": "",
-			"useSystemLanguage": "",
-			"useSystemTheme": "",
-			"versions": ""
+			"useDarkTheme": "Gunakan Tema Gelap",
+			"useSystemLanguage": "Gunakan Bahasa Sistem",
+			"useSystemTheme": "Gunakan Tema Sistem",
+			"versions": "Versi"
 		},
 		"users": {
-			"admin": "",
-			"enabled": "",
-			"nameColumn": "",
-			"you": ""
+			"admin": "Admin",
+			"enabled": "Diaktifkan",
+			"nameColumn": "Nama",
+			"you": "Anda"
 		}
 	},
 	"song": {
-		"infoTab": "",
-		"songType": ""
+		"infoTab": "Info",
+		"songType": "Jenis Lagu"
 	},
 	"songType": {
-		"acappella": "",
-		"acoustic": "",
-		"clean": "",
-		"demo": "",
-		"edit": "",
-		"instrumental": "",
-		"live": "",
-		"medley": "",
-		"nonMusic": "",
-		"original": "",
-		"remix": "",
-		"unknown": ""
+		"acappella": "A Cappella",
+		"acoustic": "Akustik",
+		"clean": "Bersih",
+		"demo": "Demo",
+		"edit": "Ubah",
+		"instrumental": "Instrumental",
+		"live": "Live",
+		"medley": "Medley/Megamix",
+		"nonMusic": "Non-Musik",
+		"original": "Orisinal",
+		"remix": "Remix",
+		"unknown": "Tidak Diketahui"
 	},
 	"tasks": {
-		"clean": "",
-		"cleanLibraries": "",
-		"refresh": "",
-		"refreshMetadata": "",
+		"clean": "Bersihkan",
+		"cleanLibraries": "Bersihkan Pustaka",
+		"refresh": "Segarkan",
+		"refreshExternalMetadata": "Segarkan Metadata Eksternal",
+		"refreshLocalMetadata": "Segarkan Metadata Lokal",
+		"refreshMetadata": "Segarkan Metadata",
 		"refreshMetadataForm": {
-			"forceLabel": ""
+			"forceLabel": "Paksa segarkan meskipun file tidak berubah",
+			"reuseLabel": "Gunakan ulang sumber yang diketahui"
 		},
-		"scan": "",
-		"scanLibraries": ""
+		"scan": "Pindai",
+		"scanLibraries": "Pindai Pustaka"
 	},
 	"toasts": {
 		"auth": {
-			"accountCreated": ""
+			"accountCreated": "Selamat! Akun Meelo Anda telah dibuat. Anda kini harus menunggu admin mengaktifkan akun Anda",
+			"serverSwitchSuccessful": "Berhasil berpindah server",
+			"signinFailed": "Tidak dapat terhubung ke server"
 		},
-		"leaveWillStopPlaybackAlert": "",
+		"clearCache": {
+			"error": "Gagal menghapus cache",
+			"success": "Cache berhasil dihapus"
+		},
+		"leaveWillStopPlaybackAlert": "Meninggalkan situs web akan menghentikan pemutaran.",
 		"library": {
-			"created": "",
-			"creationFail": "",
-			"deleted": "",
-			"deletionFail": "",
-			"deletionRunning": "",
-			"loadFail": "",
-			"updated": ""
+			"created": "Pustaka berhasil dibuat",
+			"creationFail": "Pembuatan pustaka gagal",
+			"deleted": "Pustaka berhasil dihapus",
+			"deletionFail": "Penghapusan pustaka gagal",
+			"deletionRunning": "Menghapus pustaka…",
+			"loadFail": "Pustaka tidak dapat dimuat",
+			"updated": "Pustaka berhasil diperbarui"
 		},
-		"linkCopied": "",
+		"linkCopied": "Tautan disalin ke clipboard",
 		"player": {
-			"networkError": "",
-			"playbackError": ""
+			"networkError": "Sepertinya ada beberapa masalah jaringan…",
+			"playbackError": "Format trek tidak didukung oleh browser ini. Melewati…"
 		},
 		"playlist": {
-			"itemDeletionSuccess": "",
-			"reorderFail": "",
-			"reorderSuccess": ""
+			"addedToPlaylist": "Berhasil ditambahkan ke playlist!",
+			"itemDeletionSuccess": "Penghapusan Berhasil",
+			"reorderFail": "Pengurutan Ulang Playlist Gagal",
+			"reorderSuccess": "Playlist Berhasil Diurutkan Ulang!"
 		},
 		"refreshMetadata": {
-			"failed": "",
-			"started": ""
+			"failed": "Ups… Penyegaran Metadata Gagal",
+			"started": "Menyegarkan Metadata… (Anda mungkin perlu memuat ulang halaman)"
 		},
-		"releaseSetAsMaster": "",
+		"releaseSetAsMaster": "Rilis ditetapkan sebagai master",
 		"scrobblers": {
-			"linking": "",
-			"linkingListenBrainzFailed": "",
-			"linkingSuccessful": "",
-			"unlinking": "",
-			"unlinkingFailed": "",
-			"unlinkingSuccessful": ""
+			"linking": "Menghubungkan akun...",
+			"linkingListenBrainzFailed": "Tidak dapat menghubungkan Akun ListenBrainz",
+			"linkingSuccessful": "ListenBrainz berhasil dihubungkan",
+			"unlinking": "Memutus tautan akun...",
+			"unlinkingFailed": "Tidak dapat memutus tautan Scrobbler",
+			"unlinkingSuccessful": "Scrobbler berhasil diputus tautannya"
 		},
-		"trackSetAsMaster": "",
-		"tracksUpdated": "",
+		"trackSetAsMaster": "Trek ditetapkan sebagai Master",
+		"tracksUpdated": "Trek berhasil diperbarui",
 		"users": {
-			"deleted": "",
-			"deletionFail": "",
-			"nowAdmin": "",
-			"nowDisabled": "",
-			"nowEnabled": "",
-			"nowNotAdmin": "",
-			"updateFail": ""
+			"deleted": "Pengguna berhasil dihapus",
+			"deletionFail": "Penghapusan pengguna gagal",
+			"nowAdmin": "Pengguna kini menjadi admin dan dapat menjalankan tugas administratif",
+			"nowDisabled": "Pengguna kini dinonaktifkan",
+			"nowEnabled": "Pengguna kini diaktifkan",
+			"nowNotAdmin": "Pengguna bukan lagi admin",
+			"updateFail": "Pembaruan pengguna gagal"
 		}
 	},
 	"track": {
-		"bonusTrack": "",
-		"mixed": "",
-		"remastered": ""
+		"bonusTrack": "Trek Bonus",
+		"mixed": "Campuran",
+		"remastered": "Remaster"
 	},
 	"videoType": {
-		"advert": "",
-		"behindTheScenes": "",
-		"documentary": "",
-		"interview": "",
-		"live": "",
-		"lyricsVideo": "",
-		"musicVideo": "",
-		"other": "",
-		"photoGallery": ""
+		"advert": "Iklan",
+		"behindTheScenes": "Di Balik Layar",
+		"documentary": "Dokumenter",
+		"interview": "Wawancara",
+		"live": "Live",
+		"lyricsVideo": "Video Lirik",
+		"musicVideo": "Video Musik",
+		"other": "Lainnya",
+		"photoGallery": "Galeri Foto"
 	}
 }
