@@ -26,6 +26,7 @@ import { useAccentColor } from "~/hooks/accent-color";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { animations } from "~/theme";
+import { BlurView } from "../blur-view";
 import { videoPlayerAtom } from "./context";
 import { expandPlayerAtom } from "./expanded/state";
 import { getTrackForContextMenu } from "./queries";
@@ -39,7 +40,8 @@ import {
 	rewindTrackAtom,
 } from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
-export const MinimisedPlayer = () => {
+
+export const MinimisedPlayer = ({ blurTarget }: { blurTarget: any }) => {
 	const expandPlayer = useSetAtom(expandPlayerAtom);
 	const queryClient = useQueryClient();
 	const skipTrack = useSetAtom(skipTrackAtom);
@@ -114,61 +116,70 @@ export const MinimisedPlayer = () => {
 	styles.useVariants({ loading: isLoading });
 	return (
 		<Animated.View style={[styles.root, pressStyle]}>
-			<ColorBackground />
-			<View style={styles.surface}>
-				<GestureDetector gesture={gesture}>
-					<View style={styles.infos}>
-						<View style={styles.illustration}>
-							{currentTrack?.track.type === "Video" && player ? (
-								<View style={styles.videoContainer}>
-									<VideoView
-										player={player}
-										resizeMode="cover"
-										style={styles.video}
+			<BlurView blurTarget={blurTarget} style={{ flex: 1 }}>
+				<ColorBackground />
+				<View style={styles.surface}>
+					<GestureDetector gesture={gesture}>
+						<View style={styles.infos}>
+							<View style={styles.illustration}>
+								{currentTrack?.track.type === "Video" &&
+								player ? (
+									<View style={styles.videoContainer}>
+										<VideoView
+											player={player}
+											resizeMode="cover"
+											style={styles.video}
+										/>
+									</View>
+								) : (
+									<Illustration
+										illustration={
+											currentTrack?.track.illustration
+										}
+										normalizedThumbnail={isVideo}
+										variant="center"
+										quality={isVideo ? "medium" : "low"}
 									/>
-								</View>
-							) : (
-								<Illustration
-									illustration={
-										currentTrack?.track.illustration
-									}
-									normalizedThumbnail={isVideo}
-									variant="center"
-									quality={isVideo ? "medium" : "low"}
-								/>
-							)}
-						</View>
+								)}
+							</View>
 
-						<View style={styles.text}>
-							<LoadableText
-								content={currentTrack?.track.name}
-								numberOfLines={1}
-								variant="h6"
-								skeletonWidth={15}
-							/>
-							<LoadableText
-								content={formattedArtistName}
-								numberOfLines={1}
-								variant="body"
-								skeletonWidth={15}
-							/>
+							<View style={styles.text}>
+								<LoadableText
+									content={currentTrack?.track.name}
+									numberOfLines={1}
+									variant="h6"
+									skeletonWidth={15}
+								/>
+								<LoadableText
+									content={formattedArtistName}
+									numberOfLines={1}
+									variant="body"
+									skeletonWidth={15}
+								/>
+							</View>
 						</View>
+					</GestureDetector>
+					<View style={styles.controls}>
+						<Pressable
+							onPress={rewindTrack}
+							style={styles.rewindButton}
+						>
+							<Icon
+								icon={RewindIcon}
+								style={styles.controlButton}
+							/>
+						</Pressable>
+						<PlayButton />
+						<Pressable onPress={onSkip}>
+							<Icon
+								icon={ForwardIcon}
+								style={styles.controlButton}
+							/>
+						</Pressable>
 					</View>
-				</GestureDetector>
-				<View style={styles.controls}>
-					<Pressable
-						onPress={rewindTrack}
-						style={styles.rewindButton}
-					>
-						<Icon icon={RewindIcon} style={styles.controlButton} />
-					</Pressable>
-					<PlayButton />
-					<Pressable onPress={onSkip}>
-						<Icon icon={ForwardIcon} style={styles.controlButton} />
-					</Pressable>
 				</View>
-			</View>
-			<ProgressBar />
+				<ProgressBar />
+			</BlurView>
 		</Animated.View>
 	);
 };
@@ -227,7 +238,7 @@ const styles = StyleSheet.create((theme) => ({
 		width: "100%",
 		borderRadius: theme.borderRadius,
 		overflow: "hidden",
-		backgroundColor: theme.colors.background,
+		backgroundColor: "transparent",
 		variants: {
 			loading: { true: {}, false: {} },
 		},

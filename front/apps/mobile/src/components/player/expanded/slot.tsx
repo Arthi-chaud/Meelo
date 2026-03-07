@@ -2,13 +2,15 @@ import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
+import { BlurView } from "~/components/blur-view";
 import { ModalBackdrop } from "~/components/bottom-modal-sheet";
 import { ExpandedPlayer } from "~/components/player/expanded";
+import { ColorBackground } from "../utils";
 import { collapsePlayerAtom, playerIsExpandedAtom } from "./state";
 
 export const ExpandedPlayerModalKey = "EXPANDED-PLAYER";
 
-export const ExpandedPlayerSlot = () => {
+export const ExpandedPlayerSlot = ({ blurTarget }: { blurTarget: any }) => {
 	const collapsePlayer = useSetAtom(collapsePlayerAtom);
 	const playerIsExpanded = useAtomValue(playerIsExpandedAtom);
 	const onClose = useCallback(() => collapsePlayer(), [collapsePlayer]);
@@ -27,6 +29,14 @@ export const ExpandedPlayerSlot = () => {
 			handleComponent={null}
 			onDismiss={onClose}
 			backdropComponent={ModalBackdrop}
+			backgroundComponent={() => (
+				<BlurView
+					blurTarget={blurTarget}
+					style={StyleSheet.absoluteFillObject}
+				>
+					<ColorBackground />
+				</BlurView>
+			)}
 		>
 			<UniBottomSheetView style={styles.modal}>
 				<ExpandedPlayer />
@@ -38,9 +48,9 @@ export const ExpandedPlayerSlot = () => {
 const UniBottomSheetView = withUnistyles(BottomSheetView);
 
 // Note: most of this is copy-pasted from modal
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create(() => ({
 	modal: {
 		height: "100%",
-		backgroundColor: theme.colors.background,
+		backgroundColor: "transparent",
 	},
 }));
