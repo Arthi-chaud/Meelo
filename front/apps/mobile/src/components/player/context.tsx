@@ -67,6 +67,7 @@ export const PlayerContext = () => {
 	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
 	const [canUseHLS, setCanUseHLS] = useAtom(_canUseHLSAtom);
 	const { data: settings } = useQuery(getSettings);
+	const isSwitchingTrack = useRef(false);
 
 	const { download } = useDownloadManager();
 
@@ -115,6 +116,7 @@ export const PlayerContext = () => {
 		setMarkedAsPlayed(false);
 		setProgress(0);
 		setRequestedProgress(null);
+		setDuration(null);
 		setIsHLS(false);
 		if (!currentTrack) {
 			playerRef.current?.pause();
@@ -139,7 +141,8 @@ export const PlayerContext = () => {
 						setRequestedProgress(null);
 						if (e.isPlaying) {
 							play();
-						} else {
+							// Only 'pause' if the pause wasn't caused by a track change
+						} else if (!isSwitchingTrack.current) {
 							pause();
 						}
 					},
@@ -174,12 +177,18 @@ export const PlayerContext = () => {
 				setPlayer(playerRef.current);
 			});
 		} else {
-			mkSource(queryClient, currentTrack).then((source) =>
-				playerRef.current?.replaceSourceAsync(source).then(() => {
-					playerRef.current?.play();
-					play();
-				}),
-			);
+			isSwitchingTrack.current = true;
+			playerRef.current!.pause();
+			mkSource(queryClient, currentTrack).then((source) => {
+				playerRef.current
+					?.replaceSourceAsync(source)
+					.then(() => {
+						playerRef.current!.play();
+					})
+					.finally(() => {
+						isSwitchingTrack.current = false;
+					});
+			});
 		}
 	}, [currentTrack]);
 

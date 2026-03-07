@@ -27,6 +27,9 @@ export const Slider = ({ sliderColor, trackColor }: Props) => {
 	const isBuffering = useAtomValue(isBufferingAtom);
 	useEffect(() => {
 		maxValueShared.value = duration ?? 1;
+		if (duration === null) {
+			progressShared.value = 0;
+		}
 		progressShared.value =
 			isBuffering && requestedProgress
 				? requestedProgress
