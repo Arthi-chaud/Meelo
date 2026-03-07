@@ -13,7 +13,6 @@ import { Pressable } from "~/primitives/pressable";
 import { breakpoints } from "~/theme";
 import { getSongWithLyrics } from "../queries";
 import { currentTrackAtom } from "../state";
-import { ColorBackground } from "../utils";
 import { Lyrics } from "./lyrics";
 import { Main } from "./main";
 import { Queue } from "./queue";
@@ -42,7 +41,6 @@ export const ExpandedPlayer = () => {
 			]}
 		>
 			<Handle />
-			<ColorBackground />
 			<View style={styles.content}>
 				<View style={styles.tab}>
 					{tab === "main" && <Main />}
@@ -116,6 +114,7 @@ const Footer = ({
 const styles = StyleSheet.create((theme) => ({
 	root: {
 		flex: 1,
+		backgroundColor: "transparent",
 		width: "100%",
 	},
 	content: {
