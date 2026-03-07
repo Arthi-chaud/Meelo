@@ -211,7 +211,9 @@ export const PlayerContext = () => {
 		mkSource(queryClient, currentTrack, isHLS).then((source) =>
 			playerRef.current?.replaceSourceAsync(source).then(() => {
 				playerRef.current!.play();
-				playerRef.current!.seekTo(timestamp);
+				if (isHLS) {
+					playerRef.current!.seekTo(timestamp);
+				}
 			}),
 		);
 	}, [isHLS]);
