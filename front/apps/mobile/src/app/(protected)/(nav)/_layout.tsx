@@ -141,14 +141,13 @@ export default function ProtectedLayout() {
 			</BlurTargetView>
 			<View style={styles.footer} onLayout={onLayout}>
 				<View style={styles.player}>
-					{/* TODO blur behing player, like iOS */}
 					{showPlayer && (
 						<Animated.View style={playerPresence}>
-							<MinimisedPlayer />
+							<MinimisedPlayer blurTarget={bvTarget} />
 						</Animated.View>
 					)}
 				</View>
-				<ExpandedPlayerSlot />
+				<ExpandedPlayerSlot blurTarget={bvTarget} />
 				<PlayerContext />
 				<BlurView blurTarget={bvTarget} style={styles.tabBar}>
 					<TabTrigger name="(home)" asChild>

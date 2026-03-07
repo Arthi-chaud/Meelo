@@ -1,5 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
+import { View } from "react-native";
 import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
@@ -29,15 +30,26 @@ export const ColorBackground = () => {
 		() => ({ backgroundColor: backgroundColorSV.value }),
 		[firstIllustrationColor],
 	);
-	return <Animated.View style={[styles.background, backgroundStyle]} />;
+	return (
+		<>
+			<Animated.View style={[styles.colorBackground, backgroundStyle]} />
+			<View style={styles.baseBackground} />
+		</>
+	);
 };
 
 const ColorBackgroundOpacity = 0.3;
 
-const styles = StyleSheet.create(() => ({
-	background: {
+const styles = StyleSheet.create((theme) => ({
+	colorBackground: {
 		...StyleSheet.absoluteFillObject,
 		opacity: ColorBackgroundOpacity,
+		zIndex: -1,
+	},
+	baseBackground: {
+		...StyleSheet.absoluteFillObject,
+		backgroundColor: theme.colors.background,
+		opacity: 0.3,
 	},
 }));
 export const useFormattedArtistName = () => {
