@@ -322,7 +322,6 @@ const IllustrationOrVideo = () => {
 	return (
 		<Illustration
 			illustration={currentTrack?.track.illustration}
-			dropShadow
 			quality="original"
 			variant="center"
 		/>
