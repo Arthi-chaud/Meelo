@@ -38,18 +38,16 @@ export const ColorBackground = () => {
 	);
 };
 
-const ColorBackgroundOpacity = 0.3;
-
 const styles = StyleSheet.create((theme) => ({
 	colorBackground: {
 		...StyleSheet.absoluteFillObject,
-		opacity: ColorBackgroundOpacity,
-		zIndex: -1,
+		opacity: 0.3,
 	},
 	baseBackground: {
 		...StyleSheet.absoluteFillObject,
 		backgroundColor: theme.colors.background,
 		opacity: 0.3,
+		zIndex: -1,
 	},
 }));
 export const useFormattedArtistName = () => {
