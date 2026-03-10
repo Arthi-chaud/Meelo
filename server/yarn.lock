@@ -3118,7 +3118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chroma-js@npm:*, @types/chroma-js@npm:^3":
+"@types/chroma-js@npm:*":
   version: 3.1.2
   resolution: "@types/chroma-js@npm:3.1.2"
   checksum: 10c0/d2a7d9612c5abe3733a113d339eb8158cb36aeeeb571a3c371e81e8f3a682cd70f1649cea521716fbb5d79eb96f585a539b304be44e3fa818bd56b2a05f29f73
@@ -7929,7 +7929,6 @@ __metadata:
     "@types/amqplib": "npm:^0"
     "@types/archiver": "npm:^7.0.0"
     "@types/bcrypt": "npm:^6.0.0"
-    "@types/chroma-js": "npm:^3"
     "@types/cookie-parser": "npm:^1.4.10"
     "@types/express": "npm:^5.0.0"
     "@types/get-image-colors": "npm:^4.0.2"

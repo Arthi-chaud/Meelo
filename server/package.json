@@ -80,7 +80,6 @@
 		"@types/amqplib": "^0",
 		"@types/archiver": "^7.0.0",
 		"@types/bcrypt": "^6.0.0",
-		"@types/chroma-js": "^3",
 		"@types/cookie-parser": "^1.4.10",
 		"@types/express": "^5.0.0",
 		"@types/get-image-colors": "^4.0.2",
