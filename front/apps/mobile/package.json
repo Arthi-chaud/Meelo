@@ -26,7 +26,7 @@
 		"expo-build-properties": "~55.0.9",
 		"expo-checkbox": "^55.0.3",
 		"expo-constants": "~55.0.7",
-		"expo-dev-client": "~55.0.10",
+		"expo-dev-client": "~55.0.13",
 		"expo-device": "~55.0.9",
 		"expo-file-system": "^55.0.10",
 		"expo-font": "~55.0.4",
