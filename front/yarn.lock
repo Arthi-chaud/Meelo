@@ -1804,7 +1804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^11.14.0":
+"@emotion/styled@npm:^11.14.1":
   version: 11.14.1
   resolution: "@emotion/styled@npm:11.14.1"
   dependencies:
@@ -15344,7 +15344,7 @@ __metadata:
     "@emotion/cache": "npm:^11.14.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
-    "@emotion/styled": "npm:^11.14.0"
+    "@emotion/styled": "npm:^11.14.1"
     "@mui/material": "npm:^7.3.8"
     "@mui/material-nextjs": "npm:^7.3.8"
     "@mui/utils": "npm:^7.3.8"
