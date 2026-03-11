@@ -59,7 +59,7 @@ func ParseMetadata(config c.UserSettings, filePath string) (internal.Metadata, [
 		getLyricsFromLrc(filePath, config, &metadata)
 	}
 	// Let's save some time by skipping acoustid for unreasonably long media
-	if metadata.Type == internal.Audio || metadata.Duration < 1200 { // 20 minutes
+	if len(metadata.AcoustId) == 0 && (metadata.Type == internal.Audio || metadata.Duration < 1200) { // 20 minutes
 		fingerprint, err := internal.GetFileAcousticFingerprint(filePath)
 		if err != nil {
 			// Fingerprinting failure is not fatal
