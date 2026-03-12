@@ -26,6 +26,8 @@ class AlbumType(Enum):
     LIVE = "LiveRecording"
     EP = "EP"
     REMIXES = "RemixAlbum"
+    DEMO = "DemoAlbum"
+    UNOFFICIAL = "Unofficial"
     COMPILATION = "Compilation"
     SINGLE = "Single"
     SOUNDTRACK = "Soundtrack"

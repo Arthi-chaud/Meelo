@@ -384,6 +384,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             return AlbumType.EP
         if "dj-mix" in raw_types:
             return AlbumType.REMIXES
+        if "demo" in raw_types:
+            return AlbumType.DEMO
         return None
 
     async def _get_song(self, recording_id: str) -> Any | None:
