@@ -21,11 +21,12 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { getAlbums, getArtists, getLabel } from "@/api/queries";
+import { getAlbums, getArtists, getLabel, getSongs } from "@/api/queries";
 import { useQuery } from "~/api";
 import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
+import { InfiniteSongView } from "~/components/infinite/resource/song";
 import { useTabRouter } from "~/components/tab-router";
 import getSlugOrId from "~/utils/getSlugOrId";
 
@@ -48,7 +49,7 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
-const tabs = ["artist", "album"] as const;
+const tabs = ["artist", "album", "song"] as const;
 
 const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
@@ -60,7 +61,10 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		(newTab) => `/labels/${labelIdentifier}?t=${newTab}`,
 		"album",
 		"artist",
+		"song",
 	);
+
+	// TODO Radio button
 
 	return (
 		<Box sx={{ width: "100%" }}>
@@ -118,6 +122,22 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							},
 							{ sortBy, order },
 							["artist", "illustration"],
+						)
+					}
+				/>
+			)}
+			{selectedTab === "song" && (
+				<InfiniteSongView
+					query={({ libraries, types, random, sortBy, order }) =>
+						getSongs(
+							{
+								label: labelIdentifier,
+								type: types,
+								random,
+								library: libraries,
+							},
+							{ sortBy, order },
+							["artist", "featuring", "master", "illustration"],
 						)
 					}
 				/>
