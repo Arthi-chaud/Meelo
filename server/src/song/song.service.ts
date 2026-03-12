@@ -326,6 +326,19 @@ export default class SongService extends SearchableRepositoryService {
 				playHistory: { some: { userId: where.playedBy.id } },
 			});
 		}
+		if (where.label) {
+			query.push({
+				tracks: {
+					some: {
+						release: {
+							album: AlbumService.formatManyWhereInput({
+								label: where.label,
+							}),
+						},
+					},
+				},
+			});
+		}
 		if (where.songs?.length) {
 			query.push({
 				OR: where.songs.map((song) =>
