@@ -71,7 +71,10 @@
 			"seeRelatedVideos": "Voir les vidéos",
 			"seeSongInfo": "Infos sur le morceau"
 		},
-		"switchServer": "Changer de serveur",
+		"switchServer": {
+			"label": "Changer de serveur",
+			"modalMessage": "Changer de server interronpra la lecture et réinitialisera la liste de lecture. Etes-vous sûr.e de vousloir changer de server?"
+		},
 		"track": {
 			"reassignTrack": "Réassigner la piste",
 			"seeTrackInfo": "Infos sur la piste"

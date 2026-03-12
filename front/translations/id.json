@@ -68,7 +68,9 @@
 			"seeRelatedVideos": "Lihat Video Terkait",
 			"seeSongInfo": "Info Lagu"
 		},
-		"switchServer": "Ganti Server",
+		"switchServer": {
+			"label": "Ganti Server"
+		},
 		"track": {
 			"reassignTrack": "Pindahkan Trek",
 			"seeTrackInfo": "Info Trek"

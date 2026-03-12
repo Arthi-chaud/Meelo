@@ -68,7 +68,9 @@
 			"seeRelatedVideos": "Zobraziť súvisiace videá",
 			"seeSongInfo": "Informácie o skladbe"
 		},
-		"switchServer": "Prepnúť server",
+		"switchServer": {
+			"label": "Prepnúť server"
+		},
 		"track": {
 			"reassignTrack": "Znovu priradiť skladbu",
 			"seeTrackInfo": "Informácie o skladbe"

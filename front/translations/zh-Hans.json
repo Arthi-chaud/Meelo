@@ -55,7 +55,9 @@
 			"seeRelatedVideos": "查看关联视频",
 			"seeSongInfo": "歌曲信息"
 		},
-		"switchServer": "切换服务器",
+		"switchServer": {
+			"label": "切换服务器"
+		},
 		"track": {
 			"seeTrackInfo": "曲目信息"
 		},

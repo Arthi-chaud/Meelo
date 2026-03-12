@@ -68,7 +68,9 @@
 			"seeRelatedVideos": "Ähnliche Videos sehen",
 			"seeSongInfo": "Song Info"
 		},
-		"switchServer": "Geschaltet Server",
+		"switchServer": {
+			"label": "Geschaltet Server"
+		},
 		"track": {
 			"reassignTrack": "Ordne Track neu zu",
 			"seeTrackInfo": "Track Info"

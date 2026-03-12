@@ -17,8 +17,8 @@ import { ReduceMotion } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BlurView } from "../blur-view";
 
-type ModalAtom = {
-	content: () => ReactNode;
+type ModalAtom<Args extends any[] = []> = {
+	content: (...args: Args) => ReactNode;
 	onDismiss?: () => void;
 	cannotBeDismissed?: boolean;
 };
@@ -27,9 +27,13 @@ const modalAtom = atom<ModalAtom | null>(null);
 
 export const closeModalAtom = atom(null, (_, set) => set(modalAtom, null));
 
-export const useModal = (p: ModalAtom) => {
+export const useModal = <Args extends any[] = []>(p: ModalAtom<Args>) => {
 	const setModalContent = useSetAtom(modalAtom);
-	const openModal = useCallback(() => setModalContent(p), [p]);
+	const openModal = useCallback(
+		(...args: Args) =>
+			setModalContent({ ...p, content: () => p.content(...args) }),
+		[p],
+	);
 	return { openModal };
 };
 
