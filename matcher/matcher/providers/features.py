@@ -146,6 +146,10 @@ class SearchSongWithFingerprintFeature(
     pass
 
 
+class SearchSongWithAcoustIdFeature(BaseFeature[str, Awaitable[SearchResult | None]]):
+    pass
+
+
 class GetSongFeature(BaseFeature[ResourceId, Awaitable[Any | None]]):
     pass
 

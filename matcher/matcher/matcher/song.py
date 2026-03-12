@@ -98,10 +98,17 @@ async def match_song(
     # because musicbrainz is not always useful for songs
     # + Searching using Genius seems efficient enough
     async def mb_search(mb: BaseProviderBoilerplate):
-        return (
-            (await mb.search_song_with_fingerprint(fingerprint, duration, song_name))
-            if fingerprint is not None and duration is not None
-            else await mb.search_song(song_name, artist_name, featuring, duration)
+        search_res: common.SearchResult | None = None
+        if fingerprint is not None and duration is not None:
+            search_res = await mb.search_song_with_fingerprint(
+                fingerprint, duration, song_name
+            )
+        if search_res is not None and local_identifiers.acoustid_id is not None:
+            search_res = await mb.search_song_with_acoustid(
+                local_identifiers.acoustid_id
+            )
+        return search_res or await mb.search_song(
+            song_name, artist_name, featuring, duration
         )
 
     async def resolve_sources():

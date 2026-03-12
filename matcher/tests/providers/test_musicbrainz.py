@@ -280,7 +280,7 @@ class TestMusicbrainz:
         )
         for [song_name, acoustid, duration, expected] in scenarios:
             with subtests.test("Search Song", song_name=song_name):
-                song = await provider.search_song_with_acoustid(
+                song = await provider.search_song_with_fingerprint(
                     acoustid, duration, song_name
                 )
                 if expected == []:

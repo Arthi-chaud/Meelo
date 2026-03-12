@@ -27,6 +27,7 @@ from matcher.providers.features import (
     SearchArtistFeature,
     SearchSongFeature,
     SearchSongWithFingerprintFeature,
+    SearchSongWithAcoustIdFeature,
     GetSongGenresFeature,
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
@@ -123,9 +124,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             ),
             SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
             SearchSongWithFingerprintFeature(
-                lambda acoustid, dur, name: self._search_song_with_fingerprint(
-                    acoustid, dur, name
+                lambda fingerprint, dur, name: self._search_song_with_fingerprint(
+                    fingerprint, dur, name
                 )
+            ),
+            SearchSongWithAcoustIdFeature(
+                lambda acoustid: self._search_song_with_acoustid(acoustid)
             ),
             GetSongFeature(lambda s: self._get_song(s)),
             GetSongGenresFeature(lambda album: asyncify(self._get_song_genres, album)),
@@ -449,14 +453,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             pass
 
     async def _search_song_with_fingerprint(
-        self, acoustid: str, duration: int, song_name: str
+        self, fingerprint: str, duration: int, song_name: str
     ) -> SearchResult | None:
         try:
             song_slug = to_slug(song_name)
             async with aiohttp.ClientSession() as session:
                 async with session.get(
                     # Note: the 'params' are does not allow the '+' for the 'meta' field
-                    f"https://api.acoustid.org/v2/lookup?client={'3WWOxoNbNH'}&duration={duration}&fingerprint={acoustid}&meta=recordings+sources",
+                    f"https://api.acoustid.org/v2/lookup?client={'3WWOxoNbNH'}&duration={duration}&fingerprint={fingerprint}&meta=recordings+sources",
                 ) as response:
                     recordings = (await response.json())["results"][0]["recordings"]
 
@@ -475,6 +479,21 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                     match = ordered_recordings[0]
                     return SearchResult(match["id"], match)
         except Exception:
+            pass
+
+    async def _search_song_with_acoustid(self, acoustid: str) -> SearchResult | None:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"https://api.acoustid.org/v2/lookup?client={'3WWOxoNbNH'}&trackid={acoustid}&meta=recordings+sources",
+                ) as response:
+                    res = (await response.json())["results"][0]["recordings"]
+                    ordered_res = sorted(res, key=lambda r: r["sources"])
+                    match = ordered_res[0]
+
+                    return SearchResult(match["id"], match)
+        except Exception as e:
+            print(e)
             pass
 
     def _get_song_genres(self, song: Any) -> List[str] | None:
