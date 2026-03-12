@@ -46,6 +46,8 @@ import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import TransformIdentifier from "src/identifier/identifier.transform";
+import LabelQueryParameters from "src/label/label.query-parameters";
+import LabelService from "src/label/label.service";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import { LyricsService } from "src/lyrics/lyrics.service";
@@ -84,6 +86,12 @@ export class Selector {
 		description: "Filter songs by album",
 	})
 	album?: Filter<AlbumQueryParameters.WhereInput>;
+
+	@IsOptional()
+	@TransformFilter(LabelService, {
+		description: "Filter songs by label",
+	})
+	label?: Filter<LabelQueryParameters.WhereInput>;
 
 	@IsOptional()
 	@TransformFilter(LibraryService, { description: "Filter songs by library" })
@@ -201,6 +209,7 @@ export class SongController {
 		if (sort.sortBy === "userPlayCount" && !request.user) {
 			throw new UnauthorizedAnonymousRequestException();
 		}
+
 		return this.songService.getMany(
 			{
 				...selector,

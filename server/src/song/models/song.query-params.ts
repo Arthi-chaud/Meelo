@@ -20,6 +20,7 @@ import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
+import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { SongType } from "src/prisma/generated/client";
 import type { Song } from "src/prisma/models";
@@ -90,6 +91,7 @@ namespace SongQueryParameters {
 			versionsOf: Filter<SongQueryParameters.WhereInput>;
 			type?: Filter<SongType>;
 			playedBy: Required<Pick<UserQueryParameters.WhereInput, "id">>;
+			label?: Filter<LabelQueryParameters.WhereInput>;
 			songs: SongQueryParameters.WhereInput[];
 		}>
 	>;
