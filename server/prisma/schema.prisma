@@ -114,6 +114,10 @@ enum AlbumType {
     RemixAlbum
     /// Describe a collection of video tracks from the same artist
     VideoAlbum
+    /// Describes an album that was not relesed by an approved record label
+    Unofficial
+    /// Describes a collection of unfinished or previously unreleased material
+    DemoAlbum
 
     @@map("album-types")
 }
