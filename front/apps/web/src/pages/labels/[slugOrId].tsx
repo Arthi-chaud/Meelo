@@ -16,13 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Skeleton, Tab, Tabs, Typography } from "@mui/material";
+import {
+	Box,
+	IconButton,
+	Skeleton,
+	Tab,
+	Tabs,
+	Typography,
+} from "@mui/material";
+import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAlbums, getArtists, getLabel, getSongs } from "@/api/queries";
-import { useQuery } from "~/api";
+import { transformPage } from "@/api/query";
+import { playFromInfiniteQuery } from "@/state/player";
+import { RadioIcon } from "@/ui/icons";
+import { getRandomNumber } from "@/utils/random";
+import { useQuery, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
@@ -53,6 +65,8 @@ const tabs = ["artist", "album", "song"] as const;
 
 const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
+	const queryClient = useQueryClient();
+	const playFromQuery = useSetAtom(playFromInfiniteQuery);
 	const { t } = useTranslation();
 	const labelIdentifier = props?.labelIdentifier ?? getSlugOrId(router.query);
 	const label = useQuery(getLabel, labelIdentifier);
@@ -64,7 +78,28 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		"song",
 	);
 
-	// TODO Radio button
+	const playRadio = () => {
+		playFromQuery(
+			transformPage(
+				getSongs(
+					{ label: labelIdentifier, random: getRandomNumber() },
+					undefined,
+					["artist", "featuring", "master", "illustration"],
+				),
+				(song) => ({
+					id: song.id,
+					artist: song.artist,
+					featuring: song.featuring,
+					track: {
+						...song.master,
+						song,
+						illustration: song.illustration,
+					},
+				}),
+			),
+			queryClient,
+		);
+	};
 
 	return (
 		<Box sx={{ width: "100%" }}>
@@ -73,11 +108,16 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				sx={{
 					width: "100%",
 					justifyContent: "center",
+					alignItems: "center",
+					gap: 1,
 					textAlign: "center",
 					display: "flex",
 					marginY: 5,
 				}}
 			>
+				<IconButton onClick={playRadio}>
+					<RadioIcon />
+				</IconButton>
 				<Typography variant="h5" sx={{ fontWeight: "bold" }}>
 					{label.data?.name ?? <Skeleton width={"100px"} />}
 				</Typography>
