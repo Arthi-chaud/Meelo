@@ -71,7 +71,10 @@
 			"seeRelatedVideos": "See Related Videos",
 			"seeSongInfo": "Song Info"
 		},
-		"switchServer": "Switch Server",
+		"switchServer": {
+			"label": "Switch Server",
+			"modalMessage": "Switching server will interrupt playback and reset the queue. Are you sure you want to switch?"
+		},
 		"track": {
 			"reassignTrack": "Reassign Track",
 			"seeTrackInfo": "Track Info"
