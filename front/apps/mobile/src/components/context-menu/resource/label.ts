@@ -1,11 +1,36 @@
+import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { getSongs } from "@/api/queries";
 import type Label from "@/models/label";
-import { AlbumIcon, ArtistIcon, LabelIcon } from "@/ui/icons";
+import {
+	infiniteSongQueryToPlayerQuery,
+	playFromInfiniteQuery,
+} from "@/state/player";
+import { AlbumIcon, ArtistIcon, LabelIcon, RadioIcon } from "@/ui/icons";
+import { getRandomNumber } from "@/utils/random";
+import { useQueryClient } from "~/api";
 import type { ContextMenu } from "..";
 
 export const useLabelContextMenu = (label: Label | undefined) => {
+	const queryClient = useQueryClient();
 	const { t } = useTranslation();
+	const playFromQuery = useSetAtom(playFromInfiniteQuery);
+	const startLabelRadio = useCallback(() => {
+		if (!label) {
+			return;
+		}
+		const seed = getRandomNumber();
+		const query = infiniteSongQueryToPlayerQuery(
+			getSongs({ label: label.id, random: seed }, undefined, [
+				"artist",
+				"featuring",
+				"master",
+				"illustration",
+			]),
+		);
+		playFromQuery(query, queryClient);
+	}, [label, queryClient]);
 	return useCallback(() => {
 		return {
 			header: {
@@ -16,6 +41,11 @@ export const useLabelContextMenu = (label: Label | undefined) => {
 			},
 			items: [
 				[
+					{
+						label: "actions.label.startRadio",
+						icon: RadioIcon,
+						onPress: startLabelRadio,
+					},
 					{
 						label: "actions.artist.seeAlbums",
 						icon: AlbumIcon,
