@@ -26,7 +26,7 @@ from matcher.providers.features import (
     GetAlbumTypeFeature,
     SearchArtistFeature,
     SearchSongFeature,
-    SearchSongWithAcoustIdFeature,
+    SearchSongWithFingerprintFeature,
     GetSongGenresFeature,
     GetSongUrlFromIdFeature,
     GetSongIdFromUrlFeature,
@@ -122,8 +122,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 lambda album: asyncify(self._get_album_genres, album)
             ),
             SearchSongFeature(lambda s, a, f, _: self._search_song(s, a, f)),
-            SearchSongWithAcoustIdFeature(
-                lambda acoustid, dur, name: self._search_song_with_acoustid(
+            SearchSongWithFingerprintFeature(
+                lambda acoustid, dur, name: self._search_song_with_fingerprint(
                     acoustid, dur, name
                 )
             ),
@@ -448,7 +448,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         except Exception:
             pass
 
-    async def _search_song_with_acoustid(
+    async def _search_song_with_fingerprint(
         self, acoustid: str, duration: int, song_name: str
     ) -> SearchResult | None:
         try:
