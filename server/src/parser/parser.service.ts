@@ -543,6 +543,9 @@ export default class ParserService {
 		) {
 			return AlbumType.Compilation;
 		}
+		if (albumName.includes("demos") || albumName.includes("demo")) {
+			return AlbumType.DemoAlbum;
+		}
 		return AlbumType.StudioRecording;
 	}
 

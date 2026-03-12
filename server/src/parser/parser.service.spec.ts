@@ -744,6 +744,10 @@ describe("Parser Service", () => {
 			],
 			[AlbumType.EP, ["Twist - EP"]],
 			[AlbumType.Single, ["Twist - Single", "Falling (Remixes)"]],
+			[
+				AlbumType.DemoAlbum,
+				["Music (Demos)", "Music (Demo Album)", "The Demos"],
+			],
 		] as const;
 		for (const [expectedAlbumType, albumNames] of scenarios) {
 			describe(expectedAlbumType, () => {
