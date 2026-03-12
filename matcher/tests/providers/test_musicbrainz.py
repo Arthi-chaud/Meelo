@@ -163,6 +163,8 @@ class TestMusicbrainz:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_type(self, ctx, subtests):
         scenarios: List[Tuple[str, AlbumType]] = [
+            # Lily Allen - Demos
+            ("b6b4e4b9-eeab-3f13-8963-d429a12ee574", AlbumType.DEMO),
             # Madonna - I'm Going to tell you a secret
             ("876da970-473b-3a01-9aea-79d1fa6b053a", AlbumType.LIVE),
             # Madonna - Finally Enough Love

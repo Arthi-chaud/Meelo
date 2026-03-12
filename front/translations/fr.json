@@ -97,6 +97,8 @@
 	"albumType": {
 		"compilation": "Compilation",
 		"compilation_plural": "Compilations",
+		"demoAlbum": "Album de maquettes",
+		"demoAlbum_plural": "Albums de maquettes",
 		"ep": "EP",
 		"ep_plural": "EP",
 		"liveRecording": "Album Live",
@@ -110,7 +112,9 @@
 		"studioRecording": "Album Studio",
 		"studioRecording_plural": "Albums",
 		"videoAlbum": "Collection de Vidéos",
-		"videoAlbum_plural": "Albums Vidéos"
+		"videoAlbum_plural": "Albums Vidéos",
+		"unofficial": "Album non officiel",
+		"unofficial_plural": "Albums non officiels"
 	},
 	"artist": {
 		"appearsOn": "Apparaît sur",

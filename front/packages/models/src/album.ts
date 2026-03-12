@@ -32,6 +32,8 @@ export const AlbumType = [
 	"Soundtrack",
 	"RemixAlbum",
 	"VideoAlbum",
+	"DemoAlbum",
+	"Unofficial",
 ] as const;
 
 export type AlbumType = (typeof AlbumType)[number];
