@@ -616,6 +616,9 @@ model LocalIdentifiers {
     /// @description MusicBrainz ID found in local metadata
     /// @example "53b106e7-0cc6-42cc-ac95-ed8d30a3a98e"
     musicbrainzId String?
+    /// @description AcoustId ID found in local metadata (usually for songs)
+    /// @example "53b106e7-0cc6-42cc-ac95-ed8d30a3a98e"
+    acoustidId    String?
     /// @example r1234567
     /// @description Discogs ID found in local metadata (usually for releases)
     discogsId     String?
