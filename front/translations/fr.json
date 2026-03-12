@@ -35,6 +35,9 @@
 		"goToPlaylist": "Voir la playlist",
 		"goToRelease": "Aller au disque",
 		"goToSettingsPage": "Accéder aux réglages",
+		"label": {
+			"startRadio": "Allumer la radio avec ce label"
+		},
 		"library": {
 			"create": "Créer une bibliothèque",
 			"delete": "Supprimer la bibliothèque",

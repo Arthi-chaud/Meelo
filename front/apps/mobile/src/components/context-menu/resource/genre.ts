@@ -2,9 +2,11 @@ import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { getSongs } from "@/api/queries";
-import { transformPage } from "@/api/query";
 import type Genre from "@/models/genre";
-import { playFromInfiniteQuery } from "@/state/player";
+import {
+	infiniteSongQueryToPlayerQuery,
+	playFromInfiniteQuery,
+} from "@/state/player";
 import { AlbumIcon, GenreIcon, RadioIcon, SongIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
 import { useQueryClient } from "~/api";
@@ -19,19 +21,13 @@ export const useGenreContextMenu = (genre: Genre | undefined) => {
 			return;
 		}
 		const seed = getRandomNumber();
-		const query = transformPage(
+		const query = infiniteSongQueryToPlayerQuery(
 			getSongs({ genre: genre.id, random: seed }, undefined, [
 				"artist",
 				"featuring",
 				"master",
 				"illustration",
 			]),
-			(s) => ({
-				id: s.id,
-				track: { ...s.master, illustration: s.illustration },
-				artist: s.artist,
-				featuring: s.featuring,
-			}),
 		);
 		playFromQuery(query, queryClient);
 	}, [genre, queryClient]);

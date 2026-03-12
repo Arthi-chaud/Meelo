@@ -35,6 +35,9 @@
 		"goToPlaylist": "Go To Playlist",
 		"goToRelease": "Go To Release",
 		"goToSettingsPage": "Go to Settings",
+		"label": {
+			"startRadio": "Start Label Radio"
+		},
 		"library": {
 			"create": "Create Library",
 			"delete": "Delete Library",
