@@ -30,8 +30,10 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAlbums, getArtists, getGenre, getSongs } from "@/api/queries";
-import { transformPage } from "@/api/query";
-import { playFromInfiniteQuery } from "@/state/player";
+import {
+	infiniteSongQueryToPlayerQuery,
+	playFromInfiniteQuery,
+} from "@/state/player";
 import { RadioIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
 import { useQuery, useQueryClient } from "~/api";
@@ -84,26 +86,13 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const playFromQuery = useSetAtom(playFromInfiniteQuery);
 	const queryClient = useQueryClient();
 	const playRadio = () => {
-		if (!genre.data) {
-			return;
-		}
 		playFromQuery(
-			transformPage(
+			infiniteSongQueryToPlayerQuery(
 				getSongs(
-					{ genre: genre.data.id, random: getRandomNumber() },
+					{ genre: genreIdentifier, random: getRandomNumber() },
 					undefined,
 					["artist", "featuring", "master", "illustration"],
 				),
-				(song) => ({
-					id: song.id,
-					artist: song.artist,
-					featuring: song.featuring,
-					track: {
-						...song.master,
-						song,
-						illustration: song.illustration,
-					},
-				}),
 			),
 			queryClient,
 		);

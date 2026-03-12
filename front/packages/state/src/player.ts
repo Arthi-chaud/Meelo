@@ -19,9 +19,14 @@
 import { atom } from "jotai";
 import type API from "@/api";
 import type { QueryClient } from "@/api/hook";
-import { type InfiniteQuery, toTanStackInfiniteQuery } from "@/api/query";
+import {
+	type InfiniteQuery,
+	toTanStackInfiniteQuery,
+	transformPage,
+} from "@/api/query";
 import type Artist from "@/models/artist";
 import type Resource from "@/models/resource";
+import type { SongWithRelations } from "@/models/song";
 import type { TrackWithRelations } from "@/models/track";
 
 export type TrackState = {
@@ -94,6 +99,19 @@ export const skipTrackAtom = atom(
 		}
 	},
 );
+
+export const infiniteSongQueryToPlayerQuery = <
+	S extends SongWithRelations<"artist" | "illustration" | "master">,
+>(
+	q: InfiniteQuery<any, S>,
+): InfiniteQuery<any, TrackState & Resource> => {
+	return transformPage(q, (s) => ({
+		id: s.id,
+		track: { ...s.master, song: s, illustration: s.illustration },
+		artist: s.artist,
+		featuring: "featuring" in s ? (s.featuring as Artist[]) : undefined,
+	}));
+};
 
 export const playFromInfiniteQuery = atom(
 	null,
