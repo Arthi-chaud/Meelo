@@ -257,42 +257,47 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                     not is_single and p_type != "Single"
                 ):
                     typed_releases.append(r)
-            ordered_releases = (
-                sorted(
-                    [r for r in typed_releases if "date" in r.keys()],
-                    key=lambda r: r["date"],
-                )
-                or typed_releases
+            ordered_releases = sorted(
+                [r for r in typed_releases if "date" in r.keys()],
+                key=lambda r: r["date"],
             )
-            artist_releases = [
-                r
-                for r in ordered_releases
-                if (
-                    (
-                        to_slug(r["artist-credit"][0]["artist"]["name"]) == artist_slug
-                        or to_slug(r["artist-credit"][0]["name"]) == artist_slug
-                    )
-                    if artist_name
-                    # Album artist is 'Various Artist'
-                    else (
-                        r["artist-credit"][0]["artist"]["id"]
-                        == self.compilation_artist_id()
-                        or any(
-                            [
-                                type
-                                in [
-                                    r[release_group_key]["primary-type"],
-                                    *(
-                                        r[release_group_key].get("secondary-types")
-                                        or []
-                                    ),
+            undated_releases = [r for r in typed_releases if "date" not in r.keys()]
+
+            def filter_by_artist(releases):
+                return [
+                    r
+                    for r in releases
+                    if (
+                        (
+                            to_slug(r["artist-credit"][0]["artist"]["name"])
+                            == artist_slug
+                            or to_slug(r["artist-credit"][0]["name"]) == artist_slug
+                        )
+                        if artist_name
+                        # Album artist is 'Various Artist'
+                        else (
+                            r["artist-credit"][0]["artist"]["id"]
+                            == self.compilation_artist_id()
+                            or any(
+                                [
+                                    type
+                                    in [
+                                        r[release_group_key]["primary-type"],
+                                        *(
+                                            r[release_group_key].get("secondary-types")
+                                            or []
+                                        ),
+                                    ]
+                                    for type in ["Compilation", "Soundtrack"]
                                 ]
-                                for type in ["Compilation", "Soundtrack"]
-                            ]
+                            )
                         )
                     )
-                )
-            ]
+                ]
+
+            artist_releases = filter_by_artist(ordered_releases) or filter_by_artist(
+                undated_releases
+            )
             exact_matches = [
                 r
                 for r in artist_releases

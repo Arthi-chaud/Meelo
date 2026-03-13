@@ -80,6 +80,8 @@ class TestMusicbrainz:
                 "Madonna",
                 "a0aa8b0a-5e10-3627-afde-7235b86042f6",
             ),
+            ## None of the releases have a date
+            ("Drive", "Peplab", "54d124d2-9fe5-3001-8e1f-195736ef70ad"),
             ## Test handling of 'vol.' acronyms
             (
                 "GHV2 (Greatest Hits, Vol. 2)",
