@@ -34,6 +34,7 @@ from .features import (
     SearchArtistFeature,
     SearchSongFeature,
     SearchSongWithAcoustIdFeature,
+    SearchSongWithFingerprintFeature,
     IsSongUrlFeature,
 )
 from .domain import AlbumType, SearchResult
@@ -167,11 +168,15 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
             else None
         )
 
-    async def search_song_with_acoustid(
-        self, song_acoustid: str, duration: int, song_name: str
+    async def search_song_with_fingerprint(
+        self, track_fingerprint: str, duration: int, song_name: str
     ) -> SearchResult | None:
+        f = self.get_feature(SearchSongWithFingerprintFeature)
+        return await f.run(track_fingerprint, duration, song_name) if f else None
+
+    async def search_song_with_acoustid(self, acoustid: str) -> SearchResult | None:
         f = self.get_feature(SearchSongWithAcoustIdFeature)
-        return await f.run(song_acoustid, duration, song_name) if f else None
+        return await f.run(acoustid) if f else None
 
     async def get_song(self, song_id: str) -> Any | None:
         f = self.get_feature(GetSongFeature)

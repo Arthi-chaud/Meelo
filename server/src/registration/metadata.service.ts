@@ -439,6 +439,7 @@ export default class MetadataService {
 				this.prismaService.localIdentifiers.upsert({
 					create: {
 						musicbrainzId: metadata.songMbid ?? null,
+						acoustidId: metadata.acoustid ?? null,
 						songId,
 					},
 					update: { musicbrainzId: metadata.songMbid ?? null },

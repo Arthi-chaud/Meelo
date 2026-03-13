@@ -14,6 +14,7 @@ from matcher.providers.domain import AlbumType
 class LocalIdentifiers(DataClassJsonMixin):
     musicbrainz_id: Optional[str] = None
     discogs_id: Optional[str] = None
+    acoustid_id: Optional[str] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore

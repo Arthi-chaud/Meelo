@@ -140,9 +140,13 @@ class SearchSongFeature(
     pass
 
 
-class SearchSongWithAcoustIdFeature(
+class SearchSongWithFingerprintFeature(
     BaseFeature[str, int, str, Awaitable[SearchResult | None]]
 ):
+    pass
+
+
+class SearchSongWithAcoustIdFeature(BaseFeature[str, Awaitable[SearchResult | None]]):
     pass
 
 

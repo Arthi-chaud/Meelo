@@ -18,6 +18,7 @@ export class LocalIdentifiersResponse extends OmitType(LocalIdentifiers, [
 		return {
 			musicbrainzId: localIdentifiers.musicbrainzId,
 			discogsId: localIdentifiers.discogsId,
+			acoustidId: localIdentifiers.acoustidId,
 		};
 	}
 }

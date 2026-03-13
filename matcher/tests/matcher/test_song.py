@@ -86,3 +86,21 @@ class TestMatchSong:
         context.settings.push_genres = True
         # Genres
         assert len(res.genres) == 0
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_song_with_acoustid(self, ctx):
+        res = await match_song(
+            1,
+            "",
+            "",
+            [],
+            None,
+            None,
+            LocalIdentifiers(acoustid_id="6d6e2e19-ad39-4437-a734-549a70bf34d2"),
+        )
+        ### Musicbrainz
+        [mb] = [p for p in res.metadata.sources if "musicbrainz" in p.url]
+        assert (
+            mb.url
+            == "https://musicbrainz.org/recording/0c7c0879-084f-4c94-9c79-e163ae1bd229"
+        )
