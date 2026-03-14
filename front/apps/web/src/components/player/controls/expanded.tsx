@@ -46,6 +46,7 @@ import {
 	cursorAtom,
 	infiniteQueryAtom,
 	loadNextQueuePageAtom,
+	loopModeAtom,
 	playlistAtom,
 	removeTrackAtom,
 	reorderAtom,
@@ -60,6 +61,7 @@ import {
 	LyricsIcon,
 	PlayerIcon,
 	PlaylistIcon,
+	RepeatIcon,
 	TrackIcon,
 	VolumeHighIcon,
 	VolumeLowIcon,
@@ -85,6 +87,15 @@ import {
 } from "./common";
 import { LyricsComponent } from "./lyrics";
 import PlayerSlider from "./slider";
+
+const LoopButton = () => {
+	const [loop, setLoop] = useAtom(loopModeAtom);
+	return (
+		<IconButton onClick={() => setLoop(loop === "none" ? "queue" : "none")}>
+			<RepeatIcon variant={loop === "queue" ? "Bold" : "Linear"} />
+		</IconButton>
+	);
+};
 
 const VolumeButton = (props: VolumeSliderProps & { disabled?: boolean }) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -471,8 +482,14 @@ export const ExpandedPlayerControls = (
 								justifyContent: "space-between",
 							}}
 						>
-							<Grid size={1}>
-								<IconButton />
+							<Grid
+								size={1}
+								sx={{
+									display: "flex",
+									justifyContent: "flex-end",
+								}}
+							>
+								<LoopButton />
 							</Grid>
 							<Stack
 								spacing={{ xs: 7, sm: 5 }}
