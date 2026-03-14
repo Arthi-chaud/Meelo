@@ -7,7 +7,7 @@ import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getIllustration } from "@/api/queries";
-import { loopModeAtom, skipTrackAtom } from "@/state/player";
+import { loopModeAtom, nextLoopMode } from "@/state/player";
 import {
 	ContextualMenuIcon,
 	ForwardIcon,
@@ -15,6 +15,7 @@ import {
 	PauseIcon,
 	PlayIcon,
 	RepeatIcon,
+	RepeatTrackIcon,
 	RewindIcon,
 	SettingsIcon,
 } from "@/ui/icons";
@@ -45,6 +46,7 @@ import {
 	playAtom,
 	progressAtom,
 	rewindTrackAtom,
+	skipTrackAtom,
 } from "../state";
 import { useFormattedArtistName } from "../utils";
 
@@ -83,12 +85,10 @@ const PlayControls = () => {
 
 	return (
 		<View style={styles.playControls}>
-			<Pressable
-				onPress={() => setLoop(loop === "none" ? "queue" : "none")}
-			>
+			<Pressable onPress={() => setLoop(nextLoopMode(loop))}>
 				<Icon
-					icon={RepeatIcon}
-					variant={loop === "none" ? "Linear" : "Bold"}
+					icon={loop === "track" ? RepeatTrackIcon : RepeatIcon}
+					variant={loop === "queue" ? "Bold" : "Linear"}
 					style={styles.gutterIcon}
 				/>
 			</Pressable>

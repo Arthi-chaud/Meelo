@@ -1,8 +1,11 @@
 import { atom } from "jotai";
+import type { QueryClient } from "@/api/hook";
 import {
 	cursorAtom,
+	loopModeAtom,
 	playlistAtom,
 	playPreviousTrackAtom,
+	skipTrackAtom as skipTrackAtom_,
 	type TrackState,
 } from "@/state/player";
 
@@ -21,9 +24,19 @@ export const progressAtom = atom(0);
 
 export const requestedProgressAtom = atom(0 as number | null);
 
+export const skipTrackAtom = atom(null, (get, set, qc: QueryClient) => {
+	const loopMode = get(loopModeAtom);
+	if (loopMode === "track") {
+		set(requestedProgressAtom, 0);
+	} else {
+		set(skipTrackAtom_, qc);
+	}
+});
+
 export const rewindTrackAtom = atom(null, (get, set) => {
 	const progress = get(progressAtom);
-	if (progress > 5) {
+	const loopMode = get(loopModeAtom);
+	if (progress > 5 || loopMode === "track") {
 		set(requestedProgressAtom, 0);
 	} else {
 		set(playPreviousTrackAtom);

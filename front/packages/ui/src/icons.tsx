@@ -122,6 +122,7 @@ export const VolumeLowIcon: Icon = Iconsax.VolumeLow1;
 export const VolumeHighIcon: Icon = Iconsax.VolumeHigh;
 
 export const RepeatIcon: Icon = Iconsax.RepeateMusic;
+export const RepeatTrackIcon: Icon = Iconsax.RepeateOne;
 
 // Icons for song type
 export const SongTypeOriginalIcon: Icon = Iconsax.Music;

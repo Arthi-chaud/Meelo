@@ -35,7 +35,7 @@ export type TrackState = {
 	featuring: Artist[] | undefined; // We lazy load featuring artists
 };
 
-export type LoopMode = "none" | "queue";
+export type LoopMode = "none" | "queue" | "track";
 
 export type PlayerState = {
 	loopMode: LoopMode;
@@ -59,8 +59,20 @@ export type PlayerState = {
 	} | null;
 };
 
-// TODO When adding 'track' mode, always reset it to none
-const _resetOrKeepLoopMode = (m: LoopMode) => m;
+export const nextLoopMode = (m: LoopMode) => {
+	switch (m) {
+		case "none":
+			return "queue";
+		case "queue":
+			return "track";
+		case "track":
+			return "none";
+		default:
+			return "none";
+	}
+};
+
+const _resetOrKeepLoopMode = (m: LoopMode) => (m === "track" ? "none" : m);
 
 export const cursorAtom = atom((get) => get(_playerState).cursor);
 export const loopModeAtom = atom(
@@ -101,6 +113,8 @@ export const playTracksAtom = atom(
 		});
 	},
 );
+
+// NOTE: Ignores the 'track' loop mode rule
 export const skipTrackAtom = atom(
 	null,
 	(get, set, queryClient: QueryClient) => {
@@ -247,10 +261,14 @@ export const loadNextQueuePageAtom = atom(
 	},
 );
 
+// NOTE: Ignores the 'track' loop mode rule
 export const playPreviousTrackAtom = atom(null, (get, set) => {
 	const state = get(_playerState);
+
 	let newCursor = state.cursor;
-	if (newCursor >= 0) {
+	if (state.loopMode === "queue" && state.cursor === 0) {
+		newCursor = state.playlist.length - 1;
+	} else if (newCursor >= 0) {
 		newCursor--;
 	}
 	set(_playerState, {

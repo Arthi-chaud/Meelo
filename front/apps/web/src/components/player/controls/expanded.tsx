@@ -47,6 +47,7 @@ import {
 	infiniteQueryAtom,
 	loadNextQueuePageAtom,
 	loopModeAtom,
+	nextLoopMode,
 	playlistAtom,
 	removeTrackAtom,
 	reorderAtom,
@@ -62,6 +63,7 @@ import {
 	PlayerIcon,
 	PlaylistIcon,
 	RepeatIcon,
+	RepeatTrackIcon,
 	TrackIcon,
 	VolumeHighIcon,
 	VolumeLowIcon,
@@ -90,9 +92,12 @@ import PlayerSlider from "./slider";
 
 const LoopButton = () => {
 	const [loop, setLoop] = useAtom(loopModeAtom);
+	const Icon = loop === "track" ? RepeatTrackIcon : RepeatIcon;
+	const variant = loop === "queue" ? "Bold" : "Linear";
+
 	return (
-		<IconButton onClick={() => setLoop(loop === "none" ? "queue" : "none")}>
-			<RepeatIcon variant={loop === "queue" ? "Bold" : "Linear"} />
+		<IconButton onClick={() => setLoop(nextLoopMode(loop))}>
+			<Icon variant={variant} />
 		</IconButton>
 	);
 };
