@@ -7,12 +7,15 @@ import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { VideoView } from "react-native-video";
 import { getIllustration } from "@/api/queries";
-import { skipTrackAtom } from "@/state/player";
+import { loopModeAtom, nextLoopMode } from "@/state/player";
 import {
+	ContextualMenuIcon,
 	ForwardIcon,
 	FullscreenIcon,
 	PauseIcon,
 	PlayIcon,
+	RepeatIcon,
+	RepeatTrackIcon,
 	RewindIcon,
 	SettingsIcon,
 } from "@/ui/icons";
@@ -43,6 +46,7 @@ import {
 	playAtom,
 	progressAtom,
 	rewindTrackAtom,
+	skipTrackAtom,
 } from "../state";
 import { useFormattedArtistName } from "../utils";
 
@@ -76,8 +80,18 @@ const PlayControls = () => {
 	const queryClient = useQueryClient();
 	const skipTrack = useSetAtom(skipTrackAtom);
 	const rewindTrack = useSetAtom(rewindTrackAtom);
+	const [loop, setLoop] = useAtom(loopModeAtom);
+	const { openTrackContextMenu } = useCurrentTrackContextMenu();
+
 	return (
 		<View style={styles.playControls}>
+			<Pressable onPress={() => setLoop(nextLoopMode(loop))}>
+				<Icon
+					icon={loop === "track" ? RepeatTrackIcon : RepeatIcon}
+					variant={loop === "queue" ? "Bold" : "Linear"}
+					style={styles.gutterIcon}
+				/>
+			</Pressable>
 			<Pressable onPress={rewindTrack}>
 				<Icon icon={RewindIcon} style={styles.playControlButton} />
 			</Pressable>
@@ -89,6 +103,9 @@ const PlayControls = () => {
 			</Pressable>
 			<Pressable onPress={() => skipTrack(queryClient)}>
 				<Icon icon={ForwardIcon} style={styles.playControlButton} />
+			</Pressable>
+			<Pressable onPress={openTrackContextMenu}>
+				<Icon icon={ContextualMenuIcon} style={styles.gutterIcon} />
 			</Pressable>
 		</View>
 	);
@@ -206,9 +223,7 @@ export const SelectTranscodingButton = ({
 	);
 };
 
-const TrackNameButton = () => {
-	const router = useRouter();
-	const { dismiss } = useBottomSheetModal();
+const useCurrentTrackContextMenu = () => {
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const { data: track } = useQuery(
 		getTrackForContextMenu,
@@ -217,6 +232,14 @@ const TrackNameButton = () => {
 
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
+	return { openTrackContextMenu: openContextMenu };
+};
+
+const TrackNameButton = () => {
+	const router = useRouter();
+	const { dismiss } = useBottomSheetModal();
+	const currentTrack = useAtomValue(currentTrackAtom);
+	const { openTrackContextMenu } = useCurrentTrackContextMenu();
 
 	const onPress = useCallback(() => {
 		if (currentTrack?.track.releaseId) {
@@ -228,9 +251,9 @@ const TrackNameButton = () => {
 		}
 	}, [currentTrack]);
 	const onLongPress = useCallback(() => {
-		openContextMenu();
+		openTrackContextMenu();
 		Haptics.onContextMenuOpen();
-	}, [openContextMenu]);
+	}, [openTrackContextMenu]);
 	return (
 		<View style={styles.trackName}>
 			<Pressable
@@ -370,9 +393,10 @@ const styles = StyleSheet.create((theme, _rt) => ({
 	},
 	playControls: {
 		width: "100%",
-		maxWidth: breakpoints.sm,
+		maxWidth: breakpoints.md,
 		flexDirection: "row",
-		justifyContent: "space-evenly",
+		justifyContent: { xs: "space-between", sm: "space-evenly" },
+		alignItems: "center",
 	},
 	playControlButton: { size: theme.fontSize.rem(2) } as {},
 	videoButtonRow: {
@@ -387,6 +411,7 @@ const styles = StyleSheet.create((theme, _rt) => ({
 			},
 		},
 	},
+	gutterIcon: { size: theme.fontSize.rem(1.25) } as {},
 	videoButton: { flex: 0 },
 	trackName: { flex: 1, alignItems: "center" },
 	trackNameText: theme.fontStyles.semiBold,

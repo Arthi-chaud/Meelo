@@ -14,7 +14,7 @@ import Animated, {
 import { StyleSheet } from "react-native-unistyles";
 import { useAnimatedTheme } from "react-native-unistyles/reanimated";
 import { VideoView } from "react-native-video";
-import { playlistLoadingAtom, skipTrackAtom } from "@/state/player";
+import { playlistLoadingAtom } from "@/state/player";
 import { ForwardIcon, PauseIcon, PlayIcon, RewindIcon } from "@/ui/icons";
 import { useQuery, useQueryClient } from "~/api";
 import { useContextMenu } from "~/components/context-menu";
@@ -38,6 +38,7 @@ import {
 	playAtom,
 	progressAtom,
 	rewindTrackAtom,
+	skipTrackAtom,
 } from "./state";
 import { ColorBackground, useFormattedArtistName } from "./utils";
 

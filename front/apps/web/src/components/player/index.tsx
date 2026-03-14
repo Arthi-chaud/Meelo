@@ -25,7 +25,7 @@ import {
 	useTheme,
 } from "@mui/material";
 import Hls from "hls.js";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -33,6 +33,7 @@ import { useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import {
 	cursorAtom,
+	loopModeAtom,
 	playlistAtom,
 	playlistLoadingAtom,
 	playPreviousTrackAtom,
@@ -97,6 +98,7 @@ const Player = () => {
 	const [playing, setPlaying] = useState<boolean>();
 	const playerComponentRef = useRef<HTMLDivElement>(null);
 	const [expanded, setExpanded] = useState(false);
+	const loopMode = useAtomValue(loopModeAtom);
 	const [windowFocused, setWindowFocused] = useState(true);
 	const [notification, setNotification] = useState<Notification>();
 	const bottomNavigationIsDisplayed = useMediaQuery(
@@ -130,6 +132,11 @@ const Player = () => {
 			throwawayAudioPlayer.current.pause();
 			throwawayAudioPlayer.current.src = "";
 		}
+		if (player?.current && loopMode === "track") {
+			markedAsPlayed.current = false;
+			player.current.currentTime = 0;
+			return;
+		}
 		// If last track, disable player
 		if (cursor >= playlist.length - 1) {
 			pause();
@@ -139,6 +146,11 @@ const Player = () => {
 	const onRewind = () => {
 		if (player?.current && player.current.currentTime > 5) {
 			player.current.currentTime = 0;
+			return;
+		}
+		if (player?.current && loopMode === "track") {
+			player.current.currentTime = 0;
+			markedAsPlayed.current = false;
 			return;
 		}
 		// If first track, disable player
