@@ -11752,7 +11752,7 @@ __metadata:
     react-native-toast-message: "npm:^2.3.3"
     react-native-unistyles: "npm:3.0.24"
     react-native-uuid: "npm:^2.0.3"
-    react-native-video: "npm:^7.0.0-beta.7"
+    react-native-video: "npm:^7.0.0-beta.8"
     react-native-worklets: "npm:^0.7.4"
     state: "workspace:^"
     type-fest: "npm:^5.4.1"
@@ -13141,14 +13141,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-video@npm:^7.0.0-beta.7":
-  version: 7.0.0-beta.7
-  resolution: "react-native-video@npm:7.0.0-beta.7"
+"react-native-video@npm:^7.0.0-beta.8":
+  version: 7.0.0-beta.8
+  resolution: "react-native-video@npm:7.0.0-beta.8"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: ">=0.27.2"
-  checksum: 10c0/d20fc461bae90a6b6355edadb4892efd25fa728e253beaaa40da8dc1cff372a41cc1f61b5dd68264d58ceb40b48d7cb76958c0ccdbafbaf8dda281ee8eb4d6bc
+  checksum: 10c0/4244f8624609daceb5de0b81ec4b3ba587f5b2d1561571bf1046bac6bfead7dbf994af192b8d16737be7d252852ad7cb0c17ac72e9340d51eb56ecbb8ef0b938
   languageName: node
   linkType: hard
 
