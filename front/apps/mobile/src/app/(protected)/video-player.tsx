@@ -23,12 +23,9 @@ export default function FullscreenVideoPlayer() {
 	const [currentTrack] = useAtom(currentTrackAtom);
 	const player = useAtomValue(videoPlayerAtom);
 	const closePlayer = useCallback(() => {
-		if (isMobile) {
-			ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT_UP,
-			).then(() => router.back());
-		} else router.back();
+		router.back();
 	}, [isMobile]);
+
 	useEffect(() => {
 		if (currentTrack?.track.type !== "Video") closePlayer();
 	}, [currentTrack, closePlayer]);
@@ -40,6 +37,13 @@ export default function FullscreenVideoPlayer() {
 		if (Platform.OS !== "ios") {
 			setStatusBarHidden(true);
 		}
+		return () => {
+			if (isMobile) {
+				ScreenOrientation.lockAsync(
+					ScreenOrientation.OrientationLock.PORTRAIT_UP,
+				);
+			}
+		};
 	}, []);
 	const insets = useSafeAreaInsets();
 	return (
@@ -47,7 +51,8 @@ export default function FullscreenVideoPlayer() {
 			<Stack.Screen
 				options={{
 					headerShown: false,
-					presentation: "fullScreenModal",
+					// NOTE: Bugged on iOS, and actually not needed anyway
+					// presentation: "fullScreenModal",
 					statusBarHidden: true,
 					navigationBarHidden: true,
 					animation: "none",
