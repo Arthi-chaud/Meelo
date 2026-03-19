@@ -9,6 +9,7 @@ pkgs.mkShell {
     watchman
     cocoapods
     # TODO android toolstack
+    javaPackages.compiler.openjdk17
   ];
   shellHook = ''
     unset CC
