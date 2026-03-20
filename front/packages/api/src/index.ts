@@ -699,7 +699,7 @@ export default class API {
 		if (type === "Video") {
 			return this.buildURL(`/stream/${fileId}/master.m3u8`, {});
 		}
-		return this.buildURL(`/stream/${fileId}/audio/0/index.m3u8`, {});
+		return this.buildURL(`/stream/${fileId}/audio/0/128k/index.m3u8`, {});
 	}
 
 	/**
