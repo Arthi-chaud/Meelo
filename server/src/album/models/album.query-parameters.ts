@@ -44,7 +44,7 @@ namespace AlbumQueryParameters {
 	 * The input required to save an album in the database
 	 */
 	export class CreateInput extends IntersectionType(
-		PickType(Album, ["name"] as const),
+		PickType(Album, ["name", "type"] as const),
 		class {
 			releaseDate?: Date;
 			registeredAt?: Date;

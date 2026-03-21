@@ -218,19 +218,23 @@ export default class MetadataService {
 						{ master: true },
 					)
 				: null;
-
+		const albumName = metadata.album
+			? this.parserService.parseReleaseExtension(metadata.album)
+					.parsedName
+			: undefined;
 		const album = metadata.album
 			? await this.albumService.getOrCreate(
 					{
-						name: this.parserService.parseReleaseExtension(
-							metadata.album,
-						).parsedName,
+						name: albumName!,
 						sortName: metadata.sortAlbum,
 						artist: albumArtist
 							? { id: albumArtist?.id }
 							: undefined,
 						registeredAt: file.registerDate,
 						releaseDate: metadata.albumReleaseDate,
+						type:
+							metadata.albumType ??
+							this.parserService.getAlbumType(albumName!),
 					},
 					{ releases: true },
 				)

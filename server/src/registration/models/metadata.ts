@@ -34,7 +34,7 @@ import {
 	Min,
 	MinLength,
 } from "class-validator";
-import { TrackType } from "src/prisma/generated/client";
+import { AlbumType, TrackType } from "src/prisma/generated/client";
 
 /**
  * Extracted metadata from a track file
@@ -217,6 +217,14 @@ export default class Metadata {
 	@IsOptional()
 	@IsArray()
 	genres?: string[];
+
+	/**
+	 * Type of the album
+	 */
+	@ApiProperty()
+	@IsEnum(AlbumType)
+	@IsOptional()
+	albumType?: AlbumType;
 
 	/**
 	 * Discogs ID of the parent release

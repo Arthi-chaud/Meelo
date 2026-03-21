@@ -7,6 +7,7 @@ import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import ParserModule from "src/parser/parser.module";
+import { AlbumType } from "src/prisma/generated/enums";
 import type { Release } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -231,7 +232,10 @@ describe("Release Service", () => {
 			);
 		});
 		it("Should throw, as the album does not have releases", async () => {
-			const tmpAlbum = await albumService.create({ name: "A" });
+			const tmpAlbum = await albumService.create({
+				name: "A",
+				type: AlbumType.StudioRecording,
+			});
 			const test = () =>
 				releaseService.getMasterRelease({ id: tmpAlbum.id });
 
