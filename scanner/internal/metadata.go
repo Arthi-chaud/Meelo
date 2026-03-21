@@ -49,7 +49,8 @@ type Metadata struct {
 	// Duration, in seconds
 	Duration int64 `validate:"gte=0"`
 	// Type of the track
-	Type TrackType `validate:"required"`
+	Type      TrackType `validate:"required"`
+	AlbumType AlbumType
 	// Genres of the track
 	Genres []string
 	// Discogs ID of the parent release
@@ -77,6 +78,22 @@ type TrackType string
 const (
 	Audio TrackType = "Audio"
 	Video TrackType = "Video"
+)
+
+type AlbumType string
+
+const (
+	Studio      AlbumType = "StudioRecording"
+	Live        AlbumType = "LiveRecording"
+	EP          AlbumType = "EP"
+	Remixes     AlbumType = "RemixAlbum"
+	Demo        AlbumType = "DemoAlbum"
+	Unofficial  AlbumType = "Unofficial"
+	Compilation AlbumType = "Compilation"
+	Single      AlbumType = "Single"
+	Soundtrack  AlbumType = "Soundtrack"
+	VideoAlbum  AlbumType = "VideoAlbum"
+	Other       AlbumType = "Other"
 )
 
 type IllustrationLocation string

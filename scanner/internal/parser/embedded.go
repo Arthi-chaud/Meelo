@@ -178,6 +178,32 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 	ParseTag(tags, []string{"musicbrainz release group id"}, func(value string) {
 		metadata.AlbumMbid = value
 	})
+
+	ParseTag(tags, []string{"musicbrainz album type"}, func(value string) {
+		switch value {
+		case "album":
+			metadata.AlbumType = internal.Studio
+			return
+		case "remix":
+			metadata.AlbumType = internal.Remixes
+			return
+		case "live":
+			metadata.AlbumType = internal.Live
+			return
+		case "compilation":
+			metadata.AlbumType = internal.Compilation
+			return
+		case "ep":
+			metadata.AlbumType = internal.EP
+			return
+		case "dj-mix":
+			metadata.AlbumType = internal.Remixes
+			return
+		case "demo":
+			metadata.AlbumType = internal.Demo
+			return
+		}
+	})
 	ParseTag(tags, []string{"musicbrainz track id"}, func(value string) {
 		metadata.SongMbid = value
 	})
