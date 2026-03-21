@@ -139,7 +139,7 @@ export default class AlbumService extends SearchableRepositoryService {
 					sortSlug: new Slug(albumSortName).toString(),
 					releaseDate: album.releaseDate,
 					registeredAt: album.registeredAt,
-					type: this.parserService.getAlbumType(album.name),
+					type: album.type,
 				},
 			})
 			.then((created) => {

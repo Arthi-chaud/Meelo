@@ -154,6 +154,9 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	if len(m.DiscName) > 0 {
 		mp.WriteField("discName", m.DiscName)
 	}
+	if len(m.AlbumType) > 0 {
+		mp.WriteField("albumType", string(m.AlbumType))
+	}
 	if m.Bitrate > 0 {
 		mp.WriteField("bitrate", strconv.FormatInt(m.Bitrate, 10))
 	}

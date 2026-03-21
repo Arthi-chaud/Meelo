@@ -8,7 +8,7 @@ import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import ParserModule from "src/parser/parser.module";
-import { IllustrationType } from "src/prisma/generated/client";
+import { AlbumType, IllustrationType } from "src/prisma/generated/client";
 import type {
 	Album,
 	Release,
@@ -536,7 +536,7 @@ describe("Release Controller", () => {
 		it("Should throw, as the album does not have releases", async () => {
 			const tmpAlbum = await module
 				.get(AlbumService)
-				.create({ name: "A" });
+				.create({ name: "A", type: AlbumType.StudioRecording });
 			return request(app.getHttpServer())
 				.get(`/releases/master/${tmpAlbum.id}`)
 				.expect(404);
