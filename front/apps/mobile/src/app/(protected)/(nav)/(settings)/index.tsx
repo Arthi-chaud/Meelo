@@ -4,7 +4,7 @@ import { SettingsPage } from "~/pages/settings";
 export default function SettingsView() {
 	return (
 		<StaticHeader>
-			<SettingsPage />
+			{(scrollRef) => <SettingsPage scrollRef={scrollRef} />}
 		</StaticHeader>
 	);
 }

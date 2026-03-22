@@ -1,5 +1,6 @@
+import type { FlashListRef } from "@shopify/flash-list";
 import { useAtomValue } from "jotai";
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, type RefObject, useMemo } from "react";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
 import { useQuery } from "~/api";
@@ -14,7 +15,11 @@ import { InterfaceSettings } from "./sections/interface";
 import { MiscSection } from "./sections/misc";
 import { ServiceVersionsSettings } from "./sections/service-versions";
 
-export const SettingsPage = () => {
+export const SettingsPage = ({
+	scrollRef,
+}: {
+	scrollRef: RefObject<FlashListRef<any> | null>;
+}) => {
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const otherInstances = useAtomValue(otherInstancesAtom);
 	const sections = useMemo(() => {
@@ -35,6 +40,7 @@ export const SettingsPage = () => {
 	}, [user, otherInstances]);
 	return (
 		<SafeFlashList
+			ref={scrollRef}
 			data={sections}
 			contentContainerStyle={[styles.root]}
 			renderItem={({ item: Section }) => <Section />}

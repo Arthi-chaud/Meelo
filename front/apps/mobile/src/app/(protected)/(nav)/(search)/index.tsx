@@ -111,40 +111,43 @@ export default function SearchView() {
 		},
 		[],
 	);
-
 	return (
 		<StaticHeader>
-			<InfiniteView
-				header={
-					<View style={styles.searchHeader}>
-						<TextInput
-							inModal={false}
-							autoCorrect={false}
-							autoCapitalize={"none"}
-							placeholder={t("nav.search")}
-							onChangeText={debounceSearch}
+			{(scrollRef) => (
+				<InfiniteView
+					scrollRef={scrollRef}
+					header={
+						<View style={styles.searchHeader}>
+							<TextInput
+								inModal={false}
+								autoCorrect={false}
+								autoCapitalize={"none"}
+								placeholder={t("nav.search")}
+								onChangeText={debounceSearch}
+							/>
+						</View>
+					}
+					// NOTE: Since the original type of the query is SearchResult, it does not have an id,
+					// that's why it complains
+					query={
+						query as unknown as InfiniteQuery<
+							Resource,
+							IllustratedSearchResultWithId
+						>
+					}
+					controls={{
+						filters:
+							searchValue.trim() === "" ? [] : [filterControl],
+					}}
+					render={(item) => (
+						<SearchResultItem
+							searchResult={item}
+							onPress={() => onSearchResultPress(item)}
 						/>
-					</View>
-				}
-				// NOTE: Since the original type of the query is SearchResult, it does not have an id,
-				// that's why it complains
-				query={
-					query as unknown as InfiniteQuery<
-						Resource,
-						IllustratedSearchResultWithId
-					>
-				}
-				controls={{
-					filters: searchValue.trim() === "" ? [] : [filterControl],
-				}}
-				render={(item) => (
-					<SearchResultItem
-						searchResult={item}
-						onPress={() => onSearchResultPress(item)}
-					/>
-				)}
-				layout="list"
-			/>
+					)}
+					layout="list"
+				/>
+			)}
 		</StaticHeader>
 	);
 }

@@ -294,12 +294,15 @@ export default function Root() {
 	];
 	return (
 		<StaticHeader>
-			<SafeFlashList
-				data={sections}
-				getItemType={(t) => t.type}
-				renderItem={({ item }) => renderHomePageSection(item)}
-				contentContainerStyle={[styles.main]}
-			/>
+			{(scrollRef) => (
+				<SafeFlashList
+					ref={scrollRef}
+					data={sections}
+					getItemType={(t) => t.type}
+					renderItem={({ item }) => renderHomePageSection(item)}
+					contentContainerStyle={[styles.main]}
+				/>
+			)}
 		</StaticHeader>
 	);
 }

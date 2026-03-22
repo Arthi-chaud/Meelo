@@ -1,4 +1,5 @@
-import type { FlashListProps } from "@shopify/flash-list";
+import type { FlashListProps, FlashListRef } from "@shopify/flash-list";
+import type { Ref } from "react";
 import {
 	ScrollView,
 	type ScrollViewProps,
@@ -10,7 +11,10 @@ import { useRootViewStyle } from "~/hooks/root-view-style";
 import { AnimatedFlashlist } from "./animated";
 
 export const SafeFlashList = <T,>(
-	props: Omit<FlashListProps<T>, "contentContainerStyle"> & {
+	props: Omit<
+		FlashListProps<T> & { ref?: Ref<FlashListRef<T>> },
+		"contentContainerStyle"
+	> & {
 		contentContainerStyle?: ViewStyle[];
 	},
 ) => {

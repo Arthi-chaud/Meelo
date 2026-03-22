@@ -1,6 +1,6 @@
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, type FlashListRef } from "@shopify/flash-list";
 import type React from "react";
-import { type ComponentProps, useMemo, useState } from "react";
+import { type ComponentProps, type RefObject, useMemo, useState } from "react";
 import { type StyleProp, View, type ViewStyle } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import type { InfiniteQuery } from "@/api/query";
@@ -36,6 +36,7 @@ type Props<T, T1, Sort extends string> = {
 	layout: LayoutOption;
 	header?: React.ReactElement;
 	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
+	scrollRef?: RefObject<FlashListRef<unknown> | null>;
 	render: (
 		item: T1 | undefined,
 		index: number,
@@ -95,6 +96,7 @@ export const InfiniteView = <
 					</View>
 				) : controlsHeight !== null ? (
 					<ScrollView
+						ref={props.scrollRef}
 						data={itemList}
 						refreshing={queryRes.isRefetching}
 						contentContainerStyle={
