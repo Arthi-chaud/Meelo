@@ -1,6 +1,8 @@
+import { useScrollToTop } from "@react-navigation/native";
+import type { FlashListRef } from "@shopify/flash-list";
 import { BlurTargetView } from "expo-blur";
 import { type ScreenProps, Stack } from "expo-router";
-import { type ReactNode, useRef } from "react";
+import { type ReactNode, type Ref, type RefObject, useRef } from "react";
 import {
 	interpolate,
 	type ScrollHandlerProcessed,
@@ -14,6 +16,7 @@ export type ScrollHandler = ScrollHandlerProcessed<Record<string, unknown>>;
 
 export type PageScrollProps = {
 	onScroll: ScrollHandler;
+	scrollRef: Ref<FlashListRef<any>>;
 	scrollEventThrottle: number;
 };
 
@@ -40,6 +43,7 @@ export const FadingHeader = ({
 		[],
 	);
 	const blurRef = useRef(null);
+	const scrollRef = useRef<FlashListRef<any>>(null);
 
 	return (
 		<>
@@ -55,7 +59,11 @@ export const FadingHeader = ({
 				}}
 			/>
 			<BlurTargetView ref={blurRef} style={{ flex: 1 }}>
-				{children({ onScroll: scrollHandler, scrollEventThrottle: 16 })}
+				{children({
+					scrollRef,
+					onScroll: scrollHandler,
+					scrollEventThrottle: 16,
+				})}
 			</BlurTargetView>
 		</>
 	);
@@ -65,19 +73,33 @@ export const StaticHeader = ({
 	children,
 	options,
 }: {
-	children: any;
+	children:
+		| ReactNode
+		| ((scrollRef: RefObject<FlashListRef<any> | null>) => ReactNode);
 	options?: ScreenProps["options"];
 }) => {
-	const r = useRef(null);
+	const contentRef = useRef(null);
+	const scrollRef = useRef<FlashListRef<any>>(null);
+
+	useScrollToTop(
+		useRef({
+			scrollToTop: () =>
+				scrollRef?.current?.scrollToTop({ animated: true }),
+		}),
+	);
 	return (
 		<Stack.Screen
 			options={{
-				headerBackground: () => <HeaderBackground blurTarget={r} />,
+				headerBackground: () => (
+					<HeaderBackground blurTarget={contentRef} />
+				),
 				...options,
 			}}
 		>
-			<BlurTargetView style={{ flex: 1 }} ref={r}>
-				{children}
+			<BlurTargetView style={{ flex: 1 }} ref={contentRef}>
+				{typeof children === "function"
+					? children(scrollRef)
+					: children}
 			</BlurTargetView>
 		</Stack.Screen>
 	);

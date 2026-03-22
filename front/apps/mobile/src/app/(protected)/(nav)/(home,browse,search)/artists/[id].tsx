@@ -301,6 +301,7 @@ export default function ArtistView() {
 			{(props) => (
 				<SafeFlashList
 					{...props}
+					ref={props.scrollRef}
 					data={sections}
 					getItemType={({ type }) => type}
 					renderItem={({ item }) => renderSection(item)}
