@@ -1,6 +1,7 @@
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
+import { ReduceMotion } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { BlurView } from "~/components/blur-view";
 import { ModalBackdrop } from "~/components/bottom-modal-sheet";
@@ -24,6 +25,7 @@ export const ExpandedPlayerSlot = ({ blurTarget }: { blurTarget: any }) => {
 		<BottomSheetModal
 			ref={modalRef}
 			name={ExpandedPlayerModalKey}
+			overrideReduceMotion={ReduceMotion.Never}
 			enableDynamicSizing={false}
 			snapPoints={["100%"]}
 			handleComponent={null}
