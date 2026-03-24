@@ -1,5 +1,5 @@
 import { useSetAtom } from "jotai";
-import { type ComponentProps, useMemo } from "react";
+import { type ComponentProps, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { getAlbum, getRelease, getReleaseStats } from "@/api/queries";
@@ -92,6 +92,18 @@ export default function ReleasePage({
 		],
 		[release, album, tracklist, footerSection],
 	);
+	const refresh = useCallback(() => {
+		queryClient.client.invalidateQueries({ queryKey: [releaseId] });
+		queryClient.client.invalidateQueries({
+			queryKey: [release?.slug?.toString()],
+		});
+		queryClient.client.invalidateQueries({
+			queryKey: [album?.id.toString()],
+		});
+		queryClient.client.invalidateQueries({
+			queryKey: [album?.slug.toString()],
+		});
+	}, [queryClient]);
 
 	const renderItem = (item: Item) => {
 		switch (item.type) {
@@ -151,6 +163,7 @@ export default function ReleasePage({
 			{...scrollProps}
 			contentContainerStyle={rootStyle}
 			data={items}
+			onRefresh={refresh}
 			getItemType={({ type }) => type}
 			onEndReached={fetchNextPage}
 			onEndReachedThreshold={rt.screen.height / 2}
