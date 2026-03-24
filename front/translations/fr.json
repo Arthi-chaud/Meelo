@@ -14,6 +14,7 @@
 			"seeSongs": "Voir les morceaux"
 		},
 		"changeIllutration": "Changer l'illustration",
+		"clearQueryCache": "Vider le cache des requêtes",
 		"connectToNewServer": "Se connecter à un nouveau server",
 		"create": "Créer",
 		"delete": "Supprimer",
@@ -73,7 +74,7 @@
 		},
 		"switchServer": {
 			"label": "Changer de serveur",
-			"modalMessage": "Changer de server interronpra la lecture et réinitialisera la liste de lecture. Etes-vous sûr.e de vousloir changer de server?"
+			"modalMessage": "Changer de server interronpra la lecture et réinitialisera la liste de lecture. Etes-vous sûr.e de vouloir changer de server?"
 		},
 		"track": {
 			"reassignTrack": "Réassigner la piste",

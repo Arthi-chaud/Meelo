@@ -1,8 +1,9 @@
 import { useSetAtom } from "jotai";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
-import { getAPI_ } from "~/api";
+import { getAPI_, useQueryClient } from "~/api";
 import { useLoginForm } from "~/components/login-form";
 import { Button } from "~/primitives/button";
 import { showSuccessToast } from "~/primitives/toast";
@@ -30,13 +31,24 @@ export const MiscSection = () => {
 			showSuccessToast({ text: t("toasts.auth.serverSwitchSuccessful") });
 		},
 	});
+	const queryClient = useQueryClient();
+	const clearCache = useCallback(() => {
+		queryClient.client.invalidateQueries();
+	}, [queryClient]);
 
 	return (
 		<Section>
 			<Button
+				title={t("actions.clearQueryCache")}
+				containerStyle={{ alignItems: "center" }}
+				labelStyle={styles.buttonStyle}
+				onPress={clearCache}
+				width="fill"
+			/>
+			<Button
 				title={t("actions.connectToNewServer")}
 				containerStyle={{ alignItems: "center" }}
-				labelStyle={styles.logoutButtonStyle}
+				labelStyle={styles.buttonStyle}
 				onPress={openLoginForm}
 				width="fill"
 			/>
@@ -44,7 +56,7 @@ export const MiscSection = () => {
 				title={t("actions.logout")}
 				width="fill"
 				containerStyle={{ alignItems: "center" }}
-				labelStyle={styles.logoutButtonStyle}
+				labelStyle={styles.buttonStyle}
 				onPress={() => {
 					onLeavingInstance();
 					popCurrentInstance();
@@ -55,5 +67,5 @@ export const MiscSection = () => {
 };
 
 const styles = StyleSheet.create(() => ({
-	logoutButtonStyle: { flex: 1 },
+	buttonStyle: { flex: 1 },
 }));
