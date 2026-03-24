@@ -4,15 +4,17 @@
 		"config:recommended"
 	],
 	"schedule": [
-		"on wednesday"
+		"before 5am on wednesday"
 	],
 	"labels": [
 		"Dependencies",
 		"release-note-ignore"
 	],
 	"minimumReleaseAge": "10 days",
-	"separateMinorPatch": true,
-	"prHourlyLimit": 5,
+	"separateMinorPatch": false,
+	"prHourlyLimit": 2,
+	"prConcurrentLimit": 3,
+	"branchConcurrentLimit": 3,
 	"packageRules": [
 		{
 			"matchDatasources": [
