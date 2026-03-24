@@ -124,26 +124,28 @@ export default function Root() {
 			"illustration",
 		]),
 	);
+	const queries = [
+		newlyAddedAlbums,
+		newlyAddedArtists,
+		latestAlbums,
+		topSongs,
+		newlyAddedReleases,
+	];
+	const refresh = useCallback(
+		() =>
+			queries.forEach((q) => {
+				q.refetch();
+			}),
+		[queries],
+	);
 	const sync = useCallback(
 		<T,>(q: T) => {
-			if (
-				!!newlyAddedAlbums.data &&
-				!!newlyAddedArtists.data &&
-				!!latestAlbums.data &&
-				!!topSongs.data &&
-				!!newlyAddedReleases.data
-			) {
-				return q;
+			if (queries.find((q1) => q1.data === undefined)) {
+				return undefined;
 			}
-			return undefined;
+			return q;
 		},
-		[
-			newlyAddedAlbums.data,
-			newlyAddedArtists.data,
-			latestAlbums.data,
-			topSongs.data,
-			newlyAddedReleases.data,
-		],
+		[queries],
 	);
 
 	const sections: HomePageSection[] = [
@@ -298,6 +300,8 @@ export default function Root() {
 				<SafeFlashList
 					ref={scrollRef}
 					data={sections}
+					refreshing={!!queries.find((q) => q.isRefetching)}
+					onRefresh={refresh}
 					getItemType={(t) => t.type}
 					renderItem={({ item }) => renderHomePageSection(item)}
 					contentContainerStyle={[styles.main]}
