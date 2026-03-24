@@ -3,6 +3,7 @@ import type { FlashListRef } from "@shopify/flash-list";
 import { BlurTargetView } from "expo-blur";
 import { type ScreenProps, Stack } from "expo-router";
 import { type ReactNode, type Ref, type RefObject, useRef } from "react";
+import { Platform } from "react-native";
 import {
 	interpolate,
 	type ScrollHandlerProcessed,
@@ -44,17 +45,20 @@ export const FadingHeader = ({
 	);
 	const blurRef = useRef(null);
 	const scrollRef = useRef<FlashListRef<any>>(null);
+	const showHeader = Platform.OS !== "ios";
 
 	return (
 		<>
 			<Stack.Screen
 				options={{
-					headerBackground: () => (
-						<HeaderBackground
-							blurTarget={blurRef}
-							style={[{ opacity: 0 }, headerStyle]}
-						/>
-					),
+					headerBackground: showHeader
+						? () => (
+								<HeaderBackground
+									blurTarget={blurRef}
+									style={[{ opacity: 0 }, headerStyle]}
+								/>
+							)
+						: () => null,
 					...options,
 				}}
 			/>
