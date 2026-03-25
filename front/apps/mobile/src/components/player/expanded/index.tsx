@@ -102,7 +102,9 @@ const Footer = ({
 									? styles.disabledFooterButton
 									: undefined
 							}
-							variant={selectedTab === tab ? "Bold" : undefined}
+							// NOTE: Specifying Linear to ensure
+							// the correct icon for lyrics
+							variant={selectedTab === tab ? "Bold" : "Linear"}
 						/>
 					</Pressable>
 				))}
