@@ -29,7 +29,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type LegacyRef, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useReadLocalStorage } from "usehooks-ts";
+import { useLocalStorage, useReadLocalStorage } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 import {
 	cursorAtom,
@@ -71,7 +71,7 @@ const Player = () => {
 		() => playlist[cursor + 1],
 		[cursor, playlist],
 	);
-	const [volume, setVolume] = useState(1);
+	const [volume, setVolume] = useLocalStorage("volume", 1);
 	const throwawayAudioPlayer = useRef<HTMLAudioElement>(null);
 	const audioPlayer = useRef<HTMLAudioElement>(null);
 	const [useTranscoding, setUseTranscoding] = useState(false);
@@ -203,6 +203,7 @@ const Player = () => {
 	};
 
 	const startPlayback = (isTrancoding: boolean) => {
+		if (player) player.current!.volume = volume;
 		// biome-ignore lint: false positive
 		player
 			?.current!.play()
