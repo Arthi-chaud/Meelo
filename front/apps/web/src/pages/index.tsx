@@ -20,7 +20,7 @@ import { Box, Chip, Grid, Stack } from "@mui/material";
 import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
 import Link from "next/link";
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import {
@@ -208,6 +208,28 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { GradientBackground } = useGradientBackground(
 		selectedIllustrationColor,
 	);
+	const getAlbumExternalMetadata_ = useCallback(
+		(albumId: number | undefined) => {
+			if (albumId === undefined) {
+				return undefined;
+			}
+			const res = featuredAlbumsExternalMetadata.find(
+				({ data }) => data?.albumId === albumId,
+			);
+			if (res === undefined) {
+				if (
+					featuredAlbumsExternalMetadata.every(
+						({ data }) => data === null,
+					)
+				) {
+					return null;
+				}
+				return undefined;
+			}
+			return res.data;
+		},
+		[featuredAlbumsExternalMetadata],
+	);
 
 	return (
 		<>
@@ -272,13 +294,9 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										<AlbumHighlightCard
 											album={album}
 											genres={album?.genres}
-											externalMetadata={
-												featuredAlbumsExternalMetadata.find(
-													({ data }) =>
-														data?.albumId ===
-														album?.id,
-												)?.data ?? undefined
-											}
+											externalMetadata={getAlbumExternalMetadata_(
+												album?.id,
+											)}
 										/>
 									</Grid>
 								))}
