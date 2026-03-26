@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
+import { AddIcon, LogoutIcon } from "@/ui/icons";
 import { getAPI_, useQueryClient } from "~/api";
 import { useLoginForm } from "~/components/login-form";
 import { Button } from "~/primitives/button";
@@ -39,24 +40,23 @@ export const MiscSection = () => {
 	return (
 		<Section>
 			<Button
-				title={t("actions.clearQueryCache")}
-				containerStyle={{ alignItems: "center" }}
-				labelStyle={styles.buttonStyle}
-				onPress={clearCache}
-				width="fill"
-			/>
-			<Button
 				title={t("actions.connectToNewServer")}
-				containerStyle={{ alignItems: "center" }}
-				labelStyle={styles.buttonStyle}
+				icon={AddIcon}
+				containerStyle={styles.buttonStyle}
 				onPress={openLoginForm}
 				width="fill"
 			/>
 			<Button
-				title={t("actions.logout")}
+				title={t("actions.clearQueryCache")}
+				containerStyle={styles.buttonStyle}
+				onPress={clearCache}
 				width="fill"
-				containerStyle={{ alignItems: "center" }}
-				labelStyle={styles.buttonStyle}
+			/>
+			<Button
+				title={t("actions.logout")}
+				icon={LogoutIcon}
+				width="fill"
+				containerStyle={styles.buttonStyle}
 				onPress={() => {
 					onLeavingInstance();
 					popCurrentInstance();
@@ -67,5 +67,5 @@ export const MiscSection = () => {
 };
 
 const styles = StyleSheet.create(() => ({
-	buttonStyle: { flex: 1 },
+	buttonStyle: { alignItems: "center" },
 }));
