@@ -103,7 +103,7 @@ export const Header = ({
 							/>
 						)}
 						<View style={styles.headerAlbumStat}>
-							{releaseDate !== null && (
+							{dateAndDuration !== null && (
 								<LoadableText
 									style={styles.headerText}
 									skeletonWidth={10}
@@ -165,14 +165,16 @@ const useDateAndDuration = (
 		if (releaseDate === undefined || totalDuration === undefined) {
 			return undefined;
 		}
-		return [
+		const items = [
 			releaseDate
 				? formatReleaseDate(releaseDate, i18n.language)
 				: undefined,
 			formatDuration(totalDuration),
-		]
-			.filter((item) => item !== undefined)
-			.join(" • ");
+		].filter((item) => item !== undefined);
+		if (items.length === 0) {
+			return null;
+		}
+		return items.join(" • ");
 	}, [totalDuration, releaseDate]);
 };
 
