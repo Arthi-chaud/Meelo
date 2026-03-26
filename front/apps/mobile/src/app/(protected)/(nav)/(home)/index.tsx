@@ -17,13 +17,14 @@
  */
 
 import { FlashList, type FlashListProps } from "@shopify/flash-list";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbums,
 	getArtists,
+	getCurrentUserStatus,
 	getGenres,
 	getLabels,
 	getReleases,
@@ -32,9 +33,12 @@ import {
 import type { AlbumSortingKey, AlbumWithRelations } from "@/models/album";
 import type { ArtistSortingKey, ArtistWithRelations } from "@/models/artist";
 import type { SongSortingKey } from "@/models/song";
+import { EmptyStateIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
-import { useInfiniteQuery } from "~/api";
+import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
+import { EmptyState } from "~/components/empty-state";
+import { GoToWebSettingsButton } from "~/components/go-to-web";
 import { StaticHeader } from "~/components/header";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
@@ -42,13 +46,18 @@ import { GenreChip } from "~/components/item/resource/genre";
 import { LabelChip } from "~/components/item/resource/label";
 import ReleaseTile from "~/components/item/resource/release";
 import { Row, type RowProps } from "~/components/row";
-import { SafeFlashList } from "~/components/safe-view";
+import { SafeFlashList, SafeView } from "~/components/safe-view";
 import { SongGrid, type SongGridProps } from "~/components/song-grid";
 import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
 const styles = StyleSheet.create((theme) => ({
 	main: { gap: theme.gap(2) },
+	emptyState: {
+		flex: 1,
+		justifyContent: "center",
+		paddingHorizontal: theme.gap(1),
+	},
 	lastSection: {
 		paddingBottom: theme.gap(1),
 	},
@@ -147,6 +156,7 @@ export default function Root() {
 		},
 		[queries],
 	);
+	const { data: user } = useQuery(getCurrentUserStatus);
 
 	const sections: HomePageSection[] = [
 		{
@@ -154,6 +164,7 @@ export default function Root() {
 			props: {
 				header: t("home.newlyAddedAlbums"),
 				items: sync(newlyAddedAlbums.items),
+				hideIfEmpty: true,
 				render: (album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				},
@@ -173,6 +184,7 @@ export default function Root() {
 			type: "tileRow",
 			props: {
 				header: t("home.newlyAddedArtists"),
+				hideIfEmpty: true,
 				items: sync(newlyAddedArtists.items),
 				render: (artist) => {
 					return <ArtistTile artist={artist} />;
@@ -193,6 +205,7 @@ export default function Root() {
 			props: {
 				header: t("home.latestAlbums"),
 				items: sync(latestAlbums.items),
+				hideIfEmpty: true,
 				render: (album) => {
 					return <AlbumTile album={album} subtitle="artistName" />;
 				},
@@ -212,32 +225,47 @@ export default function Root() {
 			props: {
 				header: t("home.newlyAddedReleases"),
 				items: sync(newlyAddedReleases.items),
+				hideIfEmpty: true,
 				render: (release) => {
 					return <ReleaseTile release={release} />;
 				},
 			},
 		},
-		{
-			type: "chipRow",
-			props: {
-				horizontal: true,
-				data: topGenres.items ?? generateArray(1, undefined),
 
-				ListHeaderComponent: (
-					<Text content={t("home.topGenres")} variant="h4" />
-				),
-				CellRendererComponent: (props) => {
-					return (
-						<View {...props} style={[styles.chip, props.style]} />
-					);
-				},
-				renderItem: ({ item: genre, index }) => (
-					<GenreChip genre={genre} key={genre?.slug ?? index} />
-				),
+		...(topLabels.items?.length
+			? [
+					{
+						type: "chipRow",
+						props: {
+							horizontal: true,
+							data:
+								topGenres.items ?? generateArray(1, undefined),
+							ListHeaderComponent: (
+								<Text
+									content={t("home.topGenres")}
+									variant="h4"
+								/>
+							),
+							CellRendererComponent: (props) => {
+								return (
+									<View
+										{...props}
+										style={[styles.chip, props.style]}
+									/>
+								);
+							},
+							renderItem: ({ item: genre, index }) => (
+								<GenreChip
+									genre={genre}
+									key={genre?.slug ?? index}
+								/>
+							),
 
-				contentContainerStyle: styles.chipRow,
-			},
-		},
+							contentContainerStyle: styles.chipRow,
+						},
+					} satisfies HomePageSection,
+				]
+			: []),
 
 		...(topLabels.items?.length
 			? [
@@ -271,7 +299,7 @@ export default function Root() {
 
 							contentContainerStyle: styles.chipRow,
 						},
-					} as HomePageSection,
+					} satisfies HomePageSection,
 				]
 			: []),
 		{
@@ -294,19 +322,32 @@ export default function Root() {
 			},
 		},
 	];
+	const isEmpty = useMemo(() => {
+		return queries.every((q) => q.data?.pages.at(0)?.items.length === 0);
+	}, [queries]);
 	return (
 		<StaticHeader>
-			{(scrollRef) => (
-				<SafeFlashList
-					ref={scrollRef}
-					data={sections}
-					refreshing={!!queries.find((q) => q.isRefetching)}
-					onRefresh={refresh}
-					getItemType={(t) => t.type}
-					renderItem={({ item }) => renderHomePageSection(item)}
-					contentContainerStyle={[styles.main]}
-				/>
-			)}
+			{(scrollRef) =>
+				isEmpty ? (
+					<SafeView style={[styles.main, styles.emptyState]}>
+						<EmptyState
+							icon={EmptyStateIcon}
+							text="emptyState.home"
+						/>
+						{user?.admin && <GoToWebSettingsButton />}
+					</SafeView>
+				) : (
+					<SafeFlashList
+						ref={scrollRef}
+						data={sections}
+						refreshing={!!queries.find((q) => q.isRefetching)}
+						onRefresh={refresh}
+						getItemType={(t) => t.type}
+						renderItem={({ item }) => renderHomePageSection(item)}
+						contentContainerStyle={[styles.main]}
+					/>
+				)
+			}
 		</StaticHeader>
 	);
 }
