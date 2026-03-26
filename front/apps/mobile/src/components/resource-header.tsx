@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native-unistyles";
 import type { ArtistWithRelations } from "@/models/artist";
 import type IllustrationResource from "@/models/illustration";
 import type { SongWithRelations } from "@/models/song";
+import { ArtistIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
 import { type ContextMenuBuilder, ContextMenuButton } from "./context-menu";
 import { useArtistContextMenu } from "./context-menu/resource/artist";
@@ -40,6 +41,7 @@ export const ArtistHeader = ({
 	return (
 		<ResourceHeader
 			illustration={artist?.illustration}
+			illustrationProps={{ fallbackIcon: ArtistIcon }}
 			circleIllustration
 			title={artist?.name}
 			subtitle={null}
