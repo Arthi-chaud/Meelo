@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import type { ArtistWithRelations } from "@/models/artist";
+import { ArtistIcon } from "@/ui/icons";
 import { useArtistContextMenu } from "~/components/context-menu/resource/artist";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";
@@ -22,6 +23,7 @@ export const ArtistTile = ({ artist, illustrationProps, onPress }: Props) => {
 			href={artist ? `/artists/${artist.id}` : null}
 			illustrationProps={{
 				...illustrationProps,
+				fallbackIcon: ArtistIcon,
 				variant: "circle",
 			}}
 		/>
