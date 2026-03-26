@@ -171,6 +171,7 @@ export default function ArtistView() {
 			props: {
 				header: t("artist.topSongs"),
 				parentArtistId: artist?.id,
+				hideIfEmpty: true,
 				style: styles.section,
 				seeMore:
 					(topSongs.items?.length ?? 0) >= ShowSeeMoreThreshold
