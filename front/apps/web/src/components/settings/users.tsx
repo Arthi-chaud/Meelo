@@ -19,7 +19,6 @@
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import { useMutation } from "@tanstack/react-query";
-import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -29,7 +28,7 @@ import type User from "@/models/user";
 import { DeleteIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import AdminGrid from "~/components/admin-grid";
-import { userAtom } from "~/state/user";
+import { useUser } from "~/hooks/user";
 
 const DeleteButton = ({
 	userId,
@@ -77,7 +76,7 @@ const DeleteButton = ({
 const UsersSettings = () => {
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
-	const [currentUser] = useAtom(userAtom);
+	const { user: currentUser } = useUser();
 	const userMutation = useMutation({
 		mutationFn: ({
 			user,

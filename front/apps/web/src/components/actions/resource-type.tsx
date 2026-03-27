@@ -34,7 +34,7 @@ import type Video from "@/models/video";
 import { VideoType } from "@/models/video";
 import { store } from "@/state/store";
 import { EditIcon } from "@/ui/icons";
-import { userAtom } from "~/state/user";
+import { getUser } from "~/hooks/user";
 import { closeModalAtom, openModalAtom } from "../modal";
 import type Action from "./";
 
@@ -79,7 +79,7 @@ const ChangeResourceType = <
 	return {
 		label: label,
 		icon: <EditIcon />,
-		disabled: store.get(userAtom)?.admin !== true,
+		disabled: !getUser()?.user,
 		onClick: () =>
 			store.set(openModalAtom, () => (
 				<Box sx={{ paddingX: 4, paddingY: 6 }}>

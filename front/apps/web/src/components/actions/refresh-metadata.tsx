@@ -22,6 +22,7 @@ import toast from "react-hot-toast";
 import type API from "@/api";
 import { MetadataRefreshIcon } from "@/ui/icons";
 import { useAPI, useQueryClient } from "~/api";
+import { getUser } from "~/hooks/user";
 import type Action from "./";
 
 type RefreshableResourceType =
@@ -157,6 +158,7 @@ const RefreshMetadataAction = (
 ): Action => ({
 	label: "tasks.refreshMetadata",
 	icon: <MetadataRefreshIcon />,
+	disabled: !getUser()?.user,
 	dialog: ({ close }) => (
 		<RefreshMetadataActionContent
 			t={t}

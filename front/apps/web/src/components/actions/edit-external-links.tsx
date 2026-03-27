@@ -20,7 +20,6 @@ import type {
 	CreateExternalMetadataDto,
 	MatchableResourceType,
 } from "@/models/matcher";
-import { store } from "@/state/store";
 import {
 	AddIcon,
 	DeleteIcon,
@@ -28,7 +27,7 @@ import {
 	ProviderIcon,
 } from "@/ui/icons";
 import { useInfiniteQuery, useQuery, useQueryClient } from "~/api";
-import { userAtom } from "~/state/user";
+import { getUser } from "~/hooks/user";
 import Illustration from "../illustration";
 import type Action from ".";
 
@@ -37,7 +36,7 @@ export const EditExternalLinksAction = (
 	resourceId: number,
 ): Action => ({
 	label: "actions.editExternalLinks",
-	disabled: store.get(userAtom)?.admin !== true,
+	disabled: getUser()?.user?.admin !== true,
 	icon: <EditExternalLinksIcon />,
 	dialog: ({ close }) => {
 		const { data: oldExternalMetadata } = useQuery(() =>
