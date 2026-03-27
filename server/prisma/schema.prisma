@@ -149,11 +149,8 @@ model Album {
     releases         Release[]          @relation("Releases")
     /// @description Describes the type of the album
     type             AlbumType          @default(StudioRecording)
-    /// @description The artist of the album
-    artist           Artist?            @relation(fields: [artistId], references: [id])
-    /// @description Unique numeric identifier of the main artist, if there is one
-    /// @example 123
-    artistId         Int?
+    /// @description The artists of the album
+    artists          Artist[]
     /// @description additional Metadata from external providers
     externalMetadata ExternalMetadata?
     /// @description The genres of the album
@@ -166,7 +163,6 @@ model Album {
 
     searchHistory SearchHistory[]
 
-    @@unique([slug, artistId])
     @@map("albums")
 }
 
