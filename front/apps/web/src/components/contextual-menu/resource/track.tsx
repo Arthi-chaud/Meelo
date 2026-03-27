@@ -17,7 +17,6 @@
  */
 
 import { useMutation } from "@tanstack/react-query";
-import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -43,7 +42,7 @@ import { RefreshTrackMetadataAction } from "~/components/actions/refresh-metadat
 import { ChangeSongType } from "~/components/actions/resource-type";
 import { ShowTrackFileInfoAction } from "~/components/actions/show-track-info";
 import { UpdateTrackIllustrationAction } from "~/components/actions/update-illustration";
-import { userAtom } from "~/state/user";
+import { useUser } from "~/hooks/user";
 import { ContextualMenu } from "..";
 
 type TrackContextualMenuProps = {
@@ -52,7 +51,7 @@ type TrackContextualMenuProps = {
 };
 
 const TrackContextualMenu = (props: TrackContextualMenuProps) => {
-	const [user] = useAtom(userAtom);
+	const { user } = useUser();
 	const userIsAdmin = user?.admin === true;
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
