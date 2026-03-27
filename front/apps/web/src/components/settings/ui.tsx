@@ -57,6 +57,7 @@ import {
 } from "@/ui/icons";
 import { useAPI, useQuery, useQueryClient } from "~/api";
 import SectionHeader from "~/components/section-header";
+import { useUser } from "~/hooks/user";
 import { type Language, Languages, persistLanguage } from "~/i18n";
 import { useModal } from "../modal";
 
@@ -79,6 +80,7 @@ const LinkIconStyle = { marginBottom: -5, marginRight: 5 };
 const AppVersion = process.env.NEXT_PUBLIC_VERSION || "unknown";
 
 const UISettings = () => {
+	const { user } = useUser();
 	const { t, i18n } = useTranslation();
 	const apiSettings = useQuery(() => getSettings());
 	const scannerVersion = useQuery(() => getScannerVersion());
@@ -213,8 +215,14 @@ const UISettings = () => {
 					/>
 				</Grid>
 			</Grid>
-			<SectionHeader heading={t("settings.ui.scrobblers.header")} />
-			<ScrobblersSection />
+			{user && (
+				<>
+					<SectionHeader
+						heading={t("settings.ui.scrobblers.header")}
+					/>
+					<ScrobblersSection />
+				</>
+			)}
 			<SectionHeader heading={t("settings.ui.keyboardBindings")} />
 			<Grid container sx={SettingGroupStyle}>
 				<Grid size={{ xs: 12 }}>
@@ -224,9 +232,13 @@ const UISettings = () => {
 				</Grid>
 			</Grid>
 
-			<SectionHeader heading={t("settings.ui.account.header")} />
-			<AccountSection />
-			<SectionHeader heading={t("settings.ui.project")} />
+			{user && (
+				<>
+					<SectionHeader heading={t("settings.ui.account.header")} />
+					<AccountSection />
+					<SectionHeader heading={t("settings.ui.project")} />
+				</>
+			)}
 			<p>
 				<MovingStarIcon style={LinkIconStyle} />
 				{t("settings.ui.external.enjoyingTheProject")}{" "}
@@ -257,29 +269,33 @@ const UISettings = () => {
 				</Link>
 			</p>
 
-			<SectionHeader heading={t("settings.ui.versions")} />
+			{user && (
+				<>
+					<SectionHeader heading={t("settings.ui.versions")} />
 
-			<Grid container sx={{ ...SettingGroupStyle, rowGap: 2 }}>
-				{[
-					["Web App", AppVersion] as const,
-					["Server", apiSettings.data?.version] as const,
-					["Scanner", scannerVersion.data?.version] as const,
-					["Matcher", matcherVersion.data?.version] as const,
-				].map(([appName, version]) => (
-					<Fragment key={appName}>
-						<Grid size={{ xs: 11 }}>{appName}</Grid>
-						<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
-							{version === undefined ? (
-								<Skeleton />
-							) : version === null ? (
-								"Unknown"
-							) : (
-								version
-							)}
-						</Grid>
-					</Fragment>
-				))}
-			</Grid>
+					<Grid container sx={{ ...SettingGroupStyle, rowGap: 2 }}>
+						{[
+							["Web App", AppVersion] as const,
+							["Server", apiSettings.data?.version] as const,
+							["Scanner", scannerVersion.data?.version] as const,
+							["Matcher", matcherVersion.data?.version] as const,
+						].map(([appName, version]) => (
+							<Fragment key={appName}>
+								<Grid size={{ xs: 11 }}>{appName}</Grid>
+								<Grid sx={InputContainerStyle} size={{ xs: 1 }}>
+									{version === undefined ? (
+										<Skeleton />
+									) : version === null ? (
+										"Unknown"
+									) : (
+										version
+									)}
+								</Grid>
+							</Fragment>
+						))}
+					</Grid>
+				</>
+			)}
 		</NoSsr>
 	);
 };
@@ -299,7 +315,7 @@ const AccountSection = () => {
 				newPassword,
 			})
 				.then(() => toast.success("Update successful"))
-				.catch((e) => toast.error(e.message ?? e.toString()));
+				.catch((e: Error) => toast.error(e.message ?? e.toString()));
 		},
 		[t, api],
 	);
