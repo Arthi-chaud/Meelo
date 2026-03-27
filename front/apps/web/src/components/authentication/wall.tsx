@@ -31,6 +31,8 @@ import ThemedImage from "~/components/themed-image";
 import { accessTokenAtom, userAtom } from "~/state/user";
 import AuthenticationForm from "./form";
 
+// TODO Handle anonymous
+
 const AuthenticationWall = (props: { children: any }) => {
 	const [accessToken] = useAtom(accessTokenAtom);
 	const [_, setUser] = useAtom(userAtom);

@@ -31,20 +31,12 @@ import { accessTokenAtom } from "~/state/user";
 
 const isSSR = () => typeof window === "undefined";
 
-const apiInstancesAtom = atom({} as Record<string, API>);
-
 export const useAPI = () => {
 	const [accessToken] = useAtom(accessTokenAtom);
-	const [apiInstances, setApiInstances] = useAtom(apiInstancesAtom);
 	if (!accessToken) {
 		return getAPI_(null);
 	}
-	const matchingInstance = apiInstances[accessToken];
-	if (!matchingInstance) {
-		const newInstance = getAPI_(accessToken);
-		setApiInstances((rest) => ({ ...rest, [accessToken]: newInstance }));
-		return newInstance;
-	}
+	const newInstance = getAPI_(accessToken);
 	return matchingInstance;
 };
 
