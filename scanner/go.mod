@@ -13,7 +13,7 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/echo-swagger v1.5.0
-	github.com/swaggo/swag v1.16.3
+	github.com/swaggo/swag v1.16.6
 	github.com/u2takey/ffmpeg-go v0.5.0
 	gocv.io/x/gocv v0.43.0
 	gopkg.in/vansante/go-ffprobe.v2 v2.3.0
