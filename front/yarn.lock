@@ -14876,11 +14876,11 @@ __metadata:
   linkType: hard
 
 "type-fest@npm:^5.4.1":
-  version: 5.4.1
-  resolution: "type-fest@npm:5.4.1"
+  version: 5.5.0
+  resolution: "type-fest@npm:5.5.0"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/500386d690e634499e6fb765a1e33909a75fea0258acdd56a2d1c9565d6810e222f6d95bd80daa5498377c7ea976af46f518185b5dbd67ff8454562544808aa1
+  checksum: 10c0/60bf79a8df45abf99490e3204eceb5cf7f915413f8a69fb578c75cab37ddcb7d29ee21f185f0e1617323ac0b2a441e001b8dc691e220d0b087e9c29ea205538c
   languageName: node
   linkType: hard
 
