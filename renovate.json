@@ -21,19 +21,19 @@
 			"matchDatasources": [
 				"docker"
 			],
-			"matchPackagePatterns": [
-				"meilisearch"
-			],
-			"allowedVersions": "<=1.5"
+			"allowedVersions": "<=1.5",
+			"matchPackageNames": [
+				"/meilisearch/"
+			]
 		},
 		{
 			"matchDatasources": [
 				"docker"
 			],
-			"matchPackagePatterns": [
-				"postgres"
-			],
-			"allowedVersions": "3.14"
+			"allowedVersions": "3.14",
+			"matchPackageNames": [
+				"/postgres/"
+			]
 		},
 		{
 			"matchPackageNames": [
