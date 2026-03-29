@@ -2,7 +2,7 @@ module github.com/Arthi-chaud/Meelo/scanner
 
 go 1.25.0
 
-toolchain go1.25.5
+toolchain go1.26.1
 
 require (
 	dario.cat/mergo v1.0.0
