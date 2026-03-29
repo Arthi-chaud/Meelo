@@ -65,8 +65,8 @@
 	},
 	"resolutions": {
 		"jpeg-js": "^0.4.4",
-		"@prisma/generator-helper": "6.19.2",
-		"@prisma/internals": "6.19.2",
+		"@prisma/generator-helper": "7.5.0",
+		"@prisma/internals": "7.5.0",
 		"form-data": "4.0.4",
 		"braces": "3.0.3",
 		"tar": "7.5.11",
