@@ -7936,7 +7936,7 @@ __metadata:
     jest: "npm:^30.3.0"
     jimp: "npm:^1.6.0"
     md5: "npm:^2.3.0"
-    meilisearch: "npm:^0.55.0"
+    meilisearch: "npm:^0.56.0"
     mime: "npm:^3.0.0"
     nestjs-form-data: "npm:^1.9.93"
     nestjs-meilisearch: "npm:^3.0.0"
@@ -7961,10 +7961,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"meilisearch@npm:^0.55.0":
-  version: 0.55.0
-  resolution: "meilisearch@npm:0.55.0"
-  checksum: 10c0/6d4534a65e180ce965855ef4f7604fa88c26ab579449e2a379790e1510cb1cce3006de4f94cc6dbb17948c9ea9bec34d5a6c6193b867f7ed3a1f3b7bac7dd9ea
+"meilisearch@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "meilisearch@npm:0.56.0"
+  checksum: 10c0/d94e410ebe9ac0ad525fa3bf12d789a60fd68078a803eeb3e2adacc43f18f4d2ee3572ae1f26e052790b2aa6c848710c04332bbccd60862be2d17c883dfd43d9
   languageName: node
   linkType: hard
 
