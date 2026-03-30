@@ -7938,7 +7938,7 @@ __metadata:
     md5: "npm:^2.3.0"
     meilisearch: "npm:^0.56.0"
     mime: "npm:^3.0.0"
-    nestjs-form-data: "npm:^1.9.93"
+    nestjs-form-data: "npm:^11.0.1"
     nestjs-meilisearch: "npm:^3.0.0"
     normalize-path: "npm:^3.0.0"
     passport: "npm:^0.7.0"
@@ -8315,9 +8315,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nestjs-form-data@npm:^1.9.93":
-  version: 1.9.93
-  resolution: "nestjs-form-data@npm:1.9.93"
+"nestjs-form-data@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "nestjs-form-data@npm:11.0.1"
   dependencies:
     busboy: "npm:^1.6.0"
     concat-stream: "npm:^2.0.0"
@@ -8332,7 +8332,7 @@ __metadata:
     class-validator: ^0.13.2 || ^0.14.0
     reflect-metadata: ^0.1.13 || ^0.2.0
     rxjs: ^6.6.3 || ^7.2.0 || ^7.5.0
-  checksum: 10c0/3393abe4398011fb65ef32841847ebfe0c9ed7e74c202d22529b51694bd7bf9f152411a60d41c5d2e72dbb459d3c430704d6e0ef97ea75ebce573795c6bb9f3e
+  checksum: 10c0/a004a0aa73deefada0d4d5a74604e3d39b3cf6d05d79a0d04e2cf789078c978ac46228df29e1998648d3bf9dad8f4dd614c87ca2e6ecfc69658828bec4eba453
   languageName: node
   linkType: hard
 
