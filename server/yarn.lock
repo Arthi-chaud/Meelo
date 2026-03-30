@@ -4820,7 +4820,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"class-validator@npm:^0.15.0":
+"class-validator@npm:^0.15.1":
   version: 0.15.1
   resolution: "class-validator@npm:0.15.1"
   dependencies:
@@ -7927,7 +7927,7 @@ __metadata:
     bcrypt: "npm:^6.0.0"
     blurhash: "npm:^2.0.5"
     class-transformer: "npm:^0.5.1"
-    class-validator: "npm:^0.15.0"
+    class-validator: "npm:^0.15.1"
     cookie-parser: "npm:^1.4.7"
     fs: "npm:^0.0.1-security"
     get-rgba-palette: "npm:^2.0.1"
