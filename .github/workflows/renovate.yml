@@ -5,6 +5,11 @@ on:
     - cron: "0 */6 * * *"
   push: # To rebase pending branches/PRs
     branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   renovate:
     runs-on: ubuntu-latest
