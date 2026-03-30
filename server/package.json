@@ -98,7 +98,6 @@
 		"supertest": "^7.1.4",
 		"ts-jest": "^29.4.6",
 		"ts-loader": "^9.5.2",
-		"ts-node": "^10.0.0",
 		"tsconfig-paths": "^4.2.0",
 		"type-fest": "5.5.0",
 		"typescript": "^5.9.3"
