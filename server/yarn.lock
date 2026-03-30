@@ -2322,7 +2322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^11.1.16":
+"@nestjs/common@npm:^11.1.17":
   version: 11.1.17
   resolution: "@nestjs/common@npm:11.1.17"
   dependencies:
@@ -2359,7 +2359,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:^11.1.16":
+"@nestjs/core@npm:^11.1.17":
   version: 11.1.17
   resolution: "@nestjs/core@npm:11.1.17"
   dependencies:
@@ -2416,7 +2416,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/microservices@npm:^11.1.16":
+"@nestjs/microservices@npm:^11.1.17":
   version: 11.1.17
   resolution: "@nestjs/microservices@npm:11.1.17"
   dependencies:
@@ -2469,7 +2469,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/platform-express@npm:^11.1.16":
+"@nestjs/platform-express@npm:^11.1.17":
   version: 11.1.17
   resolution: "@nestjs/platform-express@npm:11.1.17"
   dependencies:
@@ -2555,7 +2555,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/testing@npm:^11.1.16":
+"@nestjs/testing@npm:^11.1.17":
   version: 11.1.17
   resolution: "@nestjs/testing@npm:11.1.17"
   dependencies:
@@ -7897,17 +7897,17 @@ __metadata:
     "@biomejs/biome": "npm:2.3.8"
     "@nestjs/axios": "npm:^4.0.1"
     "@nestjs/cli": "npm:^11.0.16"
-    "@nestjs/common": "npm:^11.1.16"
+    "@nestjs/common": "npm:^11.1.17"
     "@nestjs/config": "npm:^4.0.3"
-    "@nestjs/core": "npm:^11.1.16"
+    "@nestjs/core": "npm:^11.1.17"
     "@nestjs/jwt": "npm:^11.0.2"
-    "@nestjs/microservices": "npm:^11.1.16"
+    "@nestjs/microservices": "npm:^11.1.17"
     "@nestjs/passport": "npm:^11.0.5"
-    "@nestjs/platform-express": "npm:^11.1.16"
+    "@nestjs/platform-express": "npm:^11.1.17"
     "@nestjs/schedule": "npm:^6.1.1"
     "@nestjs/schematics": "npm:^11.0.9"
     "@nestjs/swagger": "npm:^11.2.6"
-    "@nestjs/testing": "npm:^11.1.16"
+    "@nestjs/testing": "npm:^11.1.17"
     "@prisma/adapter-pg": "npm:7.4.2"
     "@prisma/client": "npm:7.4.2"
     "@types/amqplib": "npm:^0.10.8"
