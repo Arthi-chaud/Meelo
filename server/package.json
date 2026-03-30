@@ -61,7 +61,8 @@
 		"prisma-json-types-generator": "4.1.1",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
-		"slug": "^5.3.0"
+		"slug": "^5.3.0",
+		"ts-node": "^10.9.2"
 	},
 	"resolutions": {
 		"jpeg-js": "^0.4.4",
@@ -97,7 +98,6 @@
 		"source-map-support": "^0.5.20",
 		"supertest": "^7.1.4",
 		"ts-jest": "^29.4.6",
-		"ts-loader": "^9.5.2",
 		"tsconfig-paths": "^4.2.0",
 		"type-fest": "5.5.0",
 		"typescript": "^5.9.3"
