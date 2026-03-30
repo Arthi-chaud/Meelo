@@ -40,7 +40,7 @@
 		"bcrypt": "^6.0.0",
 		"blurhash": "^2.0.5",
 		"class-transformer": "^0.5.1",
-		"class-validator": "^0.14.4",
+		"class-validator": "^0.15.0",
 		"cookie-parser": "^1.4.7",
 		"fs": "^0.0.1-security",
 		"get-rgba-palette": "^2.0.1",
