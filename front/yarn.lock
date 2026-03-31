@@ -1372,6 +1372,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.29.2":
+  version: 7.29.2
+  resolution: "@babel/runtime@npm:7.29.2"
+  checksum: 10c0/30b80a0140d16467792e1bbeb06f655b0dab70407da38dfac7fedae9c859f9ae9d846ef14ad77bd3814c064295fe9b1bc551f1541ea14646ae9f22b71a8bc17a
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.25.0":
   version: 7.25.0
   resolution: "@babel/template@npm:7.25.0"
@@ -9356,17 +9363,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^25.8.11":
-  version: 25.8.13
-  resolution: "i18next@npm:25.8.13"
+"i18next@npm:^26.0.0":
+  version: 26.0.1
+  resolution: "i18next@npm:26.0.1"
   dependencies:
-    "@babel/runtime": "npm:^7.28.4"
+    "@babel/runtime": "npm:^7.29.2"
   peerDependencies:
-    typescript: ^5
+    typescript: ^5 || ^6
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/12c661c2b58fe70445f8491b72f937eef28a5f9413f76bd178bbca92d4378d8436003c3bea1d5d760b8a69f809cbcef2ce389beffd9bc0434651134c6b37fecc
+  checksum: 10c0/50c4202aca80ebf236765b47bd1141f1b61da73b331e0aae554c371bed68052a1ad6616c02731f00f84071b5e3211e787799f1143dec24e32af9ebe8995dc70b
   languageName: node
   linkType: hard
 
@@ -9459,8 +9466,8 @@ __metadata:
     react: "npm:19.2.4"
     typescript: "npm:5.9.3"
   peerDependencies:
-    i18next: ^25.8.11
-    react-i18next: ^16.5.4
+    i18next: ^26.0.0
+    react-i18next: ^17.0.0
   languageName: unknown
   linkType: soft
 
@@ -11727,7 +11734,7 @@ __metadata:
     expo-status-bar: "npm:~55.0.4"
     expo-system-ui: "npm:~55.0.9"
     expo-web-browser: "npm:~55.0.9"
-    i18next: "npm:^25.8.11"
+    i18next: "npm:^26.0.0"
     iconsax-react-nativejs: "npm:^0.0.8"
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
@@ -11735,7 +11742,7 @@ __metadata:
     models: "workspace:^"
     react: "npm:19.2.4"
     react-hook-form: "npm:^7.71.1"
-    react-i18next: "npm:^16.5.4"
+    react-i18next: "npm:^17.0.0"
     react-native: "npm:0.83.2"
     react-native-awesome-slider: "npm:^2.9.0"
     react-native-base64: "npm:^0.2.2"
@@ -12881,17 +12888,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^16.5.4":
-  version: 16.5.4
-  resolution: "react-i18next@npm:16.5.4"
+"react-i18next@npm:^17.0.0":
+  version: 17.0.1
+  resolution: "react-i18next@npm:17.0.1"
   dependencies:
-    "@babel/runtime": "npm:^7.28.4"
+    "@babel/runtime": "npm:^7.29.2"
     html-parse-stringify: "npm:^3.0.1"
     use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
-    i18next: ">= 25.6.2"
+    i18next: ">= 26.0.1"
     react: ">= 16.8.0"
-    typescript: ^5
+    typescript: ^5 || ^6
   peerDependenciesMeta:
     react-dom:
       optional: true
@@ -12899,7 +12906,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/41d0b76873addfa3abe0c6b8a10a796e01f205f3636bc2d090d0078b42222f2949c4303f18d7a80cc26cf1298918cb6220d96e39ae2b8644abfdbec3bb504b37
+  checksum: 10c0/eb363db5a15cebda8e6964d3f417133372c3ff5560887233a5e937b86bad3023728362754b3c1aa7bce0fb754e8d3660804c7abbc6c6eb4e85f9f48823b6a7b0
   languageName: node
   linkType: hard
 
@@ -15203,7 +15210,7 @@ __metadata:
   resolution: "utils@workspace:packages/utils"
   dependencies:
     format-duration: "npm:^3.0.0"
-    i18next: "npm:^25.8.11"
+    i18next: "npm:^26.0.0"
     jest: "npm:^30.2.0"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -15363,7 +15370,7 @@ __metadata:
     cookies-next: "npm:^6.0.0"
     core-js: "npm:^3.47.0"
     hls.js: "npm:^1.6.15"
-    i18next: "npm:^25.8.11"
+    i18next: "npm:^26.0.0"
     jotai: "npm:^2.17.0"
     material-ui-confirm: "npm:^4.0.0"
     mui-react-hook-form-plus: "npm:^1.5.1"
@@ -15375,7 +15382,7 @@ __metadata:
     react-error-boundary: "npm:^6.0.2"
     react-hook-form: "npm:^7.71.1"
     react-hot-toast: "npm:^2.6.0"
-    react-i18next: "npm:^16.5.4"
+    react-i18next: "npm:^17.0.0"
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.6.0"
     type-fest: "npm:^5.4.1"
