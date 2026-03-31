@@ -5944,7 +5944,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.90.21"
     jotai: "npm:^2.17.0"
     react: "npm:19.2.4"
-    type-fest: "npm:^5.4.1"
+    type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
     yup: "npm:^1.7.1"
   languageName: unknown
@@ -11759,7 +11759,7 @@ __metadata:
     react-native-video: "npm:^7.0.0-beta.8"
     react-native-worklets: "npm:^0.7.4"
     state: "workspace:^"
-    type-fest: "npm:^5.4.1"
+    type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
     ui: "workspace:^"
     utils: "workspace:^"
@@ -11770,7 +11770,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "models@workspace:packages/models"
   dependencies:
-    type-fest: "npm:^5.4.1"
+    type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
     yup: "npm:^1.7.1"
   languageName: unknown
@@ -14879,7 +14879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^5.4.1":
+"type-fest@npm:^5.5.0":
   version: 5.5.0
   resolution: "type-fest@npm:5.5.0"
   dependencies:
@@ -15382,7 +15382,7 @@ __metadata:
     react-i18next: "npm:^17.0.0"
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.6.0"
-    type-fest: "npm:^5.4.1"
+    type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
     usehooks-ts: "npm:^3.0.0"
     uuid: "npm:^13.0.0"
