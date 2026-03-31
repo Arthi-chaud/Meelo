@@ -9466,8 +9466,8 @@ __metadata:
     react: "npm:19.2.4"
     typescript: "npm:5.9.3"
   peerDependencies:
-    i18next: ^25.8.11 || ^26.0.0
-    react-i18next: ^16.5.4 || ^17.0.0
+    i18next: ^26.0.0
+    react-i18next: ^17.0.0
   languageName: unknown
   linkType: soft
 
