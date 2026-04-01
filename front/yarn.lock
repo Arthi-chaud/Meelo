@@ -5387,7 +5387,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-infinite-scroller@npm:^1.2.3":
+"@types/react-infinite-scroller@npm:^1.2.5":
   version: 1.2.5
   resolution: "@types/react-infinite-scroller@npm:1.2.5"
   dependencies:
@@ -15361,7 +15361,7 @@ __metadata:
     "@types/react": "npm:~19.1.10"
     "@types/react-beautiful-dnd": "npm:^13.1.3"
     "@types/react-dom": "npm:19.1.7"
-    "@types/react-infinite-scroller": "npm:^1.2.3"
+    "@types/react-infinite-scroller": "npm:^1.2.5"
     accept-language-parser: "npm:^1.5.0"
     blurhash: "npm:^2.0.5"
     cookies-next: "npm:^6.0.0"
