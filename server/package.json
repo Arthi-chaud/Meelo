@@ -11,7 +11,7 @@
 		"prebuild": "yarn run prisma generate",
 		"build": "yarn prebuild && nest build",
 		"start": "nest start",
-		"format": "biome format --write",
+		"format": "yarn run biome format --write",
 		"start:dev": "NODE_ENV=development nest start --watch",
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "node dist/src/main",

@@ -121,11 +121,11 @@ const AppProviders = [
 ];
 
 export {
-	presetup,
-	buildInterceptors,
+	AppProviders,
 	applyMiddlewares,
-	buildPipes,
 	buildExceptionFilters,
 	buildHttpPlugs,
-	AppProviders,
+	buildInterceptors,
+	buildPipes,
+	presetup,
 };
