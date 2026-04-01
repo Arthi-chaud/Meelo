@@ -5388,11 +5388,11 @@ __metadata:
   linkType: hard
 
 "@types/react-infinite-scroller@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "@types/react-infinite-scroller@npm:1.2.3"
+  version: 1.2.5
+  resolution: "@types/react-infinite-scroller@npm:1.2.5"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10c0/bcf25f2045ba3e25ec97185016832e1c01d9b38b087f35cce2048f0b2f8c1fb9cdb43ea63a774c9f8de708d915153c50c47d002bae66e37b0f92e40dc404f009
+  checksum: 10c0/6dcba15dbaf2732f61c325147395f58a0241082f93ae5280b905d580303af9a0aa38c3bb28b2b6345da9a3758b1e69489bdcfff7411f55fe2868edd0e2a0f0e6
   languageName: node
   linkType: hard
 
