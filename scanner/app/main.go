@@ -14,7 +14,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/swaggo/echo-swagger"
+	"github.com/swaggo/echo-swagger/v2"
 )
 
 const ApiHealthckechAttemptCount = 5
