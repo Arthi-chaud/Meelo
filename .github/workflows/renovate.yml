@@ -5,6 +5,10 @@ on:
     - cron: "0 */6 * * *"
   push: # To rebase pending branches/PRs
     branches: [main]
+  pull_request:
+    paths:
+      - ".github/workflows/renovate.yml"
+      - ".github/renovate-entrypoint.sh"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,6 +23,8 @@ jobs:
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v46.1.6
         with:
+          docker-cmd-file: .github/renovate-entrypoint.sh
+          docker-user: root
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
