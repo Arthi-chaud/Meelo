@@ -5369,7 +5369,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-beautiful-dnd@npm:^13.1.3":
+"@types/react-beautiful-dnd@npm:^13.1.8":
   version: 13.1.8
   resolution: "@types/react-beautiful-dnd@npm:13.1.8"
   dependencies:
@@ -15359,7 +15359,7 @@ __metadata:
     "@types/accept-language-parser": "npm:^1.5.3"
     "@types/node": "npm:24.12.0"
     "@types/react": "npm:~19.1.10"
-    "@types/react-beautiful-dnd": "npm:^13.1.3"
+    "@types/react-beautiful-dnd": "npm:^13.1.8"
     "@types/react-dom": "npm:19.1.7"
     "@types/react-infinite-scroller": "npm:^1.2.5"
     accept-language-parser: "npm:^1.5.0"
