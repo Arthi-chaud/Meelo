@@ -5,7 +5,7 @@ go 1.25.0
 toolchain go1.26.1
 
 require (
-	dario.cat/mergo v1.0.0
+	dario.cat/mergo v1.0.2
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/goccy/go-json v0.10.3
 	github.com/google/uuid v1.6.0
