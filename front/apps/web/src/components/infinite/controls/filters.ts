@@ -164,8 +164,8 @@ const useHookAndUpdater = <FilterKey extends string>(
 };
 
 export {
-	useTypeFiltersControl,
-	useTypeFilterControl,
 	useLibraryFilterControl,
 	useLibraryFiltersControl,
+	useTypeFilterControl,
+	useTypeFiltersControl,
 };

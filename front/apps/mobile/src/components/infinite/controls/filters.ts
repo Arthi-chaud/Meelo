@@ -103,8 +103,8 @@ export const useSearchTypeFilterControl = () => {
 };
 
 export {
-	useTypeFiltersControl,
-	useTypeFilterControl,
 	useLibraryFilterControl,
 	useLibraryFiltersControl,
+	useTypeFilterControl,
+	useTypeFiltersControl,
 };

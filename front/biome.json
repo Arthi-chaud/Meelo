@@ -7,10 +7,13 @@
 	"files": {
 		"includes": [
 			"**",
-			"!**/.next/**",
+			"!apps/mobile/expo-env.d.ts",
+			"!**/.next",
+			"!**/.expo",
 			"!**/translations/**/*.json",
-			"!**/android/**",
-			"!**/assets/**"
+			"!**/android",
+			"!**/ios",
+			"!**/assets"
 		]
 	},
 	"linter": {

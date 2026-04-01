@@ -165,4 +165,4 @@ const ChangeVideoType = (v: Video, client: QueryClient) =>
 			}),
 	);
 
-export { ChangeSongType, ChangeAlbumType, ChangeVideoType };
+export { ChangeAlbumType, ChangeSongType, ChangeVideoType };
