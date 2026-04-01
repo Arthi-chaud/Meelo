@@ -30,7 +30,7 @@ import { LanguageStorageKey } from "@/utils/constants";
 import { isSSR } from "~/utils/is-ssr";
 import translations, { type Language, Languages } from "../../../translations";
 
-export { Languages, type Language };
+export { type Language, Languages };
 
 export const persistLanguage = (language: Language) => {
 	const expires = new Date();

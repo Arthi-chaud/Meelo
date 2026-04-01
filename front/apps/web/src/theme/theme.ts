@@ -110,4 +110,4 @@ const GlobalTheme: Omit<ThemeOptions, "palette"> = {
 	},
 };
 
-export { LightTheme, DarkTheme, GlobalTheme };
+export { DarkTheme, GlobalTheme, LightTheme };

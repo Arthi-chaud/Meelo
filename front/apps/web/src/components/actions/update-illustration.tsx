@@ -147,7 +147,7 @@ const UpdatePlaylistIllustrationAction = (
 
 export {
 	UpdateArtistIllustrationAction,
+	UpdatePlaylistIllustrationAction,
 	UpdateReleaseIllustrationAction,
 	UpdateTrackIllustrationAction,
-	UpdatePlaylistIllustrationAction,
 };
