@@ -5369,12 +5369,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-beautiful-dnd@npm:^13.1.3":
-  version: 13.1.3
-  resolution: "@types/react-beautiful-dnd@npm:13.1.3"
+"@types/react-beautiful-dnd@npm:^13.1.8":
+  version: 13.1.8
+  resolution: "@types/react-beautiful-dnd@npm:13.1.8"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10c0/e0150ded4318cfff6f9d219f3ac9f335a44cdd6cd15baf0cefd14c003ddd47a36ca6221a23c1c5964fedfb3dd35611b6929de9ff5a8f702106dfcd29e478fd77
+  checksum: 10c0/ccdd4b2aa9e35cba4e51f3c673c2caa5bb67b6dee562d4b07ac3d3547cd68fd1ee9f21b95d55972087bdd4bdb340e256cccedb20f7129c273f24214f334708aa
   languageName: node
   linkType: hard
 
@@ -15359,7 +15359,7 @@ __metadata:
     "@types/accept-language-parser": "npm:^1.5.3"
     "@types/node": "npm:24.12.0"
     "@types/react": "npm:~19.1.10"
-    "@types/react-beautiful-dnd": "npm:^13.1.3"
+    "@types/react-beautiful-dnd": "npm:^13.1.8"
     "@types/react-dom": "npm:19.1.7"
     "@types/react-infinite-scroller": "npm:^1.2.5"
     accept-language-parser: "npm:^1.5.0"
