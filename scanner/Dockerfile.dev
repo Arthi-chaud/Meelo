@@ -11,4 +11,4 @@ ENV CGO_ENABLED=1
 
 WORKDIR /app
 ENV VERSION=dev
-CMD ["wgo", "-xdir", "./app/docs", "swag", "init", "-d", "app", "-o", "./app/docs", "::", "go", "run", "./app"]
+CMD ["wgo", "-xdir", "./app/docs", "swag", "init", "-d", "app", "-o", "./app/docs", "-ot", "go,json", "::", "go", "run", "./app"]

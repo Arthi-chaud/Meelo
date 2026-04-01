@@ -5,6 +5,10 @@ on:
     - cron: "0 */6 * * *"
   push: # To rebase pending branches/PRs
     branches: [main]
+  pull_request:
+    paths:
+      - ".github/workflows/renovate.yml"
+      - ".github/renovate-entrypoint.sh"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

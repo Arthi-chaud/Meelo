@@ -4,6 +4,7 @@
 pkgs.mkShell {
   packages = with pkgs; [
     go
+    go-swag
     golangci-lint
     gopls
     chromaprint
