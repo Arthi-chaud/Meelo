@@ -16,7 +16,7 @@
 		"@gorhom/bottom-sheet": "^5.2.8",
 		"@kesha-antonov/react-native-background-downloader": "^4.5.3",
 		"@shopify/flash-list": "2.3.0",
-		"@shopify/react-native-skia": "2.4.21",
+		"@shopify/react-native-skia": "2.5.3",
 		"@tanstack/react-query": "^5.90.21",
 		"api": "workspace:^",
 		"babel-preset-expo": "^55.0.10",
