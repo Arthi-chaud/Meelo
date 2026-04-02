@@ -9360,8 +9360,8 @@ __metadata:
   linkType: hard
 
 "i18next@npm:^26.0.0":
-  version: 26.0.1
-  resolution: "i18next@npm:26.0.1"
+  version: 26.0.3
+  resolution: "i18next@npm:26.0.3"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
   peerDependencies:
@@ -9369,7 +9369,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/50c4202aca80ebf236765b47bd1141f1b61da73b331e0aae554c371bed68052a1ad6616c02731f00f84071b5e3211e787799f1143dec24e32af9ebe8995dc70b
+  checksum: 10c0/ba0b8ba8b1294abccd892ac897902f121f5f127d77e6fd605c0c368ec505a505ccaa24ee7ddbe04928783cfbd7abbc162d4c043027aef06858b427e4e4737eb5
   languageName: node
   linkType: hard
 
@@ -12883,8 +12883,8 @@ __metadata:
   linkType: hard
 
 "react-i18next@npm:^17.0.0":
-  version: 17.0.1
-  resolution: "react-i18next@npm:17.0.1"
+  version: 17.0.2
+  resolution: "react-i18next@npm:17.0.2"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
     html-parse-stringify: "npm:^3.0.1"
@@ -12900,7 +12900,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/eb363db5a15cebda8e6964d3f417133372c3ff5560887233a5e937b86bad3023728362754b3c1aa7bce0fb754e8d3660804c7abbc6c6eb4e85f9f48823b6a7b0
+  checksum: 10c0/6bbaeccb919726a7f4fda1e547fa58936f1004e122b99234ac1a65d35077563864af7062c51ab9b8b0190be4cb384cd2ed7aeaa895d2785c1783c39cdae64ecd
   languageName: node
   linkType: hard
 
