@@ -71,7 +71,7 @@ export default class ReleaseService {
 		include?: I | undefined,
 	) {
 		const album = await this.albumService.get(input.album, {
-			artist: true,
+			artists: true,
 		});
 		const releaseNameSlug = new Slug(
 			input.name,

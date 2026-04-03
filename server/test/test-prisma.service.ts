@@ -177,7 +177,8 @@ export default class TestPrismaService extends PrismaService {
 						sortName: "My Album",
 						sortSlug: "my-album",
 						nameSlug: "my-album",
-						artistId: this.artistA.id,
+
+						artists: [{ connect: { id: this.artistA.id } }],
 						releaseDate: new Date("2022"),
 					},
 					{
