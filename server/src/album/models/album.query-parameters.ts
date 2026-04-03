@@ -49,7 +49,7 @@ namespace AlbumQueryParameters {
 			releaseDate?: Date;
 			registeredAt?: Date;
 			sortName?: string;
-			artist?: ArtistQueryParameters.WhereInput;
+			artists: ArtistQueryParameters.WhereInput[];
 		},
 	) {}
 
@@ -106,7 +106,7 @@ namespace AlbumQueryParameters {
 	 */
 	export const AvailableIncludes = [
 		"releases",
-		"artist",
+		"artists",
 		"master",
 		"genres",
 		"illustration",
@@ -114,7 +114,7 @@ namespace AlbumQueryParameters {
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["genres", "localIdentifiers"],
+		["artists", "genres", "localIdentifiers"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 

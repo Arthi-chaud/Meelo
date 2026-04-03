@@ -43,7 +43,7 @@ export class AlbumResponse extends IntersectionType(
 	IllustratedResponse,
 	ResponseWithLocalIdentifiers,
 	class {
-		artist?: ArtistResponse | null;
+		artists?: ArtistResponse[];
 		master?: ReleaseResponse;
 		genres?: Genre[];
 	},
@@ -82,14 +82,17 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 			registeredAt: album.registeredAt,
 			masterId: album.masterId,
 			type: album.type,
-			artistId: album.artistId,
 			genres: album.genres,
 			illustration: album.illustration
 				? IllustrationResponse.from(album.illustration)
 				: album.illustration,
-			artist: album.artist
-				? await this.artistResponseBuilder.buildResponse(album.artist)
-				: album.artist,
+			artists: album.artists
+				? await Promise.all(
+						album.artists.map((artist) =>
+							this.artistResponseBuilder.buildResponse(artist),
+						),
+					)
+				: album.artists,
 			master: album.master
 				? await this.releaseResponseBuilder.buildResponse(album.master)
 				: album.master,

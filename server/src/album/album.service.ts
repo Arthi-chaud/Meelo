@@ -33,7 +33,6 @@ import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import ParserService from "src/parser/parser.service";
 import { AlbumType, Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
@@ -66,8 +65,6 @@ export default class AlbumService extends SearchableRepositoryService {
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
-		@Inject(forwardRef(() => ParserService))
-		private parserService: ParserService,
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: MeiliSearch,
 	) {
