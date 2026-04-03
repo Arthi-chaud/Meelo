@@ -22,7 +22,6 @@ import ParserService from "./parser.service";
 
 @Module({
 	imports: [forwardRef(() => ArtistModule)],
-	providers: [ParserService],
-	exports: [ParserService],
+	providers: [{ useClass: ParserService, provide: "PARSER_SERVICE" }],
 })
 export default class ParserModule {}

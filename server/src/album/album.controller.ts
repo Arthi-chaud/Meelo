@@ -36,8 +36,8 @@ import {
 import Roles from "src/authentication/roles/roles.enum";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import TransformFilter, {
-	EnumFilter,
-	Filter,
+	type EnumFilter,
+	type Filter,
 	TransformEnumFilter,
 } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";

@@ -23,7 +23,7 @@ import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import TransformFilter, { Filter } from "src/filter/filter";
+import TransformFilter, { type Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Label } from "src/prisma/models";

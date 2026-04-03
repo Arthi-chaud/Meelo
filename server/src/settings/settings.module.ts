@@ -28,7 +28,10 @@ import SettingsService from "./settings.service";
 		forwardRef(() => StreamModule),
 	],
 	providers: [SettingsService, SettingsController],
-	exports: [SettingsService, SettingsController],
+	exports: [
+		{ useClass: SettingsService, provide: "SETTINGS_SERVICE" },
+		SettingsController,
+	],
 	controllers: [SettingsController],
 })
 export default class SettingsModule {}

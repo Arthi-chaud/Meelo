@@ -26,8 +26,8 @@ import type ArtistQueryParameters from "src/artist/models/artist.query-parameter
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import TransformFilter, {
-	EnumFilter,
-	Filter,
+	type EnumFilter,
+	type Filter,
 	TransformEnumFilter,
 } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";

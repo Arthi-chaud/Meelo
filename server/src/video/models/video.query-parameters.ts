@@ -18,7 +18,7 @@
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { EnumFilter, Filter } from "src/filter/filter";
+import { type EnumFilter, type Filter } from "src/filter/filter";
 import type { VideoType } from "src/prisma/generated/client";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";

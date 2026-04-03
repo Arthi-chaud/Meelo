@@ -12,8 +12,13 @@
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"paths": {
-			"*": ["*", "src/*"],
-			"~/*": ["src/*"]
+			"*": [
+				"*",
+				"src/*"
+			],
+			"~/*": [
+				"src/*"
+			]
 		},
 		"incremental": true,
 		"skipLibCheck": true,
@@ -29,5 +34,8 @@
 		"noImplicitThis": true,
 		"allowJs": true
 	},
-	"include": ["./src/**/*.ts", "./prisma/types.d.ts"]
+	"include": [
+		"./src/**/*.ts",
+		"./prisma/types.d.ts"
+	]
 }

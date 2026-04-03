@@ -17,7 +17,7 @@
  */
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import { Filter } from "src/filter/filter";
+import { type Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";

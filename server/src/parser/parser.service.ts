@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import ArtistService from "src/artist/artist.service";
+import { Injectable } from "@nestjs/common";
+import type ArtistService from "src/artist/artist.service";
 import { AlbumType, SongType, VideoType } from "src/prisma/generated/client";
 import Slug from "src/slug/slug";
 import escapeRegex from "src/utils/escape-regex";
@@ -25,10 +25,7 @@ import type Metadata from "../registration/models/metadata";
 
 @Injectable()
 export default class ParserService {
-	constructor(
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
-	) {}
+	private artistService: ArtistService; //TODO:
 
 	protected separators = [
 		[/\(/, /\)/],

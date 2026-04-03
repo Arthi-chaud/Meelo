@@ -19,7 +19,7 @@
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import type FileQueryParameters from "src/file/models/file.query-parameters";
-import { Filter } from "src/filter/filter";
+import { type Filter } from "src/filter/filter";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";
 import type { TrackType } from "src/prisma/generated/client";
 import type { Track } from "src/prisma/models";

@@ -32,7 +32,7 @@ import { IsOptional } from "class-validator";
 import type { Response as ExpressResponse } from "express";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
-import TransformFilter, { Filter } from "src/filter/filter";
+import TransformFilter, { type Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import LabelQueryParameters from "src/label/label.query-parameters";
 import LabelService from "src/label/label.service";

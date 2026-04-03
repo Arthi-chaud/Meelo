@@ -24,7 +24,7 @@ import {
 } from "@nestjs/swagger";
 import { IsEnum, IsOptional } from "class-validator";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { EnumFilter, Filter } from "src/filter/filter";
+import { type EnumFilter, type Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import LabelQueryParameters from "src/label/label.query-parameters";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";

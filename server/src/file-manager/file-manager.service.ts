@@ -18,9 +18,10 @@
 
 import * as fs from "node:fs";
 import { join, parse } from "node:path";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { ModuleRef } from "@nestjs/core";
 import type { Library } from "src/prisma/models";
-import SettingsService from "src/settings/settings.service";
+import type SettingsService from "src/settings/settings.service";
 import {
 	FileDoesNotExistException,
 	FolderDoesNotExistException,
@@ -28,10 +29,11 @@ import {
 
 @Injectable()
 export default class FileManagerService {
-	constructor(
-		@Inject(forwardRef(() => SettingsService))
-		private settingsService: SettingsService,
-	) {}
+	private settingsService: SettingsService;
+	constructor(private moduleRef: ModuleRef) {
+		this.settingsService =
+			this.moduleRef.get<SettingsService>("SETTINGS_SERVICE");
+	}
 
 	folderExists(folderPath: string): boolean {
 		try {

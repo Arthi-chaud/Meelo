@@ -38,8 +38,8 @@ import { UnauthorizedAnonymousRequestException } from "src/authentication/authen
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import TransformFilter, {
-	EnumFilter,
-	Filter,
+	type EnumFilter,
+	type Filter,
 	TransformEnumFilter,
 } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";

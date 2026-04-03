@@ -31,7 +31,7 @@ import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import TransformFilter, { Filter } from "src/filter/filter";
+import TransformFilter, { type Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import LibraryService from "src/library/library.service";
 import type LibraryQueryParameters from "src/library/models/library.query-parameters";

@@ -53,17 +53,14 @@ import {
 @Injectable()
 export default class VideoService extends SearchableRepositoryService {
 	private readonly logger = new Logger(VideoService.name);
+	private songService: SongService; //TODO:
+	private trackService: TrackService; //TODO:
+	private artistService: ArtistService; //TODO:
 	constructor(
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
-		@Inject(forwardRef(() => SongService))
-		private songService: SongService,
 		@Inject(forwardRef(() => ParserService))
 		private parserService: ParserService,
-		@Inject(forwardRef(() => ArtistService))
-		private artistService: ArtistService,
-		@Inject(forwardRef(() => TrackService))
-		private trackService: TrackService,
 	) {
 		super(
 			"videos",
