@@ -4,7 +4,8 @@
 pkgs.mkShell {
   packages = with pkgs; [
     nodejs_24
-    yarn-berry
+    bun
+    yarn-berry # TODO DELETE ME
     biome
     prisma-language-server
   ];

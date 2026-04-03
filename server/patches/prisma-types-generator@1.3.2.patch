@@ -1,0 +1,13 @@
+diff --git a/dist/generator/helpers.js b/dist/generator/helpers.js
+index 63bb445ece24073479430a0590329ae703ba5a34..23ca9574cfbfa92b5c06b2472486ad55d705c6ee 100644
+--- a/dist/generator/helpers.js
++++ b/dist/generator/helpers.js
+@@ -29,7 +29,7 @@ const makeImportsFromPrismaClient = (fields) => {
+         return null;
+     }
+     return {
+-        from: '@prisma/client',
++        from: 'src/prisma/generated/client',
+         destruct: importPrisma ? ['Prisma', ...enumsToImport] : enumsToImport,
+     };
+ };

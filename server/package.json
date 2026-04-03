@@ -50,7 +50,7 @@
 		"md5": "^2.3.0",
 		"meilisearch": "^0.56.0",
 		"mime": "^3.0.0",
-		"nestjs-form-data": "^11.0.1",
+		"nestjs-form-data": "^11.0.0",
 		"nestjs-meilisearch": "^3.0.0",
 		"normalize-path": "^3.0.0",
 		"passport": "^0.7.0",
@@ -70,7 +70,7 @@
 		"@prisma/internals": "6.19.2",
 		"braces": "3.0.3",
 		"tar": "7.5.11",
-		"@jimp/core@npm:1.6.0": "patch:@jimp/core@npm%3A1.6.0#~/.yarn/patches/@jimp-core-npm-1.6.0-787392d238.patch"
+		"@jimp/core": "1.6.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.8",
@@ -93,7 +93,7 @@
 		"@types/slug": "^5.0.9",
 		"@types/supertest": "^7.2.0",
 		"jest": "^30.3.0",
-		"prisma-types-generator": "patch:prisma-types-generator@npm%3A1.3.2#~/.yarn/patches/prisma-types-generator-npm-1.3.2-d91e9d4063.patch",
+		"prisma-types-generator": "^1.3.2",
 		"source-map-support": "^0.5.20",
 		"supertest": "^7.1.4",
 		"ts-jest": "^29.4.6",
@@ -101,5 +101,9 @@
 		"type-fest": "5.5.0",
 		"typescript": "^5.9.3"
 	},
-	"packageManager": "yarn@4.13.0"
+	"packageManager": "yarn@4.13.0",
+	"patchedDependencies": {
+		"@jimp/core@1.6.0": "patches/@jimp%2Fcore@1.6.0.patch",
+		"prisma-types-generator@1.3.2": "patches/prisma-types-generator@1.3.2.patch"
+	}
 }
