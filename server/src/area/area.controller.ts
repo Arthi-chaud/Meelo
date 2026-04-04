@@ -48,5 +48,16 @@ export default class AreaController {
 		return this.areaService.get(where);
 	}
 
-	//TODO: Get parent
+	@Get(":idOrSlug/parents")
+	@ApiOperation({
+		summary: "Get the list of an area's parents",
+		description:
+			"The first is the direct parent, the last is the furthest in the parent tree",
+	})
+	async getParents(
+		@IdentifierParam(AreaService)
+		where: AreaQueryParameters.WhereInput,
+	): Promise<Area[]> {
+		return this.areaService.getParents(where);
+	}
 }
