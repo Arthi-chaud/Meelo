@@ -48,6 +48,7 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 			name: artist.name,
 			slug: artist.slug,
 			sortName: artist.sortName,
+			areaId: artist.areaId,
 			registeredAt: artist.registeredAt,
 			illustrationId: artist.illustrationId,
 			illustration: artist.illustration

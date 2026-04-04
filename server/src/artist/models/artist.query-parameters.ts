@@ -43,6 +43,7 @@ namespace ArtistQueryParameters {
 		| "illustrationId"
 		| "sortName"
 		| "sortSlug"
+		| "areaId"
 	> & {
 		sortName?: string;
 		registeredAt?: Date;
@@ -92,6 +93,7 @@ namespace ArtistQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = [
+		"area",
 		"albums",
 		"songs",
 		"illustration",
