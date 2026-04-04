@@ -18,6 +18,7 @@
 
 import { forwardRef, Module } from "@nestjs/common";
 import AlbumModule from "src/album/album.module";
+import AreaModule from "src/area/area.module";
 import { EventsModule } from "src/events/events.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import PrismaModule from "src/prisma/prisma.module";
@@ -37,6 +38,7 @@ import { ArtistResponseBuilder } from "./models/artist.response";
 		forwardRef(() => SongModule),
 		forwardRef(() => AlbumModule),
 		forwardRef(() => TrackModule),
+		AreaModule,
 	],
 	exports: [ArtistService, ArtistResponseBuilder],
 	providers: [ArtistService, ArtistResponseBuilder],

@@ -16,9 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber, IsOptional } from "class-validator";
+
 export type ArtistModel = {
 	id: number;
 	name: string;
 	slug: string;
 	registeredAt: Date;
 };
+
+export class UpdateArtistDTO {
+	@ApiProperty({ description: "ID of the area to link" })
+	@IsOptional()
+	@IsNumber()
+	areaId?: number;
+}

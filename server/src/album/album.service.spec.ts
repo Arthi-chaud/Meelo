@@ -1,4 +1,5 @@
 import type { TestingModule } from "@nestjs/testing";
+import AreaModule from "src/area/area.module";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -36,6 +37,7 @@ describe("Album Service", () => {
 				SongModule,
 				IllustrationModule,
 				GenreModule,
+				AreaModule,
 			],
 			providers: [ArtistService],
 		})

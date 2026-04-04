@@ -1,5 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
+import AreaModule from "src/area/area.module";
 import { ArtistNotFoundException } from "src/artist/artist.exceptions";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
@@ -47,6 +48,7 @@ describe("Video Service", () => {
 				SongModule,
 				ReleaseModule,
 				ParserModule,
+				AreaModule,
 			],
 			providers: [SongService, ArtistService, PrismaService],
 		})

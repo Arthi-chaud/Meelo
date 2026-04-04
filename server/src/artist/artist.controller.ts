@@ -16,7 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, forwardRef, Get, Inject, Query } from "@nestjs/common";
+import {
+	Body,
+	Controller,
+	forwardRef,
+	Get,
+	Inject,
+	Put,
+	Query,
+} from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
@@ -34,6 +42,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
 import ArtistService from "./artist.service";
+import { UpdateArtistDTO } from "./models/artist.model";
 import ArtistQueryParameters from "./models/artist.query-parameters";
 import { ArtistResponseBuilder } from "./models/artist.response";
 
@@ -131,5 +140,21 @@ export default class ArtistController {
 		where: ArtistQueryParameters.WhereInput,
 	) {
 		return this.artistService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Update one artist",
+	})
+	@Response({
+		handler: ArtistResponseBuilder,
+	})
+	@DefaultRoleAndMicroservice()
+	@Put(":idOrSlug")
+	async update(
+		@IdentifierParam(ArtistService)
+		where: ArtistQueryParameters.WhereInput,
+		@Body() what: UpdateArtistDTO,
+	) {
+		return this.artistService.update(what, where);
 	}
 }
