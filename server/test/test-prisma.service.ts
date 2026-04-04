@@ -20,7 +20,7 @@ import {
 	type Video,
 	VideoType,
 } from "src/prisma/generated/client";
-import type { Playlist } from "src/prisma/models";
+import type { Area, Playlist } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import Slug from "src/slug/slug";
 
@@ -67,6 +67,10 @@ export default class TestPrismaService extends PrismaService {
 	public labelA: Label;
 	public labelB: Label;
 
+	public areaA: Area;
+	public areaB: Area;
+	public areaC: Area;
+
 	public compilationAlbumA: Album;
 	public compilationReleaseA1: Release;
 
@@ -108,6 +112,44 @@ export default class TestPrismaService extends PrismaService {
 	override async onModuleInit() {
 		await this.$connect();
 		await this.flushDatabase();
+
+		const areas = await this.area.create({
+			data: {
+				name: "Paris",
+				slug: "paris",
+				mbid: "dc10c22b-e510-4006-8b7f-fecb4f36436e",
+				sortName: "Paris",
+				sortSlug: "paris",
+				type: "City",
+				parent: {
+					create: {
+						name: "Île-de-France",
+						slug: "ile-de-france",
+						sortName: "Île-de-France",
+						sortSlug: "ile-de-france",
+						mbid: "d79e4501-8cba-431b-96e7-bb9976f0ae76",
+						type: "Subdivision",
+						parent: {
+							create: {
+								name: "France",
+								slug: "france",
+								mbid: "08310658-51eb-3801-80de-5a0739207115",
+								sortName: "France",
+								sortSlug: "France",
+								type: "Country",
+								iso3166: "FR",
+							},
+						},
+					},
+				},
+			},
+			include: { parent: { include: { parent: true } } },
+		});
+		const { parent, ...areaA } = areas;
+		const { parent: areaC, ...areaB } = parent as Area & { parent: Area };
+		this.areaA = areaA;
+		this.areaB = areaB;
+		this.areaC = areaC;
 
 		[this.labelA, this.labelB] = await this.label.createManyAndReturn({
 			data: [
