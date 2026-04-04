@@ -59,10 +59,14 @@ export default class LabelService {
 			});
 	}
 
-	async get(where: LabelQueryParameters.WhereInput) {
+	async get<I extends LabelQueryParameters.RelationInclude = {}>(
+		where: LabelQueryParameters.WhereInput,
+		include?: I,
+	) {
 		return this.prismaService.label
 			.findUniqueOrThrow({
 				where: LabelService.formatWhereInput(where),
+				include: include ?? ({} as I),
 			})
 			.catch((error) => {
 				if (
@@ -78,13 +82,15 @@ export default class LabelService {
 			});
 	}
 
-	async getMany(
+	async getMany<I extends LabelQueryParameters.RelationInclude = {}>(
 		where: LabelQueryParameters.ManyWhereInput,
 		sort?: LabelQueryParameters.SortingParameter,
+		include?: I,
 		pagination?: PaginationParameters,
 	) {
 		return this.prismaService.label.findMany({
 			where: LabelService.formatManyWhereInput(where),
+			include: include ?? ({} as I),
 			orderBy:
 				sort === undefined ? undefined : this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),

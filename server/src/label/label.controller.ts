@@ -27,6 +27,7 @@ import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Label } from "src/prisma/models";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
 import LabelQueryParameters from "./label.query-parameters";
 import LabelService from "./label.service";
@@ -56,8 +57,15 @@ export default class LabelController {
 		@Query() selector: Selector,
 		@Query() sort: LabelQueryParameters.SortingParameter,
 		@Query() paginationParameters: PaginationParameters,
+		@RelationIncludeQuery(LabelQueryParameters.AvailableAtomicIncludes)
+		include: LabelQueryParameters.RelationInclude,
 	) {
-		return this.labelService.getMany(selector, sort, paginationParameters);
+		return this.labelService.getMany(
+			selector,
+			sort,
+			include,
+			paginationParameters,
+		);
 	}
 
 	@Get(":idOrSlug")
@@ -65,7 +73,9 @@ export default class LabelController {
 	async get(
 		@IdentifierParam(LabelService)
 		where: LabelQueryParameters.WhereInput,
+		@RelationIncludeQuery(LabelQueryParameters.AvailableAtomicIncludes)
+		include: LabelQueryParameters.RelationInclude,
 	): Promise<Label> {
-		return this.labelService.get(where);
+		return this.labelService.get(where, include);
 	}
 }

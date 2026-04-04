@@ -20,6 +20,7 @@ import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Filter } from "src/filter/filter";
 import { Label } from "src/prisma/generated/client";
+import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import Slug from "src/slug/slug";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { RequireExactlyOne } from "type-fest";
@@ -31,6 +32,13 @@ namespace LabelQueryParameters {
 		album: Filter<AlbumQueryParameters.WhereInput>;
 		artist: Filter<ArtistQueryParameters.WhereInput>;
 	}>;
+
+	/**
+	 * Defines what relations to include in query
+	 */
+	export const AvailableIncludes = ["area"] as const;
+	export const AvailableAtomicIncludes = AvailableIncludes;
+	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
 	/**
 	 * Defines how to sort fetched entries
