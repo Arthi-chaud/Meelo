@@ -1,6 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
+import AreaModule from "src/area/area.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import FileModule from "src/file/file.module";
@@ -47,6 +48,7 @@ describe("Release Service", () => {
 				ParserModule,
 				GenreModule,
 				FileModule,
+				AreaModule,
 			],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		})
