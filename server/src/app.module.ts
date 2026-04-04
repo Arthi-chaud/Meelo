@@ -24,6 +24,7 @@ import { MeiliSearchModule } from "nestjs-meilisearch";
 import AlbumModule from "./album/album.module";
 import AppController from "./app.controller";
 import * as Plugins from "./app.plugins";
+import AreaModule from "./area/area.module";
 import ArtistModule from "./artist/artist.module";
 import AuthenticationModule from "./authentication/authentication.module";
 import { EventsModule } from "./events/events.module";
@@ -92,6 +93,7 @@ import VideoModule from "./video/video.module";
 		EventsModule,
 		LabelModule,
 		ScrobblerModule,
+		AreaModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,
