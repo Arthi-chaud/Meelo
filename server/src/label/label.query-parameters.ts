@@ -33,6 +33,8 @@ namespace LabelQueryParameters {
 		artist: Filter<ArtistQueryParameters.WhereInput>;
 	}>;
 
+	export type UpdateInput = Partial<Pick<Label, "areaId">>;
+
 	/**
 	 * Defines what relations to include in query
 	 */

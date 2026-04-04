@@ -18,6 +18,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
+import AreaService from "src/area/area.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -38,7 +39,10 @@ import LabelQueryParameters from "./label.query-parameters";
 @Injectable()
 export default class LabelService {
 	private readonly logger: Logger = new Logger(LabelService.name);
-	constructor(private prismaService: PrismaService) {}
+	constructor(
+		private prismaService: PrismaService,
+		private areaService: AreaService,
+	) {}
 
 	async create(input: LabelQueryParameters.CreateInput) {
 		const labelSlug = new Slug(input.name);
@@ -69,16 +73,37 @@ export default class LabelService {
 				include: include ?? ({} as I),
 			})
 			.catch((error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code === PrismaError.RecordsNotFound
-				) {
-					if (where.id !== undefined) {
-						throw new LabelNotFoundException(where.id);
-					}
-					throw new LabelNotFoundException(where.slug);
-				}
-				throw new UnhandledORMErrorException(error, where);
+				throw this.onNotFound(error, where);
+			});
+	}
+
+	onNotFound(error: Error, where: LabelQueryParameters.WhereInput) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === PrismaError.RecordsNotFound
+		) {
+			if (where.id !== undefined) {
+				return new LabelNotFoundException(where.id);
+			}
+			return new LabelNotFoundException(where.slug);
+		}
+		return new UnhandledORMErrorException(error, where);
+	}
+
+	async update(
+		what: LabelQueryParameters.UpdateInput,
+		where: LabelQueryParameters.WhereInput,
+	) {
+		if (what.areaId) {
+			await this.areaService.get({ id: what.areaId });
+		}
+		return this.prismaService.label
+			.update({
+				data: what,
+				where: LabelService.formatWhereInput(where),
+			})
+			.catch(async (error) => {
+				throw this.onNotFound(error, where);
 			});
 	}
 
