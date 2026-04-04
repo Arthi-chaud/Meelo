@@ -8,6 +8,7 @@ import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
 import { Area, Prisma } from "src/prisma/generated/client";
+import { AreaWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import { formatIdentifier } from "src/repository/repository.utils";
 import Slug from "src/slug/slug";
@@ -72,8 +73,35 @@ export default class AreaService {
 	}
 
 	async getParents(where: AreaQueryParameters.WhereInput): Promise<Area[]> {
-		//TODO: Unimplemented
-		return [];
+		const area = await this.get(where);
+		if (area.parentId === null) {
+			return [];
+		}
+		const args = {
+			include: this._buildInclude(10),
+			where: { id: area.parentId },
+		};
+		let parentArea: AreaWithRelations | null =
+			await this.prismaService.area.findFirstOrThrow<
+				Prisma.SelectSubset<
+					typeof args,
+					Prisma.AreaFindFirstOrThrowArgs
+				>
+			>(args);
+		const parentAreas = [];
+		while (parentArea !== null) {
+			const { parent, ...area }: AreaWithRelations = parentArea;
+			parentAreas.push(area);
+			parentArea = parent ?? null;
+		}
+		return parentAreas;
+	}
+
+	private _buildInclude(depth: number): any {
+		if (depth < 1) {
+			return { parent: true };
+		}
+		return { parent: { include: this._buildInclude(depth - 1) } };
 	}
 
 	static formatWhereInput(

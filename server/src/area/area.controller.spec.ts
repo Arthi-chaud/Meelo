@@ -96,5 +96,33 @@ describe("Area Controller", () => {
 		});
 	});
 
-	// TODO : Test create
+	describe("Get Area's Parents", () => {
+		it("should get parents", async () => {
+			return request(app.getHttpServer())
+				.get(`/areas/${dummyRepository.areaA.id}/parents`)
+				.expect(200)
+				.expect((res) => {
+					const parents: Area[] = res.body;
+					expect(parents.length).toBe(2);
+					expect(parents[0].id).toBe(dummyRepository.areaB.id);
+					expect(parents[1].id).toBe(dummyRepository.areaC.id);
+				});
+		});
+
+		it("should get 0 parent", async () => {
+			return request(app.getHttpServer())
+				.get(`/areas/${dummyRepository.areaC.id}/parents`)
+				.expect(200)
+				.expect((res) => {
+					const parents: Area[] = res.body;
+					expect(parents.length).toBe(0);
+				});
+		});
+
+		it("should error, area does not exist", async () => {
+			return request(app.getHttpServer())
+				.get("/areas/parents/-1")
+				.expect(404);
+		});
+	});
 });
