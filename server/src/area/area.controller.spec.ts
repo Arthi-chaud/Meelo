@@ -7,7 +7,7 @@ import request from "supertest";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import CreateAreaDTO from "./area.dto";
+import CreateAreaDTO, { UpdateAreaDTO } from "./area.dto";
 import AreaModule from "./area.module";
 
 describe("Area Controller", () => {
@@ -78,6 +78,25 @@ describe("Area Controller", () => {
 					mbid: dummyRepository.areaA.mbid,
 				} satisfies CreateAreaDTO)
 				.expect(409);
+		});
+	});
+
+	describe("Update Area", () => {
+		it("should update area", async () => {
+			return request(app.getHttpServer())
+				.put(`/areas/${dummyRepository.areaA.id}`)
+				.send({
+					parentId: dummyRepository.areaC.id,
+				} satisfies UpdateAreaDTO)
+				.expect(200)
+				.expect(async (res) => {
+					const area: Area = res.body;
+					expect(area.parentId).toBe(dummyRepository.areaC.id);
+					await dummyRepository.area.update({
+						where: { id: dummyRepository.areaA.id },
+						data: { parentId: dummyRepository.areaA.parentId },
+					});
+				});
 		});
 	});
 
