@@ -82,12 +82,21 @@ describe("Area Controller", () => {
 	});
 
 	describe("Get Area", () => {
-		it("should get area", async () => {
+		it("should get area by id", async () => {
 			return request(app.getHttpServer())
 				.get(`/areas/${dummyRepository.areaA.id}`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual(dummyRepository.areaA);
+				});
+		});
+
+		it("should get area by mbid", async () => {
+			return request(app.getHttpServer())
+				.get(`/areas/${dummyRepository.areaB.mbid}`)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).toStrictEqual(dummyRepository.areaB);
 				});
 		});
 

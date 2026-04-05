@@ -18,11 +18,12 @@
 
 import { Area } from "src/prisma/generated/client";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import { RequireExactlyOne } from "type-fest";
 
 namespace AreaQueryParameters {
 	export type CreateInput = Pick<Area, "name" | "sortName" | "mbid"> &
 		Partial<Pick<Area, "iso3166" | "type">>;
-	export type WhereInput = { id: number };
+	export type WhereInput = RequireExactlyOne<Pick<Area, "id" | "mbid">>;
 
 	export const SortingKeys = ["name"] as const;
 	export type SortingKeys = typeof SortingKeys;

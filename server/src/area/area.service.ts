@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { isUUID } from "class-validator";
 import { PrismaError } from "prisma-error-enum";
 import {
 	EventsService,
@@ -66,7 +67,7 @@ export default class AreaService {
 					error instanceof Prisma.PrismaClientKnownRequestError &&
 					error.code === PrismaError.RecordsNotFound
 				) {
-					throw new AreaNotFoundException(where.id);
+					throw new AreaNotFoundException(where.id ?? where.mbid);
 				}
 				throw new UnhandledORMErrorException(error, where);
 			});
@@ -109,6 +110,7 @@ export default class AreaService {
 	): Prisma.AreaWhereUniqueInput {
 		return {
 			id: where.id,
+			mbid: where.mbid,
 		};
 	}
 
@@ -132,9 +134,12 @@ export default class AreaService {
 	static formatIdentifierToWhereInput(
 		identifier: Identifier,
 	): AreaQueryParameters.WhereInput {
-		return formatIdentifier(identifier, (_) => {
+		return formatIdentifier(identifier, (mbid) => {
+			if (isUUID(mbid)) {
+				return { mbid };
+			}
 			throw new InvalidRequestException(
-				`Identifier: expected a number, got ${identifier}`,
+				`Identifier: expected a number or an MBID, got ${identifier}`,
 			);
 		});
 	}

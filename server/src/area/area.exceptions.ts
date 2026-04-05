@@ -29,11 +29,11 @@ export class AreaAlreadyExistsException extends AlreadyExistsException {
 }
 
 export class AreaNotFoundException extends NotFoundException {
-	constructor(labelSlugOrId: Slug | number) {
+	constructor(areaIdOrMbid: string | number) {
 		super(
-			typeof labelSlugOrId === "number"
-				? `Area ${labelSlugOrId} not found`
-				: `Area '${labelSlugOrId}' not found`,
+			typeof areaIdOrMbid === "number"
+				? `Area ${areaIdOrMbid} not found`
+				: `Area '${areaIdOrMbid}' not found`,
 		);
 	}
 }
