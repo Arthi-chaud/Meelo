@@ -35,7 +35,7 @@ class AlbumType(Enum):
     OTHER = "Other"
 
 
-class AreaType(Enum):
+class AreaType(str, Enum):
     COUNTRY = "Country"
     SUBDIV = "Subdivision"
     COUNTY = "County"

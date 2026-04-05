@@ -5,6 +5,7 @@ from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
     AlbumType,
+    AreaType,
     ResourceId,
     ResourceUrl,
     ResourceName,
@@ -191,8 +192,23 @@ class IsSongUrlFeature(IsUrlFeature):
     pass
 
 
-## Lables
+## Labels
 
 
 class GetLabelArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
+    pass
+
+
+## Areas
+
+
+class GetArea(BaseFeature[str, Awaitable[AreaDto | None]]):
+    pass
+
+
+class GetParentArea(BaseFeature[Any, AreaDto | None]):
+    pass
+
+
+class GetAreaType(BaseFeature[Any, AreaType | None]):
     pass

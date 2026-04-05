@@ -25,6 +25,13 @@ class AreaDto(DataClassJsonMixin):
     type: Optional[AreaType] = None
 
 
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class UpdateAreaDto(DataClassJsonMixin):
+    parentId: Optional[int] = None
+    type: Optional[AreaType] = None
+
+
 @dataclass_json
 @dataclass
 class User(DataClassJsonMixin):

@@ -48,7 +48,7 @@ async def match_and_post_artist(
             )
         if res.area:
             logging.info(f"Found area for artist {artist_name}: {res.area.name}")
-            area = await context.client.get_area(res.area.mbid)
+            area = await context.client.get_area_by_mbid(res.area.mbid)
             if area is None:
                 area = await context.client.post_area(res.area)
             if area is not None:

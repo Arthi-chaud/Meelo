@@ -11,6 +11,7 @@ from matcher.models.api.dto import (
     CreateProviderDto,
     ExternalMetadataDto,
     UpdateAlbumDto,
+    UpdateAreaDto,
     User,
 )
 from matcher.models.api.page import Page
@@ -183,18 +184,27 @@ class API:
     async def post_song_genres(self, song_id: int, genres: List[str]):
         await self._put(f"/songs/{song_id}", json={"genres": genres})
 
-    async def get_area(self, area_mbid: str) -> Area | None:
+    async def get_area(self, area_id: str | int) -> Area:
+        json = await self._get(f"/areas/{area_id}")
+        return Area.schema().load(json)
+
+    async def get_area_by_mbid(self, area_mbid: str) -> Area | None:
         try:
-            json = await self._get(f"/areas/{area_mbid}")
-            return Area.schema().load(json)
-        except Exception as e:
-            logging.error(e)
+            return await self.get_area(area_mbid)
+        except Exception:
             pass
 
     async def post_area(self, area_dto: AreaDto) -> Area | None:
         try:
             json = await self._post("/areas", json=area_dto.to_dict())
             return Area.schema().load(json)
+        except Exception as e:
+            logging.error(e)
+            pass
+
+    async def update_area(self, area_id: int, area_dto: UpdateAreaDto):
+        try:
+            await self._put(f"/areas/{area_id}", json=area_dto.to_dict())
         except Exception as e:
             logging.error(e)
             pass

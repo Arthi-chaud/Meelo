@@ -12,8 +12,11 @@ from .features import (
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
+    GetArea,
+    GetAreaType,
     GetArtistArea,
     GetLabelArea,
+    GetParentArea,
     IsAlbumUrlFeature,
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -40,7 +43,7 @@ from .features import (
     SearchSongWithFingerprintFeature,
     IsSongUrlFeature,
 )
-from .domain import AlbumType, SearchResult
+from .domain import AlbumType, AreaType, SearchResult
 from typing import Any, List
 
 
@@ -229,6 +232,20 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     ## Label
 
-    async def get_area_area(self, area: Any) -> AreaDto | None:
+    async def get_label_area(self, area: Any) -> AreaDto | None:
         f = self.get_feature(GetLabelArea)
         return await f.run(area) if f else None
+
+    ## Area
+
+    async def get_area(self, area_mbid: str) -> Any | None:
+        f = self.get_feature(GetArea)
+        return await f.run(area_mbid) if f else None
+
+    def get_parent_area(self, area: Any) -> AreaDto | None:
+        f = self.get_feature(GetParentArea)
+        return f.run(area) if f else None
+
+    def get_area_type(self, area: Any) -> AreaType | None:
+        f = self.get_feature(GetAreaType)
+        return f.run(area) if f else None

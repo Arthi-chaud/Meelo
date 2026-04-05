@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from matcher.bootstrap import bootstrap_context
 from matcher.context import Context, CurrentItem
 from matcher.matcher.album import match_and_post_album
+from matcher.matcher.area import match_and_post_area
 from matcher.matcher.song import match_and_post_song
 from matcher.matcher.artist import match_and_post_artist
 from matcher.api import User
@@ -76,6 +77,11 @@ async def match(
                         song.local_identifiers or default_local_identifiers,
                         reuseSources,
                     )
+                    ctx.increment_handled_items_count()
+                    pass
+                case "area":
+                    area = await ctx.client.get_area(str(resourceId))
+                    await match_and_post_area(area)
                     ctx.increment_handled_items_count()
                     pass
                 case _:

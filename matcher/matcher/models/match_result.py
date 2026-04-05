@@ -3,7 +3,7 @@ from matcher.models.api.dto import AreaDto, ExternalMetadataDto
 from datetime import date
 from dataclasses import dataclass
 
-from matcher.providers.domain import AlbumType
+from matcher.providers.domain import AlbumType, AreaType
 
 type SyncedLyrics = List[Tuple[float, str]]
 
@@ -65,3 +65,15 @@ class ArtistMatchResult:
 
     def set_area_if_none(self, area: AreaDto):
         self.area = self.area or area
+
+
+@dataclass
+class AreaMatchResult:
+    parent_area: AreaDto | None
+    type: AreaType | None
+
+    def set_parent_area_if_none(self, parent: AreaDto):
+        self.parent_area = self.parent_area or parent
+
+    def set_area_type_if_none(self, area_type: AreaType):
+        self.type = self.type or area_type

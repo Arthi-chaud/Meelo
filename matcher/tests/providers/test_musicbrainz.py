@@ -339,3 +339,16 @@ class TestMusicbrainz:
                 for label in labels:
                     assert label in expected
                 assert len(labels) == len(expected)
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_area(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        # Victoria, AU
+        area = await provider.get_area("09936ede-4dcc-4794-a1e7-83d3af37bf4e")
+        assert provider.get_area_type(area) == AreaType.SUBDIV
+        parent_area = provider.get_parent_area(area)
+        assert parent_area is not None
+        # AU
+        assert parent_area.mbid == "106e0bec-b638-3b37-b731-f53d507dc00e"
