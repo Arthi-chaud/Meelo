@@ -5096,7 +5096,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query-devtools@npm:^5.91.3":
+"@tanstack/react-query-devtools@npm:^5.96.2":
   version: 5.96.2
   resolution: "@tanstack/react-query-devtools@npm:5.96.2"
   dependencies:
@@ -5108,7 +5108,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.90.21":
+"@tanstack/react-query@npm:^5.96.2":
   version: 5.96.2
   resolution: "@tanstack/react-query@npm:5.96.2"
   dependencies:
@@ -5939,7 +5939,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api@workspace:packages/api"
   dependencies:
-    "@tanstack/react-query": "npm:^5.90.21"
+    "@tanstack/react-query": "npm:^5.96.2"
     jotai: "npm:2.18.1"
     react: "npm:19.2.4"
     type-fest: "npm:^5.5.0"
@@ -11702,7 +11702,7 @@ __metadata:
     "@kesha-antonov/react-native-background-downloader": "npm:^4.5.3"
     "@shopify/flash-list": "npm:2.3.0"
     "@shopify/react-native-skia": "npm:2.5.3"
-    "@tanstack/react-query": "npm:^5.90.21"
+    "@tanstack/react-query": "npm:^5.96.2"
     "@types/react": "npm:~19.1.10"
     "@types/react-native-base64": "npm:^0"
     api: "workspace:^"
@@ -15379,8 +15379,8 @@ __metadata:
     "@mui/utils": "npm:^7.3.9"
     "@mui/x-data-grid": "npm:^8.28.1"
     "@mui/x-date-pickers": "npm:^8.27.2"
-    "@tanstack/react-query": "npm:^5.90.21"
-    "@tanstack/react-query-devtools": "npm:^5.91.3"
+    "@tanstack/react-query": "npm:^5.96.2"
+    "@tanstack/react-query-devtools": "npm:^5.96.2"
     "@types/accept-language-parser": "npm:^1.5.3"
     "@types/node": "npm:24.12.0"
     "@types/react": "npm:~19.1.10"
