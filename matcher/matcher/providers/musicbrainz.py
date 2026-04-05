@@ -539,5 +539,5 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     def _parse_area_type(self, area_type: str | None) -> AreaType | None:
         if area_type is None:
             return None
-        if area_type in [t for t, _ in AreaType.__members__.items()]:
+        if area_type in [t.value for _, t in AreaType.__members__.items()]:
             return AreaType(area_type)
