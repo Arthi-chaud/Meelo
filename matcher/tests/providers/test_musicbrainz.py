@@ -4,7 +4,7 @@ import pytest
 import pytest_asyncio
 import datetime
 from matcher.context import Context
-from matcher.providers.domain import AlbumType
+from matcher.providers.domain import AlbumType, AreaType
 from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
@@ -49,6 +49,12 @@ class TestMusicbrainz:
         artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         assert artist is not None
         assert artist.get("name") == "Britney Spears"
+        area = await provider.get_artist_area(artist)
+        assert area is not None
+        assert area.name == "United States"
+        assert area.mbid == "489ce91b-6658-3307-9877-795b68554c98"
+        assert area.sort_name == "United States"
+        assert area.iso3166 == "US"
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_search_album(self, ctx, subtests):
