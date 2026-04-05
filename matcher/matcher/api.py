@@ -5,11 +5,13 @@ from typing import Any, List, TypeVar
 import aiohttp
 from dataclasses_json import DataClassJsonMixin
 
-from matcher.models.api.domain import Album, Artist, Song, File
+from matcher.models.api.domain import Album, Area, Artist, Song, File
 from matcher.models.api.dto import (
+    AreaDto,
     CreateProviderDto,
     ExternalMetadataDto,
     UpdateAlbumDto,
+    UpdateAreaDto,
     User,
 )
 from matcher.models.api.page import Page
@@ -83,6 +85,12 @@ class API:
         await self._post(
             "/illustrations/url",
             json={"url": image_url, "artistId": artist_id},
+        )
+
+    async def link_artist_to_area(self, artist_id: int, area_id: int):
+        await self._put(
+            f"/artists/{artist_id}",
+            json={"areaId": area_id},
         )
 
     async def get_artist_external_metadata(
@@ -175,6 +183,31 @@ class API:
 
     async def post_song_genres(self, song_id: int, genres: List[str]):
         await self._put(f"/songs/{song_id}", json={"genres": genres})
+
+    async def get_area(self, area_id: str | int) -> Area:
+        json = await self._get(f"/areas/{area_id}")
+        return Area.schema().load(json)
+
+    async def get_area_by_mbid(self, area_mbid: str) -> Area | None:
+        try:
+            return await self.get_area(area_mbid)
+        except Exception:
+            pass
+
+    async def post_area(self, area_dto: AreaDto) -> Area | None:
+        try:
+            json = await self._post("/areas", json=area_dto.to_dict())
+            return Area.schema().load(json)
+        except Exception as e:
+            logging.error(e)
+            pass
+
+    async def update_area(self, area_id: int, area_dto: UpdateAreaDto):
+        try:
+            await self._put(f"/areas/{area_id}", json=area_dto.to_dict())
+        except Exception as e:
+            logging.error(e)
+            pass
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:

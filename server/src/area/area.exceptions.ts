@@ -16,16 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import AreaModule from "src/area/area.module";
-import PrismaModule from "src/prisma/prisma.module";
-import LabelController from "./label.controller";
-import LabelService from "./label.service";
+import {
+	AlreadyExistsException,
+	NotFoundException,
+} from "src/exceptions/meelo-exception";
+import Slug from "src/slug/slug";
 
-@Module({
-	imports: [PrismaModule, AreaModule],
-	providers: [LabelService],
-	exports: [LabelService],
-	controllers: [LabelController],
-})
-export default class LabelModule {}
+export class AreaAlreadyExistsException extends AlreadyExistsException {
+	constructor(labelSlug: string | Slug) {
+		super(`Area ${labelSlug.toString()} already exists`);
+	}
+}
+
+export class AreaNotFoundException extends NotFoundException {
+	constructor(areaIdOrMbid: string | number) {
+		super(
+			typeof areaIdOrMbid === "number"
+				? `Area ${areaIdOrMbid} not found`
+				: `Area '${areaIdOrMbid}' not found`,
+		);
+	}
+}

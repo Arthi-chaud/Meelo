@@ -33,3 +33,13 @@ class AlbumType(Enum):
     SOUNDTRACK = "Soundtrack"
     VIDEO = "VideoAlbum"
     OTHER = "Other"
+
+
+class AreaType(str, Enum):
+    COUNTRY = "Country"
+    SUBDIV = "Subdivision"
+    COUNTY = "County"
+    MUNICIPALITY = "Municipality"
+    CITY = "City"
+    DISTRICT = "District"
+    ISLAND = "Island"

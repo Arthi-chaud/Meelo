@@ -1,5 +1,6 @@
 import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
+import AreaModule from "src/area/area.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
@@ -37,6 +38,7 @@ describe("Artist Service", () => {
 				TrackModule,
 				LyricsModule,
 				ReleaseModule,
+				AreaModule,
 			],
 			providers: [ArtistService],
 		})

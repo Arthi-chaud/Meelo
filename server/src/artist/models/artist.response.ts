@@ -18,6 +18,7 @@
 
 import { Injectable } from "@nestjs/common";
 import { IntersectionType, OmitType } from "@nestjs/swagger";
+import { ResponseWithArea } from "src/area/area.response";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
@@ -33,6 +34,7 @@ export class ArtistResponse extends IntersectionType(
 	OmitType(Artist, ["sortSlug"]),
 	IllustratedResponse,
 	ResponseWithLocalIdentifiers,
+	ResponseWithArea,
 ) {}
 
 @Injectable()
@@ -48,6 +50,8 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 			name: artist.name,
 			slug: artist.slug,
 			sortName: artist.sortName,
+			areaId: artist.areaId,
+			area: artist.area,
 			registeredAt: artist.registeredAt,
 			illustrationId: artist.illustrationId,
 			illustration: artist.illustration

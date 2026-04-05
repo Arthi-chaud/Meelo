@@ -28,7 +28,7 @@ import Logger from "src/logger/logger";
 
 const QueueName = "meelo";
 
-type ResourceCreationEventType = "artist" | "album" | "song";
+type ResourceCreationEventType = "artist" | "album" | "song" | "area";
 
 // Should be numbers between 1 and 5. The higher, the more important
 export enum ResourceEventPriority {
@@ -36,6 +36,7 @@ export enum ResourceEventPriority {
 	OriginalSong = 3,
 	NonOriginalSong = 1,
 	ExtraMaterial = 1,
+	Area = 2,
 	StudioAlbum = 4,
 	NonStudioAlbum = 2,
 }

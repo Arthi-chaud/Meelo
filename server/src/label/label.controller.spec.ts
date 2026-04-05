@@ -1,5 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { TestingModule } from "@nestjs/testing";
+import AreaModule from "src/area/area.module";
 import { Label } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
@@ -7,6 +8,7 @@ import request from "supertest";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
+import { UpdateLabelDTO } from "./label.model";
 import LabelModule from "./label.module";
 
 describe("Label Controller", () => {
@@ -15,7 +17,7 @@ describe("Label Controller", () => {
 	let module: TestingModule;
 	beforeAll(async () => {
 		module = await createTestingModule({
-			imports: [LabelModule, PrismaModule],
+			imports: [LabelModule, PrismaModule, AreaModule],
 		})
 			.overrideProvider(PrismaService)
 			.useClass(TestPrismaService)
@@ -178,6 +180,27 @@ describe("Label Controller", () => {
 						expect(labels[0].id).toBe(dummyRepository.labelA.id);
 					});
 			});
+		});
+	});
+
+	describe("Update Label", () => {
+		it("Should link area", async () => {
+			return request(app.getHttpServer())
+				.put(`/labels/${dummyRepository.labelA.id}`)
+				.send({
+					areaId: dummyRepository.areaB.id,
+				} satisfies UpdateLabelDTO)
+				.expect(200)
+				.expect(async (res) => {
+					const label: Label = res.body;
+					expect(label.areaId).toBe(dummyRepository.areaB.id);
+				});
+		});
+		it("Should fail: invalid area id", async () => {
+			return request(app.getHttpServer())
+				.put(`/labels/${dummyRepository.labelA.id}`)
+				.send({ areaId: -1 } satisfies UpdateLabelDTO)
+				.expect(404);
 		});
 	});
 });

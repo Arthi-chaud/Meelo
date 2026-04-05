@@ -196,7 +196,9 @@ model Artist {
     /// @description Related Illustration
     illustrationId   Int?              @unique
     illustration     Illustration?     @relation(fields: [illustrationId], references: [id])
-
+    /// @description Related area
+    areaId           Int?
+    area             Area?             @relation(fields: [areaId], references: [id])
     localIdentifiers LocalIdentifiers?
 
     searchHistory SearchHistory[]
@@ -305,6 +307,9 @@ model Label {
     /// @description Unique string identifier
     /// @example my-label
     slug     String    @unique
+    /// @description Related area
+    areaId   Int?
+    area     Area?     @relation(fields: [areaId], references: [id])
     releases Release[]
     albums   Album[]
 
@@ -719,6 +724,37 @@ model PlaylistEntry {
     index      Int
 
     @@map("playlist_entries")
+}
+
+model Area {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id       Int       @id @default(autoincrement())
+    slug     String
+    name     String
+    mbid     String    @unique
+    /// @description Sort name of area
+    sortName String
+    sortSlug String
+    iso3166  String?
+    type     AreaType?
+    parentId Int?
+    parent   Area?     @relation("area-tree", fields: [parentId], references: [id], onDelete: Cascade)
+    children Area[]    @relation("area-tree")
+    artists  Artist[]
+    labels   Label[]
+
+    @@map("areas")
+}
+
+enum AreaType {
+    Country
+    Subdivision
+    County
+    Municipality
+    City
+    District
+    Island
 }
 
 model ReleaseIllustration {
