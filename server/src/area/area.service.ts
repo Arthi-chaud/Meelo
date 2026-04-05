@@ -63,13 +63,34 @@ export default class AreaService {
 				where: AreaService.formatWhereInput(where),
 			})
 			.catch((error) => {
-				if (
-					error instanceof Prisma.PrismaClientKnownRequestError &&
-					error.code === PrismaError.RecordsNotFound
-				) {
-					throw new AreaNotFoundException(where.id ?? where.mbid);
-				}
-				throw new UnhandledORMErrorException(error, where);
+				throw this.onNotFound(error, where);
+			});
+	}
+
+	onNotFound(error: Error, where: AreaQueryParameters.WhereInput) {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === PrismaError.RecordsNotFound
+		) {
+			return new AreaNotFoundException(where.id ?? where.mbid);
+		}
+		return new UnhandledORMErrorException(error, where);
+	}
+
+	async update(
+		where: AreaQueryParameters.WhereInput,
+		what: AreaQueryParameters.UpdateInput,
+	) {
+		if (what.parentId) {
+			await this.get({ id: what.parentId });
+		}
+		return this.prismaService.area
+			.update({
+				where: AreaService.formatWhereInput(where),
+				data: what,
+			})
+			.catch((error) => {
+				throw this.onNotFound(error, where);
 			});
 	}
 

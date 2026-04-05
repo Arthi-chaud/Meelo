@@ -24,6 +24,7 @@ namespace AreaQueryParameters {
 	export type CreateInput = Pick<Area, "name" | "sortName" | "mbid"> &
 		Partial<Pick<Area, "iso3166" | "type">>;
 	export type WhereInput = RequireExactlyOne<Pick<Area, "id" | "mbid">>;
+	export type UpdateInput = Partial<Pick<Area, "parentId" | "type">>;
 
 	export const SortingKeys = ["name"] as const;
 	export type SortingKeys = typeof SortingKeys;
