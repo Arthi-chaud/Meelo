@@ -15,10 +15,13 @@ from matcher.providers.features import (
     GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumUrlFromIdFeature,
+    GetArea,
+    GetAreaType,
     GetArtistArea,
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
+    GetParentArea,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
@@ -143,6 +146,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetSongIdFromUrlFeature(
                 lambda song_url: self._get_song_id_from_url(song_url)
             ),
+            GetArea(lambda area_mbid: self._get_area(area_mbid)),
+            GetParentArea(lambda area: self._get_parent_area(area)),
+            GetAreaType(lambda area: self._get_area_type(area)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -518,6 +524,32 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 for genre in genres
                 if genre["count"] > 0
             ]
+        except Exception:
+            pass
+
+    async def _get_area(self, mbid: str) -> Any | None:
+        try:
+            return await self._fetch(f"/area/{mbid}", {"inc": "area-rels"})
+        except Exception:
+            pass
+
+    def _get_parent_area(self, area: Any) -> AreaDto | None:
+        try:
+            related_areas = area["relations"]
+            parent_areas = [
+                a
+                for a in related_areas
+                if a["direction"] == "backward" and a["target-type"] == "area"
+            ]
+            if len(parent_areas) == 0:
+                return None
+            return self._parse_area(parent_areas[0]["area"])
+        except Exception:
+            pass
+
+    def _get_area_type(self, area: Any) -> AreaType | None:
+        try:
+            return self._parse_area_type(area["type"])
         except Exception:
             pass
 
