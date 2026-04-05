@@ -1,3 +1,4 @@
+from matcher.models.api.dto import AreaDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseProvider
 from datetime import date
@@ -11,6 +12,8 @@ from .features import (
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
+    GetArtistArea,
+    GetLabelArea,
     IsAlbumUrlFeature,
     GetArtistDescriptionFeature,
     GetArtistFeature,
@@ -94,6 +97,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     def get_wikidata_artist_relation_key(self) -> str | None:
         f = self.get_feature(GetWikidataArtistRelationKeyFeature)
         return f.run() if f else None
+
+    async def get_artist_area(self, artist: Any) -> AreaDto | None:
+        f = self.get_feature(GetArtistArea)
+        return await f.run(artist) if f else None
 
     # Album
     async def search_album(
@@ -219,3 +226,9 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
             return False
         res = f.run(url)
         return res is not None if f else False
+
+    ## Label
+
+    async def get_area_area(self, area: Any) -> AreaDto | None:
+        f = self.get_feature(GetLabelArea)
+        return await f.run(area) if f else None

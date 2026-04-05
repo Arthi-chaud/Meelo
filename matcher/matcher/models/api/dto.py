@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import List, Optional
 from dataclasses_json import DataClassJsonMixin, LetterCase, Undefined, dataclass_json
 
+from matcher.providers.domain import AreaType
+
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
@@ -11,6 +13,16 @@ class UpdateAlbumDto(DataClassJsonMixin):
     genres: Optional[List[str]] = None
     labels: Optional[List[str]] = None
     type: Optional[str] = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class AreaDto(DataClassJsonMixin):
+    name: str
+    sort_name: str
+    mbid: str
+    iso3166: Optional[str] = None
+    type: Optional[AreaType] = None
 
 
 @dataclass_json
