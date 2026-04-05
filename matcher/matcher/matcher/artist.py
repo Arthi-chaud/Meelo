@@ -7,6 +7,7 @@ from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDt
 from matcher.models.match_result import ArtistMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
+    GetArtistArea,
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
 )
@@ -45,6 +46,13 @@ async def match_and_post_artist(
             await context.client.post_artist_illustration(
                 artist_id, res.illustration_url
             )
+        if res.area:
+            logging.info(f"Found area for artist {artist_name}: {res.area.name}")
+            area = await context.client.get_area(res.area.mbid)
+            if area is None:
+                area = await context.client.post_area(res.area)
+            if area is not None:
+                await context.client.link_artist_to_area(artist_id, area.id)
     except Exception as e:
         logging.error(e)
 
@@ -96,6 +104,7 @@ async def match_artist(
             sources=[],
         ),
         None,
+        None,
     )
 
     async def provider_task(
@@ -118,6 +127,13 @@ async def match_artist(
             return
 
         await asyncio.gather(
+            common.bind_feature_to_result(
+                GetArtistArea,
+                provider,
+                lambda: res.area is None,
+                lambda get_area: get_area.run(artist),
+                lambda area: res.set_area_if_none(area),
+            ),
             common.bind_feature_to_result(
                 GetArtistDescriptionFeature,
                 provider,

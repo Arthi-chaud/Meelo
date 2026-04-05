@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from matcher.models.api.dto import ExternalMetadataDto
+from matcher.models.api.dto import AreaDto, ExternalMetadataDto
 from datetime import date
 from dataclasses import dataclass
 
@@ -58,6 +58,10 @@ class AlbumMatchResult:
 class ArtistMatchResult:
     metadata: ExternalMetadataDto
     illustration_url: str | None
+    area: AreaDto | None
 
     def set_illustration_url_if_none(self, illustration_url: str):
         self.illustration_url = self.illustration_url or illustration_url
+
+    def set_area_if_none(self, area: AreaDto):
+        self.area = self.area or area
