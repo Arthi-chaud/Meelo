@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Any, Awaitable, List
+from matcher.models.api.dto import AreaDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
@@ -69,6 +70,10 @@ class GetArtistIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class IsArtistUrlFeature(IsUrlFeature):
+    pass
+
+
+class GetArtistArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
     pass
 
 
@@ -183,4 +188,11 @@ class GetWikidataSongRelationKeyFeature(GetWikidataRelationKeyFeature):
 
 
 class IsSongUrlFeature(IsUrlFeature):
+    pass
+
+
+## Lables
+
+
+class GetLabelArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
     pass
