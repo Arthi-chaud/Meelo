@@ -45,14 +45,13 @@ import formatArtists from "@/utils/format-artists";
 import { useQueryClient } from "~/api";
 import { DrawerBreakpoint } from "~/components/scaffold";
 import { useKeyboardBinding } from "~/contexts/keybindings";
-import { userAtom } from "~/state/user";
+import { useUser } from "~/hooks/user";
 import { ExpandedPlayerControls } from "./controls/expanded";
 import { MinimizedPlayerControls } from "./controls/minimized";
 
 const Player = () => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const [user] = useAtom(userAtom);
 	const queryClient = useQueryClient();
 	const api = queryClient.api;
 	const playPreviousTrack = useSetAtom(playPreviousTrackAtom);
@@ -66,6 +65,7 @@ const Player = () => {
 		[cursor, playlist],
 	);
 	const markedAsPlayed = useRef(false);
+	const { user } = useUser();
 
 	const nextTrack = useMemo<TrackState | undefined>(
 		() => playlist[cursor + 1],
@@ -193,7 +193,7 @@ const Player = () => {
 			// Note: it might be a bit redundant, but we need to do this when
 			// user slided in the crossfade zone.
 			// Hypothesis: Since progress will be set back at 0, the 'halfway point' is never reached (?)
-			if (currentTrack?.track.songId && !markedAsPlayed.current) {
+			if (currentTrack?.track.songId && !markedAsPlayed.current && user) {
 				api.setSongAsPlayed(currentTrack.track.songId);
 			}
 			skipTrack(queryClient);

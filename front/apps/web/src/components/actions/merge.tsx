@@ -35,6 +35,7 @@ import type { Song, SongWithRelations } from "@/models/song";
 import type { TrackWithRelations } from "@/models/track";
 import { MergeIcon, SongIcon } from "@/ui/icons";
 import ListItem from "~/components/list-item";
+import { getUser } from "~/hooks/user";
 import Illustration from "../illustration";
 import InfiniteList from "../infinite/list";
 import type Action from ".";
@@ -45,6 +46,7 @@ export const MergeSongAction = (
 ): Action => ({
 	icon: <MergeIcon />,
 	label: "actions.song.mergeSong.label",
+	disabled: !getUser()?.user,
 	dialog: ({ close }) => {
 		const [selectedSongId, selectSong] = useState<number>();
 		const closeModal = () => selectSong(undefined);
@@ -127,6 +129,7 @@ export const ReassignTrackAction = (
 ): Action => ({
 	icon: <MergeIcon />,
 	label: "actions.track.reassignTrack",
+	disabled: !getUser()?.user,
 	dialog: ({ close }) => {
 		const router = useRouter();
 		const { t } = useTranslation();

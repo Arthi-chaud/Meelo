@@ -28,12 +28,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import type API from "@/api";
-import {
-	getCurrentUserStatus,
-	getPlaylist,
-	getPlaylistEntries,
-	getRelease,
-} from "@/api/queries";
+import { getPlaylist, getPlaylistEntries, getRelease } from "@/api/queries";
 import { type Query, toTanStackQuery } from "@/api/query";
 import type {
 	PlaylistEntry,
@@ -66,6 +61,7 @@ import { Head } from "~/components/head";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
 import RelationPageHeader from "~/components/relation-page-header";
+import { useUser } from "~/hooks/user";
 import getSlugOrId from "~/utils/getSlugOrId";
 
 const playlistQuery = (idOrSlug: number | string) =>
@@ -252,7 +248,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	);
 	const playlist = useQuery(playlistQuery, playlistIdentifier);
 	const entriesQuery = useQuery(playlistEntriesQuery, playlistIdentifier);
-	const user = useQuery(getCurrentUserStatus);
+	const { user } = useUser();
 	const masterTracksReleaseQueries = useQueries(
 		...(entriesQuery.data
 			?.filter(({ master }) => master.releaseId)
@@ -283,12 +279,8 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		},
 	});
 	const isOwner = useMemo(
-		() =>
-			(playlist.data &&
-				user.data &&
-				playlist.data.ownerId === user.data.id) ||
-			false,
-		[playlist.data, user.data],
+		() => (playlist.data && playlist.data.ownerId === user?.id) || false,
+		[playlist.data, user],
 	);
 
 	const canEditPlaylist = useMemo(

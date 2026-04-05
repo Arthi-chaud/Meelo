@@ -18,13 +18,12 @@
 
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { atom } from "jotai";
-import type User from "@/models/user";
 import { UserAccessTokenStorageKey } from "@/utils/constants";
 
-export const userAtom = atom<User | undefined>();
+export const AnonynmousAccessToken = "anonymous" as const;
 
 export const accessTokenAtom = atom<
-	string | undefined,
+	string | typeof AnonynmousAccessToken | undefined,
 	[string | undefined],
 	void
 >(

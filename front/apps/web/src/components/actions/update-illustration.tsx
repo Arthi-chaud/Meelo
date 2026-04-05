@@ -27,9 +27,8 @@ import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import type { QueryClient } from "@/api/hook";
-import { store } from "@/state/store";
 import { UpdateIllustrationIcon } from "@/ui/icons";
-import { userAtom } from "~/state/user";
+import { getUser } from "~/hooks/user";
 import type Action from "./";
 
 type IllustrationUpdateFormType = {
@@ -114,7 +113,7 @@ const UpdateIllustrationAction = (
 
 	return {
 		label: "actions.changeIllutration",
-		disabled: store.get(userAtom)?.admin !== true,
+		disabled: !getUser()?.user?.admin,
 		icon: <UpdateIllustrationIcon />,
 		dialog: (controls) => (
 			<IllustrationUpdateForm

@@ -17,7 +17,6 @@
  */
 
 import { useMutation } from "@tanstack/react-query";
-import { useAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -34,7 +33,7 @@ import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadat
 import { ChangeAlbumType } from "~/components/actions/resource-type";
 import { ShareReleaseAction } from "~/components/actions/share";
 import { UpdateReleaseIllustrationAction } from "~/components/actions/update-illustration";
-import { userAtom } from "~/state/user";
+import { useUser } from "~/hooks/user";
 import { ContextualMenu } from "..";
 
 type ReleaseContextualMenuProps = {
@@ -42,7 +41,7 @@ type ReleaseContextualMenuProps = {
 };
 
 const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
-	const [user] = useAtom(userAtom);
+	const { user } = useUser();
 	const userIsAdmin = user?.admin === true;
 	const queryClient = useQueryClient();
 	const confirm = useConfirm();
