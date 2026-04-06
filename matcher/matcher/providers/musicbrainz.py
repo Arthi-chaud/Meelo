@@ -17,7 +17,8 @@ from matcher.providers.features import (
     GetAlbumUrlFromIdFeature,
     GetArea,
     GetAreaType,
-    GetArtistArea,
+    GetArtistActivityArea,
+    GetArtistBirthArea,
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
@@ -105,7 +106,10 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 lambda artist_url: self._get_artist_id_from_url(artist_url)
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
-            GetArtistArea(lambda artist: self._get_artist_area(artist)),
+            GetArtistActivityArea(
+                lambda artist: self._get_artist_activity_area(artist)
+            ),
+            GetArtistBirthArea(lambda artist: self._get_artist_birth_area(artist)),
             GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
             GetAlbumLabelsFeature(lambda album: self._get_album_labels(album)),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
@@ -207,9 +211,15 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     async def _get_artist(self, id: str) -> Any:
         return await self._fetch(f"/artist/{id}", {"inc": "url-rels+area-rels"})
 
-    async def _get_artist_area(self, artist: Any) -> AreaDto | None:
+    async def _get_artist_activity_area(self, artist: Any) -> AreaDto | None:
         try:
             return self._parse_area(artist["area"])
+        except Exception:
+            pass
+
+    async def _get_artist_birth_area(self, artist: Any) -> AreaDto | None:
+        try:
+            return self._parse_area(artist["begin-area"])
         except Exception:
             pass
 

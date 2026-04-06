@@ -17,8 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { IntersectionType, OmitType } from "@nestjs/swagger";
-import { ResponseWithArea } from "src/area/area.response";
+import { ApiProperty, IntersectionType, OmitType } from "@nestjs/swagger";
 import {
 	IllustratedResponse,
 	IllustrationResponse,
@@ -27,15 +26,28 @@ import {
 	LocalIdentifiersResponse,
 	ResponseWithLocalIdentifiers,
 } from "src/local-identifiers/local-identifiers.response";
-import { Artist, ArtistWithRelations } from "src/prisma/models";
+import { Area, Artist, ArtistWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 
 export class ArtistResponse extends IntersectionType(
 	OmitType(Artist, ["sortSlug"]),
 	IllustratedResponse,
 	ResponseWithLocalIdentifiers,
-	ResponseWithArea,
-) {}
+) {
+	@ApiProperty({
+		nullable: true,
+		type: Area,
+		description: "Use 'with' query parameter to include this field",
+	})
+	activityArea?: Area | null | undefined;
+
+	@ApiProperty({
+		nullable: true,
+		type: Area,
+		description: "Use 'with' query parameter to include this field",
+	})
+	birthArea?: Area | null | undefined;
+}
 
 @Injectable()
 export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
@@ -50,8 +62,10 @@ export class ArtistResponseBuilder extends ResponseBuilderInterceptor<
 			name: artist.name,
 			slug: artist.slug,
 			sortName: artist.sortName,
-			areaId: artist.areaId,
-			area: artist.area,
+			activityAreaId: artist.activityAreaId,
+			activityArea: artist.activityArea,
+			birthAreaId: artist.birthAreaId,
+			birthArea: artist.birthArea,
 			registeredAt: artist.registeredAt,
 			illustrationId: artist.illustrationId,
 			illustration: artist.illustration

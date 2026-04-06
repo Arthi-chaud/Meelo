@@ -87,11 +87,15 @@ class API:
             json={"url": image_url, "artistId": artist_id},
         )
 
-    async def link_artist_to_area(self, artist_id: int, area_id: int):
-        await self._put(
-            f"/artists/{artist_id}",
-            json={"areaId": area_id},
-        )
+    async def link_artist_to_area(
+        self, artist_id: int, activity_area_id: int | None, birth_area_id: int | None
+    ):
+        body = {}
+        if activity_area_id is not None:
+            body["activityAreaId"] = activity_area_id
+        if birth_area_id is not None:
+            body["birthAreaId"] = birth_area_id
+        await self._put(f"/artists/{artist_id}", json=body)
 
     async def get_artist_external_metadata(
         self, artistId: int

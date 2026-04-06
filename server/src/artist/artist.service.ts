@@ -94,8 +94,11 @@ export default class ArtistService extends SearchableRepositoryService {
 		what: ArtistQueryParameters.UpdateInput,
 		where: ArtistQueryParameters.WhereInput,
 	) {
-		if (what.areaId) {
-			await this.areaService.get({ id: what.areaId });
+		if (what.activityAreaId) {
+			await this.areaService.get({ id: what.activityAreaId });
+		}
+		if (what.birthAreaId) {
+			await this.areaService.get({ id: what.birthAreaId });
 		}
 		return this.prismaService.artist
 			.update({

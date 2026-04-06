@@ -58,13 +58,17 @@ class AlbumMatchResult:
 class ArtistMatchResult:
     metadata: ExternalMetadataDto
     illustration_url: str | None
-    area: AreaDto | None
+    activity_area: AreaDto | None
+    birth_area: AreaDto | None
 
     def set_illustration_url_if_none(self, illustration_url: str):
         self.illustration_url = self.illustration_url or illustration_url
 
-    def set_area_if_none(self, area: AreaDto):
-        self.area = self.area or area
+    def set_activity_area_if_none(self, area: AreaDto):
+        self.activity_area = self.activity_area or area
+
+    def set_birth_area_if_none(self, area: AreaDto):
+        self.birth_area = self.birth_area or area
 
 
 @dataclass

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsOptional } from "class-validator";
+import { PartialType, PickType } from "@nestjs/swagger";
+import { Artist } from "src/prisma/models";
 
 export type ArtistModel = {
 	id: number;
@@ -26,9 +26,6 @@ export type ArtistModel = {
 	registeredAt: Date;
 };
 
-export class UpdateArtistDTO {
-	@ApiProperty({ description: "ID of the area to link" })
-	@IsOptional()
-	@IsNumber()
-	areaId?: number;
-}
+export class UpdateArtistDTO extends PartialType(
+	PickType(Artist, ["activityAreaId", "birthAreaId"]),
+) {}

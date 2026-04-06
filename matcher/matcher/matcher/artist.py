@@ -2,12 +2,13 @@ import asyncio
 import logging
 from typing import List
 
-from matcher.models.api.domain import LocalIdentifiers
+from matcher.models.api.domain import Area, LocalIdentifiers
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.models.match_result import ArtistMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
-    GetArtistArea,
+    GetArtistActivityArea,
+    GetArtistBirthArea,
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
 )
@@ -46,13 +47,23 @@ async def match_and_post_artist(
             await context.client.post_artist_illustration(
                 artist_id, res.illustration_url
             )
-        if res.area:
-            logging.info(f"Found area for artist {artist_name}: {res.area.name}")
-            area = await context.client.get_area_by_mbid(res.area.mbid)
-            if area is None:
-                area = await context.client.post_area(res.area)
-            if area is not None:
-                await context.client.link_artist_to_area(artist_id, area.id)
+        if res.activity_area or res.birth_area:
+            logging.info(f"Found area(s) for artist {artist_name}")
+            activity_area: Area | None = None
+            birth_area: Area | None = None
+            if res.activity_area:
+                activity_area = (
+                    await context.client.get_area_by_mbid(res.activity_area.mbid)
+                ) or (await context.client.post_area(res.activity_area))
+            if res.birth_area:
+                birth_area = (
+                    await context.client.get_area_by_mbid(res.birth_area.mbid)
+                ) or (await context.client.post_area(res.birth_area))
+            await context.client.link_artist_to_area(
+                artist_id,
+                activity_area.id if activity_area else None,
+                birth_area.id if birth_area else None,
+            )
     except Exception as e:
         logging.error(e)
 
@@ -105,6 +116,7 @@ async def match_artist(
         ),
         None,
         None,
+        None,
     )
 
     async def provider_task(
@@ -128,11 +140,18 @@ async def match_artist(
 
         await asyncio.gather(
             common.bind_feature_to_result(
-                GetArtistArea,
+                GetArtistActivityArea,
                 provider,
-                lambda: res.area is None,
+                lambda: res.activity_area is None,
                 lambda get_area: get_area.run(artist),
-                lambda area: res.set_area_if_none(area),
+                lambda area: res.set_activity_area_if_none(area),
+            ),
+            common.bind_feature_to_result(
+                GetArtistBirthArea,
+                provider,
+                lambda: res.birth_area is None,
+                lambda get_area: get_area.run(artist),
+                lambda area: res.set_birth_area_if_none(area),
             ),
             common.bind_feature_to_result(
                 GetArtistDescriptionFeature,

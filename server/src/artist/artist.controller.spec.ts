@@ -400,22 +400,37 @@ describe("Artist Controller", () => {
 	});
 
 	describe("Update Artist", () => {
-		it("Should link area", async () => {
+		it("Should link activity area", async () => {
 			return request(app.getHttpServer())
 				.put(`/artists/${dummyRepository.artistB.id}`)
 				.send({
-					areaId: dummyRepository.areaB.id,
+					activityAreaId: dummyRepository.areaB.id,
 				} satisfies UpdateArtistDTO)
 				.expect(200)
 				.expect(async (res) => {
 					const artist: Artist = res.body;
-					expect(artist.areaId).toBe(dummyRepository.areaB.id);
+					expect(artist.activityAreaId).toBe(
+						dummyRepository.areaB.id,
+					);
+				});
+		});
+
+		it("Should link birth area", async () => {
+			return request(app.getHttpServer())
+				.put(`/artists/${dummyRepository.artistB.id}`)
+				.send({
+					birthAreaId: dummyRepository.areaA.id,
+				} satisfies UpdateArtistDTO)
+				.expect(200)
+				.expect(async (res) => {
+					const artist: Artist = res.body;
+					expect(artist.birthAreaId).toBe(dummyRepository.areaA.id);
 				});
 		});
 		it("Should fail: invalid area id", async () => {
 			return request(app.getHttpServer())
 				.put(`/artists/${dummyRepository.artistB.id}`)
-				.send({ areaId: -1 } satisfies UpdateArtistDTO)
+				.send({ activityAreaId: -1 } satisfies UpdateArtistDTO)
 				.expect(404);
 		});
 	});

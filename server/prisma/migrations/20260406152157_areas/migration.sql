@@ -2,7 +2,8 @@
 CREATE TYPE "AreaType" AS ENUM ('Country', 'Subdivision', 'County', 'Municipality', 'City', 'District', 'Island');
 
 -- AlterTable
-ALTER TABLE "artists" ADD COLUMN     "areaId" INTEGER;
+ALTER TABLE "artists" ADD COLUMN     "activityAreaId" INTEGER,
+ADD COLUMN     "birthAreaId" INTEGER;
 
 -- AlterTable
 ALTER TABLE "labels" ADD COLUMN     "areaId" INTEGER;
@@ -26,7 +27,10 @@ CREATE TABLE "areas" (
 CREATE UNIQUE INDEX "areas_mbid_key" ON "areas"("mbid");
 
 -- AddForeignKey
-ALTER TABLE "artists" ADD CONSTRAINT "artists_areaId_fkey" FOREIGN KEY ("areaId") REFERENCES "areas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "artists" ADD CONSTRAINT "artists_activityAreaId_fkey" FOREIGN KEY ("activityAreaId") REFERENCES "areas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "artists" ADD CONSTRAINT "artists_birthAreaId_fkey" FOREIGN KEY ("birthAreaId") REFERENCES "areas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "labels" ADD CONSTRAINT "labels_areaId_fkey" FOREIGN KEY ("areaId") REFERENCES "areas"("id") ON DELETE SET NULL ON UPDATE CASCADE;

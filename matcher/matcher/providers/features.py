@@ -74,7 +74,11 @@ class IsArtistUrlFeature(IsUrlFeature):
     pass
 
 
-class GetArtistArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
+class GetArtistActivityArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
+    pass
+
+
+class GetArtistBirthArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
     pass
 
 

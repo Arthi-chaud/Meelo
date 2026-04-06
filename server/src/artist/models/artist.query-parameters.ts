@@ -43,7 +43,8 @@ namespace ArtistQueryParameters {
 		| "illustrationId"
 		| "sortName"
 		| "sortSlug"
-		| "areaId"
+		| "activityAreaId"
+		| "birthAreaId"
 	> & {
 		sortName?: string;
 		registeredAt?: Date;
@@ -75,7 +76,9 @@ namespace ArtistQueryParameters {
 	/**
 	 * Parameters to update an Artist
 	 */
-	export type UpdateInput = Partial<Pick<Artist, "areaId">>;
+	export type UpdateInput = Partial<
+		Pick<Artist, "activityAreaId" | "birthAreaId">
+	>;
 
 	/**
 	 * Parameters to delete an Artist
@@ -93,7 +96,8 @@ namespace ArtistQueryParameters {
 	 * Defines what relations to include in query
 	 */
 	export const AvailableIncludes = [
-		"area",
+		"activityArea",
+		"birthArea",
 		"albums",
 		"songs",
 		"illustration",

@@ -14,7 +14,8 @@ from .features import (
     GetAlbumUrlFromIdFeature,
     GetArea,
     GetAreaType,
-    GetArtistArea,
+    GetArtistActivityArea,
+    GetArtistBirthArea,
     GetLabelArea,
     GetParentArea,
     IsAlbumUrlFeature,
@@ -101,8 +102,12 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetWikidataArtistRelationKeyFeature)
         return f.run() if f else None
 
-    async def get_artist_area(self, artist: Any) -> AreaDto | None:
-        f = self.get_feature(GetArtistArea)
+    async def get_artist_activity_area(self, artist: Any) -> AreaDto | None:
+        f = self.get_feature(GetArtistActivityArea)
+        return await f.run(artist) if f else None
+
+    async def get_artist_birth_area(self, artist: Any) -> AreaDto | None:
+        f = self.get_feature(GetArtistBirthArea)
         return await f.run(artist) if f else None
 
     # Album

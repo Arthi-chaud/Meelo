@@ -49,12 +49,17 @@ class TestMusicbrainz:
         artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         assert artist is not None
         assert artist.get("name") == "Britney Spears"
-        area = await provider.get_artist_area(artist)
+        area = await provider.get_artist_activity_area(artist)
         assert area is not None
         assert area.name == "United States"
         assert area.mbid == "489ce91b-6658-3307-9877-795b68554c98"
         assert area.sort_name == "United States"
         assert area.iso3166 == "US"
+
+        area = await provider.get_artist_birth_area(artist)
+        assert area is not None
+        assert area.name == "McComb"
+        assert area.mbid == "ff7eb755-8d72-447f-a5f2-d7a4350cafd5"
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_search_album(self, ctx, subtests):
