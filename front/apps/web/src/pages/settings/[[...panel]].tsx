@@ -85,10 +85,7 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 		}
 	}, [panel]);
 
-	if (!user) {
-		return null;
-	}
-	if (user?.admin === false) {
+	if (!user || user?.admin === false) {
 		return <UISettings />;
 	}
 	return (

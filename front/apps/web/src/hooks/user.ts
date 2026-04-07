@@ -1,10 +1,11 @@
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
 import { getCurrentUserStatus } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
 import type User from "@/models/user";
 import { store } from "@/state/store";
 import { useAPI } from "~/api";
+import { queryClientAtom } from "~/state/query-client";
 import { AnonynmousAccessToken, accessTokenAtom } from "~/state/user";
 
 export type UserState =
@@ -18,15 +19,16 @@ export const useUser = (): UserState => {
 	const api = useAPI();
 	const { data: user, error } = useQuery({
 		...toTanStackQuery(api, getCurrentUserStatus),
+		throwOnError: token !== AnonynmousAccessToken,
 		enabled: token !== undefined && token !== AnonynmousAccessToken,
 	});
 	return getUser_(token, user, error);
 };
 
 export const getUser = () => {
-	const user = new QueryClient().getQueryData<User>(
-		getCurrentUserStatus().key,
-	);
+	const user = store
+		.get(queryClientAtom)
+		.getQueryData<User>(getCurrentUserStatus().key);
 	return getUser_(store.get(accessTokenAtom), user, null);
 };
 

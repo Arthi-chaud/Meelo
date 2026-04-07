@@ -125,6 +125,7 @@
 	"auth": {
 		"loggedInAs": "Logged in as {{n}}",
 		"loggedInAsAnonymous": "Anonymous user",
+		"loginAsAnonymous": "Login anonymously",
 		"loginButton": "Login",
 		"signupButton": "Signup",
 		"signup": "New here ? Signup",

@@ -77,7 +77,7 @@ const newlyAddedReleasesQuery = getReleases(
 
 const mostListenedSongsQuery = getSongs(
 	{},
-	{ sortBy: "userPlayCount", order: "desc" },
+	{ sortBy: "totalPlayCount", order: "desc" },
 	["artist", "featuring", "master", "illustration"],
 );
 

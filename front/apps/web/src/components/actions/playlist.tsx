@@ -190,7 +190,7 @@ export const CreatePlaylistAction = (
 ): Action => ({
 	label: "actions.new",
 	icon: <AddIcon />,
-	disabled: !getUser()?.user,
+	disabled: getUser()?.user === null,
 	dialog: ({ close }) => {
 		const mutation = useMutation({
 			mutationFn: (formFields: CreatePlaylistDto) => {

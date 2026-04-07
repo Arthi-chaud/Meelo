@@ -1,7 +1,6 @@
 import {
 	dehydrate,
 	HydrationBoundary as Hydrate,
-	QueryClient,
 	QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -23,14 +22,10 @@ import "~/theme/styles.css";
 import type { EmotionCache } from "@emotion/react";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
-import { Provider } from "jotai";
+import { Provider, useAtomValue } from "jotai";
 import type { Page } from "ssr";
-import { getCurrentUserStatus, getLibraries } from "@/api/queries";
-import {
-	DefaultQueryOptions,
-	toTanStackInfiniteQuery,
-	toTanStackQuery,
-} from "@/api/query";
+import { getCurrentUserStatus, getLibraries, getSettings } from "@/api/queries";
+import { toTanStackInfiniteQuery, toTanStackQuery } from "@/api/query";
 import { store } from "@/state/store";
 import {
 	loadViewPreferences,
@@ -42,7 +37,8 @@ import { ModalSlot } from "~/components/modal";
 import Scaffold from "~/components/scaffold";
 import { KeyboardBindingsProvider } from "~/contexts/keybindings";
 import { withTranslations } from "~/i18n";
-import { accessTokenAtom } from "~/state/user";
+import { queryClientAtom } from "~/state/query-client";
+import { AnonynmousAccessToken, accessTokenAtom } from "~/state/user";
 import { viewPreferenceAtom } from "~/state/view-preferences";
 import ThemeProvider from "~/theme/provider";
 
@@ -55,14 +51,7 @@ function MyApp({
 	pageProps: { session, lng, ...pageProps },
 	emotionCache,
 }: MyAppProps) {
-	const [queryClient] = useState(
-		() =>
-			new QueryClient({
-				defaultOptions: {
-					queries: DefaultQueryOptions,
-				},
-			}),
-	);
+	const queryClient = useAtomValue(queryClientAtom);
 	const router = useRouter();
 	const [errorType, setError] = useState<"not-found" | "error" | undefined>();
 	useEffect(() => {
@@ -149,11 +138,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	const { pageProps } = await NextApp.getInitialProps(appContext);
 	const Component = appContext.Component as unknown as Page;
 
-	const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: DefaultQueryOptions,
-		},
-	});
+	const queryClient = store.get(queryClientAtom);
 	const cookies = (appContext.ctx.req as any)?.cookies ?? {};
 
 	const accessToken: string | undefined = cookies[UserAccessTokenStorageKey];
@@ -170,7 +155,12 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 
 	const { queries, infiniteQueries, additionalProps } =
 		(await Component.prepareSSR?.(appContext.ctx, queryClient)) ?? {};
-
+	// Only prefetch settings when user claims to be anonymous
+	if (accessToken === AnonynmousAccessToken) {
+		await queryClient
+			.fetchQuery(toTanStackQuery(api, getSettings))
+			.catch(() => null);
+	}
 	const userQueryResult = await queryClient
 		.fetchQuery(toTanStackQuery(api, getCurrentUserStatus))
 		.catch(() => null);

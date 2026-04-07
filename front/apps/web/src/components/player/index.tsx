@@ -224,7 +224,10 @@ const Player = () => {
 						const isPastHalfwayPoint = duration_
 							? progress.current > duration_ / 2
 							: false;
-						if (isPastHalfwayPoint || isMoreThanFourMinutes) {
+						if (
+							user &&
+							(isPastHalfwayPoint || isMoreThanFourMinutes)
+						) {
 							markedAsPlayed.current = true;
 							api.setSongAsPlayed(currentTrack.track.songId);
 						}
