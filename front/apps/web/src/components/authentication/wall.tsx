@@ -28,14 +28,13 @@ import { toTanStackQuery } from "@/api/query";
 import { getAPI_ } from "~/api";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";
-import { accessTokenAtom, userAtom } from "~/state/user";
+import { accessTokenAtom } from "~/state/user";
 import AuthenticationForm from "./form";
 
 // TODO Handle anonymous
 
 const AuthenticationWall = (props: { children: any }) => {
-	const [accessToken] = useAtom(accessTokenAtom);
-	const [_, setUser] = useAtom(userAtom);
+	const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 	const api = useMemo(() => getAPI_(accessToken ?? null), [accessToken]);
 	const queryClient = useQueryClient();
 	const status = useReactQuery({
@@ -60,7 +59,7 @@ const AuthenticationWall = (props: { children: any }) => {
 	}, [accessToken, status, authentified]);
 	useEffect(() => {
 		if (accessToken && status.data && !status.error) {
-			setUser(status.data);
+			setAccessToken(accessToken);
 		}
 	}, [accessToken, status]);
 	if (!authentified || !status.data?.id) {

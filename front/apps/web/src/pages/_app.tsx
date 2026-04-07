@@ -174,6 +174,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	const userQueryResult = await queryClient
 		.fetchQuery(toTanStackQuery(api, getCurrentUserStatus))
 		.catch(() => null);
+	// NOTE: This means that disable SSR for anonymous users, no biggy
 	if (userQueryResult != null) {
 		try {
 			await Promise.all([

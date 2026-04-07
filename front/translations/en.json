@@ -123,6 +123,8 @@
 		"topVideos": "Top Videos"
 	},
 	"auth": {
+		"loggedInAs": "Logged in as {{n}}",
+		"loggedInAsAnonymous": "Anonymous user",
 		"loginButton": "Login",
 		"signupButton": "Signup",
 		"signup": "New here ? Signup",

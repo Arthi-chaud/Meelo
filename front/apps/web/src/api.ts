@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
+import { useMemo } from "react";
 import API from "@/api";
 import {
 	mkUseInfiniteQuery,
@@ -27,17 +28,18 @@ import {
 import type { InfiniteQueryFn, QueryFn } from "@/api/query";
 import type Resource from "@/models/resource";
 import { store } from "@/state/store";
-import { accessTokenAtom } from "~/state/user";
+import { AnonynmousAccessToken, accessTokenAtom } from "~/state/user";
 
 const isSSR = () => typeof window === "undefined";
 
 export const useAPI = () => {
 	const [accessToken] = useAtom(accessTokenAtom);
-	if (!accessToken) {
-		return getAPI_(null);
-	}
-	const newInstance = getAPI_(accessToken);
-	return matchingInstance;
+	return useMemo(() => {
+		if (!accessToken || accessToken === AnonynmousAccessToken) {
+			return getAPI_(null);
+		}
+		return getAPI_(accessToken);
+	}, [accessToken]);
 };
 
 // Get API instance using atom to resolve access token

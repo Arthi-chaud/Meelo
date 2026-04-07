@@ -125,6 +125,8 @@
 	},
 	"auth": {
 		"connectButton": "Se connecter au server",
+		"loggedInAs": "Connecté en tant que {{n}}",
+		"loggedInAsAnonymous": "Connecté en tant qu'utilisateur anonyme",
 		"loginButton": "Se connecter",
 		"signin": "On s'est déjà vu ? Connectez-vous",
 		"signup": "Nouveau ici ? Inscrivez-vous",
