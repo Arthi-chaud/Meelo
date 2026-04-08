@@ -14,7 +14,8 @@
 			"seeSongs": "Zeige Songs"
 		},
 		"changeIllutration": "Ändere Illustration",
-		"connectToNewServer": "Verbinde einen Meelo-Server",
+		"clearQueryCache": "Cache leeren",
+		"connectToNewServer": "Verbinden mit dem Meelo Server",
 		"create": "Erstellen",
 		"delete": "Lösche",
 		"deleteFromPlaylist": "Lösche aus Playlist",
@@ -35,10 +36,13 @@
 		"goToPlaylist": "Zur Playlist",
 		"goToRelease": "Zur Veröffentlichung",
 		"goToSettingsPage": "Zu den Einstellungen",
+		"label": {
+			"startRadio": "Starte Label Radio"
+		},
 		"library": {
 			"create": "Neue Bibliothek",
 			"delete": "Lösche Bibliothek",
-			"deletionWarning": "Eine Bibliothek wird gelöscht. Dies kann nicht rückgängig gemacht werden."
+			"deletionWarning": "Eine Bibliothek wird gelöscht. Dies kann nicht rückgängig gemacht werden"
 		},
 		"logout": "Ausloggen",
 		"new": "Neu",
@@ -60,7 +64,7 @@
 			"mergeSong": {
 				"label": "Führe Songs zusammen",
 				"modalTitle": "Wähle Song",
-				"warningBeforeMerging": "Alle Tracks werden dem gewählten Song zugeordnet und der alte Song gelöscht. Dateien werden weder geändert noch gelöscht."
+				"warningBeforeMerging": "Alle Tracks werden dem gewählten Song zugeordnet und der alte Song gelöscht. Dateien werden weder geändert noch gelöscht"
 			},
 			"seeLyrics": "Zeige Liedtext",
 			"seeOtherVersions": "Zeige andere Versionen",
@@ -69,7 +73,8 @@
 			"seeSongInfo": "Song Info"
 		},
 		"switchServer": {
-			"label": "Geschaltet Server"
+			"label": "Ändere Server",
+			"modalMessage": "Änderung des Servers unterbricht und setzt die Wiedergabeliste zurück. Trotzdem fortfahren?"
 		},
 		"track": {
 			"reassignTrack": "Ordne Track neu zu",
@@ -92,6 +97,8 @@
 	"albumType": {
 		"compilation": "Compilation",
 		"compilation_plural": "Compilations",
+		"demoAlbum": "Demo Album",
+		"demoAlbum_plural": "Demo Alben",
 		"ep": "EP",
 		"ep_plural": "EPs",
 		"liveRecording": "Live-Aufnahme",
@@ -104,6 +111,8 @@
 		"soundtrack_plural": "Soundtrack Alben",
 		"studioRecording": "Studioalbum",
 		"studioRecording_plural": "Studioalben",
+		"unofficial": "Unoffizielle Alben",
+		"unofficial_plural": "Unoffiziele Alben",
 		"videoAlbum": "Videoalbum",
 		"videoAlbum_plural": "Videoalben"
 	},
@@ -175,8 +184,10 @@
 	},
 	"errors": {
 		"errorOccured": "Oops... Ein Fehler ist aufgetreten",
+		"goBack": "Zurück",
 		"oops": "Oops",
-		"pageNotFound": "Oops... Seite nicht gefunden"
+		"pageNotFound": "Oops... Seite nicht gefunden",
+		"tryAgain": "Neuer Versuch"
 	},
 	"fileInfo": {
 		"bitRate": "Bitrate",
@@ -242,8 +253,8 @@
 		"newlyAddedAlbums": "Neu hinzugefügte Alben",
 		"newlyAddedArtists": "Neu hinzugefügte Künstler",
 		"newlyAddedReleases": "Neu hinzugefügte Veröffentlichungen",
-		"topGenres": "Top Genres",
-		"topLabels": ""
+		"topGenres": "Top Genre",
+		"topLabels": "Top Labels"
 	},
 	"keyboardBindings": {
 		"closePlayer": "Player schließen",
@@ -251,7 +262,7 @@
 		"goToSettingsPage": "Zu Einstellungen gehen",
 		"modalTitle": "Tastaturabkürzungen",
 		"openClosePlayer": "Player öffnen / schließen",
-		"openModalShortcutDescription": "",
+		"openModalShortcutDescription": "öffne / schließe das modal",
 		"playPauseWhenExpanded": "Wiedergabe / Pause (Wenn Player geöffnet ist)"
 	},
 	"misc": {
@@ -264,8 +275,9 @@
 		"album_plural": "Alben",
 		"artist": "Künstler",
 		"artist_plural": "Künstler",
-		"disc": "Scheibe",
+		"disc": "Disk",
 		"externalLink_plural": "Externer Link",
+		"genre": "Genre",
 		"genre_plural": "Genres",
 		"label": "Plattenlabel",
 		"library_plural": "Bibliotheken",
@@ -291,19 +303,28 @@
 	},
 	"player": {
 		"loadNextSongs": "Nächste Lieder laden",
+		"plainLyrics": "Einfache Songtexte",
 		"saveQueueAsPlaylist": "Warteschlange als Playlist speichern",
 		"stream": {
 			"directStream": "Direktstream",
 			"transcode": "Transkodierung"
-		}
+		},
+		"syncedLyrics": "Synchronisierte Lyrics"
 	},
 	"search": {
 		"all": "Alle"
 	},
 	"settings": {
+		"cache": {
+			"cachedTracks": "Zwischengespeicherte Tracks",
+			"clearCache": "Lösche Zwischenspeicher",
+			"header": "Zwischenspeicher",
+			"maxCachedTracks": "Maximal zwischengespeicherte Tracks",
+			"prefetchCount": "Vorabrufanzahl"
+		},
 		"interface": "Schnittstelle",
 		"libraries": {
-			"nameColumn": "",
+			"nameColumn": "Name",
 			"tasks": {
 				"current": "Aktuell",
 				"label": "Aufgaben",
@@ -339,7 +360,9 @@
 				"pt": "Portugiesisch",
 				"pt_br": "Portugiesisch (Brasilien)",
 				"ru": "Russisch",
-				"sk": "slowakisch"
+				"sk": "slowakisch",
+				"zh_Hans": "Chinesisch (vereinfacht)",
+				"zh_Hant": "Chinesisch (Traditionell)"
 			},
 			"language": "Sprache",
 			"notifications": "Benachrichtigungen",
@@ -370,14 +393,14 @@
 		"songType": "Liedtyp"
 	},
 	"songType": {
-		"acappella": "",
+		"acappella": "A Capella",
 		"acoustic": "Akustik",
 		"clean": "Sauber",
 		"demo": "Demo",
 		"edit": "Bearbeiten",
 		"instrumental": "Instrumental",
-		"live": "",
-		"medley": "",
+		"live": "Live",
+		"medley": "Medley",
 		"nonMusic": "Nicht-Musik",
 		"original": "Original",
 		"remix": "Remix",
@@ -402,6 +425,10 @@
 			"accountCreated": "Herzlichen Glückwunsch! Dein Meelo-Account wurde erstellt. Du musst nun darauf warten, dass der Administrator deinen Account freigibt",
 			"serverSwitchSuccessful": "Serverwechsel erfolgreich",
 			"signinFailed": "Verbindung zum Server konnte nicht hergestellt werden"
+		},
+		"clearCache": {
+			"error": "Fehler beim Cache leeren",
+			"success": "Cache geleert"
 		},
 		"leaveWillStopPlaybackAlert": "Wenn Sie die Website verlassen, wird die Wiedergabe gestoppt.",
 		"library": {
@@ -459,7 +486,7 @@
 		"behindTheScenes": "Hinter den Kulissen",
 		"documentary": "Dokumentation",
 		"interview": "Interview",
-		"live": "",
+		"live": "Live",
 		"lyricsVideo": "Liedtext Video",
 		"musicVideo": "Musik Video",
 		"other": "Andere",
