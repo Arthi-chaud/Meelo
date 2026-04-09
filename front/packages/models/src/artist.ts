@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { Area } from "./area";
 import Illustration from "./illustration";
 import Resource from "./resource";
 
@@ -37,7 +38,7 @@ const Artist = Resource.concat(
 
 type Artist = yup.InferType<typeof Artist>;
 
-export type ArtistInclude = "illustration";
+export type ArtistInclude = "illustration" | "activityArea" | "birthArea";
 
 export const ArtistWithRelations = <
 	Selection extends ArtistInclude | never = never,
@@ -48,6 +49,8 @@ export const ArtistWithRelations = <
 		yup
 			.object({
 				illustration: Illustration.required().nullable(),
+				activityArea: Area.required().nullable(),
+				birthArea: Area.required().nullable(),
 			})
 			.pick(relation),
 	);

@@ -271,6 +271,7 @@
 		"playPauseWhenExpanded": "Lecture / Pause (Quand le lecteur est ouvert)"
 	},
 	"misc": {
+		"from": "Originaire de",
 		"loading": "Chargement",
 		"no": "Non",
 		"yes": "Oui"

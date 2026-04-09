@@ -25,6 +25,7 @@ import {
 	type AlbumType,
 	AlbumWithRelations,
 } from "@/models/album";
+import { Area } from "@/models/area";
 import {
 	type ArtistInclude,
 	type ArtistSortingKeys,
@@ -595,6 +596,14 @@ export const getScrobblerStatus = (): Query<ScrobblersStatus> => {
 /// Settings
 export const getSettings = (): Query<Settings> => {
 	return _mkSimpleQuery({ route: "/settings", validator: Settings });
+};
+
+/// Areas
+export const getParentAreas = (areaId: Identifier): Query<Area[]> => {
+	return _mkSimpleQuery({
+		route: `/areas/${areaId}/parents`,
+		validator: yup.array().of(Area.required()).required(),
+	});
 };
 
 export const getScannerVersion = () => {

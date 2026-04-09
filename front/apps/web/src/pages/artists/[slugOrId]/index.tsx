@@ -16,7 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Container, Divider, Grid, Stack } from "@mui/material";
+import {
+	Box,
+	Container,
+	Divider,
+	Grid,
+	Stack,
+	Typography,
+} from "@mui/material";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
@@ -26,10 +33,12 @@ import {
 	getAlbums,
 	getArtist,
 	getArtistExternalMetadata,
+	getParentAreas,
 	getSongs,
 	getVideos,
 } from "@/api/queries";
 import { AlbumType } from "@/models/album";
+import type { Area } from "@/models/area";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { VideoTypeIsExtra } from "@/models/video";
 import { generateArray } from "@/utils/gen-list";
@@ -87,7 +96,7 @@ const rareSongsQuery = (artistSlugOrId: string | number) =>
 	);
 
 const artistQuery = (artistSlugOrId: string | number) =>
-	getArtist(artistSlugOrId, ["illustration"]);
+	getArtist(artistSlugOrId, ["illustration", "activityArea", "birthArea"]);
 
 const externalMetadataQuery = (artistSlugOrId: string | number) =>
 	getArtistExternalMetadata(artistSlugOrId);
@@ -117,12 +126,29 @@ const prepareSSR = (context: NextPageContext) => {
 	};
 };
 
+export const useAreas = (
+	baseArea: Area | null | undefined,
+): Area[] | null | undefined => {
+	const { data: parentAreas } = useQuery(
+		getParentAreas,
+		baseArea?.id ?? undefined,
+	);
+	if (!baseArea) {
+		return baseArea;
+	}
+	if (parentAreas === undefined) {
+		return undefined;
+	}
+	return [baseArea, ...parentAreas];
+};
+
 const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const artistIdentifier =
 		props?.artistIdentifier ?? getSlugOrId(router.query);
 	const artist = useQuery(artistQuery, artistIdentifier);
+	const areas = useAreas(artist.data?.birthArea ?? artist.data?.activityArea);
 	const albums = latestAlbumsQuery.map(({ type, query }) => ({
 		type: type,
 
@@ -237,12 +263,28 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<SectionHeader heading={t("browsing.sections.about")} />
 						<Container
 							maxWidth={false}
-							sx={{ paddingY: 4, paddingTop: 3 }}
+							sx={{
+								paddingBottom: areas?.length ? 0 : 4,
+								paddingTop: 3,
+							}}
 						>
 							<ResourceDescription
 								externalMetadata={externalMetadata.data}
 							/>
 						</Container>
+					</Box>
+				)}
+
+				{areas && (
+					<Box>
+						<Typography variant="h6" component={"span"}>
+							{`${t("misc.from")}: `}
+						</Typography>
+						{areas.map((area, idx) =>
+							idx < areas.length - 1
+								? `${area.name}, `
+								: area.name,
+						)}
 					</Box>
 				)}
 				{(externalMetadata.data === undefined ||
