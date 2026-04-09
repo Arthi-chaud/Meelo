@@ -57,6 +57,7 @@ import {
 	GoToSettingsAction,
 } from "~/components/actions/link";
 import { RootGradientBackground } from "~/components/gradient-background";
+import { useUser } from "~/hooks/user";
 import Player from "./player";
 import ThemedImage from "./themed-image";
 
@@ -132,6 +133,7 @@ const Drawer = ({
 }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
+	const user = useUser();
 	const theme = useTheme();
 	const persistentDrawerBreakpoint = DrawerBreakpoint;
 	const drawerWidth = { [persistentDrawerBreakpoint]: DrawerWidth };
@@ -307,6 +309,18 @@ const Drawer = ({
 								);
 							})}
 						</List>
+						<Divider variant="middle" />
+						<Typography
+							variant="caption"
+							color="textSecondary"
+							sx={{ textAlign: "center", paddingY: 2 }}
+						>
+							{user.type === "anonymous"
+								? t("auth.loggedInAsAnonymous")
+								: t("auth.loggedInAs", {
+										n: user.user?.name ?? t("misc.loading"),
+									})}
+						</Typography>
 					</MUIDrawer>
 				),
 			)}

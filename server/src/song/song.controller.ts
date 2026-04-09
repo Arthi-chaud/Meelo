@@ -34,7 +34,6 @@ import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
-import { UnauthorizedAnonymousRequestException } from "src/authentication/authentication.exception";
 import { Admin, Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import TransformFilter, {
@@ -207,7 +206,7 @@ export class SongController {
 		}
 
 		if (sort.sortBy === "userPlayCount" && !request.user) {
-			throw new UnauthorizedAnonymousRequestException();
+			sort.sortBy = "totalPlayCount";
 		}
 
 		return this.songService.getMany(

@@ -24,7 +24,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { getSettings } from "@/api/queries";
 import { useAPI, useQuery } from "~/api";
-import { accessTokenAtom } from "~/state/user";
+import { AnonynmousAccessToken, accessTokenAtom } from "~/state/user";
 
 /**
  * Authentication form
@@ -139,6 +139,7 @@ const AuthenticationForm = () => {
 					<Button
 						type="submit"
 						variant="contained"
+						disabled={settings.isError}
 						onClick={() => {}}
 					>
 						{t(
@@ -148,6 +149,18 @@ const AuthenticationForm = () => {
 						)}
 					</Button>
 				</Box>
+
+				{settings.data?.allowAnonymous && (
+					<Button
+						variant="text"
+						href="/" //TODO: Ugly workaround to force auth wall to recompute state
+						onClick={() => {
+							setAccessToken(AnonynmousAccessToken);
+						}}
+					>
+						{t("auth.loginAsAnonymous")}
+					</Button>
+				)}
 				<Divider sx={{ width: "100%" }} variant="middle" />
 				<Box>
 					<Button

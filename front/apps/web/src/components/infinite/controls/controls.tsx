@@ -262,6 +262,7 @@ const ActionButtonGroup = ({ actions }: { actions: Action[] }) => {
 					<Button
 						key={`action-${action.label}`}
 						startIcon={action.icon}
+						disabled={action.disabled}
 						variant="contained"
 						onClickCapture={() => {
 							if (action.disabled === true) {

@@ -22,12 +22,11 @@ import { useRouter } from "next/router";
 import { type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { getCurrentUserStatus } from "@/api/queries";
-import { useQuery } from "~/api";
 import { Head } from "~/components/head";
 import LibrariesSettings from "~/components/settings/libraries";
 import UISettings from "~/components/settings/ui";
 import UsersSettings from "~/components/settings/users";
+import { useUser } from "~/hooks/user";
 
 // NOTE: Data Grid do not support SSR
 // https://github.com/mui/mui-x/issues/7599
@@ -78,18 +77,15 @@ const SettingsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 	const [panel, setPanel] = useState(
 		props?.panel ?? getPanelFromQuery(router.query.panel?.at(0)),
 	);
-	const userQuery = useQuery(getCurrentUserStatus);
+	const { user } = useUser();
 
 	useEffect(() => {
-		if (userQuery.data?.admin === true) {
+		if (user?.admin === true) {
 			router.push(`/settings/${panel}`, undefined, { shallow: true });
 		}
 	}, [panel]);
 
-	if (!userQuery.data) {
-		return null;
-	}
-	if (userQuery.data.admin === false) {
+	if (!user || user?.admin === false) {
 		return <UISettings />;
 	}
 	return (

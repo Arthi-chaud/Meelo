@@ -23,30 +23,38 @@ import {
 } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
-import { getCurrentUserStatus } from "@/api/queries";
+import { getCurrentUserStatus, getSettings } from "@/api/queries";
 import { toTanStackQuery } from "@/api/query";
-import { getAPI_ } from "~/api";
+import { getAPI_, useQuery } from "~/api";
 import ModalPage from "~/components/modal-page";
 import ThemedImage from "~/components/themed-image";
-import { accessTokenAtom, userAtom } from "~/state/user";
+import { AnonynmousAccessToken, accessTokenAtom } from "~/state/user";
 import AuthenticationForm from "./form";
 
 const AuthenticationWall = (props: { children: any }) => {
-	const [accessToken] = useAtom(accessTokenAtom);
-	const [_, setUser] = useAtom(userAtom);
+	const [accessToken, setAccessToken] = useAtom(accessTokenAtom);
 	const api = useMemo(() => getAPI_(accessToken ?? null), [accessToken]);
 	const queryClient = useQueryClient();
+	const { data: settings } = useQuery(getSettings);
 	const status = useReactQuery({
 		...toTanStackQuery(api, getCurrentUserStatus),
 		throwOnError: false,
+		enabled: !(
+			settings?.allowAnonymous && accessToken === AnonynmousAccessToken
+		),
 	});
 	const [authentified, setAuthenticationStatus] = useState(
-		status.data?.id !== undefined,
+		status.data?.id !== undefined ||
+			(settings?.allowAnonymous && accessToken === AnonynmousAccessToken),
 	);
 
 	useEffect(() => {
-		queryClient.invalidateQueries({ queryKey: getCurrentUserStatus().key });
-		status.refetch();
+		if (accessToken !== AnonynmousAccessToken) {
+			queryClient.invalidateQueries({
+				queryKey: getCurrentUserStatus().key,
+			});
+			status.refetch();
+		}
 	}, [accessToken]);
 	useEffect(() => {
 		if (accessToken && status.data?.id && !status.error) {
@@ -58,10 +66,10 @@ const AuthenticationWall = (props: { children: any }) => {
 	}, [accessToken, status, authentified]);
 	useEffect(() => {
 		if (accessToken && status.data && !status.error) {
-			setUser(status.data);
+			setAccessToken(accessToken);
 		}
 	}, [accessToken, status]);
-	if (!authentified || !status.data?.id) {
+	if (!authentified) {
 		return (
 			<ModalPage open>
 				<Stack

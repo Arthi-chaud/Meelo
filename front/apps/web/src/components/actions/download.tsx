@@ -19,6 +19,7 @@
 import type { useConfirm } from "material-ui-confirm";
 import type API from "@/api";
 import { ArchiveIcon, DownloadIcon } from "@/ui/icons";
+import { getUser } from "~/hooks/user";
 import type Action from "./";
 
 const confirmDownloadAction = (
@@ -46,6 +47,7 @@ export const DownloadAction = (
 ): Action => ({
 	icon: <DownloadIcon />,
 	label: "actions.download.label",
+	disabled: !getUser()?.user,
 	onClick: () =>
 		confirmDownloadAction(confirm, api.getDirectStreamURL(sourceFileId), t),
 });
@@ -58,6 +60,7 @@ export const DownloadAsyncAction = (
 ): Action => ({
 	icon: <DownloadIcon />,
 	label: "actions.download.label",
+	disabled: !getUser()?.user,
 	onClick: () =>
 		sourceFileId().then((id) =>
 			confirmDownloadAction(confirm, api.getDirectStreamURL(id), t),

@@ -61,6 +61,7 @@ import { useQueryClient } from "~/api";
 import Illustration from "~/components/illustration";
 import InfiniteList from "~/components/infinite/list";
 import ListItem from "~/components/list-item";
+import { getUser } from "~/hooks/user";
 import type Action from "./";
 
 export const PlayNextAction = (
@@ -189,6 +190,7 @@ export const CreatePlaylistAction = (
 ): Action => ({
 	label: "actions.new",
 	icon: <AddIcon />,
+	disabled: getUser()?.user === null,
 	dialog: ({ close }) => {
 		const mutation = useMutation({
 			mutationFn: (formFields: CreatePlaylistDto) => {
@@ -220,6 +222,7 @@ export const UpdatePlaylistAction = (
 ): Action => ({
 	label: "actions.update",
 	icon: <EditIcon />,
+	disabled: !getUser()?.user,
 	dialog: ({ close }) => {
 		const mutation = useMutation({
 			mutationFn: (dto: UpdatePlaylistDto) => {
@@ -362,6 +365,7 @@ export const AddToPlaylistAction = (
 ): Action => ({
 	icon: <AddToPlaylistIcon />,
 	label: "actions.addToPlaylist.label",
+	disabled: !getUser()?.user,
 	dialog: ({ close }) => {
 		const { t } = useTranslation();
 		const mutation = useMutation({

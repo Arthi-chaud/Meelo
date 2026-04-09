@@ -19,9 +19,8 @@
 import { useConfirm } from "material-ui-confirm";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { getCurrentUserStatus } from "@/api/queries";
 import type Playlist from "@/models/playlist";
-import { useQuery, useQueryClient } from "~/api";
+import { useQueryClient } from "~/api";
 import {
 	AddToPlaylistAction,
 	DeletePlaylistAction,
@@ -29,6 +28,7 @@ import {
 } from "~/components/actions/playlist";
 import { SharePlaylistAction } from "~/components/actions/share";
 import { UpdatePlaylistIllustrationAction } from "~/components/actions/update-illustration";
+import { useUser } from "~/hooks/user";
 import { ContextualMenu } from "..";
 
 type PlaylistContextualMenuProps = {
@@ -41,7 +41,7 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 	const confirm = useConfirm();
 	const router = useRouter();
 	const { t } = useTranslation();
-	const { data: user } = useQuery(getCurrentUserStatus);
+	const { user } = useUser();
 
 	return (
 		<ContextualMenu
