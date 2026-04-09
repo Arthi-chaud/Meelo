@@ -111,6 +111,14 @@ Thanks to the amazing folks who support this project:
 
 Want to support Meelo? [Become a sponsor](https://github.com/sponsors/Arthi-chaud)
 
+## :warning: Disclaimer
+
+> [!WARNING]
+> Meelo is intended for private use only! Do not use your instance as a public downloading platform.
+> It is not intended to support heavy traffic, and it should not be used to illegally share/download copyrighted media.
+> 
+> The maintainers are not responsible for any misuse of the software.
+
 ---
 
 Get ready to make the most out of you music collection!
