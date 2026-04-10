@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Divider, Stack } from "@mui/material";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import { useAtom } from "jotai";
 import { HookTextField, useHookForm } from "mui-react-hook-form-plus";
 import { useMemo, useState } from "react";
@@ -139,6 +139,7 @@ const AuthenticationForm = () => {
 					<Button
 						type="submit"
 						variant="contained"
+						loading={settings.isLoading}
 						disabled={settings.isError}
 						onClick={() => {}}
 					>
@@ -160,6 +161,13 @@ const AuthenticationForm = () => {
 					>
 						{t("auth.loginAsAnonymous")}
 					</Button>
+				)}
+				{settings.error && (
+					<Box>
+						<Typography color="error">
+							{settings.error.toString()}
+						</Typography>
+					</Box>
 				)}
 				<Divider sx={{ width: "100%" }} variant="middle" />
 				<Box>
