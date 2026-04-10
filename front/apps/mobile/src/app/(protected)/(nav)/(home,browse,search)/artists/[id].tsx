@@ -2,11 +2,13 @@ import { useLocalSearchParams } from "expo-router";
 import { useSetAtom } from "jotai";
 import { type ComponentProps, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import {
 	getAlbums,
 	getArtist,
 	getArtistExternalMetadata,
+	getParentAreas,
 	getSongs,
 	getVideos,
 } from "@/api/queries";
@@ -15,6 +17,7 @@ import {
 	AlbumType,
 	type AlbumWithRelations,
 } from "@/models/album";
+import type { Area } from "@/models/area";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import type { VideoSortingKey, VideoWithRelations } from "@/models/video";
 import { VideoTypeIsExtra } from "@/models/video";
@@ -33,6 +36,7 @@ import { Row } from "~/components/row";
 import { SafeFlashList } from "~/components/safe-view";
 import { SongGrid } from "~/components/song-grid";
 import { useQueryErrorModal } from "~/hooks/error";
+import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
 const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
@@ -73,9 +77,38 @@ type ArtistPageSection =
 			props: ComponentProps<typeof ExternalMetadataDescriptionSection>;
 	  }
 	| {
+			type: "fromSection";
+			props: ComponentProps<typeof AreaSection>;
+	  }
+	| {
 			type: "externalLinks";
 			props: ComponentProps<typeof ExternalMetadataSourcesSection>;
 	  };
+
+const AreaSection = ({ areas }: { areas: Area[] | null | undefined }) => {
+	const { t } = useTranslation();
+	if (!areas) {
+		return null;
+	}
+	return (
+		<View style={[styles.section, styles.areaSection]}>
+			<Text
+				variant="h6"
+				style={[{ flex: 0 }, styles.areaText]}
+				content={`${t("misc.from")} `}
+			/>
+			<Text
+				variant="body"
+				style={[{ flex: 1 }, styles.areaText]}
+				content={areas
+					.map((area, idx) =>
+						idx < areas.length - 1 ? `${area.name},` : area.name,
+					)
+					.join(" ")}
+			/>
+		</View>
+	);
+};
 
 const renderSection = (section: ArtistPageSection) => {
 	switch (section.type) {
@@ -91,6 +124,8 @@ const renderSection = (section: ArtistPageSection) => {
 			return <Row {...section.props} />;
 		case "aboutSection":
 			return <ExternalMetadataDescriptionSection {...section.props} />;
+		case "fromSection":
+			return <AreaSection {...section.props} />;
 		case "externalLinks":
 			return <ExternalMetadataSourcesSection {...section.props} />;
 	}
@@ -101,8 +136,21 @@ export default function ArtistView() {
 	const { id: artistId } = useLocalSearchParams<{ id: string }>();
 	const { t } = useTranslation();
 
-	const artistQuery = useQuery(() => getArtist(artistId, ["illustration"]));
+	const artistQuery = useQuery(() =>
+		getArtist(artistId, ["illustration", "birthArea", "activityArea"]),
+	);
 	const { data: artist } = artistQuery;
+	const area = artist ? (artist.birthArea ?? artist.activityArea) : undefined;
+	const { data: parentAreas } = useQuery(getParentAreas, area?.id);
+	const areas = useMemo(() => {
+		if (!area) {
+			return area;
+		}
+		if (parentAreas === undefined) {
+			return undefined;
+		}
+		return [area, ...parentAreas];
+	}, [area, parentAreas]);
 	const topSongs = useInfiniteQuery(() =>
 		getSongs(
 			{ artist: artistId },
@@ -285,6 +333,11 @@ export default function ArtistView() {
 							style: styles.section,
 						},
 					},
+				]
+			: []) satisfies ArtistPageSection[]),
+		{ type: "fromSection", props: { areas } },
+		...((externalMetadata !== null
+			? [
 					{
 						type: "externalLinks",
 						props: {
@@ -352,4 +405,10 @@ const styles = StyleSheet.create((theme) => ({
 	section: {
 		paddingBottom: theme.gap(1),
 	},
+	areaSection: {
+		flexDirection: "row",
+		alignItems: "flex-start",
+		paddingHorizontal: theme.gap(2),
+	},
+	areaText: { lineHeight: theme.fontSize.rem(1.125) }, // NOTE: Copied from text component, for consistency across font
 }));

@@ -33,6 +33,8 @@ const Artist = Resource.concat(
 		 */
 		slug: yup.string().required(),
 		illustrationId: yup.number().required().nullable(),
+		birthAreaId: yup.number().required().nullable(),
+		activityAreaId: yup.number().required().nullable(),
 	}),
 );
 
