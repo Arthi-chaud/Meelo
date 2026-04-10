@@ -220,6 +220,7 @@ export class SongController {
 			selector.random ?? sort,
 			paginationParameters,
 			include,
+			(request.user as User)?.id,
 		);
 	}
 

@@ -156,6 +156,7 @@
 				"creationDate": "Creation Date",
 				"discIndex": "Disc Index",
 				"entryCount": "Entry Count",
+				"lastPlayDate": "Play Date",
 				"name": "Title",
 				"registrationDate": "Registration Date",
 				"releaseDate": "Release Date",

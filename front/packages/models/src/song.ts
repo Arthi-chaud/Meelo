@@ -102,6 +102,7 @@ export const SongSortingKeys = [
 	"artistName",
 	"releaseDate",
 	"addDate",
+	"lastPlayDate",
 	"userPlayCount",
 	"totalPlayCount",
 ] as const;
