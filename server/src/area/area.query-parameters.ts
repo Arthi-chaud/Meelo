@@ -16,16 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Module } from "@nestjs/common";
-import AreaModule from "src/area/area.module";
-import PrismaModule from "src/prisma/prisma.module";
-import LabelController from "./label.controller";
-import LabelService from "./label.service";
+import { Area } from "src/prisma/generated/client";
+import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
+import { RequireExactlyOne } from "type-fest";
 
-@Module({
-	imports: [PrismaModule, AreaModule],
-	providers: [LabelService],
-	exports: [LabelService],
-	controllers: [LabelController],
-})
-export default class LabelModule {}
+namespace AreaQueryParameters {
+	export type CreateInput = Pick<Area, "name" | "sortName" | "mbid"> &
+		Partial<Pick<Area, "iso3166" | "type">>;
+	export type WhereInput = RequireExactlyOne<Pick<Area, "id" | "mbid">>;
+	export type UpdateInput = Partial<Pick<Area, "parentId" | "type">>;
+
+	export const SortingKeys = ["name"] as const;
+	export type SortingKeys = typeof SortingKeys;
+	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
+}
+
+export default AreaQueryParameters;

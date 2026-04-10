@@ -1,9 +1,9 @@
 from typing import List, Tuple
-from matcher.models.api.dto import ExternalMetadataDto
+from matcher.models.api.dto import AreaDto, ExternalMetadataDto
 from datetime import date
 from dataclasses import dataclass
 
-from matcher.providers.domain import AlbumType
+from matcher.providers.domain import AlbumType, AreaType
 
 type SyncedLyrics = List[Tuple[float, str]]
 
@@ -58,6 +58,26 @@ class AlbumMatchResult:
 class ArtistMatchResult:
     metadata: ExternalMetadataDto
     illustration_url: str | None
+    activity_area: AreaDto | None
+    birth_area: AreaDto | None
 
     def set_illustration_url_if_none(self, illustration_url: str):
         self.illustration_url = self.illustration_url or illustration_url
+
+    def set_activity_area_if_none(self, area: AreaDto):
+        self.activity_area = self.activity_area or area
+
+    def set_birth_area_if_none(self, area: AreaDto):
+        self.birth_area = self.birth_area or area
+
+
+@dataclass
+class AreaMatchResult:
+    parent_area: AreaDto | None
+    type: AreaType | None
+
+    def set_parent_area_if_none(self, parent: AreaDto):
+        self.parent_area = self.parent_area or parent
+
+    def set_area_type_if_none(self, area_type: AreaType):
+        self.type = self.type or area_type

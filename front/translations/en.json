@@ -269,6 +269,7 @@
 		"playPauseWhenExpanded": "Play / Pause (When player is open)"
 	},
 	"misc": {
+		"from": "From",
 		"loading": "Loading",
 		"no": "No",
 		"yes": "Yes"

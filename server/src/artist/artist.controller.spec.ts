@@ -2,6 +2,7 @@ import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
 import AlbumService from "src/album/album.service";
+import AreaModule from "src/area/area.module";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
@@ -25,6 +26,7 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import ArtistModule from "./artist.module";
 import ArtistService from "./artist.service";
+import { UpdateArtistDTO } from "./models/artist.model";
 
 describe("Artist Controller", () => {
 	let dummyRepository: TestPrismaService;
@@ -46,6 +48,7 @@ describe("Artist Controller", () => {
 				LyricsModule,
 				FileModule,
 				SettingsModule,
+				AreaModule,
 			],
 			providers: [
 				ArtistService,
@@ -393,6 +396,42 @@ describe("Artist Controller", () => {
 						},
 					});
 				});
+		});
+	});
+
+	describe("Update Artist", () => {
+		it("Should link activity area", async () => {
+			return request(app.getHttpServer())
+				.put(`/artists/${dummyRepository.artistB.id}`)
+				.send({
+					activityAreaId: dummyRepository.areaB.id,
+				} satisfies UpdateArtistDTO)
+				.expect(200)
+				.expect(async (res) => {
+					const artist: Artist = res.body;
+					expect(artist.activityAreaId).toBe(
+						dummyRepository.areaB.id,
+					);
+				});
+		});
+
+		it("Should link birth area", async () => {
+			return request(app.getHttpServer())
+				.put(`/artists/${dummyRepository.artistB.id}`)
+				.send({
+					birthAreaId: dummyRepository.areaA.id,
+				} satisfies UpdateArtistDTO)
+				.expect(200)
+				.expect(async (res) => {
+					const artist: Artist = res.body;
+					expect(artist.birthAreaId).toBe(dummyRepository.areaA.id);
+				});
+		});
+		it("Should fail: invalid area id", async () => {
+			return request(app.getHttpServer())
+				.put(`/artists/${dummyRepository.artistB.id}`)
+				.send({ activityAreaId: -1 } satisfies UpdateArtistDTO)
+				.expect(404);
 		});
 	});
 });

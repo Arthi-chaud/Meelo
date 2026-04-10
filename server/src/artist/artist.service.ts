@@ -21,6 +21,7 @@ import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
+import AreaService from "src/area/area.service";
 import compilationAlbumArtistKeyword from "src/constants/compilation";
 import {
 	EventsService,
@@ -58,6 +59,7 @@ export default class ArtistService extends SearchableRepositoryService {
 	constructor(
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
+		private areaService: AreaService,
 		private illustrationRepository: IllustrationRepository,
 		private eventService: EventsService,
 	) {
@@ -86,6 +88,26 @@ export default class ArtistService extends SearchableRepositoryService {
 				throw this.onNotFound(error, where);
 			});
 		return artist;
+	}
+
+	async update(
+		what: ArtistQueryParameters.UpdateInput,
+		where: ArtistQueryParameters.WhereInput,
+	) {
+		if (what.activityAreaId) {
+			await this.areaService.get({ id: what.activityAreaId });
+		}
+		if (what.birthAreaId) {
+			await this.areaService.get({ id: what.birthAreaId });
+		}
+		return this.prismaService.artist
+			.update({
+				data: what,
+				where: ArtistService.formatWhereInput(where),
+			})
+			.catch(async (error) => {
+				throw this.onNotFound(error, where);
+			});
 	}
 
 	async search<I extends ArtistQueryParameters.RelationInclude = {}>(

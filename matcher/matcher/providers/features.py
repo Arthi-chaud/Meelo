@@ -1,9 +1,11 @@
 from datetime import date
 from typing import Any, Awaitable, List
+from matcher.models.api.dto import AreaDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
     AlbumType,
+    AreaType,
     ResourceId,
     ResourceUrl,
     ResourceName,
@@ -69,6 +71,14 @@ class GetArtistIdFromUrlFeature(GetIdFromUrlFeature):
 
 
 class IsArtistUrlFeature(IsUrlFeature):
+    pass
+
+
+class GetArtistActivityArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
+    pass
+
+
+class GetArtistBirthArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
     pass
 
 
@@ -183,4 +193,26 @@ class GetWikidataSongRelationKeyFeature(GetWikidataRelationKeyFeature):
 
 
 class IsSongUrlFeature(IsUrlFeature):
+    pass
+
+
+## Labels
+
+
+class GetLabelArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
+    pass
+
+
+## Areas
+
+
+class GetArea(BaseFeature[str, Awaitable[AreaDto | None]]):
+    pass
+
+
+class GetParentArea(BaseFeature[Any, AreaDto | None]):
+    pass
+
+
+class GetAreaType(BaseFeature[Any, AreaType | None]):
     pass

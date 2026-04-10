@@ -4,7 +4,7 @@ import pytest
 import pytest_asyncio
 import datetime
 from matcher.context import Context
-from matcher.providers.domain import AlbumType
+from matcher.providers.domain import AlbumType, AreaType
 from matcher.providers.musicbrainz import MusicBrainzProvider
 from tests.matcher.common import MatcherTestUtils
 
@@ -49,6 +49,17 @@ class TestMusicbrainz:
         artist = await provider.get_artist("45a663b5-b1cb-4a91-bff6-2bef7bbfdd76")
         assert artist is not None
         assert artist.get("name") == "Britney Spears"
+        area = await provider.get_artist_activity_area(artist)
+        assert area is not None
+        assert area.name == "United States"
+        assert area.mbid == "489ce91b-6658-3307-9877-795b68554c98"
+        assert area.sort_name == "United States"
+        assert area.iso3166 == "US"
+
+        area = await provider.get_artist_birth_area(artist)
+        assert area is not None
+        assert area.name == "McComb"
+        assert area.mbid == "ff7eb755-8d72-447f-a5f2-d7a4350cafd5"
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_search_album(self, ctx, subtests):
@@ -333,3 +344,16 @@ class TestMusicbrainz:
                 for label in labels:
                     assert label in expected
                 assert len(labels) == len(expected)
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_area(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        # Victoria, AU
+        area = await provider.get_area("09936ede-4dcc-4794-a1e7-83d3af37bf4e")
+        assert provider.get_area_type(area) == AreaType.SUBDIV
+        parent_area = provider.get_parent_area(area)
+        assert parent_area is not None
+        # AU
+        assert parent_area.mbid == "106e0bec-b638-3b37-b731-f53d507dc00e"

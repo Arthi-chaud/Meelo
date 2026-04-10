@@ -16,18 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Controller, Get, Query } from "@nestjs/common";
+import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
 import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Label } from "src/prisma/models";
+import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
+import { UpdateLabelDTO } from "./label.model";
 import LabelQueryParameters from "./label.query-parameters";
 import LabelService from "./label.service";
 
@@ -56,8 +60,15 @@ export default class LabelController {
 		@Query() selector: Selector,
 		@Query() sort: LabelQueryParameters.SortingParameter,
 		@Query() paginationParameters: PaginationParameters,
+		@RelationIncludeQuery(LabelQueryParameters.AvailableAtomicIncludes)
+		include: LabelQueryParameters.RelationInclude,
 	) {
-		return this.labelService.getMany(selector, sort, paginationParameters);
+		return this.labelService.getMany(
+			selector,
+			sort,
+			include,
+			paginationParameters,
+		);
 	}
 
 	@Get(":idOrSlug")
@@ -65,7 +76,22 @@ export default class LabelController {
 	async get(
 		@IdentifierParam(LabelService)
 		where: LabelQueryParameters.WhereInput,
+		@RelationIncludeQuery(LabelQueryParameters.AvailableAtomicIncludes)
+		include: LabelQueryParameters.RelationInclude,
 	): Promise<Label> {
-		return this.labelService.get(where);
+		return this.labelService.get(where, include);
+	}
+
+	@ApiOperation({
+		summary: "Update one label",
+	})
+	@Role(Roles.Microservice, Roles.Admin)
+	@Put(":idOrSlug")
+	async update(
+		@IdentifierParam(LabelService)
+		where: LabelQueryParameters.WhereInput,
+		@Body() what: UpdateLabelDTO,
+	): Promise<Label> {
+		return this.labelService.update(what, where);
 	}
 }

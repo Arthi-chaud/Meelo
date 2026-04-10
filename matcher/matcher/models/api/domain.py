@@ -6,7 +6,7 @@ from dataclasses_json import (
     DataClassJsonMixin,
 )
 from typing import Optional, List
-from matcher.providers.domain import AlbumType
+from matcher.providers.domain import AlbumType, AreaType
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -41,6 +41,15 @@ class Album(DataClassJsonMixin):
 class Label(DataClassJsonMixin):
     id: int
     name: str
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
+class Area(DataClassJsonMixin):
+    id: int
+    name: str
+    mbid: str
+    type: Optional[AreaType] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore

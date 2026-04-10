@@ -8,15 +8,21 @@ import aiohttp
 from aiohttp.client import ClientSession
 from matcher.context import Context
 
+from matcher.models.api.dto import AreaDto
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
     GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumUrlFromIdFeature,
+    GetArea,
+    GetAreaType,
+    GetArtistActivityArea,
+    GetArtistBirthArea,
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
+    GetParentArea,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
@@ -39,7 +45,7 @@ from ..utils import (
     removeprefix_or_none,
     to_slug,
 )
-from .domain import AlbumType, SearchResult
+from .domain import AlbumType, AreaType, SearchResult
 from ..settings import MusicBrainzSettings
 from .session import HasSession
 from .boilerplate import BaseProviderBoilerplate
@@ -100,6 +106,10 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 lambda artist_url: self._get_artist_id_from_url(artist_url)
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
+            GetArtistActivityArea(
+                lambda artist: self._get_artist_activity_area(artist)
+            ),
+            GetArtistBirthArea(lambda artist: self._get_artist_birth_area(artist)),
             GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
             GetAlbumLabelsFeature(lambda album: self._get_album_labels(album)),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
@@ -140,6 +150,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetSongIdFromUrlFeature(
                 lambda song_url: self._get_song_id_from_url(song_url)
             ),
+            GetArea(lambda area_mbid: self._get_area(area_mbid)),
+            GetParentArea(lambda area: self._get_parent_area(area)),
+            GetAreaType(lambda area: self._get_area_type(area)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -196,7 +209,19 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             return removeprefix_or_none(path, "/recording/")
 
     async def _get_artist(self, id: str) -> Any:
-        return await self._fetch(f"/artist/{id}", {"inc": "url-rels"})
+        return await self._fetch(f"/artist/{id}", {"inc": "url-rels+area-rels"})
+
+    async def _get_artist_activity_area(self, artist: Any) -> AreaDto | None:
+        try:
+            return self._parse_area(artist["area"])
+        except Exception:
+            pass
+
+    async def _get_artist_birth_area(self, artist: Any) -> AreaDto | None:
+        try:
+            return self._parse_area(artist["begin-area"])
+        except Exception:
+            pass
 
     async def _search_artist(self, artist_name: str) -> SearchResult | None:
         try:
@@ -511,3 +536,50 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             ]
         except Exception:
             pass
+
+    async def _get_area(self, mbid: str) -> Any | None:
+        try:
+            return await self._fetch(f"/area/{mbid}", {"inc": "area-rels"})
+        except Exception:
+            pass
+
+    def _get_parent_area(self, area: Any) -> AreaDto | None:
+        try:
+            related_areas = area["relations"]
+            parent_areas = [
+                a
+                for a in related_areas
+                if a["direction"] == "backward" and a["target-type"] == "area"
+            ]
+            if len(parent_areas) == 0:
+                return None
+            return self._parse_area(parent_areas[0]["area"])
+        except Exception:
+            pass
+
+    def _get_area_type(self, area: Any) -> AreaType | None:
+        try:
+            return self._parse_area_type(area["type"])
+        except Exception:
+            pass
+
+    def _parse_area(self, area: Any) -> AreaDto | None:
+        try:
+            iso3166 = None
+            if "iso-3166-1-codes" in area:
+                iso3166 = (area["iso-3166-1-codes"] or [None])[0]
+            return AreaDto(
+                name=area["name"],
+                sort_name=area["sort-name"],
+                mbid=area["id"],
+                iso3166=iso3166,
+                type=self._parse_area_type(area["type"]),
+            )
+        except Exception:
+            pass
+
+    def _parse_area_type(self, area_type: str | None) -> AreaType | None:
+        if area_type is None:
+            return None
+        if area_type in [t.value for _, t in AreaType.__members__.items()]:
+            return AreaType(area_type)

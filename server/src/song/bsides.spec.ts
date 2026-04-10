@@ -1,5 +1,6 @@
 import { TestingModule } from "@nestjs/testing";
 import AlbumModule from "src/album/album.module";
+import AreaModule from "src/area/area.module";
 import ArtistModule from "src/artist/artist.module";
 import ArtistService from "src/artist/artist.service";
 import GenreModule from "src/genre/genre.module";
@@ -45,6 +46,7 @@ describe("Get B-Sides", () => {
 				ReleaseModule,
 				SongModule,
 				ParserModule,
+				AreaModule,
 			],
 			providers: [SongService, ArtistService, PrismaService],
 		})
