@@ -138,7 +138,6 @@ namespace SongQueryParameters {
 		"name",
 		"totalPlayCount",
 		"userPlayCount",
-		"lastPlayDate",
 		"artistName",
 		"addDate",
 		"releaseDate",
