@@ -63,6 +63,7 @@ import { ScrobblersStatus } from "@/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "@/models/search";
 import { Settings } from "@/models/settings";
 import {
+	PlayHistoryEntryWithRelations,
 	type SongInclude,
 	type SongSortingKeys,
 	type SongType,
@@ -206,6 +207,18 @@ export const getSongs = <I extends SongInclude | never = never>(
 		sort,
 		include,
 		validator: PaginatedResponse(SongWithRelations(include ?? [])),
+	});
+};
+
+export const getSongHistory = <I extends SongInclude | never = never>(
+	include?: I[],
+): InfiniteQuery<PlayHistoryEntryWithRelations<I>> => {
+	return _mkSimplePaginatedQuery({
+		route: "/songs/history",
+		include,
+		validator: PaginatedResponse(
+			PlayHistoryEntryWithRelations(include ?? []),
+		),
 	});
 };
 

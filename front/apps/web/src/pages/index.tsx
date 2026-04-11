@@ -16,11 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Chip, Grid, Stack } from "@mui/material";
+import { Box, Chip, Collapse, Grid, IconButton, Stack } from "@mui/material";
 import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
 import Link from "next/link";
-import { type ReactNode, useCallback, useMemo, useState } from "react";
+import {
+	type MouseEvent,
+	type ReactNode,
+	useCallback,
+	useMemo,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import {
@@ -30,11 +36,13 @@ import {
 	getGenres,
 	getLabels,
 	getReleases,
+	getSongHistory,
 	getSongs,
 } from "@/api/queries";
 import { toTanStackInfiniteQuery } from "@/api/query";
 import type { AlbumExternalMetadata } from "@/models/external-metadata";
-import { EmptyStateIcon } from "@/ui/icons";
+import { EmptyStateIcon, ExpandLessIcon, ExpandMoreIcon } from "@/ui/icons";
+import { ParentScrollableDivId } from "@/utils/constants";
 import { generateArray } from "@/utils/gen-list";
 import { getRandomNumber } from "@/utils/random";
 import { getAPI, useInfiniteQuery, useQueries, type useQuery } from "~/api";
@@ -81,6 +89,13 @@ const mostListenedSongsQuery = getSongs(
 	["artist", "featuring", "master", "illustration"],
 );
 
+const playHistoryQuery = getSongHistory([
+	"artist",
+	"featuring",
+	"master",
+	"illustration",
+]);
+
 const albumRecommendations = (seed: number) =>
 	getAlbums({ random: seed, type: ["StudioRecording"] }, undefined, [
 		"artist",
@@ -96,19 +111,58 @@ const HomePageSection = <T,>(props: {
 	heading: string | ReactNode;
 	queryData: { items?: T[] };
 	render: (items: (T | undefined)[]) => ReactNode;
+	collapsed?: boolean;
 }) => {
+	const [collapsed, setCollapsed] = useState(props.collapsed ?? false);
 	const items = props.queryData.items;
 
 	// Remove the section if its content is empty
 	if (items !== undefined && items.length === 0) {
 		return null;
 	}
+	const onExpand = (c: boolean, e: MouseEvent<HTMLElement>) => {
+		const vpHeight = window.outerHeight;
+		const clickPos = e.currentTarget.offsetTop;
+		if (c && clickPos > vpHeight / 2) {
+			// Wait for the collapse animation to be done
+			setTimeout(
+				() =>
+					document.getElementById(ParentScrollableDivId)?.scrollTo({
+						top: clickPos,
+						behavior: "smooth",
+					}),
+				150,
+			);
+		}
+	};
 	return (
 		<Stack spacing={3}>
-			<SectionHeader heading={props.heading} />
-			<Box sx={{ maxHeight: "20%" }}>
-				{props.render(items?.slice(0, 12) ?? generateArray(6))}
-			</Box>
+			<SectionHeader
+				heading={props.heading}
+				trailing={
+					props.collapsed !== undefined && (
+						<IconButton
+							onClick={(e) => {
+								setCollapsed((c) => {
+									onExpand(c, e);
+									return !c;
+								});
+							}}
+						>
+							{collapsed ? (
+								<ExpandMoreIcon />
+							) : (
+								<ExpandLessIcon />
+							)}
+						</IconButton>
+					)
+				}
+			/>
+			<Collapse in={!collapsed}>
+				<Box sx={{ maxHeight: "20%" }}>
+					{props.render(items?.slice(0, 12) ?? generateArray(6))}
+				</Box>
+			</Collapse>
 		</Stack>
 	);
 };
@@ -164,6 +218,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const newlyAddedArtists = useInfiniteQuery(() => newlyAddedArtistsQuery);
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
+	const playHistory = useInfiniteQuery(() => playHistoryQuery); //TODO:
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
 	const topGenres = useInfiniteQuery(() => topGenresQuery);
 	const topLabels = useInfiniteQuery(() => topLabelsQuery);
@@ -375,6 +430,13 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<HomePageSection
 						heading={t("home.mostPlayedSongs")}
 						queryData={mostListenedSongs}
+						render={(songs) => <SongGrid songs={songs} />}
+					/>
+
+					<HomePageSection
+						heading={t("home.playHistory")}
+						collapsed
+						queryData={playHistory}
 						render={(songs) => <SongGrid songs={songs} />}
 					/>
 				</Stack>
