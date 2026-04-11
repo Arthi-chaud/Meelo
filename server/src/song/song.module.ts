@@ -26,7 +26,10 @@ import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import ReleaseModule from "src/release/release.module";
 import TrackModule from "src/track/track.module";
-import { SongResponseBuilder } from "./models/song.response";
+import {
+	PlayHistoryEntryResponseBuilder,
+	SongResponseBuilder,
+} from "./models/song.response";
 import { SongGroupResponseBuilder } from "./models/song-group.response";
 import { SongController } from "./song.controller";
 import SongService from "./song.service";
@@ -49,12 +52,14 @@ import SongGroupService from "./song-group.service";
 		SongService,
 		SongGroupService,
 		SongResponseBuilder,
+		PlayHistoryEntryResponseBuilder,
 		SongGroupResponseBuilder,
 	],
 	providers: [
 		SongService,
 		SongGroupService,
 		SongResponseBuilder,
+		PlayHistoryEntryResponseBuilder,
 		SongGroupResponseBuilder,
 	],
 	controllers: [SongController, SongGroupController],

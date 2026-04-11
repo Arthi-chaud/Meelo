@@ -62,7 +62,10 @@ import Response, { ResponseType } from "src/response/response.decorator";
 import Slug from "src/slug/slug";
 import MergeSongDTO from "./models/merge-song.dto";
 import SongQueryParameters from "./models/song.query-params";
-import { SongResponseBuilder } from "./models/song.response";
+import {
+	PlayHistoryEntryResponseBuilder,
+	SongResponseBuilder,
+} from "./models/song.response";
 import type SongGroupQueryParameters from "./models/song-group.query-params";
 import UpdateSongDTO from "./models/update-song.dto";
 import SongService from "./song.service";
@@ -221,6 +224,29 @@ export class SongController {
 			paginationParameters,
 			include,
 			(request.user as User)?.id,
+		);
+	}
+
+	@ApiOperation({
+		summary: "Get play history",
+	})
+	@Response({
+		handler: PlayHistoryEntryResponseBuilder,
+		type: ResponseType.Page,
+	})
+	@Role(Roles.User)
+	@Get("history")
+	async getPlayHistory(
+		@Query()
+		paginationParameters: PaginationParameters,
+		@RelationIncludeQuery(SongQueryParameters.AvailableAtomicIncludes)
+		include: SongQueryParameters.RelationInclude,
+		@Req() request: Express.Request,
+	) {
+		return this.songService.getPlayHistory(
+			(request.user! as User).id,
+			paginationParameters,
+			include,
 		);
 	}
 

@@ -283,7 +283,7 @@ export default class SongService extends SearchableRepositoryService {
 		}
 
 		if (sort?.sortBy === "lastPlayDate" && userId) {
-			const ids = await this.getSongIdsByPlayDate(
+			const ids = await this.getSongIdsByLastPlayDate(
 				userId,
 				where,
 				sort.order,
@@ -314,7 +314,7 @@ export default class SongService extends SearchableRepositoryService {
 		>(args);
 	}
 
-	private async getSongIdsByPlayDate(
+	private async getSongIdsByLastPlayDate(
 		userId: number,
 		where: SongQueryParameters.ManyWhereInput,
 		order?: SortOrder,
@@ -356,6 +356,20 @@ export default class SongService extends SearchableRepositoryService {
 			pagination?.skip ?? 0,
 			pagination?.take,
 		);
+	}
+
+	async getPlayHistory<I extends SongQueryParameters.RelationInclude = {}>(
+		userId: number,
+		pagination?: PaginationParameters,
+		include?: I,
+	): Promise<(SongWithRelations & { playedAt: Date })[]> {
+		const entries = await this.prismaService.playHistory.findMany({
+			where: { userId },
+			orderBy: { playedAt: "desc" },
+			include: { song: include ? { include } : true },
+			...formatPaginationParameters(pagination),
+		});
+		return entries.map(({ song, playedAt }) => ({ ...song, playedAt }));
 	}
 
 	static formatManyWhereInput(where: SongQueryParameters.ManyWhereInput) {
