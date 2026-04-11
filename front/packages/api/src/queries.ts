@@ -195,7 +195,7 @@ export const getSongs = <I extends SongInclude | never = never>(
 		label?: Identifier;
 	},
 	sort?: SortingParameters<typeof SongSortingKeys>,
-	include?: I[],
+	include?: readonly I[],
 ): InfiniteQuery<SongWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
 		route: "/songs",
@@ -211,7 +211,7 @@ export const getSongs = <I extends SongInclude | never = never>(
 };
 
 export const getSongHistory = <I extends SongInclude | never = never>(
-	include?: I[],
+	include?: readonly I[],
 ): InfiniteQuery<PlayHistoryEntryWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
 		route: "/songs/history",
@@ -713,7 +713,7 @@ export const _mkSimpleQuery = <T>(
 export const _mkSimplePaginatedQuery = <T>(
 	arg: {
 		route: string;
-		include?: string[];
+		include?: readonly string[];
 		filter?: Record<
 			string,
 			undefined | string | number | (string | number)[]
@@ -761,7 +761,7 @@ export const _mkSimplePaginatedQuery = <T>(
 };
 
 // Format Includes for the query key
-const formatIncludeKeys = (includes?: string[]) =>
+const formatIncludeKeys = (includes?: readonly string[]) =>
 	includes?.map((include) => `include-${include}`) ?? [];
 
 // format any object for the query key

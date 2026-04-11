@@ -20,15 +20,22 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { getArtist, getGenre, getSong, getSongs } from "@/api/queries";
-import { transformPage } from "@/api/query";
-import Song, {
+import {
+	getArtist,
+	getGenre,
+	getSong,
+	getSongHistory,
+	getSongs,
+} from "@/api/queries";
+import { type InfiniteQuery, transformPage } from "@/api/query";
+import {
+	type PlayHistoryEntry,
 	SongSortingKeys,
 	SongType,
 	type SongWithRelations,
 } from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
-import { playFromInfiniteQuery } from "@/state/player";
+import { playFromInfiniteQuery, playTrackAtom } from "@/state/player";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { getRandomNumber } from "@/utils/random";
 import type { Action } from "~/actions";
@@ -45,8 +52,13 @@ import { ArtistHeader, SongHeader } from "~/components/resource-header";
 
 // TODO song subtitle: allow it to be album
 
+type SongT = SongWithRelations<
+	"artist" | "master" | "featuring" | "illustration"
+>;
+
 export default function SongBrowseView() {
 	const playTracks = useSetAtom(playFromInfiniteQuery);
+	const playTrack = useSetAtom(playTrackAtom);
 	const queryClient = useQueryClient();
 	const nav = useNavigation();
 	const { t } = useTranslation();
@@ -55,12 +67,18 @@ export default function SongBrowseView() {
 		rare: rareArtistId,
 		genre: genreId,
 		versionsOf: versionsOfSongId,
+		playHistory: playHistoryStr,
 	} = useLocalSearchParams<{
+		playHistory?: string;
 		artist?: string;
 		rare?: string;
 		versionsOf?: string;
 		genre?: string;
 	}>();
+	const isPlayHistory = useMemo(
+		() => playHistoryStr === "true",
+		[playHistoryStr],
+	);
 	const [{ sort, order }, sortControl] = useSortControl({
 		sortingKeys: SongSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
@@ -82,7 +100,9 @@ export default function SongBrowseView() {
 		versionsOfSongId,
 	);
 	useEffect(() => {
-		if (rareArtistId !== undefined) {
+		if (isPlayHistory) {
+			nav.setOptions({ headerTitle: t("home.playHistory") });
+		} else if (rareArtistId !== undefined) {
 			nav.setOptions({ headerTitle: t("artist.rareSongs") });
 		} else if (versionsOfSongId !== undefined) {
 			nav.setOptions({ headerTitle: t("models.versions") });
@@ -91,7 +111,7 @@ export default function SongBrowseView() {
 		}
 	}, [rareArtistId, versionsOfSongId, genreId, genre]);
 	const subtitle = useCallback(
-		(songItem: SongWithRelations<"featuring"> | undefined) => {
+		(songItem: SongT | undefined) => {
 			if (
 				artistId === undefined &&
 				versionsOfSongId === undefined &&
@@ -121,8 +141,19 @@ export default function SongBrowseView() {
 		[artistId, rareArtistId, song],
 	);
 	const getQuery = useCallback(
-		(random?: number) =>
-			getSongs(
+		(random?: number) => {
+			const includes = [
+				"artist",
+				"illustration",
+				"featuring",
+				"master",
+			] as const;
+			if (isPlayHistory) {
+				return getSongHistory(
+					includes,
+				) as unknown as InfiniteQuery<SongT>;
+			}
+			return getSongs(
 				{
 					library: libraries,
 					type: types,
@@ -133,9 +164,11 @@ export default function SongBrowseView() {
 					genre: genreId,
 				},
 				{ sortBy: sort ?? "name", order: order ?? "asc" },
-				["artist", "illustration", "featuring", "master"],
-			),
+				includes,
+			);
+		},
 		[
+			isPlayHistory,
 			song,
 			order,
 			libraries,
@@ -161,14 +194,23 @@ export default function SongBrowseView() {
 		[query],
 	);
 	const onItemPress = useCallback(
-		(index: number, songs: Song[] | undefined) => {
+		(index: number, songs: SongT[] | undefined) => {
 			if (songs === undefined) {
 				return;
 			}
-			const afterId = index > 0 ? songs[index - 1]?.id : undefined;
-			playTracks(getQueryForPlayer(), queryClient, afterId);
+			if (isPlayHistory) {
+				const song = songs[index];
+				playTrack({
+					artist: song.artist,
+					featuring: song.featuring,
+					track: { ...song.master, illustration: song.illustration },
+				});
+			} else {
+				const afterId = index > 0 ? songs[index - 1]?.id : undefined;
+				playTracks(getQueryForPlayer(), queryClient, afterId);
+			}
 		},
-		[query],
+		[query, isPlayHistory],
 	);
 	const playAction = useMemo(() => {
 		return {
@@ -200,11 +242,26 @@ export default function SongBrowseView() {
 						<SongHeader song={song} />
 					) : undefined
 				}
-				controls={{
-					sort: sortControl,
-					filters: [libraryFilterControl, songTypeFilterControl],
-					actions: [playAction, shuffleAction],
-				}}
+				keyExtractor={
+					isPlayHistory
+						? (s) =>
+								(
+									s as any as PlayHistoryEntry
+								).playedAt.toString()
+						: undefined
+				}
+				controls={
+					isPlayHistory
+						? {}
+						: {
+								sort: sortControl,
+								filters: [
+									libraryFilterControl,
+									songTypeFilterControl,
+								],
+								actions: [playAction, shuffleAction],
+							}
+				}
 				query={query}
 				render={(songItem, idx, songs) => (
 					<SongItem

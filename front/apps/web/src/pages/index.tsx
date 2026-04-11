@@ -218,7 +218,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const newlyAddedArtists = useInfiniteQuery(() => newlyAddedArtistsQuery);
 	const newlyAddedReleases = useInfiniteQuery(() => newlyAddedReleasesQuery);
 	const mostListenedSongs = useInfiniteQuery(() => mostListenedSongsQuery);
-	const playHistory = useInfiniteQuery(() => playHistoryQuery); //TODO:
+	const playHistory = useInfiniteQuery(() => playHistoryQuery);
 	const newestAlbums = useInfiniteQuery(() => newestAlbumsQuery);
 	const topGenres = useInfiniteQuery(() => topGenresQuery);
 	const topLabels = useInfiniteQuery(() => topLabelsQuery);

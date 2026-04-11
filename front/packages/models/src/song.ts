@@ -90,7 +90,7 @@ export const SongRelations = yup.object({
 export const SongWithRelations = <
 	Selection extends SongInclude | never = never,
 >(
-	relation: Selection[],
+	relation: readonly Selection[],
 ) => Song.concat(SongRelations.pick(relation));
 
 export type SongWithRelations<Selection extends SongInclude | never = never> =
@@ -105,7 +105,7 @@ export type PlayHistoryEntry = yup.InferType<typeof PlayHistoryEntry>;
 export const PlayHistoryEntryWithRelations = <
 	Selection extends SongInclude | never = never,
 >(
-	relation: Selection[],
+	relation: readonly Selection[],
 ) => PlayHistoryEntry.concat(SongRelations.pick(relation));
 
 export type PlayHistoryEntryWithRelations<

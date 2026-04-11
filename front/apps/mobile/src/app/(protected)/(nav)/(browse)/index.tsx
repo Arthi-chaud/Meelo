@@ -8,6 +8,7 @@ import {
 	ArtistIcon,
 	CompilationIcon,
 	GenreIcon,
+	HistoryIcon,
 	type Icon,
 	PlaylistIcon,
 	SongIcon,
@@ -58,6 +59,12 @@ const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
 		title: "models.genre_plural",
 		href: "/(protected)/(nav)/(browse)/genres",
 		icon: GenreIcon,
+	},
+
+	{
+		title: "home.playHistory",
+		href: "/(protected)/(nav)/(browse)/songs?playHistory=true",
+		icon: HistoryIcon,
 	},
 ];
 

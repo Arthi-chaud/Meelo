@@ -36,6 +36,7 @@ type Props<T, T1, Sort extends string> = {
 	layout: LayoutOption;
 	header?: React.ReactElement;
 	controls: Omit<ComponentProps<typeof Controls<Sort>>, "style">;
+	keyExtractor?: (item: T1) => string;
 	scrollRef?: RefObject<FlashListRef<unknown> | null>;
 	render: (
 		item: T1 | undefined,
@@ -140,7 +141,7 @@ export const InfiniteView = <
 											if (!item) {
 												return `skeleton-${idx}-cc:${columnCount}`;
 											}
-											return `item-${item.id}-cc:${columnCount}`;
+											return `item-${props.keyExtractor?.(item) ?? item.id}-cc:${columnCount}`;
 										},
 									}),
 								}
@@ -150,7 +151,7 @@ export const InfiniteView = <
 										if (!item) {
 											return `skeleton-${idx}`;
 										}
-										return `item-${item.id}`;
+										return `item-${props.keyExtractor?.(item) ?? item.id}`;
 									},
 								})}
 					/>

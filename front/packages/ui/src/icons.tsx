@@ -106,6 +106,7 @@ export const PlusIcon: Icon = Iconsax.Add;
 export const MinusIcon: Icon = Iconsax.Minus;
 export const DoneIcon: Icon = Iconsax.TickSquare;
 export const RetryIcon: Icon = Iconsax.ArrowRotateLeft;
+export const HistoryIcon: Icon = Iconsax.Clock;
 
 export const EmptyStateIcon: Icon = Iconsax.SearchStatus1;
 
