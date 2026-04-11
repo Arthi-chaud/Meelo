@@ -10,62 +10,76 @@ import {
 	GenreIcon,
 	HistoryIcon,
 	type Icon,
+	LabelIcon,
 	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
 import { StaticHeader } from "~/components/header";
 import { ListItem } from "~/components/item/list-item";
-import { SafeView } from "~/components/safe-view";
+import { SafeFlashList } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
 import { Icon as IconComponent } from "~/primitives/icon";
 
-const tabs: { title: TranslationKey; href: Href; icon: Icon }[] = [
-	{
-		title: "models.artist_plural",
-		href: "/(protected)/(nav)/(browse)/artists",
-		icon: ArtistIcon,
-	},
-	{
-		title: "models.album_plural",
-		href: "/(protected)/(nav)/(browse)/albums",
-		icon: AlbumIcon,
-	},
+const TabGroups: { title: TranslationKey; href: Href; icon: Icon }[][] = [
+	[
+		{
+			title: "models.artist_plural",
+			href: "/(protected)/(nav)/(browse)/artists",
+			icon: ArtistIcon,
+		},
+		{
+			title: "models.album_plural",
+			href: "/(protected)/(nav)/(browse)/albums",
+			icon: AlbumIcon,
+		},
 
-	{
-		title: "models.song_plural",
-		href: "/(protected)/(nav)/(browse)/songs",
-		icon: SongIcon,
-	},
+		{
+			title: "models.song_plural",
+			href: "/(protected)/(nav)/(browse)/songs",
+			icon: SongIcon,
+		},
 
-	{
-		title: "models.video_plural",
-		href: "/(protected)/(nav)/(browse)/videos",
-		icon: VideoIcon,
-	},
-	{
-		title: "nav.compilations",
-		href: "/(protected)/(nav)/(browse)/albums?compilations=true",
-		icon: CompilationIcon,
-	},
+		{
+			title: "models.video_plural",
+			href: "/(protected)/(nav)/(browse)/videos",
+			icon: VideoIcon,
+		},
+	],
+	[
+		{
+			title: "nav.compilations",
+			href: "/(protected)/(nav)/(browse)/albums?compilations=true",
+			icon: CompilationIcon,
+		},
+		{
+			title: "models.playlist_plural",
+			href: "/(protected)/(nav)/(browse)/playlists",
+			icon: PlaylistIcon,
+		},
+	],
 
-	{
-		title: "models.playlist_plural",
-		href: "/(protected)/(nav)/(browse)/playlists",
-		icon: PlaylistIcon,
-	},
+	[
+		{
+			title: "models.genre_plural",
+			href: "/(protected)/(nav)/(browse)/genres",
+			icon: GenreIcon,
+		},
 
-	{
-		title: "models.genre_plural",
-		href: "/(protected)/(nav)/(browse)/genres",
-		icon: GenreIcon,
-	},
+		{
+			title: "models.label_plural",
+			href: "/(protected)/(nav)/(browse)/labels",
+			icon: LabelIcon,
+		},
+	],
 
-	{
-		title: "home.playHistory",
-		href: "/(protected)/(nav)/(browse)/songs?playHistory=true",
-		icon: HistoryIcon,
-	},
+	[
+		{
+			title: "home.playHistory",
+			href: "/(protected)/(nav)/(browse)/songs?playHistory=true",
+			icon: HistoryIcon,
+		},
+	],
 ];
 
 export default function BrowseList() {
@@ -73,23 +87,31 @@ export default function BrowseList() {
 	const { t } = useTranslation();
 	return (
 		<StaticHeader>
-			<SafeView style={[styles.root]}>
-				{tabs.map(({ title, href, icon }) => (
-					<Fragment key={title}>
-						<ListItem
-							leading={
-								<View style={styles.icon}>
-									<IconComponent icon={icon} />
-								</View>
-							}
-							title={t(title)}
-							subtitle={null}
-							onPress={() => router.navigate(href)}
-						/>
+			<SafeFlashList
+				data={TabGroups}
+				contentContainerStyle={[styles.root]}
+				renderItem={({ item: group }) => (
+					<>
+						{group.map(({ title, href, icon }) => (
+							<Fragment key={title}>
+								<ListItem
+									leading={
+										<View style={styles.icon}>
+											<IconComponent icon={icon} />
+										</View>
+									}
+									title={t(title)}
+									subtitle={null}
+									onPress={() => router.navigate(href)}
+								/>
+								<Divider h withInsets />
+							</Fragment>
+						))}
 						<Divider h withInsets />
-					</Fragment>
-				))}
-			</SafeView>
+					</>
+				)}
+				ItemSeparatorComponent={() => <Divider h withInsets />}
+			/>
 		</StaticHeader>
 	);
 }
@@ -97,10 +119,6 @@ export default function BrowseList() {
 const styles = StyleSheet.create((theme) => ({
 	root: {
 		padding: theme.gap(0.5),
-		display: "flex",
-		height: "100%",
-		alignItems: "flex-start",
-		justifyContent: "flex-start",
 	},
 	icon: {
 		height: "100%",
