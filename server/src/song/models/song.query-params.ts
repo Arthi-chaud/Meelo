@@ -141,6 +141,7 @@ namespace SongQueryParameters {
 		"artistName",
 		"addDate",
 		"releaseDate",
+		"lastPlayDate",
 		"bpm",
 	] as const;
 	export type SortingKeys = typeof SortingKeys;

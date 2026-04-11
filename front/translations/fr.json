@@ -157,6 +157,7 @@
 				"creationDate": "Date de création",
 				"discIndex": "Index de disque",
 				"entryCount": "Nombre de titres",
+				"lastPlayDate": "Date de lecture",
 				"name": "Titre",
 				"registrationDate": "Date d'ajout",
 				"releaseDate": "Date de sortie",
@@ -258,6 +259,7 @@
 		"newlyAddedAlbums": "Ajoutés récemment",
 		"newlyAddedArtists": "Artistes Ajoutés Récemment",
 		"newlyAddedReleases": "Disques Ajoutés Récemment",
+		"playHistory": "Historique de lecture",
 		"topGenres": "Genres populaires",
 		"topLabels": "Labels populaires"
 	},

@@ -42,6 +42,7 @@ import {
 	SongType,
 	TrackType,
 } from "src/prisma/generated/client";
+import { SortOrder } from "src/prisma/generated/internal/prismaNamespace";
 import type { SongWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
@@ -262,6 +263,7 @@ export default class SongService extends SearchableRepositoryService {
 		sort?: SongQueryParameters.SortingParameter | number,
 		pagination?: PaginationParameters,
 		include?: I,
+		userId?: number,
 	): Promise<SongWithRelations[]> {
 		if (typeof sort === "number") {
 			const randomIds = await this.getManyRandomIds(
@@ -279,6 +281,27 @@ export default class SongService extends SearchableRepositoryService {
 				include,
 			).then((items) => sortItemsUsingOrderedIdList(randomIds, items));
 		}
+
+		if (sort?.sortBy === "lastPlayDate" && userId) {
+			const ids = await this.getSongIdsByLastPlayDate(
+				userId,
+				where,
+				sort.order,
+				pagination,
+			);
+			return this.getMany(
+				{
+					...where,
+					songs: ids.map((id) => ({ id })),
+				},
+				undefined,
+				undefined,
+				include,
+			).then((items) => sortItemsUsingOrderedIdList(ids, items));
+		}
+		if (sort?.sortBy === "lastPlayDate" && !userId) {
+			return []; // NOTE: If anonymous user, no history
+		}
 		const args = {
 			include: include ?? ({} as I),
 			where: SongService.formatManyWhereInput(where),
@@ -289,6 +312,29 @@ export default class SongService extends SearchableRepositoryService {
 		return this.prismaService.song.findMany<
 			Prisma.SelectSubset<typeof args, Prisma.SongFindManyArgs>
 		>(args);
+	}
+
+	private async getSongIdsByLastPlayDate(
+		userId: number,
+		where: SongQueryParameters.ManyWhereInput,
+		order?: SortOrder,
+		pagination?: PaginationParameters,
+	) {
+		const entries = await this.prismaService.playHistory.findMany({
+			distinct: ["songId"],
+			where: {
+				AND: [{ userId }, { song: this.formatManyWhereInput(where) }],
+			},
+			orderBy: { playedAt: order },
+			select: { songId: true },
+
+			cursor: pagination?.afterId
+				? { id: pagination.afterId }
+				: undefined,
+		});
+		return entries
+			.map(({ songId }) => songId)
+			.slice(pagination?.skip ?? 0, pagination?.take);
 	}
 
 	private async getManyRandomIds(
@@ -310,6 +356,20 @@ export default class SongService extends SearchableRepositoryService {
 			pagination?.skip ?? 0,
 			pagination?.take,
 		);
+	}
+
+	async getPlayHistory<I extends SongQueryParameters.RelationInclude = {}>(
+		userId: number,
+		pagination?: PaginationParameters,
+		include?: I,
+	): Promise<(SongWithRelations & { playedAt: Date })[]> {
+		const entries = await this.prismaService.playHistory.findMany({
+			where: { userId },
+			orderBy: { playedAt: "desc" },
+			include: { song: include ? { include } : true },
+			...formatPaginationParameters(pagination),
+		});
+		return entries.map(({ song, playedAt }) => ({ ...song, playedAt }));
 	}
 
 	static formatManyWhereInput(where: SongQueryParameters.ManyWhereInput) {

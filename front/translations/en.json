@@ -156,6 +156,7 @@
 				"creationDate": "Creation Date",
 				"discIndex": "Disc Index",
 				"entryCount": "Entry Count",
+				"lastPlayDate": "Play Date",
 				"name": "Title",
 				"registrationDate": "Registration Date",
 				"releaseDate": "Release Date",
@@ -256,6 +257,7 @@
 		"newlyAddedAlbums": "Newly Added Albums",
 		"newlyAddedArtists": "Newly Added Artists",
 		"newlyAddedReleases": "Newly Added Releases",
+		"playHistory": "History",
 		"topGenres": "Top Genres",
 		"topLabels": "Top Labels"
 	},

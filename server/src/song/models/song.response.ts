@@ -17,7 +17,8 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { IntersectionType, OmitType } from "@nestjs/swagger";
+import { IntersectionType, OmitType, PickType } from "@nestjs/swagger";
+import { Pick } from "node_modules/@prisma/client/runtime/client";
 import {
 	type ArtistResponse,
 	ArtistResponseBuilder,
@@ -31,7 +32,7 @@ import {
 	ResponseWithLocalIdentifiers,
 } from "src/local-identifiers/local-identifiers.response";
 import { LyricsResponse } from "src/lyrics/models/lyrics.response";
-import { Song, type SongWithRelations } from "src/prisma/models";
+import { PlayHistory, Song, type SongWithRelations } from "src/prisma/models";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
 import {
 	type TrackResponse,
@@ -49,6 +50,11 @@ export class SongResponse extends IntersectionType(
 		master?: TrackResponse;
 		featuring?: ArtistResponse[];
 	},
+) {}
+
+export class PlayHistoryEntryResponse extends IntersectionType(
+	SongResponse,
+	PickType(PlayHistory, ["playedAt"]),
 ) {}
 
 @Injectable()
@@ -107,6 +113,30 @@ export class SongResponseBuilder extends ResponseBuilderInterceptor<
 			localIdentifiers: LocalIdentifiersResponse.from(
 				song.localIdentifiers,
 			),
+		};
+	}
+}
+
+@Injectable()
+export class PlayHistoryEntryResponseBuilder extends ResponseBuilderInterceptor<
+	SongWithRelations & Pick<PlayHistory, "playedAt">,
+	PlayHistoryEntryResponse
+> {
+	constructor(
+		@Inject(forwardRef(() => SongResponseBuilder))
+		private songResponseBuilder: SongResponseBuilder,
+	) {
+		super();
+	}
+
+	returnType = PlayHistoryEntryResponse;
+
+	async buildResponse(
+		song: SongWithRelations & Pick<PlayHistory, "playedAt">,
+	): Promise<PlayHistoryEntryResponse> {
+		return {
+			...(await this.songResponseBuilder.buildResponse(song)),
+			playedAt: song.playedAt,
 		};
 	}
 }

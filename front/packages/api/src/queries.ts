@@ -63,6 +63,7 @@ import { ScrobblersStatus } from "@/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "@/models/search";
 import { Settings } from "@/models/settings";
 import {
+	PlayHistoryEntryWithRelations,
 	type SongInclude,
 	type SongSortingKeys,
 	type SongType,
@@ -194,7 +195,7 @@ export const getSongs = <I extends SongInclude | never = never>(
 		label?: Identifier;
 	},
 	sort?: SortingParameters<typeof SongSortingKeys>,
-	include?: I[],
+	include?: readonly I[],
 ): InfiniteQuery<SongWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
 		route: "/songs",
@@ -206,6 +207,18 @@ export const getSongs = <I extends SongInclude | never = never>(
 		sort,
 		include,
 		validator: PaginatedResponse(SongWithRelations(include ?? [])),
+	});
+};
+
+export const getSongHistory = <I extends SongInclude | never = never>(
+	include?: readonly I[],
+): InfiniteQuery<PlayHistoryEntryWithRelations<I>> => {
+	return _mkSimplePaginatedQuery({
+		route: "/songs/history",
+		include,
+		validator: PaginatedResponse(
+			PlayHistoryEntryWithRelations(include ?? []),
+		),
 	});
 };
 
@@ -700,7 +713,7 @@ export const _mkSimpleQuery = <T>(
 export const _mkSimplePaginatedQuery = <T>(
 	arg: {
 		route: string;
-		include?: string[];
+		include?: readonly string[];
 		filter?: Record<
 			string,
 			undefined | string | number | (string | number)[]
@@ -748,7 +761,7 @@ export const _mkSimplePaginatedQuery = <T>(
 };
 
 // Format Includes for the query key
-const formatIncludeKeys = (includes?: string[]) =>
+const formatIncludeKeys = (includes?: readonly string[]) =>
 	includes?.map((include) => `include-${include}`) ?? [];
 
 // format any object for the query key

@@ -55,7 +55,7 @@ export type AddToPlaylistPayload = RequireExactlyOne<
 
 type QueryParameters<Keys extends readonly string[]> = {
 	pagination?: PaginationParameters | null;
-	include?: string[];
+	include?: readonly string[];
 	sort?: SortingParameters<Keys>;
 };
 
@@ -767,7 +767,7 @@ export default class API {
 		return `?${formattedQueryParams.join("&")}`;
 	}
 
-	private static formatInclude(include: string[]): string | null {
+	private static formatInclude(include: readonly string[]): string | null {
 		if (include.length === 0) {
 			return null;
 		}

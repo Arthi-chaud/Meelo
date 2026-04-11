@@ -22,6 +22,7 @@ import Illustration from "./illustration";
 import { Lyrics } from "./lyrics";
 import Resource from "./resource";
 import Track from "./track";
+import { yupdate } from "./utils";
 
 export const SongType = [
 	"Original",
@@ -89,11 +90,27 @@ export const SongRelations = yup.object({
 export const SongWithRelations = <
 	Selection extends SongInclude | never = never,
 >(
-	relation: Selection[],
+	relation: readonly Selection[],
 ) => Song.concat(SongRelations.pick(relation));
 
 export type SongWithRelations<Selection extends SongInclude | never = never> =
 	yup.InferType<ReturnType<typeof SongWithRelations<Selection>>>;
+
+export const PlayHistoryEntry = Song.concat(
+	yup.object({ playedAt: yupdate.required() }),
+);
+
+export type PlayHistoryEntry = yup.InferType<typeof PlayHistoryEntry>;
+
+export const PlayHistoryEntryWithRelations = <
+	Selection extends SongInclude | never = never,
+>(
+	relation: readonly Selection[],
+) => PlayHistoryEntry.concat(SongRelations.pick(relation));
+
+export type PlayHistoryEntryWithRelations<
+	Selection extends SongInclude | never = never,
+> = yup.InferType<ReturnType<typeof PlayHistoryEntryWithRelations<Selection>>>;
 
 export default Song;
 export const SongSortingKeys = [
@@ -102,6 +119,7 @@ export const SongSortingKeys = [
 	"artistName",
 	"releaseDate",
 	"addDate",
+	"lastPlayDate",
 	"userPlayCount",
 	"totalPlayCount",
 ] as const;
