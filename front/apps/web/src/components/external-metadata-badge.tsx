@@ -26,6 +26,21 @@ type ExternalMetadataBadgeProps = {
 	source: ExternalMetadataSource | undefined;
 };
 
+const getSafeExternalUrl = (url: string | undefined) => {
+	if (!url) {
+		return undefined;
+	}
+	try {
+		const parsedUrl = new URL(url);
+		if (parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:") {
+			return parsedUrl.toString();
+		}
+	} catch {
+		return undefined;
+	}
+	return undefined;
+};
+
 const ExternalMetadataBadge = ({ source }: ExternalMetadataBadgeProps) => {
 	const badge = (
 		<Button
@@ -44,13 +59,11 @@ const ExternalMetadataBadge = ({ source }: ExternalMetadataBadgeProps) => {
 		</Button>
 	);
 
-	if (source?.url) {
+	const safeUrl = getSafeExternalUrl(source?.url);
+
+	if (safeUrl) {
 		return (
-			<Link
-				href={source.url ?? undefined}
-				rel="noopener noreferrer"
-				target="_blank"
-			>
+			<Link href={safeUrl} rel="noopener noreferrer" target="_blank">
 				{badge}
 			</Link>
 		);
