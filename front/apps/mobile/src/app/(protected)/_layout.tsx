@@ -5,7 +5,6 @@ export default function ProtectedRoot() {
 		<Stack
 			screenOptions={{
 				freezeOnBlur: true,
-				animation: "none",
 				headerShown: false,
 				headerTransparent: true,
 				contentStyle: { backgroundColor: "transparent", flex: 1 },
