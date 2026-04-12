@@ -133,8 +133,7 @@ export default function RootLayout() {
 								>
 									<Stack
 										screenOptions={{
-											animation: "none",
-											animationTypeForReplace: "pop",
+											animation: "default",
 											headerShown: false,
 											contentStyle: {
 												flex: 1,
@@ -148,6 +147,7 @@ export default function RootLayout() {
 										<Stack.Screen
 											name="(protected)"
 											options={{
+												animationTypeForReplace: "push",
 												contentStyle: {
 													backgroundColor:
 														"transparent",
@@ -158,6 +158,7 @@ export default function RootLayout() {
 										<Stack.Screen
 											name="auth"
 											options={{
+												animationTypeForReplace: "pop",
 												contentStyle: {
 													backgroundColor:
 														(actualColorScheme ===

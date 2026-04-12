@@ -55,7 +55,7 @@ export default function FullscreenVideoPlayer() {
 					// presentation: "fullScreenModal",
 					statusBarHidden: true,
 					navigationBarHidden: true,
-					animation: "none",
+					animation: "slide_from_right",
 				}}
 			/>
 			<SafeAreaView style={styles.root}>

@@ -1,5 +1,6 @@
 import type { Stack } from "expo-router";
 import type { ComponentProps } from "react";
+import { Platform } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { BackButton } from "~/components/navigation";
 
@@ -17,7 +18,7 @@ export const useScreenOptions = () => {
 		},
 	};
 	return {
-		animation: "none", //TODO slide_from_right without flicker
+		animation: Platform.OS === "android" ? "fade" : "default",
 		animationTypeForReplace: "pop",
 		freezeOnBlur: true,
 		contentStyle: [styles.screen],
