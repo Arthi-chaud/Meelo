@@ -1,6 +1,6 @@
 import { BottomSheetDraggableView } from "@gorhom/bottom-sheet";
 import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { View } from "react-native";
 import DraggableFlatList, {
 	ScaleDecorator,
@@ -26,24 +26,18 @@ import { Pressable } from "~/primitives/pressable";
 import { breakpoints } from "~/theme";
 
 export const Queue = () => {
+	"use no memo";
 	const queryClient = useQueryClient();
 	const playlist = useAtomValue(playlistAtom);
 	const reorderTracks = useSetAtom(reorderAtom);
 	const removeTrack = useSetAtom(removeTrackAtom);
 	const cursor = useAtomValue(cursorAtom);
 	const skipTrack = useSetAtom(skipTrackAtom);
-	const queue = useMemo(
-		() =>
-			playlist
-				.slice(cursor + 1)
-				.map((track, idx) => [track, idx] as const),
-		[playlist, cursor],
-	);
 	const onItemPress = useCallback(
 		(trackOffset: number) => {
 			for (let i = 0; i < trackOffset + 1; i++) skipTrack(queryClient);
 		},
-		[playlist, cursor],
+		[skipTrack, queryClient],
 	);
 	const onItemDelete = useCallback(
 		(trackOffset: number) => {
@@ -65,23 +59,26 @@ export const Queue = () => {
 			<Divider h />
 			<BottomSheetDraggableView>
 				<DraggableFlatList
-					data={queue}
+					data={playlist.slice(cursor + 1)}
 					onDragEnd={({ from, to }) => onDragEnd(from, to)}
-					keyExtractor={([t, idx]) => `${t.track.id}-${idx}`}
-					renderItem={({ item: [t, idx], drag }) => (
-						<ScaleDecorator>
-							<QueueItem
-								onDrag={() => {
-									drag();
-									Haptics.onDragStart();
-								}}
-								track={t}
-								onPress={() => onItemPress(idx)}
-								onDelete={() => onItemDelete(idx)}
-							/>
-							<Divider h />
-						</ScaleDecorator>
-					)}
+					keyExtractor={(t, idx) => `${t.track.id}-${idx}`}
+					renderItem={({ item: t, drag }) => {
+						const idx = playlist.indexOf(t) - cursor - 1;
+						return (
+							<ScaleDecorator>
+								<QueueItem
+									onDrag={() => {
+										drag();
+										Haptics.onDragStart();
+									}}
+									track={t}
+									onPress={() => onItemPress(idx)}
+									onDelete={() => onItemDelete(idx)}
+								/>
+								<Divider h />
+							</ScaleDecorator>
+						);
+					}}
 				/>
 			</BottomSheetDraggableView>
 		</View>
