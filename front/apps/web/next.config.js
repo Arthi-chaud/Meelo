@@ -3,6 +3,10 @@ const config = {
 	output: "standalone",
 	reactStrictMode: false,
 	images: { localPatterns: [{ pathname: "/api/**" }] },
+	logging: {
+		serverFunctions: false,
+		browserToTerminal: false,
+	},
 	i18n: {
 		locales: ["en", "fr"],
 		defaultLocale: "en",
