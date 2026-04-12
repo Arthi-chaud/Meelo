@@ -14,6 +14,7 @@
 			"seeSongs": "Lihat Lagu"
 		},
 		"changeIllutration": "Ubah Ilustrasi",
+		"clearQueryCache": "Hapus Cache Kueri",
 		"connectToNewServer": "Hubungkan server Meelo",
 		"create": "Buat",
 		"delete": "Hapus",
@@ -35,6 +36,9 @@
 		"goToPlaylist": "Buka Playlist",
 		"goToRelease": "Buka Rilis",
 		"goToSettingsPage": "Buka Pengaturan",
+		"label": {
+			"startRadio": "Mulai Radio Label"
+		},
 		"library": {
 			"create": "Buat Pustaka",
 			"delete": "Hapus Pustaka",
@@ -69,7 +73,8 @@
 			"seeSongInfo": "Info Lagu"
 		},
 		"switchServer": {
-			"label": "Ganti Server"
+			"label": "Ganti Server",
+			"modalMessage": "Mengganti server akan menghentikan pemutaran dan mengatur ulang antrean. Apakah Anda yakin ingin mengganti?"
 		},
 		"track": {
 			"reassignTrack": "Pindahkan Trek",
@@ -92,6 +97,8 @@
 	"albumType": {
 		"compilation": "Kompilasi",
 		"compilation_plural": "Kompilasi",
+		"demoAlbum": "Album Demo",
+		"demoAlbum_plural": "Album-Album Demo",
 		"ep": "EP",
 		"ep_plural": "EP",
 		"liveRecording": "Rekaman Live",
@@ -104,6 +111,8 @@
 		"soundtrack_plural": "Album Soundtrack",
 		"studioRecording": "Rekaman Studio",
 		"studioRecording_plural": "Album Studio",
+		"unofficial": "Album Tidak Resmi",
+		"unofficial_plural": "Album-Album Tidak Resmi",
 		"videoAlbum": "Album Video",
 		"videoAlbum_plural": "Album Video"
 	},
@@ -115,6 +124,9 @@
 	},
 	"auth": {
 		"connectButton": "Hubungkan ke server",
+		"loggedInAs": "Masuk sebagai {{n}}",
+		"loggedInAsAnonymous": "Pengguna anonim",
+		"loginAsAnonymous": "Masuk secara anonim",
 		"loginButton": "Masuk",
 		"signin": "Sudah punya akun? Masuk",
 		"signup": "Baru di sini? Daftar",
@@ -144,6 +156,7 @@
 				"creationDate": "Tanggal Pembuatan",
 				"discIndex": "Indeks Disc",
 				"entryCount": "Jumlah Entri",
+				"lastPlayDate": "Tanggal Putar",
 				"name": "Judul",
 				"registrationDate": "Tanggal Pendaftaran",
 				"releaseDate": "Tanggal Rilis",
@@ -244,6 +257,7 @@
 		"newlyAddedAlbums": "Album Baru Ditambahkan",
 		"newlyAddedArtists": "Artis Baru Ditambahkan",
 		"newlyAddedReleases": "Rilis Baru Ditambahkan",
+		"playHistory": "Riwayat",
 		"topGenres": "Genre Teratas",
 		"topLabels": "Label Teratas"
 	},
@@ -257,6 +271,7 @@
 		"playPauseWhenExpanded": "Putar / Jeda (Saat pemutar terbuka)"
 	},
 	"misc": {
+		"from": "Dari",
 		"loading": "Memuat",
 		"no": "Tidak",
 		"yes": "Ya"
@@ -271,6 +286,7 @@
 		"genre": "Genre",
 		"genre_plural": "Genre",
 		"label": "Label Rekaman",
+		"label_plural": "Label Rekaman",
 		"library_plural": "Pustaka",
 		"lyrics": "Lirik",
 		"playlist": "Playlist",
