@@ -101,9 +101,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 
 const ResponsiveFlashList = withUnistyles(FlashList, (theme, rt) => ({
 	snapToInterval:
-		// TODO The interval is not correct,
-		// the further we scroll the more the snap position is shifted to the left
-		theme.gap(0.5) +
 		// @ts-expect-error
 		rt.screen.width / theme.layout.grid.columnCount[rt.breakpoint!],
 }));
