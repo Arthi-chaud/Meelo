@@ -4103,13 +4103,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amqplib@npm:^0.10.9":
-  version: 0.10.9
-  resolution: "amqplib@npm:0.10.9"
+"amqplib@npm:^1.0.0":
+  version: 1.0.3
+  resolution: "amqplib@npm:1.0.3"
   dependencies:
     buffer-more-ints: "npm:~1.0.0"
-    url-parse: "npm:~1.5.10"
-  checksum: 10c0/d241efba1e38cf158c36a0fe40fc1c5424f3abf1a2d2e7d4494cb308e1800bd42ddba02cc119b47a7f4f37ef1874dfa5a9dca294e5d84443727228244e62af62
+  checksum: 10c0/0a61edff9192d545ac26f191d528cc92204e97e6fa02bb5fa38c18e4b6053c8ebd7fdfead1ab0087589e7847c6676a644fa40c5079269e081dc83f1d4a8cd6de
   languageName: node
   linkType: hard
 
@@ -7990,7 +7989,7 @@ __metadata:
     "@types/slug": "npm:^5.0.9"
     "@types/supertest": "npm:^7.2.0"
     amqp-connection-manager: "npm:^5.0.0"
-    amqplib: "npm:^0.10.9"
+    amqplib: "npm:^1.0.0"
     archiver: "npm:^7.0.1"
     axios: "npm:^1.13.6"
     bcrypt: "npm:^6.0.0"
@@ -9346,13 +9345,6 @@ __metadata:
   version: 1.0.2
   resolution: "quantize@npm:1.0.2"
   checksum: 10c0/fcecd3ac3279ca54492067633b823aa3b66150ab71e9171f7983b858c328ab85fca6c36f40956914ef7540e50cceb28049d30853221dc288aa67a867ae71351a
-  languageName: node
-  linkType: hard
-
-"querystringify@npm:^2.1.1":
-  version: 2.2.0
-  resolution: "querystringify@npm:2.2.0"
-  checksum: 10c0/3258bc3dbdf322ff2663619afe5947c7926a6ef5fb78ad7d384602974c467fadfc8272af44f5eb8cddd0d011aae8fabf3a929a8eee4b86edcc0a21e6bd10f9aa
   languageName: node
   linkType: hard
 
@@ -10771,16 +10763,6 @@ __metadata:
   dependencies:
     punycode: "npm:^2.1.0"
   checksum: 10c0/4ef57b45aa820d7ac6496e9208559986c665e49447cb072744c13b66925a362d96dd5a46c4530a6b8e203e5db5fe849369444440cb22ecfc26c679359e5dfa3c
-  languageName: node
-  linkType: hard
-
-"url-parse@npm:~1.5.10":
-  version: 1.5.10
-  resolution: "url-parse@npm:1.5.10"
-  dependencies:
-    querystringify: "npm:^2.1.1"
-    requires-port: "npm:^1.0.0"
-  checksum: 10c0/bd5aa9389f896974beb851c112f63b466505a04b4807cea2e5a3b7092f6fbb75316f0491ea84e44f66fed55f1b440df5195d7e3a8203f64fcefa19d182f5be87
   languageName: node
   linkType: hard
 
