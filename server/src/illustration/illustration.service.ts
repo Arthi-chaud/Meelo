@@ -26,6 +26,7 @@ import { Jimp } from "jimp";
 import md5 from "md5";
 import mime from "mime";
 import { version } from "package.json";
+import sharp from "sharp";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import FileManagerService from "src/file-manager/file-manager.service";
 import Logger from "src/logger/logger";
@@ -131,19 +132,19 @@ export default class IllustrationService {
 		outputPath: string,
 		quality: ImageQuality,
 	) {
-		const image = await Jimp.read(sourcePath);
+		const image = sharp(sourcePath);
 		switch (quality) {
 			case "low":
-				image.resize({ w: 100 });
+				image.resize({ width: 100 });
 				break;
 			case "medium":
-				image.resize({ w: 300 });
+				image.resize({ width: 300 });
 				break;
 			case "high":
-				image.resize({ w: 500 });
+				image.resize({ width: 500 });
 				break;
 		}
-		await image.write(outputPath as any);
+		await image.toFile(outputPath);
 	}
 
 	/**
