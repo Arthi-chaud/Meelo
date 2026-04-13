@@ -7,7 +7,7 @@
 	},
 	"devDependencies": {
 		"jest": "^30.3.0",
-		"typescript": "5.9.3"
+		"typescript": "6.0.2"
 	},
 	"packageManager": "yarn@4.13.0"
 }

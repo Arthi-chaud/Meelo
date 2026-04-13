@@ -6,7 +6,7 @@
 		"yup": "^1.7.1"
 	},
 	"devDependencies": {
-		"typescript": "5.9.3"
+		"typescript": "6.0.2"
 	},
 	"packageManager": "yarn@4.13.0"
 }
