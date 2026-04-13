@@ -66,8 +66,8 @@
 	},
 	"resolutions": {
 		"jpeg-js": "^0.4.4",
-		"@prisma/generator-helper": "6.19.2",
-		"@prisma/internals": "6.19.2",
+		"@prisma/generator-helper": "6.19.3",
+		"@prisma/internals": "6.19.3",
 		"braces": "3.0.3",
 		"tar": "7.5.13",
 		"@jimp/core@npm:1.6.0": "patch:@jimp/core@npm%3A1.6.0#~/.yarn/patches/@jimp-core-npm-1.6.0-787392d238.patch"
