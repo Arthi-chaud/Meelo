@@ -44,7 +44,7 @@
 		"iconsax-react-nativejs": "^0.0.8",
 		"infinite-controls": "workspace:^",
 		"intl-pluralrules": "^2.0.1",
-		"jotai": "2.18.1",
+		"jotai": "2.19.0",
 		"models": "workspace:^",
 		"react": "19.2.4",
 		"react-hook-form": "^7.72.0",
