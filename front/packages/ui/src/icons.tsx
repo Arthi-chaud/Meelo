@@ -60,7 +60,13 @@ export const AddIcon: Icon = Iconsax.AddCircle;
 export const DeleteIcon: Icon = Iconsax.Trash;
 export const ShuffleIcon: Icon = Iconsax.Shuffle;
 export const InfoIcon: Icon = (props: IconProps) => (
-	<Iconsax.InfoCircle style={{ rotate: "180deg" }} {...props} />
+	<Iconsax.InfoCircle
+		{...props}
+		style={{
+			...rotate(180),
+			...props.style,
+		}}
+	/>
 );
 export const AddToPlaylistIcon: Icon = Iconsax.MusicSquareAdd;
 export const AddItemToPlaylistIcon: Icon = Iconsax.MusicSquareAdd;
@@ -85,7 +91,7 @@ export const UncheckIcon: Icon = Iconsax.CloseCircle;
 export const ContextualMenuIcon: Icon = (props: IconProps) => (
 	<Iconsax.More
 		{...props}
-		style={{ rotate: "90deg", ...props.style }}
+		style={{ ...rotate(90), ...props.style }}
 		size={18}
 	/>
 );
@@ -166,3 +172,8 @@ export const SongTypeIcon = (type: SongType) => {
 			return SongIcon;
 	}
 };
+
+const rotate = (deg: number) => ({
+	rotate: `${deg}deg`, // For web
+	transform: [{ rotate: `${deg}deg` }], // For mobile
+});
