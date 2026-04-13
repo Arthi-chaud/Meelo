@@ -4968,14 +4968,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/flash-list@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@shopify/flash-list@npm:2.3.0"
+"@shopify/flash-list@npm:2.3.1":
+  version: 2.3.1
+  resolution: "@shopify/flash-list@npm:2.3.1"
   peerDependencies:
     "@babel/runtime": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/549fbecd447f3b34a07e37387891105a6b087b673d008c04611b91693d8e37db802a40a1cf7029a8b28d9cf97cefd3676901deab90c38cbf3efa8debc2422cd6
+  checksum: 10c0/abe921b93aeb6bf35efb4cd16163ca0126eec1513a40f1b88e370eb646e8bece5daa245e889300aa7ace2a4a81a9ffbd765c1ce2c3f2346611e94cc66c97c6e3
   languageName: node
   linkType: hard
 
@@ -11548,7 +11548,7 @@ __metadata:
     "@expo/ngrok": "npm:^4.1.3"
     "@gorhom/bottom-sheet": "npm:^5.2.8"
     "@kesha-antonov/react-native-background-downloader": "npm:^4.5.3"
-    "@shopify/flash-list": "npm:2.3.0"
+    "@shopify/flash-list": "npm:2.3.1"
     "@shopify/react-native-skia": "npm:2.5.3"
     "@tanstack/react-query": "npm:^5.96.2"
     "@types/react": "npm:~19.1.10"
