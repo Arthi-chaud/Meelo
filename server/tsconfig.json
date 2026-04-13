@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
+		"strict": false,
 		"module": "commonjs",
-		"moduleResolution": "node",
 		"declaration": true,
 		"removeComments": true,
 		"emitDecoratorMetadata": true,
@@ -10,10 +10,14 @@
 		"target": "es2023",
 		"sourceMap": true,
 		"outDir": "./dist",
-		"baseUrl": "./",
 		"paths": {
-			"*": ["*", "src/*"],
-			"~/*": ["src/*"]
+			"*": [
+				"./*",
+				"./src/*"
+			],
+			"~/*": [
+				"./src/*"
+			]
 		},
 		"incremental": true,
 		"skipLibCheck": true,
@@ -27,7 +31,13 @@
 		"alwaysStrict": true,
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
-		"allowJs": true
+		"allowJs": true,
+		"types": [
+			"*"
+		]
 	},
-	"include": ["./src/**/*.ts", "./prisma/types.d.ts"]
+	"include": [
+		"./src/**/*.ts",
+		"./prisma/types.d.ts"
+	]
 }
