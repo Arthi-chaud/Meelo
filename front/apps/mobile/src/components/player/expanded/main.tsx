@@ -136,7 +136,7 @@ const ProgressControls = () => {
 				/>
 			</View>
 			<Slider
-				sliderColor={accentColor}
+				sliderColor={accentColor ?? theme.colors.text.primary}
 				trackColor={
 					accentColor ? `${accentColor}30` : theme.colors.skeleton
 				}
