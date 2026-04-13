@@ -13010,9 +13010,9 @@ __metadata:
   linkType: hard
 
 "react-native-uuid@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "react-native-uuid@npm:2.0.3"
-  checksum: 10c0/d94bccc28936c2dea081ab404f90b0c968092013af4d428b8e74bf407d6098ad5410914f77a903ad1296cce364fc85d27d8dfd70d22ec48d8cf1b7edc8803a8d
+  version: 2.0.4
+  resolution: "react-native-uuid@npm:2.0.4"
+  checksum: 10c0/56bcf29fa59a3e4c6374e612d9adf4e2a5e7f1000e632451f0e4bf0fbeb00664eb8657a5af7e2adb64c435e96f42c535cc20529cffcc48a03581b41ba1761d2a
   languageName: node
   linkType: hard
 
