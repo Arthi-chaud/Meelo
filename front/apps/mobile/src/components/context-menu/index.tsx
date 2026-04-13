@@ -175,7 +175,6 @@ const styles = StyleSheet.create((theme) => ({
 	itemIcon: { aspectRatio: 1, alignItems: "center" },
 	itemLabel: { width: "100%" },
 	button: {
-		transform: [{ rotate: "90deg" }],
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
