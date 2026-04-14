@@ -22,7 +22,6 @@ import { Readable } from "node:stream";
 import { HttpService } from "@nestjs/axios";
 import { Injectable, StreamableFile } from "@nestjs/common";
 import * as Blurhash from "blurhash";
-import { Jimp } from "jimp";
 import md5 from "md5";
 import mime from "mime";
 import { version } from "package.json";
@@ -184,25 +183,19 @@ export default class IllustrationService {
 		}
 		if (dimensions.width || dimensions.height) {
 			try {
-				const image = await Jimp.read(sourceFilePath);
+				const image = sharp(sourceFilePath);
 
-				if (dimensions.width && dimensions.height) {
-					image.cover({ w: dimensions.width, h: dimensions.height });
-				} else {
-					const [originalWidth, originalHeight] = [
-						image.width,
-						image.height,
-					];
-					const ratio = dimensions.height
-						? dimensions.height / originalHeight
-						: dimensions.width! / originalWidth;
-					image.cover({
-						w: dimensions.width ?? originalWidth * ratio,
-						h: dimensions.height ?? originalHeight * ratio,
-					});
-				}
+				image.resize({
+					width: dimensions.width,
+					height: dimensions.height,
+					fit:
+						dimensions.width && dimensions.height
+							? "fill"
+							: "cover",
+				});
 				return image
-					.getBuffer("image/jpeg")
+					.jpeg()
+					.toBuffer()
 					.then(
 						(buffer) => new StreamableFile(Readable.from(buffer)),
 					);
@@ -222,33 +215,42 @@ export default class IllustrationService {
 	}
 
 	async getImageStats(buffer: Buffer): Promise<IllustrationStats> {
-		const image = await Jimp.read(buffer, {
-			"image/jpeg": { maxMemoryUsageInMB: 1024 },
+		const image = sharp(buffer, {
+			limitInputPixels: false,
 		});
-		const aspectRatio = image.width / image.height;
+		const info = await image.metadata();
+		const aspectRatio = info.width / info.height;
 
 		return Promise.all([
-			new Promise<string>((resolve) => {
+			(async () => {
 				const [componentX, componentY] =
 					this.getBlurhashComponentCountFromAspectRatio(aspectRatio);
-				const isHorizontal = image.width > image.height;
+				const isHorizontal = info.width > info.height;
 				const ratio = isHorizontal
-					? image.width / image.height
-					: image.height / image.width;
+					? info.width / info.height
+					: info.height / info.width;
 				const width = 50;
-				const height = isHorizontal ? width / ratio : width * ratio;
-				const smallImage = image.resize({ w: width, h: height });
-				resolve(
-					Blurhash.encode(
-						Uint8ClampedArray.from(smallImage.bitmap.data),
-						smallImage.width,
-						smallImage.height,
-						componentX,
-						componentY,
-					),
+				const height = Math.round(
+					isHorizontal ? width / ratio : width * ratio,
 				);
-			}),
-			this.getImageColors(image.bitmap.data),
+				const smallImage = await image
+					.resize({
+						width: width,
+						height: height,
+						fit: "fill",
+					})
+					.ensureAlpha()
+					.raw()
+					.toBuffer();
+				return Blurhash.encode(
+					Uint8ClampedArray.from(smallImage),
+					width,
+					height,
+					componentX,
+					componentY,
+				);
+			})(),
+			image.ensureAlpha().raw().toBuffer().then(this.getImageColors),
 		]).then(([blurhash, colors]) => ({
 			blurhash,
 			colors,
