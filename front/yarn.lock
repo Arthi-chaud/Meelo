@@ -11611,7 +11611,7 @@ __metadata:
     react-native-nitro-modules: "npm:0.34.1"
     react-native-reanimated: "npm:~4.2.2"
     react-native-safe-area-context: "npm:~5.7.0"
-    react-native-screens: "npm:~4.23.0"
+    react-native-screens: "npm:~4.24.0"
     react-native-svg: "npm:15.15.4"
     react-native-toast-message: "npm:^2.3.3"
     react-native-unistyles: "npm:3.0.24"
@@ -12942,16 +12942,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-screens@npm:~4.23.0":
-  version: 4.23.0
-  resolution: "react-native-screens@npm:4.23.0"
+"react-native-screens@npm:~4.24.0":
+  version: 4.24.0
+  resolution: "react-native-screens@npm:4.24.0"
   dependencies:
     react-freeze: "npm:^1.0.0"
     warn-once: "npm:^0.1.0"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/91c0c9840d36923adc49cb0d463f4e6b63d63060245029d49f8b80d82a405fcecce2196695c993f214c5ecb945e1b0bfb8ec0b8b44845b1438b8fac0d9ed53a7
+  checksum: 10c0/49299e694ed20cf5a8c0f86702eb77df03f5b7353d9b73e7415bb593ac5ff3aa4dfe76b1e9d8efb0fd926917e507f02f13e0a8791c8833910080454b66d99943
   languageName: node
   linkType: hard
 
