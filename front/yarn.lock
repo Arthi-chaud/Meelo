@@ -1486,6 +1486,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/types@npm:7.29.0, @babel/types@npm:^7.28.6, @babel/types@npm:^7.29.0":
+  version: 7.29.0
+  resolution: "@babel/types@npm:7.29.0"
+  dependencies:
+    "@babel/helper-string-parser": "npm:^7.27.1"
+    "@babel/helper-validator-identifier": "npm:^7.28.5"
+  checksum: 10c0/23cc3466e83bcbfab8b9bd0edaafdb5d4efdb88b82b3be6728bbade5ba2f0996f84f63b1c5f7a8c0d67efded28300898a5f930b171bb40b311bca2029c4e9b4f
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.0.0, @babel/types@npm:^7.18.6, @babel/types@npm:^7.20.7, @babel/types@npm:^7.22.5, @babel/types@npm:^7.3.3":
   version: 7.22.5
   resolution: "@babel/types@npm:7.22.5"
@@ -1535,16 +1545,6 @@ __metadata:
     "@babel/helper-string-parser": "npm:^7.27.1"
     "@babel/helper-validator-identifier": "npm:^7.28.5"
   checksum: 10c0/a5a483d2100befbf125793640dec26b90b95fd233a94c19573325898a5ce1e52cdfa96e495c7dcc31b5eca5b66ce3e6d4a0f5a4a62daec271455959f208ab08a
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.28.6, @babel/types@npm:^7.29.0":
-  version: 7.29.0
-  resolution: "@babel/types@npm:7.29.0"
-  dependencies:
-    "@babel/helper-string-parser": "npm:^7.27.1"
-    "@babel/helper-validator-identifier": "npm:^7.28.5"
-  checksum: 10c0/23cc3466e83bcbfab8b9bd0edaafdb5d4efdb88b82b3be6728bbade5ba2f0996f84f63b1c5f7a8c0d67efded28300898a5f930b171bb40b311bca2029c4e9b4f
   languageName: node
   linkType: hard
 
@@ -11614,7 +11614,7 @@ __metadata:
     react-native-screens: "npm:~4.23.0"
     react-native-svg: "npm:15.15.4"
     react-native-toast-message: "npm:^2.3.3"
-    react-native-unistyles: "npm:3.0.24"
+    react-native-unistyles: "npm:3.2.2"
     react-native-uuid: "npm:^2.0.4"
     react-native-video: "npm:^7.0.0-beta.8"
     react-native-worklets: "npm:^0.7.4"
@@ -13007,9 +13007,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-unistyles@npm:3.0.24":
-  version: 3.0.24
-  resolution: "react-native-unistyles@npm:3.0.24"
+"react-native-unistyles@npm:3.2.2":
+  version: 3.2.2
+  resolution: "react-native-unistyles@npm:3.2.2"
+  dependencies:
+    "@babel/types": "npm:7.29.0"
   peerDependencies:
     "@react-native/normalize-colors": "*"
     react: "*"
@@ -13018,9 +13020,11 @@ __metadata:
     react-native-nitro-modules: "*"
     react-native-reanimated: "*"
   peerDependenciesMeta:
+    react-native-edge-to-edge:
+      optional: true
     react-native-reanimated:
       optional: true
-  checksum: 10c0/92fa56cda65018b6cd43050b74b1e28094730de119e705f233e1d6d777a06b5d13b1d226a834be0d859149c1a9600abd87704a0e3a750c43371c7eac79cb58cd
+  checksum: 10c0/1072a785ba47de30c282b4891e40ddfff152ecc064f86b382d3dcd6796618305aba9945a7a858f7a199bf18666e24242b4ccd9b4a4c99e330c7d0f07f8e0be46
   languageName: node
   linkType: hard
 
