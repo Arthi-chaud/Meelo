@@ -46,7 +46,6 @@
 		"get-rgba-palette": "^2.0.1",
 		"helmet": "^8.1.0",
 		"http-proxy-middleware": "^3.0.5",
-		"jimp": "^1.6.0",
 		"md5": "^2.3.0",
 		"meilisearch": "^0.56.0",
 		"mime": "^3.0.0",
@@ -61,6 +60,7 @@
 		"prisma-json-types-generator": "4.1.1",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
+		"sharp": "^0.34.5",
 		"slug": "^5.3.0",
 		"ts-node": "^10.9.2"
 	},
@@ -69,8 +69,7 @@
 		"@prisma/generator-helper": "6.19.3",
 		"@prisma/internals": "6.19.3",
 		"braces": "3.0.3",
-		"tar": "7.5.13",
-		"@jimp/core@npm:1.6.0": "patch:@jimp/core@npm%3A1.6.0#~/.yarn/patches/@jimp-core-npm-1.6.0-787392d238.patch"
+		"tar": "7.5.13"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.10",

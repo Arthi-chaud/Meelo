@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import { HttpModule } from "@nestjs/axios";
 import type { TestingModule } from "@nestjs/testing";
-import { Jimp } from "jimp";
+import sharp from "sharp";
 import AlbumService from "src/album/album.service";
 import ArtistModule from "src/artist/artist.module";
 import FileManagerModule from "src/file-manager/file-manager.module";
@@ -135,12 +135,11 @@ describe("Illustration Service", () => {
 	describe("Get Illustration Colors", () => {
 		it("should return the correct set of colors", async () => {
 			const img = fs.readFileSync("test/assets/artwork.jpeg");
-			const colorsSet = await illustrationService.getImageColors(
-				(await Jimp.read(img)).bitmap.data,
-			);
+			const data = await sharp(img).ensureAlpha().raw().toBuffer();
+			const colorsSet = await illustrationService.getImageColors(data);
 			expect(colorsSet).toEqual([
-				"#babc85",
-				"#211a11",
+				"#babd85",
+				"#211a12",
 				"#a0893e",
 				"#736e39",
 				"#949c7c",
