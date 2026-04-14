@@ -11608,7 +11608,7 @@ __metadata:
     react-native-gesture-handler: "npm:~2.30.0"
     react-native-keyboard-controller: "npm:1.21.3"
     react-native-mmkv: "npm:4.1.2"
-    react-native-nitro-modules: "npm:0.34.1"
+    react-native-nitro-modules: "npm:0.35.3"
     react-native-reanimated: "npm:~4.2.2"
     react-native-safe-area-context: "npm:~5.7.0"
     react-native-screens: "npm:~4.23.0"
@@ -12908,13 +12908,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:0.34.1":
-  version: 0.34.1
-  resolution: "react-native-nitro-modules@npm:0.34.1"
+"react-native-nitro-modules@npm:0.35.3":
+  version: 0.35.3
+  resolution: "react-native-nitro-modules@npm:0.35.3"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/1fbbf49cfd884fa9034f368ea3c989e16a3a6d56fd8001c8afe9839f83b772bc392a477cae962880b9728054a10247a93b1658dc3a8028bcf18032dfaac95a29
+  checksum: 10c0/85faaa8fc10bb8a1a3d731045fca92fccfac8d884a1a3dc1dc9dfe6ef30231db2e7d9ed9fd66546ae1038918ad0ab371f8fd47d3cea8e480dc016c13d83eaafc
   languageName: node
   linkType: hard
 
