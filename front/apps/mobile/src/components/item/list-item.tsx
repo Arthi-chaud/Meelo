@@ -87,7 +87,7 @@ export const ListItem = ({
 				}
 			}}
 			onLongPress={onLongPressCallback}
-			style={[styles.root]}
+			style={styles.root}
 		>
 			{leading === undefined ? (
 				<View style={styles.illustration}>
