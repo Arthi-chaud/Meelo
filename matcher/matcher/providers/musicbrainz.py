@@ -353,26 +353,35 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 # date can be an empty string
                 if "date" in r and r["date"] and "label-info" in r
             ]
-            releases = sorted(releases, key=lambda r: r["date"])
-            for date_length in [10, 7, 4]:
-                sorted_releases = [r for r in releases if len(r["date"]) == date_length]
-                if not sorted_releases:
-                    continue
-                first_release = sorted_releases[0]
-                original_releases = [
-                    r for r in sorted_releases if r["date"] == first_release["date"]
+            releases_with_date = [
+                [
+                    datetime.strptime(
+                        d
+                        + ("" if len(d) == 10 else "-31" if len(d) == 7 else "-12-31"),
+                        "%Y-%m-%d",
+                    ),
+                    r,
                 ]
-                labels = []
-                for release in original_releases:
-                    for label in release["label-info"]:
-                        label_name = label["label"]["name"]
-                        if (
-                            any([c for c in label_name if c.isascii()])
-                            and label_name not in labels
-                            and label_name != "[no label]"  # Placeholder
-                        ):
-                            labels.append(label_name)
-                return labels
+                for [d, r] in ([r["date"], r] for r in releases)
+            ]
+            sorted_releases = [
+                r for [_, r] in sorted(releases_with_date, key=lambda i: i[0])
+            ]
+            first_release = sorted_releases[0]
+            original_releases = [
+                r for r in sorted_releases if r["date"] == first_release["date"]
+            ]
+            labels = []
+            for release in original_releases:
+                for label in release["label-info"]:
+                    label_name = label["label"]["name"]
+                    if (
+                        any([c for c in label_name if c.isascii()])
+                        and label_name not in labels
+                        and label_name != "[no label]"  # Placeholder
+                    ):
+                        labels.append(label_name)
+            return labels
         except Exception:
             return None
 
