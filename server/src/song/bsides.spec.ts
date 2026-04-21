@@ -87,7 +87,7 @@ describe("Get B-Sides", () => {
 				nameSlug: new Slug(name).toString(),
 				sortName: getSortName(name),
 				sortSlug: new Slug(getSortName(name)).toString(),
-				artistId: artist.id,
+				artists: { connect: { id: artist.id } },
 				releaseDate,
 				type,
 			},

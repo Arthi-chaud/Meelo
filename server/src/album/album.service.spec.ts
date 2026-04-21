@@ -66,12 +66,12 @@ describe("Album Service", () => {
 				const registeredAt = new Date("2001");
 				newCompilationAlbum = await albumService.create({
 					name: "My Other Compilation Album",
+					artists: [],
 					type: AlbumType.Compilation,
 					registeredAt,
 				});
 
 				expect(newCompilationAlbum.id).toBeDefined();
-				expect(newCompilationAlbum.artistId).toBeNull();
 				expect(newCompilationAlbum.releaseDate).toBeNull();
 				expect(newCompilationAlbum.registeredAt).toStrictEqual(
 					registeredAt,
@@ -92,6 +92,7 @@ describe("Album Service", () => {
 				const test = async () => {
 					return albumService.create({
 						name: dummyRepository.compilationAlbumA.name,
+						artists: [],
 						type: AlbumType.Compilation,
 					});
 				};
@@ -105,7 +106,7 @@ describe("Album Service", () => {
 					return albumService.create({
 						name: dummyRepository.albumA1.name,
 						type: AlbumType.StudioRecording,
-						artist: { id: dummyRepository.artistA.id },
+						artists: [{ id: dummyRepository.artistA.id }],
 					});
 				};
 				return expect(test()).rejects.toThrow(
@@ -118,12 +119,11 @@ describe("Album Service", () => {
 			it("should create a live album", async () => {
 				newAlbum = await albumService.create({
 					name: "My Live Album",
-					artist: { slug: new Slug(dummyRepository.artistA.slug) },
+					artists: [{ slug: new Slug(dummyRepository.artistA.slug) }],
 					type: AlbumType.LiveRecording,
 					releaseDate: new Date("2006"),
 				});
 				expect(newAlbum.id).toBeDefined();
-				expect(newAlbum.artistId).toBe(dummyRepository.artistA.id);
 				expect(newAlbum.releaseDate).toStrictEqual(new Date("2006"));
 				expect(newAlbum.registeredAt.getUTCDate()).toStrictEqual(
 					new Date(Date.now()).getUTCDate(),
@@ -133,6 +133,11 @@ describe("Album Service", () => {
 				expect(newAlbum.sortSlug).toBe("my-live-album");
 				expect(newAlbum.slug).toBe("my-artist-my-live-album");
 				expect(newAlbum.type).toBe(AlbumType.LiveRecording);
+				const artists = await dummyRepository.artist.findMany({
+					where: { albums: { some: { id: newAlbum.id } } },
+				});
+				expect(artists.length).toBe(1);
+				expect(artists[0].id).toBe(dummyRepository.artistA.id);
 			});
 
 			it("should throw, as an album with the same name exists", () => {
@@ -140,7 +145,7 @@ describe("Album Service", () => {
 					return albumService.create({
 						name: dummyRepository.albumA1.name,
 						type: AlbumType.StudioRecording,
-						artist: { id: dummyRepository.artistA.id },
+						artists: [{ id: dummyRepository.artistA.id }],
 					});
 				};
 				return expect(test()).rejects.toThrow(
@@ -153,7 +158,7 @@ describe("Album Service", () => {
 					return albumService.create({
 						name: "My album (Live)",
 						type: AlbumType.LiveRecording,
-						artist: { slug: new Slug("I do not exists") },
+						artists: [{ slug: new Slug("I do not exists") }],
 					});
 				};
 				return expect(test()).rejects.toThrow(ArtistNotFoundException);
@@ -285,6 +290,7 @@ describe("Album Service", () => {
 		it("should find the existing album (no artist)", async () => {
 			const fetchedAlbum = await albumService.getOrCreate({
 				name: dummyRepository.compilationAlbumA.name,
+				artists: [],
 				type: AlbumType.Compilation,
 			});
 
@@ -297,7 +303,7 @@ describe("Album Service", () => {
 			const fetchedAlbum = await albumService.getOrCreate({
 				name: dummyRepository.albumB1.name,
 				type: AlbumType.StudioRecording,
-				artist: { slug: new Slug(dummyRepository.artistB.slug) },
+				artists: [{ slug: new Slug(dummyRepository.artistB.slug) }],
 			});
 
 			expect(fetchedAlbum).toStrictEqual(dummyRepository.albumB1);
@@ -306,10 +312,10 @@ describe("Album Service", () => {
 		it("should create a new album", async () => {
 			const otherAlbum = await albumService.getOrCreate({
 				name: "My Third Compilation Album",
+				artists: [],
 				type: AlbumType.Compilation,
 			});
 
-			expect(otherAlbum.artistId).toBeNull();
 			expect(otherAlbum).not.toStrictEqual(newCompilationAlbum);
 			expect(otherAlbum).not.toStrictEqual(
 				dummyRepository.compilationAlbumA,
@@ -331,6 +337,7 @@ describe("Album Service", () => {
 		it("should delete the album", async () => {
 			const tmpAlbum = await albumService.create({
 				name: "1234",
+				artists: [],
 				type: AlbumType.StudioRecording,
 			});
 			await albumService.delete([{ id: tmpAlbum.id }]);

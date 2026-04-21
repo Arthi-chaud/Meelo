@@ -827,6 +827,9 @@ export default class SongService extends SearchableRepositoryService {
 		const { album, ...release } = await this.releaseService.get(where, {
 			album: true,
 		});
+		const artists = await this.artistService.getMany({
+			album: { is: { id: album.id } },
+		});
 
 		if (album.type !== AlbumType.StudioRecording) {
 			return [];
@@ -917,13 +920,25 @@ export default class SongService extends SearchableRepositoryService {
 											{
 												OR: [
 													...albumSongsBaseNames.map(
-														(slug) => ({
+														(
+															slug,
+														): Prisma.AlbumWhereInput => ({
 															nameSlug: {
 																startsWith:
 																	slug,
 															},
-															artistId:
-																album.artistId,
+															artists: {
+																every: {
+																	id: {
+																		in: artists.map(
+																			({
+																				id,
+																			}) =>
+																				id,
+																		),
+																	},
+																},
+															},
 															type: AlbumType.Single,
 														}),
 													),
@@ -1040,7 +1055,11 @@ export default class SongService extends SearchableRepositoryService {
 									every: {
 										release: {
 											album: {
-												artistId: { not: artist.id },
+												artists: {
+													none: {
+														id: artist.id,
+													},
+												},
 											},
 										},
 									},

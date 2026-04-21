@@ -22,7 +22,7 @@ import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import { AlbumType, TrackType } from "src/prisma/generated/client";
-import type { File } from "src/prisma/models";
+import type { Artist, File } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import Slug from "src/slug/slug";
@@ -87,13 +87,33 @@ export default class MetadataService {
 				this.genreService.getOrCreate({ name: genre }),
 			),
 		);
-		const albumArtist = !metadata.compilation
-			? await this.artistService.getOrCreate({
-					name: metadata.albumArtist ?? metadata.artist!,
-					sortName: metadata.sortAlbumArtist,
-					registeredAt: file.registerDate,
-				})
-			: undefined;
+		const albumArtists: Artist[] = [];
+		if (!metadata.compilation) {
+			if (metadata.albumArtist) {
+				const albumArtistsNames = metadata.albumArtist.split(";");
+				const albumArtistsSortNames =
+					metadata.sortAlbumArtist?.split(";") ?? [];
+				albumArtists.push(
+					...(await Promise.all(
+						albumArtistsNames.map((a, i) =>
+							this.artistService.getOrCreate({
+								name: a,
+								sortName: albumArtistsSortNames.at(i),
+								registeredAt: file.registerDate,
+							}),
+						),
+					)),
+				);
+			} else if (metadata.artist) {
+				albumArtists.push(
+					await this.artistService.getOrCreate({
+						name: metadata.artist,
+						sortName: metadata.sortArtist,
+						registeredAt: file.registerDate,
+					}),
+				);
+			}
+		}
 		const { name: parsedSongName, featuring: parsedFeaturingArtists } =
 			await this.parserService.extractFeaturedArtistsFromSongName(
 				metadata.name,
@@ -101,7 +121,10 @@ export default class MetadataService {
 		parsedFeaturingArtists.push(...(metadata.featuring ?? []));
 		let parsedArtistName = metadata.artist;
 
-		if (metadata.artist !== albumArtist?.name) {
+		if (
+			albumArtists.length > 1 ||
+			metadata.artist !== albumArtists.at(0)?.name
+		) {
 			const { artist, featuring } =
 				await this.parserService.extractFeaturedArtistsFromArtistName(
 					metadata.artist,
@@ -227,9 +250,7 @@ export default class MetadataService {
 					{
 						name: albumName!,
 						sortName: metadata.sortAlbum,
-						artist: albumArtist
-							? { id: albumArtist?.id }
-							: undefined,
+						artists: albumArtists.map(({ id }) => ({ id })),
 						registeredAt: file.registerDate,
 						releaseDate: metadata.albumReleaseDate,
 						type:
@@ -270,7 +291,7 @@ export default class MetadataService {
 		await this.saveLocalIdentifiers(
 			metadata,
 			songArtist.id,
-			albumArtist?.id,
+			albumArtists.map(({ id }) => id),
 			album?.id,
 			song?.id,
 			release?.id,
@@ -309,7 +330,7 @@ export default class MetadataService {
 				);
 			}
 			if (
-				albumArtist === undefined &&
+				albumArtists.length === 0 &&
 				release.album.type === AlbumType.StudioRecording
 			) {
 				await this.albumService.update(
@@ -379,7 +400,7 @@ export default class MetadataService {
 	private async saveLocalIdentifiers(
 		metadata: Metadata,
 		songArtistId: number,
-		albumArtistId: number | undefined,
+		albumArtistIds: number[],
 		albumId: number | undefined,
 		songId: number | undefined,
 		releaseId: number | undefined,
@@ -397,16 +418,21 @@ export default class MetadataService {
 			}),
 		);
 
-		if (albumArtistId && albumArtistId !== songArtistId) {
+		const albumArtistMbids = metadata.albumArtistMbid?.split(";") ?? [];
+		if (albumArtistMbids.length === albumArtistIds.length) {
 			promises.push(
-				this.prismaService.localIdentifiers.upsert({
-					create: {
-						musicbrainzId: metadata.albumArtistMbid ?? null,
-						artistId: albumArtistId,
-					},
-					update: { musicbrainzId: metadata.albumArtistMbid ?? null },
-					where: { artistId: albumArtistId },
-				}),
+				...albumArtistIds.map((albumArtistId, idx) =>
+					this.prismaService.localIdentifiers.upsert({
+						create: {
+							musicbrainzId: albumArtistMbids[idx],
+							artistId: albumArtistId,
+						},
+						update: {
+							musicbrainzId: albumArtistMbids[idx],
+						},
+						where: { artistId: albumArtistId },
+					}),
+				),
 			);
 		}
 

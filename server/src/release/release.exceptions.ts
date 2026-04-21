@@ -34,12 +34,8 @@ export class ReleaseNotFoundException extends NotFoundException {
 }
 
 export class ReleaseAlreadyExists extends AlreadyExistsException {
-	constructor(releaseSlug: Slug, artistSlug?: Slug) {
-		super(
-			`Release '${releaseSlug.toString()}' ${
-				artistSlug ? `by ${artistSlug.toString()} ` : ""
-			}already exists`,
-		);
+	constructor(releaseSlug: Slug) {
+		super(`Release '${releaseSlug.toString()}' already exists`);
 	}
 }
 

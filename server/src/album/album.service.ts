@@ -80,18 +80,16 @@ export default class AlbumService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		try {
-			const artist = album.artist
-				? await this.artistServce.get(album.artist)
-				: undefined;
-			return await this.get(
-				{
-					slug: new Slug(
-						artist?.name ?? compilationAlbumArtistKeyword,
-						album.name,
-					),
-				},
-				include,
+			const artists = await Promise.all(
+				album.artists.map((a) => this.artistServce.get(a)),
 			);
+			const slug = new Slug(
+				...(artists.length
+					? artists.map((a) => a.slug)
+					: [compilationAlbumArtistKeyword]),
+				album.name,
+			);
+			return await this.get({ slug }, include);
 		} catch {
 			return this.create(album);
 		}
@@ -101,36 +99,38 @@ export default class AlbumService extends SearchableRepositoryService {
 	 * Create an Album
 	 */
 	async create(album: AlbumQueryParameters.CreateInput) {
-		if (album.artist === undefined) {
-			if (
-				(await this.prismaService.album.count({
-					where: {
-						name: album.name,
-						artist: null,
-					},
-				})) !== 0
-			) {
-				throw new AlbumAlreadyExistsException(new Slug(album.name));
-			}
-		}
-		const artistSlug =
-			album.artist === undefined
-				? compilationAlbumArtistKeyword
-				: (await this.artistServce.get(album.artist)).slug;
+		const artists = album.artists
+			? await Promise.all(
+					album.artists.map((a) => this.artistServce.get(a)),
+				)
+			: [];
+
+		const artistSlugs = artists.length
+			? artists.map((a) => a.slug)
+			: [compilationAlbumArtistKeyword];
 		const albumNameSlug = new Slug(album.name).toString();
 		const albumSortName = album.sortName ?? getSortName(album.name);
+		const slug = new Slug(...artistSlugs, albumNameSlug).toString();
+		if (
+			(await this.prismaService.album.count({
+				where: {
+					name: album.name,
+					artists: {
+						every: { id: { in: artists.map(({ id }) => id) } },
+					},
+				},
+			})) !== 0
+		) {
+			throw new AlbumAlreadyExistsException(new Slug(slug));
+		}
 		return this.prismaService.album
 			.create({
 				data: {
 					name: album.name,
-					artist: album.artist
-						? {
-								connect: ArtistService.formatWhereInput(
-									album.artist,
-								),
-							}
-						: undefined,
-					slug: new Slug(artistSlug, albumNameSlug).toString(),
+					artists: {
+						connect: artists.map(({ id }) => ({ id })),
+					},
+					slug,
 					nameSlug: albumNameSlug,
 					sortName: albumSortName,
 					sortSlug: new Slug(albumSortName).toString(),
@@ -161,16 +161,8 @@ export default class AlbumService extends SearchableRepositoryService {
 			})
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					const albumSlug = new Slug(album.name);
-
-					if (album.artist) {
-						await this.artistServce.get(album.artist);
-					}
 					if (error.code === PrismaError.UniqueConstraintViolation) {
-						throw new AlbumAlreadyExistsException(
-							albumSlug,
-							album.artist?.slug ?? album.artist?.id,
-						);
+						throw new AlbumAlreadyExistsException(new Slug(slug));
 					}
 				}
 				throw new UnhandledORMErrorException(error, album);
@@ -444,8 +436,8 @@ export default class AlbumService extends SearchableRepositoryService {
 						},
 					},
 				})),
-				artist: {
-					isNot: filterToPrisma(
+				artists: {
+					none: filterToPrisma(
 						{ or: where.appearance.and },
 						ArtistService.formatWhereInput,
 					),
@@ -466,8 +458,8 @@ export default class AlbumService extends SearchableRepositoryService {
 								},
 							},
 						},
-						artist: {
-							isNot: where.appearance.not
+						artists: {
+							none: where.appearance.not
 								? undefined
 								: filterToPrisma(
 										where.appearance,
@@ -483,14 +475,16 @@ export default class AlbumService extends SearchableRepositoryService {
 			where.artist?.and?.find((a) => a.compilationArtist)
 		) {
 			query.push({
-				artist: null,
+				artists: { none: {} },
 			});
 		} else if (where.artist) {
 			query.push({
-				artist: filterToPrisma(
-					where.artist,
-					ArtistService.formatWhereInput,
-				),
+				artists: {
+					some: filterToPrisma(
+						where.artist,
+						ArtistService.formatWhereInput,
+					),
+				},
 			});
 		}
 		if (where.label?.and) {
@@ -580,12 +574,12 @@ export default class AlbumService extends SearchableRepositoryService {
 			case "name":
 				return [
 					{ sortSlug: sortingParameter.order },
-					{ artist: { sortSlug: "asc" } },
+					{ slug: "asc" },
 					{ id: "asc" },
 				];
 			case "artistName":
 				return [
-					{ artist: { slug: sortingParameter.order } },
+					{ slug: sortingParameter.order },
 					{ sortSlug: "asc" },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ id: "asc" },
@@ -603,7 +597,7 @@ export default class AlbumService extends SearchableRepositoryService {
 							nulls: "last",
 						},
 					},
-					{ artist: { sortSlug: "asc" } },
+					{ slug: "asc" },
 					{ sortSlug: "asc" },
 					{ id: "asc" },
 				];

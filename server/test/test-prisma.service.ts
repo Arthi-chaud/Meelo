@@ -220,7 +220,6 @@ export default class TestPrismaService extends PrismaService {
 						sortSlug: "my-album",
 						nameSlug: "my-album",
 
-						artists: [{ connect: { id: this.artistA.id } }],
 						releaseDate: new Date("2022"),
 					},
 					{
@@ -229,7 +228,6 @@ export default class TestPrismaService extends PrismaService {
 						nameSlug: "my-second-album",
 						sortName: "My Second Album",
 						sortSlug: "my-second-album",
-						artistId: this.artistB.id,
 					},
 					{
 						name: "My Compilation Album",
@@ -242,6 +240,19 @@ export default class TestPrismaService extends PrismaService {
 					},
 				],
 			});
+		await this.album.update({
+			where: { id: this.albumA1.id },
+			data: {
+				artists: { connect: { id: this.artistA.id } },
+			},
+		});
+
+		await this.album.update({
+			where: { id: this.albumB1.id },
+			data: {
+				artists: { connect: { id: this.artistB.id } },
+			},
+		});
 		[
 			this.releaseA1_1,
 			this.releaseA1_2,
