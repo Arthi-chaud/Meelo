@@ -30,7 +30,7 @@ class Artist(DataClassJsonMixin):
 class Album(DataClassJsonMixin):
     id: int
     name: str
-    artist: Optional[Artist] = None
+    artists: Optional[List[Artist]] = None
     type: AlbumType = AlbumType.OTHER
     release_date: Optional[str] = None
     local_identifiers: Optional[LocalIdentifiers] = None

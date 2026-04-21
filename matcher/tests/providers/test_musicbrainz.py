@@ -63,67 +63,66 @@ class TestMusicbrainz:
 
     @pytest.mark.asyncio(loop_scope="module")
     async def test_search_album(self, ctx, subtests):
-        scenarios: List[Tuple[str, str | None, str | None]] = [
-            ("Nova Tunes 01", None, "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
+        scenarios: List[Tuple[str, List[str], str | None]] = [
+            ("Nova Tunes 01", [], "a6875c2b-3fc2-34b2-9eb6-3b73578a8ea8"),
             # Test when is not actually various artist, but has type 'compilation'
-            ("Hotel Costes, Vol. 4", None, "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
-            ("Hotel Costes, Volume 4", None, "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
-            ("Hotel Costes: Best Of...", None, "16b9cdb4-1219-3bde-b538-b33fbf5d0626"),
-            # Test when is not actually various artist, but has type 'Soundtrack'
+            ("Hotel Costes, Vol. 4", [], "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
+            ("Hotel Costes, Volume 4", [], "ff53e2aa-5b80-3f67-b1d1-2e22582af2c2"),
+            ("Hotel Costes: Best Of...", [], "16b9cdb4-1219-3bde-b538-b33fbf5d0626"),
             (
                 "Challengers: Original Score",
-                None,
+                ["Trent Reznor", "Atticus Ross"],
                 "5f2a4d8a-3511-4656-9c9a-0ad5c604a421",
             ),
-            ("Protection", "Massive Attack", "ded46e46-788d-3c1f-b21b-9f5e9c37b1bc"),
+            ("Protection", ["Massive Attack"], "ded46e46-788d-3c1f-b21b-9f5e9c37b1bc"),
             # also use full artist name to match
-            ("Disco", "Kylie Minogue", "f01db7e3-63bb-4856-9581-0bf3b472447e"),
+            ("Disco", ["Kylie Minogue"], "f01db7e3-63bb-4856-9581-0bf3b472447e"),
             (
                 "Revolution In Me",
-                "Siobhan Donaghy",
+                ["Siobhan Donaghy"],
                 "80f800d3-8dd0-3f69-8ddd-fc1e42c55d4c",
             ),
-            ("M!ssundaztood", "P!nk", "1000b015-e841-3cc4-ab5b-f47931f574e3"),
-            ("Volumen Plus", "Björk", None),
-            ("Celebration", "Madonna", "bd252c17-ff32-4369-8e73-4d0a65a316bd"),
+            ("M!ssundaztood", ["P!nk"], "1000b015-e841-3cc4-ab5b-f47931f574e3"),
+            ("Volumen Plus", ["Björk"], None),
+            ("Celebration", ["Madonna"], "bd252c17-ff32-4369-8e73-4d0a65a316bd"),
             (
                 "GHV2 (Greatest Hits, Volume 2)",
-                "Madonna",
+                ["Madonna"],
                 "a0aa8b0a-5e10-3627-afde-7235b86042f6",
             ),
-            ## None of the releases have a date
-            ("Drive", "Peplab", "54d124d2-9fe5-3001-8e1f-195736ef70ad"),
             ## Test handling of 'vol.' acronyms
             (
                 "GHV2 (Greatest Hits, Vol. 2)",
-                "Madonna",
+                ["Madonna"],
                 "a0aa8b0a-5e10-3627-afde-7235b86042f6",
             ),
+            ## None of the releases have a date
+            ("Drive", ["Peplab"], "54d124d2-9fe5-3001-8e1f-195736ef70ad"),
             ## Test handling of '(Remixes)' Suffix
             (
                 "Love Profusion (Remixes)",
-                "Madonna",
+                ["Madonna"],
                 "618ac790-9456-3c5b-80ff-94a341c51aba",
             ),
             (
                 "American Life (Remixes)",
-                "Madonna",
+                ["Madonna"],
                 "2db09a30-3e77-3ada-ab03-5b9bff66c8a8",
             ),
             (
                 "Protection - Single",
-                "Massive Attack",
+                ["Massive Attack"],
                 "751030cb-44c8-3542-8e75-42b3e4f820fa",
             ),
             # Handle '&'
             (
                 "Sampladelic Relics And Dancefloor Oddities",
-                "Deee-Lite",
+                ["Deee-Lite"],
                 "3709277b-0466-325c-a822-d919133c88ee",
             ),
             (
                 "Sampladelic Relics & Dancefloor Oddities",
-                "Deee-Lite",
+                ["Deee-Lite"],
                 "3709277b-0466-325c-a822-d919133c88ee",
             ),
         ]

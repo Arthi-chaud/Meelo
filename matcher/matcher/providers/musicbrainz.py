@@ -115,8 +115,8 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
             SearchAlbumFeature(
-                lambda album_name, artist_name: self._search_album(
-                    album_name, artist_name
+                lambda album_name, artist_names: self._search_album(
+                    album_name, artist_names
                 )
             ),
             GetAlbumUrlFromIdFeature(
@@ -247,7 +247,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     async def _search_album(
         self,
         album_name: str,
-        artist_name: str | None,
+        artist_names: List[str],
     ) -> SearchResult | None:
         album_name = self._sanitise_acronyms(album_name)
         # TODO It's ugly, use an album_type variable from API
@@ -259,14 +259,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         )
         album_slug = to_slug(sanitised_album_name)
 
-        artist_slug = to_slug(artist_name) if artist_name else None
+        first_artist = artist_names[0] if len(artist_names) > 0 else None
         is_single = sanitised_album_name != album_name
         try:
             releases = (
                 await self._fetch(
                     "/release",
                     {
-                        "query": f"{sanitised_album_name.lower()} {f'arid:{self.compilation_artist_id()}' if not artist_name else f'artist:({artist_name.lower()})'}",
+                        "query": f"{sanitised_album_name.lower()} {f'arid:{self.compilation_artist_id()}' if not first_artist else f'artist:({first_artist.lower()})'}",
                         "limit": 20,
                     },
                 )
@@ -289,16 +289,25 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             undated_releases = [r for r in typed_releases if "date" not in r.keys()]
 
             def filter_by_artist(releases):
+                artist_slugs = [to_slug(a) for a in artist_names]
+
+                def release_artists_match(r: Any):
+                    if not len(artist_slugs):
+                        return False
+                    release_artists_slugs = [
+                        to_slug(a["artist"]["name"]) for a in r["artist-credit"]
+                    ] + [to_slug(a["name"]) for a in r["artist-credit"]]
+                    for s in artist_slugs:
+                        if s not in release_artists_slugs:
+                            return False
+                    return True
+
                 return [
                     r
                     for r in releases
                     if (
-                        (
-                            to_slug(r["artist-credit"][0]["artist"]["name"])
-                            == artist_slug
-                            or to_slug(r["artist-credit"][0]["name"]) == artist_slug
-                        )
-                        if artist_name
+                        release_artists_match(r)
+                        if len(artist_names) > 0
                         # Album artist is 'Various Artist'
                         else (
                             r["artist-credit"][0]["artist"]["id"]

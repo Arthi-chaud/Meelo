@@ -86,7 +86,7 @@ class GetArtistBirthArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
 
 
 class SearchAlbumFeature(
-    BaseFeature[ResourceName, ResourceName | None, Awaitable[SearchResult | None]]
+    BaseFeature[ResourceName, List[ResourceName], Awaitable[SearchResult | None]]
 ):
     pass
 

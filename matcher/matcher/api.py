@@ -125,7 +125,7 @@ class API:
 
     async def get_album(self, album_id: int, token: str | None = None) -> Album:
         json = await self._get(
-            f"/albums/{album_id}?with=artist,localIdentifiers", token
+            f"/albums/{album_id}?with=artists,localIdentifiers", token
         )
         return Album.schema().load(json)
 

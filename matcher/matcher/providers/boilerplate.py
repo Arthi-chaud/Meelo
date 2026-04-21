@@ -112,10 +112,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     # Album
     async def search_album(
-        self, album_name: str, artist_name: str | None
+        self, album_name: str, artist_names: List[str]
     ) -> SearchResult | None:
         f = self.get_feature(SearchAlbumFeature)
-        return await f.run(album_name, artist_name) if f else None
+        return await f.run(album_name, artist_names) if f else None
 
     def get_album_url_from_id(self, album_id: str) -> str | None:
         f = self.get_feature(GetAlbumUrlFromIdFeature)
