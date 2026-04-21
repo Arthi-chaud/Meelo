@@ -31,7 +31,6 @@ import { type Ref, useCallback, useMemo } from "react";
 import {
 	type GestureResponderEvent,
 	type LayoutChangeEvent,
-	Platform,
 	View,
 } from "react-native";
 import Animated, {
@@ -85,9 +84,7 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	tabBar: {
 		paddingTop: theme.gap(2),
-		// On android: the bottom bar is always visible, so we need padding
-		// On ios, it's visible only on gesture, so we ditch the padding to keep things immersive
-		paddingBottom: theme.gap(Platform.OS === "ios" ? 3 : 4),
+		paddingBottom: theme.gap(4),
 		flexDirection: "row",
 		backgroundColor: "transparent",
 
