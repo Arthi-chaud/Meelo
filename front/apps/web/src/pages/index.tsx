@@ -62,13 +62,13 @@ import TileRow from "~/components/tile/row";
 const newlyAddedAlbumsQuery = getAlbums(
 	{},
 	{ sortBy: "addDate", order: "desc" },
-	["artist", "illustration"],
+	["artists", "illustration"],
 );
 
 const newestAlbumsQuery = getAlbums(
 	{},
 	{ sortBy: "releaseDate", order: "desc" },
-	["artist", "illustration"],
+	["artists", "illustration"],
 );
 
 const newlyAddedArtistsQuery = getArtists(
@@ -98,7 +98,7 @@ const playHistoryQuery = getSongHistory([
 
 const albumRecommendations = (seed: number) =>
 	getAlbums({ random: seed, type: ["StudioRecording"] }, undefined, [
-		"artist",
+		"artists",
 		"genres",
 		"illustration",
 	]);
@@ -271,17 +271,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			const res = featuredAlbumsExternalMetadata.find(
 				({ data }) => data?.albumId === albumId,
 			);
-			if (res === undefined) {
-				if (
-					featuredAlbumsExternalMetadata.every(
-						({ data }) => data === null,
-					)
-				) {
-					return null;
-				}
-				return undefined;
-			}
-			return res.data;
+			return res?.data || null;
 		},
 		[featuredAlbumsExternalMetadata],
 	);

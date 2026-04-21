@@ -134,7 +134,7 @@ const ArtistSongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 									const formattedArtists = formatArtists(
 										song.artist,
 										song.featuring,
-										artist.data,
+										artist.data ? [artist.data] : [],
 									);
 									if (releaseName !== null) {
 										return `${formattedArtists} • ${releaseName}`;

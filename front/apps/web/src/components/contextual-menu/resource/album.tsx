@@ -32,7 +32,7 @@ import { ShareAlbumAction } from "~/components/actions/share";
 import { ContextualMenu } from "..";
 
 type AlbumContextualMenuProps = {
-	album: AlbumWithRelations<"artist">;
+	album: AlbumWithRelations<"artists">;
 };
 
 const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
@@ -51,9 +51,14 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 				],
 				[
 					GoToAlbumAction(props.album.slug),
-					...(props.album.artist
-						? [GoToArtistAction(props.album.artist.slug)]
-						: []),
+					...props.album.artists.map((artist) =>
+						GoToArtistAction(
+							artist.slug,
+							props.album.artists.length > 1
+								? artist.name
+								: undefined,
+						),
+					),
 				],
 				props.album.masterId
 					? [

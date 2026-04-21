@@ -51,7 +51,7 @@ const prepareSSR = (context: NextPageContext) => {
 		queries: [artistQuery(artistIdentifier)],
 		infiniteQueries: [
 			getAlbums({ artist: artistIdentifier }, sort, [
-				"artist",
+				"artists",
 				"illustration",
 			]),
 		],
@@ -92,7 +92,7 @@ const ArtistAlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 							library: libraries,
 						},
 						{ sortBy, order },
-						["artist", "illustration"],
+						["artists", "illustration"],
 					)
 				}
 			/>

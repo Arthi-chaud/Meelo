@@ -20,12 +20,25 @@ import type Artist from "@/models/artist";
 
 const formatArtists = (
 	artist: Pick<Artist, "name" | "id">,
-	featuring?: Pick<Artist, "name">[],
-	mainArtist?: Pick<Artist, "id"> | null,
+	featuring?: Pick<Artist, "name" | "id">[],
+	mainArtists?: Pick<Artist, "id">[] | null,
 ): string => {
+	mainArtists ??= [];
 	if (!featuring || featuring.length === 0) {
 		return artist.name;
 	}
+	if (mainArtists.length > 1) {
+		const mainArtistIds = mainArtists.map(({ id }) => id);
+		if (mainArtistIds.includes(artist.id)) {
+			return formatArtists(
+				artist,
+				featuring.filter(({ id }) => !mainArtistIds.includes(id)),
+				[artist],
+			);
+		}
+		return formatArtists(artist, featuring, []);
+	}
+	const mainArtist = mainArtists.at(0);
 	const nameLists = (
 		mainArtist?.id === artist.id
 			? (featuring ?? [])
@@ -41,5 +54,8 @@ const formatArtists = (
 		return formattedString;
 	}
 };
+
+export const formatArtists_ = (artists: Pick<Artist, "name" | "id">[]) =>
+	formatArtists(artists[0], artists.slice(1));
 
 export default formatArtists;

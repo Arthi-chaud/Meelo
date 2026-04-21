@@ -33,10 +33,10 @@ type SongGridProps = {
 		| SongWithRelations<"artist" | "featuring" | "master" | "illustration">
 		| undefined
 	)[];
-	parentArtist?: Artist | null;
+	parentArtists?: Artist[] | undefined;
 };
 
-const SongGrid = ({ songs, parentArtist }: SongGridProps) => {
+const SongGrid = ({ songs, parentArtists }: SongGridProps) => {
 	const playTracks = useSetAtom(playTracksAtom);
 	const playSong = useCallback(
 		(index: number) => {
@@ -73,13 +73,14 @@ const SongGrid = ({ songs, parentArtist }: SongGridProps) => {
 						title={song?.name}
 						secondTitle={
 							song
-								? parentArtist?.id === song.artist.id &&
+								? parentArtists?.at(0)?.id === song.artist.id &&
+									parentArtists.length === 1 &&
 									song.featuring.length === 0
 									? null
 									: formatArtists(
 											song.artist,
 											song.featuring,
-											parentArtist,
+											parentArtists,
 										)
 								: undefined
 						}

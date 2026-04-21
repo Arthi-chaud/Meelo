@@ -26,7 +26,7 @@ import { MasterIcon, UpgradeIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { DownloadReleaseAction } from "~/components/actions/download";
 import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
-import { GoToAlbumAction, GoToArtistAction } from "~/components/actions/link";
+import { GoToAlbumAction } from "~/components/actions/link";
 import { PlayReleaseAction } from "~/components/actions/play-album";
 import { AddToPlaylistAction } from "~/components/actions/playlist";
 import { RefreshAlbumMetadataAction } from "~/components/actions/refresh-metadata";
@@ -91,12 +91,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 		<ContextualMenu
 			actions={[
 				[PlayReleaseAction(props.release.id, queryClient)],
-				[
-					...(props.release.album.artistId
-						? [GoToArtistAction(props.release.album.artistId)]
-						: []),
-					GoToAlbumAction(props.release.album.id),
-				],
+				[GoToAlbumAction(props.release.album.id)],
 				[
 					AddToPlaylistAction(
 						{ releaseId: props.release.id },

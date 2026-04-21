@@ -33,13 +33,14 @@ import type { AlbumExternalMetadata } from "@/models/external-metadata";
 import type Genre from "@/models/genre";
 import { PlayIcon } from "@/ui/icons";
 import { useAccentColor } from "@/utils/accent-color";
+import { formatArtists_ } from "@/utils/format-artists";
 import { generateArray } from "@/utils/gen-list";
 import { useQueryClient } from "~/api";
 import Illustration from "~/components/illustration";
 import { PlayReleaseAction } from "./actions/play-album";
 
 type HighlightCardProps = {
-	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
+	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
 	genres: Genre[] | undefined;
 	externalMetadata: AlbumExternalMetadata | null | undefined;
 };
@@ -153,11 +154,11 @@ const AlbumHighlightCard = ({
 									{album?.name ?? <Skeleton variant="text" />}
 								</Typography>
 
-								{album?.artist !== null && (
+								{(!album || album.artists.length) && (
 									<Link
 										href={
 											album
-												? `/artists/${album.artist.slug}`
+												? `/artists/${album.artists[0].slug}`
 												: {}
 										}
 									>
@@ -175,7 +176,7 @@ const AlbumHighlightCard = ({
 											}}
 										>
 											{album ? (
-												album.artist?.name
+												formatArtists_(album.artists)
 											) : (
 												<Skeleton variant="text" />
 											)}

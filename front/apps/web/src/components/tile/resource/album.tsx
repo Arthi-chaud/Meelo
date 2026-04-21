@@ -19,13 +19,14 @@
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import { AlbumIcon } from "@/ui/icons";
+import { formatArtists_ } from "@/utils/format-artists";
 import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
 import Illustration from "~/components/illustration";
 import Tile from "~/components/tile";
 
 const AlbumTile = (props: {
-	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
-	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
+	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
+	formatSubtitle?: (album: AlbumWithRelations<"artists">) => string;
 	onClick?: () => void;
 }) => {
 	const { t } = useTranslation();
@@ -40,16 +41,17 @@ const AlbumTile = (props: {
 				props.album === undefined
 					? undefined
 					: (props.formatSubtitle?.call(this, props.album) ??
-						props.album?.artist?.name ??
-						t("compilationArtistLabel"))
+						(props.album.artists.length
+							? formatArtists_(props.album.artists)
+							: t("compilationArtistLabel")))
 			}
 			onClick={props.onClick}
 			href={props.album ? `/albums/${props.album.slug}` : undefined}
 			secondaryHref={
 				props.album
 					? !props.formatSubtitle
-						? props.album.artist?.slug
-							? `/artists/${props.album.artist.slug}`
+						? props.album.artists.length
+							? `/artists/${props.album.artists[0].slug}`
 							: undefined
 						: undefined
 					: undefined

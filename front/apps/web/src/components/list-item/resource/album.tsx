@@ -19,13 +19,14 @@
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import { AlbumIcon } from "@/ui/icons";
+import { formatArtists_ } from "@/utils/format-artists";
 import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
 
 type AlbumItemProps = {
-	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
-	formatSubtitle?: (album: AlbumWithRelations<"artist">) => string;
+	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
+	formatSubtitle?: (album: AlbumWithRelations<"artists">) => string;
 	onClick?: () => void;
 };
 
@@ -35,8 +36,10 @@ type AlbumItemProps = {
  * @returns
  */
 const AlbumItem = ({ album, formatSubtitle, onClick }: AlbumItemProps) => {
-	const artist = album?.artist;
 	const { t } = useTranslation();
+	const artistNames = album?.artists.length
+		? formatArtists_(album.artists)
+		: t("compilationArtistLabel");
 
 	return (
 		<ListItem
@@ -52,9 +55,7 @@ const AlbumItem = ({ album, formatSubtitle, onClick }: AlbumItemProps) => {
 			title={album?.name}
 			secondTitle={
 				album
-					? (formatSubtitle?.call(this, album) ??
-						artist?.name ??
-						t("compilationArtistLabel"))
+					? (formatSubtitle?.call(this, album) ?? artistNames)
 					: undefined
 			}
 			trailing={album && <AlbumContextualMenu album={album} />}

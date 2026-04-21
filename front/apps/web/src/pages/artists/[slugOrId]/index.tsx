@@ -104,7 +104,7 @@ const appearanceQuery = (artistSlugOrId: string | number) =>
 	getAlbums(
 		{ appearance: artistSlugOrId },
 		{ sortBy: "releaseDate", order: "desc" },
-		["artist", "illustration"],
+		["artists", "illustration"],
 	);
 
 const prepareSSR = (context: NextPageContext) => {

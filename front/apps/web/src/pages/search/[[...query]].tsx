@@ -43,7 +43,7 @@ import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
 import { SearchIcon } from "@/ui/icons";
-import formatArtists from "@/utils/format-artists";
+import formatArtists, { formatArtists_ } from "@/utils/format-artists";
 import { useAPI, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
 import InfiniteList from "~/components/infinite/list";
@@ -71,7 +71,7 @@ const prepareSSR = (context: NextPageContext) => {
 							"illustration",
 						]),
 						getAlbums({ query: searchQuery }, undefined, [
-							"artist",
+							"artists",
 							"illustration",
 						]),
 						getSongs({ query: searchQuery }, undefined, [
@@ -255,8 +255,9 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								album={item?.album}
 								formatSubtitle={(album) =>
 									`${t("models.album")} • ${
-										album.artist?.name ??
-										t("compilationArtistLabel")
+										album.artists.length
+											? formatArtists_(album.artists)
+											: t("compilationArtistLabel")
 									}`
 								}
 							/>
@@ -340,7 +341,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								library: libraries,
 							},
 							undefined,
-							["artist", "illustration"],
+							["artists", "illustration"],
 						)
 					}
 				/>
