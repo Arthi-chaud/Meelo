@@ -53,8 +53,10 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
         self.features = [
             GetMusicBrainzRelationKeyFeature(lambda: "genius"),
             IsMusicBrainzRelationFeature(
-                lambda rel: rel["type"] == "lyrics"
-                and urlparse(rel["url"]["resource"]).netloc == "genius.com"
+                lambda rel: (
+                    rel["type"] == "lyrics"
+                    and urlparse(rel["url"]["resource"]).netloc == "genius.com"
+                )
             ),
             SearchArtistFeature(lambda artist_name: self._search_artist(artist_name)),
             GetArtistIdFromUrlFeature(
@@ -217,6 +219,8 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
     def _get_artist_illustration_url(self, artist: Any) -> str | None:
         try:
             imageUrl = artist["image_url"]
+            if "default_cover_image" in imageUrl:
+                return None
             if "default_avatar" in imageUrl:
                 return None
             return imageUrl
