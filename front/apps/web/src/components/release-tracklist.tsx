@@ -48,7 +48,7 @@ import {
 	type TrackState,
 } from "@/state/player";
 import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/ui/icons";
-import formatArtists from "@/utils/format-artists";
+import formatArtists, { shouldShowArtists } from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
@@ -74,7 +74,6 @@ const ReleaseTrackList = ({
 }: ReleaseTracklistProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
-	const mainArtistIds = mainArtists?.map(({ id }) => id);
 	const PlayingIcon = () => (
 		<PlayIcon
 			style={{
@@ -94,21 +93,14 @@ const ReleaseTrackList = ({
 	const flatTracklist = tracklist
 		? Array.from(Object.values(tracklist)).flat()
 		: undefined;
-	const showSubtitle = (song: { artist: Artist; featuring?: Artist[] }) => {
-		return !(
-			mainArtistIds?.includes(song.artist.id) &&
-			mainArtistIds.length === (song.featuring?.length ?? 0) + 1 &&
-			song.featuring?.findIndex(
-				({ id }) => !mainArtistIds.includes(id),
-			) === -1
-		);
-	};
 
 	const formatTracksubtitle = (song: {
 		artist: Artist;
 		featuring?: Artist[];
 	}) => {
-		if (!showSubtitle(song)) {
+		if (
+			!shouldShowArtists(song.artist, song.featuring ?? [], mainArtists)
+		) {
 			return undefined;
 		}
 		return formatArtists(song.artist, song.featuring, mainArtists);
@@ -195,9 +187,13 @@ const ReleaseTrackList = ({
 										mainArtists === undefined
 											? false
 											: currentTrack
-												? showSubtitle(
+												? shouldShowArtists(
 														(currentTrack.song ??
-															currentTrack.video)!,
+															currentTrack.video)!
+															.artist,
+														currentTrack.song
+															?.featuring ?? [],
+														mainArtists,
 													)
 												: false
 									}

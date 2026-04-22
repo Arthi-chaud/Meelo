@@ -58,4 +58,19 @@ const formatArtists = (
 export const formatArtists_ = (artists: Pick<Artist, "name" | "id">[]) =>
 	formatArtists(artists[0], artists.slice(1));
 
+export const shouldShowArtists = <A extends Pick<Artist, "id">>(
+	artist: A,
+	featuringArtists: A[],
+	referenceArtists: A[] | undefined,
+) => {
+	const referenceArtistIds = referenceArtists?.map(({ id }) => id);
+	return !(
+		referenceArtistIds?.includes(artist.id) &&
+		referenceArtistIds.length === (featuringArtists?.length ?? 0) + 1 &&
+		featuringArtists?.findIndex(
+			({ id }) => !referenceArtistIds.includes(id),
+		) === -1
+	);
+};
+
 export default formatArtists;
