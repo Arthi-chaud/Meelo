@@ -27,13 +27,18 @@ import {
 export type Action = {
 	icon: IconType;
 	label: TranslationKey;
+	subtitle?: string;
 	onPress?: () => void;
 	href?: Href;
 	disabled?: boolean;
 };
 
-export const GoToArtist = (artistId: string | number): Action => ({
+export const GoToArtist = (
+	artistId: string | number,
+	artistName?: string,
+): Action => ({
 	label: "actions.goToArtist",
+	subtitle: artistName,
 	icon: ArtistIcon,
 	href: `/artists/${artistId}`,
 });

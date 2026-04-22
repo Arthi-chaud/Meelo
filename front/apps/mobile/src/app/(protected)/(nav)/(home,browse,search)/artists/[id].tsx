@@ -43,7 +43,7 @@ const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
 	getAlbums(
 		{ artist: artistId, type: [albumType] },
 		{ sortBy: "releaseDate", order: "desc" },
-		["illustration", "artist"],
+		["illustration", "artists"],
 	);
 
 // Note: we show the 'seeMore' button for song grids and video rows iff there's more items than ShowSeeMoreThreshold
@@ -61,7 +61,7 @@ type ArtistPageSection =
 	| {
 			type: "albumRow";
 			props: ComponentProps<
-				typeof Row<AlbumWithRelations<"illustration" | "artist">>
+				typeof Row<AlbumWithRelations<"illustration" | "artists">>
 			>;
 	  }
 	| {
@@ -178,7 +178,7 @@ export default function ArtistView() {
 		getAlbums(
 			{ appearance: artistId },
 			{ sortBy: "releaseDate", order: "desc" },
-			["artist", "illustration"],
+			["artists", "illustration"],
 		),
 	);
 	const { data: externalMetadata } = useQuery(
@@ -218,7 +218,7 @@ export default function ArtistView() {
 			type: "songGrid",
 			props: {
 				header: t("artist.topSongs"),
-				parentArtistId: artist?.id,
+				mainArtists: artist ? [artist] : undefined,
 				hideIfEmpty: true,
 				style: styles.section,
 				seeMore:
@@ -259,7 +259,7 @@ export default function ArtistView() {
 
 				style: styles.section,
 				songs: rareSongs.data?.pages.at(0)?.items,
-				parentArtistId: artist?.id,
+				mainArtists: artist ? [artist] : undefined,
 				subtitle: !rareSongs.data
 					? null
 					: (song) =>

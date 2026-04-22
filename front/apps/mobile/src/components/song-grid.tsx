@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ScrollView, View, type ViewStyle } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import type Artist from "@/models/artist";
 import type { SongWithRelations } from "@/models/song";
 import { playTracksAtom, type TrackState } from "@/state/player";
 import { generateArray } from "@/utils/gen-list";
@@ -29,7 +30,7 @@ export type SongGridProps = {
 	header?: string;
 	hideIfEmpty?: true;
 	illustrationProps?: ComponentProps<typeof ListItem>["illustrationProps"];
-	parentArtistId?: number;
+	mainArtists?: Artist[];
 	subtitle: null | ((song: Song) => "artists" | null);
 };
 
@@ -42,7 +43,7 @@ export const SongGrid = ({
 	illustrationProps,
 	hideIfEmpty,
 	seeMore,
-	parentArtistId,
+	mainArtists,
 	...props
 }: SongGridProps) => {
 	const playTracks = useSetAtom(playTracksAtom);
@@ -119,7 +120,7 @@ export const SongGrid = ({
 								>
 									<SongItem
 										song={item}
-										parentArtistId={parentArtistId}
+										mainArtists={mainArtists}
 										subtitle={
 											subtitle === null
 												? null

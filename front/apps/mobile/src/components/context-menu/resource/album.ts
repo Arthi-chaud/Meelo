@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getCurrentUserStatus } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { getYear } from "@/utils/date";
+import { formatArtists_ } from "@/utils/format-artists";
 import {
 	ChangeType,
 	GoToArtist,
@@ -22,7 +23,7 @@ import type {
 //TODO Refresh Metadata
 
 export const useAlbumContextMenu = (
-	album: AlbumWithRelations<"artist" | "illustration"> | undefined,
+	album: AlbumWithRelations<"artists" | "illustration"> | undefined,
 ): ContextMenuBuilder => {
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const { t } = useTranslation();
@@ -33,7 +34,10 @@ export const useAlbumContextMenu = (
 		if (!album) {
 			return undefined;
 		}
-		const artistName = album.artist?.name ?? t("compilationArtistLabel");
+		const artistName =
+			album.artists.length > 0
+				? formatArtists_(album.artists)
+				: t("compilationArtistLabel");
 		if (album.releaseDate) {
 			return [artistName, getYear(album.releaseDate)?.toString()].join(
 				" • ",
@@ -49,8 +53,8 @@ export const useAlbumContextMenu = (
 		if (album?.masterId) {
 			goToItems.push(GoToRelease(album.masterId));
 		}
-		if (album?.artistId) {
-			goToItems.push(GoToArtist(album.artistId));
+		for (const artist of album?.artists ?? []) {
+			goToItems.push(GoToArtist(artist.id, artist.name));
 		}
 		return {
 			header: {

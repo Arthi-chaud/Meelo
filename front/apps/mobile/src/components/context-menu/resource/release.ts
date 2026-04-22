@@ -43,10 +43,11 @@ export const useReleaseContextMenu = (
 			disabled: !release,
 			onPress: () => {
 				queryClient
-					.fetchQuery(getAlbum(release!.albumId))
+					.fetchQuery(getAlbum(release!.albumId, ["artists"]))
 					.then(
-						({ artistId }) =>
-							artistId && router.navigate(`/artists/${artistId}`),
+						({ artists }) =>
+							artists.length > 0 &&
+							router.navigate(`/artists/${artists[0].id}`),
 					);
 			},
 		} satisfies Action;

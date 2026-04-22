@@ -37,6 +37,7 @@ import {
 import { songTypeToTranslationKey } from "@/models/utils";
 import { playFromInfiniteQuery, playTrackAtom } from "@/state/player";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
+import { shouldShowArtists } from "@/utils/format-artists";
 import { getRandomNumber } from "@/utils/random";
 import type { Action } from "~/actions";
 import { useQuery, useQueryClient } from "~/api";
@@ -125,20 +126,17 @@ export default function SongBrowseView() {
 			// If song's artist matches the main song's artist
 			// + if there is no featuring, don;t display artist name
 			if (
-				songItem.featuring.length === 0 &&
-				songItem.artistId === song?.artistId
-			) {
-				return null;
-			}
-			if (
-				songItem.featuring.length > 0 ||
-				songItem.artistId !== artist?.id
+				shouldShowArtists(
+					songItem.artist,
+					songItem.featuring,
+					artist ? [artist] : [],
+				)
 			) {
 				return "artists";
 			}
 			return null;
 		},
-		[artistId, rareArtistId, song],
+		[artistId, rareArtistId, song, artist],
 	);
 	const getQuery = useCallback(
 		(random?: number) => {
@@ -266,7 +264,11 @@ export default function SongBrowseView() {
 				render={(songItem, idx, songs) => (
 					<SongItem
 						song={songItem}
-						parentArtistId={artist?.id ?? song?.artistId}
+						mainArtists={
+							artist || song
+								? [artist ?? song!.artist]
+								: undefined
+						}
 						onPress={() => onItemPress(idx, songs)}
 						subtitle={subtitle(songItem)}
 						illustrationProps={{}}

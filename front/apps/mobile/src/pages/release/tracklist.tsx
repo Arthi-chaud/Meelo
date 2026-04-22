@@ -3,11 +3,12 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import type Artist from "@/models/artist";
 import type { Disc } from "@/models/disc";
 import type { TracklistItemWithRelations } from "@/models/tracklist";
 import { PlayIcon, VideoIcon } from "@/ui/icons";
 import { formatDiscName } from "@/ui/pages/release";
-import formatArtists from "@/utils/format-artists";
+import formatArtists, { shouldShowArtists } from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { ContextMenuButton, useContextMenu } from "~/components/context-menu";
 import { useSongContextMenu } from "~/components/context-menu/resource/song";
@@ -24,12 +25,12 @@ export const TrackItem = ({
 	track,
 	onPress,
 	maxTrackIndex,
-	albumArtistId,
+	albumArtists,
 }: {
 	track: TrackType | undefined;
 	maxTrackIndex: number;
 	onPress: () => void;
-	albumArtistId: number | null | undefined;
+	albumArtists: Artist[] | undefined;
 }) => {
 	const currentTrack = useAtomValue(currentTrackAtom);
 	//Note: Instead of using track context menu
@@ -110,19 +111,18 @@ export const TrackItem = ({
 					variant="body"
 				/>
 				{(track?.song ?? track?.video) !== undefined &&
-					albumArtistId !== undefined &&
-					((track?.song ?? track?.video)!.artistId !==
-						albumArtistId ||
-						(track?.song?.featuring.length ?? 0) > 0) && (
+					shouldShowArtists(
+						(track?.song ?? track?.video)!.artist,
+						track?.song?.featuring ?? [],
+						albumArtists,
+					) && (
 						<LoadableText
 							content={
 								track?.song
 									? formatArtists(
 											track.song.artist,
 											track.song.featuring,
-											albumArtistId
-												? { id: albumArtistId }
-												: undefined,
+											albumArtists,
 										)
 									: track?.video?.artist.name
 							}

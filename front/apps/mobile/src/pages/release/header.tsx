@@ -8,12 +8,14 @@ import type { AlbumWithRelations } from "@/models/album";
 import type { ReleaseWithRelations } from "@/models/release";
 import { PlayIcon, ShuffleIcon } from "@/ui/icons";
 import { formatReleaseDate, useReleaseDate } from "@/ui/pages/release";
+import { formatArtists_ } from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { useQuery } from "~/api";
 import { ContextMenuButton } from "~/components/context-menu";
 import { useReleaseContextMenu } from "~/components/context-menu/resource/release";
 import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
+import { usePickArtistModal } from "~/components/pick-artist";
 import { Rating } from "~/components/rating";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
@@ -30,7 +32,7 @@ export const Header = ({
 }: {
 	isMixed: boolean | undefined;
 	release: ReleaseWithRelations<"illustration"> | undefined;
-	album: AlbumWithRelations<"artist"> | undefined;
+	album: AlbumWithRelations<"artists"> | undefined;
 	totalDuration: number | null | undefined;
 	playButtonCallback: () => void;
 	shuffleButtonCallback: () => void;
@@ -45,6 +47,9 @@ export const Header = ({
 	const { data: externalMetadata } = useQuery(
 		(albumId) => getAlbumExternalMetadata(albumId),
 		album?.id,
+	);
+	const { openModal: openPickArtistModal } = usePickArtistModal(
+		album?.artists,
 	);
 	const dateAndDuration = useDateAndDuration(releaseDate, totalDuration);
 	const extensions = useMemo(() => {
@@ -78,16 +83,29 @@ export const Header = ({
 						numberOfLines={3}
 						variant="h2"
 					/>
-					{(!album || album.artist) && (
+					{(!album || album.artists.length > 0) && (
 						<Pressable
 							style={styles.headerArtistName}
-							onPress={() =>
-								router.navigate(`/artists/${album?.artist?.id}`)
-							}
+							onPress={() => {
+								if (!album) {
+									return;
+								}
+								if (album?.artists.length === 1) {
+									router.navigate(
+										`/artists/${album?.artists[0].id}`,
+									);
+								} else {
+									openPickArtistModal();
+								}
+							}}
 						>
 							<LoadableText
 								style={styles.headerText}
-								content={album?.artist?.name}
+								content={
+									album
+										? formatArtists_(album.artists)
+										: undefined
+								}
 								numberOfLines={1}
 								skeletonWidth={10}
 								variant="h4"

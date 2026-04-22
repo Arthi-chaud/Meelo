@@ -11,7 +11,7 @@ import {
 	getLabels,
 	getPlaylists,
 } from "@/api/queries";
-import type Album from "@/models/album";
+import type { AlbumWithRelations } from "@/models/album";
 import type Genre from "@/models/genre";
 import type Label from "@/models/label";
 import type { ReleaseWithRelations } from "@/models/release";
@@ -19,6 +19,7 @@ import type { SongWithRelations } from "@/models/song";
 import type { VideoWithRelations } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
 import { useBSidesAndExtras, useLabels, useVideos } from "@/ui/pages/release";
+import { shouldShowArtists } from "@/utils/format-artists";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import {
@@ -94,14 +95,13 @@ export const renderFooterSection = ({ type, props }: FooterSection) => {
 export const useFooter = ({
 	album,
 	release,
-	albumArtistId,
 	tracks,
 }: {
-	album: Album | undefined;
+	album: AlbumWithRelations<"artists"> | undefined;
 	release: ReleaseWithRelations<"label"> | undefined;
-	albumArtistId: number | undefined | null;
 	tracks: TrackType[];
 }): FooterSection[] => {
+	const mainArtistsIds = album?.artists.map(({ id }) => id);
 	const releaseId = release?.id;
 	const playTracks = useSetAtom(playTracksAtom);
 	const { t } = useTranslation();
@@ -211,18 +211,22 @@ export const useFooter = ({
 				style: styles.section,
 				header: t("album.bonusTracks"),
 				// Avoid shift when bsides are loaded before main artist
-				songs: albumArtistId === undefined ? undefined : bSides,
-				parentArtistId: albumArtistId ?? undefined,
-				subtitle: !bSides
-					? null
-					: (song) =>
-							song.artistId === albumArtistId &&
-							song.featuring.length === 0
-								? null
-								: "artists",
+				songs: album !== undefined ? bSides : undefined,
+				mainArtists: album?.artists,
+				subtitle:
+					!bSides || !album
+						? null
+						: (song) =>
+								shouldShowArtists(
+									song.artist,
+									song.featuring,
+									album.artists ?? [],
+								)
+									? "artists"
+									: null,
 			},
 		}),
-		[albumArtistId, bSides],
+		[album, bSides],
 	);
 	const releasesSection: FooterSection = useMemo(
 		() => ({
@@ -315,15 +319,15 @@ export const useFooter = ({
 				header: t("album.onThisAlbum"),
 				items:
 					// We don't want to list them until we know who the album artist is
-					albumArtistId === undefined
+					album === undefined
 						? undefined
 						: featuringArtists?.filter(
-								({ id }) => id !== albumArtistId,
+								({ id }) => !mainArtistsIds?.includes(id),
 							),
 				render: (artist) => <ArtistTile artist={artist as any} />,
 			},
 		}),
-		[albumArtistId, featuringArtists],
+		[album, featuringArtists],
 	);
 	const playlistsSection: FooterSection = useMemo(
 		() => ({

@@ -2,12 +2,13 @@ import { type ComponentProps, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { AlbumWithRelations } from "@/models/album";
 import { getYear } from "@/utils/date";
+import { formatArtists_ } from "@/utils/format-artists";
 import { useAlbumContextMenu } from "~/components/context-menu/resource/album";
 import { ListItem } from "../list-item";
 import { Tile } from "../tile";
 
 type Props = {
-	album: AlbumWithRelations<"artist" | "illustration"> | undefined;
+	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
 	subtitle: "artistName" | "year";
 	illustrationProps?: ComponentProps<typeof Tile>["illustrationProps"];
 	onPress?: () => void;
@@ -81,7 +82,11 @@ const useFormattedSubtitle = ({
 			return f(getYear(album.releaseDate)?.toString() ?? "");
 		}
 		if (subtitle === "artistName") {
-			return f(album.artist?.name ?? t("compilationArtistLabel"));
+			return f(
+				album.artists.length > 0
+					? formatArtists_(album.artists)
+					: t("compilationArtistLabel"),
+			);
 		}
 		return null;
 	}, [subtitle, formatSubtitle, album]);

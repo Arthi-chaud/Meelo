@@ -178,7 +178,7 @@ const useSearchQuery = (
 				case "album":
 					query = transformPage(
 						getAlbums({ query: searchValue }, undefined, [
-							"artist",
+							"artists",
 							"illustration",
 						]),
 						(album): SearchResult => ({ album }),
