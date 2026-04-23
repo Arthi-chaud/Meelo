@@ -48,7 +48,7 @@
 		"http-proxy-middleware": "^3.0.5",
 		"md5": "^2.3.0",
 		"meilisearch": "^0.56.0",
-		"mime": "^3.0.0",
+		"mime": "^4.0.0",
 		"nestjs-form-data": "^11.0.1",
 		"nestjs-meilisearch": "^3.0.0",
 		"normalize-path": "^3.0.0",
