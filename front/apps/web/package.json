@@ -43,7 +43,7 @@
 		"react-use": "^17.6.0",
 		"type-fest": "^5.5.0",
 		"usehooks-ts": "^3.0.0",
-		"uuid": "^13.0.0"
+		"uuid": "^14.0.0"
 	},
 	"devDependencies": {
 		"@types/accept-language-parser": "^1.5.3",
