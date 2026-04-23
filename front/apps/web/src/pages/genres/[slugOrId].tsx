@@ -53,7 +53,7 @@ const prepareSSR = (context: NextPageContext) => {
 		queries: [getGenre(genreIdentifier)],
 		infiniteQueries: [
 			getAlbums({ genre: genreIdentifier }, defaultQuerySortParams, [
-				"artist",
+				"artists",
 				"illustration",
 			]),
 			getArtists({ genre: genreIdentifier }, defaultQuerySortParams, [
@@ -158,7 +158,7 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								library: libraries,
 							},
 							{ sortBy, order },
-							["artist", "illustration"],
+							["artists", "illustration"],
 						)
 					}
 				/>

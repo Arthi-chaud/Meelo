@@ -48,7 +48,7 @@ import {
 	type TrackState,
 } from "@/state/player";
 import { ContextualMenuIcon, PlayIcon, VideoIcon } from "@/ui/icons";
-import formatArtists from "@/utils/format-artists";
+import formatArtists, { shouldShowArtists } from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
 import ReleaseTrackContextualMenu from "~/components/contextual-menu/resource/release-track";
@@ -59,7 +59,7 @@ type TrackType = TrackWithRelations<"illustration"> &
 		video: VideoWithRelations<"artist">;
 	}>;
 type ReleaseTracklistProps = {
-	mainArtist: Artist | undefined | null;
+	mainArtists: Artist[] | undefined;
 	tracklist: Tracklist<TrackType> | undefined;
 	release: ReleaseWithRelations<"discs"> | undefined;
 };
@@ -70,7 +70,7 @@ type ReleaseTracklistProps = {
 const ReleaseTrackList = ({
 	tracklist,
 	release,
-	mainArtist,
+	mainArtists,
 }: ReleaseTracklistProps) => {
 	const { t } = useTranslation();
 	const theme = useTheme();
@@ -93,15 +93,17 @@ const ReleaseTrackList = ({
 	const flatTracklist = tracklist
 		? Array.from(Object.values(tracklist)).flat()
 		: undefined;
+
 	const formatTracksubtitle = (song: {
-		artistId: number;
 		artist: Artist;
 		featuring?: Artist[];
 	}) => {
-		if (song.artistId === mainArtist?.id && !song.featuring?.length) {
+		if (
+			!shouldShowArtists(song.artist, song.featuring ?? [], mainArtists)
+		) {
 			return undefined;
 		}
-		return formatArtists(song.artist, song.featuring, mainArtist);
+		return formatArtists(song.artist, song.featuring, mainArtists);
 	};
 	// Note, at this point disc index is a string /shrug
 	const formatDisc = (discIndex: string) => {
@@ -182,13 +184,17 @@ const ReleaseTrackList = ({
 							<Fragment key={index}>
 								<ListItem
 									dense={
-										mainArtist === undefined
+										mainArtists === undefined
 											? false
 											: currentTrack
-												? (currentTrack.song ??
-														currentTrack.video)!
-														.artistId !==
-													mainArtist?.id
+												? shouldShowArtists(
+														(currentTrack.song ??
+															currentTrack.video)!
+															.artist,
+														currentTrack.song
+															?.featuring ?? [],
+														mainArtists,
+													)
 												: false
 									}
 									disablePadding
@@ -304,7 +310,7 @@ const ReleaseTrackList = ({
 												},
 											}}
 											secondary={
-												mainArtist === undefined
+												mainArtists === undefined
 													? null
 													: currentTrack
 														? formatTracksubtitle(

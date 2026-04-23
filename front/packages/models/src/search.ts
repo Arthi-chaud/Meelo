@@ -24,7 +24,7 @@ import { VideoWithRelations } from "./video";
 
 export type SearchResult = RequireExactlyOne<{
 	song: SongWithRelations<"artist" | "featuring" | "illustration" | "master">;
-	album: AlbumWithRelations<"artist" | "illustration">;
+	album: AlbumWithRelations<"artists" | "illustration">;
 	artist: ArtistWithRelations<"illustration">;
 	video: VideoWithRelations<"illustration" | "master" | "artist">;
 }>;
@@ -62,7 +62,7 @@ export const SearchResultTransformer = (
 			if ("masterId" in result) {
 				return {
 					album: await AlbumWithRelations([
-						"artist",
+						"artists",
 						"illustration",
 					] as const).validate(result),
 				};

@@ -157,6 +157,10 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 					variant="subtitle"
 					style={item.disabled ? styles.disabled : undefined}
 				/>
+
+				{item.subtitle && (
+					<Text content={item.subtitle} style={styles.disabled} />
+				)}
 			</View>
 		</Pressable>
 	);

@@ -53,7 +53,7 @@ const prepareSSR = (context: NextPageContext) => {
 		queries: [getLabel(labelIdentifier)],
 		infiniteQueries: [
 			getAlbums({ label: labelIdentifier }, defaultQuerySortParams, [
-				"artist",
+				"artists",
 				"illustration",
 			]),
 			getArtists({ label: labelIdentifier }, defaultQuerySortParams, [
@@ -153,7 +153,7 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								library: libraries,
 							},
 							{ sortBy, order },
-							["artist", "illustration"],
+							["artists", "illustration"],
 						)
 					}
 				/>

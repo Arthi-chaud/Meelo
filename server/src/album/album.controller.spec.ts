@@ -180,14 +180,16 @@ describe("Album Controller", () => {
 		});
 		it("Should include related artist", () => {
 			return request(app.getHttpServer())
-				.get("/albums?with=artist&take=1")
+				.get("/albums?with=artists&take=1")
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumA1),
-						artist: expectedArtistResponse(dummyRepository.artistA),
+						artists: [
+							expectedArtistResponse(dummyRepository.artistA),
+						],
 					});
 				});
 		});
@@ -274,7 +276,7 @@ describe("Album Controller", () => {
 		it("Should get all albums, w/ artist", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/albums?genre=${dummyRepository.genreB.id}&sortBy=name&take=1&with=artist`,
+					`/albums?genre=${dummyRepository.genreB.id}&sortBy=name&take=1&with=artists`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -282,7 +284,9 @@ describe("Album Controller", () => {
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumA1),
-						artist: expectedArtistResponse(dummyRepository.artistA),
+						artists: [
+							expectedArtistResponse(dummyRepository.artistA),
+						],
 					});
 				});
 		});
@@ -327,19 +331,21 @@ describe("Album Controller", () => {
 		});
 		it("Should include related artist", () => {
 			return request(app.getHttpServer())
-				.get(`/albums/${dummyRepository.albumB1.id}?with=artist`)
+				.get(`/albums/${dummyRepository.albumB1.id}?with=artists`)
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumB1),
-						artist: expectedArtistResponse(dummyRepository.artistB),
+						artists: [
+							expectedArtistResponse(dummyRepository.artistB),
+						],
 					});
 				});
 		});
-		it("Should include related artist (null)", () => {
+		it("Should include related artists (empty list)", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/albums/${dummyRepository.compilationAlbumA.id}?with=artist`,
+					`/albums/${dummyRepository.compilationAlbumA.id}?with=artists`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -347,7 +353,7 @@ describe("Album Controller", () => {
 						...expectedAlbumResponse(
 							dummyRepository.compilationAlbumA,
 						),
-						artist: null,
+						artists: [],
 					});
 				});
 		});
@@ -416,7 +422,7 @@ describe("Album Controller", () => {
 		it("should return every albums w/ artist", () => {
 			return request(app.getHttpServer())
 				.get(
-					`/albums?library=${dummyRepository.library1.id}&with=artist`,
+					`/albums?library=${dummyRepository.library1.id}&with=artists`,
 				)
 				.expect(200)
 				.expect((res) => {
@@ -424,13 +430,15 @@ describe("Album Controller", () => {
 					expect(albums.length).toBe(2);
 					expect(albums[0]).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumA1),
-						artist: expectedArtistResponse(dummyRepository.artistA),
+						artists: [
+							expectedArtistResponse(dummyRepository.artistA),
+						],
 					});
 					expect(albums[1]).toStrictEqual({
 						...expectedAlbumResponse(
 							dummyRepository.compilationAlbumA,
 						),
-						artist: null,
+						artists: [],
 					});
 				});
 		});
@@ -495,14 +503,18 @@ describe("Album Controller", () => {
 		});
 		it("should get all albums, w/ artist", () => {
 			return request(app.getHttpServer())
-				.get(`/albums?artist=${dummyRepository.artistB.id}&with=artist`)
+				.get(
+					`/albums?artist=${dummyRepository.artistB.id}&with=artists`,
+				)
 				.expect(200)
 				.expect((res) => {
 					const albums: Album[] = res.body.items;
 					expect(albums.length).toBe(1);
 					expect(albums[0]).toStrictEqual({
 						...expectedAlbumResponse(dummyRepository.albumB1),
-						artist: expectedArtistResponse(dummyRepository.artistB),
+						artists: [
+							expectedArtistResponse(dummyRepository.artistB),
+						],
 					});
 				});
 		});

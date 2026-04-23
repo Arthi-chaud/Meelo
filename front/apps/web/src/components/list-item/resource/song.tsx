@@ -78,7 +78,7 @@ export const SongGroupItem = <
 const defaultSubtitle = (
 	s: SongWithRelations<"artist" | "featuring">,
 	mainArtist: Artist | undefined | null,
-) => formatArtists(s.artist, s.featuring, mainArtist);
+) => formatArtists(s.artist, s.featuring, mainArtist ? [mainArtist] : []);
 
 /**
  * Item for a list of songs

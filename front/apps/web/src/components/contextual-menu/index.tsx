@@ -128,7 +128,7 @@ export const ContextualMenuItem = (
 			sx={{ borderRadius: "0" }}
 		>
 			{props.icon && <ListItemIcon>{props.icon}</ListItemIcon>}
-			<ListItemText>{t(props.label)}</ListItemText>
+			<ListItemText primary={t(props.label)} secondary={props.subtitle} />
 		</MenuItem>
 	);
 

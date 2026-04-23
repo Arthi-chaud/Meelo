@@ -71,14 +71,16 @@ export default class ReleaseService {
 		include?: I | undefined,
 	) {
 		const album = await this.albumService.get(input.album, {
-			artist: true,
+			artists: true,
 		});
 		const releaseNameSlug = new Slug(
 			input.name,
 			...input.extensions,
 		).toString();
 		const uniqueSlug = new Slug(
-			album.artist?.slug ?? compilationAlbumArtistKeyword,
+			...(album.artists.length
+				? album.artists.map((a) => a.slug)
+				: [compilationAlbumArtistKeyword]),
 			releaseNameSlug,
 		).toString();
 		const args = {
@@ -125,20 +127,8 @@ export default class ReleaseService {
 			)
 			.catch(async (error) => {
 				if (error instanceof Prisma.PrismaClientKnownRequestError) {
-					const parentAlbum = await this.albumService.get(
-						input.album,
-						{
-							artist: true,
-						},
-					);
-
 					if (error.code === PrismaError.UniqueConstraintViolation) {
-						throw new ReleaseAlreadyExists(
-							new Slug(input.name),
-							parentAlbum.artist
-								? new Slug(parentAlbum.artist!.slug)
-								: undefined,
-						);
+						throw new ReleaseAlreadyExists(new Slug(uniqueSlug));
 					}
 				}
 				throw new UnhandledORMErrorException(error, input);
@@ -154,14 +144,16 @@ export default class ReleaseService {
 	) {
 		try {
 			const album = await this.albumService.get(input.album, {
-				artist: true,
+				artists: true,
 			});
 			const releaseNameSlug = new Slug(
 				input.name,
 				...input.extensions,
 			).toString();
 			const uniqueSlug = new Slug(
-				album.artist?.slug ?? compilationAlbumArtistKeyword,
+				...(album.artists.length
+					? album.artists.map((a) => a.slug)
+					: [compilationAlbumArtistKeyword]),
 				releaseNameSlug,
 			);
 			return await this.get({ slug: uniqueSlug }, include);
@@ -231,7 +223,7 @@ export default class ReleaseService {
 			case "name":
 				return [
 					{ nameSlug: sortingParameter.order },
-					{ album: { artist: { sortSlug: "asc" } } },
+					{ slug: "asc" },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ tracks: { _count: "asc" } },
 					{ id: "asc" },
@@ -240,7 +232,7 @@ export default class ReleaseService {
 				return [
 					{ tracks: { _count: sortingParameter.order } },
 					{ nameSlug: "asc" },
-					{ album: { artist: { sortSlug: "asc" } } },
+					{ slug: "asc" },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ id: "asc" },
 				];
@@ -248,7 +240,7 @@ export default class ReleaseService {
 				return [
 					{ registeredAt: sortingParameter.order },
 					{ nameSlug: "asc" },
-					{ album: { artist: { sortSlug: "asc" } } },
+					{ slug: "asc" },
 					{ releaseDate: { sort: "asc", nulls: "last" } },
 					{ tracks: { _count: "asc" } },
 					{ id: "asc" },
@@ -262,7 +254,7 @@ export default class ReleaseService {
 						},
 					},
 					{ nameSlug: "asc" },
-					{ album: { artist: { sortSlug: "asc" } } },
+					{ slug: "asc" },
 					{ tracks: { _count: "asc" } },
 					{ id: "asc" },
 				];
@@ -491,14 +483,7 @@ export default class ReleaseService {
 	}
 
 	async pipeArchive(where: ReleaseQueryParameters.WhereInput, res: Response) {
-		const release = await this.prismaService.release
-			.findFirstOrThrow({
-				where: ReleaseService.formatWhereInput(where),
-				include: { tracks: true, album: { include: { artist: true } } },
-			})
-			.catch(async (err) => {
-				throw await this.onNotFound(err, where);
-			});
+		const release = await this.get(where, { tracks: true });
 		const illustration =
 			await this.illustrationRepository.getReleaseIllustrationResponse(
 				where,

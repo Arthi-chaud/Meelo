@@ -99,7 +99,7 @@ export class SearchService {
 							undefined,
 							{
 								illustration: true,
-								artist: true,
+								artists: true,
 							},
 						),
 					matchingAlbumsIds,

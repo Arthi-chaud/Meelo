@@ -70,6 +70,7 @@ import {
 import { useAccentColor } from "@/utils/accent-color";
 import { ParentScrollableDivId } from "@/utils/constants";
 import { getYear } from "@/utils/date";
+import { formatArtists_ } from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
 import { shuffle } from "@/utils/random";
@@ -127,7 +128,8 @@ const releaseTracklistQuery = (
 				}),
 	};
 };
-const albumQuery = (albumId: number) => getAlbum(albumId, ["genres", "artist"]);
+const albumQuery = (albumId: number) =>
+	getAlbum(albumId, ["genres", "artists"]);
 const externalMetadataQuery = (albumIdentifier: string | number) =>
 	getAlbumExternalMetadata(albumIdentifier);
 const artistsOnAlbumQuery = (albumId: number) => {
@@ -154,7 +156,7 @@ const albumVideosQuery = (albumId: number) =>
 	getVideos({ album: albumId }, undefined, ["master", "illustration"]);
 const relatedAlbumsQuery = (albumId: number) =>
 	getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
-		"artist",
+		"artists",
 		"illustration",
 	]);
 const relatedReleasesQuery = (albumId: number) =>
@@ -228,7 +230,6 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		externalMetadataQuery,
 		release.data?.albumId,
 	);
-	const artistId = useMemo(() => release.data?.album?.artistId, [release]);
 	const album = useQuery(albumQuery, release.data?.albumId);
 	const tracklistQuery = useQuery(
 		(rId) => releaseTracklistQuery(rId, showOnlyExclusive),
@@ -262,11 +263,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 		relatedPlaylistsQuery,
 		release.data?.albumId,
 	);
-	const albumArtist = useMemo(() => album.data?.artist, [album.data]);
-	const featurings = useMemo(
-		() => artists.data?.filter((artist) => artist.id !== artistId),
-		[artistId, artists],
-	);
+	const albumArtists = album.data?.artists;
+	const featurings = useMemo(() => {
+		const albumArtistsIds = albumArtists?.map(({ id }) => id) ?? [];
+		return (
+			artists.data?.filter((a) => !albumArtistsIds.includes(a.id)) ?? []
+		);
+	}, [albumArtists, artists.data]);
 	const playlists = useMemo(
 		() => relatedPlaylists.items,
 		[relatedPlaylists.items],
@@ -381,12 +384,13 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									)}
 								</Typography>
 							</Box>
-							{albumArtist !== null && (
+							{(albumArtists === undefined ||
+								albumArtists.length > 0) && (
 								<Box>
 									<Link
 										href={
-											albumArtist
-												? `/artists/${albumArtist.slug}`
+											albumArtists?.length
+												? `/artists/${albumArtists[0].slug}`
 												: {}
 										}
 									>
@@ -402,7 +406,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 												variant="h4"
 												textAlign={"left"}
 											>
-												{albumArtist?.name ?? (
+												{albumArtists !== undefined ? (
+													formatArtists_(albumArtists)
+												) : (
 													<Skeleton width={"200px"} />
 												)}
 											</Typography>
@@ -610,7 +616,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						}}
 					>
 						<ReleaseTrackList
-							mainArtist={albumArtist}
+							mainArtists={albumArtists}
 							tracklist={
 								trackList && album.data // need to wait for main artist
 									? Object.fromEntries(
@@ -631,7 +637,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 						{release.data?.album.type === "Compilation" &&
 							/* It does not make sense to show the button if the album is from 'Various Artists' */
-							albumArtist !== null && (
+							albumArtists?.length && (
 								<ListItemButton
 									sx={{
 										textAlign: "center",
@@ -701,7 +707,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					display={(bSides.length ?? 0) > 0}
 					title={t("album.bonusTracks")}
 				>
-					<SongGrid parentArtist={albumArtist} songs={bSides ?? []} />
+					<SongGrid
+						parentArtists={albumArtists}
+						songs={bSides ?? []}
+					/>
 				</RelatedContentSection>
 				<RelatedContentSection
 					display={(relatedReleases.items?.length ?? 0) > 1}
@@ -759,7 +768,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					title={t("browsing.sections.extras")}
 				>
 					{extras.length > 0 && (
-						<SongGrid parentArtist={albumArtist} songs={extras} />
+						<SongGrid parentArtists={albumArtists} songs={extras} />
 					)}
 					{videoExtras.length > 0 && (
 						<TileRow

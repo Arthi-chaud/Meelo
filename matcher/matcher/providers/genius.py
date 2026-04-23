@@ -229,8 +229,9 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
 
     # Album
     async def _search_album(
-        self, album_name: str, artist_name: str | None
+        self, album_name: str, artist_names: List[str]
     ) -> SearchResult | None:
+        artist_name = None if len(artist_names) == 0 else artist_names[0]
         artist_slug = None if not artist_name else to_slug(artist_name)
         album_slug = to_slug(album_name)
         try:

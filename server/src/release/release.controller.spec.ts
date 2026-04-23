@@ -536,9 +536,11 @@ describe("Release Controller", () => {
 				.expect(404);
 		});
 		it("Should throw, as the album does not have releases", async () => {
-			const tmpAlbum = await module
-				.get(AlbumService)
-				.create({ name: "A", type: AlbumType.StudioRecording });
+			const tmpAlbum = await module.get(AlbumService).create({
+				name: "A",
+				type: AlbumType.StudioRecording,
+				artists: [],
+			});
 			return request(app.getHttpServer())
 				.get(`/releases/master/${tmpAlbum.id}`)
 				.expect(404);

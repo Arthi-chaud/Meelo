@@ -31,13 +31,14 @@ async def match_and_post_album(
     try:
         context = Context.get()
         album = await context.client.get_album(album_id)
+        artist_names = [a.name for a in album.artists or []]
 
         async def match():
             if not reuseSources:
                 return await match_album(
                     album_id,
                     album_name,
-                    album.artist.name if album.artist else None,
+                    artist_names,
                     album.type,
                     local_identifiers,
                     None,
@@ -49,7 +50,7 @@ async def match_and_post_album(
             return await match_album(
                 album_id,
                 album_name,
-                album.artist.name if album.artist else None,
+                artist_names,
                 album.type,
                 local_identifiers,
                 previous_sources,
@@ -110,7 +111,7 @@ async def match_and_post_album(
 async def match_album(
     album_id: int,
     album_name: str,
-    artist_name: str | None,
+    artist_names: List[str],
     type: AlbumType,
     local_identifiers: common.LocalIdentifiers,
     sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
@@ -124,7 +125,7 @@ async def match_album(
     async def resolve_sources():
         (wikidata_id, external_sources) = await common.get_sources_from_musicbrainz(
             local_identifiers,
-            lambda mb: mb.search_album(album_name, artist_name),
+            lambda mb: mb.search_album(album_name, artist_names),
             lambda mb, mbid: mb.get_album(mbid),
             lambda mb, mbid: mb.get_album_url_from_id(mbid),
         )
@@ -175,7 +176,7 @@ async def match_album(
         (source, album) = await common.resolve_data_from_source(
             source,
             provider,
-            lambda: provider.search_album(album_name, artist_name),
+            lambda: provider.search_album(album_name, artist_names),
             lambda id: provider.get_album(id),
             lambda url: provider.get_album_url_from_id(url),
             lambda id: provider.get_album_id_from_url(id),

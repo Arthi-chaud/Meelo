@@ -75,7 +75,9 @@ export const SongGridPageSection = (
 					}}
 				>
 					<SongGrid
-						parentArtist={props.artist?.data}
+						parentArtists={
+							props.artist?.data ? [props.artist.data] : []
+						}
 						songs={
 							items?.slice(0, props.maxItemCount) ??
 							generateArray(props.maxItemCount)
@@ -130,10 +132,10 @@ export const AlbumListPageSection = (
 				<AlbumTile
 					key={`album-${item?.slug}-${index}`}
 					album={
-						item && props.artist?.data
+						item && props.artist.data
 							? {
 									// Note: we expect this to be overwritten for albums that are not from main artst
-									artist: props.artist?.data,
+									artists: [props.artist.data],
 									...item,
 								}
 							: undefined

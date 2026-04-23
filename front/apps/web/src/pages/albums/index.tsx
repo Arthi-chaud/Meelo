@@ -23,7 +23,7 @@ const prepareSSR = (context: NextPageContext) => {
 						: undefined,
 				},
 				sort,
-				["artist", "illustration"],
+				["artists", "illustration"],
 			),
 		],
 	};
@@ -47,7 +47,7 @@ const AlbumsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 								: undefined,
 						},
 						{ sortBy, order },
-						["artist", "illustration"],
+						["artists", "illustration"],
 					)
 				}
 			/>

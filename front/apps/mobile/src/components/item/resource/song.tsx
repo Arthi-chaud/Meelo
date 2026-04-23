@@ -1,4 +1,5 @@
 import { type ComponentProps, useMemo } from "react";
+import type Artist from "@/models/artist";
 import type { SongWithRelations } from "@/models/song";
 import formatArtists from "@/utils/format-artists";
 import { useSongContextMenu } from "~/components/context-menu/resource/song";
@@ -10,7 +11,7 @@ type Props = {
 		| undefined;
 	illustrationProps: ComponentProps<typeof ListItem>["illustrationProps"];
 	subtitle: "artists" | null | undefined;
-	parentArtistId?: number;
+	mainArtists?: Artist[];
 	formatSubtitle?: (s: string) => string;
 	onPress: () => void;
 	// If set, overrides 'open context menu'
@@ -24,7 +25,7 @@ export const SongItem = ({
 	formatSubtitle,
 	onLongPress,
 	onPress,
-	parentArtistId,
+	mainArtists,
 }: Props) => {
 	const contextMenu = useSongContextMenu(song);
 	const formattedSubtitle = useMemo(() => {
@@ -36,16 +37,10 @@ export const SongItem = ({
 			return undefined;
 		}
 		if (subtitle === "artists") {
-			return f(
-				formatArtists(
-					song.artist,
-					song.featuring,
-					parentArtistId ? { id: parentArtistId } : undefined,
-				),
-			);
+			return f(formatArtists(song.artist, song.featuring, mainArtists));
 		}
 		return null;
-	}, [subtitle, formatSubtitle, song, parentArtistId]);
+	}, [subtitle, formatSubtitle, song, mainArtists]);
 	return (
 		<ListItem
 			title={song?.name}

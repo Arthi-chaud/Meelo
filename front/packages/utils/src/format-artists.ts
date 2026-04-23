@@ -20,12 +20,25 @@ import type Artist from "@/models/artist";
 
 const formatArtists = (
 	artist: Pick<Artist, "name" | "id">,
-	featuring?: Pick<Artist, "name">[],
-	mainArtist?: Pick<Artist, "id"> | null,
+	featuring?: Pick<Artist, "name" | "id">[],
+	mainArtists?: Pick<Artist, "id">[] | null,
 ): string => {
+	mainArtists ??= [];
 	if (!featuring || featuring.length === 0) {
 		return artist.name;
 	}
+	if (mainArtists.length > 1) {
+		const mainArtistIds = mainArtists.map(({ id }) => id);
+		if (mainArtistIds.includes(artist.id)) {
+			return formatArtists(
+				artist,
+				featuring.filter(({ id }) => !mainArtistIds.includes(id)),
+				[artist],
+			);
+		}
+		return formatArtists(artist, featuring, []);
+	}
+	const mainArtist = mainArtists.at(0);
 	const nameLists = (
 		mainArtist?.id === artist.id
 			? (featuring ?? [])
@@ -40,6 +53,24 @@ const formatArtists = (
 	} else {
 		return formattedString;
 	}
+};
+
+export const formatArtists_ = (artists: Pick<Artist, "name" | "id">[]) =>
+	formatArtists(artists[0], artists.slice(1));
+
+export const shouldShowArtists = <A extends Pick<Artist, "id">>(
+	artist: A,
+	featuringArtists: A[],
+	referenceArtists: A[] | undefined,
+) => {
+	const referenceArtistIds = referenceArtists?.map(({ id }) => id);
+	return !(
+		referenceArtistIds?.includes(artist.id) &&
+		referenceArtistIds.length === (featuringArtists?.length ?? 0) + 1 &&
+		featuringArtists?.findIndex(
+			({ id }) => !referenceArtistIds.includes(id),
+		) === -1
+	);
 };
 
 export default formatArtists;

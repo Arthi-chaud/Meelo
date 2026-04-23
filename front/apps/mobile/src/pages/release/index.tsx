@@ -42,7 +42,7 @@ export default function ReleasePage({
 	);
 	const { data: release } = releaseQuery;
 	const albumQuery = useQuery(
-		(albumId) => getAlbum(albumId, ["artist"]),
+		(albumId) => getAlbum(albumId, ["artists"]),
 		release?.albumId,
 	);
 	const { data: album } = albumQuery;
@@ -65,7 +65,6 @@ export default function ReleasePage({
 		album,
 		release,
 		tracks: tracks_ ?? [],
-		albumArtistId: album?.artistId,
 	});
 	const items: Item[] = useMemo(
 		() => [
@@ -134,7 +133,7 @@ export default function ReleasePage({
 					<>
 						<TrackItem
 							track={track}
-							albumArtistId={album?.artistId}
+							albumArtists={album?.artists}
 							maxTrackIndex={releaseStats?.trackCount ?? 10}
 							onPress={() => {
 								if (track) {

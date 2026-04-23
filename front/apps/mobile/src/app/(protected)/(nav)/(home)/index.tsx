@@ -95,7 +95,7 @@ export default function Root() {
 	const newlyAddedAlbums = useInfiniteQuery(() =>
 		getAlbums({}, { sortBy: "addDate", order: "desc" }, [
 			"illustration",
-			"artist",
+			"artists",
 		]),
 	);
 	const newlyAddedArtists = useInfiniteQuery(() =>
@@ -105,7 +105,7 @@ export default function Root() {
 	const latestAlbums = useInfiniteQuery(() =>
 		getAlbums({}, { sortBy: "releaseDate", order: "desc" }, [
 			"illustration",
-			"artist",
+			"artists",
 		]),
 	);
 
@@ -177,7 +177,9 @@ export default function Root() {
 							} satisfies Sorting<AlbumSortingKey>,
 						}
 					: undefined,
-			} satisfies RowProps<AlbumWithRelations<"illustration" | "artist">>,
+			} satisfies RowProps<
+				AlbumWithRelations<"illustration" | "artists">
+			>,
 		},
 		/* TODO Featured albums */
 		{
@@ -218,7 +220,9 @@ export default function Root() {
 							} satisfies Sorting<AlbumSortingKey>,
 						}
 					: undefined,
-			} satisfies RowProps<AlbumWithRelations<"illustration" | "artist">>,
+			} satisfies RowProps<
+				AlbumWithRelations<"illustration" | "artists">
+			>,
 		},
 		{
 			type: "tileRow",

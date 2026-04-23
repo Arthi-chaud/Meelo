@@ -98,7 +98,7 @@ export default function AlbumBrowseView() {
 						label: labelId,
 					},
 					{ sortBy: sort ?? "name", order: order ?? "asc" },
-					["artist", "illustration"],
+					["artists", "illustration"],
 				)}
 				render={(album) => (
 					<Item

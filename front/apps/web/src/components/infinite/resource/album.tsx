@@ -40,7 +40,7 @@ type QueryProps = {
 	libraries?: string[];
 } & SortingParameters<typeof AlbumSortingKeys>;
 
-type AlbumModel = AlbumWithRelations<"artist" | "illustration">;
+type AlbumModel = AlbumWithRelations<"artists" | "illustration">;
 
 type ViewProps = {
 	query: (q: QueryProps) => InfiniteQuery<AlbumModel>;

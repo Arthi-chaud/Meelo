@@ -58,11 +58,6 @@ const Album = Resource.concat(
 		 */
 		type: yup.mixed<AlbumType>().oneOf(AlbumType).required(),
 		/**
-		 * Unique identifier of the parent artist
-		 * If undefined, the album is a compilation
-		 */
-		artistId: yup.number().required().nullable(),
-		/**
 		 * Unique identifier of the master release
 		 * If undefined, the first related release is chosen
 		 */
@@ -74,7 +69,7 @@ type Album = yup.InferType<typeof Album>;
 
 export default Album;
 
-export type AlbumInclude = "artist" | "genres" | "illustration";
+export type AlbumInclude = "artists" | "genres" | "illustration";
 
 export const AlbumWithRelations = <
 	Selection extends AlbumInclude | never = never,
@@ -84,7 +79,7 @@ export const AlbumWithRelations = <
 	Album.concat(
 		yup
 			.object({
-				artist: Artist.required().nullable(),
+				artists: yup.array(Artist.required()).required(),
 				genres: yup.array(Genre.required()).required(),
 				illustration: Illustration.required().nullable(),
 			})

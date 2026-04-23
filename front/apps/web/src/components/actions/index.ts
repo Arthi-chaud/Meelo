@@ -26,6 +26,7 @@ type Action = {
 	disabled?: boolean;
 	onClick?: () => void;
 	label: TranslationKey;
+	subtitle?: string;
 	icon?: ReactNode;
 } & Partial<
 	RequireExactlyOne<{

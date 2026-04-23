@@ -236,6 +236,7 @@ describe("Release Service", () => {
 		it("Should throw, as the album does not have releases", async () => {
 			const tmpAlbum = await albumService.create({
 				name: "A",
+				artists: [],
 				type: AlbumType.StudioRecording,
 			});
 			const test = () =>

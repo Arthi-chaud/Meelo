@@ -48,9 +48,11 @@ export const GoToSongInfoAction = (
 
 export const GoToArtistAction = (
 	artistIdentifier: string | number,
+	artistName?: string,
 ): Action => ({
 	href: `/artists/${artistIdentifier}`,
 	label: "actions.goToArtist",
+	subtitle: artistName,
 	icon: <ArtistIcon />,
 });
 
