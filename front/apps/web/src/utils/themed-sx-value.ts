@@ -17,7 +17,7 @@
  */
 
 import { useTheme } from "@mui/material";
-import type { StandardCSSProperties } from "@mui/system/styleFunctionSx/StandardCssProperties";
+import type { StandardCSSProperties } from "@mui/system/styleFunctionSx";
 
 /**
  * Utilitary hook that formats a themed `sx` value
