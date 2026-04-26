@@ -44,7 +44,7 @@ export const ToastComponent = ({ text, variant }: ToastComponentProps) => {
 			<View style={styles.icon}>
 				<Icon variant="Bold" style={styles.icon} />
 			</View>
-			<Text variant="body" style={styles.text}>
+			<Text variant="itemText" style={styles.text}>
 				{text}
 			</Text>
 		</Pressable>

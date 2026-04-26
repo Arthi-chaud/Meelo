@@ -89,7 +89,7 @@ const PlainLyrics = ({
 				<LoadableText
 					key={idx}
 					content={line}
-					variant="body"
+					variant="itemText"
 					skeletonWidth={20 + (idx % 5)}
 				/>
 			))}
@@ -224,7 +224,11 @@ const SyncedLyric = ({
 	return (
 		<Pressable onPress={onPress} onLayout={onLayout}>
 			<Animated.View style={opacityOnActive}>
-				<Text variant="h2" color="primary" content={content} />
+				<Text
+					variant="resourceTitle"
+					color="primary"
+					content={content}
+				/>
 			</Animated.View>
 		</Pressable>
 	);

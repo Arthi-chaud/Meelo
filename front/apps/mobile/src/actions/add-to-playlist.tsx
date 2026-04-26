@@ -89,7 +89,7 @@ const ChoosePlaylistModal = ({
 				<>
 					<Text
 						content={t("actions.addToPlaylist.modalTitle")}
-						variant="h4"
+						variant="secondaryTitle"
 					/>
 					<ListItem
 						title={t("actions.new")}

@@ -108,7 +108,7 @@ export const TrackItem = ({
 					content={track?.name}
 					skeletonWidth={10}
 					numberOfLines={1}
-					variant="body"
+					variant="itemText"
 				/>
 				{(track?.song ?? track?.video) !== undefined &&
 					shouldShowArtists(
@@ -129,7 +129,7 @@ export const TrackItem = ({
 							numberOfLines={1}
 							skeletonWidth={10}
 							color="secondary"
-							variant="body"
+							variant="itemText"
 						/>
 					)}
 			</View>
@@ -163,7 +163,7 @@ export const DiscDivider = ({
 		<View style={styles.discLabel}>
 			<Pressable onPress={onPress}>
 				<LoadableText
-					variant="subtitle"
+					variant="buttonLabel"
 					skeletonWidth={6}
 					content={formatDiscName(discName, discs, t)}
 				/>

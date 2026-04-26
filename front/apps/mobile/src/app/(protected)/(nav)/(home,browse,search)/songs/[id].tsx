@@ -138,7 +138,7 @@ const LyricsView = ({
 					variant={
 						lowerSongName &&
 						line.toLowerCase().includes(lowerSongName)
-							? "subtitle"
+							? "itemText"
 							: undefined
 					}
 				/>
@@ -161,7 +161,7 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 	return (
 		<View style={[styles.tab, styles.info]}>
 			<View style={styles.row}>
-				<Text content={`${t("song.songType")}:`} variant="subtitle" />
+				<Text content={`${t("song.songType")}:`} variant="itemLabel" />
 				<View style={styles.row}>
 					{song && (
 						<Icon
@@ -183,7 +183,7 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 				<View style={styles.row}>
 					<Text
 						content={`${t("models.genre_plural")}:`}
-						variant="subtitle"
+						variant="itemLabel"
 					/>
 					<ScrollView
 						horizontal
@@ -205,7 +205,7 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 				<View style={styles.row}>
 					<Text
 						content={`${t("models.externalLink_plural")}:`}
-						variant="subtitle"
+						variant="itemLabel"
 					/>
 					<ScrollView
 						horizontal

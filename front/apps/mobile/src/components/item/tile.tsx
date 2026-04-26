@@ -103,14 +103,14 @@ export const Tile = ({
 			</View>
 			<View style={[styles.textColumn]}>
 				<LoadableText
-					variant="h6"
+					variant="itemLabel"
 					numberOfLines={1}
 					skeletonWidth={10}
 					content={title}
 				/>
 				{subtitle !== null && (
 					<LoadableText
-						variant="body"
+						variant="itemText"
 						skeletonWidth={8}
 						numberOfLines={1}
 						content={subtitle}

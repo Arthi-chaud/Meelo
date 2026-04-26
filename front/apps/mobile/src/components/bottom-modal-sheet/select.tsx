@@ -63,7 +63,7 @@ export const SelectBottomModalContent = <T, S>({
 						}}
 					/>
 				)}
-				{header && <Text content={header} variant="h4" />}
+				{header && <Text content={header} variant="secondaryTitle" />}
 
 				{!closeOnSelect && (
 					<Button

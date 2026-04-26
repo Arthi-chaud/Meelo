@@ -97,7 +97,7 @@ export const ResourceHeader = ({
 						skeletonWidth={10}
 						numberOfLines={2}
 						style={styles.text}
-						variant={subtitle !== null ? "h3" : "h2"}
+						variant={"resourceTitle"}
 					/>
 					{subtitle !== null && (
 						<LoadableText
@@ -105,7 +105,7 @@ export const ResourceHeader = ({
 							skeletonWidth={10}
 							style={styles.text}
 							numberOfLines={1}
-							variant="h5"
+							variant="secondaryTitle"
 						/>
 					)}
 				</View>

@@ -105,7 +105,7 @@ const ContextMenuHeader = ({ header }: { header: ContextMenuHeader }) => {
 			<View style={headerStyles.text}>
 				<LoadableText
 					content={header.title}
-					variant="h6"
+					variant="itemLabel"
 					numberOfLines={1}
 					skeletonWidth={15}
 				/>
@@ -113,7 +113,7 @@ const ContextMenuHeader = ({ header }: { header: ContextMenuHeader }) => {
 				{header.subtitle !== null && (
 					<LoadableText
 						content={header.subtitle}
-						variant="body"
+						variant="itemText"
 						numberOfLines={1}
 						skeletonWidth={10}
 					/>
@@ -154,7 +154,7 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 			<View style={styles.itemLabel}>
 				<Text
 					content={t(item.label)}
-					variant="subtitle"
+					variant="buttonLabel"
 					style={item.disabled ? styles.disabled : undefined}
 				/>
 

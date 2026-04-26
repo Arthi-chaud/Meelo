@@ -93,12 +93,12 @@ const AreaSection = ({ areas }: { areas: Area[] | null | undefined }) => {
 	return (
 		<View style={[styles.section, styles.areaSection]}>
 			<Text
-				variant="h6"
+				variant="itemLabel"
 				style={[{ flex: 0 }, styles.areaText]}
 				content={`${t("misc.from")} `}
 			/>
 			<Text
-				variant="body"
+				variant="itemText"
 				style={[{ flex: 1 }, styles.areaText]}
 				content={areas
 					.map((area, idx) =>

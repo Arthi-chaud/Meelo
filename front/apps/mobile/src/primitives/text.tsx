@@ -25,6 +25,15 @@ import {
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import type { RequireExactlyOne } from "type-fest";
 
+const fontSizeAndLineHeight = (
+	theme: any, // TODO
+	rem: number,
+	lineHeightRatio = 1.5,
+) => ({
+	fontSize: theme.fontSize.rem(rem),
+	lineHeight: theme.fontSize.rem(lineHeightRatio * rem),
+});
+
 const styles = StyleSheet.create((theme) => ({
 	text: {
 		fontSize: theme.fontSize.default, // to fix typing
@@ -35,41 +44,31 @@ const styles = StyleSheet.create((theme) => ({
 				default: { color: theme.colors.text.primary },
 			},
 			variant: {
-				h1: {
-					fontSize: theme.fontSize.rem(4),
-					lineHeight: theme.fontSize.rem(4),
-					...theme.fontStyles.light,
-				},
-				h2: {
-					fontSize: theme.fontSize.rem(2.25),
-					lineHeight: theme.fontSize.rem(2.75),
+				resourceTitle: {
 					overflow: "visible",
+					...fontSizeAndLineHeight(theme, 2, 1.2),
 					...theme.fontStyles.semiBold,
 				},
-				h3: {
-					fontSize: theme.fontSize.rem(1.875),
-					...theme.fontStyles.regular,
-				},
-				h4: {
+				secondaryTitle: {
 					fontSize: theme.fontSize.rem(1.5),
 					...theme.fontStyles.regular,
 				},
-				h5: {
+				thirdTitle: {
 					fontSize: theme.fontSize.rem(1.25),
 					...theme.fontStyles.regular,
 				},
-				h6: {
+				itemLabel: {
 					fontSize: theme.fontSize.rem(1.125),
 					lineHeight: theme.fontSize.rem(1.25),
 					...theme.fontStyles.medium,
 				},
-				body: {
-					fontSize: theme.fontSize.rem(1),
-					lineHeight: theme.fontSize.rem(1.125),
+				itemText: {
+					...fontSizeAndLineHeight(theme, 1),
 					...theme.fontStyles.regular,
 				},
-				subtitle: {
+				buttonLabel: {
 					fontSize: theme.fontSize.rem(1),
+					lineHeight: theme.fontSize.rem(1.5),
 					...theme.fontStyles.medium,
 				},
 			},
@@ -111,7 +110,7 @@ export const TextSkeleton = (
 		width: `${number}%` | number;
 	},
 ) => {
-	styles.useVariants({ variant: props.variant ?? "body" });
+	styles.useVariants({ variant: props.variant ?? "itemText" });
 	return (
 		<View
 			style={[

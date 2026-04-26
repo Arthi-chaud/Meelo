@@ -59,14 +59,14 @@ const VideoName = () => {
 			<LoadableText
 				content={track?.track.name}
 				style={[styles.text, styles.titleText]}
-				variant="h4"
+				variant="secondaryTitle"
 				skeletonWidth={10}
 				numberOfLines={1}
 			/>
 			<LoadableText
 				content={formattedArtistName}
 				style={styles.text}
-				variant="h5"
+				variant="thirdTitle"
 				skeletonWidth={10}
 				numberOfLines={1}
 			/>

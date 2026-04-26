@@ -81,7 +81,7 @@ export const Header = ({
 						style={styles.headerText}
 						skeletonWidth={15}
 						numberOfLines={3}
-						variant="h2"
+						variant="resourceTitle"
 					/>
 					{(!album || album.artists.length > 0) && (
 						<Pressable
@@ -108,7 +108,7 @@ export const Header = ({
 								}
 								numberOfLines={1}
 								skeletonWidth={10}
-								variant="h4"
+								variant="secondaryTitle"
 							/>
 						</Pressable>
 					)}

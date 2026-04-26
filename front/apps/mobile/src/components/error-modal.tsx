@@ -21,8 +21,8 @@ export const ErrorModal = ({
 	return (
 		<View style={styles.root}>
 			<Icon icon={ErrorIcon} style={styles.icon} />
-			<Text content={t("errors.errorOccured")} variant="h4" />
-			<Text content={error.toString()} variant="body" />
+			<Text content={t("errors.errorOccured")} variant="secondaryTitle" />
+			<Text content={error.toString()} variant="itemText" />
 			<View style={styles.buttons}>
 				{router.canGoBack() ? (
 					<Button

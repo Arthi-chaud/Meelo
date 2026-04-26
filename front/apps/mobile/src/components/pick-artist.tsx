@@ -64,7 +64,7 @@ export const PickArtistModal = ({ artists }: { artists: Artist[] }) => {
 			}
 			ListHeaderComponent={
 				<View style={styles.header}>
-					<Text content={t("models.artist_plural")} variant="h4" />
+					<Text content={t("models.artist_plural")} variant="secondaryTitle" />
 				</View>
 			}
 			renderItem={({
