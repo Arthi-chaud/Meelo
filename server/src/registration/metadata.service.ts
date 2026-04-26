@@ -114,11 +114,11 @@ export default class MetadataService {
 				);
 			}
 		}
-		const { name: parsedSongName, featuring: parsedFeaturingArtists } =
+		const featuringArtistNames: string[] = [];
+		const { name: parsedSongName, featuring: featuringArtistsFromSong } =
 			await this.parserService.extractFeaturedArtistsFromSongName(
 				metadata.name,
 			);
-		parsedFeaturingArtists.push(...(metadata.featuring ?? []));
 		let parsedArtistName = metadata.artist;
 
 		if (
@@ -131,7 +131,7 @@ export default class MetadataService {
 				);
 
 			parsedArtistName = artist;
-			parsedFeaturingArtists.push(...featuring);
+			featuringArtistNames.push(...featuring);
 		}
 		const songArtist = await this.artistService.getOrCreate({
 			name: parsedArtistName,
@@ -141,8 +141,13 @@ export default class MetadataService {
 					: metadata.sortArtist,
 			registeredAt: file.registerDate,
 		});
+
+		featuringArtistNames.push(
+			...featuringArtistsFromSong,
+			...(metadata.featuring ?? []),
+		);
 		const featuringArtists = await Promise.all(
-			parsedFeaturingArtists
+			featuringArtistNames
 				.map(
 					(artistName) => [artistName, new Slug(artistName)] as const,
 				)
