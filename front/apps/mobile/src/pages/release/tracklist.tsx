@@ -212,7 +212,6 @@ const styles = StyleSheet.create((theme) => ({
 	}),
 	trackLabel: {
 		flex: 1,
-		gap: theme.gap(1),
 		justifyContent: "center",
 	},
 }));

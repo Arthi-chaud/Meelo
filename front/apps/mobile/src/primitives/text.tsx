@@ -50,16 +50,15 @@ const styles = StyleSheet.create((theme) => ({
 					...theme.fontStyles.semiBold,
 				},
 				secondaryTitle: {
-					fontSize: theme.fontSize.rem(1.5),
+					...fontSizeAndLineHeight(theme, 1.5, 1.2),
 					...theme.fontStyles.regular,
 				},
 				thirdTitle: {
-					fontSize: theme.fontSize.rem(1.25),
+					...fontSizeAndLineHeight(theme, 1.25),
 					...theme.fontStyles.regular,
 				},
 				itemLabel: {
-					fontSize: theme.fontSize.rem(1.125),
-					lineHeight: theme.fontSize.rem(1.25),
+					...fontSizeAndLineHeight(theme, 1.125),
 					...theme.fontStyles.medium,
 				},
 				itemText: {
@@ -67,8 +66,7 @@ const styles = StyleSheet.create((theme) => ({
 					...theme.fontStyles.regular,
 				},
 				buttonLabel: {
-					fontSize: theme.fontSize.rem(1),
-					lineHeight: theme.fontSize.rem(1.5),
+					...fontSizeAndLineHeight(theme, 1),
 					...theme.fontStyles.medium,
 				},
 			},

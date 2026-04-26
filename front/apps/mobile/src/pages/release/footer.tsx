@@ -476,7 +476,7 @@ const ChipRow = <T,>({
 			)}
 			renderItem={({ item }) => renderItem(item)}
 			ListHeaderComponent={
-				<Text content={`${t(title)}:`} variant="itemLabel" />
+				<Text content={`${t(title)} :`} variant="itemLabel" />
 			}
 		/>
 	);

@@ -410,5 +410,5 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: "flex-start",
 		paddingHorizontal: theme.gap(2),
 	},
-	areaText: { lineHeight: theme.fontSize.rem(1.125) }, // NOTE: Copied from text component, for consistency across font
+	areaText: { lineHeight: theme.fontSize.rem(1.3) }, // NOTE: Copied from text component, for consistency across font
 }));

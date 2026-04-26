@@ -238,9 +238,7 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	descriptionText: {
-		lineHeight: theme.gap(2.5),
-	},
+	descriptionText: {},
 	descriptionContainer: {
 		flex: 1,
 		paddingHorizontal: theme.gap(1.5),

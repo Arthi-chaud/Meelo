@@ -238,7 +238,6 @@ const styles = StyleSheet.create((theme) => ({
 	root: { width: "100%", flex: 1, maxWidth: breakpoints.md },
 	plainLyrics: {
 		paddingVertical: theme.gap(2),
-		gap: theme.gap(0.5),
 		variants: {
 			hasToggle: { true: { paddingBottom: theme.gap(6) }, false: {} },
 		},

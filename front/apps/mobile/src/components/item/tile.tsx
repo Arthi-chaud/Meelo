@@ -33,7 +33,6 @@ const styles = StyleSheet.create((theme) => ({
 		flexDirection: "column",
 		paddingHorizontal: theme.gap(0.5),
 		paddingVertical: theme.gap(1),
-		gap: theme.gap(0.5),
 		variants: {
 			normalizedThumbnail: {
 				true: {},

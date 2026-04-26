@@ -167,7 +167,7 @@ const styles = StyleSheet.create((theme) => ({
 		display: "flex",
 		flex: 1,
 		justifyContent: "center",
-		gap: theme.gap(1),
+		gap: theme.gap(0.5),
 
 		variants: {
 			hasIllustration: {
