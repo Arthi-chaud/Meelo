@@ -3,7 +3,7 @@
 	"sideEffects": false,
 	"dependencies": {
 		"@tanstack/react-query": "^5.96.2",
-		"jotai": "2.19.0",
+		"jotai": "2.19.1",
 		"react": "19.2.4",
 		"type-fest": "^5.5.0",
 		"yup": "^1.7.1"
