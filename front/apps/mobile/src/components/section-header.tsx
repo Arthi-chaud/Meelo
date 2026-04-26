@@ -32,7 +32,11 @@ export const SectionHeader = ({
 				// To keep the text from pushing the button out of the container
 				style={{ flex: 1, flexShrink: 1 }}
 			>
-				<LoadableText {...textProps} variant="secondaryTitle" numberOfLines={1} />
+				<LoadableText
+					{...textProps}
+					variant="secondaryTitle"
+					numberOfLines={1}
+				/>
 			</Pressable>
 			{trailing ||
 				(seeMore !== undefined && (

@@ -28,7 +28,11 @@ export const InstanceButton = ({
 	return (
 		<View style={styles.root}>
 			<View style={styles.label}>
-				<Text content={cleanUrl} color={textColor} variant="thirdTitle" />
+				<Text
+					content={cleanUrl}
+					color={textColor}
+					variant="thirdTitle"
+				/>
 				<Text
 					content={instance.username}
 					color={textColor}

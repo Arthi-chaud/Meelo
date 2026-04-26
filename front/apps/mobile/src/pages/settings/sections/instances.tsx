@@ -114,7 +114,10 @@ const LeavingInstanceWarningModal = ({
 		<View style={modalStyles.root}>
 			<View style={modalStyles.header}>
 				<WarningIcon />
-				<Text variant="secondaryTitle" content={t("actions.warningModalTitle")} />
+				<Text
+					variant="secondaryTitle"
+					content={t("actions.warningModalTitle")}
+				/>
 			</View>
 
 			<View style={modalStyles.content}>
