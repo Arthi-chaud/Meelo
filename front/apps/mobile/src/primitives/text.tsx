@@ -72,9 +72,12 @@ const styles = StyleSheet.create((theme) => ({
 			},
 		},
 	},
+	skeletonContainer: {
+		alignSelf: "flex-start",
+		justifyContent: "center",
+	},
 	skeleton: {
 		backgroundColor: theme.colors.skeleton,
-		alignSelf: "flex-start",
 		borderRadius: theme.borderRadius,
 	},
 }));
@@ -112,17 +115,24 @@ export const TextSkeleton = (
 	return (
 		<View
 			style={[
-				styles.skeleton,
+				styles.skeletonContainer,
 				{
-					width:
-						typeof props.width === "string"
-							? props.width
-							: styles.text.fontSize * (props.width / 2),
+					height: styles.text.lineHeight,
 				},
 			]}
 		>
-			{/* To ensure correct skeleton height */}
-			<Text variant={props.variant}> </Text>
+			<View
+				style={[
+					styles.skeleton,
+					{
+						height: styles.text.fontSize,
+						width:
+							typeof props.width === "string"
+								? props.width
+								: styles.text.fontSize * (props.width / 2),
+					},
+				]}
+			/>
 		</View>
 	);
 };
