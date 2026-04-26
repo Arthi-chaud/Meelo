@@ -32,11 +32,12 @@ const validMetadata: MetadataDto = {
 	checksum: "azerty",
 	registrationDate: new Date("2012-04-03"),
 	compilation: false,
-	artist: "A",
-	featuring: ["C"],
+	artist: "A & B",
+	albumArtist: "A",
+	featuring: ["D"],
 	album: "Album",
 	release: "Album (Deluxe Edition)",
-	name: "...Baby One More Time (feat. B)",
+	name: "...Baby One More Time (feat. C)",
 	type: "Audio",
 	genres: ["My Genre"],
 	bpm: 120,
@@ -189,11 +190,12 @@ describe("Registration Controller", () => {
 				},
 			);
 			expect(song.name).toBe("...Baby One More Time");
-			expect(song.artist.name).toBe(validMetadata.artist);
+			expect(song.artist.name).toBe("A");
 			expect(song.bpm).toBe(120);
-			expect(song.featuring.length).toBe(2);
+			expect(song.featuring.length).toBe(3);
 			expect(song.featuring[0].name).toBe("B");
-			expect(song.featuring[1].name).toBe(validMetadata.featuring![0]);
+			expect(song.featuring[1].name).toBe("C");
+			expect(song.featuring[2].name).toBe(validMetadata.featuring![0]);
 			expect(song.registeredAt).toStrictEqual(
 				validMetadata.registrationDate,
 			);
