@@ -12,6 +12,7 @@ import {
 	getSongs,
 	getVideos,
 } from "@/api/queries";
+import type { Query } from "@/api/query";
 import {
 	type AlbumSortingKey,
 	AlbumType,
@@ -22,7 +23,7 @@ import { albumTypeToTranslationKey } from "@/models/utils";
 import type { VideoSortingKey, VideoWithRelations } from "@/models/video";
 import { VideoTypeIsExtra } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
-import { useInfiniteQuery, useQuery } from "~/api";
+import { useInfiniteQuery, useQueries, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import {
 	ExternalMetadataDescriptionSection,
@@ -39,12 +40,20 @@ import { useQueryErrorModal } from "~/hooks/error";
 import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
-const albumTypeQuery = (albumType: AlbumType, artistId: string) =>
-	getAlbums(
+const albumTypeQuery = (
+	albumType: AlbumType,
+	artistId: string,
+): Query<AlbumWithRelations<"illustration" | "artists">[]> => {
+	const { key, exec } = getAlbums(
 		{ artist: artistId, type: [albumType] },
 		{ sortBy: "releaseDate", order: "desc" },
 		["illustration", "artists"],
 	);
+	return {
+		key: [...key, "first-page"],
+		exec: (api) => () => exec(api)({}).then(({ items }) => items),
+	};
+};
 
 // Note: we show the 'seeMore' button for song grids and video rows iff there's more items than ShowSeeMoreThreshold
 // since the user may want to shuffle them through the dedicated page
@@ -54,10 +63,6 @@ const ShowSeeMoreThreshold = 3;
 type ArtistPageSection =
 	| { type: "header"; props: ComponentProps<typeof ArtistHeader> }
 	| { type: "songGrid"; props: ComponentProps<typeof SongGrid> }
-	| {
-			type: "artistAlbumRow";
-			props: ComponentProps<typeof AlbumTypeRow>;
-	  }
 	| {
 			type: "albumRow";
 			props: ComponentProps<
@@ -91,7 +96,7 @@ const AreaSection = ({ areas }: { areas: Area[] | null | undefined }) => {
 		return null;
 	}
 	return (
-		<View style={[styles.section, styles.areaSection]}>
+		<View style={styles.areaSection}>
 			<Text
 				variant="itemLabel"
 				style={[{ flex: 0 }, styles.areaText]}
@@ -116,8 +121,6 @@ const renderSection = (section: ArtistPageSection) => {
 			return <ArtistHeader {...section.props} />;
 		case "songGrid":
 			return <SongGrid {...section.props} />;
-		case "artistAlbumRow":
-			return <AlbumTypeRow {...section.props} />;
 		case "albumRow":
 			return <Row {...section.props} />;
 		case "videoRow":
@@ -131,6 +134,28 @@ const renderSection = (section: ArtistPageSection) => {
 	}
 };
 
+const filterSections = (sections: ArtistPageSection[]): ArtistPageSection[] => {
+	return sections.filter((section) => {
+		switch (section.type) {
+			case "header":
+				return true;
+			case "songGrid":
+				return section.props.songs?.length !== 0;
+			case "albumRow":
+				return section.props.items?.length !== 0;
+			case "videoRow":
+				return section.props.items?.length !== 0;
+			case "aboutSection":
+				return section.props.externalMetadata !== null;
+			case "fromSection":
+				return section.props.areas !== null;
+			case "externalLinks":
+				return section.props.externalMetadata?.sources.length !== 0;
+		}
+		return true;
+	});
+};
+
 export default function ArtistView() {
 	const playTracks = useSetAtom(playTracksAtom);
 	const { id: artistId } = useLocalSearchParams<{ id: string }>();
@@ -142,6 +167,18 @@ export default function ArtistView() {
 	const { data: artist } = artistQuery;
 	const area = artist ? (artist.birthArea ?? artist.activityArea) : undefined;
 	const { data: parentAreas } = useQuery(getParentAreas, area?.id);
+	const albumTypeQueries = useQueries(
+		...AlbumType.map(
+			(
+				type,
+			): Parameters<
+				typeof useQuery<
+					AlbumWithRelations<"illustration" | "artists">[],
+					[]
+				>
+			> => [() => albumTypeQuery(type, artistId)],
+		),
+	);
 	const areas = useMemo(() => {
 		if (!area) {
 			return area;
@@ -220,7 +257,6 @@ export default function ArtistView() {
 				header: t("artist.topSongs"),
 				mainArtists: artist ? [artist] : undefined,
 				hideIfEmpty: true,
-				style: styles.section,
 				seeMore:
 					(topSongs.items?.length ?? 0) >= ShowSeeMoreThreshold
 						? {
@@ -238,12 +274,35 @@ export default function ArtistView() {
 								: "artists",
 			},
 		},
-		...AlbumType.map(
-			(albumType): ArtistPageSection => ({
-				type: "artistAlbumRow",
-				props: { artistId, type: albumType },
-			}),
-		),
+		...AlbumType.map((type, idx): ArtistPageSection => {
+			const query = albumTypeQueries[idx];
+			return {
+				type: "albumRow",
+				props: {
+					hideIfEmpty: true,
+					header: t(albumTypeToTranslationKey(type, true)),
+					items: query.data,
+					render: (item) => (
+						<AlbumTile album={item} subtitle="year" />
+					),
+					seeMore:
+						query.data && query.data.length >= 5
+							? {
+									pathname: "/albums",
+									params: {
+										artist: artistId,
+										sort: "releaseDate",
+										order: "desc",
+										type: type,
+									} satisfies Sorting<AlbumSortingKey> & {
+										type: AlbumType;
+										artist: string;
+									},
+								}
+							: undefined,
+				},
+			};
+		}),
 		{
 			type: "songGrid",
 			props: {
@@ -256,8 +315,6 @@ export default function ArtistView() {
 								params: { rare: artistId },
 							}
 						: undefined,
-
-				style: styles.section,
 				songs: rareSongs.data?.pages.at(0)?.items,
 				mainArtists: artist ? [artist] : undefined,
 				subtitle: !rareSongs.data
@@ -281,7 +338,6 @@ export default function ArtistView() {
 				props: {
 					hideIfEmpty: true,
 					items: items,
-					style: styles.section,
 					header: t(`browsing.sections.${label}`),
 					render: (item) => (
 						<VideoTile
@@ -315,7 +371,6 @@ export default function ArtistView() {
 			type: "albumRow",
 			props: {
 				hideIfEmpty: true,
-				style: styles.section,
 				header: t("artist.appearsOn"),
 				items: relatedAlbums.items,
 				render: (album) => (
@@ -330,7 +385,6 @@ export default function ArtistView() {
 						type: "aboutSection",
 						props: {
 							externalMetadata: externalMetadata,
-							style: styles.section,
 						},
 					},
 				]
@@ -342,7 +396,6 @@ export default function ArtistView() {
 						type: "externalLinks",
 						props: {
 							externalMetadata: externalMetadata,
-							style: styles.section,
 						},
 					},
 				]
@@ -356,55 +409,21 @@ export default function ArtistView() {
 				<SafeFlashList
 					{...props}
 					ref={props.scrollRef}
-					data={sections}
+					data={filterSections(sections)}
 					getItemType={({ type }) => type}
-					renderItem={({ item }) => renderSection(item)}
+					renderItem={({ item }) => (
+						<View style={styles.section}>
+							{renderSection(item)}
+						</View>
+					)}
 				/>
 			)}
 		</FadingHeader>
 	);
 }
 
-const AlbumTypeRow = ({
-	type,
-	artistId,
-}: {
-	type: AlbumType;
-	artistId: string;
-}) => {
-	const { t } = useTranslation();
-	const query = useInfiniteQuery(() => albumTypeQuery(type, artistId));
-	return (
-		<Row
-			hideIfEmpty
-			style={styles.section}
-			header={t(albumTypeToTranslationKey(type, true))}
-			items={query.items}
-			render={(item) => <AlbumTile album={item} subtitle="year" />}
-			seeMore={
-				query.hasNextPage
-					? {
-							pathname: "/albums",
-							params: {
-								artist: artistId,
-								sort: "releaseDate",
-								order: "desc",
-								type: type,
-							} satisfies Sorting<AlbumSortingKey> & {
-								type: AlbumType;
-								artist: string;
-							},
-						}
-					: undefined
-			}
-		/>
-	);
-};
-
 const styles = StyleSheet.create((theme) => ({
-	section: {
-		paddingBottom: theme.gap(1),
-	},
+	section: { paddingBottom: theme.gap(2) },
 	areaSection: {
 		flexDirection: "row",
 		alignItems: "flex-start",
