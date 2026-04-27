@@ -53,8 +53,12 @@ export const useAlbumContextMenu = (
 		if (album?.masterId) {
 			goToItems.push(GoToRelease(album.masterId));
 		}
-		for (const artist of album?.artists ?? []) {
-			goToItems.push(GoToArtist(artist.id, artist.name));
+		if (album?.artists.length === 1) {
+			goToItems.push(GoToArtist(album.artists[0].id));
+		} else {
+			for (const artist of album?.artists ?? []) {
+				goToItems.push(GoToArtist(artist.id, artist.name));
+			}
 		}
 		return {
 			header: {
