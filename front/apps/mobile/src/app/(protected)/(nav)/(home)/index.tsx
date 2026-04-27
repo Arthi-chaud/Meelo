@@ -52,21 +52,18 @@ import { Text } from "~/primitives/text";
 import type { Sorting } from "~/utils/sorting";
 
 const styles = StyleSheet.create((theme) => ({
-	main: { gap: theme.gap(2) },
+	main: { paddingTop: theme.gap(3) },
+	section: { paddingBottom: theme.gap(2) },
 	emptyState: {
 		flex: 1,
 		justifyContent: "center",
 		paddingHorizontal: theme.gap(1),
-	},
-	lastSection: {
-		paddingBottom: theme.gap(1),
 	},
 	title: { paddingLeft: theme.gap(2) },
 	chipRow: {
 		alignItems: "center",
 		paddingHorizontal: theme.gap(2),
 		paddingVertical: theme.gap(1),
-		marginBottom: theme.gap(1),
 	},
 	chip: {
 		paddingLeft: theme.gap(1.5),
@@ -89,6 +86,19 @@ const renderHomePageSection = (s: HomePageSection) => {
 			return <FlashList {...s.props} />;
 	}
 };
+
+const filterSections = (ss: HomePageSection[]) =>
+	ss.filter((s) => {
+		switch (s.type) {
+			case "songGrid":
+				return s.props.songs?.length !== 0;
+			case "tileRow":
+				return s.props.items?.length !== 0;
+			case "chipRow":
+				return s.props.data?.length !== 0;
+		}
+		return true;
+	});
 
 export default function Root() {
 	const { t } = useTranslation();
@@ -322,7 +332,6 @@ export default function Root() {
 				header: t("home.mostPlayedSongs"),
 				songs: sync(topSongs.data?.pages.at(0)?.items),
 				subtitle: () => "artists",
-				style: styles.lastSection,
 			},
 		},
 	];
@@ -343,11 +352,15 @@ export default function Root() {
 				) : (
 					<SafeFlashList
 						ref={scrollRef}
-						data={sections}
+						data={filterSections(sections)}
 						refreshing={!!queries.find((q) => q.isRefetching)}
 						onRefresh={refresh}
 						getItemType={(t) => t.type}
-						renderItem={({ item }) => renderHomePageSection(item)}
+						renderItem={({ item }) => (
+							<View style={styles.section}>
+								{renderHomePageSection(item)}
+							</View>
+						)}
 						contentContainerStyle={[styles.main]}
 					/>
 				)
