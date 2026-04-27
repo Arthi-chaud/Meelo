@@ -47,7 +47,7 @@
 		"helmet": "^8.1.0",
 		"http-proxy-middleware": "^3.0.5",
 		"md5": "^2.3.0",
-		"meilisearch": "^0.56.0",
+		"meilisearch": "^0.57.0",
 		"mime": "^3.0.0",
 		"nestjs-form-data": "^11.0.1",
 		"nestjs-meilisearch": "^3.0.0",

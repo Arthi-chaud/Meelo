@@ -7806,7 +7806,7 @@ __metadata:
     http-proxy-middleware: "npm:^3.0.5"
     jest: "npm:^30.3.0"
     md5: "npm:^2.3.0"
-    meilisearch: "npm:^0.56.0"
+    meilisearch: "npm:^0.57.0"
     mime: "npm:^3.0.0"
     nestjs-form-data: "npm:^11.0.1"
     nestjs-meilisearch: "npm:^3.0.0"
@@ -7832,10 +7832,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"meilisearch@npm:^0.56.0":
-  version: 0.56.0
-  resolution: "meilisearch@npm:0.56.0"
-  checksum: 10c0/d94e410ebe9ac0ad525fa3bf12d789a60fd68078a803eeb3e2adacc43f18f4d2ee3572ae1f26e052790b2aa6c848710c04332bbccd60862be2d17c883dfd43d9
+"meilisearch@npm:^0.57.0":
+  version: 0.57.0
+  resolution: "meilisearch@npm:0.57.0"
+  checksum: 10c0/ded4d2a75f6984821c7d753d7e686606b9815b2f7205eaedcaf90d688fbbe01e8d843b5de05947395d6ddeda94ecd7c4c74814c4bf7f7ebcb6ca46951ccb991f
   languageName: node
   linkType: hard
 
