@@ -1,6 +1,7 @@
 import type { FlashListRef } from "@shopify/flash-list";
 import { useAtomValue } from "jotai";
 import { type ReactNode, type RefObject, useMemo } from "react";
+import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getCurrentUserStatus } from "@/api/queries";
 import { useQuery } from "~/api";
@@ -44,11 +45,16 @@ export const SettingsPage = ({
 			data={sections}
 			contentContainerStyle={[styles.root]}
 			renderItem={({ item: Section }) => <Section />}
-			ItemSeparatorComponent={() => <Divider h />}
+			ItemSeparatorComponent={() => (
+				<View style={styles.divider}>
+					<Divider h />
+				</View>
+			)}
 		/>
 	);
 };
 
 const styles = StyleSheet.create((theme) => ({
-	root: { paddingHorizontal: theme.gap(1) },
+	root: { paddingHorizontal: theme.gap(1), paddingTop: theme.gap(1) },
+	divider: { paddingVertical: theme.gap(0.5) },
 }));
