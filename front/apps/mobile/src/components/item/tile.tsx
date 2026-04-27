@@ -33,7 +33,6 @@ const styles = StyleSheet.create((theme) => ({
 		flexDirection: "column",
 		paddingHorizontal: theme.gap(0.5),
 		paddingVertical: theme.gap(1),
-		gap: theme.gap(0.5),
 		variants: {
 			normalizedThumbnail: {
 				true: {},
@@ -103,14 +102,14 @@ export const Tile = ({
 			</View>
 			<View style={[styles.textColumn]}>
 				<LoadableText
-					variant="h6"
+					variant="itemLabel"
 					numberOfLines={1}
 					skeletonWidth={10}
 					content={title}
 				/>
 				{subtitle !== null && (
 					<LoadableText
-						variant="body"
+						variant="itemText"
 						skeletonWidth={8}
 						numberOfLines={1}
 						content={subtitle}

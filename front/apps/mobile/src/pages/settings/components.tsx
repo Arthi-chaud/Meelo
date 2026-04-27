@@ -29,7 +29,7 @@ export const SectionRowTitle = ({
 	textProps?: Omit<Parameters<typeof Text>[0], "children">;
 }) => {
 	const { t } = useTranslation();
-	return <Text content={t(title)} variant="h5" {...textProps} />;
+	return <Text content={t(title)} variant="thirdTitle" {...textProps} />;
 };
 
 export const SectionRow = ({

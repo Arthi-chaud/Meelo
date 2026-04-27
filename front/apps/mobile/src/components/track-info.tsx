@@ -91,13 +91,13 @@ const Row = ({
 		<View style={styles.rowContainer}>
 			<View style={styles.row}>
 				<View style={styles.label}>
-					<Text content={label} variant="h6" />
+					<Text content={label} variant="itemLabel" />
 				</View>
 				<View style={styles.value}>
 					{icon && <Icon icon={icon} style={styles.icon} />}
 					<LoadableText
 						content={value}
-						variant="body"
+						variant="itemText"
 						skeletonWidth={20}
 					/>
 				</View>

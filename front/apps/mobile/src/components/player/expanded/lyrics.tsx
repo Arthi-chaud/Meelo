@@ -89,7 +89,7 @@ const PlainLyrics = ({
 				<LoadableText
 					key={idx}
 					content={line}
-					variant="body"
+					variant="itemText"
 					skeletonWidth={20 + (idx % 5)}
 				/>
 			))}
@@ -224,7 +224,11 @@ const SyncedLyric = ({
 	return (
 		<Pressable onPress={onPress} onLayout={onLayout}>
 			<Animated.View style={opacityOnActive}>
-				<Text variant="h2" color="primary" content={content} />
+				<Text
+					variant="resourceTitle"
+					color="primary"
+					content={content}
+				/>
 			</Animated.View>
 		</Pressable>
 	);
@@ -234,7 +238,6 @@ const styles = StyleSheet.create((theme) => ({
 	root: { width: "100%", flex: 1, maxWidth: breakpoints.md },
 	plainLyrics: {
 		paddingVertical: theme.gap(2),
-		gap: theme.gap(0.5),
 		variants: {
 			hasToggle: { true: { paddingBottom: theme.gap(6) }, false: {} },
 		},

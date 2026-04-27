@@ -93,12 +93,12 @@ const AreaSection = ({ areas }: { areas: Area[] | null | undefined }) => {
 	return (
 		<View style={[styles.section, styles.areaSection]}>
 			<Text
-				variant="h6"
+				variant="itemLabel"
 				style={[{ flex: 0 }, styles.areaText]}
 				content={`${t("misc.from")} `}
 			/>
 			<Text
-				variant="body"
+				variant="itemText"
 				style={[{ flex: 1 }, styles.areaText]}
 				content={areas
 					.map((area, idx) =>
@@ -410,5 +410,5 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: "flex-start",
 		paddingHorizontal: theme.gap(2),
 	},
-	areaText: { lineHeight: theme.fontSize.rem(1.125) }, // NOTE: Copied from text component, for consistency across font
+	areaText: { lineHeight: theme.fontSize.rem(1.3) }, // NOTE: Copied from text component, for consistency across font
 }));

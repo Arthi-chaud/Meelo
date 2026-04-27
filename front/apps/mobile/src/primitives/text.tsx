@@ -25,6 +25,15 @@ import {
 import { StyleSheet, type UnistylesVariants } from "react-native-unistyles";
 import type { RequireExactlyOne } from "type-fest";
 
+const fontSizeAndLineHeight = (
+	theme: any, // TODO
+	rem: number,
+	lineHeightRatio = 1.5,
+) => ({
+	fontSize: theme.fontSize.rem(rem),
+	lineHeight: theme.fontSize.rem(lineHeightRatio * rem),
+});
+
 const styles = StyleSheet.create((theme) => ({
 	text: {
 		fontSize: theme.fontSize.default, // to fix typing
@@ -35,49 +44,40 @@ const styles = StyleSheet.create((theme) => ({
 				default: { color: theme.colors.text.primary },
 			},
 			variant: {
-				h1: {
-					fontSize: theme.fontSize.rem(4),
-					lineHeight: theme.fontSize.rem(4),
-					...theme.fontStyles.light,
-				},
-				h2: {
-					fontSize: theme.fontSize.rem(2.25),
-					lineHeight: theme.fontSize.rem(2.75),
+				resourceTitle: {
 					overflow: "visible",
+					...fontSizeAndLineHeight(theme, 2, 1.2),
 					...theme.fontStyles.semiBold,
 				},
-				h3: {
-					fontSize: theme.fontSize.rem(1.875),
+				secondaryTitle: {
+					...fontSizeAndLineHeight(theme, 1.5, 1.2),
 					...theme.fontStyles.regular,
 				},
-				h4: {
-					fontSize: theme.fontSize.rem(1.5),
+				thirdTitle: {
+					...fontSizeAndLineHeight(theme, 1.25),
 					...theme.fontStyles.regular,
 				},
-				h5: {
-					fontSize: theme.fontSize.rem(1.25),
-					...theme.fontStyles.regular,
-				},
-				h6: {
-					fontSize: theme.fontSize.rem(1.125),
-					lineHeight: theme.fontSize.rem(1.25),
+				itemLabel: {
+					...fontSizeAndLineHeight(theme, 1.125),
 					...theme.fontStyles.medium,
 				},
-				body: {
-					fontSize: theme.fontSize.rem(1),
-					lineHeight: theme.fontSize.rem(1.125),
+				itemText: {
+					...fontSizeAndLineHeight(theme, 1),
 					...theme.fontStyles.regular,
 				},
-				subtitle: {
-					fontSize: theme.fontSize.rem(1),
+				buttonLabel: {
+					...fontSizeAndLineHeight(theme, 1),
 					...theme.fontStyles.medium,
 				},
 			},
 		},
 	},
+	skeletonContainer: {
+		alignSelf: "flex-start",
+		justifyContent: "center",
+	},
 	skeleton: {
 		backgroundColor: theme.colors.skeleton,
-		alignSelf: "flex-start",
 		borderRadius: theme.borderRadius,
 	},
 }));
@@ -111,21 +111,28 @@ export const TextSkeleton = (
 		width: `${number}%` | number;
 	},
 ) => {
-	styles.useVariants({ variant: props.variant ?? "body" });
+	styles.useVariants({ variant: props.variant ?? "itemText" });
 	return (
 		<View
 			style={[
-				styles.skeleton,
+				styles.skeletonContainer,
 				{
-					width:
-						typeof props.width === "string"
-							? props.width
-							: styles.text.fontSize * (props.width / 2),
+					height: styles.text.lineHeight,
 				},
 			]}
 		>
-			{/* To ensure correct skeleton height */}
-			<Text variant={props.variant}> </Text>
+			<View
+				style={[
+					styles.skeleton,
+					{
+						height: styles.text.fontSize,
+						width:
+							typeof props.width === "string"
+								? props.width
+								: styles.text.fontSize * (props.width / 2),
+					},
+				]}
+			/>
 		</View>
 	);
 };

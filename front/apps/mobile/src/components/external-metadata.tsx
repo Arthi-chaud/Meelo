@@ -76,7 +76,7 @@ export const ExternalMetadataDescriptionSection = ({
 							<TextSkeleton
 								key={idx}
 								width={"100%"}
-								variant="body"
+								variant="itemText"
 							/>
 						))}
 					</>
@@ -84,7 +84,7 @@ export const ExternalMetadataDescriptionSection = ({
 					externalMetadata.description !== null && (
 						<Text
 							content={externalMetadata.description.trimEnd()}
-							variant="body"
+							variant="itemText"
 							style={styles.descriptionText}
 							numberOfLines={
 								isExpanded ? undefined : DescriptionLineCount
@@ -114,7 +114,7 @@ export const ExternalMetadataDescription = ({
 		return (
 			<>
 				{generateArray(DescriptionLineCount).map((_, idx) => (
-					<TextSkeleton key={idx} width={"100%"} variant="body" />
+					<TextSkeleton key={idx} width={"100%"} variant="itemText" />
 				))}
 			</>
 		);
@@ -122,7 +122,7 @@ export const ExternalMetadataDescription = ({
 	return (
 		<Text
 			content={description}
-			variant="body"
+			variant="itemText"
 			style={styles.descriptionText}
 		/>
 	);
@@ -202,7 +202,7 @@ export const ExternalMetadataSourceComponent = ({
 			)}
 			<LoadableText
 				content={source?.providerName}
-				variant="body"
+				variant="itemText"
 				skeletonWidth={10}
 			/>
 		</Pressable>
@@ -238,9 +238,7 @@ const styles = StyleSheet.create((theme) => ({
 		justifyContent: "center",
 		alignItems: "center",
 	},
-	descriptionText: {
-		lineHeight: theme.gap(2.5),
-	},
+	descriptionText: {},
 	descriptionContainer: {
 		flex: 1,
 		paddingHorizontal: theme.gap(1.5),

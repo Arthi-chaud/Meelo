@@ -46,7 +46,7 @@ export const Chip = ({
 				content={title}
 				skeletonWidth={5}
 				style={styles.chipText}
-				variant="subtitle"
+				variant="buttonLabel"
 			/>
 		</Pressable>
 	);
@@ -73,7 +73,7 @@ const styles = StyleSheet.create((theme) => ({
 				false: {},
 			},
 		},
-		paddingVertical: theme.gap(0.5),
+		paddingVertical: theme.gap(0.25),
 		paddingHorizontal: theme.gap(1.5),
 	},
 	chipIcon: {

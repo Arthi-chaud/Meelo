@@ -105,14 +105,14 @@ export const ListItem = ({
 				<LoadableText
 					content={title}
 					skeletonWidth={15}
-					variant="h6"
+					variant="itemLabel"
 					numberOfLines={1}
 				/>
 				{subtitle !== null && (
 					<LoadableText
 						content={subtitle}
 						skeletonWidth={10}
-						variant="body"
+						variant="itemText"
 						numberOfLines={1}
 					/>
 				)}
@@ -167,7 +167,7 @@ const styles = StyleSheet.create((theme) => ({
 		display: "flex",
 		flex: 1,
 		justifyContent: "center",
-		gap: theme.gap(1),
+		gap: theme.gap(0.5),
 
 		variants: {
 			hasIllustration: {

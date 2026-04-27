@@ -247,7 +247,7 @@ export default function Root() {
 							ListHeaderComponent: (
 								<Text
 									content={t("home.topGenres")}
-									variant="h4"
+									variant="secondaryTitle"
 								/>
 							),
 							CellRendererComponent: (props) => {
@@ -283,7 +283,7 @@ export default function Root() {
 							ListHeaderComponent: (
 								<Text
 									content={t("home.topLabels")}
-									variant="h4"
+									variant="secondaryTitle"
 								/>
 							),
 							CellRendererComponent: (props) => {

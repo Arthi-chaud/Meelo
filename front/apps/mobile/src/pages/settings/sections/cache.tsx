@@ -45,7 +45,7 @@ const MaxCachedSettings = () => {
 					/>
 					<Text
 						content={maxCachedCount.toString()}
-						variant="h5"
+						variant="thirdTitle"
 						color="secondary"
 					/>
 					<Button
@@ -83,7 +83,7 @@ const PrefetchCountSettings = () => {
 					/>
 					<Text
 						content={queuePrefetchCount.toString()}
-						variant="h5"
+						variant="thirdTitle"
 						color="secondary"
 					/>
 					<Button

@@ -148,13 +148,13 @@ export const MinimisedPlayer = ({ blurTarget }: { blurTarget: any }) => {
 								<LoadableText
 									content={currentTrack?.track.name}
 									numberOfLines={1}
-									variant="h6"
+									variant="itemLabel"
 									skeletonWidth={15}
 								/>
 								<LoadableText
 									content={formattedArtistName}
 									numberOfLines={1}
-									variant="body"
+									variant="itemText"
 									skeletonWidth={15}
 								/>
 							</View>

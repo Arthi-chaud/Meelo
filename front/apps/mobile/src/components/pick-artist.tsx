@@ -64,14 +64,17 @@ export const PickArtistModal = ({ artists }: { artists: Artist[] }) => {
 			}
 			ListHeaderComponent={
 				<View style={styles.header}>
-					<Text content={t("models.artist_plural")} variant="h4" />
+					<Text
+						content={t("models.artist_plural")}
+						variant="secondaryTitle"
+					/>
 				</View>
 			}
 			renderItem={({
 				item: artist,
 				index,
 			}: {
-				item: ArtistWithRelations<"illustration">;
+				item: ArtistWithRelations<"illustration"> | undefined;
 				index: number;
 			}) => (
 				<>

@@ -266,7 +266,7 @@ const TrackNameButton = () => {
 			>
 				<LoadableText
 					content={currentTrack?.track.name}
-					variant="h4"
+					variant="secondaryTitle"
 					style={styles.trackNameText}
 					skeletonWidth={20}
 					numberOfLines={1}
@@ -327,7 +327,7 @@ const ArtistNameButton = () => {
 		<Pressable onPress={onPress} onLongPress={onLongPress}>
 			<LoadableText
 				content={formattedArtistName}
-				variant="h5"
+				variant="thirdTitle"
 				skeletonWidth={20}
 				numberOfLines={1}
 			/>
