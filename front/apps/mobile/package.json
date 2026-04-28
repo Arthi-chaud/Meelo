@@ -80,5 +80,5 @@
 		"eas-cli": "^18.6.0",
 		"typescript": "5.9.3"
 	},
-	"packageManager": "yarn@4.13.0"
+	"packageManager": "yarn@4.14.1"
 }
