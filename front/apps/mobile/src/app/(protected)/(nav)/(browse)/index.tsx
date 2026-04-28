@@ -11,6 +11,7 @@ import {
 	HistoryIcon,
 	type Icon,
 	LabelIcon,
+	MoreIcon,
 	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
@@ -96,12 +97,17 @@ export default function BrowseList() {
 							<Fragment key={title}>
 								<ListItem
 									leading={
-										<View style={styles.icon}>
+										<View
+											style={styles.leadingIconContainer}
+										>
 											<IconComponent icon={icon} />
 										</View>
 									}
 									title={t(title)}
 									subtitle={null}
+									trailing={
+										<MoreIcon style={styles.trailingIcon} />
+									}
 									onPress={() => router.navigate(href)}
 								/>
 								<Divider h withInsets />
@@ -120,11 +126,14 @@ const styles = StyleSheet.create((theme) => ({
 	root: {
 		padding: theme.gap(0.5),
 	},
-	icon: {
+	leadingIconContainer: {
 		height: "100%",
 		backgroundColor: theme.colors.skeleton,
 		borderRadius: theme.borderRadius,
 		justifyContent: "center",
 		alignItems: "center",
+	},
+	trailingIcon: {
+		color: theme.colors.text.primary,
 	},
 }));
