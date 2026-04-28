@@ -3,7 +3,7 @@
 	"sideEffects": false,
 	"dependencies": {
 		"format-duration": "^3.0.0",
-		"i18next": "^26.0.0"
+		"i18next": "^26.0.8"
 	},
 	"devDependencies": {
 		"jest": "^30.3.0",
