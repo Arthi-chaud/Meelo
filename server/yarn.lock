@@ -2074,7 +2074,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/cli@npm:^11.0.19":
+"@nestjs/cli@npm:^11.0.21":
   version: 11.0.21
   resolution: "@nestjs/cli@npm:11.0.21"
   dependencies:
@@ -2273,7 +2273,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/schedule@npm:^6.1.1":
+"@nestjs/schedule@npm:^6.1.3":
   version: 6.1.3
   resolution: "@nestjs/schedule@npm:6.1.3"
   dependencies:
@@ -2285,7 +2285,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/schematics@npm:^11.0.1, @nestjs/schematics@npm:^11.0.10":
+"@nestjs/schematics@npm:^11.0.1, @nestjs/schematics@npm:^11.1.0":
   version: 11.1.0
   resolution: "@nestjs/schematics@npm:11.1.0"
   dependencies:
@@ -2304,7 +2304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/swagger@npm:^11.2.7":
+"@nestjs/swagger@npm:^11.4.2":
   version: 11.4.2
   resolution: "@nestjs/swagger@npm:11.4.2"
   dependencies:
@@ -7734,7 +7734,7 @@ __metadata:
   dependencies:
     "@biomejs/biome": "npm:2.4.10"
     "@nestjs/axios": "npm:^4.0.1"
-    "@nestjs/cli": "npm:^11.0.19"
+    "@nestjs/cli": "npm:^11.0.21"
     "@nestjs/common": "npm:^11.1.19"
     "@nestjs/config": "npm:^4.0.4"
     "@nestjs/core": "npm:^11.1.19"
@@ -7742,9 +7742,9 @@ __metadata:
     "@nestjs/microservices": "npm:^11.1.19"
     "@nestjs/passport": "npm:^11.0.5"
     "@nestjs/platform-express": "npm:^11.1.19"
-    "@nestjs/schedule": "npm:^6.1.1"
-    "@nestjs/schematics": "npm:^11.0.10"
-    "@nestjs/swagger": "npm:^11.2.7"
+    "@nestjs/schedule": "npm:^6.1.3"
+    "@nestjs/schematics": "npm:^11.1.0"
+    "@nestjs/swagger": "npm:^11.4.2"
     "@nestjs/testing": "npm:^11.1.19"
     "@prisma/adapter-pg": "npm:7.6.0"
     "@prisma/client": "npm:7.6.0"
