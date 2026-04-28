@@ -3877,7 +3877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material-nextjs@npm:^7.3.8":
+"@mui/material-nextjs@npm:^7.3.10":
   version: 7.3.10
   resolution: "@mui/material-nextjs@npm:7.3.10"
   dependencies:
@@ -3900,7 +3900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^7.3.9":
+"@mui/material@npm:^7.3.10":
   version: 7.3.10
   resolution: "@mui/material@npm:7.3.10"
   dependencies:
@@ -4018,7 +4018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^7.3.10, @mui/utils@npm:^7.3.5, @mui/utils@npm:^7.3.9":
+"@mui/utils@npm:^7.3.10, @mui/utils@npm:^7.3.5":
   version: 7.3.10
   resolution: "@mui/utils@npm:7.3.10"
   dependencies:
@@ -4038,7 +4038,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^8.28.1":
+"@mui/x-data-grid@npm:^8.28.2":
   version: 8.28.2
   resolution: "@mui/x-data-grid@npm:8.28.2"
   dependencies:
@@ -4065,7 +4065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^8.27.2":
+"@mui/x-date-pickers@npm:^8.28.4":
   version: 8.28.4
   resolution: "@mui/x-date-pickers@npm:8.28.4"
   dependencies:
@@ -15672,11 +15672,11 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@mui/material": "npm:^7.3.9"
-    "@mui/material-nextjs": "npm:^7.3.8"
-    "@mui/utils": "npm:^7.3.9"
-    "@mui/x-data-grid": "npm:^8.28.1"
-    "@mui/x-date-pickers": "npm:^8.27.2"
+    "@mui/material": "npm:^7.3.10"
+    "@mui/material-nextjs": "npm:^7.3.10"
+    "@mui/utils": "npm:^7.3.10"
+    "@mui/x-data-grid": "npm:^8.28.2"
+    "@mui/x-date-pickers": "npm:^8.28.4"
     "@tanstack/react-query": "npm:^5.100.5"
     "@tanstack/react-query-devtools": "npm:^5.100.5"
     "@types/accept-language-parser": "npm:^1.5.3"
