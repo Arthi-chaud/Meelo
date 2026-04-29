@@ -5,7 +5,6 @@ const IS_DEV = process.env.APP_VARIANT === "development";
 export default (_: ConfigContext): ExpoConfig => ({
 	name: IS_DEV ? "Meelo (Dev)" : "Meelo",
 	slug: "meelo",
-	version: "1.0.0",
 	scheme: "mobile",
 	userInterfaceStyle: "automatic",
 	android: {
@@ -17,6 +16,7 @@ export default (_: ConfigContext): ExpoConfig => ({
 			"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
 		],
 	},
+	updates: { enabled: false },
 	ios: {
 		icon: "./assets/icon.icon",
 		userInterfaceStyle: "automatic",
