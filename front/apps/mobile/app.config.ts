@@ -21,9 +21,13 @@ export default (_: ConfigContext): ExpoConfig => ({
 		icon: "./assets/icon.icon",
 		userInterfaceStyle: "automatic",
 		bundleIdentifier: "com.arthichaud.meelo",
+		appleTeamId: "HJ45QP4WWR",
 		supportsTablet: true,
+		config: { usesNonExemptEncryption: false },
 		infoPlist: {
 			UIViewControllerBasedStatusBarAppearance: true,
+			CFBundleShortVersionString: "$(MARKETING_VERSION)",
+			CFBundleVersion: "$(CURRENT_PROJECT_VERSION)",
 		},
 	},
 	plugins: [
