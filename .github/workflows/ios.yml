@@ -1,0 +1,43 @@
+name: "iOS Build"
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  release:
+    types: [published]
+
+defaults:
+  run:
+    working-directory: ./front/apps/mobile
+
+jobs:
+  Build:
+    # Only run if manually requested, pushed on main or on release
+    runs-on: macos-26
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v6
+      - name: Get Tag
+        shell: bash
+        if: ${{ github.event_name == 'release' }}
+        run: echo "EXPO_PUBLIC_BUILD_COMMIT=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+      - name: Get Commit
+        shell: bash
+        if: ${{ github.event_name != 'release' }}
+        run: echo "EXPO_PUBLIC_BUILD_COMMIT=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})" >> $GITHUB_ENV
+      - run: echo "APK_NAME=${{ github.event_name == 'pull_request' && 'meelo-preview.apk' || 'meelo.apk' }}" >> $GITHUB_ENV
+      - name: Restore Dependencies
+        uses: ./.github/actions/cache-front
+      - name: Install Dependencies
+        run: yarn workspaces focus -A
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Prebuild
+        run: |
+          yarn run expo prebuild -p ios
+          CI=1 yarn run ios --no-bundler
