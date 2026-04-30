@@ -23,6 +23,14 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v6
+      - name: "Download Provisioning Profiles"
+        uses: apple-actions/download-provisioning-profiles@v4
+        with:
+          bundle-id: "com.arthichaud.meelo"
+          profile-type: "IOS_APP_STORE"
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}
