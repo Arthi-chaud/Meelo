@@ -23,6 +23,11 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v6
+      - name: Import Certs
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
+          p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
       - name: "Download Provisioning Profiles"
         uses: apple-actions/download-provisioning-profiles@v4
         with:
