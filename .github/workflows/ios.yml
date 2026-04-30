@@ -53,3 +53,14 @@ jobs:
           cd ios
           xcrun agvtool new-marketing-version "$(echo ${{ github.event_name != 'release' && '$EXPO_PUBLIC_BUILD_COMMIT' || '0.1'  }} | tr -d v)"
           xcrun agvtool new-version "$(date '+%Y%m%d')"
+      - name: Archive
+        run: |
+          cd ios
+          xcodebuild \
+            -workspace Meelo.xcworkspace \
+            -scheme Meelo \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -sdk iphoneos \
+            -archivePath build/Meelo.xcarchive \
+            archive
