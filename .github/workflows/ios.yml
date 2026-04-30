@@ -12,6 +12,10 @@ defaults:
   run:
     working-directory: ./front/apps/mobile
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   Build:
     # Only run if manually requested, pushed on main or on release
