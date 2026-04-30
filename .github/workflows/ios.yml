@@ -40,4 +40,15 @@ jobs:
       - name: Prebuild
         run: |
           yarn run expo prebuild -p ios
+      - name: Restore Cache Pods
+        uses: actions/cache@v5
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ios-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: ios-
+      - name: Compile
+        run: |
           CI=1 yarn run ios --no-bundler
