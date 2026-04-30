@@ -40,15 +40,12 @@ jobs:
       - name: Prebuild
         run: |
           yarn run expo prebuild -p ios
-      - name: Restore Cache Pods
-        uses: actions/cache@v5
-        with:
-          path: |
-            ios/Pods
-            ~/Library/Caches/CocoaPods
-            ~/.cocoapods
-          key: ios-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: ios-
+      # NOTE: Caching Pods does not improve compilation time
       - name: Compile
         run: |
           CI=1 yarn run ios --no-bundler
+      - name: Set Version and Build number
+        run: |
+          cd ios
+          xcrun agvtool new-marketing-version "$(echo ${{ github.event_name != 'release' && '$EXPO_PUBLIC_BUILD_COMMIT' || '0.1'  }} | tr -d v)"
+          xcrun agvtool new-version "$(date '+%Y%m%d')"
