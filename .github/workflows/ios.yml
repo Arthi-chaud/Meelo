@@ -164,10 +164,11 @@ jobs:
             -destination 'generic/platform=iOS' \
             -sdk iphoneos \
             -archivePath build/Meelo.xcarchive \
-            archive \
-            CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE="ed48c922-290b-4edb-9410-2376b10f8a16" \
-            CODE_SIGN_IDENTITY="iPhone Distribution"
+            -allowProvisioningUpdates \
+            archive
+      # CODE_SIGN_STYLE=Manual \
+      # PROVISIONING_PROFILE="ed48c922-290b-4edb-9410-2376b10f8a16" \
+      # CODE_SIGN_IDENTITY="iPhone Distribution"
       # - name: Export IPA
       #   run: |
       #     cd ios
