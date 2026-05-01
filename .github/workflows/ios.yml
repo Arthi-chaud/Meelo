@@ -57,15 +57,15 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
           p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
-      - name: Download Build Provisioning Profile
-        id: dl_build_prof
-        uses: apple-actions/download-provisioning-profiles@v4
-        with:
-          bundle-id: "com.arthichaud.meelo"
-          profile-type: "IOS_APP_DEVELOPMENT"
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      # - name: Download Build Provisioning Profile
+      #   id: dl_build_prof
+      #   uses: apple-actions/download-provisioning-profiles@v4
+      #   with:
+      #     bundle-id: "com.arthichaud.meelo"
+      #     profile-type: "IOS_APP_DEVELOPMENT"
+      #     issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Download Store Provisioning Profile
         id: dl_store_prof
