@@ -165,6 +165,8 @@ jobs:
             -sdk iphoneos \
             -archivePath build/Meelo.xcarchive \
             -allowProvisioningUpdates \
+            -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
             archive
       # CODE_SIGN_STYLE=Manual \
       # PROVISIONING_PROFILE="ed48c922-290b-4edb-9410-2376b10f8a16" \
