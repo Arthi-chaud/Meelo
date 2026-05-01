@@ -157,7 +157,7 @@ jobs:
       - name: Archive
         run: |
           cd ios
-          xcodebuild \
+          xcrun xcodebuild \
             -workspace Meelo.xcworkspace \
             -scheme Meelo \
             -configuration Release \
