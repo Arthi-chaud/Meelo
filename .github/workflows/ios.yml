@@ -87,6 +87,8 @@ jobs:
             </dict>
             </plist>
             EOF
+
+          sed -i -e 's/PRODUCT_NAME = Meelo;/PRODUCT_NAME = Meelo;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "AppStore com.arthichaud.meelo";\n\t\t\t\t"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore com.arthichaud.meelo";/g' ios/Meelo.xcodeproj/project.pbxproj
       - name: Archive
         uses: Apple-Actions/xcodebuild@v1
         with:
