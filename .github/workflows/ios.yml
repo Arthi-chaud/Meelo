@@ -23,19 +23,19 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v6
-      - name: Import Certs
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
-          p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
-      - name: "Download Provisioning Profiles"
-        uses: apple-actions/download-provisioning-profiles@v4
-        with:
-          bundle-id: "com.arthichaud.meelo"
-          profile-type: "IOS_APP_STORE"
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      # - name: Import Certs
+      #   uses: apple-actions/import-codesign-certs@v3
+      #   with:
+      #     p12-file-base64: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 }}
+      #     p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
+      # - name: "Download Provisioning Profiles"
+      #   uses: apple-actions/download-provisioning-profiles@v4
+      #   with:
+      #     bundle-id: "com.arthichaud.meelo"
+      #     profile-type: "IOS_APP_STORE"
+      #     issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}
@@ -58,81 +58,80 @@ jobs:
         run: |
           yarn run expo prebuild -p ios
       # NOTE: Caching Pods does not improve compilation time
-      - name: Compile
-        run: |
-          CI=1 yarn run ios --no-bundler
       - name: Set Version and Build number
         run: |
           cd ios
           xcrun agvtool new-marketing-version "$(echo ${{ github.event_name != 'release' && '$EXPO_PUBLIC_BUILD_COMMIT' || '0.1'  }} | tr -d v)"
           xcrun agvtool new-version "$(date '+%Y%m%d')"
-      - name: Set Export Options
-        run: |
-          cat > ios/ExportOptions.plist <<EOF
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-              <key>method</key>
-              <string>app-store-connect</string>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>uploadSymbols</key>
-              <true/>
-              <key>provisioningProfiles</key>
-              <dict>
-                  <key>com.arthichaud.meelo</key>
-                  <string>AppStore com.arthichaud.meelo</string>
-              </dict>
-            </dict>
-            </plist>
-            EOF
-
-          sed -i -e 's/PRODUCT_NAME = Meelo;/PRODUCT_NAME = Meelo;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "AppStore com.arthichaud.meelo";\n\t\t\t\t"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore com.arthichaud.meelo";/g' ios/Meelo.xcodeproj/project.pbxproj
-      - name: Archive
-        uses: Apple-Actions/xcodebuild@v1
-        with:
-          working-directory: front/apps/mobile/ios
-          workspace: Meelo.xcworkspace
-          scheme: Meelo
-          sdk: iphoneos
-          action: archive
-          destination: "generic/platform=iOS"
-          archive-path: Meelo.xcarchive
-          export-options-plist: ExportOptions.plist
-          export-path: Meelo.ipa
-      # - name: Archive
+      - name: Build
+        run: eas build --local -p ios --profile production --non-interactive --output meelo.ipa
+      # - name: Set Export Options
       #   run: |
-      #     cd ios
-      #     xcodebuild \
-      #       -workspace Meelo.xcworkspace \
-      #       -scheme Meelo \
-      #       -configuration Release \
-      #       -destination 'generic/platform=iOS' \
-      #       -sdk iphoneos \
-      #       -archivePath build/Meelo.xcarchive \
-      #       archive
-      # - name: Export IPA
-      #   run: |
-      #     cd ios
-      #     cat > ExportOptions.plist <<EOF
+      #     cat > ios/ExportOptions.plist <<EOF
       #       <?xml version="1.0" encoding="UTF-8"?>
       #       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
       #       <plist version="1.0">
       #       <dict>
       #         <key>method</key>
-      #         <string>app-store</string>
+      #         <string>app-store-connect</string>
       #         <key>signingStyle</key>
       #         <string>manual</string>
       #         <key>uploadSymbols</key>
       #         <true/>
+      #         <key>provisioningProfiles</key>
+      #         <dict>
+      #             <key>com.arthichaud.meelo</key>
+      #             <string>AppStore com.arthichaud.meelo</string>
+      #         </dict>
       #       </dict>
       #       </plist>
       #       EOF
       #
-      #     xcodebuild \
-      #       -exportArchive \
-      #       -exportFormat ipa \
-      #       -archivePath build/Meelo.xcarchive \
-      #       -exportOptionsPlist ExportOptions.plist
-      #       -exportPath build/Meelo.ipa
+      #     sed -i -e 's/PRODUCT_NAME = Meelo;/PRODUCT_NAME = Meelo;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "AppStore com.arthichaud.meelo";\n\t\t\t\t"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore com.arthichaud.meelo";/g' ios/Meelo.xcodeproj/project.pbxproj
+      # - name: Archive
+      #   uses: Apple-Actions/xcodebuild@v1
+      #   with:
+      #     working-directory: front/apps/mobile/ios
+      #     workspace: Meelo.xcworkspace
+      #     scheme: Meelo
+      #     sdk: iphoneos
+      #     action: archive
+      #     destination: "generic/platform=iOS"
+      #     archive-path: Meelo.xcarchive
+      #     export-options-plist: ExportOptions.plist
+      #     export-path: Meelo.ipa
+      # # - name: Archive
+      # #   run: |
+      # #     cd ios
+      # #     xcodebuild \
+      # #       -workspace Meelo.xcworkspace \
+      # #       -scheme Meelo \
+      # #       -configuration Release \
+      # #       -destination 'generic/platform=iOS' \
+      # #       -sdk iphoneos \
+      # #       -archivePath build/Meelo.xcarchive \
+      # #       archive
+      # # - name: Export IPA
+      # #   run: |
+      # #     cd ios
+      # #     cat > ExportOptions.plist <<EOF
+      # #       <?xml version="1.0" encoding="UTF-8"?>
+      # #       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      # #       <plist version="1.0">
+      # #       <dict>
+      # #         <key>method</key>
+      # #         <string>app-store</string>
+      # #         <key>signingStyle</key>
+      # #         <string>manual</string>
+      # #         <key>uploadSymbols</key>
+      # #         <true/>
+      # #       </dict>
+      # #       </plist>
+      # #       EOF
+      # #
+      # #     xcodebuild \
+      # #       -exportArchive \
+      # #       -exportFormat ipa \
+      # #       -archivePath build/Meelo.xcarchive \
+      # #       -exportOptionsPlist ExportOptions.plist
+      # #       -exportPath build/Meelo.ipa
