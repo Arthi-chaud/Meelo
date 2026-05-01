@@ -66,6 +66,16 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+      - name: Download Store Provisioning Profile
+        id: dl_store_prof
+        uses: apple-actions/download-provisioning-profiles@v4
+        with:
+          bundle-id: "com.arthichaud.meelo"
+          profile-type: "IOS_APP_STORE"
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
       # - run: echo '${{ steps.dl_build_prof.outputs.profiles }}' && exit 1
       - name: Get Tag
         shell: bash
@@ -154,21 +164,21 @@ jobs:
       #     archive-path: Meelo.xcarchive
       #     export-options-plist: ExportOptions.plist
       #     export-path: Meelo.ipa
+      # CODE_SIGN_ST
       - name: Archive
         run: |
           cd ios
-          xcrun xcodebuild \
+          xcodebuild \
             -workspace Meelo.xcworkspace \
             -scheme Meelo \
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -sdk iphoneos \
             -archivePath build/Meelo.xcarchive \
-            -allowProvisioningUpdates \
-            -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
-            -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
-            archive
-      # CODE_SIGN_STYLE=Manual \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE="03c3ee95-0dd3-49f2-8d83-8a88e72a28ed" \
+            CODE_SIGN_IDENTITY="iPhone Distribution"
       # PROVISIONING_PROFILE="ed48c922-290b-4edb-9410-2376b10f8a16" \
       # CODE_SIGN_IDENTITY="iPhone Distribution"
       # - name: Export IPA
