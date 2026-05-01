@@ -118,50 +118,57 @@ jobs:
       #       EOF
       #
       #     sed -i -e 's/PRODUCT_NAME = Meelo;/PRODUCT_NAME = Meelo;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "AppStore com.arthichaud.meelo";\n\t\t\t\t"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore com.arthichaud.meelo";/g' ios/Meelo.xcodeproj/project.pbxproj
-      # - name: Archive
-      #   uses: Apple-Actions/xcodebuild@v1
-      #   with:
-      #     working-directory: front/apps/mobile/ios
-      #     workspace: Meelo.xcworkspace
-      #     scheme: Meelo
-      #     sdk: iphoneos
-      #     action: archive
-      #     destination: "generic/platform=iOS"
-      #     archive-path: Meelo.xcarchive
-      #     export-options-plist: ExportOptions.plist
-      #     export-path: Meelo.ipa
-      - name: Archive
+      - name: Define Export Options
         run: |
           cd ios
-          xcodebuild \
-            -workspace Meelo.xcworkspace \
-            -scheme Meelo \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            -sdk iphoneos \
-            -archivePath build/Meelo.xcarchive \
-            archive
-      # # - name: Export IPA
-      # #   run: |
-      # #     cd ios
-      # #     cat > ExportOptions.plist <<EOF
-      # #       <?xml version="1.0" encoding="UTF-8"?>
-      # #       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      # #       <plist version="1.0">
-      # #       <dict>
-      # #         <key>method</key>
-      # #         <string>app-store</string>
-      # #         <key>signingStyle</key>
-      # #         <string>manual</string>
-      # #         <key>uploadSymbols</key>
-      # #         <true/>
-      # #       </dict>
-      # #       </plist>
-      # #       EOF
-      # #
-      # #     xcodebuild \
-      # #       -exportArchive \
-      # #       -exportFormat ipa \
-      # #       -archivePath build/Meelo.xcarchive \
-      # #       -exportOptionsPlist ExportOptions.plist
-      # #       -exportPath build/Meelo.ipa
+          cat > ExportOptions.plist <<EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>signingStyle</key>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.arthichaud.meelo</key>
+                  <string>Meelo CI</string>
+              </dict>
+              <string>manual</string>
+              <key>uploadSymbols</key>
+              <true/>
+            </dict>
+            </plist>
+            EOF
+      - name: Archive
+        uses: Apple-Actions/xcodebuild@v1
+        with:
+          working-directory: front/apps/mobile/ios
+          workspace: Meelo.xcworkspace
+          scheme: Meelo
+          sdk: iphoneos
+          action: archive
+          destination: "generic/platform=iOS"
+          archive-path: Meelo.xcarchive
+          export-options-plist: ExportOptions.plist
+          export-path: Meelo.ipa
+      # - name: Archive
+      #   run: |
+      #     cd ios
+      #     xcodebuild \
+      #       -workspace Meelo.xcworkspace \
+      #       -scheme Meelo \
+      #       -configuration Release \
+      #       -destination 'generic/platform=iOS' \
+      #       -sdk iphoneos \
+      #       -archivePath build/Meelo.xcarchive \
+      #       archive
+      # - name: Export IPA
+      #   run: |
+      #     cd ios
+      #     xcodebuild \
+      #       -exportArchive \
+      #       -exportFormat ipa \
+      #       -archivePath build/Meelo.xcarchive \
+      #       -exportOptionsPlist ExportOptions.plist
+      #         -exportPath build/Meelo.ipa
