@@ -36,6 +36,8 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      - name: Get Profile UUID
+        run: echo "PROFILE_UUID=$(echo '${{ steps.dl_store_prof.outputs.profiles }}' | jq '.[-1].udid')" >> $GITHUB_ENV
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}
@@ -63,31 +65,6 @@ jobs:
           cd ios
           xcrun agvtool new-marketing-version "$(echo ${{ github.event_name != 'release' && '$EXPO_PUBLIC_BUILD_COMMIT' || '0.1'  }} | tr -d v)"
           xcrun agvtool new-version "$(date '+%Y%m%d')"
-      # - name: Build
-      #   run: eas build --local -p ios --profile production --non-interactive --output meelo.ipa
-      # - name: Set Export Options
-      #   run: |
-      #     cat > ios/ExportOptions.plist <<EOF
-      #       <?xml version="1.0" encoding="UTF-8"?>
-      #       <plist version="1.0">
-      #       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      #       <dict>
-      #         <key>method</key>
-      #         <string>app-store-connect</string>
-      #         <key>signingStyle</key>
-      #         <string>manual</string>
-      #         <key>uploadSymbols</key>
-      #         <true/>
-      #         <key>provisioningProfiles</key>
-      #         <dict>
-      #             <key>com.arthichaud.meelo</key>
-      #             <string>AppStore com.arthichaud.meelo</string>
-      #         </dict>
-      #       </dict>
-      #       </plist>
-      #       EOF
-      #
-      #     sed -i -e 's/PRODUCT_NAME = Meelo;/PRODUCT_NAME = Meelo;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "AppStore com.arthichaud.meelo";\n\t\t\t\t"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "AppStore com.arthichaud.meelo";/g' ios/Meelo.xcodeproj/project.pbxproj
       - name: Define Export Options
         run: |
           cd ios
