@@ -36,8 +36,10 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-      - name: Get Profile UUID
-        run: echo "PROFILE_UUID=$(echo '${{ steps.dl_store_prof.outputs.profiles }}' | jq '.[-1].udid')" >> $GITHUB_ENV
+      - name: Get Profile Info
+        run: |
+          echo "PROFILE_UUID=$(echo '${{ steps.dl_store_prof.outputs.profiles }}' | jq -r '.[-1].udid')" >> $GITHUB_ENV
+          echo "PROFILE_NAME=$(echo '${{ steps.dl_store_prof.outputs.profiles }}' | jq -r '.[-1].name')" >> $GITHUB_ENV
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}
@@ -78,7 +80,7 @@ jobs:
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.arthichaud.meelo</key>
-                  <string>Meelo CI</string>
+                  <string>${{ env.PROFILE_NAME }}</string>
               </dict>
               <key>signingStyle</key>
               <string>manual</string>
@@ -99,7 +101,7 @@ jobs:
             -archivePath build/Meelo.xcarchive \
             archive \
             CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE="03c3ee95-0dd3-49f2-8d83-8a88e72a28ed" \
+            PROVISIONING_PROFILE=${{ env.PROFILE_UUID }} \
             CODE_SIGN_IDENTITY="iPhone Distribution"
 
       - name: Export IPA
