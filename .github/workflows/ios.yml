@@ -36,7 +36,7 @@ jobs:
           export BUILD_COMMIT=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})
           echo "EXPO_PUBLIC_BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV
 
-          echo "WHATS_NEW='${{ github.event_name == 'pull_request' &&  github.event.pull_request.title || github.event.head_commit.message }}.\nWarning: This version of the app was built from the main branch ($BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images.'" >> $GITHUB_ENV
+          echo "WHATS_NEW='${{ github.event_name == 'pull_request' &&  github.event.pull_request.title || github.event.head_commit.message }}. Warning: This version of the app was built from the main branch (commit $BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images.'" >> $GITHUB_ENV
       - name: Import Certs
         uses: apple-actions/import-codesign-certs@v3
         with:
@@ -83,7 +83,7 @@ jobs:
             <plist version="1.0">
             <dict>
               <key>method</key>
-              <string>app-store</string>
+              <string>app-store-connect</string>
               <key>provisioningProfiles</key>
               <dict>
                   <key>com.arthichaud.meelo</key>
@@ -118,4 +118,15 @@ jobs:
             -exportArchive \
             -archivePath build/Meelo.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
-            -exportPath build/Meelo.ipa
+            -exportPath build/Meelo
+
+      - name: "Upload app to TestFlight"
+        uses: apple-actions/upload-testflight-build@v4
+        with:
+          app-path: ${{ format('{0}/front/apps/mobile/ios/build/Meelo/Meelo.ipa', github.workspace) }}
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          release-notes: ${{ env.WHATS_NEW }}
+          wait-for-processing: "false"
+          backend: AppStoreAPI
