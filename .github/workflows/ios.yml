@@ -22,6 +22,21 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v6
+      - name: Get Tag & Build Changelog
+        shell: bash
+        if: ${{ github.event_name == 'release' }}
+        run: |
+          echo "EXPO_PUBLIC_BUILD_COMMIT=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+          echo "WHATS_NEW='This version of the app is compatible with Meelo ${{ github.event.release.tag_name }}. Using the app with a mismatched version may cause unexpected behaviour. For more information, check out the changelog on GitHub.'" >> $GITHUB_ENV
+      - name: Get Commit & Build Changelog
+        shell: bash
+        if: ${{ github.event_name != 'release' }}
+        run: |
+          export BUILD_COMMIT=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})
+          echo "EXPO_PUBLIC_BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV
+
+          echo "WHATS_NEW='${{ github.event_name == 'pull_request' &&  github.event.pull_request.title || github.event.head_commit.message }}.\nWarning: This version of the app was built from the main branch ($BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images.'" >> $GITHUB_ENV
       - name: Import Certs
         uses: apple-actions/import-codesign-certs@v3
         with:
@@ -40,14 +55,6 @@ jobs:
         run: |
           echo "PROFILE_UUID=$(echo '${{ steps.dl_store_prof.outputs.profiles }}' | jq -r '.[-1].udid')" >> $GITHUB_ENV
           echo "PROFILE_NAME=$(echo '${{ steps.dl_store_prof.outputs.profiles }}' | jq -r '.[-1].name')" >> $GITHUB_ENV
-      - name: Get Tag
-        shell: bash
-        if: ${{ github.event_name == 'release' }}
-        run: echo "EXPO_PUBLIC_BUILD_COMMIT=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-      - name: Get Commit
-        shell: bash
-        if: ${{ github.event_name != 'release' }}
-        run: echo "EXPO_PUBLIC_BUILD_COMMIT=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})" >> $GITHUB_ENV
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
