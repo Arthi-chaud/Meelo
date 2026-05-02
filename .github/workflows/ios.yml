@@ -152,19 +152,6 @@ jobs:
             </dict>
             </plist>
             EOF
-      # - name: Archive
-      #   uses: Apple-Actions/xcodebuild@v1
-      #   with:
-      #     working-directory: front/apps/mobile/ios
-      #     workspace: Meelo.xcworkspace
-      #     scheme: Meelo
-      #     sdk: iphoneos
-      #     action: archive
-      #     destination: "generic/platform=iOS"
-      #     archive-path: Meelo.xcarchive
-      #     export-options-plist: ExportOptions.plist
-      #     export-path: Meelo.ipa
-      # CODE_SIGN_ST
       - name: Archive
         run: |
           cd ios
@@ -179,14 +166,12 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             PROVISIONING_PROFILE="03c3ee95-0dd3-49f2-8d83-8a88e72a28ed" \
             CODE_SIGN_IDENTITY="iPhone Distribution"
-      # PROVISIONING_PROFILE="ed48c922-290b-4edb-9410-2376b10f8a16" \
-      # CODE_SIGN_IDENTITY="iPhone Distribution"
-      # - name: Export IPA
-      #   run: |
-      #     cd ios
-      #     xcodebuild \
-      #       -exportArchive \
-      #       -exportFormat ipa \
-      #       -archivePath build/Meelo.xcarchive \
-      #       -exportOptionsPlist ExportOptions.plist
-      #         -exportPath build/Meelo.ipa
+
+      - name: Export IPA
+        run: |
+          cd ios
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/Meelo.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/Meelo.ipa
