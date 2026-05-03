@@ -63,6 +63,9 @@ export default (_: ConfigContext): ExpoConfig => ({
 				android: {
 					usesCleartextTraffic: true,
 				},
+				ios: {
+					useFrameworks: "static",
+				},
 			},
 		],
 		[
@@ -74,8 +77,6 @@ export default (_: ConfigContext): ExpoConfig => ({
 				],
 			},
 		],
-		// Comment me out when building ios
-		"./plugins/withMediaServicePlugin.ts",
 		[
 			// https://docs.thewidlarzgroup.com/react-native-video/docs/v7/configuration/expo-plugin
 			"react-native-video",
