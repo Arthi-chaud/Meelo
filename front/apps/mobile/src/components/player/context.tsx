@@ -335,7 +335,12 @@ const useNotificationControls = () => {
 					);
 			},
 		);
-		//TODO: seek forward/backward
+		const seekForward = MediaControls.addEventListener("seek", () => {
+			store.set(requestedProgressAtom, store.get(progressAtom) + 15);
+		});
+		const seekBackward = MediaControls.addEventListener("seek", () => {
+			store.set(requestedProgressAtom, store.get(progressAtom) - 15);
+		});
 
 		return () => {
 			play.remove();
@@ -343,6 +348,8 @@ const useNotificationControls = () => {
 			skip.remove();
 			pause.remove();
 			seek.remove();
+			seekBackward.remove();
+			seekForward.remove();
 			stop.remove();
 			repeatMode.remove();
 		};
@@ -375,7 +382,7 @@ const useNotificationControls = () => {
 
 	// Update progress
 	useEffect(() => {
-		setInterval(() => {
+		const i = setInterval(() => {
 			const track = store.get(currentTrackAtom);
 			if (!track) {
 				return;
@@ -385,5 +392,6 @@ const useNotificationControls = () => {
 			const duration = store.get(durationAtom) ?? undefined;
 			MediaControls.updateMetadata({ duration, position });
 		}, 500);
+		return () => clearInterval(i);
 	}, []);
 };
