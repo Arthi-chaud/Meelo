@@ -6,7 +6,6 @@ import {
 } from "expo-media-control";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import { AppState } from "react-native";
 import uuid from "react-native-uuid";
 import {
 	type onLoadData,
@@ -303,6 +302,7 @@ const useNotificationControls = () => {
 	const queryClient = useQueryClient();
 	const controlsEnabled = useRef(false);
 	const controlsListener = useRef<(() => void) | null>(null);
+	const requestedProgress = useAtomValue(requestedProgressAtom);
 
 	const updatePlayerState = (isPlaying?: boolean, progress?: number) => {
 		MediaControl.updatePlaybackState(
@@ -313,31 +313,6 @@ const useNotificationControls = () => {
 			1,
 		);
 	};
-
-	// If the progress is set on the app, we need to update the notification controls
-	useEffect(() => {
-		let i: ReturnType<typeof setInterval> | null = null;
-		const subscription = AppState.addEventListener(
-			"change",
-			(nextAppState) => {
-				if (nextAppState === "active") {
-					i = setInterval(() => {
-						if (currentTrack)
-							updatePlayerState(
-								undefined,
-								store.get(progressAtom),
-							);
-					}, 1000);
-				} else {
-					if (i) clearInterval(i);
-				}
-			},
-		);
-
-		return () => {
-			subscription.remove();
-		};
-	}, []);
 
 	const enableControls = (enable: boolean) => {
 		if (enable === false) {
@@ -412,6 +387,11 @@ const useNotificationControls = () => {
 		store.set(requestedProgressAtom, newPosition);
 		updatePlayerState(undefined, newPosition);
 	};
+
+	useEffect(() => {
+		if (requestedProgress !== null)
+			updatePlayerState(undefined, requestedProgress);
+	}, [requestedProgress]);
 
 	useEffect(() => {
 		if (!currentTrack) {
