@@ -8,7 +8,6 @@ pkgs.mkShell {
     yarn-berry
     watchman
     cocoapods
-    fastlane
     # TODO android toolstack
     javaPackages.compiler.openjdk17
   ];
