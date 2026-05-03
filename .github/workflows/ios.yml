@@ -28,7 +28,7 @@ jobs:
         run: |
           echo "EXPO_PUBLIC_BUILD_COMMIT=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
-          echo "WHATS_NEW='This version of the app is compatible with Meelo ${{ github.event.release.tag_name }}. Using the app with a mismatched version may cause unexpected behaviour. For more information, check out the changelog on GitHub.'" >> $GITHUB_ENV
+          echo "WHATS_NEW=This version of the app is compatible with Meelo ${{ github.event.release.tag_name }}. Using the app with a mismatched version may cause unexpected behaviour. For more information, check out the changelog on GitHub." >> $GITHUB_ENV
       - name: Get Commit & Build Changelog
         shell: bash
         if: ${{ github.event_name != 'release' }}
@@ -36,7 +36,7 @@ jobs:
           export BUILD_COMMIT=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})
           echo "EXPO_PUBLIC_BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV
 
-          echo "WHATS_NEW='${{ github.event_name == 'pull_request' &&  github.event.pull_request.title || github.event.head_commit.message }}. Warning: This version of the app was built from the main branch (commit $BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images.'" >> $GITHUB_ENV
+          echo "WHATS_NEW=${{ github.event_name == 'pull_request' &&  github.event.pull_request.title || github.event.head_commit.message }}. Warning: This version of the app was built from the main branch (commit $BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images." >> $GITHUB_ENV
       - name: Import Certs
         uses: apple-actions/import-codesign-certs@v3
         with:
@@ -119,11 +119,12 @@ jobs:
             -archivePath build/Meelo.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
             -exportPath build/Meelo
-
+      - name: Get IPA Path
+        run: echo "IPA_PATH=${{ format('{0}/front/apps/mobile/ios/build/Meelo/Meelo.ipa', github.workspace) }}" >> $GITHUB_ENV
       - name: "Upload app to TestFlight"
         uses: apple-actions/upload-testflight-build@v4
         with:
-          app-path: ${{ format('{0}/front/apps/mobile/ios/build/Meelo/Meelo.ipa', github.workspace) }}
+          app-path: ${{ env.IPA_PATH }}
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
@@ -131,3 +132,15 @@ jobs:
           # NOTE: When false, release notes are not uploaded :/
           wait-for-processing: "true"
           backend: AppStoreAPI
+      - name: Upload IPA
+        uses: actions/upload-artifact@v6
+        with:
+          if-no-files-found: error
+          name: Meelo.ipa
+          path: ${{ env.IPA_PATH }}
+      - name: Add IPA to release
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.event_name == 'release' }}
+        with:
+          files: |
+            ${{ env.IPA_PATH }}
