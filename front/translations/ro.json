@@ -1,0 +1,39 @@
+{
+	"actions": {
+		"addToPlaylist": {
+			"label": "Adaugă la playlist",
+			"modalTitle": "Alege un playlist"
+		},
+		"album": {
+			"changeType": "Schimbă tipul albumului",
+			"goToAlbum": "Accesează albumul"
+		},
+		"archive": "Arhivă",
+		"artist": {
+			"seeAlbums": "Vezi albumele",
+			"seeSongs": "Vezi melodiile"
+		},
+		"changeIllutration": "Schimba illustrația",
+		"clearQueryCache": "Golește query cache-ul",
+		"connectToNewServer": "Conectați un server Meelo",
+		"create": "Creează",
+		"delete": "Sterge",
+		"deleteFromPlaylist": "Sterge din lista de redare",
+		"deleteUser": {
+			"label": "Sterge utilizatorul",
+			"warning": "Esti pe cale de a sterge un utilizator. Acestea actiune nu poate fii anulata."
+		},
+		"download": {
+			"label": "Descarcă"
+		},
+		"editExternalLinks": "Modifică linkul extern",
+		"genre": {
+			"startRadio": "Incepe un radio de genuri"
+		},
+		"goBackHome": "Inapoi spre pagina principală",
+		"goToArtist": "Spre pagina artistului",
+		"goToPlaylist": "Spre playlist",
+		"goToRelease": "Spre lansări",
+		"goToSettingsPage": "Spre setări"
+	}
+}
