@@ -25,6 +25,7 @@ import id from "./id.json";
 import it from "./it.json";
 import pt from "./pt.json";
 import pt_br from "./pt-BR.json";
+import ro from "./ro.json";
 import ru from "./ru.json";
 import sk from "./sk.json";
 import zh_Hans from "./zh-Hans.json";
@@ -40,6 +41,7 @@ export default Object.entries({
 	it,
 	pt,
 	pt_br,
+	ro,
 	cs,
 	sk,
 	zh_Hans,
@@ -59,6 +61,7 @@ export const Languages = [
 	"id",
 	"pt",
 	"pt_br",
+	"ro",
 	"cs",
 	"sk",
 	"zh_Hant",
