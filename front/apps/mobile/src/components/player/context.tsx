@@ -1,5 +1,6 @@
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import * as MediaControls from "react-native-media-notification";
 import uuid from "react-native-uuid";
 import {
 	type onLoadData,
@@ -13,6 +14,8 @@ import type { QueryClient } from "@/api/hook";
 import { getSettings } from "@/api/queries";
 import {
 	cursorAtom,
+	emptyPlaylistAtom,
+	loopModeAtom,
 	playlistAtom,
 	skipTrackAtom,
 	type TrackState,
@@ -35,6 +38,7 @@ import {
 	playAtom,
 	progressAtom,
 	requestedProgressAtom,
+	rewindTrackAtom,
 } from "./state";
 // Should be used as a readonly handle, mainly for the VideoView component
 export const videoPlayerAtom = atom<VideoPlayer | null>(null);
@@ -71,6 +75,7 @@ export const PlayerContext = () => {
 
 	const { download } = useDownloadManager();
 
+	useNotificationControls();
 	useEffect(() => {
 		setCanUseHLS(settings?.transcoderAvailable === true);
 	}, [settings]);
@@ -128,7 +133,7 @@ export const PlayerContext = () => {
 				playerRef.current = new VideoPlayer(source);
 				playerRef.current.mixAudioMode = "doNotMix";
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
-				playerRef.current.showNotificationControls = true;
+				playerRef.current.showNotificationControls = false;
 				playerRef.current.playInBackground = true;
 				playerRef.current.addEventListener(
 					"onPlaybackStateChange",
@@ -267,7 +272,7 @@ const mkSource = async (
 };
 
 const _mkSource = (
-	{ track, artist, featuring }: TrackState,
+	{ track }: TrackState,
 	api: API,
 	useTranscoding = false,
 	localPath?: string,
@@ -285,11 +290,100 @@ const _mkSource = (
 				}
 			: {}),
 	},
-	metadata: {
-		title: track.name,
-		artist: formatArtists(artist, featuring),
-		imageUri: track.illustration
-			? api.getIllustrationURL(track.illustration.url, "original", true)
-			: undefined,
-	},
 });
+
+const useNotificationControls = () => {
+	const queryClient = useQueryClient();
+	const currentTrack = useAtomValue(currentTrackAtom);
+	const isPlaying = useAtomValue(isPlayingAtom);
+
+	// Setup
+	useEffect(() => {
+		MediaControls.enableBackgroundMode(true);
+		MediaControls.enableAudioInterruption(true);
+		MediaControls.setControlEnabled("shuffle", false);
+		const play = MediaControls.addEventListener("play", () =>
+			store.set(playAtom),
+		);
+		const pause = MediaControls.addEventListener("pause", () =>
+			store.set(pauseAtom),
+		);
+		const rewind = MediaControls.addEventListener("skipToPrevious", () =>
+			store.set(rewindTrackAtom),
+		);
+		const skip = MediaControls.addEventListener("skipToNext", () =>
+			store.set(skipTrackAtom, queryClient),
+		);
+		const stop = MediaControls.addEventListener("stop", () =>
+			store.set(emptyPlaylistAtom),
+		);
+		const seek = MediaControls.addEventListener("seek", (data) => {
+			if (data?.seekPosition !== undefined)
+				store.set(requestedProgressAtom, data.seekPosition);
+		});
+		const repeatMode = MediaControls.addEventListener(
+			"repeatMode",
+			(data) => {
+				if (data?.repeatMode !== undefined)
+					store.set(
+						loopModeAtom,
+						data.repeatMode === "off"
+							? "none"
+							: data.repeatMode === "all"
+								? "queue"
+								: "track",
+					);
+			},
+		);
+		//TODO: seek forward/backward
+
+		return () => {
+			play.remove();
+			rewind.remove();
+			skip.remove();
+			pause.remove();
+			seek.remove();
+			stop.remove();
+			repeatMode.remove();
+		};
+	}, [queryClient]);
+
+	// Set base metadata
+	useEffect(() => {
+		if (!currentTrack) {
+			MediaControls.stopMediaNotification();
+			return;
+		}
+		MediaControls.updateMetadata({
+			title: currentTrack.track.name,
+			artist: formatArtists(currentTrack.artist, currentTrack.featuring),
+			duration: currentTrack.track.duration ?? undefined,
+			artwork: currentTrack.track.illustration
+				? queryClient.api.getIllustrationURL(
+						currentTrack.track.illustration.url,
+						"original",
+						true,
+					)
+				: undefined,
+		});
+	}, [currentTrack, queryClient]);
+
+	// Set playing status
+	useEffect(() => {
+		if (currentTrack) MediaControls.updateMetadata({ isPlaying });
+	}, [isPlaying, currentTrack]);
+
+	// Update progress
+	useEffect(() => {
+		setInterval(() => {
+			const track = store.get(currentTrackAtom);
+			if (!track) {
+				return;
+			}
+
+			const position = store.get(progressAtom);
+			const duration = store.get(durationAtom) ?? undefined;
+			MediaControls.updateMetadata({ duration, position });
+		}, 500);
+	}, []);
+};
