@@ -63,9 +63,13 @@ export default (_: ConfigContext): ExpoConfig => ({
 				android: {
 					usesCleartextTraffic: true,
 				},
-				ios: {
-					useFrameworks: "static",
-				},
+			},
+		],
+		[
+			"expo-media-control",
+			{
+				enableBackgroundAudio: true,
+				audioSessionCategory: "playback",
 			},
 		],
 		[

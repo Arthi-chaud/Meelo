@@ -1,6 +1,12 @@
+import {
+	Command,
+	MediaControl,
+	type MediaControlEvent,
+	PlaybackState,
+} from "expo-media-control";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import * as MediaControls from "react-native-media-notification";
+import { AppState } from "react-native";
 import uuid from "react-native-uuid";
 import {
 	type onLoadData,
@@ -15,7 +21,6 @@ import { getSettings } from "@/api/queries";
 import {
 	cursorAtom,
 	emptyPlaylistAtom,
-	loopModeAtom,
 	playlistAtom,
 	skipTrackAtom,
 	type TrackState,
@@ -293,105 +298,157 @@ const _mkSource = (
 });
 
 const useNotificationControls = () => {
-	const queryClient = useQueryClient();
 	const currentTrack = useAtomValue(currentTrackAtom);
 	const isPlaying = useAtomValue(isPlayingAtom);
+	const queryClient = useQueryClient();
+	const controlsEnabled = useRef(false);
+	const controlsListener = useRef<(() => void) | null>(null);
 
-	// Setup
+	const updatePlayerState = (isPlaying?: boolean, progress?: number) => {
+		MediaControl.updatePlaybackState(
+			(isPlaying ?? store.get(isPlayingAtom))
+				? PlaybackState.PLAYING
+				: PlaybackState.PAUSED,
+			progress ?? store.get(progressAtom),
+			1,
+		);
+	};
+
+	// If the progress is set on the app, we need to update the notification controls
 	useEffect(() => {
-		MediaControls.enableBackgroundMode(true);
-		MediaControls.enableAudioInterruption(true);
-		MediaControls.setControlEnabled("shuffle", false);
-		const play = MediaControls.addEventListener("play", () =>
-			store.set(playAtom),
-		);
-		const pause = MediaControls.addEventListener("pause", () =>
-			store.set(pauseAtom),
-		);
-		const rewind = MediaControls.addEventListener("skipToPrevious", () =>
-			store.set(rewindTrackAtom),
-		);
-		const skip = MediaControls.addEventListener("skipToNext", () =>
-			store.set(skipTrackAtom, queryClient),
-		);
-		const stop = MediaControls.addEventListener("stop", () =>
-			store.set(emptyPlaylistAtom),
-		);
-		const seek = MediaControls.addEventListener("seek", (data) => {
-			if (data?.seekPosition !== undefined)
-				store.set(requestedProgressAtom, data.seekPosition);
-		});
-		const repeatMode = MediaControls.addEventListener(
-			"repeatMode",
-			(data) => {
-				if (data?.repeatMode !== undefined)
-					store.set(
-						loopModeAtom,
-						data.repeatMode === "off"
-							? "none"
-							: data.repeatMode === "all"
-								? "queue"
-								: "track",
-					);
+		let i: ReturnType<typeof setInterval> | null = null;
+		const subscription = AppState.addEventListener(
+			"change",
+			(nextAppState) => {
+				if (nextAppState === "active") {
+					i = setInterval(() => {
+						if (currentTrack)
+							updatePlayerState(
+								undefined,
+								store.get(progressAtom),
+							);
+					}, 1000);
+				} else {
+					if (i) clearInterval(i);
+				}
 			},
 		);
-		const seekForward = MediaControls.addEventListener("seek", () => {
-			store.set(requestedProgressAtom, store.get(progressAtom) + 15);
-		});
-		const seekBackward = MediaControls.addEventListener("seek", () => {
-			store.set(requestedProgressAtom, store.get(progressAtom) - 15);
-		});
 
 		return () => {
-			play.remove();
-			rewind.remove();
-			skip.remove();
-			pause.remove();
-			seek.remove();
-			seekBackward.remove();
-			seekForward.remove();
-			stop.remove();
-			repeatMode.remove();
+			subscription.remove();
 		};
-	}, [queryClient]);
+	}, []);
 
-	// Set base metadata
-	useEffect(() => {
-		if (!currentTrack) {
-			MediaControls.stopMediaNotification();
+	const enableControls = (enable: boolean) => {
+		if (enable === false) {
+			MediaControl.disableMediaControls();
+			controlsListener.current?.();
+			controlsEnabled.current = false;
 			return;
 		}
-		MediaControls.updateMetadata({
+		if (controlsEnabled.current === false) {
+			MediaControl.enableMediaControls({
+				capabilities: [
+					Command.PLAY,
+					Command.PAUSE,
+					Command.STOP,
+					Command.NEXT_TRACK,
+					Command.PREVIOUS_TRACK,
+					Command.SEEK,
+					Command.SKIP_FORWARD,
+					Command.SKIP_BACKWARD,
+				],
+				compactCapabilities: [
+					Command.PREVIOUS_TRACK,
+					Command.PLAY,
+					Command.NEXT_TRACK,
+				],
+				notification: { showWhenClosed: true },
+				ios: { skipInterval: 15 },
+				android: { skipInterval: 15 },
+			});
+
+			controlsListener.current = MediaControl.addListener(
+				(event: MediaControlEvent) => {
+					const progress = store.get(progressAtom);
+					switch (event.command) {
+						case Command.PLAY:
+							store.set(playAtom);
+							break;
+						case Command.PAUSE:
+							store.set(pauseAtom);
+							break;
+						case Command.STOP:
+							store.set(emptyPlaylistAtom);
+							MediaControl.updatePlaybackState(
+								PlaybackState.STOPPED,
+							);
+							break;
+						case Command.NEXT_TRACK:
+							onSeek(0);
+							store.set(skipTrackAtom, queryClient);
+							break;
+						case Command.PREVIOUS_TRACK:
+							onSeek(0);
+							store.set(rewindTrackAtom);
+							break;
+						case Command.SEEK:
+							onSeek(event.data.position);
+							break;
+						case Command.SKIP_FORWARD:
+							onSeek(progress + (event.data?.interval || 15));
+							break;
+						case Command.SKIP_BACKWARD:
+							onSeek(progress - (event.data?.interval || 15));
+							break;
+					}
+				},
+			);
+			controlsEnabled.current = true;
+		}
+	};
+
+	const onSeek = (newPosition: number) => {
+		store.set(requestedProgressAtom, newPosition);
+		updatePlayerState(undefined, newPosition);
+	};
+
+	useEffect(() => {
+		if (!currentTrack) {
+			enableControls(false);
+			return;
+		}
+		enableControls(true);
+		MediaControl.updateMetadata({
 			title: currentTrack.track.name,
 			artist: formatArtists(currentTrack.artist, currentTrack.featuring),
 			duration: currentTrack.track.duration ?? undefined,
 			artwork: currentTrack.track.illustration
-				? queryClient.api.getIllustrationURL(
-						currentTrack.track.illustration.url,
-						"original",
-						true,
-					)
+				? {
+						uri: queryClient.api.getIllustrationURL(
+							currentTrack.track.illustration.url,
+							"original",
+							true,
+						),
+					}
 				: undefined,
 		});
 	}, [currentTrack, queryClient]);
 
 	// Set playing status
 	useEffect(() => {
-		if (currentTrack) MediaControls.updateMetadata({ isPlaying });
-	}, [isPlaying, currentTrack]);
+		if (currentTrack) updatePlayerState(isPlaying);
+	}, [isPlaying, currentTrack?.track.id]);
 
-	// Update progress
+	// Reset progress on track change
 	useEffect(() => {
-		const i = setInterval(() => {
-			const track = store.get(currentTrackAtom);
-			if (!track) {
-				return;
-			}
+		if (currentTrack) updatePlayerState(undefined, 0);
+	}, [currentTrack?.track.id]);
 
-			const position = store.get(progressAtom);
-			const duration = store.get(durationAtom) ?? undefined;
-			MediaControls.updateMetadata({ duration, position });
-		}, 500);
-		return () => clearInterval(i);
+	useEffect(() => {
+		return () => {
+			controlsListener.current?.();
+			MediaControl.disableMediaControls();
+		};
 	}, []);
 };
