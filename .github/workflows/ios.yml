@@ -73,7 +73,7 @@ jobs:
         run: |
           cd ios
           xcrun agvtool new-marketing-version "$(echo ${{ github.event_name == 'release' && '$EXPO_PUBLIC_BUILD_COMMIT' || '0.1'  }} | tr -d v)"
-          xcrun agvtool new-version "$(date '+%Y%m%d')"
+          xcrun agvtool new-version "$(date '+%Y%m%d')${{ github.run_number }}"
       - name: Define Export Options
         run: |
           cd ios
