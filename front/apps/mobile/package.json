@@ -34,6 +34,7 @@
 		"expo-image": "^55.0.8",
 		"expo-linear-gradient": "^55.0.13",
 		"expo-linking": "~55.0.12",
+		"expo-media-control": "^1.0.12",
 		"expo-router": "~55.0.12",
 		"expo-screen-orientation": "~55.0.13",
 		"expo-splash-screen": "~55.0.17",
