@@ -8591,7 +8591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-media-control@npm:^1.0.12":
+"expo-media-control@npm:1.0.12":
   version: 1.0.12
   resolution: "expo-media-control@npm:1.0.12"
   peerDependencies:
@@ -8599,6 +8599,17 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/02acf4a8eeb1075f2ee907fed30d14fb8e8c82b7e8e5ad02227f6e9b881be652ccbd5c5179d83defd77571e2e6a1145f2ad6e0324568471c98ac194c6a8beff1
+  languageName: node
+  linkType: hard
+
+"expo-media-control@patch:expo-media-control@npm%3A1.0.12#~/.yarn/patches/expo-media-control-npm-1.0.12-d7bddfea85.patch":
+  version: 1.0.12
+  resolution: "expo-media-control@patch:expo-media-control@npm%3A1.0.12#~/.yarn/patches/expo-media-control-npm-1.0.12-d7bddfea85.patch::version=1.0.12&hash=3733d9"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/6eea48dda39a59bffb8c1ce1de766fdd40dc2c570cbe9d36139e81dc62d277c33c9bb09d111cd30ac7e3c8b5e490e8a98e8966bb6ec6e3512d2d6401ce3c77ad
   languageName: node
   linkType: hard
 
@@ -11978,7 +11989,7 @@ __metadata:
     expo-image: "npm:^55.0.8"
     expo-linear-gradient: "npm:^55.0.13"
     expo-linking: "npm:~55.0.12"
-    expo-media-control: "npm:^1.0.12"
+    expo-media-control: "patch:expo-media-control@npm%3A1.0.12#~/.yarn/patches/expo-media-control-npm-1.0.12-d7bddfea85.patch"
     expo-router: "npm:~55.0.12"
     expo-screen-orientation: "npm:~55.0.13"
     expo-splash-screen: "npm:~55.0.17"
