@@ -58,7 +58,10 @@ export const expectedSongGroupResponse = (
 	versionCount,
 });
 
-export const expectedReleaseResponse = (release: Release) => ({
+export const expectedReleaseResponse = ({
+	isFirstRegistered,
+	...release
+}: Release) => ({
 	...release,
 	registeredAt: release.registeredAt.toISOString(),
 	releaseDate: release.releaseDate?.toISOString() ?? null,

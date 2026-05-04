@@ -295,13 +295,19 @@ export const getVideo = <I extends VideoInclude | never = never>(
 /// Releases
 
 export const getReleases = <I extends ReleaseInclude | never = never>(
-	filter: { album?: Identifier },
+	filter: { album?: Identifier; isFirstRegistered?: false },
 	sort?: SortingParameters<typeof ReleaseSortingKeys>,
 	include?: I[],
 ): InfiniteQuery<ReleaseWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
 		route: "/releases",
-		filter,
+		filter: {
+			...filter,
+			isFirstRegistered:
+				filter.isFirstRegistered === false
+					? ("false" as const)
+					: undefined,
+		},
 		sort,
 		include,
 		validator: PaginatedResponse(ReleaseWithRelations(include ?? [])),

@@ -373,6 +373,47 @@ describe("Release Controller", () => {
 		// });
 	});
 
+	describe("Filter Releases by 'isFirstRegistered'", () => {
+		it("should only return first registered releases", () => {
+			return request(app.getHttpServer())
+				.get(`/releases?isFirstRegistered=true&with=album`)
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(3);
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(dummyRepository.releaseA1_1),
+						album: expectedAlbumResponse(dummyRepository.albumA1),
+					});
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(dummyRepository.releaseB1_1),
+						album: expectedAlbumResponse(dummyRepository.albumB1),
+					});
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(
+							dummyRepository.compilationReleaseA1,
+						),
+						album: expectedAlbumResponse(
+							dummyRepository.compilationAlbumA,
+						),
+					});
+				});
+		});
+
+		it("should not return first registered releases", () => {
+			return request(app.getHttpServer())
+				.get(`/releases?isFirstRegistered=false&with=album`)
+				.expect(200)
+				.expect((res) => {
+					const releases: Release[] = res.body.items;
+					expect(releases.length).toBe(1);
+					expect(releases).toContainEqual({
+						...expectedReleaseResponse(dummyRepository.releaseA1_2),
+						album: expectedAlbumResponse(dummyRepository.albumA1),
+					});
+				});
+		});
+	});
 	describe("Get Releases by library", () => {
 		it("should return every releases, w/ tracks & parent album", () => {
 			return request(app.getHttpServer())

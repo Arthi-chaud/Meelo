@@ -78,7 +78,7 @@ const newlyAddedArtistsQuery = getArtists(
 );
 
 const newlyAddedReleasesQuery = getReleases(
-	{},
+	{ isFirstRegistered: false },
 	{ sortBy: "addDate", order: "desc" },
 	["album", "illustration"],
 );

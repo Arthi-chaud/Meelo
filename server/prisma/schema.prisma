@@ -256,39 +256,40 @@ model Library {
 model Release {
     /// @description Unique numeric Release identifier
     /// @example 123
-    id               Int                      @id @default(autoincrement())
+    id                Int                      @id @default(autoincrement())
     /// @description The title of the release
     /// @example My Album
-    name             String                   @db.Citext()
+    name              String                   @db.Citext()
     /// @description The Extensions of the release
     /// @example ["Deluxe Edition"]
-    extensions       String[]
+    extensions        String[]
     /// @description String identifier
     /// @example my-artist-my-release-deluxe-edition
-    slug             String                   @unique
-    nameSlug         String
+    slug              String                   @unique
+    nameSlug          String
     /// @description The date of the release
-    releaseDate      DateTime?
+    releaseDate       DateTime?
     /// @description The tracks on the release
-    tracks           Track[]
+    tracks            Track[]
     /// @description The reference Album
-    album            Album                    @relation("Releases", fields: [albumId], references: [id])
+    album             Album                    @relation("Releases", fields: [albumId], references: [id])
     /// @description Unique numeric identifier of the parent album
     /// @example 123
-    albumId          Int
-    masterOf         Album?                   @relation("Master")
+    albumId           Int
+    masterOf          Album?                   @relation("Master")
     /// @description The date the release was registered
-    registeredAt     DateTime                 @default(now())
+    registeredAt      DateTime                 @default(now())
     /// @description The related Illustrations
-    illustrations    ReleaseIllustration[]
+    illustrations     ReleaseIllustration[]
     /// @description additional Metadata from external providers
-    externalMetadata ExternalMetadata?
-    illustration     ReleaseMainIllustration?
-    discs            Disc[]
+    externalMetadata  ExternalMetadata?
+    illustration      ReleaseMainIllustration?
+    discs             Disc[]
+    isFirstRegistered Boolean
     /// @description the label that the release was published under
-    label            Label?                   @relation(fields: [labelId], references: [id])
+    label             Label?                   @relation(fields: [labelId], references: [id])
     /// @description the ID of the label of the release
-    labelId          Int?
+    labelId           Int?
 
     localIdentifiers LocalIdentifiers?
 

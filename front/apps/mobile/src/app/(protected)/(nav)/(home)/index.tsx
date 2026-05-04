@@ -120,10 +120,11 @@ export default function Root() {
 	);
 
 	const newlyAddedReleases = useInfiniteQuery(() =>
-		getReleases({}, { sortBy: "addDate", order: "desc" }, [
-			"illustration",
-			"album",
-		]),
+		getReleases(
+			{ isFirstRegistered: false },
+			{ sortBy: "addDate", order: "desc" },
+			["illustration", "album"],
+		),
 	);
 
 	const topGenres = useInfiniteQuery(() =>

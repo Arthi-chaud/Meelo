@@ -89,6 +89,7 @@ export default class ReleaseService {
 				slug: uniqueSlug,
 				nameSlug: releaseNameSlug,
 				registeredAt: input.registeredAt,
+				isFirstRegistered: input.isFirstRegistered,
 				releaseDate: input.releaseDate,
 				extensions: input.extensions,
 				album: { connect: { id: album.id } },
@@ -176,6 +177,7 @@ export default class ReleaseService {
 		const query: Prisma.ReleaseWhereInput[] = [
 			{
 				name: buildStringSearchParameters(where.name),
+				isFirstRegistered: where.isFirstRegistered ?? undefined,
 			},
 		];
 

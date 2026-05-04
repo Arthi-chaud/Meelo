@@ -61,7 +61,7 @@ export class ReleaseStats {
 }
 
 export class ReleaseResponse extends IntersectionType(
-	Release,
+	OmitType(Release, ["isFirstRegistered"]),
 	IllustratedResponse,
 	ResponseWithLocalIdentifiers,
 	class {
