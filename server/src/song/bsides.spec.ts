@@ -109,6 +109,7 @@ describe("Get B-Sides", () => {
 		return dummyRepository.release.create({
 			data: {
 				name: album.name,
+				isFirstRegistered: true,
 				slug: new Slug(
 					`${artist.name} ${album.name} ${extensions.join("-")}`,
 				).toString(),

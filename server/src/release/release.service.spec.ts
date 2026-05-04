@@ -78,6 +78,7 @@ describe("Release Service", () => {
 				name: "My Album",
 				extensions: ["Deluxe Edition"],
 				album: { id: dummyRepository.albumA1.id },
+				isFirstRegistered: false,
 				releaseDate: new Date("2023"),
 				discogsId: "12345",
 			});
@@ -95,6 +96,7 @@ describe("Release Service", () => {
 				name: "My Compilation",
 				extensions: ["Expanded Edition"],
 				album: { id: dummyRepository.compilationAlbumA.id },
+				isFirstRegistered: false,
 				releaseDate: new Date("2005"),
 			});
 			expect(newCompilationRelease.albumId).toBe(
@@ -123,6 +125,7 @@ describe("Release Service", () => {
 				name: "My Album",
 				extensions: ["TMD Edition"],
 				album: { id: dummyRepository.albumA1.id },
+				isFirstRegistered: false,
 				releaseDate: new Date("2006"),
 			});
 			const album = await albumService.get({
@@ -269,6 +272,7 @@ describe("Release Service", () => {
 			const fetchedRelease: Release = await releaseService.getOrCreate({
 				name: newRelease.name,
 				extensions: ["Deluxe Edition"],
+				isFirstRegistered: true,
 				album: { id: dummyRepository.albumA1.id },
 				releaseDate: new Date("2008"),
 			});
@@ -280,6 +284,7 @@ describe("Release Service", () => {
 				name: "My Album",
 				extensions: ["Edited Version"],
 				album: { id: dummyRepository.albumA1.id },
+				isFirstRegistered: true,
 				releaseDate: new Date("2007"),
 			});
 			expect(newRelease2.albumId).toBe(dummyRepository.albumA1.id);

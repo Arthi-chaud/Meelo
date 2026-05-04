@@ -89,6 +89,7 @@ export default class ReleaseService {
 				slug: uniqueSlug,
 				nameSlug: releaseNameSlug,
 				registeredAt: input.registeredAt,
+				isFirstRegistered: input.isFirstRegistered,
 				releaseDate: input.releaseDate,
 				extensions: input.extensions,
 				album: { connect: { id: album.id } },
