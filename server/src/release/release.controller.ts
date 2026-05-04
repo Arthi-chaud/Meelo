@@ -27,7 +27,13 @@ import {
 	Query,
 	Res,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+	ApiOkResponse,
+	ApiOperation,
+	ApiPropertyOptional,
+	ApiTags,
+} from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { IsOptional } from "class-validator";
 import type { Response as ExpressResponse } from "express";
 import AlbumService from "src/album/album.service";
@@ -69,6 +75,22 @@ class Selector {
 		description: "Filter releases by label",
 	})
 	label?: Filter<LabelQueryParameters.WhereInput>;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description:
+			"If true, only the first releases registered for their respective album will be returned. ",
+	})
+	@Transform(({ value }) => {
+		if (typeof value === "boolean") return value;
+		if (typeof value === "string") {
+			const v = value.toLowerCase();
+			if (v === "true" || v === "1") return true;
+			if (v === "false" || v === "0") return false;
+		}
+		return null;
+	})
+	isFirstRegistered?: boolean | null;
 }
 
 @ApiTags("Releases")

@@ -177,6 +177,7 @@ export default class ReleaseService {
 		const query: Prisma.ReleaseWhereInput[] = [
 			{
 				name: buildStringSearchParameters(where.name),
+				isFirstRegistered: where.isFirstRegistered ?? undefined,
 			},
 		];
 
