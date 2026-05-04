@@ -6,6 +6,7 @@ import {
 } from "expo-media-control";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import { Platform } from "react-native";
 import uuid from "react-native-uuid";
 import {
 	type onLoadData,
@@ -85,7 +86,14 @@ export const PlayerContext = () => {
 		isPlaying?: boolean,
 		progress?: number,
 	) => {
-		if (controlsRegistered.current && ready.current)
+		// These checks are for iOS only, as setting the state before media is loaded can brick the player (play btn)
+		// We ignore them when on android
+		if (
+			Platform.OS !== "ios" ||
+			(controlsRegistered.current &&
+				ready.current &&
+				!isSwitchingTrack.current)
+		)
 			await MediaControl.updatePlaybackState(
 				(isPlaying ?? store.get(isPlayingAtom))
 					? PlaybackState.PLAYING
@@ -97,6 +105,7 @@ export const PlayerContext = () => {
 
 	const enableControls = async (enable: boolean) => {
 		if (enable === false) {
+			await MediaControl.removeAllListeners();
 			await MediaControl.disableMediaControls();
 			controlsListener.current?.();
 			controlsListener.current = null;
@@ -128,14 +137,16 @@ export const PlayerContext = () => {
 					const progress = store.get(progressAtom);
 					switch (event.command) {
 						case Command.PLAY:
-							store.set(playAtom);
+							playerRef.current?.play();
 							break;
 						case Command.PAUSE:
-							store.set(pauseAtom);
+							playerRef.current?.pause();
 							break;
 						case Command.STOP:
 							MediaControl.updatePlaybackState(
 								PlaybackState.STOPPED,
+								0,
+								1,
 							);
 							store.set(emptyPlaylistAtom);
 							break;
@@ -226,7 +237,10 @@ export const PlayerContext = () => {
 				playerRef.current = new VideoPlayer(source);
 				playerRef.current.mixAudioMode = "doNotMix";
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
-				playerRef.current.showNotificationControls = false;
+				// NOTE: On ios, When the player is paused, the 'focus' is lost and the media controls are flushed (cannot press play again + no metadata)
+				// Setting this opt to true preserves the focus.
+				playerRef.current.showNotificationControls =
+					Platform.OS === "ios";
 				playerRef.current.playInBackground = true;
 				playerRef.current.addEventListener(
 					"onPlaybackStateChange",
@@ -252,6 +266,11 @@ export const PlayerContext = () => {
 				playerRef.current.addEventListener("onEnd", () => {
 					skipTrack(queryClient);
 				});
+				playerRef.current.addEventListener("onStatusChange", (e) => {
+					if (e !== "readyToPlay") {
+						ready.current = false;
+					}
+				});
 				playerRef.current.addEventListener(
 					"onLoad",
 					(data: onLoadData) => {
@@ -262,10 +281,18 @@ export const PlayerContext = () => {
 						setDuration(duration);
 						ready.current = false;
 						enableControls(true).then(async () => {
+							const currentTrack = store.get(currentTrackAtom)!;
+							await MediaControl.updatePlaybackState(
+								PlaybackState.PLAYING,
+								0,
+								1,
+							);
 							await MediaControl.updateMetadata({
-								isLiveStream: false,
+								trackNumber: store.get(cursorAtom) + 1,
+								albumTrackCount: store.get(playlistAtom).length,
 								title: currentTrack.track.name,
-								duration: duration ?? undefined,
+								elapsedTime: 0,
+								duration: duration ?? 1,
 								artist: formatArtists(
 									currentTrack.artist,
 									currentTrack.featuring,
@@ -282,7 +309,6 @@ export const PlayerContext = () => {
 									: undefined,
 							});
 							ready.current = true;
-							await updateMediaControlsState(true, 0);
 						});
 					},
 				);
