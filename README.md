@@ -107,6 +107,9 @@ Thanks to the amazing folks who support this project:
   <a href="https://github.com/Laflamme">
     <img src="https://avatars.githubusercontent.com/u/3687644?v=4" height="40"/>
   </a>
+  <a href="https://github.com/alik-agaev">
+    <img src="https://avatars.githubusercontent.com/u/2662697?v=4" height="40"/>
+  </a>
 </p>
 
 Want to support Meelo? [Become a sponsor](https://github.com/sponsors/Arthi-chaud)
