@@ -168,7 +168,7 @@ export class SearchHistoryService {
 					},
 					undefined,
 					undefined,
-					{ illustration: true, artist: true },
+					{ illustration: true, artists: true },
 				)
 			: [];
 
