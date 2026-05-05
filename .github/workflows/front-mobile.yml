@@ -148,7 +148,12 @@ jobs:
           export BUILD_COMMIT=$(git rev-parse --short ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }})
           echo "EXPO_PUBLIC_BUILD_COMMIT=$BUILD_COMMIT" >> $GITHUB_ENV
 
-          echo "WHATS_NEW=${{ github.event_name == 'pull_request' &&  github.event.pull_request.title || github.event.head_commit.message }}. Warning: This version of the app was built from the main branch (commit $BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images." >> $GITHUB_ENV
+          {
+            echo "WHATS_NEW<<EOF_"
+            printf '%s\n\n' "${{ github.event_name == 'pull_request' && github.event.pull_request.title || github.event.head_commit.message }}."
+            echo "Warning: This version of the app was built from the main branch (commit $BUILD_COMMIT). Make sure to update your instance using the edge tag, and pull the latest images."
+            echo "EOF_"
+          } >> $GITHUB_ENV
       - name: Import Certs
         uses: apple-actions/import-codesign-certs@v3
         with:
