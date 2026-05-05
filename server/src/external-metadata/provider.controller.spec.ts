@@ -36,7 +36,7 @@ describe("External Provider Controller", () => {
 		app = await SetupApp(module);
 		dummyRepository = module.get(PrismaService);
 		await dummyRepository.onModuleInit();
-		jest.spyOn(
+		vi.spyOn(
 			IllustrationService.prototype,
 			"getImageStats",
 		).mockImplementation(async () => ({

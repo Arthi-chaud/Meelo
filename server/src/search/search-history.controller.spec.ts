@@ -16,8 +16,6 @@ import TestPrismaService from "test/test-prisma.service";
 import * as Plugins from "../app.plugins";
 import { SearchModule } from "./search.module";
 
-jest.setTimeout(60000);
-
 describe("Search History Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;

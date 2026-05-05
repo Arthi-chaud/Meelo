@@ -36,8 +36,6 @@ import ReleaseController from "./release.controller";
 import ReleaseModule from "./release.module";
 import ReleaseService from "./release.service";
 
-jest.setTimeout(60000);
-
 describe("Release Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;

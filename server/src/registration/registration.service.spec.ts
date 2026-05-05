@@ -14,8 +14,6 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import { RegistrationService } from "./registration.service";
 
-jest.setTimeout(120000);
-
 describe("Registration Service", () => {
 	let registrationService: RegistrationService;
 	let dummyRepository: TestPrismaService;
@@ -66,7 +64,7 @@ describe("Registration Service", () => {
 
 		let discIllustrationPath: string;
 		it("should extract release/track illustration, mocking the illustration bytes", async () => {
-			jest.spyOn(
+			vi.spyOn(
 				IllustrationService.prototype,
 				"getImageStats",
 			).mockImplementation(async () => ({
@@ -91,7 +89,7 @@ describe("Registration Service", () => {
 
 		let trackIllustrationPath = "";
 		it("should extract track illustration, mocking the illustration bytes", async () => {
-			jest.spyOn(
+			vi.spyOn(
 				IllustrationService.prototype,
 				"getImageStats",
 			).mockImplementation(async () => ({
@@ -111,7 +109,7 @@ describe("Registration Service", () => {
 			expect(fs.existsSync(trackIllustrationPath)).toBe(true);
 		});
 		it("should re-extract illustration to track folder, mocking the illustration bytes", async () => {
-			jest.spyOn(
+			vi.spyOn(
 				IllustrationService.prototype,
 				"getImageStats",
 			).mockImplementation(async () => ({

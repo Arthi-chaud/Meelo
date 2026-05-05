@@ -25,7 +25,7 @@ describe("Settings Controller", () => {
 		fileService = module.get<FileManagerService>(FileManagerService);
 		controller = module.get<SettingsController>(SettingsController);
 		app = await SetupApp(module);
-		jest.spyOn(fileService, "getFileContent").mockImplementationOnce(() =>
+		vi.spyOn(fileService, "getFileContent").mockImplementationOnce(() =>
 			fs.readFileSync("test/assets/settings.json").toString(),
 		);
 	});

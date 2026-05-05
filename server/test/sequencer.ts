@@ -1,12 +1,7 @@
-const Sequencer = require("@jest/test-sequencer").default;
+import { BaseSequencer, TestSpecification } from "vitest/node";
 
-class CustomSequencer extends Sequencer {
-	sort(tests) {
-		const copyTests = Array.from(tests);
-		return copyTests.sort((testA, testB) =>
-			testA.path > testB.path ? 1 : -1,
-		);
+export default class CustomSequencer extends BaseSequencer {
+	async sort(files: TestSpecification[]): Promise<TestSpecification[]> {
+		return files.sort((a, b) => a.moduleId.localeCompare(b.moduleId));
 	}
 }
-
-module.exports = CustomSequencer;

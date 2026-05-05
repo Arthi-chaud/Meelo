@@ -33,8 +33,6 @@ import {
 } from "./authentication.exception";
 import AuthenticationModule from "./authentication.module";
 
-jest.setTimeout(120000);
-
 @Module({
 	imports: [
 		AuthenticationModule,
@@ -291,7 +289,7 @@ describe("Authentication Controller & Role Management", () => {
 
 	describe("Test allowed Anonymous access", () => {
 		it("Should Reject Anonymous request ", () => {
-			jest.spyOn(
+			vi.spyOn(
 				SettingsService.prototype,
 				"settingsValues",
 				"get",
@@ -301,7 +299,7 @@ describe("Authentication Controller & Role Management", () => {
 			return request(app.getHttpServer()).get("/users").expect(401);
 		});
 		it("Should Accept Anonymous request ", async () => {
-			const mock = jest.spyOn(
+			const mock = vi.spyOn(
 				SettingsService.prototype,
 				"settingsValues",
 				"get",
@@ -313,7 +311,7 @@ describe("Authentication Controller & Role Management", () => {
 			mock.mockReset();
 		});
 		it("Should Reject Anonymous request for User route ", () => {
-			jest.spyOn(
+			vi.spyOn(
 				SettingsService.prototype,
 				"settingsValues",
 				"get",
@@ -333,7 +331,7 @@ describe("Authentication Controller & Role Management", () => {
 
 	describe("Test disabled user registration", () => {
 		it("Should regject", () => {
-			jest.spyOn(
+			vi.spyOn(
 				SettingsService.prototype,
 				"settingsValues",
 				"get",

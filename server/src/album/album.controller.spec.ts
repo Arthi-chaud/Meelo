@@ -26,8 +26,6 @@ import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
 import AlbumModule from "./album.module";
 
-jest.setTimeout(60000);
-
 describe("Album Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;

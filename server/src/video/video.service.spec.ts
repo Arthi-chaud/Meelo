@@ -126,7 +126,7 @@ describe("Video Service", () => {
 					name: "My Video",
 					artist: { id: dummyRepository.artistB.id },
 				});
-			expect(test()).rejects.toThrow(VideoAlreadyExistsException);
+			return expect(test()).rejects.toThrow(VideoAlreadyExistsException);
 		});
 
 		it("should fail, song does not exist", () => {
@@ -136,7 +136,7 @@ describe("Video Service", () => {
 					song: { id: -1 },
 					artist: { id: dummyRepository.artistA.id },
 				});
-			expect(test()).rejects.toThrow(SongNotFoundException);
+			return expect(test()).rejects.toThrow(SongNotFoundException);
 		});
 
 		it("should fail, artist does not exist", () => {
@@ -145,7 +145,7 @@ describe("Video Service", () => {
 					name: "test",
 					artist: { id: -1 },
 				});
-			expect(test()).rejects.toThrow(ArtistNotFoundException);
+			return expect(test()).rejects.toThrow(ArtistNotFoundException);
 		});
 	});
 
@@ -167,7 +167,7 @@ describe("Video Service", () => {
 				videoService.get({
 					slug: new Slug("A"),
 				});
-			expect(test()).rejects.toThrow(VideoNotFoundException);
+			return expect(test()).rejects.toThrow(VideoNotFoundException);
 		});
 	});
 

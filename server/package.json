@@ -17,8 +17,8 @@
 		"start:prod": "node dist/src/main",
 		"test:setup": "docker run -d --rm --env-file .env -p 5432:5432 --name test-db postgres:alpine3.16 ; docker run -d --rm --env-file .env -p 7700:7700 --name test-meili getmeili/meilisearch:v1.5 ; sleep 3; yarn run prisma migrate dev",
 		"test:teardown": "docker container stop test-db ; docker container stop test-meili",
-		"test": "LASTFM_API_KEY=a LASTFM_API_SECRET=b JWT_SIGNATURE=AAAAAA API_KEY=a INTERNAL_CONFIG_DIR=test/assets/ INTERNAL_DATA_DIR=test/assets/ jest -i",
-		"test:cov": "yarn test --coverage"
+		"test": "LASTFM_API_KEY=a LASTFM_API_SECRET=b JWT_SIGNATURE=AAAAAA API_KEY=a INTERNAL_CONFIG_DIR=test/assets/ INTERNAL_DATA_DIR=test/assets/ vitest",
+		"test:cov": "yarn test --coverage.enabled"
 	},
 	"dependencies": {
 		"@nestjs/axios": "^4.0.1",
@@ -76,6 +76,7 @@
 		"@nestjs/cli": "^11.0.21",
 		"@nestjs/schematics": "^11.1.0",
 		"@nestjs/testing": "^11.1.19",
+		"@swc/core": "^1.15.33",
 		"@types/amqplib": "^0.10.8",
 		"@types/archiver": "^7.0.0",
 		"@types/bcrypt": "^6.0.0",
@@ -83,7 +84,6 @@
 		"@types/express": "^5.0.6",
 		"@types/get-image-colors": "^4.0.5",
 		"@types/get-pixels": "^3.3.4",
-		"@types/jest": "^30.0.0",
 		"@types/md5": "^2.3.6",
 		"@types/normalize-path": "^3.0.2",
 		"@types/passport-jwt": "^4.0.1",
@@ -91,14 +91,15 @@
 		"@types/pg": "^8.18.0",
 		"@types/slug": "^5.0.9",
 		"@types/supertest": "^7.2.0",
-		"jest": "^30.3.0",
+		"@vitest/coverage-v8": "^4.1.5",
 		"prisma-types-generator": "patch:prisma-types-generator@npm%3A1.3.2#~/.yarn/patches/prisma-types-generator-npm-1.3.2-d91e9d4063.patch",
 		"source-map-support": "^0.5.20",
 		"supertest": "^7.1.4",
-		"ts-jest": "^29.4.6",
 		"tsconfig-paths": "^4.2.0",
 		"type-fest": "5.6.0",
-		"typescript": "^5.9.3"
+		"typescript": "^5.9.3",
+		"unplugin-swc": "^1.5.9",
+		"vitest": "^4.1.5"
 	},
 	"packageManager": "yarn@4.14.1"
 }
