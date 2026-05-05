@@ -303,7 +303,7 @@ export const PlayerContext = () => {
 								),
 								artwork: currentTrack.track.illustration
 									? {
-											uri: api.getIllustrationURL(
+											uri: getAPI().getIllustrationURL(
 												currentTrack.track.illustration
 													.url,
 												"original",
