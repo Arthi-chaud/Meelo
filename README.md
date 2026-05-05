@@ -1,3 +1,4 @@
+
 <div align="center" style="display: flex; justify-content: center; align-items: center;">
 <img width="500" src="https://github.com/user-attachments/assets/8d9b147f-aad3-4cd7-898b-01e58f65dd7c" />
 </div>
@@ -73,7 +74,7 @@ We love embedded metadata here. Make sure your music is correctly tagged before 
 
 ## :camera: Screenshots
 
-[![](https://github.com/user-attachments/assets/48141241-25ec-4570-a4f1-696c0cdfcaaa)](https://github.com/user-attachments/assets/48141241-25ec-4570-a4f1-696c0cdfcaaa)
+[![](https://github.com/user-attachments/assets/03d0d877-fc76-4078-96d5-af8e2bec3ad0)](https://github.com/user-attachments/assets/03d0d877-fc76-4078-96d5-af8e2bec3ad0)
 
 :point_right: You can find more screenshots of the UI [here](./docs/screenshots/)
 
