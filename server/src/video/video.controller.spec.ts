@@ -15,8 +15,6 @@ import TestPrismaService from "test/test-prisma.service";
 import type { VideoResponse } from "./models/video.response";
 import VideoModule from "./video.module";
 
-jest.setTimeout(60000);
-
 describe("Video Controller", () => {
 	let dummyRepository: TestPrismaService;
 	let app: INestApplication;

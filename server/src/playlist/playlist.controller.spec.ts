@@ -68,7 +68,7 @@ describe("Playlist Controller", () => {
 			id: dummyRepository.user1.id,
 		});
 
-		jest.spyOn(
+		vi.spyOn(
 			SettingsService.prototype,
 			"settingsValues",
 			"get",

@@ -470,7 +470,7 @@ describe("Track Service", () => {
 				songId: dummyRepository.songA1.id,
 			});
 			// housekeeping would have deleted the song
-			expect(() =>
+			return expect(() =>
 				trackService.update(
 					{
 						song: { id: dummyRepository.songA2.id },

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as fs from "node:fs";
+import fs from "node:fs";
 import * as dir from "node:path";
 import { Readable } from "node:stream";
 import { HttpService } from "@nestjs/axios";
@@ -24,7 +24,6 @@ import { Injectable, StreamableFile } from "@nestjs/common";
 import * as Blurhash from "blurhash";
 import md5 from "md5";
 import mime from "mime";
-import { version } from "package.json";
 import sharp from "sharp";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import FileManagerService from "src/file-manager/file-manager.service";
@@ -66,7 +65,7 @@ export default class IllustrationService {
 					await this.httpService.axiosRef.get(illustrationURL, {
 						responseType: "arraybuffer",
 						headers: {
-							"User-Agent": `Meelo v${version}`,
+							"User-Agent": `Meelo v0.0.1`,
 						},
 					})
 				).data,

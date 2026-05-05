@@ -15,8 +15,6 @@ import TestPrismaService from "test/test-prisma.service";
 import IllustrationModule from "./illustration.module";
 import IllustrationService from "./illustration.service";
 
-jest.setTimeout(120000);
-
 describe("Illustration Service", () => {
 	let illustrationService: IllustrationService;
 	let releaseService: ReleaseService;
