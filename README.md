@@ -45,26 +45,31 @@ Meelo has all the basic features you might expect from a music player/server (pl
 - Push Scrobbles to ListenBrainz and LastFM!
 - Download (synced) lyrics or get them from embedded metadata and `.lrc` files
 
-Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues)
+Keep track of the upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues).
 
 <img src="https://github.com/user-attachments/assets/7e1fe7df-638c-42f1-978d-e1cb59f91324" />
 
+## :iphone: Mobile App
+
+Meelo has a mobile app for both Android and iOS :tada:.
+
+You can find the known issues and the list of upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22).
+
+- **Android**: You can download the latest stable APK on the release page. More info [here](https://github.com/Arthi-chaud/Meelo/discussions/1130)
+- **iOS**: The app is distributed using TestFlight. More info [here](https://github.com/Arthi-chaud/Meelo/discussions/1533)
+
+APKs and IPAs are also built whenever code is pushed to the main branch. Check out [this worklow](https://github.com/Arthi-chaud/Meelo/actions/workflows/front-mobile.yml?query=branch%3Amain)
+
 ## 🔧 Setup
+
+:whale: Meelo is shipped though Docker images.
 
 :point_right: To get started, follow the dedicated [wiki](https://github.com/Arthi-chaud/Meelo/wiki)
 
-You'll need a 'clean' collection: either with embedded metadata or standard file/folder architecture. Using iTunes or Beets is a great way to start.
+We love embedded metadata here. Make sure your music is correctly tagged before getting started!
 
-> [!NOTE]  
-> Meelo is shipped though Docker images. You might need to know a bit about Regexes.
-
-## :iphone: Mobile App
-
-Meelo now has an Android app :tada:. You can download the latest stable APK on the release page. 
-
-You can find the known issues and the list of missing/upcoming features [here](https://github.com/Arthi-chaud/Meelo/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Front%20(Mobile)%22).
-
-🤫 An alpha iOS app is being tested right now. Join the group of testers! More info [here](https://github.com/Arthi-chaud/Meelo/discussions/1533)
+> [!NOTE]
+> If you want to rely on the file paths as metadata sources,  you might need to be familiar with Regexes!
 
 ## :camera: Screenshots
 
@@ -76,6 +81,7 @@ You can find the known issues and the list of missing/upcoming features [here](h
 > Some screenshots may be outdated and may not show the state of the latest version of the app. Some minor details may change (e.g. logo, spacing, etc.)
 </details>
 
+
 ## :desktop_computer: Live Demo
 
 We are actively working on a public demo, so that you can try out Meelo. Stay tuned...
@@ -86,6 +92,8 @@ Meelo uses [Weblate](https://weblate.org/en-gb/) to handle translations.
 Feel free to contribute [here](https://hosted.weblate.org/engage/meelo/)!
 
 [![Stats](https://hosted.weblate.org/widget/meelo/front/multi-auto.svg)](https://hosted.weblate.org/engage/meelo/)
+
+🫂 A big thank you to all the translators who contributed!
 
 Any questions about this? Open a discussion [here](https://github.com/Arthi-chaud/Meelo/discussions/categories/translation)!
 
