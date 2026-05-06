@@ -36,7 +36,7 @@
 		"react-blurhash": "^0.3.0",
 		"react-dom": "19.2.4",
 		"react-error-boundary": "^6.0.2",
-		"react-hook-form": "^7.72.0",
+		"react-hook-form": "^7.75.0",
 		"react-hot-toast": "^2.6.0",
 		"react-i18next": "^17.0.6",
 		"react-infinite-scroller": "^1.2.6",
