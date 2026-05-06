@@ -78,7 +78,6 @@
 		"@expo/ngrok": "^4.1.3",
 		"@types/react": "~19.1.10",
 		"@types/react-native-base64": "^0",
-		"eas-cli": "^18.6.0",
 		"typescript": "5.9.3"
 	},
 	"packageManager": "yarn@4.14.1"
