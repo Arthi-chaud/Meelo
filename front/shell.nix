@@ -7,6 +7,7 @@ pkgs.mkShell {
     biome
     yarn-berry
     watchman
+    eas-cli
     cocoapods
     # TODO android toolstack
     javaPackages.compiler.openjdk17
