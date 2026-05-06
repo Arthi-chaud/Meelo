@@ -69,6 +69,7 @@
 		"@prisma/generator-helper": "6.19.3",
 		"@prisma/internals": "6.19.3",
 		"braces": "3.0.3",
+		"semver": "7.7.4",
 		"tar": "7.5.13"
 	},
 	"devDependencies": {
