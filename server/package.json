@@ -45,7 +45,7 @@
 		"fs": "^0.0.1-security",
 		"get-rgba-palette": "^2.0.1",
 		"helmet": "^8.1.0",
-		"http-proxy-middleware": "^3.0.5",
+		"http-proxy-middleware": "^4.0.0",
 		"md5": "^2.3.0",
 		"meilisearch": "^0.56.0",
 		"mime": "^3.0.0",
@@ -68,7 +68,6 @@
 		"jpeg-js": "^0.4.4",
 		"@prisma/generator-helper": "6.19.3",
 		"@prisma/internals": "6.19.3",
-		"braces": "3.0.3",
 		"semver": "7.7.4",
 		"tar": "7.5.13"
 	},
