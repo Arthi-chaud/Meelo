@@ -38,7 +38,7 @@ import { EmptyStateIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
-import { Coverflow } from "~/components/coverflow/coverflow";
+import { Coverflow } from "~/components/coverflow";
 import { EmptyState } from "~/components/empty-state";
 import { GoToWebSettingsButton } from "~/components/go-to-web";
 import { StaticHeader } from "~/components/header";
@@ -129,6 +129,10 @@ export default function Root() {
 			data={newlyAddedAlbums.data?.pages.at(0)?.items ?? []}
 			config={{ spacing: 200, rotation: 70 }}
 			itemKey={(album) => album.slug}
+			onChange={(idx) =>
+				console.log(`Selected: ${newlyAddedAlbums.items![idx].name}`)
+			}
+			onScrollStart={() => console.log("Started Scrolling")}
 			renderItem={(album) => (
 				<Illustration
 					illustration={album.illustration}

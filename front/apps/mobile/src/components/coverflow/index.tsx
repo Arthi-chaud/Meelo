@@ -31,6 +31,8 @@ type Props<T> = {
 	sensitivity?: Sensitivity;
 	deceleration?: Deceleration;
 	initialSelection?: number;
+	onScrollStart?: () => void;
+	onChange?: (index: number) => void;
 	data: T[];
 	renderItem: (item: T) => ReactNode;
 	itemKey: (item: T) => string;
@@ -38,7 +40,6 @@ type Props<T> = {
 		Omit<ComponentProps<typeof CoverflowItem>, "children" | "scroll">
 	>;
 	onPress?: (itemIdx: number) => void;
-	onChange?: (scrollPos: number) => void;
 	style?: ViewStyle;
 };
 
@@ -72,6 +73,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 		if (newSelection !== selection) {
 			// NOTE: Guard is not necessary
 			setSelection(newSelection);
+			props.onScrollStart?.();
 		}
 	};
 	useAnimatedReaction(
@@ -92,8 +94,11 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			Math.max(0, childrenCount - 1),
 		);
 		if (finalPos !== scrollPos.value) {
-			props.onChange?.(finalPos);
-			scrollX.value = withSpring(finalPos);
+			scrollX.value = withSpring(finalPos, undefined, () => {
+				if (props.onChange) {
+					runOnJS(props.onChange)(finalPos);
+				}
+			});
 		}
 	};
 	const [selection, setSelection] = useState(props.initialSelection ?? 0);
