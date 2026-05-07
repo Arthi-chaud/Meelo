@@ -64,7 +64,11 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	const onScroll = (value: number) => {
 		scrollPos.value = value;
 
-		const newSelection = clamp(Math.round(value), 0, childrenCount - 1);
+		const newSelection = clamp(
+			Math.round(value),
+			0,
+			Math.max(0, childrenCount - 1),
+		);
 		if (newSelection !== selection) {
 			// NOTE: Guard is not necessary
 			setSelection(newSelection);
@@ -82,7 +86,11 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	const snapToPosition = (pos?: number) => {
 		pos ??= scrollPos.value;
 
-		const finalPos = clamp(Math.round(pos), 0, childrenCount - 1);
+		const finalPos = clamp(
+			Math.round(pos),
+			0,
+			Math.max(0, childrenCount - 1),
+		);
 		if (finalPos !== scrollPos.value) {
 			props.onChange?.(finalPos);
 			scrollX.value = withSpring(finalPos);
@@ -91,7 +99,11 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	const [selection, setSelection] = useState(props.initialSelection ?? 0);
 	useEffect(() => {
 		setSelection((oldSelection) => {
-			const newSelection = clamp(oldSelection, 0, props.data.length - 1);
+			const newSelection = clamp(
+				oldSelection,
+				0,
+				Math.max(0, childrenCount - 1),
+			);
 			if (newSelection !== oldSelection) {
 				scrollX.value = newSelection;
 			}

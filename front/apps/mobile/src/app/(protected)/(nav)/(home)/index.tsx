@@ -125,13 +125,13 @@ export default function Root() {
 	}, []);
 	return (
 		<Coverflow
-			style={{ flex: 1, paddingVertical: 30 }}
+			style={{ height: "70%", width: "100%" }}
 			data={newlyAddedAlbums.data?.pages.at(0)?.items ?? []}
 			config={{ spacing: 200, rotation: 70 }}
-			itemKey={(album) => album?.slug ?? "idk"}
+			itemKey={(album) => album.slug}
 			renderItem={(album) => (
 				<Illustration
-					illustration={album?.illustration}
+					illustration={album.illustration}
 					quality="medium"
 				/>
 			)}

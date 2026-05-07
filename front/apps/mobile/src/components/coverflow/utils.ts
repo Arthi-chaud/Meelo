@@ -29,8 +29,10 @@ export const orderChildren = <T>(
 	selection: number,
 ): [number, T][] => {
 	const children: [number, T][] = [];
+	selection = Math.min(selection, data.length - 1);
+
 	if (data.length === 0) {
-		return children;
+		return [];
 	}
 
 	// First the children before selection
