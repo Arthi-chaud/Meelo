@@ -120,11 +120,11 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			if (
 				selection > 0 &&
 				selection < childrenCount - 2 &&
-				Math.abs(event.translationX) > 1
+				Math.abs(event.velocityX) > 1
 			) {
 				const velocity =
-					-Math.sign(event.translationX) *
-					(clamp(Math.abs(event.translationX), 3, 5) / sensitivity);
+					-Math.sign(event.velocityX) *
+					(clamp(Math.abs(event.velocityX), 3, 5) / sensitivity);
 				scrollX.value = withDecay(
 					{
 						velocity,
