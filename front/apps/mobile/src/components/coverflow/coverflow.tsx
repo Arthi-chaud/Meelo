@@ -8,7 +8,7 @@ import {
 	useState,
 } from "react";
 import { View, type ViewStyle } from "react-native";
-import { Gesture } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import {
 	cancelAnimation,
 	clamp,
@@ -78,6 +78,16 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			}
 		},
 	);
+
+	const snapToPosition = (pos?: number) => {
+		pos ??= scrollPos.current;
+
+		const finalPos = clamp(Math.round(pos), 0, childrenCount - 1);
+		if (finalPos !== scrollPos.current) {
+			props.onChange?.(finalPos);
+			scrollX.value = withSpring(finalPos);
+		}
+	};
 	const [selection, setSelection] = useState(props.initialSelection ?? 0);
 	useEffect(() => {
 		setSelection((oldSelection) => {
@@ -124,25 +134,15 @@ export const Coverflow = <T,>(props: Props<T>) => {
 					},
 					(finished) => {
 						if (finished) {
-							snapToPosition();
+							runOnJS(snapToPosition)();
 						}
 					},
 				);
 			} else {
-				snapToPosition();
+				runOnJS(snapToPosition)();
 			}
 		});
 
-	//TODO: renderItem, render
-	const snapToPosition = (pos?: number) => {
-		pos ??= scrollPos.current;
-
-		const finalPos = clamp(Math.round(pos), 0, childrenCount - 1);
-		if (finalPos !== scrollPos.current) {
-			props.onChange?.(finalPos);
-			scrollX.value = withSpring(finalPos);
-		}
-	};
 	const onSelect = (idx: number) => {
 		// Check if the current selection is "exactly" the same
 		if (idx === Math.round(scrollPos.current)) {
@@ -151,7 +151,6 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			snapToPosition(idx);
 		}
 	};
-
 	const renderItem = ([position, item]: [number, T]) => {
 		if (!width) {
 			return null;
@@ -174,18 +173,19 @@ export const Coverflow = <T,>(props: Props<T>) => {
 		);
 	};
 	return (
-		<View
-			style={[styles.container, props.style]}
-			{...props}
-			onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-			{...panResponder.handlers}
-		>
-			{orderedChildren.map((item) => (
-				<Fragment key={props.itemKey(item[1])}>
-					{renderItem(item)}
-				</Fragment>
-			))}
-		</View>
+		<GestureDetector gesture={panResponder}>
+			<View
+				style={[styles.container, props.style]}
+				{...props}
+				onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+			>
+				{orderedChildren.map((item) => (
+					<Fragment key={props.itemKey(item[1])}>
+						{renderItem(item)}
+					</Fragment>
+				))}
+			</View>
+		</GestureDetector>
 	);
 };
 
