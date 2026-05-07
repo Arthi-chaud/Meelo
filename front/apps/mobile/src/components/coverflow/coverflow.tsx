@@ -4,7 +4,6 @@ import {
 	type ReactNode,
 	useEffect,
 	useMemo,
-	useRef,
 	useState,
 } from "react";
 import { View, type ViewStyle } from "react-native";
@@ -12,6 +11,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import {
 	cancelAnimation,
 	clamp,
+	ReduceMotion,
 	useAnimatedReaction,
 	useSharedValue,
 	withDecay,
@@ -62,7 +62,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	const offsetX = useSharedValue(0);
 
 	const onScroll = (value: number) => {
-		scrollPos.current = value;
+		scrollPos.value = value;
 
 		const newSelection = clamp(Math.round(value), 0, childrenCount - 1);
 		if (newSelection !== selection) {
@@ -80,10 +80,10 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	);
 
 	const snapToPosition = (pos?: number) => {
-		pos ??= scrollPos.current;
+		pos ??= scrollPos.value;
 
 		const finalPos = clamp(Math.round(pos), 0, childrenCount - 1);
-		if (finalPos !== scrollPos.current) {
+		if (finalPos !== scrollPos.value) {
 			props.onChange?.(finalPos);
 			scrollX.value = withSpring(finalPos);
 		}
@@ -98,7 +98,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			return newSelection;
 		});
 	}, [props.data]);
-	const scrollPos = useRef(props.initialSelection ?? 0);
+	const scrollPos = useSharedValue(props.initialSelection ?? 0);
 	const childrenCount = useMemo(() => props.data.length, [props.data]);
 	const orderedChildren = useMemo(
 		() => orderChildren(props.data, selection),
@@ -116,7 +116,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			scrollX.value = offsetX.value - event.translationX / sensitivity;
 		})
 		.onEnd((event) => {
-			const selection = Math.round(scrollPos.current);
+			const selection = Math.round(scrollPos.value);
 			if (
 				selection > 0 &&
 				selection < childrenCount - 2 &&
@@ -127,16 +127,14 @@ export const Coverflow = <T,>(props: Props<T>) => {
 					(clamp(Math.abs(event.velocityX), 3, 5) / sensitivity);
 				scrollX.value = withDecay(
 					{
+						//TODO: Allow fast scroll and inertia
 						velocity,
+						reduceMotion: ReduceMotion.Never,
 						deceleration: convertDeceleration(
 							props.deceleration ?? "normal",
 						),
 					},
-					(finished) => {
-						if (finished) {
-							runOnJS(snapToPosition)();
-						}
-					},
+					() => runOnJS(snapToPosition)(),
 				);
 			} else {
 				runOnJS(snapToPosition)();
@@ -145,7 +143,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 
 	const onSelect = (idx: number) => {
 		// Check if the current selection is "exactly" the same
-		if (idx === Math.round(scrollPos.current)) {
+		if (idx === Math.round(scrollPos.value)) {
 			props.onPress?.(idx);
 		} else {
 			snapToPosition(idx);
