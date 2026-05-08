@@ -17,10 +17,12 @@
  */
 
 import { useLocalSearchParams } from "expo-router";
+import { useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { getAlbums, getArtist, getGenre, getLabel } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
+import { CoverflowIcon } from "@/ui/icons";
 import { useQuery } from "~/api";
 import { StaticHeader } from "~/components/header";
 import {
@@ -32,6 +34,7 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { AlbumItem, AlbumTile } from "~/components/item/resource/album";
 import { ArtistHeader } from "~/components/resource-header";
+import { coverflowQueryAtom } from "~/state/coverflow";
 
 export default function AlbumBrowseView() {
 	const { t } = useTranslation();
@@ -63,10 +66,22 @@ export default function AlbumBrowseView() {
 		(artistId) => getArtist(artistId, ["illustration"]),
 		artistId,
 	);
+	const setCoverflowQuery = useSetAtom(coverflowQueryAtom);
 
 	const { data: genre } = useQuery((genreId) => getGenre(genreId), genreId);
 	const { data: label } = useQuery((labelId) => getLabel(labelId), labelId);
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
+	const query = getAlbums(
+		{
+			library: libraries,
+			type: types,
+			artist: compilations ? "compilations" : artistId,
+			genre: genreId,
+			label: labelId,
+		},
+		{ sortBy: sort ?? "name", order: order ?? "asc" },
+		["artists", "illustration"],
+	);
 	return (
 		<StaticHeader
 			options={{
@@ -88,18 +103,16 @@ export default function AlbumBrowseView() {
 					layout: layoutControl,
 					sort: sortControl,
 					filters: [libraryFilterControl, albumTypeFilterControl],
+					actions: [
+						{
+							icon: CoverflowIcon,
+							href: "/coverflow",
+							onPress: () => setCoverflowQuery(query),
+							disabled: false, // TODO: should be true if query is empty
+						},
+					],
 				}}
-				query={getAlbums(
-					{
-						library: libraries,
-						type: types,
-						artist: compilations ? "compilations" : artistId,
-						genre: genreId,
-						label: labelId,
-					},
-					{ sortBy: sort ?? "name", order: order ?? "asc" },
-					["artists", "illustration"],
-				)}
+				query={query}
 				render={(album) => (
 					<Item
 						album={album}
