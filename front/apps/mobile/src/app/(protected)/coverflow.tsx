@@ -27,7 +27,9 @@ export default function CoverflowView() {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const query = useAtomValue(coverflowQueryAtom);
-	const { items } = useInfiniteQuery(() => query!); // TODO:
+	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
+		useInfiniteQuery(() => query!); // TODO:
+	const LOADNEXT_THRESHOLD = 10;
 	useEffect(() => {
 		if (items?.length === 0) {
 			router.back();
@@ -36,14 +38,18 @@ export default function CoverflowView() {
 
 	useEffect(() => {
 		if (isMobile) {
-			ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.LANDSCAPE,
+			ScreenOrientation.unlockAsync().then(() =>
+				ScreenOrientation.lockAsync(
+					ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
+				),
 			);
 		}
 		return () => {
 			if (isMobile) {
-				ScreenOrientation.lockAsync(
-					ScreenOrientation.OrientationLock.PORTRAIT_UP,
+				ScreenOrientation.unlockAsync().then(() =>
+					ScreenOrientation.lockAsync(
+						ScreenOrientation.OrientationLock.PORTRAIT_UP,
+					),
 				);
 			}
 		};
@@ -61,6 +67,7 @@ export default function CoverflowView() {
 		<>
 			<Stack.Screen
 				options={{
+					orientation: "landscape",
 					headerShown: false,
 					navigationBarHidden: true,
 					animation: "fade",
@@ -75,7 +82,14 @@ export default function CoverflowView() {
 					config={{ spacing: 175, rotation: 70 }}
 					data={items ?? []}
 					itemKey={(album) => album.slug}
-					onScrollStart={() => {
+					onScroll={(pos) => {
+						if (
+							!isFetchingNextPage &&
+							hasNextPage &&
+							pos >= (items?.length ?? 0) - LOADNEXT_THRESHOLD
+						) {
+							fetchNextPage();
+						}
 						textOpacity.value = withTiming(0, animations.fades);
 					}}
 					onChange={(idx) => {
@@ -102,6 +116,7 @@ export default function CoverflowView() {
 								<Text
 									content={selectedItem.name ?? ""}
 									variant="resourceTitle"
+									numberOfLines={1}
 								/>
 							</Pressable>
 							<Pressable
@@ -125,6 +140,7 @@ export default function CoverflowView() {
 											: t("compilationArtistLabel")
 									}
 									variant="secondaryTitle"
+									numberOfLines={1}
 								/>
 							</Pressable>
 						</>
@@ -141,6 +157,7 @@ const styles = StyleSheet.create((theme) => ({
 		gap: theme.gap(3),
 		paddingVertical: theme.gap(3),
 		justifyContent: "center",
+		alignItems: "center",
 	},
 	coverflow: {
 		height: "70%",
@@ -148,7 +165,7 @@ const styles = StyleSheet.create((theme) => ({
 		maxHeight: 3000,
 	},
 	text: {
-		width: "100%",
+		width: "80%",
 		alignItems: "center",
 		gap: theme.gap(1.5),
 	},

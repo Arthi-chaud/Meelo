@@ -31,7 +31,7 @@ type Props<T> = {
 	sensitivity?: Sensitivity;
 	deceleration?: Deceleration;
 	initialSelection?: number;
-	onScrollStart?: () => void;
+	onScroll?: (scrollX: number) => void;
 	onChange?: (index: number) => void;
 	data: T[];
 	renderItem: (item: T) => ReactNode;
@@ -73,7 +73,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 		if (newSelection !== selection) {
 			// NOTE: Guard is not necessary
 			setSelection(newSelection);
-			props.onScrollStart?.();
+			props.onScroll?.(scrollPos.value);
 		}
 	};
 	useAnimatedReaction(
