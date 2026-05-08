@@ -1,6 +1,8 @@
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import type { SetOptional } from "type-fest";
 import type { FilterControl } from "@/infinite-controls/filters/control";
 import type { LayoutControl } from "@/infinite-controls/layout";
 import type { SelectedSort, SortControl } from "@/infinite-controls/sort";
@@ -13,7 +15,7 @@ type Props<SortingKey extends string> = {
 	layout?: LayoutControl;
 	sort?: SortControl<SortingKey>;
 	filters?: FilterControl<any>[];
-	actions?: Omit<Action, "href">[];
+	actions?: SetOptional<Action, "label">[];
 };
 
 export const Controls = <SortingKey extends string>({
@@ -23,6 +25,7 @@ export const Controls = <SortingKey extends string>({
 	actions,
 }: Props<SortingKey>) => {
 	const { t } = useTranslation();
+	const router = useRouter();
 	return (
 		<View style={styles.row}>
 			<View style={styles.row}>
@@ -116,9 +119,12 @@ export const Controls = <SortingKey extends string>({
 						width="fitContent"
 						key={idx}
 						icon={action.icon}
-						title={t(action.label)}
+						title={action.label ? t(action.label) : undefined}
 						onPress={() => {
 							action.onPress?.();
+							if (action.href) {
+								router.push(action.href);
+							}
 						}}
 					/>
 				))}
