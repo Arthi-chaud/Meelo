@@ -23,7 +23,6 @@ export default (_: ConfigContext): ExpoConfig => ({
 		bundleIdentifier: "com.arthichaud.meelo",
 		appleTeamId: "HJ45QP4WWR",
 		supportsTablet: true,
-		requireFullScreen: true, // NOTE: When set to false, the coverflow does not rotate automatically
 		config: { usesNonExemptEncryption: false },
 		infoPlist: {
 			UIViewControllerBasedStatusBarAppearance: true,

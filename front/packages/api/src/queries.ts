@@ -374,7 +374,7 @@ export const getReleaseTracklist = <I extends SongInclude | never = never>(
 	random?: number,
 ): InfiniteQuery<TracklistItemWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
-		route: `/releases/${slugOrId.toString()}/tracklist`,
+		route: `/releases/${slugOrId?.toString()}/tracklist`,
 		include,
 		filter: { exclusive: exclusiveOnly ? "true" : undefined, random },
 		validator: PaginatedResponse(TracklistItemWithRelations(include ?? [])),

@@ -36,7 +36,7 @@ type Props<T> = {
 	onScroll?: (scrollX: number) => void;
 	onChange?: (index: number) => void;
 	data: T[];
-	renderItem: (item: T) => ReactNode;
+	renderItem: (item: [number, T]) => ReactNode;
 	itemKey: (item: T) => string;
 	config?: Partial<
 		Omit<ComponentProps<typeof CoverflowItem>, "children" | "scroll">
@@ -177,14 +177,14 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			snapToPosition(idx);
 		}
 	};
-	const renderItem = ([position, item]: [number, T]) => {
+	const renderItem = (item: [number, T]) => {
 		if (!width) {
 			return null;
 		}
 		return (
 			<CoverflowItem
 				scroll={scrollX}
-				position={position}
+				position={item[0]}
 				spacing={props.config?.spacing ?? 100}
 				wingSpan={props.config?.wingSpan ?? 80}
 				rotation={props.config?.rotation ?? 50}
@@ -192,7 +192,7 @@ export const Coverflow = <T,>(props: Props<T>) => {
 				perspective={props.config?.perspective ?? 800}
 				scaleDown={props.config?.scaleDown ?? 0.8}
 				scaleFurther={props.config?.scaleFurther ?? 0.75}
-				onSelect={() => onSelect(position)}
+				onSelect={() => onSelect(item[0])}
 			>
 				{props.renderItem(item)}
 			</CoverflowItem>
