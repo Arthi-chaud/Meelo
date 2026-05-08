@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import type { AlbumWithRelations } from "@/models/album";
 import { formatArtists_ } from "@/utils/format-artists";
 import { useInfiniteQuery } from "~/api";
@@ -22,14 +22,13 @@ import { Text } from "~/primitives/text";
 import { coverflowQueryAtom } from "~/state/coverflow";
 import { animations } from "~/theme";
 
+const LOADNEXT_THRESHOLD = 10;
 export default function CoverflowView() {
-	const isMobile = Device.deviceType !== Device.DeviceType.TABLET;
 	const { t } = useTranslation();
 	const router = useRouter();
 	const query = useAtomValue(coverflowQueryAtom);
 	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
 		useInfiniteQuery(() => query!); // TODO:
-	const LOADNEXT_THRESHOLD = 10;
 	useEffect(() => {
 		if (items?.length === 0) {
 			router.back();
@@ -37,19 +36,14 @@ export default function CoverflowView() {
 	}, [query, items]);
 
 	useEffect(() => {
+		const isMobile = Device.deviceType === Device.DeviceType.PHONE;
 		if (isMobile) {
-			ScreenOrientation.unlockAsync().then(() =>
-				ScreenOrientation.lockAsync(
-					ScreenOrientation.OrientationLock.LANDSCAPE_LEFT,
-				),
-			);
+			ScreenOrientation.unlockAsync();
 		}
 		return () => {
 			if (isMobile) {
-				ScreenOrientation.unlockAsync().then(() =>
-					ScreenOrientation.lockAsync(
-						ScreenOrientation.OrientationLock.PORTRAIT_UP,
-					),
+				ScreenOrientation.lockAsync(
+					ScreenOrientation.OrientationLock.PORTRAIT_UP,
 				);
 			}
 		};
@@ -62,6 +56,9 @@ export default function CoverflowView() {
 		selectedItem?.artists,
 	);
 	const textOpacity = useSharedValue(1);
+	const {
+		rt: { isPortrait },
+	} = useUnistyles();
 	useSetKeyIllustration(selectedItem);
 	return (
 		<>
@@ -69,6 +66,7 @@ export default function CoverflowView() {
 				options={{
 					orientation: "landscape",
 					headerShown: false,
+					statusBarHidden: true,
 					navigationBarHidden: true,
 					animation: "fade",
 					gestureEnabled: false,
@@ -79,7 +77,11 @@ export default function CoverflowView() {
 				<BackgroundGradient />
 				<Coverflow
 					style={styles.coverflow}
-					config={{ spacing: 175, rotation: 70 }}
+					config={
+						isPortrait
+							? { spacing: 100 }
+							: { spacing: 175, rotation: 70 }
+					}
 					data={items ?? []}
 					itemKey={(album) => album.slug}
 					onScroll={(pos) => {
@@ -108,7 +110,7 @@ export default function CoverflowView() {
 						<>
 							<Pressable
 								onPress={() => {
-									router.dismissTo(
+									router.replace(
 										`/releases/${selectedItem.masterId}`,
 									);
 								}}
@@ -125,7 +127,7 @@ export default function CoverflowView() {
 									if (selectedItem.artists.length > 1) {
 										openPickArtistModal();
 									} else {
-										router.dismissTo(
+										router.replace(
 											`/artists/${selectedItem.artists[0].id}`,
 										);
 									}
@@ -151,7 +153,7 @@ export default function CoverflowView() {
 	);
 }
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme, rt) => ({
 	root: {
 		flex: 1,
 		gap: theme.gap(3),
@@ -160,9 +162,9 @@ const styles = StyleSheet.create((theme) => ({
 		alignItems: "center",
 	},
 	coverflow: {
-		height: "70%",
+		height: rt.isPortrait ? "20%" : "70%",
 		width: "100%",
-		maxHeight: 3000,
+		maxHeight: rt.isPortrait ? 500 : 3000,
 	},
 	text: {
 		width: "80%",

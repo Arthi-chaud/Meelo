@@ -25,30 +25,16 @@ export const convertDeceleration = (deceleration: Deceleration) => {
 };
 
 export const orderChildren = <T>(
-	data: T[],
+	data: [number, T][],
 	selection: number,
 ): [number, T][] => {
-	const children: [number, T][] = [];
-	selection = Math.min(selection, data.length - 1);
+	return data.sort(([a], [b]) => {
+		const aDist = Math.abs(a - selection);
+		const bDist = Math.abs(b - selection);
 
-	if (data.length === 0) {
-		return [];
-	}
-
-	// First the children before selection
-	for (let i = 0; i < selection; i += 1) {
-		children.push([i, data[i]]);
-	}
-
-	// Next the children after selection in reverse order
-	for (let i = data.length - 1; i > selection; i -= 1) {
-		children.push([i, data[i]]);
-	}
-
-	// Finally the selection at the top
-	children.push([selection, data[selection]]);
-
-	return children;
+		// center item last so it appears on top
+		return bDist - aDist;
+	});
 };
 export const clamp = (value: number, min: number, max: number) => {
 	if (value < min) {

@@ -1,3 +1,4 @@
+import * as ScreenOrientation from "expo-screen-orientation";
 import {
 	type ComponentProps,
 	Fragment,
@@ -18,6 +19,7 @@ import {
 	withSpring,
 } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
+import { runOnJS } from "react-native-worklets";
 import { CoverflowItem } from "./item";
 import {
 	convertDeceleration,
@@ -43,8 +45,6 @@ type Props<T> = {
 	style?: ViewStyle;
 };
 
-import * as ScreenOrientation from "expo-screen-orientation";
-import { runOnJS } from "react-native-worklets";
 export const Coverflow = <T,>(props: Props<T>) => {
 	useEffect(() => {
 		ScreenOrientation.unlockAsync();
@@ -117,10 +117,21 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	}, [props.data]);
 	const scrollPos = useSharedValue(props.initialSelection ?? 0);
 	const childrenCount = useMemo(() => props.data.length, [props.data]);
-	const orderedChildren = useMemo(
-		() => orderChildren(props.data, selection),
-		[props.data, selection],
-	);
+
+	const VISIBLE_RANGE = 10;
+	const visibleChildren = useMemo(() => {
+		const start = Math.max(0, selection - VISIBLE_RANGE);
+		const end = Math.min(props.data.length - 1, selection + VISIBLE_RANGE);
+
+		const items: [number, T][] = [];
+
+		for (let i = start; i <= end; i++) {
+			items.push([i, props.data[i]]);
+		}
+
+		return orderChildren(items, selection);
+	}, [props.data, selection]);
+
 	const panResponder = Gesture.Pan()
 		// Only start the pan responder when there is some movement
 		.activeOffsetX([-10, 10])
@@ -190,11 +201,13 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	return (
 		<GestureDetector gesture={panResponder}>
 			<View
+				renderToHardwareTextureAndroid
+				shouldRasterizeIOS
 				style={[styles.container, props.style]}
 				{...props}
 				onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
 			>
-				{orderedChildren.map((item) => (
+				{visibleChildren.map((item) => (
 					<Fragment key={props.itemKey(item[1])}>
 						{renderItem(item)}
 					</Fragment>
