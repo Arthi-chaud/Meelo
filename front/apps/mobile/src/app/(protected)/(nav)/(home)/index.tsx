@@ -38,11 +38,9 @@ import { EmptyStateIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
-import { Coverflow } from "~/components/coverflow";
 import { EmptyState } from "~/components/empty-state";
 import { GoToWebSettingsButton } from "~/components/go-to-web";
 import { StaticHeader } from "~/components/header";
-import { Illustration } from "~/components/illustration";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
@@ -110,36 +108,6 @@ export default function Root() {
 			"illustration",
 			"artists",
 		]),
-	);
-	useEffect(() => {
-		ScreenOrientation.unlockAsync().then(() =>
-			ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.LANDSCAPE,
-			),
-		);
-		return () => {
-			ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT_UP,
-			);
-		};
-	}, []);
-	return (
-		<Coverflow
-			style={{ height: "70%", width: "100%" }}
-			data={newlyAddedAlbums.data?.pages.at(0)?.items ?? []}
-			config={{ spacing: 200, rotation: 70 }}
-			itemKey={(album) => album.slug}
-			onChange={(idx) =>
-				console.log(`Selected: ${newlyAddedAlbums.items![idx].name}`)
-			}
-			onScrollStart={() => console.log("Started Scrolling")}
-			renderItem={(album) => (
-				<Illustration
-					illustration={album.illustration}
-					quality="medium"
-				/>
-			)}
-		/>
 	);
 	const newlyAddedArtists = useInfiniteQuery(() =>
 		getArtists({}, { sortBy: "addDate", order: "desc" }, ["illustration"]),
