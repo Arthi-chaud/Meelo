@@ -1,30 +1,22 @@
 import { useRouter } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Pressable as Touchable, View } from "react-native";
-import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import type { AlbumWithRelations } from "@/models/album";
-import { formatArtists_ } from "@/utils/format-artists";
 import { useInfiniteQuery } from "~/api";
 import {
 	BackgroundGradient,
 	useSetKeyIllustration,
 } from "~/components/background-gradient";
 import { Illustration } from "~/components/illustration";
-import { usePickArtistModal } from "~/components/pick-artist";
-import { Pressable } from "~/primitives/pressable";
-import { Text } from "~/primitives/text";
 import { coverflowQueryAtom } from "~/state/coverflow";
-import { animations } from "~/theme";
 import { Coverflow as CoverflowComponent } from "./component";
 import { FlipCard } from "./flipcard";
 import { FlippedCard } from "./flipped";
+import { Footer } from "./footer";
+import type { AlbumT } from "./utils";
 
 const LOADNEXT_THRESHOLD = 10;
-
-type AlbumT = AlbumWithRelations<"artists" | "illustration">;
 
 const Coverflow = withUnistyles(CoverflowComponent, (_, rt) => ({
 	config: rt.isPortrait ? { spacing: 100 } : { spacing: 175, rotation: 70 },
@@ -44,7 +36,7 @@ export default function CoverflowView() {
 		items?.at(0),
 	);
 
-	const textOpacity = useSharedValue(1);
+	const [isScrolling, setIsScrolling] = useState(false);
 	const [flippedItemIdx, setFlippedItemIdx] = useState<number | null>(null);
 	useSetKeyIllustration(selectedItem);
 	return (
@@ -63,16 +55,18 @@ export default function CoverflowView() {
 				style={styles.coverflow}
 				data={items ?? []}
 				itemKey={(album) => (album as AlbumT).slug}
-				onPress={(idx) =>
+				onPress={(idx) => {
 					setFlippedItemIdx((oldIdx) => {
 						if (oldIdx === idx) {
 							return null;
 						}
 						return idx;
-					})
-				}
+					});
+					setIsScrolling(false);
+				}}
 				onScroll={(pos) => {
 					setFlippedItemIdx(null);
+					setIsScrolling(true);
 					if (
 						!isFetchingNextPage &&
 						hasNextPage &&
@@ -80,13 +74,10 @@ export default function CoverflowView() {
 					) {
 						fetchNextPage();
 					}
-					if (textOpacity.value) {
-						textOpacity.value = withTiming(0, animations.fades);
-					}
 				}}
 				onChange={(idx) => {
 					setSelectedItem(items?.at(idx));
-					textOpacity.value = withTiming(1, animations.fades);
+					setIsScrolling(false);
 				}}
 				renderItem={(item) => {
 					const [idx, album] = item as [number, AlbumT];
@@ -110,58 +101,14 @@ export default function CoverflowView() {
 					);
 				}}
 			/>
-			<Animated.View style={[styles.text, { opacity: textOpacity }]}>
-				{selectedItem && <TextFooter selectedItem={selectedItem} />}
-			</Animated.View>
+			<Footer
+				isScrolling={isScrolling}
+				selectedItem={selectedItem}
+				style={styles.footer}
+			/>
 		</View>
 	);
 }
-
-const TextFooter = ({ selectedItem }: { selectedItem: AlbumT }) => {
-	const { t } = useTranslation();
-	const router = useRouter();
-	const { openModal: openPickArtistModal } = usePickArtistModal(
-		selectedItem?.artists,
-	);
-	return (
-		<>
-			<Pressable
-				onPress={() => {
-					router.replace(`/releases/${selectedItem.masterId}`);
-				}}
-			>
-				<Text
-					content={selectedItem.name ?? ""}
-					variant="resourceTitle"
-					numberOfLines={1}
-				/>
-			</Pressable>
-			<Pressable
-				disabled={selectedItem.artists.length === 0}
-				onPress={() => {
-					if (selectedItem.artists.length > 1) {
-						openPickArtistModal();
-					} else {
-						router.replace(
-							`/artists/${selectedItem.artists[0].id}`,
-						);
-					}
-				}}
-			>
-				<Text
-					content={
-						selectedItem.artists.length !== 0
-							? formatArtists_(selectedItem.artists)
-							: t("compilationArtistLabel")
-					}
-					variant="secondaryTitle"
-					numberOfLines={1}
-				/>
-			</Pressable>
-		</>
-	);
-};
-
 const styles = StyleSheet.create((theme, rt) => ({
 	root: {
 		flex: 1,
@@ -176,11 +123,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 		width: "100%",
 		maxHeight: rt.isPortrait ? 500 : 3000,
 	},
-	text: {
-		width: "80%",
-		alignItems: "center",
-		gap: theme.gap(1.5),
-	},
+	footer: { width: "90%" },
 	card: {
 		width: "100%",
 		height: "100%",

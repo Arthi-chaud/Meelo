@@ -44,12 +44,12 @@ export const FlippedCard = ({
 	const playFromTracklist = useSetAtom(playFromInfiniteQuery);
 	const onPress = useCallback(
 		(track: { id: number }) => {
-			// playFromTracklist(
-			// 	queryForPlayer(),
-			// 	queryClient,
-			// 	undefined,
-			// 	track.id,
-			// );
+			playFromTracklist(
+				queryForPlayer(),
+				queryClient,
+				undefined,
+				track.id,
+			);
 		},
 		[playFromTracklist, queryForPlayer, queryClient],
 	);
