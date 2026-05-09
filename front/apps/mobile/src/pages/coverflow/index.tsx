@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
-import { Pressable as Touchable, View } from "react-native";
+import { Platform, Pressable as Touchable, View } from "react-native";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import { useInfiniteQuery } from "~/api";
 import {
@@ -18,9 +18,31 @@ import type { AlbumT } from "./utils";
 
 const LOADNEXT_THRESHOLD = 10;
 
-const Coverflow = withUnistyles(CoverflowComponent, (_, rt) => ({
-	config: rt.isPortrait ? { spacing: 100 } : { spacing: 175, rotation: 70 },
+const coverflowHeight = (screenHeight: number, isPortrait = false) =>
+	Math.max(400, screenHeight * (isPortrait ? 0.25 : 0.65));
+
+const coverflowStyles = StyleSheet.create((_, rt) => ({
+	coverflow: {
+		zIndex: 2, // We want flipcard to be above the text
+		height: rt.isPortrait ? "25%" : "65%",
+		width: "100%",
+		maxHeight: 400,
+	},
 }));
+
+const Coverflow = withUnistyles(CoverflowComponent, (_, rt) => {
+	const h = coverflowHeight(rt.screen.height, rt.isPortrait);
+	const w = h;
+	const sideWidth = w;
+	return {
+		config: {
+			spacing: sideWidth / 2,
+			rotation: Platform.OS === "ios" ? 50 : 40,
+			wingSpan: sideWidth / 5,
+		},
+	};
+});
+
 export default function CoverflowView() {
 	const router = useRouter();
 	const query = useAtomValue(coverflowQueryAtom);
@@ -52,7 +74,7 @@ export default function CoverflowView() {
 				/>
 			)}
 			<Coverflow
-				style={styles.coverflow}
+				style={coverflowStyles.coverflow}
 				data={items ?? []}
 				itemKey={(album) => (album as AlbumT).slug}
 				onPress={(idx) => {
@@ -101,11 +123,9 @@ export default function CoverflowView() {
 					);
 				}}
 			/>
-			<Footer
-				isScrolling={isScrolling}
-				selectedItem={selectedItem}
-				style={styles.footer}
-			/>
+			<View style={styles.footer}>
+				<Footer isScrolling={isScrolling} selectedItem={selectedItem} />
+			</View>
 		</View>
 	);
 }
@@ -116,12 +136,6 @@ const styles = StyleSheet.create((theme, rt) => ({
 		paddingVertical: theme.gap(3),
 		justifyContent: "center",
 		alignItems: "center",
-	},
-	coverflow: {
-		zIndex: 2, // We want flipcard to be above the text
-		height: rt.isPortrait ? "20%" : "70%",
-		width: "100%",
-		maxHeight: rt.isPortrait ? 500 : 3000,
 	},
 	footer: { width: "90%" },
 	card: {

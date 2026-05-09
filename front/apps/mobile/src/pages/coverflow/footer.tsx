@@ -24,7 +24,7 @@ import type { AlbumT } from "./utils";
 
 type Props = {
 	selectedItem: AlbumT | undefined;
-	style: ViewStyle;
+	style?: ViewStyle;
 	isScrolling: boolean;
 };
 
@@ -36,17 +36,22 @@ export const Footer = ({ selectedItem, isScrolling, style }: Props) => {
 	}, [isScrolling]);
 	return (
 		<View style={[styles.root, style]}>
-			<Button
-				icon={BackIcon}
-				variant="text"
-				onPress={() => router.back()}
-			/>
-			<Animated.View style={[{ opacity: textOpacity }]}>
+			<View style={styles.trailing}>
+				<Button
+					icon={BackIcon}
+					onPress={() => router.back()}
+					width="fitContent"
+					variant="text"
+				/>
+			</View>
+			<Animated.View style={[{ opacity: textOpacity }, styles.center]}>
 				{selectedItem && (
 					<SelectedItemText selectedItem={selectedItem} />
 				)}
 			</Animated.View>
-			<NowPlaying />
+			<View style={styles.trailing}>
+				<NowPlaying />
+			</View>
 		</View>
 	);
 };
@@ -59,7 +64,7 @@ const NowPlaying = () => {
 
 	return (
 		<Pressable
-			style={styles.nowPlaying}
+			style={[styles.nowPlaying]}
 			disabled={!currentTrack}
 			onPress={() => (isPlaying ? pause() : play())}
 		>
@@ -92,7 +97,7 @@ const SelectedItemText = ({ selectedItem }: { selectedItem: AlbumT }) => {
 				}}
 			>
 				<Text
-					content={selectedItem.name ?? ""}
+					content={selectedItem.name}
 					variant="resourceTitle"
 					numberOfLines={1}
 				/>
@@ -126,13 +131,16 @@ const SelectedItemText = ({ selectedItem }: { selectedItem: AlbumT }) => {
 const styles = StyleSheet.create((theme) => ({
 	root: {
 		flexDirection: "row",
-		justifyContent: "space-between",
 		alignItems: "center",
-		gap: theme.gap(2),
+		gap: theme.gap(1),
+	},
+	trailing: {},
+	center: {
+		flex: 1,
 	},
 	text: {
 		alignItems: "center",
-		gap: theme.gap(1.5),
+		gap: theme.gap(1),
 	},
 	nowPlaying: {
 		justifyContent: "center",
