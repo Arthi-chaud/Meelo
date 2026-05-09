@@ -1,9 +1,8 @@
-import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Pressable as Touchable, View } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
 import type { AlbumWithRelations } from "@/models/album";
@@ -15,14 +14,13 @@ import {
 } from "~/components/background-gradient";
 import { Illustration } from "~/components/illustration";
 import { usePickArtistModal } from "~/components/pick-artist";
-import { releaseTracklistQuery } from "~/pages/release/queries";
-import { TrackItem } from "~/pages/release/tracklist";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { coverflowQueryAtom } from "~/state/coverflow";
 import { animations } from "~/theme";
 import { Coverflow as CoverflowComponent } from "./component";
 import { FlipCard } from "./flipcard";
+import { FlippedCard } from "./flipped";
 
 const LOADNEXT_THRESHOLD = 10;
 
@@ -32,7 +30,6 @@ const Coverflow = withUnistyles(CoverflowComponent, (_, rt) => ({
 	config: rt.isPortrait ? { spacing: 100 } : { spacing: 175, rotation: 70 },
 }));
 export default function CoverflowView() {
-	const { t } = useTranslation();
 	const router = useRouter();
 	const query = useAtomValue(coverflowQueryAtom);
 	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
@@ -47,15 +44,21 @@ export default function CoverflowView() {
 		items?.at(0),
 	);
 
-	const { openModal: openPickArtistModal } = usePickArtistModal(
-		selectedItem?.artists,
-	);
 	const textOpacity = useSharedValue(1);
 	const [flippedItemIdx, setFlippedItemIdx] = useState<number | null>(null);
 	useSetKeyIllustration(selectedItem);
 	return (
 		<View style={styles.root}>
 			<BackgroundGradient />
+			{flippedItemIdx !== null && (
+				<Touchable
+					onPress={(e) => {
+						e.stopPropagation();
+						setFlippedItemIdx(null);
+					}}
+					style={styles.flippedCardBackgroud}
+				/>
+			)}
 			<Coverflow
 				style={styles.coverflow}
 				data={items ?? []}
@@ -108,76 +111,54 @@ export default function CoverflowView() {
 				}}
 			/>
 			<Animated.View style={[styles.text, { opacity: textOpacity }]}>
-				{selectedItem && (
-					<>
-						<Pressable
-							onPress={() => {
-								router.replace(
-									`/releases/${selectedItem.masterId}`,
-								);
-							}}
-						>
-							<Text
-								content={selectedItem.name ?? ""}
-								variant="resourceTitle"
-								numberOfLines={1}
-							/>
-						</Pressable>
-						<Pressable
-							disabled={selectedItem.artists.length === 0}
-							onPress={() => {
-								if (selectedItem.artists.length > 1) {
-									openPickArtistModal();
-								} else {
-									router.replace(
-										`/artists/${selectedItem.artists[0].id}`,
-									);
-								}
-							}}
-						>
-							<Text
-								content={
-									selectedItem.artists.length !== 0
-										? formatArtists_(selectedItem.artists)
-										: t("compilationArtistLabel")
-								}
-								variant="secondaryTitle"
-								numberOfLines={1}
-							/>
-						</Pressable>
-					</>
-				)}
+				{selectedItem && <TextFooter selectedItem={selectedItem} />}
 			</Animated.View>
 		</View>
 	);
 }
-const FlippedCard = ({
-	album,
-	flipped,
-}: {
-	album: AlbumWithRelations<"artists" | "illustration">;
-	flipped: boolean;
-}) => {
-	const tracks = useInfiniteQuery(
-		(id) => releaseTracklistQuery(id),
-		!flipped ? undefined : (album.masterId ?? undefined),
+
+const TextFooter = ({ selectedItem }: { selectedItem: AlbumT }) => {
+	const { t } = useTranslation();
+	const router = useRouter();
+	const { openModal: openPickArtistModal } = usePickArtistModal(
+		selectedItem?.artists,
 	);
-	if (!flipped) {
-		return <View style={styles.flippedCard} />;
-	}
 	return (
-		<FlashList
-			style={styles.flippedCard}
-			data={tracks.items}
-			renderItem={({ item: track }) => (
-				<TrackItem
-					track={track}
-					onPress={() => {}}
-					albumArtists={album.artists}
-					maxTrackIndex={10}
+		<>
+			<Pressable
+				onPress={() => {
+					router.replace(`/releases/${selectedItem.masterId}`);
+				}}
+			>
+				<Text
+					content={selectedItem.name ?? ""}
+					variant="resourceTitle"
+					numberOfLines={1}
 				/>
-			)}
-		/>
+			</Pressable>
+			<Pressable
+				disabled={selectedItem.artists.length === 0}
+				onPress={() => {
+					if (selectedItem.artists.length > 1) {
+						openPickArtistModal();
+					} else {
+						router.replace(
+							`/artists/${selectedItem.artists[0].id}`,
+						);
+					}
+				}}
+			>
+				<Text
+					content={
+						selectedItem.artists.length !== 0
+							? formatArtists_(selectedItem.artists)
+							: t("compilationArtistLabel")
+					}
+					variant="secondaryTitle"
+					numberOfLines={1}
+				/>
+			</Pressable>
+		</>
 	);
 };
 
@@ -190,6 +171,7 @@ const styles = StyleSheet.create((theme, rt) => ({
 		alignItems: "center",
 	},
 	coverflow: {
+		zIndex: 2, // We want flipcard to be above the text
 		height: rt.isPortrait ? "20%" : "70%",
 		width: "100%",
 		maxHeight: rt.isPortrait ? 500 : 3000,
@@ -204,11 +186,16 @@ const styles = StyleSheet.create((theme, rt) => ({
 		height: "100%",
 		backfaceVisibility: "hidden",
 	},
-	flippedCard: {
-		aspectRatio: 1,
-		height: "100%",
-		width: "100%",
-		backgroundColor: theme.colors.background,
-		borderRadius: theme.borderRadius,
+	flippedCardBackgroud: {
+		// backgroundColor: "black",
+		// opacity: 0.5,
+		position: "absolute",
+		left: 0,
+		right: 0,
+		top: 0,
+		flex: 1,
+		height: rt.screen.height,
+		width: rt.screen.width,
+		zIndex: 1,
 	},
 }));
