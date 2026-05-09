@@ -17,8 +17,7 @@
  */
 
 import { FlashList, type FlashListProps } from "@shopify/flash-list";
-import * as ScreenOrientation from "expo-screen-orientation";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";

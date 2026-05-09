@@ -201,8 +201,6 @@ export const Coverflow = <T,>(props: Props<T>) => {
 	return (
 		<GestureDetector gesture={panResponder}>
 			<View
-				renderToHardwareTextureAndroid
-				shouldRasterizeIOS
 				style={[styles.container, props.style]}
 				{...props}
 				onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
