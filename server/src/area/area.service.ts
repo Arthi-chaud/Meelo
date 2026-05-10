@@ -8,6 +8,7 @@ import {
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Identifier from "src/identifier/models/identifier";
+import Logger from "src/logger/logger";
 import { Area, Prisma } from "src/prisma/generated/client";
 import { AreaWithRelations } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
@@ -21,6 +22,7 @@ import AreaQueryParameters from "./area.query-parameters";
 
 @Injectable()
 export default class AreaService {
+	private readonly logger = new Logger(AreaService.name);
 	constructor(
 		private prismaService: PrismaService,
 		private eventService: EventsService,
@@ -163,5 +165,28 @@ export default class AreaService {
 				`Identifier: expected a number or an MBID, got ${identifier}`,
 			);
 		});
+	}
+
+	async housekeeping() {
+		let done = false;
+		let deleted = 0;
+		while (!done) {
+			try {
+				const { count } = await this.prismaService.area.deleteMany({
+					where: {
+						createdArtists: { none: {} },
+						children: { none: {} },
+					},
+				});
+				done = count === 0;
+				deleted = deleted + count;
+			} catch {
+				break;
+			}
+		}
+
+		if (deleted) {
+			this.logger.warn(`Deleted ${deleted} areas`);
+		}
 	}
 }
