@@ -3,7 +3,11 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View, type ViewStyle } from "react-native";
-import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, {
+	ReduceMotion,
+	useSharedValue,
+	withTiming,
+} from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BackIcon, PauseIcon, PlayIcon } from "@/ui/icons";
 import { formatArtists_ } from "@/utils/format-artists";
@@ -32,7 +36,10 @@ export const Footer = ({ selectedItem, isScrolling, style }: Props) => {
 	const textOpacity = useSharedValue(isScrolling ? 0 : 1);
 	const router = useRouter();
 	useEffect(() => {
-		textOpacity.value = withTiming(isScrolling ? 0 : 1, animations.fades);
+		textOpacity.value = withTiming(isScrolling ? 0 : 1, {
+			...animations.fades,
+			reduceMotion: ReduceMotion.Never,
+		});
 	}, [isScrolling]);
 	return (
 		<View style={[styles.root, style]}>

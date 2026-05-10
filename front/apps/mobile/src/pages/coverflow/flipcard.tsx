@@ -2,6 +2,7 @@ import { type ReactNode, useEffect } from "react";
 import { View, type ViewStyle } from "react-native";
 import Animated, {
 	interpolate,
+	ReduceMotion,
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
@@ -25,12 +26,18 @@ export const FlipCard = ({ isFlipped, cardStyle, head, tail }: Props) => {
 	const headStyle = useAnimatedStyle(() => {
 		const spinValue = interpolate(Number(flippedS.value), [0, 1], [0, 180]);
 		const scaleValue = interpolate(spinValue, [0, 60, 180], [1, 0.8, 1.5]);
-		const rotateValue = withTiming(`${spinValue}deg`);
+		const rotateValue = withTiming(`${spinValue}deg`, {
+			reduceMotion: ReduceMotion.Never,
+		});
 
 		return {
 			transform: [
 				{ rotateY: rotateValue },
-				{ scale: withTiming(scaleValue) },
+				{
+					scale: withTiming(scaleValue, {
+						reduceMotion: ReduceMotion.Never,
+					}),
+				},
 			],
 		};
 	});
@@ -43,11 +50,19 @@ export const FlipCard = ({ isFlipped, cardStyle, head, tail }: Props) => {
 		);
 		const scale = withTiming(
 			interpolate(spinValue, [180, 240, 360], [1, 0.9, 1.5]),
+			{
+				reduceMotion: ReduceMotion.Never,
+			},
 		);
 		const translateY = withTiming(
 			interpolate(spinValue, [180, 360], [0, 30]),
+			{
+				reduceMotion: ReduceMotion.Never,
+			},
 		);
-		const rotateY = withTiming(`${spinValue}deg`);
+		const rotateY = withTiming(`${spinValue}deg`, {
+			reduceMotion: ReduceMotion.Never,
+		});
 
 		return {
 			transform: [{ rotateY }, { scale }, { translateY }],

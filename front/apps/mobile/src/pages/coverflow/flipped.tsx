@@ -81,7 +81,7 @@ export const FlippedCard = ({
 								album.artists.length === 0
 									? t("compilationArtistLabel")
 									: formatArtists_(album.artists)
-							} // TODO:
+							}
 							skeletonWidth={10}
 							numberOfLines={1}
 							color="secondary"

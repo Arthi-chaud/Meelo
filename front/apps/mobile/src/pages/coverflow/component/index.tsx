@@ -97,11 +97,15 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			Math.max(0, childrenCount - 1),
 		);
 		if (finalPos !== scrollPos.value) {
-			scrollX.value = withSpring(finalPos, undefined, () => {
-				if (props.onChange) {
-					runOnJS(props.onChange)(finalPos);
-				}
-			});
+			scrollX.value = withSpring(
+				finalPos,
+				{ reduceMotion: ReduceMotion.Never },
+				() => {
+					if (props.onChange) {
+						runOnJS(props.onChange)(finalPos);
+					}
+				},
+			);
 		}
 	};
 	const [selection, setSelection] = useState(props.initialSelection ?? 0);

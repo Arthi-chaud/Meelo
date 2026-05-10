@@ -10,6 +10,7 @@ import { atom, useAtom, useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
 import { View } from "react-native";
 import {
+	ReduceMotion,
 	useDerivedValue,
 	useSharedValue,
 	withTiming,
@@ -80,18 +81,23 @@ export const BackgroundGradient = () => {
 		if (keyIllustration) {
 			currentColor1.value = withTiming(keyIllustration.colors[0], {
 				duration: transitionDuration,
+				reduceMotion: ReduceMotion.Never,
 			});
 			currentColor2.value = withTiming(keyIllustration.colors[1], {
 				duration: transitionDuration,
+				reduceMotion: ReduceMotion.Never,
 			});
 			currentColor3.value = withTiming(keyIllustration.colors[2], {
 				duration: transitionDuration,
+				reduceMotion: ReduceMotion.Never,
 			});
 			currentColor4.value = withTiming(keyIllustration.colors[3], {
 				duration: transitionDuration,
+				reduceMotion: ReduceMotion.Never,
 			});
 			currentColor5.value = withTiming(keyIllustration.colors[4], {
 				duration: transitionDuration,
+				reduceMotion: ReduceMotion.Never,
 			});
 		}
 	}, [keyIllustration]);
