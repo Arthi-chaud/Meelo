@@ -18,6 +18,7 @@
 
 import { forwardRef, Module } from "@nestjs/common";
 import AlbumModule from "src/album/album.module";
+import AreaModule from "src/area/area.module";
 import ArtistModule from "src/artist/artist.module";
 import GenreModule from "src/genre/genre.module";
 import LabelModule from "src/label/label.module";
@@ -37,6 +38,7 @@ import { HousekeepingService } from "./housekeeping.service";
 		forwardRef(() => PlaylistModule),
 		forwardRef(() => VideoModule),
 		forwardRef(() => LabelModule),
+		forwardRef(() => AreaModule),
 	],
 	providers: [HousekeepingService],
 	exports: [HousekeepingService],

@@ -18,6 +18,7 @@
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import AlbumService from "src/album/album.service";
+import AreaService from "src/area/area.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
@@ -46,6 +47,8 @@ export class HousekeepingService {
 		private playlistService: PlaylistService,
 		@Inject(forwardRef(() => LabelService))
 		private labelService: LabelService,
+		@Inject(forwardRef(() => AreaService))
+		private areaService: AreaService,
 	) {}
 	/**
 	 * Calls housekeeping methods on repository services
@@ -59,6 +62,7 @@ export class HousekeepingService {
 		await this.genresService.housekeeping();
 		await this.playlistService.housekeeping();
 		await this.labelService.housekeeping();
+		await this.areaService.housekeeping();
 		await this.resolveMasters();
 	}
 
