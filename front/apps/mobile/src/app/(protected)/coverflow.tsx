@@ -5,11 +5,13 @@ import { useEffect } from "react";
 import Coverflow from "~/pages/coverflow";
 
 export default function CoverflowView() {
-	//NOTE: This is broken in expo 55.0
+	//NOTE: This is broken for ios in expo 55.0 (?)
 	useEffect(() => {
 		const isMobile = Device.deviceType === Device.DeviceType.PHONE;
 		if (isMobile) {
-			ScreenOrientation.unlockAsync();
+			ScreenOrientation.lockAsync(
+				ScreenOrientation.OrientationLock.LANDSCAPE,
+			);
 		}
 		return () => {
 			if (isMobile) {
