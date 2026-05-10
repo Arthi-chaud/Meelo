@@ -255,6 +255,7 @@ const styles = StyleSheet.create((theme) => ({
 	infos: {
 		flex: 1,
 		flexDirection: "row",
+		alignItems: "center",
 		gap: theme.gap(1),
 	},
 
