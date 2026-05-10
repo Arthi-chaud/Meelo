@@ -26,12 +26,17 @@ export const TrackItem = ({
 	onPress,
 	maxTrackIndex,
 	albumArtists,
+	removeContextMenu,
+	compact,
 }: {
 	track: TrackType | undefined;
 	maxTrackIndex: number;
 	onPress: () => void;
 	albumArtists: Artist[] | undefined;
+	removeContextMenu?: true;
+	compact?: true;
 }) => {
+	styles.useVariants({ compact: compact ?? false });
 	const currentTrack = useAtomValue(currentTrackAtom);
 	//Note: Instead of using track context menu
 	//We build back songs and videos from the track
@@ -59,14 +64,20 @@ export const TrackItem = ({
 	const songContextMenu = useSongContextMenu(songWithTrack);
 	const videoContextMenu = useVideoContextMenu(videoWithTrack);
 	const contextMenu = useMemo(() => {
-		if (!track) {
+		if (!track || removeContextMenu) {
 			return undefined;
 		}
 		if (videoWithTrack) {
 			return videoContextMenu;
 		}
 		return songContextMenu;
-	}, [songWithTrack, videoWithTrack, videoContextMenu, songContextMenu]);
+	}, [
+		songWithTrack,
+		videoWithTrack,
+		videoContextMenu,
+		songContextMenu,
+		removeContextMenu,
+	]);
 	const { openContextMenu } = useContextMenu(contextMenu);
 	const onLongPress = useCallback(() => {
 		if (contextMenu) {
@@ -99,6 +110,7 @@ export const TrackItem = ({
 								? (track.trackIndex?.toString() ?? " ")
 								: undefined
 						}
+						style={styles.trackText}
 						color="secondary"
 					/>
 				)}
@@ -108,6 +120,7 @@ export const TrackItem = ({
 					content={track?.name}
 					skeletonWidth={10}
 					numberOfLines={1}
+					style={styles.trackText}
 					variant="itemText"
 				/>
 				{(track?.song ?? track?.video) !== undefined &&
@@ -129,6 +142,7 @@ export const TrackItem = ({
 							numberOfLines={1}
 							skeletonWidth={10}
 							color="secondary"
+							style={styles.trackText}
 							variant="itemText"
 						/>
 					)}
@@ -137,6 +151,7 @@ export const TrackItem = ({
 				<LoadableText
 					content={track ? formatDuration(track.duration) : undefined}
 					skeletonWidth={UnknownDurationPlaceholderLength}
+					style={styles.trackText}
 					color="secondary"
 				/>
 			</View>
@@ -197,9 +212,19 @@ const styles = StyleSheet.create((theme) => ({
 	trackButton: {
 		width: "100%",
 		flexDirection: "row",
-		gap: theme.gap(1),
 		alignItems: "center",
-		paddingVertical: theme.gap(1.5),
+		variants: {
+			compact: {
+				true: {
+					gap: theme.gap(0.75),
+					paddingVertical: theme.gap(1),
+				},
+				false: {
+					gap: theme.gap(1),
+					paddingVertical: theme.gap(1.5),
+				},
+			},
+		},
 	},
 	trackIndex: (maxTrackIndex: number) => ({
 		marginRight: theme.gap(1),
@@ -210,6 +235,16 @@ const styles = StyleSheet.create((theme) => ({
 			theme.fontSize.default *
 			(Math.max(maxTrackIndex.toString().length, 2) - 0.5),
 	}),
+	trackText: {
+		variants: {
+			compact: {
+				true: {
+					fontSize: theme.fontSize.rem(0.8),
+				},
+				false: {},
+			},
+		},
+	},
 	trackLabel: {
 		flex: 1,
 		justifyContent: "center",
