@@ -45,6 +45,9 @@ type Props<T> = {
 	style?: ViewStyle;
 };
 
+// NOTE: This was heavily inspired by Bhoos/react-native-coverflow!
+//
+// AI was used for optimisation (e.g. the orderChildren function)
 export const Coverflow = <T,>(props: Props<T>) => {
 	useEffect(() => {
 		ScreenOrientation.unlockAsync();
