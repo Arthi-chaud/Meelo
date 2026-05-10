@@ -119,6 +119,7 @@ export const Controls = <SortingKey extends string>({
 						width="fitContent"
 						key={idx}
 						icon={action.icon}
+						disabled={action.disabled}
 						title={action.label ? t(action.label) : undefined}
 						onPress={() => {
 							action.onPress?.();

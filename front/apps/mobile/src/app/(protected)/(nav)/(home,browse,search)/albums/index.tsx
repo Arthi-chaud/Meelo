@@ -23,7 +23,7 @@ import { getAlbums, getArtist, getGenre, getLabel } from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { CoverflowIcon } from "@/ui/icons";
-import { useQuery } from "~/api";
+import { useInfiniteQuery, useQuery } from "~/api";
 import { StaticHeader } from "~/components/header";
 import {
 	useLibraryFiltersControl,
@@ -82,6 +82,7 @@ export default function AlbumBrowseView() {
 		{ sortBy: sort ?? "name", order: order ?? "asc" },
 		["artists", "illustration"],
 	);
+	const { items } = useInfiniteQuery(() => query);
 	return (
 		<StaticHeader
 			options={{
@@ -108,7 +109,7 @@ export default function AlbumBrowseView() {
 							icon: CoverflowIcon,
 							href: "/coverflow",
 							onPress: () => setCoverflowQuery(query),
-							disabled: false, // TODO: should be true if query is empty
+							disabled: items?.length === 0,
 						},
 					],
 				}}
