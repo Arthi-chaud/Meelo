@@ -269,8 +269,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								)}
 							</Stack>
 						)}
-						{(song.data === undefined ||
-							externalMetadata.data?.sources.length) && (
+						{song.data === undefined ||
+						externalMetadata.data?.sources.length ? (
 							<Stack
 								direction="row"
 								sx={{
@@ -294,7 +294,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									/>
 								))}
 							</Stack>
-						)}
+						) : null}
 						<Typography variant="body1" sx={{ paddingTop: 2 }}>
 							{externalMetadata.data?.description}
 						</Typography>
