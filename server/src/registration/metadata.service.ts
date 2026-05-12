@@ -284,7 +284,8 @@ export default class MetadataService {
 							name: parsedReleaseName.parsedName,
 							extensions: parsedReleaseName.extensions,
 							isFirstRegistered:
-								album.registeredAt === file.registerDate,
+								album.registeredAt.getTime() ===
+								file.registerDate.getTime(),
 							releaseDate:
 								metadata.releaseReleaseDate ??
 								metadata.albumReleaseDate,
