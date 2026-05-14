@@ -615,6 +615,7 @@ export default class API {
 		const response = await fetch(
 			this.buildURL(route, parameters, otherParameters, service),
 			{
+				cache: "no-store",
 				method: method ?? "GET",
 				body: data ? JSON.stringify(data) : undefined,
 				headers: this.accessToken
@@ -623,6 +624,8 @@ export default class API {
 							...this.getAuthHeaders(),
 						}
 					: header,
+
+				...({ next: { revalidate: 0 } } as {}),
 			},
 		);
 		const jsonResponse = emptyResponse
