@@ -7,6 +7,8 @@ const config = {
 		serverFunctions: false,
 		browserToTerminal: false,
 	},
+	cacheComponents: false,
+	cacheMaxMemorySize: 0,
 	i18n: {
 		locales: ["en", "fr"],
 		defaultLocale: "en",
