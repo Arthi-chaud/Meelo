@@ -3204,11 +3204,11 @@ __metadata:
   linkType: hard
 
 "amqplib@npm:^1.0.0":
-  version: 1.0.3
-  resolution: "amqplib@npm:1.0.3"
+  version: 1.2.0
+  resolution: "amqplib@npm:1.2.0"
   dependencies:
     buffer-more-ints: "npm:~1.0.0"
-  checksum: 10c0/0a61edff9192d545ac26f191d528cc92204e97e6fa02bb5fa38c18e4b6053c8ebd7fdfead1ab0087589e7847c6676a644fa40c5079269e081dc83f1d4a8cd6de
+  checksum: 10c0/4f60da4f1c0ba0fbd8c21fd4a4806c466122c9a0e0b65eb15b30770d0f3d18ad2c318acf8842b7a5eddeceda0bc8be3a8a40d0a067bee9fd79ca0cd08f688f25
   languageName: node
   linkType: hard
 
