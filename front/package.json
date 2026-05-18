@@ -17,7 +17,7 @@
 	],
 	"devDependencies": {
 		"@biomejs/biome": "2.4.14",
-		"typescript": "5.9.3",
+		"typescript": "6.0.3",
 		"vitest": "^4.1.5"
 	},
 	"packageManager": "yarn@4.14.1"
