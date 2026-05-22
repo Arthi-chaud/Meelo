@@ -2323,15 +2323,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/amqplib@npm:^0.10.8":
-  version: 0.10.8
-  resolution: "@types/amqplib@npm:0.10.8"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/9c5ab2e22f2b8dc2ace235d520bbae9453a0f4152b4f84ffa15a313f8840fe31bbf8b454e036f168a178cc44ed73bd3492e9c9cee425e3fcfef8cd5073141bfa
-  languageName: node
-  linkType: hard
-
 "@types/archiver@npm:^7.0.0":
   version: 7.0.0
   resolution: "@types/archiver@npm:7.0.0"
@@ -3203,12 +3194,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"amqplib@npm:^1.0.0":
-  version: 1.0.3
-  resolution: "amqplib@npm:1.0.3"
+"amqplib@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "amqplib@npm:1.2.0"
   dependencies:
     buffer-more-ints: "npm:~1.0.0"
-  checksum: 10c0/0a61edff9192d545ac26f191d528cc92204e97e6fa02bb5fa38c18e4b6053c8ebd7fdfead1ab0087589e7847c6676a644fa40c5079269e081dc83f1d4a8cd6de
+  checksum: 10c0/4f60da4f1c0ba0fbd8c21fd4a4806c466122c9a0e0b65eb15b30770d0f3d18ad2c318acf8842b7a5eddeceda0bc8be3a8a40d0a067bee9fd79ca0cd08f688f25
   languageName: node
   linkType: hard
 
@@ -6176,7 +6167,6 @@ __metadata:
     "@prisma/adapter-pg": "npm:7.8.0"
     "@prisma/client": "npm:7.8.0"
     "@swc/core": "npm:^1.15.33"
-    "@types/amqplib": "npm:^0.10.8"
     "@types/archiver": "npm:^7.0.0"
     "@types/bcrypt": "npm:^6.0.0"
     "@types/cookie-parser": "npm:^1.4.10"
@@ -6192,7 +6182,7 @@ __metadata:
     "@types/supertest": "npm:^7.2.0"
     "@vitest/coverage-v8": "npm:^4.1.5"
     amqp-connection-manager: "npm:^5.0.0"
-    amqplib: "npm:^1.0.0"
+    amqplib: "npm:^1.2.0"
     archiver: "npm:^7.0.1"
     axios: "npm:^1.13.6"
     bcrypt: "npm:^6.0.0"
