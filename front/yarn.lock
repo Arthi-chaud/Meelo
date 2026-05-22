@@ -9414,16 +9414,16 @@ __metadata:
     react-native-gesture-handler: "npm:~2.31.0"
     react-native-keyboard-controller: "npm:1.21.7"
     react-native-mmkv: "npm:4.3.1"
-    react-native-nitro-modules: "npm:0.35.4"
+    react-native-nitro-modules: "npm:0.35.7"
     react-native-reanimated: "npm:~4.3.1"
     react-native-safe-area-context: "npm:~5.7.0"
     react-native-screens: "npm:~4.24.0"
     react-native-svg: "npm:15.15.4"
     react-native-toast-message: "npm:^2.3.3"
-    react-native-unistyles: "npm:3.2.3"
+    react-native-unistyles: "npm:3.2.4"
     react-native-uuid: "npm:^2.0.4"
     react-native-video: "npm:^7.0.0-beta.9"
-    react-native-worklets: "npm:^0.8.1"
+    react-native-worklets: "npm:^0.8.3"
     state: "workspace:^"
     type-fest: "npm:^5.6.0"
     typescript: "npm:5.9.3"
@@ -10481,13 +10481,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:0.35.4":
-  version: 0.35.4
-  resolution: "react-native-nitro-modules@npm:0.35.4"
+"react-native-nitro-modules@npm:0.35.7":
+  version: 0.35.7
+  resolution: "react-native-nitro-modules@npm:0.35.7"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/dffb64c1b349d21feb8a33546cde48e3c5d92e04e120f733c178d4afa26ef6de652c6236a4eed0da7ca842ac9815afaa0708f57ae1454d881397e5d0575031c2
+  checksum: 10c0/f0c9167655032952bfdadd6802eade60796df2021e29a451ec205843dd6e95c6cb274d77c77534703a5d5d55e45c6f7ca1900a94813de3e0bdb0f3aa654cf3fc
   languageName: node
   linkType: hard
 
@@ -10580,9 +10580,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-unistyles@npm:3.2.3":
-  version: 3.2.3
-  resolution: "react-native-unistyles@npm:3.2.3"
+"react-native-unistyles@npm:3.2.4":
+  version: 3.2.4
+  resolution: "react-native-unistyles@npm:3.2.4"
   dependencies:
     "@babel/types": "npm:7.29.0"
   peerDependencies:
@@ -10597,7 +10597,7 @@ __metadata:
       optional: true
     react-native-reanimated:
       optional: true
-  checksum: 10c0/109f8acc23fa7ef94c377277f52afa17657b7f2cbe19a6f04144b10ba7a90cb8d3b76a8b77ff54461e5ef180a8cb23b3a062eef8e6cb94129e770cedef31ee94
+  checksum: 10c0/9ac4cf4a9143a8382620031f96f1440947eef30b748c4415b5213fe322555efe761907ec68c4e8e96a37b13074fa999f99e2ebd70f60712ccc5d939e817d78c8
   languageName: node
   linkType: hard
 
@@ -10621,9 +10621,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "react-native-worklets@npm:0.8.1"
+"react-native-worklets@npm:^0.8.3":
+  version: 0.8.3
+  resolution: "react-native-worklets@npm:0.8.3"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
     "@babel/plugin-transform-class-properties": "npm:^7.27.1"
@@ -10641,7 +10641,7 @@ __metadata:
     "@react-native/metro-config": "*"
     react: "*"
     react-native: 0.81 - 0.85
-  checksum: 10c0/a82edbd65b09a31d973497dac899adcd618677b56f7e5c460fd9f3b1b4ef1547b7bfd2edaa644d1ebf866bf70658bdbd1314c9d0ab2856e98c6975d0e97fd449
+  checksum: 10c0/9ceb8ff1f1569165be3318c958087ed95d7b89e5e7308b733dc3f8e328d48c2acc7bc7369449b004b1824ed96e14a15a279d2dbee0105d7d62a55001045484ba
   languageName: node
   linkType: hard
 
