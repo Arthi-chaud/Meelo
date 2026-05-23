@@ -18,7 +18,7 @@ export const Rating = ({
 					<Icon
 						key={idx}
 						icon={StarIcon}
-						style={[styles.star(rating ?? 0, idx)]}
+						style={styles.star(rating ?? 0, idx)}
 					/>
 				))
 			) : (
