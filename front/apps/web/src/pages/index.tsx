@@ -391,7 +391,7 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										<GenreChip
 											genre={genre}
 											variant="surface"
-											key={`label-${genre?.id}-${index}`}
+											key={`genre-${genre?.id}-${index}`}
 										/>
 									))}
 								</Stack>
