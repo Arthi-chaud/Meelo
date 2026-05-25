@@ -53,6 +53,7 @@
 			"playNext": "Play Next",
 			"shuffle": "Shuffle"
 		},
+		"playRadio": "Play Radio",
 		"release": {
 			"setAllTracksAsMaster": "Set all tracks as Master"
 		},
@@ -303,6 +304,7 @@
 		"browse": "Browse",
 		"compilations": "Compilations",
 		"home": "Home",
+		"labels": "Labels",
 		"more": "More",
 		"musicVideos": "Music Videos",
 		"search": "Search",

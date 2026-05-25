@@ -45,6 +45,7 @@ import {
 	BurgerIcon,
 	CompilationIcon,
 	GenreIcon,
+	LabelIcon,
 	PlaylistIcon,
 	SongIcon,
 	VideoIcon,
@@ -76,8 +77,9 @@ const navItems = [
 	"songs",
 	"videos",
 	"playlists",
-	"genres",
 	"albums/compilations",
+	"genres",
+	"labels",
 ] as const;
 
 const getNavItemLabel = (type: (typeof navItems)[number]): TranslationKey => {
@@ -94,6 +96,8 @@ const getNavItemLabel = (type: (typeof navItems)[number]): TranslationKey => {
 			return "models.playlist_plural";
 		case "genres":
 			return "models.genre_plural";
+		case "labels":
+			return "nav.labels";
 		case "albums/compilations":
 			return "nav.compilations";
 	}
@@ -116,6 +120,8 @@ const getNavItemIcon = (
 			return <PlaylistIcon {...props} />;
 		case "genres":
 			return <GenreIcon {...props} />;
+		case "labels":
+			return <LabelIcon {...props} />;
 		case "albums/compilations":
 			return <CompilationIcon {...props} />;
 	}
