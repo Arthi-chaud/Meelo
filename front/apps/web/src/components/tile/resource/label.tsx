@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type Genre from "@/models/genre";
+import type Label from "@/models/label";
 import { TitleRadioTile } from "..";
 
 type Props = {
-	genre: Genre | undefined;
+	label: Label | undefined;
 };
 
-export const GenreTile = ({ genre }: Props) => {
-	const href = genre ? `/genres/${genre.slug}` : undefined;
+export const LabelTile = ({ label }: Props) => {
+	const href = label ? `/labels/${label.slug}` : undefined;
 	return (
 		<TitleRadioTile
 			href={href}
-			title={genre?.name}
-			songFilter={{ genre: genre?.id }}
+			title={label?.name}
+			songFilter={{ label: label?.slug }}
 		/>
 	);
 };

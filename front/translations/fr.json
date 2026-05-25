@@ -53,6 +53,7 @@
 			"playNext": "Lire ensuite",
 			"shuffle": "Aléatoire"
 		},
+		"playRadio": "Lancer la radio",
 		"release": {
 			"setAllTracksAsMaster": "Promouvoir toutes les pistes"
 		},
@@ -305,6 +306,7 @@
 		"browse": "Bibliothèque",
 		"compilations": "Compilations",
 		"home": "Accueil",
+		"labels": "Labels",
 		"more": "Plus",
 		"musicVideos": "Vidéos",
 		"search": "Rechercher",

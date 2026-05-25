@@ -21,14 +21,25 @@ import {
 	Card,
 	CardContent,
 	CardMedia,
+	Chip,
+	IconButton,
 	Link as MUILink,
+	Paper,
 	Skeleton,
 	Typography,
 	useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { useSetAtom } from "jotai";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { getSongs } from "@/api/queries";
+import { transformPage } from "@/api/query";
+import { playFromInfiniteQuery } from "@/state/player";
+import { MoreIcon, RadioIcon } from "@/ui/icons";
+import { getRandomNumber } from "@/utils/random";
+import { useQueryClient } from "~/api";
 
 const PREFIX = "Tile";
 
@@ -222,3 +233,108 @@ const Tile = (props: TileProps) => {
 };
 
 export default Tile;
+
+export const TitleRadioTile = ({
+	href,
+	title,
+	songFilter,
+}: {
+	title: string | undefined;
+	href: string | undefined;
+	songFilter: Parameters<typeof getSongs>[0];
+}) => {
+	const theme = useTheme();
+	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const play = useSetAtom(playFromInfiniteQuery);
+	const onPlay = () => {
+		play(
+			transformPage(
+				getSongs(
+					{
+						...songFilter,
+						random: getRandomNumber(),
+					},
+					undefined,
+					["master", "illustration", "featuring", "artist"],
+				),
+				(song) => ({
+					track: {
+						...song.master,
+						illustration: song.illustration,
+					},
+					artist: song.artist,
+					featuring: song.featuring,
+					id: song.id,
+				}),
+			),
+			queryClient,
+		);
+	};
+	return (
+		<Link href={href ?? {}} passHref>
+			<Paper
+				sx={{
+					padding: 2,
+					backgroundColor: theme.vars.palette.action.selected,
+					flexDirection: "column",
+					gap: 2,
+					":hover": { transform: "scale(1.03)" },
+					transition: "transform 0.2s",
+				}}
+			>
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+						overflow: "hidden",
+						whiteSpace: "nowrap",
+						textOverflow: "ellipsis",
+						paddingTop: 1,
+						paddingBottom: 2,
+						gap: 1,
+					}}
+				>
+					<Typography
+						variant="body1"
+						fontWeight={450}
+						sx={{ flex: 1, textAlign: "center" }}
+					>
+						{title ?? <Skeleton width={"60px"} />}
+					</Typography>
+
+					<IconButton
+						size="small"
+						sx={{
+							padding: 1,
+							backgroundColor: theme.vars.palette.action.selected,
+						}}
+						onClick={() => {}}
+					>
+						<MoreIcon />
+					</IconButton>
+				</Box>
+				<Box
+					sx={{
+						display: "flex",
+						gap: 2,
+						justifyContent: "space-between",
+						alignItems: "center",
+					}}
+				>
+					<Chip
+						sx={{ flex: 1 }}
+						clickable
+						label={t("actions.playRadio")}
+						icon={<RadioIcon />}
+						onClick={(e) => {
+							e.preventDefault();
+							onPlay();
+						}}
+					/>
+				</Box>
+			</Paper>
+		</Link>
+	);
+};
