@@ -72,17 +72,14 @@ export const ScaffoldActions: Action[] = [
  * Array of possible item types
  */
 const navItems = [
-	"artists",
-	"albums",
-	"songs",
-	"videos",
-	"playlists",
-	"albums/compilations",
-	"genres",
-	"labels",
+	["artists", "albums", "songs", "videos"],
+	["albums/compilations", "playlists"],
+	["genres", "labels"],
 ] as const;
 
-const getNavItemLabel = (type: (typeof navItems)[number]): TranslationKey => {
+const getNavItemLabel = (
+	type: (typeof navItems)[number][number],
+): TranslationKey => {
 	switch (type) {
 		case "albums":
 			return "models.album_plural";
@@ -104,7 +101,7 @@ const getNavItemLabel = (type: (typeof navItems)[number]): TranslationKey => {
 };
 
 const getNavItemIcon = (
-	type: (typeof navItems)[number],
+	type: (typeof navItems)[number][number],
 	props?: IconProps,
 ): ReactNode => {
 	switch (type) {
@@ -218,53 +215,58 @@ const Drawer = ({
 						</Box>
 						<Divider variant="middle" />
 						<List>
-							{navItems.map((item) => {
-								const path = `/${item}`;
-								const isSelected =
-									path === router.asPath.split("?")[0];
-								const Icon = (props: IconProps) =>
-									getNavItemIcon(item, props);
+							{navItems.map((items) => (
+								<>
+									{items.map((item) => {
+										const path = `/${item}`;
+										const isSelected =
+											path ===
+											router.asPath.split("?")[0];
+										const Icon = (props: IconProps) =>
+											getNavItemIcon(item, props);
 
-								return (
-									<ListItem key={item}>
-										<Link
-											href={path}
-											style={{ width: "100%" }}
-										>
-											<ListItemButton onClick={onClose}>
-												<ListItemIcon>
-													<Icon
-														variant={
-															isSelected
-																? "Bold"
-																: "Outline"
-														}
-													/>
-												</ListItemIcon>
-												<ListItemText>
-													<Typography
-														sx={{
-															fontWeight:
-																isSelected
-																	? "bold"
-																	: "normal",
-														}}
+										return (
+											<ListItem key={item}>
+												<Link
+													href={path}
+													style={{ width: "100%" }}
+												>
+													<ListItemButton
+														onClick={onClose}
 													>
-														{t(
-															getNavItemLabel(
-																item,
-															),
-														)}
-													</Typography>
-												</ListItemText>
-											</ListItemButton>
-										</Link>
-									</ListItem>
-								);
-							})}
-						</List>
-						<Divider variant="middle" />
-						<List>
+														<ListItemIcon>
+															<Icon
+																variant={
+																	isSelected
+																		? "Bold"
+																		: "Outline"
+																}
+															/>
+														</ListItemIcon>
+														<ListItemText>
+															<Typography
+																sx={{
+																	fontWeight:
+																		isSelected
+																			? "bold"
+																			: "normal",
+																}}
+															>
+																{t(
+																	getNavItemLabel(
+																		item,
+																	),
+																)}
+															</Typography>
+														</ListItemText>
+													</ListItemButton>
+												</Link>
+											</ListItem>
+										);
+									})}
+									<Divider variant="middle" />
+								</>
+							))}
 							{actions.map((action) => {
 								const path = action.href;
 								const isSelected = path
@@ -314,19 +316,27 @@ const Drawer = ({
 									</ListItem>
 								);
 							})}
+							<Divider variant="middle" />
+							<ListItem>
+								<Typography
+									variant="caption"
+									color="textSecondary"
+									sx={{
+										width: "100%",
+										textAlign: "center",
+										paddingY: 1,
+									}}
+								>
+									{user.type === "anonymous"
+										? t("auth.loggedInAsAnonymous")
+										: t("auth.loggedInAs", {
+												n:
+													user.user?.name ??
+													t("misc.loading"),
+											})}
+								</Typography>
+							</ListItem>
 						</List>
-						<Divider variant="middle" />
-						<Typography
-							variant="caption"
-							color="textSecondary"
-							sx={{ textAlign: "center", paddingY: 2 }}
-						>
-							{user.type === "anonymous"
-								? t("auth.loggedInAsAnonymous")
-								: t("auth.loggedInAs", {
-										n: user.user?.name ?? t("misc.loading"),
-									})}
-						</Typography>
 					</MUIDrawer>
 				),
 			)}
@@ -357,7 +367,7 @@ const BottomNavigation = (props: { onDrawerOpen: () => void }) => {
 				display: { xs: "flex", [DrawerBreakpoint]: "none" },
 			}}
 		>
-			{navItems.slice(0, 3).map((item) => {
+			{navItems[0].slice(0, 3).map((item) => {
 				const path = `/${item}`;
 				const isSelected = path === router.asPath.split("?")[0];
 				const Icon = (pr: IconProps) => getNavItemIcon(item, pr);
