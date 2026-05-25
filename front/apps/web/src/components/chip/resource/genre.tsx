@@ -8,4 +8,10 @@ export const GenreChip = ({
 }: { genre: Genre | undefined } & Omit<
 	ComponentProps<typeof Chip>,
 	"label" | "href"
->) => <Chip {...props} label={genre?.name} href={`/genres/${genre?.slug}`} />;
+>) => (
+	<Chip
+		{...props}
+		label={genre?.name}
+		href={genre ? `/genres/${genre.slug}` : undefined}
+	/>
+);

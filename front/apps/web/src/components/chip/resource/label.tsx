@@ -5,6 +5,6 @@ export const LabelChip = ({ label }: { label: Label | undefined }) => (
 	<Chip
 		label={label?.name}
 		variant="surface"
-		href={`/labels/${label?.slug}`}
+		href={label ? `/labels/${label.slug}` : undefined}
 	/>
 );
