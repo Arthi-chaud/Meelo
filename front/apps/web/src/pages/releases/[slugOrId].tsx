@@ -75,10 +75,10 @@ import formatDuration from "@/utils/format-duration";
 import { generateArray } from "@/utils/gen-list";
 import { shuffle } from "@/utils/random";
 import { getAPI, useInfiniteQuery, useQuery } from "~/api";
+import { GenreChip } from "~/components/chip/resource/genre";
 import ReleaseContextualMenu from "~/components/contextual-menu/resource/release";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
 import Fade from "~/components/fade";
-import GenreButton from "~/components/genre-button";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import Illustration from "~/components/illustration";
@@ -587,8 +587,9 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 													key={index}
 													sx={{ display: "flex" }}
 												>
-													<GenreButton
+													<GenreChip
 														genre={genre}
+														variant="outlined"
 														sx={genreButtonOutline}
 													/>
 												</Grid>

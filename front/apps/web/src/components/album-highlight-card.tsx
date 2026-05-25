@@ -18,7 +18,6 @@
 
 import {
 	Box,
-	Chip,
 	Grid,
 	IconButton,
 	Skeleton,
@@ -38,6 +37,7 @@ import { generateArray } from "@/utils/gen-list";
 import { useQueryClient } from "~/api";
 import Illustration from "~/components/illustration";
 import { PlayReleaseAction } from "./actions/play-album";
+import { GenreChip } from "./chip/resource/genre";
 
 type HighlightCardProps = {
 	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
@@ -234,20 +234,10 @@ const AlbumHighlightCard = ({
 								{(genres ?? generateArray(1, undefined)).map(
 									(genre, index) => (
 										<Grid key={index}>
-											<Link
-												href={
-													genre
-														? `/genres/${genre.slug}`
-														: {}
-												}
-												key={index}
-											>
-												<Chip
-													variant="filled"
-													clickable
-													label={genre?.name}
-												/>
-											</Link>
+											<GenreChip
+												genre={genre}
+												variant="surface"
+											/>
 										</Grid>
 									),
 								)}

@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Chip, Collapse, Grid, IconButton, Stack } from "@mui/material";
+import { Box, Collapse, Grid, IconButton, Stack } from "@mui/material";
 import type { QueryClient } from "@tanstack/react-query";
 import type { NextPageContext } from "next";
-import Link from "next/link";
 import {
 	type MouseEvent,
 	type ReactNode,
@@ -48,6 +47,8 @@ import { getRandomNumber } from "@/utils/random";
 import { getAPI, useInfiniteQuery, useQueries, type useQuery } from "~/api";
 import { GoToSettingsAction } from "~/components/actions/link";
 import AlbumHighlightCard from "~/components/album-highlight-card";
+import { GenreChip } from "~/components/chip/resource/genre";
+import { LabelChip } from "~/components/chip/resource/label";
 import { EmptyState } from "~/components/empty-state";
 import Fade from "~/components/fade";
 import { useGradientBackground } from "~/components/gradient-background";
@@ -55,7 +56,6 @@ import SectionHeader from "~/components/section-header";
 import SongGrid from "~/components/song-grid";
 import AlbumTile from "~/components/tile/resource/album";
 import ArtistTile from "~/components/tile/resource/artist";
-import { GenreTile } from "~/components/tile/resource/genre";
 import ReleaseTile from "~/components/tile/resource/release";
 import TileRow from "~/components/tile/row";
 
@@ -373,23 +373,31 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						)}
 					/>
 
-					<HomePageSection
-						heading={t("home.topGenres")}
-						queryData={topGenres}
-						render={(genres) => (
-							<TileRow
-								tiles={genres.map((genre, index) => (
-									<Box
-										sx={{ paddingBottom: 2 }}
-										key={`genre-${genre?.id}-${index}`}
-									>
-										<GenreTile key={index} genre={genre} />
-									</Box>
-								))}
-								windowSize={tileRowWindowSize}
-							/>
-						)}
-					/>
+					{topGenres.items?.length ? (
+						<HomePageSection
+							heading={t("home.topGenres")}
+							queryData={topGenres}
+							render={(genres) => (
+								<Stack
+									direction={"row"}
+									gap={2}
+									sx={{
+										paddingY: 1,
+										alignItems: "center",
+										overflowX: "scroll",
+									}}
+								>
+									{genres.map((genre, index) => (
+										<GenreChip
+											genre={genre}
+											variant="surface"
+											key={`label-${genre?.id}-${index}`}
+										/>
+									))}
+								</Stack>
+							)}
+						/>
+					) : null}
 
 					{topLabels.items?.length ? (
 						<HomePageSection
@@ -406,12 +414,10 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									}}
 								>
 									{labels.map((label, index) => (
-										<Link
+										<LabelChip
+											label={label}
 											key={`label-${label?.id}-${index}`}
-											href={`/labels/${label?.slug}`}
-										>
-											<Chip label={label?.name} />
-										</Link>
+										/>
 									))}
 								</Stack>
 							)}

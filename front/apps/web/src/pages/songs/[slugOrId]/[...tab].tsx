@@ -47,8 +47,8 @@ import { PlayIcon } from "@/ui/icons";
 import { useAccentColor } from "@/utils/accent-color";
 import { generateArray } from "@/utils/gen-list";
 import { getAPI, useInfiniteQuery, useQuery } from "~/api";
+import { GenreChip } from "~/components/chip/resource/genre";
 import ExternalMetadataBadge from "~/components/external-metadata-badge";
-import GenreButton from "~/components/genre-button";
 import { useGradientBackground } from "~/components/gradient-background";
 import { Head } from "~/components/head";
 import { InfiniteSongView } from "~/components/infinite/resource/song";
@@ -260,7 +260,8 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 								</Typography>
 								{(genres.items ?? generateArray(2)).map(
 									(genre, index) => (
-										<GenreButton
+										<GenreChip
+											variant="outlined"
 											sx={genreButtonOutline}
 											key={index}
 											genre={genre}
