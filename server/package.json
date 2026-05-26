@@ -69,7 +69,7 @@
 		"@prisma/generator-helper": "6.19.3",
 		"@prisma/internals": "6.19.3",
 		"semver": "7.8.0",
-		"tar": "7.5.14"
+		"tar": "7.5.15"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.15",
