@@ -3229,13 +3229,13 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^8.28.2":
-  version: 8.28.2
-  resolution: "@mui/x-data-grid@npm:8.28.2"
+  version: 8.28.7
+  resolution: "@mui/x-data-grid@npm:8.28.7"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
     "@mui/x-internals": "npm:8.26.0"
-    "@mui/x-virtualizer": "npm:0.3.4"
+    "@mui/x-virtualizer": "npm:0.3.5"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     use-sync-external-store: "npm:^1.6.0"
@@ -3251,13 +3251,13 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10c0/fd222c1e05953c99d95b7e03ffc102c186c6ee1a69d31172f9d9b21fdf4e0cbe9ff3132023dd862a3a71a6908c53146a7949f95191e9b33850632fba3af4b58b
+  checksum: 10c0/3389f6273b56f267f8d1ab6cb85aa69c5759fe7f0cf67937db4bad3e197e04a3f2db9f549ae1204c954ff37bf6dadc3b564d4f942b084e39632bb77ddd889bd5
   languageName: node
   linkType: hard
 
 "@mui/x-date-pickers@npm:^8.28.4":
-  version: 8.28.4
-  resolution: "@mui/x-date-pickers@npm:8.28.4"
+  version: 8.28.7
+  resolution: "@mui/x-date-pickers@npm:8.28.7"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
@@ -3299,7 +3299,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10c0/cb0777610bd460ed73e728e01f68113f9eab475c612fde56e3cca52476de2221c59c190cae1baf19a0a45d6871041f1a4438d3e3f1e4969bc9255cfb9689fe32
+  checksum: 10c0/b0d9cb2013c62fde772df5c3069c06499c837275d987723086ec31f641ac30ddd43cceef7bb12d7b604894e522c05b5744283664f9cbf30bcc2e2b84cadfdc0c
   languageName: node
   linkType: hard
 
@@ -3317,9 +3317,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-virtualizer@npm:0.3.4":
-  version: 0.3.4
-  resolution: "@mui/x-virtualizer@npm:0.3.4"
+"@mui/x-virtualizer@npm:0.3.5":
+  version: 0.3.5
+  resolution: "@mui/x-virtualizer@npm:0.3.5"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@mui/utils": "npm:^7.3.5"
@@ -3327,7 +3327,7 @@ __metadata:
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/b67d85fb04ab0a39e43e4b3f3d27172c7e25f8bbc40131240caafb282a46c58e76b19dbd33145cbfc3c6def52851337388c21398a779a50c4e2fdf4db0774ac2
+  checksum: 10c0/54e143c283219b835bdbb7c2673ad60da6e3466839f5d256f679bd3b044a0f341253deeb13028a0e577014229547d39bbc7e3e07af80ce300d4710cc3881fdd3
   languageName: node
   linkType: hard
 
