@@ -34,7 +34,7 @@
 		"@prisma/adapter-pg": "7.8.0",
 		"@prisma/client": "7.8.0",
 		"amqp-connection-manager": "^5.0.0",
-		"amqplib": "^1.2.0",
+		"amqplib": "^2.0.0",
 		"archiver": "^7.0.1",
 		"axios": "^1.13.6",
 		"bcrypt": "^6.0.0",
