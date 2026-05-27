@@ -56,7 +56,7 @@ const LibraryForm = (props: LibraryFormProps) => {
 				style={{ width: "100%", height: "100%" }}
 			>
 				<DialogContent>
-					<Grid container direction="column" spacing={3}>
+					<Grid container spacing={3}>
 						<HookTextField
 							{...registerState("name")}
 							textFieldProps={{
@@ -64,7 +64,7 @@ const LibraryForm = (props: LibraryFormProps) => {
 								fullWidth: true,
 								label: t("form.library.nameOfLibrary"),
 							}}
-							gridProps={{}}
+							gridProps={{ sx: { width: "100%" } }}
 							rules={{
 								required: {
 									value: true,
@@ -80,7 +80,7 @@ const LibraryForm = (props: LibraryFormProps) => {
 								helperText:
 									"Path should be relative to the 'DATA_DIR' variable. Use './' if the library path is 'DATA_DIR' ",
 							}}
-							gridProps={{}}
+							gridProps={{ sx: { width: "100%" } }}
 							rules={{
 								required: {
 									value: true,

@@ -36,7 +36,7 @@ import type {} from "@mui/material/themeCssVarsAugmentation";
 import { deepmerge } from "@mui/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type ReactNode, useEffect, useState } from "react";
+import { Fragment, type ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { IconProps } from "@/ui/icons";
 import {
@@ -215,8 +215,8 @@ const Drawer = ({
 						</Box>
 						<Divider variant="middle" />
 						<List>
-							{navItems.map((items) => (
-								<>
+							{navItems.map((items, idx) => (
+								<Fragment key={idx}>
 									{items.map((item) => {
 										const path = `/${item}`;
 										const isSelected =
@@ -233,6 +233,7 @@ const Drawer = ({
 												>
 													<ListItemButton
 														onClick={onClose}
+														sx={{ gap: 1.5 }}
 													>
 														<ListItemIcon>
 															<Icon
@@ -265,7 +266,7 @@ const Drawer = ({
 										);
 									})}
 									<Divider variant="middle" />
-								</>
+								</Fragment>
 							))}
 							{actions.map((action) => {
 								const path = action.href;
@@ -280,6 +281,7 @@ const Drawer = ({
 											action.onClick?.();
 											onClose();
 										}}
+										sx={{ gap: 1.5 }}
 									>
 										<ListItemIcon>
 											{action.icon}

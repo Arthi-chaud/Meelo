@@ -279,7 +279,6 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	return (
 		<>
 			<GradientBackground />
-
 			{allIsEmpty && (
 				<Box
 					sx={{
@@ -301,7 +300,12 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				</Box>
 			)}
 			<Fade in>
-				<Stack spacing={4} my={2}>
+				<Stack
+					spacing={4}
+					sx={{
+						my: 2,
+					}}
+				>
 					<HomePageSection
 						heading={t("home.newlyAddedAlbums")}
 						queryData={newlyAddedAlbums}
@@ -380,8 +384,8 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							render={(genres) => (
 								<Stack
 									direction={"row"}
-									gap={2}
 									sx={{
+										gap: 2,
 										paddingY: 1,
 										alignItems: "center",
 										overflowX: "scroll",
@@ -406,8 +410,8 @@ const HomePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							render={(labels) => (
 								<Stack
 									direction={"row"}
-									gap={2}
 									sx={{
+										gap: 2,
 										paddingY: 1,
 										alignItems: "center",
 										overflowX: "scroll",

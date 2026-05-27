@@ -37,7 +37,12 @@ const SectionHeader = (props: SectionHeaderProps) => {
 				alignItems: "center",
 			}}
 		>
-			<Typography variant="h5" fontWeight="bold">
+			<Typography
+				variant="h5"
+				sx={{
+					fontWeight: "bold",
+				}}
+			>
 				{props.heading ?? <Skeleton width={"200px"} />}
 			</Typography>
 			{props.trailing}

@@ -489,7 +489,6 @@ const ScrobblersSection = () => {
 			<Typography>
 				{t("settings.ui.scrobblers.connect_scrobblers")}
 			</Typography>
-
 			<Grid
 				container
 				columnSpacing={2}
@@ -658,7 +657,7 @@ const ListenBrainzTokenModal = ({
 							),
 						}}
 						rules={{}}
-						gridProps={{ paddingTop: 2 }}
+						gridProps={{ sx: { paddingTop: 2 } }}
 					/>
 				</DialogContent>
 				<DialogActions>

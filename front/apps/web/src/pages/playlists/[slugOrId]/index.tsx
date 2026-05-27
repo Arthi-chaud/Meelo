@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, Button, Divider, Grid, IconButton, Stack } from "@mui/material";
+import { Box, Button, Divider, IconButton, Stack } from "@mui/material";
 import { type QueryClient, useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useConfirm } from "material-ui-confirm";
@@ -357,7 +357,7 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				}
 			/>
 
-			<Grid container direction={{ xs: "column", sm: "row" }} spacing={1}>
+			<Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
 				{(
 					[
 						[
@@ -374,20 +374,19 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 						],
 					] as const
 				).map(([label, Icon, variant, callback], index) => (
-					<Grid size="grow" key={index}>
-						<Button
-							variant={variant}
-							color="primary"
-							startIcon={<Icon />}
-							sx={{ width: "100%" }}
-							onClick={callback}
-							disabled={entries === undefined}
-						>
-							{t(`actions.playback.${label}`)}
-						</Button>
-					</Grid>
+					<Button
+						key={index}
+						variant={variant}
+						color="primary"
+						startIcon={<Icon />}
+						sx={{ width: "100%" }}
+						onClick={callback}
+						disabled={entries === undefined}
+					>
+						{t(`actions.playback.${label}`)}
+					</Button>
 				))}
-			</Grid>
+			</Stack>
 			<Divider sx={{ marginY: 2 }} />
 			{editState ? (
 				<DragAndDropPlaylist
@@ -413,74 +412,68 @@ const PlaylistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({
 				</Stack>
 			)}
 			<Divider sx={{ marginY: 2 }} />
-			<Grid
-				container
+			<Stack
 				direction={{ xs: "column", sm: "row" }}
 				spacing={1}
 				sx={{ justifyContent: { xs: "space-evenly", sm: "end" } }}
 			>
-				<Grid>
-					<Button
-						variant={editState ? "contained" : "outlined"}
-						color="primary"
-						startIcon={
-							editState ? <DoneIcon /> : <ReorderPlaylistIcon />
-						}
-						sx={{ width: "100%" }}
-						disabled={!canEditPlaylist || entries === undefined}
-						onClick={
-							entries &&
-							(() => {
-								if (editState) {
-									const editComparison = entries.map(
-										(entry, index) => ({
-											oldEntryId: entry.entryId,
-											newEntryId:
-												tempPlaylistEdit.at(index)!
-													.entryId,
-											index,
-										}),
-									);
-									const changes = editComparison.filter(
-										({ oldEntryId, newEntryId }) =>
-											newEntryId !== oldEntryId,
-									);
+				<Button
+					variant={editState ? "contained" : "outlined"}
+					color="primary"
+					startIcon={
+						editState ? <DoneIcon /> : <ReorderPlaylistIcon />
+					}
+					sx={{ width: { xs: "100%", sm: "auto" } }}
+					disabled={!canEditPlaylist || entries === undefined}
+					onClick={
+						entries &&
+						(() => {
+							if (editState) {
+								const editComparison = entries.map(
+									(entry, index) => ({
+										oldEntryId: entry.entryId,
+										newEntryId:
+											tempPlaylistEdit.at(index)!.entryId,
+										index,
+									}),
+								);
+								const changes = editComparison.filter(
+									({ oldEntryId, newEntryId }) =>
+										newEntryId !== oldEntryId,
+								);
 
-									if (changes.length !== 0) {
-										reorderMutation
-											.mutateAsync(
-												tempPlaylistEdit.map(
-													({ entryId }) => entryId,
-												),
-											)
-											.finally(() => setEditState(false));
-									} else {
-										setEditState(false);
-									}
+								if (changes.length !== 0) {
+									reorderMutation
+										.mutateAsync(
+											tempPlaylistEdit.map(
+												({ entryId }) => entryId,
+											),
+										)
+										.finally(() => setEditState(false));
 								} else {
-									setEditState(true);
-									// To set the state before passing it to the dragndrop list
-									setTempEdit(entries);
+									setEditState(false);
 								}
-							})
-						}
-					>
-						{t(editState ? "form.done" : "form.playlist.reorder")}
-					</Button>
-				</Grid>
-				<Grid>
-					<Button
-						variant="outlined"
-						color="error"
-						disabled={!isOwner || entries === undefined}
-						startIcon={deleteAction.icon}
-						sx={{ width: "100%" }}
-						onClick={deleteAction.onClick}
-					>
-						{t(deleteAction.label)}
-					</Button>
-				</Grid>
-			</Grid>
+							} else {
+								setEditState(true);
+								// To set the state before passing it to the dragndrop list
+								setTempEdit(entries);
+							}
+						})
+					}
+				>
+					{t(editState ? "form.done" : "form.playlist.reorder")}
+				</Button>
+				<Button
+					variant="outlined"
+					color="error"
+					disabled={!isOwner || entries === undefined}
+					startIcon={deleteAction.icon}
+					sx={{ width: { xs: "100%", sm: "auto" } }}
+					onClick={deleteAction.onClick}
+				>
+					{t(deleteAction.label)}
+				</Button>
+			</Stack>
 		</>
 	);
 };

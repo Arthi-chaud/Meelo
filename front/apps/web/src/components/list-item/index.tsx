@@ -103,8 +103,8 @@ const ListItem = (props: ListItemProps) => {
 					<ListItemText
 						primary={props.title ?? <Skeleton width={"120px"} />}
 						slotProps={{
-							primary: primaryTextStyle,
-							secondary: secondaryTextStyle,
+							primary: { sx: primaryTextStyle },
+							secondary: { sx: secondaryTextStyle },
 						}}
 						secondary={
 							props.secondTitle === undefined ? (
@@ -116,10 +116,13 @@ const ListItem = (props: ListItemProps) => {
 					/>
 				</Box>
 				<Grid
-					paddingRight={8}
 					container
 					spacing={2}
-					sx={{ display: { xs: "none", xl: "flex" }, width: "100%" }}
+					sx={{
+						paddingRight: 8,
+						display: { xs: "none", xl: "flex" },
+						width: "100%",
+					}}
 				>
 					<Grid size={{ xs: props.secondTitle !== null ? 6 : 10 }}>
 						<Typography sx={{ ...textStyle, ...primaryTextStyle }}>

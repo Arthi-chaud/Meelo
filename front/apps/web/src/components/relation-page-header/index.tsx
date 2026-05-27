@@ -30,8 +30,11 @@ const RelationPageHeader = (props: RelationHeaderProps) => {
 		<Grid
 			container
 			spacing={2}
-			flexWrap={"nowrap"}
-			sx={{ width: "inherit", height: "auto" }}
+			sx={{
+				flexWrap: "nowrap",
+				width: "inherit",
+				height: "auto",
+			}}
 		>
 			<Grid size={{ xs: 4, sm: 3, md: 2, xl: 1 }} sx={{ margin: 2 }}>
 				{props.illustration}

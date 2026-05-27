@@ -53,7 +53,13 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		"fileInfo.type": track.data?.type,
 		"song.songType": track.data?.song
 			? songType && (
-					<Stack direction="row" spacing={1} alignItems="center">
+					<Stack
+						direction="row"
+						spacing={1}
+						sx={{
+							alignItems: "center",
+						}}
+					>
 						<SongTypeIcon
 							type={songType}
 							size={theme.typography.body1.fontSize as number}
@@ -100,7 +106,11 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 				{Object.entries(tableContent).map(([key, value], index) => (
 					<TableRow key={index}>
 						<TableCell>
-							<Typography fontWeight="bold">
+							<Typography
+								sx={{
+									fontWeight: "bold",
+								}}
+							>
 								{t(key as TranslationKey)}
 							</Typography>
 						</TableCell>

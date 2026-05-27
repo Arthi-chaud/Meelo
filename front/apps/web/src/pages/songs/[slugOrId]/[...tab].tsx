@@ -216,7 +216,7 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									<Stack
 										direction="row"
 										spacing={1}
-										alignItems="center"
+										sx={{ alignItems: "center" }}
 									>
 										<SongTypeIcon
 											type={song.data.type}

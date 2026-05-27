@@ -48,7 +48,7 @@ const ResourceTypeForm = <Enum extends string>(props: {
 	const { t } = useTranslation();
 
 	return (
-		<Grid container spacing={2} justifyContent="center">
+		<Grid container spacing={2} sx={{ justifyContent: "center" }}>
 			{props.values.map((type) => (
 				<Grid key={type}>
 					<Chip

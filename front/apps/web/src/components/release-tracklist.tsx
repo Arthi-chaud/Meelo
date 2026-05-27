@@ -276,7 +276,7 @@ const ReleaseTrackList = ({
 														/>
 													</Icon>
 												) : (
-													<Typography color="text.disabled">
+													<Typography color="textDisabled">
 														{
 															currentTrack.trackIndex
 														}
@@ -301,12 +301,16 @@ const ReleaseTrackList = ({
 											}
 											slotProps={{
 												primary: {
-													fontSize: "medium",
-													component: "div",
+													sx: {
+														fontSize: "medium",
+														component: "div",
+													},
 												},
 												secondary: {
-													fontSize: "small",
-													color: "text.disabled",
+													sx: {
+														fontSize: "small",
+														color: "text.disabled",
+													},
 												},
 											}}
 											secondary={
@@ -328,14 +332,14 @@ const ReleaseTrackList = ({
 														sm: "block",
 													},
 												}}
-												color="text.disabled"
+												color="textDisabled"
 											>
 												{t("track.bonusTrack")}
 											</Typography>
 										)}
 										{currentTrack?.isRemastered && (
 											<Typography
-												color="text.disabled"
+												color="textDisabled"
 												sx={{
 													display: {
 														xs: "none",
@@ -347,7 +351,7 @@ const ReleaseTrackList = ({
 											</Typography>
 										)}
 										<Typography
-											color="text.disabled"
+											color="textDisabled"
 											sx={{
 												marginLeft: 2,
 												overflow: "unset",
@@ -363,7 +367,7 @@ const ReleaseTrackList = ({
 										</Typography>
 									</ListItemButton>
 								</ListItem>
-								<Divider variant="inset" />
+								<Divider sx={{ marginLeft: 6 }} />
 							</Fragment>
 						),
 					)}

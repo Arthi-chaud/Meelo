@@ -100,7 +100,7 @@ const AuthenticationWall = (props: { children: any }) => {
 							style={{ objectFit: "contain" }}
 						/>
 					</Box>
-					<Box flexGrow={1}>
+					<Box sx={{ flexGrow: 1 }}>
 						<AuthenticationForm />
 					</Box>
 				</Stack>

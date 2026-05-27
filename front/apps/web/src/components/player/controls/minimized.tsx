@@ -47,10 +47,10 @@ const ProgressBar = ({
 	progress,
 	duration,
 	illustration,
-	boxProps,
+	boxSx,
 }: Pick<PlayerControlsProps, "progress" | "duration"> & {
 	illustration: IllustrationModel | null | undefined;
-} & Record<"boxProps", BoxProps>) => {
+} & Record<"boxSx", BoxProps["sx"]>) => {
 	const theme = useTheme();
 	const accentColorHook = useAccentColor(illustration);
 	const [progressState, setProgress] = useState(0);
@@ -88,7 +88,7 @@ const ProgressBar = ({
 			<Box
 				ref={barRef}
 				sx={{
-					...boxProps,
+					...boxSx,
 					borderRadius: theme.shape.borderRadius,
 					borderTop: "3px solid",
 					...accentColor,
@@ -130,7 +130,7 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				progress={props.progress}
 				illustration={props.track?.illustration}
 				duration={props.duration}
-				boxProps={{
+				boxSx={{
 					bottom: -8,
 					left: -8,
 				}}
@@ -250,9 +250,13 @@ export const MinimizedPlayerControls = (props: PlayerControlsProps) => {
 				<Grid
 					container
 					size={{ xs: 4, sm: 4, md: 4, lg: 3, xl: 2 }}
-					flexWrap="nowrap"
-					color={props.playlistLoading ? "text.disabled" : undefined}
 					onClick={(event) => event.stopPropagation()}
+					sx={{
+						flexWrap: "nowrap",
+						color: props.playlistLoading
+							? "text.disabled"
+							: undefined,
+					}}
 				>
 					<Grid
 						size="grow"

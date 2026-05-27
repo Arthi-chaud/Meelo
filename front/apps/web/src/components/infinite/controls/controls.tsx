@@ -57,7 +57,6 @@ export const Controls = <SortingKey extends string>(props: {
 	return (
 		<Grid
 			container
-			gap={1}
 			sx={{
 				zIndex: 1000,
 				width: "100%",
@@ -67,6 +66,7 @@ export const Controls = <SortingKey extends string>(props: {
 				position: "sticky",
 				top: 16,
 				left: 0,
+				gap: 1,
 			}}
 		>
 			{props.filters && (

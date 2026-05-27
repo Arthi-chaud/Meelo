@@ -637,7 +637,7 @@ export const ExpandedPlayerControls = (
 																						"center",
 																				}}
 																			>
-																				<Typography color="text.disabled">
+																				<Typography color="textDisabled">
 																					{formatDuration(
 																						playlistItem
 																							.track
