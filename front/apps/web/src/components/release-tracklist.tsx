@@ -367,7 +367,7 @@ const ReleaseTrackList = ({
 										</Typography>
 									</ListItemButton>
 								</ListItem>
-								<Divider variant="inset" />
+								<Divider sx={{ marginLeft: 6 }} />
 							</Fragment>
 						),
 					)}

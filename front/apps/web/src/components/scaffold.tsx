@@ -233,6 +233,7 @@ const Drawer = ({
 												>
 													<ListItemButton
 														onClick={onClose}
+														sx={{ gap: 1.5 }}
 													>
 														<ListItemIcon>
 															<Icon
@@ -280,6 +281,7 @@ const Drawer = ({
 											action.onClick?.();
 											onClose();
 										}}
+										sx={{ gap: 1.5 }}
 									>
 										<ListItemIcon>
 											{action.icon}
