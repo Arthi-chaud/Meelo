@@ -298,8 +298,11 @@ export const TitleRadioTile = ({
 				>
 					<Typography
 						variant="body1"
-						fontWeight={450}
-						sx={{ flex: 1, textAlign: "center" }}
+						sx={{
+							fontWeight: 450,
+							flex: 1,
+							textAlign: "center",
+						}}
 					>
 						{title ?? <Skeleton width={"60px"} />}
 					</Typography>

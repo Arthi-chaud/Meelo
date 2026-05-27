@@ -204,17 +204,19 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							(document.activeElement as any)?.blur();
 						}
 					}}
-					InputProps={{
-						value: inputValue,
-						autoComplete: "off",
-						autoCorrect: "off",
-						spellCheck: false,
-						autoCapitalize: "off",
-						startAdornment: (
-							<InputAdornment position="start">
-								<SearchIcon />
-							</InputAdornment>
-						),
+					slotProps={{
+						input: {
+							value: inputValue,
+							autoComplete: "off",
+							autoCorrect: "off",
+							spellCheck: false,
+							autoCapitalize: "off",
+							startAdornment: (
+								<InputAdornment position="start">
+									<SearchIcon />
+								</InputAdornment>
+							),
+						},
 					}}
 					onChange={(event) => {
 						setInputValue(event.target.value || undefined);

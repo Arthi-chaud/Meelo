@@ -36,12 +36,14 @@ const ErrorPage = ({ heading }: ErrorPageProps) => {
 
 	return (
 		<Box
-			width="100%"
-			display="flex"
-			justifyContent="space-evenly"
-			alignItems="center"
-			minHeight="100vh"
-			flexDirection="column"
+			sx={{
+				width: "100%",
+				display: "flex",
+				justifyContent: "space-evenly",
+				alignItems: "center",
+				minHeight: "100vh",
+				flexDirection: "column",
+			}}
 		>
 			<Head title={t("errors.oops")} />
 			<Typography

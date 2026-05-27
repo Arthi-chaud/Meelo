@@ -38,7 +38,11 @@ const LyricsBox = (props: LyricsProps) => {
 	}
 	return (
 		<Fade in>
-			<Box flexDirection="column">
+			<Box
+				sx={{
+					flexDirection: "column",
+				}}
+			>
 				{props.lyrics !== undefined
 					? props.lyrics.map((lyric, index) => {
 							if (lyric.length === 0) {

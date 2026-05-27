@@ -367,8 +367,8 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							<Box sx={{ width: "inherit" }}>
 								<Typography
 									variant="h3"
-									fontWeight="bold"
 									sx={{
+										fontWeight: "bold",
 										overflow: "hidden",
 										display: "-webkit-box",
 										WebkitLineClamp: 3,
@@ -404,7 +404,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 										>
 											<Typography
 												variant="h4"
-												textAlign={"left"}
+												sx={{ textAlign: "left" }}
 											>
 												{albumArtists !== undefined ? (
 													formatArtists_(albumArtists)
@@ -547,7 +547,7 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				>
 					{hasGenres && (
 						<Grid
-							marginTop={1}
+							sx={{ marginTop: 1 }}
 							size={{
 								xl: 2,
 								lg: 3,

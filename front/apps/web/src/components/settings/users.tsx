@@ -114,10 +114,19 @@ const UsersSettings = () => {
 			flex: 7,
 			renderCell: ({ row: user }) => {
 				return (
-					<Typography display="inline-flex">
+					<Typography
+						sx={{
+							display: "inline-flex",
+						}}
+					>
 						{user.name}
 						{user.id === currentUser?.id && (
-							<Typography color="grey" paddingX={1}>
+							<Typography
+								color="textDisabled"
+								sx={{
+									paddingX: 1,
+								}}
+							>
 								{t("settings.users.you")}
 							</Typography>
 						)}
