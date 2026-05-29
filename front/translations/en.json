@@ -484,7 +484,9 @@
 			"nowEnabled": "User is now enabled",
 			"nowNotAdmin": "User is not an admin anymore",
 			"updateFail": "Updating user failed"
-		}
+		},
+		"willPlayAfter": "'{{songName}}' will play after",
+		"willPlayNext": "'{{songName}}' will play next"
 	},
 	"track": {
 		"bonusTrack": "Bonus Track",
