@@ -17,7 +17,7 @@
  */
 
 import { DeviceType, deviceType } from "expo-device";
-import { Pressable, View } from "react-native";
+import { Pressable } from "react-native";
 import Toast, { type ToastConfig } from "react-native-toast-message";
 import { StyleSheet } from "react-native-unistyles";
 import { CheckIcon, ErrorIcon } from "@/ui/icons";
@@ -41,10 +41,8 @@ export const ToastComponent = ({ text, variant }: ToastComponentProps) => {
 	styles.useVariants({ variant, isTablet: deviceType === DeviceType.TABLET });
 	return (
 		<Pressable style={styles.root} onPress={() => Toast.hide()}>
-			<View style={styles.icon}>
-				<Icon variant="Bold" style={styles.icon} />
-			</View>
-			<Text variant="itemText" style={styles.text}>
+			<Icon variant="Bold" style={styles.icon} />
+			<Text variant="thirdTitle" style={styles.text}>
 				{text}
 			</Text>
 		</Pressable>
@@ -55,7 +53,6 @@ const toastConfig: ToastConfig = {
 	success: ({ text1 }) => (
 		<ToastComponent text={text1 ?? ""} variant="success" />
 	),
-
 	error: ({ text1 }) => <ToastComponent text={text1 ?? ""} variant="error" />,
 };
 
@@ -63,7 +60,7 @@ export const ToastManager = () => {
 	return <Toast config={toastConfig} />;
 };
 
-const styles = StyleSheet.create((theme) => ({
+const styles = StyleSheet.create((theme, rt) => ({
 	root: {
 		variants: {
 			isTablet: {
@@ -74,7 +71,7 @@ const styles = StyleSheet.create((theme) => ({
 				false: {},
 			},
 		},
-		width: "auto",
+		maxWidth: rt.screen.width * 0.9,
 		backgroundColor: theme.colors.background,
 		borderRadius: theme.borderRadius * 1.5,
 		padding: theme.gap(2),
@@ -91,9 +88,8 @@ const styles = StyleSheet.create((theme) => ({
 				error: { color: theme.colors.error },
 			},
 		},
-		aspectRatio: 1,
 	},
 	text: {
-		fontSize: theme.fontSize.rem(1.5),
+		flex: deviceType === DeviceType.PHONE ? 1 : undefined,
 	},
 }));
