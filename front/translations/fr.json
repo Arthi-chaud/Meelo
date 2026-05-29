@@ -481,7 +481,9 @@
 			"nowEnabled": "Le compte utilisateur est activé",
 			"nowNotAdmin": "L'utilisateur n'est plus administrateur",
 			"updateFail": "Echec de la mise à jour de l'utilisateur"
-		}
+		},
+		"willPlayAfter": "'{{songName}}' sera joué après",
+		"willPlayNext": "'{{songName}}' sera joué ensuite"
 	},
 	"track": {
 		"bonusTrack": "Piste Bonus",

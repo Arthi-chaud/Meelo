@@ -26,6 +26,7 @@ import {
 	Grid,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import i18next from "i18next";
 import type { useConfirm } from "material-ui-confirm";
 import {
 	HookCheckBox,
@@ -70,7 +71,11 @@ export const PlayNextAction = (
 	onClick: () =>
 		getTrack().then((track) => {
 			store.set(playNextAtom, track);
-			toast.success(`'${track.track.name}' will play next!`);
+			toast.success(
+				i18next.t("toasts.willPlayNext", {
+					songName: track.track.name,
+				}),
+			);
 		}),
 	label: "actions.playback.playNext",
 	icon: <PlayNextIcon />,
@@ -82,7 +87,11 @@ export const PlayAfterAction = (
 	onClick: () =>
 		getTrack().then((track) => {
 			store.set(playAfterAtom, track);
-			toast.success(`'${track.track.name}' will play after!`);
+			toast.success(
+				i18next.t("toasts.willPlayAfter", {
+					songName: track.track.name,
+				}),
+			);
 		}),
 	label: "actions.playback.playAfter",
 	icon: <PlayAfterIcon />,
