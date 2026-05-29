@@ -1,4 +1,5 @@
 import type { Href } from "expo-router";
+import i18next from "i18next";
 import type { QueryClient } from "@/api/hook";
 import { getReleaseTracklist } from "@/api/queries";
 import { transformPage } from "@/api/query";
@@ -24,6 +25,7 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
+import { showSuccessToast } from "~/primitives/toast";
 export type Action = {
 	icon: IconType;
 	label: TranslationKey;
@@ -77,13 +79,27 @@ export const Play = (track: TrackState): Action => ({
 export const PlayNext = (track: TrackState): Action => ({
 	label: "actions.playback.playNext",
 	icon: PlayNextIcon,
-	onPress: () => store.set(playNextAtom, track),
+	onPress: () => {
+		store.set(playNextAtom, track);
+		showSuccessToast({
+			text: i18next.t("toasts.willPlayNext", {
+				songName: track.track.name,
+			}),
+		});
+	},
 });
 
 export const PlayAfter = (track: TrackState): Action => ({
 	label: "actions.playback.playAfter",
 	icon: PlayAfterIcon,
-	onPress: () => store.set(playAfterAtom, track),
+	onPress: () => {
+		store.set(playAfterAtom, track);
+		showSuccessToast({
+			text: i18next.t("toasts.willPlayAfter", {
+				songName: track.track.name,
+			}),
+		});
+	},
 });
 
 export const PlayReleaseAction = (
