@@ -1,6 +1,7 @@
 {
 	"actions": {
 		"addToPlaylist": {
+			"duplicateWarning": "Ce morceau est déjà dans la playlist. Voulez-vous vraiment l'ajouter à nouveau?",
 			"label": "Ajouter à une liste de lecture",
 			"modalTitle": "Choisissez une liste de lecture"
 		},

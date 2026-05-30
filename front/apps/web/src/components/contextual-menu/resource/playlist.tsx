@@ -62,6 +62,7 @@ const PlaylistContextualMenu = (props: PlaylistContextualMenuProps) => {
 					AddToPlaylistAction(
 						{ playlistId: props.playlist.id },
 						queryClient,
+						confirm,
 					),
 				],
 				[SharePlaylistAction(props.playlist.slug, t)],

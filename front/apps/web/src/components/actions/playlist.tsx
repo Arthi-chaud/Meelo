@@ -39,7 +39,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import type { AddToPlaylistPayload } from "@/api";
 import type { QueryClient } from "@/api/hook";
-import { getPlaylists } from "@/api/queries";
+import { getPlaylists, isSongInPlaylist } from "@/api/queries";
 import type { InfiniteQueryFn } from "@/api/query";
 import type Playlist from "@/models/playlist";
 import type {
@@ -297,7 +297,7 @@ export const DeletePlaylistAction = (
 
 type SelectPlaylistFormProps = {
 	playlistQuery: InfiniteQueryFn<PlaylistWithRelations<"illustration">>;
-	onSubmit: (playlistId: number) => void;
+	onSubmit: (playlistId: number) => Promise<boolean>;
 	onClose: () => void;
 };
 
@@ -314,7 +314,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 				open={openModal}
 				onClose={closeModal}
 				fullWidth
-				sx={{ zIndex: 999999 }}
+				sx={{ zIndex: 999998 }}
 			>
 				{createPlaylistAction.dialog?.({ close: closeModal })}
 			</Dialog>
@@ -351,8 +351,13 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 							onClick={
 								item &&
 								(() => {
-									props.onSubmit(item.id);
-									props.onClose();
+									props
+										.onSubmit(item.id)
+										.then((shouldClose) => {
+											if (shouldClose) {
+												props.onClose();
+											}
+										});
 								})
 							}
 						/>
@@ -371,6 +376,7 @@ const SelectPlaylistForm = (props: SelectPlaylistFormProps) => {
 export const AddToPlaylistAction = (
 	payload: AddToPlaylistPayload,
 	queryClient: QueryClient,
+	confirm: ReturnType<typeof useConfirm>,
 ): Action => ({
 	icon: <AddToPlaylistIcon />,
 	label: "actions.addToPlaylist.label",
@@ -378,8 +384,29 @@ export const AddToPlaylistAction = (
 	dialog: ({ close }) => {
 		const { t } = useTranslation();
 		const mutation = useMutation({
-			mutationFn: (playlistId: number) => {
-				return queryClient.api
+			mutationFn: async (playlistId: number) => {
+				if (payload.songId) {
+					const songIsInPlaylist = await isSongInPlaylist(
+						payload.songId,
+						playlistId,
+					).exec(queryClient.api)();
+					if (songIsInPlaylist) {
+						const { confirmed } = await confirm({
+							title: t("actions.warningModalTitle"),
+							description: t(
+								"actions.addToPlaylist.duplicateWarning",
+							),
+							confirmationText: t("actions.addToPlaylist.label"),
+							cancellationText: t("form.cancel"),
+							confirmationButtonProps: { variant: "contained" },
+							dialogProps: { sx: { zIndex: 999999 } },
+						});
+						if (!confirmed) {
+							return false;
+						}
+					}
+				}
+				queryClient.api
 					.addToPlaylist(payload, playlistId)
 					.then(() => {
 						toast.success(t("toasts.playlist.addedToPlaylist"));
@@ -390,14 +417,17 @@ export const AddToPlaylistAction = (
 							queryKey: ["playlists"],
 						});
 					})
-					.catch((error: Error) => toast.error(error.message));
+					.catch((error: Error) => {
+						toast.error(error.message);
+					});
+				return true;
 			},
 		});
 
 		return (
 			<SelectPlaylistForm
 				onClose={close}
-				onSubmit={(playlistId) => mutation.mutate(playlistId)}
+				onSubmit={(playlistId) => mutation.mutateAsync(playlistId)}
 				playlistQuery={() =>
 					getPlaylists(
 						{ changeable: true },

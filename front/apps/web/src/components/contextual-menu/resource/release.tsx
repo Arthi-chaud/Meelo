@@ -96,6 +96,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 					AddToPlaylistAction(
 						{ releaseId: props.release.id },
 						queryClient,
+						confirm,
 					),
 				],
 				[

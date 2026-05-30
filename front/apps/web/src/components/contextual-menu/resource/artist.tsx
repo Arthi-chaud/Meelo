@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useConfirm } from "material-ui-confirm";
 import { useTranslation } from "react-i18next";
 import type Artist from "@/models/artist";
 import { useQueryClient } from "~/api";
@@ -39,6 +40,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 	const artistSlug = props.artist.slug;
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
+	const confirm = useConfirm();
 
 	return (
 		<ContextualMenu
@@ -52,6 +54,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 					AddToPlaylistAction(
 						{ artistId: props.artist.id },
 						queryClient,
+						confirm,
 					),
 				],
 				[

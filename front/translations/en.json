@@ -1,6 +1,7 @@
 {
 	"actions": {
 		"addToPlaylist": {
+			"duplicateWarning": "This song is already in the playlist. Are you sure you want to add it again?",
 			"label": "Add to Playlist",
 			"modalTitle": "Select a playlist"
 		},

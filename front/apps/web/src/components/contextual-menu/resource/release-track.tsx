@@ -80,6 +80,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 							AddToPlaylistAction(
 								{ songId: props.track.songId },
 								queryClient,
+								confirm,
 							),
 						]
 					: [],
