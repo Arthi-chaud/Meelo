@@ -17,7 +17,6 @@
  */
 
 import { useConfirm } from "material-ui-confirm";
-import { useTranslation } from "react-i18next";
 import { getMasterRelease } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import { useQueryClient } from "~/api";
@@ -39,7 +38,6 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 	const albumSlug = props.album.slug;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
-	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -71,21 +69,17 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 					: [],
 				[
 					ChangeAlbumType(props.album, queryClient),
-					RefreshAlbumMetadataAction(props.album.id, t),
+					RefreshAlbumMetadataAction(props.album.id),
 					EditExternalLinksAction("album", props.album.id),
 				],
 				[
-					DownloadReleaseAsyncAction(
-						queryClient.api,
-						confirm,
-						() =>
-							queryClient
-								.fetchQuery(getMasterRelease(albumSlug))
-								.then((release) => release.id),
-						t,
+					DownloadReleaseAsyncAction(queryClient.api, confirm, () =>
+						queryClient
+							.fetchQuery(getMasterRelease(albumSlug))
+							.then((release) => release.id),
 					),
 				],
-				[ShareAlbumAction(albumSlug, t)],
+				[ShareAlbumAction(albumSlug)],
 			]}
 		/>
 	);

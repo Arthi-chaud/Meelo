@@ -124,7 +124,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 						? [ChangeSongType(props.track.song, queryClient)]
 						: []),
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
-					RefreshTrackMetadataAction(props.track.id, t),
+					RefreshTrackMetadataAction(props.track.id),
 
 					...(props.track.songId
 						? [EditExternalLinksAction("song", props.track.songId)]
@@ -139,7 +139,6 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.track.sourceFileId,
-						t,
 					),
 				],
 			]}

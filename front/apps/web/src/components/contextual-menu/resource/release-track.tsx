@@ -17,7 +17,6 @@
  */
 
 import { useConfirm } from "material-ui-confirm";
-import { useTranslation } from "react-i18next";
 import type Artist from "@/models/artist";
 import type { TrackWithRelations } from "@/models/track";
 import { useQueryClient } from "~/api";
@@ -52,7 +51,6 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 	const songSlug = props.track.song?.slug;
 	const confirm = useConfirm();
 	const queryClient = useQueryClient();
-	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -97,10 +95,7 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 					UpdateTrackIllustrationAction(queryClient, props.track.id),
 					...(props.track.songId
 						? [
-								RefreshSongMetadataAction(
-									props.track.songId,
-									t,
-								),
+								RefreshSongMetadataAction(props.track.songId),
 								EditExternalLinksAction(
 									"song",
 									props.track.songId,
@@ -114,9 +109,8 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.track.sourceFileId,
-						t,
 					),
-					...(songSlug ? [ShareSongAction(songSlug, t)] : []),
+					...(songSlug ? [ShareSongAction(songSlug)] : []),
 				],
 			]}
 		/>

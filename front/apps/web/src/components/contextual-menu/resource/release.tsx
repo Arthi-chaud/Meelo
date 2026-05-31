@@ -122,7 +122,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						queryClient,
 						props.release.id,
 					),
-					RefreshAlbumMetadataAction(props.release.albumId, t),
+					RefreshAlbumMetadataAction(props.release.albumId),
 					EditExternalLinksAction("album", props.release.albumId),
 				],
 				[
@@ -130,10 +130,9 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.release.id,
-						t,
 					),
 				],
-				[ShareReleaseAction(props.release.id, t)],
+				[ShareReleaseAction(props.release.id)],
 			]}
 		/>
 	);

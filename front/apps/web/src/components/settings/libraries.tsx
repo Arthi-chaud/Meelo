@@ -242,7 +242,7 @@ const LibrariesSettings = () => {
 				renderCell: ({ row: library }) => (
 					<RunTaskButton
 						variant="outlined"
-						{...RefreshLibraryMetadataAction(library.id, t)}
+						{...RefreshLibraryMetadataAction(library.id)}
 						label="tasks.refresh"
 					/>
 				),

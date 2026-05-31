@@ -100,7 +100,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[
 					ChangeSongType(props.song, queryClient),
-					RefreshSongMetadataAction(props.song.id, t),
+					RefreshSongMetadataAction(props.song.id),
 					EditExternalLinksAction("song", props.song.id),
 					MergeSongAction(props.song, queryClient),
 				],
@@ -112,16 +112,12 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 					),
 				],
 				[
-					DownloadAsyncAction(
-						queryClient.api,
-						confirm,
-						() =>
-							getMasterTrack().then(
-								({ sourceFileId }) => sourceFileId,
-							),
-						t,
+					DownloadAsyncAction(queryClient.api, confirm, () =>
+						getMasterTrack().then(
+							({ sourceFileId }) => sourceFileId,
+						),
 					),
-					ShareSongAction(songSlug, t),
+					ShareSongAction(songSlug),
 				],
 			].concat(
 				props.entryId !== undefined
