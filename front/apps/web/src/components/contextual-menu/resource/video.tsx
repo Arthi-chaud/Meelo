@@ -17,7 +17,6 @@
  */
 
 import { useConfirm } from "material-ui-confirm";
-import { useTranslation } from "react-i18next";
 import { getArtist } from "@/api/queries";
 import type { VideoWithRelations } from "@/models/video";
 import { useQueryClient } from "~/api";
@@ -59,7 +58,6 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 				featuring: undefined,
 				artist,
 			}));
-	const { t } = useTranslation();
 
 	return (
 		<ContextualMenu
@@ -96,7 +94,7 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 						queryClient,
 						props.video.master.id,
 					),
-					RefreshTrackMetadataAction(props.video.master.id, t),
+					RefreshTrackMetadataAction(props.video.master.id),
 				],
 				[ShowTrackFileInfoAction(confirm, props.video.master.id)],
 				[

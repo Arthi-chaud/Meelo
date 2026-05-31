@@ -100,7 +100,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 				],
 				[
 					ChangeSongType(props.song, queryClient),
-					RefreshSongMetadataAction(props.song.id, t),
+					RefreshSongMetadataAction(props.song.id),
 					EditExternalLinksAction("song", props.song.id),
 					MergeSongAction(props.song, queryClient),
 				],

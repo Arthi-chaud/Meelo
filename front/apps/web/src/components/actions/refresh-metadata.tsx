@@ -19,6 +19,7 @@
 import { Box, Button, Checkbox, Divider, Stack } from "@mui/material";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import type API from "@/api";
 import { MetadataRefreshIcon } from "@/ui/icons";
 import { useAPI, useQueryClient } from "~/api";
@@ -30,16 +31,15 @@ type RefreshableResourceType =
 	| "artist";
 
 const RefreshMetadataActionContent = ({
-	t,
 	resourceType,
 	resourceId,
 	close,
 }: {
-	t: Translator;
 	resourceType: RefreshableResourceType;
 	resourceId: number;
 	close: () => void;
 }) => {
+	const { t } = useTranslation();
 	const [force, setForce] = useState(false);
 	const [reuseSources, setReuseSources] = useState(true);
 	const api = useAPI();
@@ -152,7 +152,6 @@ const RefreshMetadataActionContent = ({
 };
 
 const RefreshMetadataAction = (
-	t: Translator,
 	resourceType: RefreshableResourceType,
 	resourceId: number,
 ): Action => ({
@@ -161,7 +160,6 @@ const RefreshMetadataAction = (
 	disabled: !getUser()?.user,
 	dialog: ({ close }) => (
 		<RefreshMetadataActionContent
-			t={t}
 			resourceId={resourceId}
 			resourceType={resourceType}
 			close={close}
@@ -169,32 +167,20 @@ const RefreshMetadataAction = (
 	),
 });
 
-export const RefreshLibraryMetadataAction = (
-	librarySlugOrId: number,
-	t: Translator,
-) => RefreshMetadataAction(t, "library", librarySlugOrId);
+export const RefreshLibraryMetadataAction = (librarySlugOrId: number) =>
+	RefreshMetadataAction("library", librarySlugOrId);
 
-export const RefreshArtistMetadataAction = (
-	artistSlugOrId: number,
-	t: Translator,
-) => RefreshMetadataAction(t, "artist", artistSlugOrId);
+export const RefreshArtistMetadataAction = (artistSlugOrId: number) =>
+	RefreshMetadataAction("artist", artistSlugOrId);
 
-export const RefreshAlbumMetadataAction = (
-	albumSlugOrId: number,
-	t: Translator,
-) => RefreshMetadataAction(t, "album", albumSlugOrId);
+export const RefreshAlbumMetadataAction = (albumSlugOrId: number) =>
+	RefreshMetadataAction("album", albumSlugOrId);
 
-export const RefreshReleaseMetadataAction = (
-	releaseSlugOrId: number,
-	t: Translator,
-) => RefreshMetadataAction(t, "release", releaseSlugOrId);
+export const RefreshReleaseMetadataAction = (releaseSlugOrId: number) =>
+	RefreshMetadataAction("release", releaseSlugOrId);
 
-export const RefreshSongMetadataAction = (
-	songSlugOrId: number,
-	t: Translator,
-) => RefreshMetadataAction(t, "song", songSlugOrId);
+export const RefreshSongMetadataAction = (songSlugOrId: number) =>
+	RefreshMetadataAction("song", songSlugOrId);
 
-export const RefreshTrackMetadataAction = (
-	trackSlugOrId: number,
-	t: Translator,
-) => RefreshMetadataAction(t, "track", trackSlugOrId);
+export const RefreshTrackMetadataAction = (trackSlugOrId: number) =>
+	RefreshMetadataAction("track", trackSlugOrId);

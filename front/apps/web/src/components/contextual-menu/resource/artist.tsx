@@ -17,7 +17,6 @@
  */
 
 import { useConfirm } from "material-ui-confirm";
-import { useTranslation } from "react-i18next";
 import type Artist from "@/models/artist";
 import { useQueryClient } from "~/api";
 import { EditExternalLinksAction } from "~/components/actions/edit-external-links";
@@ -39,7 +38,6 @@ type ArtistContextualMenuProps = {
 const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 	const artistSlug = props.artist.slug;
 	const queryClient = useQueryClient();
-	const { t } = useTranslation();
 	const confirm = useConfirm();
 
 	return (
@@ -62,7 +60,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 						queryClient,
 						props.artist.id,
 					),
-					RefreshArtistMetadataAction(props.artist.id, t),
+					RefreshArtistMetadataAction(props.artist.id),
 					EditExternalLinksAction("artist", props.artist.id),
 				],
 				[ShareArtistAction(artistSlug)],
