@@ -29,7 +29,7 @@ import {
 	Req,
 } from "@nestjs/common";
 import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
-import { IsOptional } from "class-validator";
+import { IsNumber, IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
 import { Role } from "src/authentication/roles/roles.decorators";
@@ -63,6 +63,21 @@ export class Selector {
 	})
 	@TransformIdentifier(AlbumService)
 	album?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Get playlists that have the song",
+	})
+	@TransformIdentifier(AlbumService)
+	song?: SongQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description:
+			"Filter by playlist id. Mainly used along the 'song' filter",
+	})
+	@IsNumber()
+	playlistId?: number;
 
 	@IsOptional()
 	@ApiPropertyOptional({
@@ -100,7 +115,7 @@ export default class PlaylistController {
 	@Role(Roles.Default)
 	@Response({ handler: PlaylistResponseBuilder, type: ResponseType.Page })
 	async getMany(
-		@Query() { changeable, ...selector }: Selector,
+		@Query() { changeable, playlistId, ...selector }: Selector,
 		@Query() sort: PlaylistQueryParameters.SortingParameter,
 		@RelationIncludeQuery(PlaylistQueryParameters.AvailableAtomicIncludes)
 		include: PlaylistQueryParameters.RelationInclude,
@@ -112,6 +127,7 @@ export default class PlaylistController {
 		return this.playlistService.getMany(
 			{
 				...selector,
+				id: playlistId ? { in: [playlistId] } : undefined,
 				changleableBy:
 					changeable && userId ? { id: userId } : undefined,
 			},

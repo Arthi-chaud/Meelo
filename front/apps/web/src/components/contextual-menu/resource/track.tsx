@@ -105,6 +105,7 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 							AddToPlaylistAction(
 								{ songId: props.track.songId },
 								queryClient,
+								confirm,
 							),
 						]
 					: [],

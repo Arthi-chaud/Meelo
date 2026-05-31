@@ -65,6 +65,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 							AddToPlaylistAction(
 								{ releaseId: props.album.masterId },
 								queryClient,
+								confirm,
 							),
 						]
 					: [],

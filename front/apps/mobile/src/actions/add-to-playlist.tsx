@@ -2,9 +2,10 @@ import { BottomSheetFlatList, useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Alert } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type { AddToPlaylistPayload } from "@/api";
-import { getPlaylists } from "@/api/queries";
+import { getPlaylists, isSongInPlaylist } from "@/api/queries";
 import type { PlaylistWithRelations } from "@/models/playlist";
 import { AddIcon, PlaylistIcon } from "@/ui/icons";
 import { generateArray } from "@/utils/gen-list";
@@ -48,24 +49,53 @@ const ChoosePlaylistModal = ({
 }) => {
 	const { t } = useTranslation();
 	const { dismiss } = useBottomSheetModal();
+	const submit = (playlistId: number) => {
+		queryClient.api
+			.addToPlaylist(payload, playlistId)
+			.then(() => {
+				showSuccessToast({
+					text: t("toasts.playlist.addedToPlaylist"),
+				});
+				dismiss();
+				queryClient.client.invalidateQueries({
+					queryKey: ["playlists"],
+				});
+			})
+			.catch((e) =>
+				showErrorToast({
+					text: t(e.message ?? e.error ?? JSON.stringify(e)),
+				}),
+			);
+	};
 	const addToPlaylist = useMutation({
-		mutationFn: (playlistId: number) =>
-			queryClient.api
-				.addToPlaylist(payload, playlistId)
-				.then(() => {
-					showSuccessToast({
-						text: t("toasts.playlist.addedToPlaylist"),
-					});
-					dismiss();
-					queryClient.client.invalidateQueries({
-						queryKey: ["playlists"],
-					});
-				})
-				.catch((e) =>
-					showErrorToast({
-						text: t(e.message ?? e.error ?? JSON.stringify(e)),
-					}),
-				),
+		mutationFn: async (playlistId: number) => {
+			if (payload.songId) {
+				const songIsInPlaylist = await isSongInPlaylist(
+					payload.songId,
+					playlistId,
+				).exec(queryClient.api)();
+				if (songIsInPlaylist) {
+					Alert.alert(
+						t("actions.warningModalTitle"),
+						t("actions.addToPlaylist.duplicateWarning"),
+						[
+							{
+								text: t("form.cancel"),
+								onPress: () => {},
+								style: "cancel",
+							},
+							{
+								text: t("actions.addToPlaylist.label"),
+								onPress: () => submit(playlistId),
+								style: "default",
+							},
+						],
+					);
+				} else {
+					submit(playlistId);
+				}
+			}
+		},
 	});
 	const { openFormModal } = useCreatePlaylistFormModal(undefined, (p) =>
 		addToPlaylist.mutate(p.id),

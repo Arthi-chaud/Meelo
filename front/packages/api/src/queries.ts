@@ -451,6 +451,24 @@ export const getPlaylistEntries = <I extends SongInclude | never = never>(
 	});
 };
 
+export const isSongInPlaylist = (
+	songId: number,
+	playlistId: number,
+): Query<boolean> => {
+	const q = _mkSimpleQuery({
+		route: `/playlists?song=${songId}&playlistId=${playlistId}`,
+		validator: PaginatedResponse(PlaylistWithRelations([])),
+	});
+	return {
+		...q,
+		exec: (api) => () =>
+			q
+				.exec(api)()
+				.catch(() => ({ items: [] }))
+				.then(({ items }) => items.length === 1),
+	};
+};
+
 /// Genres
 
 export const getGenres = (

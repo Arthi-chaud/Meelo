@@ -86,6 +86,7 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 							AddToPlaylistAction(
 								{ songId: props.video.songId },
 								queryClient,
+								confirm,
 							),
 						]
 					: [],
