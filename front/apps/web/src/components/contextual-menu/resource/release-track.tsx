@@ -114,7 +114,6 @@ const ReleaseTrackContextualMenu = (props: ReleaseTrackContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.track.sourceFileId,
-						t,
 					),
 					...(songSlug ? [ShareSongAction(songSlug)] : []),
 				],

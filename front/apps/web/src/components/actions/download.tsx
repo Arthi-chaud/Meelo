@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import i18next from "i18next";
 import type { useConfirm } from "material-ui-confirm";
 import type API from "@/api";
 import { ArchiveIcon, DownloadIcon } from "@/ui/icons";
@@ -25,8 +26,8 @@ import type Action from "./";
 const confirmDownloadAction = (
 	confirm: ReturnType<typeof useConfirm>,
 	downloadUrl: string,
-	t: Translator,
 ) => {
+	const t = i18next.t;
 	confirm({
 		title: t("actions.warningModalTitle"),
 		description: t("actions.download.warning"),
@@ -43,27 +44,25 @@ export const DownloadAction = (
 	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	sourceFileId: number,
-	t: Translator,
 ): Action => ({
 	icon: <DownloadIcon />,
 	label: "actions.download.label",
 	disabled: !getUser()?.user,
 	onClick: () =>
-		confirmDownloadAction(confirm, api.getDirectStreamURL(sourceFileId), t),
+		confirmDownloadAction(confirm, api.getDirectStreamURL(sourceFileId)),
 });
 
 export const DownloadAsyncAction = (
 	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	sourceFileId: () => PromiseLike<number>,
-	t: Translator,
 ): Action => ({
 	icon: <DownloadIcon />,
 	label: "actions.download.label",
 	disabled: !getUser()?.user,
 	onClick: () =>
 		sourceFileId().then((id) =>
-			confirmDownloadAction(confirm, api.getDirectStreamURL(id), t),
+			confirmDownloadAction(confirm, api.getDirectStreamURL(id)),
 		),
 });
 
@@ -71,24 +70,22 @@ export const DownloadReleaseAction = (
 	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	releaseId: number | string,
-	t: Translator,
 ): Action => ({
 	icon: <ArchiveIcon />,
 	label: "actions.archive",
 	onClick: () =>
-		confirmDownloadAction(confirm, api.getReleaseArchiveURL(releaseId), t),
+		confirmDownloadAction(confirm, api.getReleaseArchiveURL(releaseId)),
 });
 
 export const DownloadReleaseAsyncAction = (
 	api: API,
 	confirm: ReturnType<typeof useConfirm>,
 	releaseId: () => PromiseLike<number | string>,
-	t: Translator,
 ): Action => ({
 	icon: <ArchiveIcon />,
 	label: "actions.archive",
 	onClick: () =>
 		releaseId().then((id) =>
-			confirmDownloadAction(confirm, api.getReleaseArchiveURL(id), t),
+			confirmDownloadAction(confirm, api.getReleaseArchiveURL(id)),
 		),
 });

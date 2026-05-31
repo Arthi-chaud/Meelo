@@ -75,14 +75,10 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 					EditExternalLinksAction("album", props.album.id),
 				],
 				[
-					DownloadReleaseAsyncAction(
-						queryClient.api,
-						confirm,
-						() =>
-							queryClient
-								.fetchQuery(getMasterRelease(albumSlug))
-								.then((release) => release.id),
-						t,
+					DownloadReleaseAsyncAction(queryClient.api, confirm, () =>
+						queryClient
+							.fetchQuery(getMasterRelease(albumSlug))
+							.then((release) => release.id),
 					),
 				],
 				[ShareAlbumAction(albumSlug)],

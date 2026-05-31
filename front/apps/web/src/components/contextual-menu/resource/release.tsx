@@ -130,7 +130,6 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.release.id,
-						t,
 					),
 				],
 				[ShareReleaseAction(props.release.id)],

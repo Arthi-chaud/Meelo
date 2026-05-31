@@ -139,7 +139,6 @@ const TrackContextualMenu = (props: TrackContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.track.sourceFileId,
-						t,
 					),
 				],
 			]}

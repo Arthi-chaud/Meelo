@@ -104,7 +104,6 @@ const VideoContextualMenu = (props: VideoContextualMenuProps) => {
 						queryClient.api,
 						confirm,
 						props.video.master.sourceFileId,
-						t,
 					),
 				],
 			]}
