@@ -121,7 +121,7 @@ const SongContextualMenu = (props: SongContextualMenuProps) => {
 							),
 						t,
 					),
-					ShareSongAction(songSlug, t),
+					ShareSongAction(songSlug),
 				],
 			].concat(
 				props.entryId !== undefined

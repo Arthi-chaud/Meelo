@@ -65,7 +65,7 @@ const ArtistContextualMenu = (props: ArtistContextualMenuProps) => {
 					RefreshArtistMetadataAction(props.artist.id, t),
 					EditExternalLinksAction("artist", props.artist.id),
 				],
-				[ShareArtistAction(artistSlug, t)],
+				[ShareArtistAction(artistSlug)],
 			]}
 		/>
 	);

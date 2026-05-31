@@ -20,33 +20,24 @@ import { ShareIcon } from "@/ui/icons";
 import copyLinkToClipboard from "~/utils/copy-link";
 import type Action from "./";
 
-export const ShareAction = (url: string, t: Translator): Action => ({
-	onClick: () => copyLinkToClipboard(url, t),
+export const ShareAction = (url: string): Action => ({
+	onClick: () => copyLinkToClipboard(url),
 	label: "actions.share",
 	icon: <ShareIcon />,
 });
 
-export const ShareArtistAction = (
-	artistIdentifier: string | number,
-	t: Translator,
-): Action => ShareAction(`/artists/${artistIdentifier}`, t);
+export const ShareArtistAction = (artistIdentifier: string | number): Action =>
+	ShareAction(`/artists/${artistIdentifier}`);
 
-export const ShareAlbumAction = (
-	albumIdentifier: string | number,
-	t: Translator,
-): Action => ShareAction(`/albums/${albumIdentifier}`, t);
+export const ShareAlbumAction = (albumIdentifier: string | number): Action =>
+	ShareAction(`/albums/${albumIdentifier}`);
 
 export const ShareReleaseAction = (
 	releaseIdentifier: string | number,
-	t: Translator,
-): Action => ShareAction(`/releases/${releaseIdentifier}`, t);
+): Action => ShareAction(`/releases/${releaseIdentifier}`);
 
-export const ShareSongAction = (
-	songSlug: string | number,
-	t: Translator,
-): Action => ShareAction(`/songs/${songSlug}`, t);
+export const ShareSongAction = (songSlug: string | number): Action =>
+	ShareAction(`/songs/${songSlug}`);
 
-export const SharePlaylistAction = (
-	playlistSlug: string | number,
-	t: Translator,
-): Action => ShareAction(`/playlists/${playlistSlug}`, t);
+export const SharePlaylistAction = (playlistSlug: string | number): Action =>
+	ShareAction(`/playlists/${playlistSlug}`);

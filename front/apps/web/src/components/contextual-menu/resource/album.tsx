@@ -85,7 +85,7 @@ const AlbumContextualMenu = (props: AlbumContextualMenuProps) => {
 						t,
 					),
 				],
-				[ShareAlbumAction(albumSlug, t)],
+				[ShareAlbumAction(albumSlug)],
 			]}
 		/>
 	);

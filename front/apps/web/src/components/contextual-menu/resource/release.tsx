@@ -133,7 +133,7 @@ const ReleaseContextualMenu = (props: ReleaseContextualMenuProps) => {
 						t,
 					),
 				],
-				[ShareReleaseAction(props.release.id, t)],
+				[ShareReleaseAction(props.release.id)],
 			]}
 		/>
 	);
