@@ -35,7 +35,7 @@
 		"@prisma/client": "7.8.0",
 		"amqp-connection-manager": "^5.0.0",
 		"amqplib": "^2.0.0",
-		"archiver": "^7.0.1",
+		"archiver": "^8.0.0",
 		"axios": "^1.13.6",
 		"bcrypt": "^6.0.0",
 		"blurhash": "^2.0.5",
