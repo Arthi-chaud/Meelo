@@ -59,7 +59,7 @@
 		"react-native-mmkv": "4.3.1",
 		"react-native-nitro-modules": "0.35.7",
 		"react-native-reanimated": "~4.3.1",
-		"react-native-safe-area-context": "~5.7.0",
+		"react-native-safe-area-context": "~5.8.0",
 		"react-native-screens": "~4.24.0",
 		"react-native-svg": "15.15.5",
 		"react-native-toast-message": "^2.3.3",
