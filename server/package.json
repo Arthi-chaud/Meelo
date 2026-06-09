@@ -72,7 +72,7 @@
 		"tar": "7.5.15"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.15",
+		"@biomejs/biome": "2.4.16",
 		"@nestjs/cli": "^11.0.21",
 		"@nestjs/schematics": "^11.1.0",
 		"@nestjs/testing": "^11.1.19",
