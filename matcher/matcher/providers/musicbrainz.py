@@ -430,12 +430,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             return AlbumType.REMIXES
         if "live" in raw_types:
             return AlbumType.LIVE
+        if "dj-mix" in raw_types:
+            return AlbumType.DJMIX
         if "compilation" in raw_types:
             return AlbumType.COMPILATION
         if "ep" in raw_types:
             return AlbumType.EP
-        if "dj-mix" in raw_types:
-            return AlbumType.REMIXES
         if "demo" in raw_types:
             return AlbumType.DEMO
         return None

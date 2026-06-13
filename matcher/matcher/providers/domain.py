@@ -29,6 +29,7 @@ class AlbumType(Enum):
     DEMO = "DemoAlbum"
     UNOFFICIAL = "Unofficial"
     COMPILATION = "Compilation"
+    DJMIX = "DJMix"
     SINGLE = "Single"
     SOUNDTRACK = "Soundtrack"
     VIDEO = "VideoAlbum"

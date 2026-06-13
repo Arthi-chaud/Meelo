@@ -189,6 +189,10 @@ class TestMusicbrainz:
             ("a70bd0f3-2af4-3fb0-b4af-d94b0c3a882f", AlbumType.REMIXES),
             # Sneaker Pimps - Becoming remixed
             ("20e4a61b-218b-3e1f-9d12-6a4a2dd44425", AlbumType.REMIXES),
+            # K&D - DJ-Kicks
+            ("965922f6-52b4-32b8-af66-7bfba786eb4b", AlbumType.DJMIX),
+            # Deep Dish - GU021
+            ("ef064abc-bc31-39bb-8371-5a985026b411", AlbumType.DJMIX),
             # Madonna - Celebration
             ("bd252c17-ff32-4369-8e73-4d0a65a316bd", AlbumType.COMPILATION),
             # Girls Aloud - Ten
