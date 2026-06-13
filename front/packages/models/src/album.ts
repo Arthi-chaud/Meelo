@@ -30,6 +30,7 @@ export const AlbumType = [
 	"LiveRecording",
 	"Compilation",
 	"Soundtrack",
+	"DJMix",
 	"RemixAlbum",
 	"VideoAlbum",
 	"DemoAlbum",
