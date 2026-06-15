@@ -183,12 +183,14 @@ class TestMusicbrainz:
             ("7316f52d-7421-43af-b9e8-02e1cab17153", AlbumType.REMIXES),
             # Massive Attack - No Protection
             ("54bd7d44-86e1-3e3c-82e0-10febdedcbda", AlbumType.REMIXES),
-            # Girls Aloud - Mixed Up
-            ("ce018797-8764-34f8-aee4-10089fc7393d", AlbumType.REMIXES),
             # Madonna - You Can Dance
             ("a70bd0f3-2af4-3fb0-b4af-d94b0c3a882f", AlbumType.REMIXES),
             # Sneaker Pimps - Becoming remixed
             ("20e4a61b-218b-3e1f-9d12-6a4a2dd44425", AlbumType.REMIXES),
+            # K&D - DJ-Kicks
+            ("965922f6-52b4-32b8-af66-7bfba786eb4b", AlbumType.DJMIX),
+            # Deep Dish - GU021
+            ("ef064abc-bc31-39bb-8371-5a985026b411", AlbumType.DJMIX),
             # Madonna - Celebration
             ("bd252c17-ff32-4369-8e73-4d0a65a316bd", AlbumType.COMPILATION),
             # Girls Aloud - Ten

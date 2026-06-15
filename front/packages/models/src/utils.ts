@@ -79,7 +79,9 @@ export const albumTypeToTranslationKey = (
 ): TranslationKey =>
 	albumType === "EP"
 		? `albumType.ep${plural ? "_plural" : ""}`
-		: `albumType.${uncapitalize(albumType)}${plural ? "_plural" : ""}`;
+		: albumType === "DJMix"
+			? `albumType.djMix${plural ? "_plural" : ""}`
+			: `albumType.${uncapitalize(albumType)}${plural ? "_plural" : ""}`;
 
 export const songTypeToTranslationKey = (
 	songType: SongType,

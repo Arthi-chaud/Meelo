@@ -110,6 +110,8 @@ enum AlbumType {
     EP
     /// Describe a collection of tracks coming from another project's soundtrack
     Soundtrack
+    /// Describe a collection of tracks that belong to a DJ set 
+    DJMix
     /// Describe a collection of remixed tracks from the same artist
     RemixAlbum
     /// Describe a collection of video tracks from the same artist

@@ -184,6 +184,9 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		case "album":
 			metadata.AlbumType = internal.Studio
 			return
+		case "dj-mix":
+			metadata.AlbumType = internal.DJMix
+			return
 		case "remix":
 			metadata.AlbumType = internal.Remixes
 			return
@@ -195,9 +198,6 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 			return
 		case "ep":
 			metadata.AlbumType = internal.EP
-			return
-		case "dj-mix":
-			metadata.AlbumType = internal.Remixes
 			return
 		case "demo":
 			metadata.AlbumType = internal.Demo

@@ -87,6 +87,7 @@ const (
 	Live        AlbumType = "LiveRecording"
 	EP          AlbumType = "EP"
 	Remixes     AlbumType = "RemixAlbum"
+	DJMix       AlbumType = "DJMix"
 	Demo        AlbumType = "DemoAlbum"
 	Unofficial  AlbumType = "Unofficial"
 	Compilation AlbumType = "Compilation"
