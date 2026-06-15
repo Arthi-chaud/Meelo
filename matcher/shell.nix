@@ -15,10 +15,10 @@ pkgs.mkShell rec {
 
     if [ ! -d "${venvDir}" ]; then
       echo "Creating new venv environment in path: '${venvDir}'"
-      ${pkgs.python3Packages.python.interpreter} -m venv "${venvDir}"
+      ${pkgs.python314Packages.python.interpreter} -m venv "${venvDir}"
     fi
 
-    PYTHONPATH=$PWD/${venvDir}/${pkgs.python3Packages.python.sitePackages}/:$PYTHONPATH
+    PYTHONPATH=$PWD/${venvDir}/${pkgs.python314Packages.python.sitePackages}/:$PYTHONPATH
     source "${venvDir}/bin/activate"
     pip install -r requirements.txt -qqq # Hiding verbose logs
   '';
