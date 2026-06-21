@@ -65,6 +65,8 @@ export default class AlbumService extends SearchableRepositoryService {
 		private artistServce: ArtistService,
 		@Inject(forwardRef(() => ReleaseService))
 		private releaseService: ReleaseService,
+		@Inject(forwardRef(() => LabelService))
+		private labelService: LabelService,
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: MeiliSearch,
 	) {
@@ -624,6 +626,11 @@ export default class AlbumService extends SearchableRepositoryService {
 				);
 			}
 		}
+		const labels = await Promise.all(
+			what.labels?.map((labelName) =>
+				this.labelService.getOrCreate({ name: labelName }),
+			) ?? [],
+		);
 		return this.prismaService.album
 			.update({
 				data: {
@@ -637,20 +644,11 @@ export default class AlbumService extends SearchableRepositoryService {
 						: undefined,
 					releaseDate: what.releaseDate ?? undefined,
 
-					labels: what.labels
+					labels: labels.length
 						? {
-								connectOrCreate: what.labels
-									.map((label) => [
-										label,
-										new Slug(label).toString(),
-									])
-									.map(([labelName, labelSlug]) => ({
-										where: { slug: labelSlug },
-										create: {
-											name: labelName,
-											slug: labelSlug,
-										},
-									})),
+								connect: labels.map((label) => ({
+									id: label.id,
+								})),
 							}
 						: undefined,
 					genres: what.genres
