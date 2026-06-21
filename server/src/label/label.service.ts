@@ -294,7 +294,11 @@ export default class LabelService {
 		const labelSlug = new Slug(data.name);
 		return this.prismaService.label.upsert({
 			where: { slug: labelSlug.toString() },
-			create: { name: data.name, slug: labelSlug.toString() },
+			create: {
+				name: data.name,
+				slug: labelSlug.toString(),
+				mbid: data.mbid,
+			},
 			update: {},
 		});
 	}

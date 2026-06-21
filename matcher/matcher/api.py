@@ -10,6 +10,7 @@ from matcher.models.api.dto import (
     AreaDto,
     CreateProviderDto,
     ExternalMetadataDto,
+    LabelDto,
     UpdateAlbumDto,
     UpdateAreaDto,
     User,
@@ -163,7 +164,7 @@ class API:
         album_id: int,
         release_date: date | None,
         genres: List[str] | None,
-        labels: List[str] | None,
+        labels: List[LabelDto] | None,
         type: AlbumType | None,
     ):
         dto = UpdateAlbumDto(

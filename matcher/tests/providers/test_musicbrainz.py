@@ -347,7 +347,7 @@ class TestMusicbrainz:
                 album = await provider.get_album(mbid)
                 labels = await provider.get_album_labels(album)
                 assert labels is not None
-                for label in labels:
+                for label in [label.name for label in labels]:
                     assert label in expected
                 assert len(labels) == len(expected)
 

@@ -1,4 +1,4 @@
-from matcher.models.api.dto import AreaDto
+from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseProvider
 from datetime import date
@@ -145,7 +145,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetAlbumGenresFeature)
         return await f.run(album) if f else None
 
-    async def get_album_labels(self, album: Any) -> List[str] | None:
+    async def get_album_labels(self, album: Any) -> List[LabelDto] | None:
         f = self.get_feature(GetAlbumLabelsFeature)
         return await f.run(album) if f else None
 

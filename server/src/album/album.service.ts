@@ -627,9 +627,8 @@ export default class AlbumService extends SearchableRepositoryService {
 			}
 		}
 		const labels = await Promise.all(
-			what.labels?.map((labelName) =>
-				this.labelService.getOrCreate({ name: labelName }),
-			) ?? [],
+			what.labels?.map((label) => this.labelService.getOrCreate(label)) ??
+				[],
 		);
 		return this.prismaService.album
 			.update({

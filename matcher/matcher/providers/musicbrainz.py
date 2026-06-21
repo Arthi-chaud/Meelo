@@ -8,7 +8,7 @@ import aiohttp
 from aiohttp.client import ClientSession
 from matcher.context import Context
 
-from matcher.models.api.dto import AreaDto
+from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
@@ -352,7 +352,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         )
         return res
 
-    async def _get_album_labels(self, album: Any) -> List[str] | None:
+    async def _get_album_labels(self, album: Any) -> List[LabelDto] | None:
         try:
             album_id = album["id"]
             res = await self._fetch("/release", {"query": f"rgid:{album_id}"})
@@ -384,12 +384,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             for release in original_releases:
                 for label in release["label-info"]:
                     label_name = label["label"]["name"]
+                    label_id = label["label"]["id"]
+                    known_labels = [label.name for label in labels]
                     if (
                         any([c for c in label_name if c.isascii()])
-                        and label_name not in labels
+                        and label_name not in known_labels
                         and label_name != "[no label]"  # Placeholder
                     ):
-                        labels.append(label_name)
+                        labels.append(LabelDto(name=label_name, mbid=label_id))
             return labels
         except Exception:
             return None

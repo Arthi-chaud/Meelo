@@ -41,6 +41,7 @@ class Album(DataClassJsonMixin):
 class Label(DataClassJsonMixin):
     id: int
     name: str
+    mbid: Optional[str] = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore

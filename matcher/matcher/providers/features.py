@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Any, Awaitable, List
-from matcher.models.api.dto import AreaDto
+from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
@@ -107,7 +107,7 @@ class GetAlbumGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
     pass
 
 
-class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
+class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[List[LabelDto] | None]]):
     pass
 
 
