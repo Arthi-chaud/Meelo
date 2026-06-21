@@ -29,16 +29,18 @@ async def match_label(label: Label) -> LabelMatchResult:
         _: ExternalMetadataSourceDto | None,
         provider: BaseProviderBoilerplate,
     ):
-        label_model = await provider.get_label(label.mbid) or (
-            await provider.get_label_by_name(label.name)
+        label_model = (
+            await provider.get_label_by_mbid(label.mbid)
+            or (await provider.get_label_by_name(label.name))
+            if label.mbid
+            else await provider.get_label_by_name(label.name)
         )
         if label_model is None:
             return
 
         res.mbid = label.mbid or provider.get_label_mbid(label_model)
-        dates = provider.get_label_dates(label_model)
-        if dates is not None:
-            [res.start_date, res.end_date] = dates
+        res.start_date = provider.get_label_start_date(label_model)
+        res.end_date = provider.get_label_end_date(label_model)
 
     await common.run_tasks_from_sources(provider_task, [])
     return res

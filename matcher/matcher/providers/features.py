@@ -196,13 +196,6 @@ class IsSongUrlFeature(IsUrlFeature):
     pass
 
 
-## Labels
-
-
-class GetLabelArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
-    pass
-
-
 ## Areas
 
 
@@ -215,4 +208,31 @@ class GetParentArea(BaseFeature[Any, AreaDto | None]):
 
 
 class GetAreaType(BaseFeature[Any, AreaType | None]):
+    pass
+
+
+## Label
+
+
+class GetLabelByName(BaseFeature[str, Awaitable[Any | None]]):
+    pass
+
+
+class GetLabelByMBID(BaseFeature[str, Awaitable[Any | None]]):
+    pass
+
+
+class GetLabelStartDate(BaseFeature[Any, date | None]):
+    pass
+
+
+class GetLabelEndDate(BaseFeature[Any, date | None]):
+    pass
+
+
+class GetLabelArea(BaseFeature[Any, AreaDto | None]):
+    pass
+
+
+class GetLabelMBID(BaseFeature[Any, str | None]):
     pass

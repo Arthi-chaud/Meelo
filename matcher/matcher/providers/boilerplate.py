@@ -17,6 +17,11 @@ from .features import (
     GetArtistActivityArea,
     GetArtistBirthArea,
     GetLabelArea,
+    GetLabelByMBID,
+    GetLabelByName,
+    GetLabelEndDate,
+    GetLabelMBID,
+    GetLabelStartDate,
     GetParentArea,
     IsAlbumUrlFeature,
     GetArtistDescriptionFeature,
@@ -235,12 +240,6 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         res = f.run(url)
         return res is not None if f else False
 
-    ## Label
-
-    async def get_label_area(self, area: Any) -> AreaDto | None:
-        f = self.get_feature(GetLabelArea)
-        return await f.run(area) if f else None
-
     ## Area
 
     async def get_area(self, area_mbid: str) -> Any | None:
@@ -254,3 +253,28 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     def get_area_type(self, area: Any) -> AreaType | None:
         f = self.get_feature(GetAreaType)
         return f.run(area) if f else None
+
+    ## Label
+    async def get_label_by_mbid(self, label_mbid: str) -> Any | None:
+        f = self.get_feature(GetLabelByMBID)
+        return await f.run(label_mbid) if f else None
+
+    async def get_label_by_name(self, label_name: str) -> Any | None:
+        f = self.get_feature(GetLabelByName)
+        return await f.run(label_name) if f else None
+
+    def get_label_start_date(self, label: Any) -> date | None:
+        f = self.get_feature(GetLabelStartDate)
+        return f.run(label) if f else None
+
+    def get_label_end_date(self, label: Any) -> date | None:
+        f = self.get_feature(GetLabelEndDate)
+        return f.run(label) if f else None
+
+    def get_label_mbid(self, label: Any) -> str | None:
+        f = self.get_feature(GetLabelMBID)
+        return f.run(label) if f else None
+
+    def get_label_area(self, label: Any) -> AreaDto | None:
+        f = self.get_feature(GetLabelArea)
+        return f.run(label) if f else None
