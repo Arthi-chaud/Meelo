@@ -312,6 +312,7 @@ model Label {
     /// @description Related area
     areaId   Int?
     area     Area?     @relation(fields: [areaId], references: [id])
+    mbid     String?
     releases Release[]
     albums   Album[]
 

@@ -18,12 +18,13 @@
 
 import { Module } from "@nestjs/common";
 import AreaModule from "src/area/area.module";
+import { EventsModule } from "src/events/events.module";
 import PrismaModule from "src/prisma/prisma.module";
 import LabelController from "./label.controller";
 import LabelService from "./label.service";
 
 @Module({
-	imports: [PrismaModule, AreaModule],
+	imports: [PrismaModule, AreaModule, EventsModule],
 	providers: [LabelService],
 	exports: [LabelService],
 	controllers: [LabelController],

@@ -19,6 +19,10 @@ import { Injectable } from "@nestjs/common";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import AreaService from "src/area/area.service";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -42,6 +46,7 @@ export default class LabelService {
 	constructor(
 		private prismaService: PrismaService,
 		private areaService: AreaService,
+		private eventService: EventsService,
 	) {}
 
 	async create(input: LabelQueryParameters.CreateInput) {
@@ -50,6 +55,7 @@ export default class LabelService {
 			.create({
 				data: {
 					name: input.name,
+					mbid: input.mbid,
 					slug: labelSlug.toString(),
 				},
 			})
@@ -60,6 +66,15 @@ export default class LabelService {
 					}
 				}
 				throw new UnhandledORMErrorException(error, input);
+			})
+			.then((label) => {
+				this.eventService.publishItemCreationEvent(
+					"label",
+					label.name,
+					label.id,
+					ResourceEventPriority.Label,
+				);
+				return label;
 			});
 	}
 
