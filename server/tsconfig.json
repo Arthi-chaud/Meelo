@@ -11,8 +11,13 @@
 		"sourceMap": true,
 		"outDir": "./dist",
 		"paths": {
-			"*": ["./*", "./src/*"],
-			"~/*": ["./src/*"]
+			"*": [
+				"./*",
+				"./src/*"
+			],
+			"~/*": [
+				"./src/*"
+			]
 		},
 		"incremental": true,
 		"skipLibCheck": true,
@@ -27,7 +32,13 @@
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
 		"allowJs": true,
-		"types": ["*"]
+		"types": [
+			"*",
+			"vitest/globals"
+		]
 	},
-	"include": ["./src/**/*.ts", "./prisma/types.d.ts"]
+	"include": [
+		"./src/**/*.ts",
+		"./prisma/types.d.ts"
+	]
 }
