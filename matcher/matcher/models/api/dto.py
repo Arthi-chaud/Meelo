@@ -88,4 +88,4 @@ class UpdateLabelDto(DataClassJsonMixin):
     start_date: Optional[date] = None
     end_date: Optional[date] = None
     mbid: Optional[str] = None
-    area: Optional[AreaDto] = None
+    area_id: Optional[int] = None
