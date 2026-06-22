@@ -113,6 +113,13 @@
 			],
 			"groupName": "slug",
 			"enabled": false
+		},
+		{
+			"matchPackageNames": [
+				"/^react-native$/",
+			],
+			"groupName": "react-native",
+			"enabled": false
 		}
 	],
 	"postUpdateOptions": [
