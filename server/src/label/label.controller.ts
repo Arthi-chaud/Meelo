@@ -73,6 +73,7 @@ export default class LabelController {
 
 	@Get(":idOrSlug")
 	@ApiOperation({ summary: "Get a label" })
+	@Role(Roles.Microservice, Roles.Default)
 	async get(
 		@IdentifierParam(LabelService)
 		where: LabelQueryParameters.WhereInput,

@@ -292,15 +292,11 @@ export default class LabelService {
 
 	async getOrCreate(data: LabelQueryParameters.CreateInput) {
 		const labelSlug = new Slug(data.name);
-		return this.prismaService.label.upsert({
-			where: { slug: labelSlug.toString() },
-			create: {
-				name: data.name,
-				slug: labelSlug.toString(),
-				mbid: data.mbid,
-			},
-			update: {},
-		});
+		try {
+			return await this.get({ slug: labelSlug });
+		} catch {
+			return await this.create(data);
+		}
 	}
 
 	async housekeeping() {
