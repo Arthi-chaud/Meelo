@@ -1,7 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsOptional } from "class-validator";
+import { IsNumber, IsOptional, IsUUID } from "class-validator";
 
 export class UpdateLabelDTO {
+	@ApiProperty({ description: "MBID of the label" })
+	@IsOptional()
+	@IsUUID()
+	mbid?: string;
+
 	@ApiProperty({ description: "ID of the area to link" })
 	@IsOptional()
 	@IsNumber()

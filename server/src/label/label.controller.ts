@@ -31,9 +31,9 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import { Label } from "src/prisma/models";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
-import { UpdateLabelDTO } from "./label.model";
 import LabelQueryParameters from "./label.query-parameters";
 import LabelService from "./label.service";
+import { UpdateLabelDTO } from "./models/update-label.dto";
 
 class Selector {
 	@IsOptional()
