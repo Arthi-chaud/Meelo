@@ -2323,12 +2323,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/archiver@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "@types/archiver@npm:7.0.0"
+"@types/archiver@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@types/archiver@npm:8.0.0"
   dependencies:
+    "@types/node": "npm:*"
     "@types/readdir-glob": "npm:*"
-  checksum: 10c0/30fe68377e3fbdd9691235bca1c99e1d6ac9c850156a56abc09fa3ed7777c520a260cbee6a1c796994a5adee96dcdc6dd3742cc4444aca713e2611c6b6d1f73d
+  checksum: 10c0/8a211a4a8d326d881268c0a144688c52add044dbf2892dae7efc9c0c4d35eea70ea4ac0511ce5f285c061a3e060c978d9f14f79c72b48960ef0c9d3416235234
   languageName: node
   linkType: hard
 
@@ -6149,7 +6150,7 @@ __metadata:
     "@prisma/adapter-pg": "npm:7.8.0"
     "@prisma/client": "npm:7.8.0"
     "@swc/core": "npm:^1.15.33"
-    "@types/archiver": "npm:^7.0.0"
+    "@types/archiver": "npm:^8.0.0"
     "@types/bcrypt": "npm:^6.0.0"
     "@types/cookie-parser": "npm:^1.4.10"
     "@types/express": "npm:^5.0.6"

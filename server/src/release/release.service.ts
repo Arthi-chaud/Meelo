@@ -19,7 +19,7 @@
 import { createReadStream } from "node:fs";
 import { basename } from "node:path";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import archiver from "archiver";
+import { ZipArchive } from "archiver";
 import type { Response } from "express";
 import mime from "mime";
 import { PrismaError } from "prisma-error-enum";
@@ -490,7 +490,7 @@ export default class ReleaseService {
 			await this.illustrationRepository.getReleaseIllustrationResponse(
 				where,
 			);
-		const archive = archiver("zip");
+		const archive = new ZipArchive();
 		const outputName = `${release.slug}.zip`;
 
 		await Promise.all(
