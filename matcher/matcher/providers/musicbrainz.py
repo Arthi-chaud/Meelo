@@ -22,8 +22,12 @@ from matcher.providers.features import (
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
+    GetLabelArea,
     GetLabelByMBID,
     GetLabelByName,
+    GetLabelEndDate,
+    GetLabelMBID,
+    GetLabelStartDate,
     GetParentArea,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
@@ -157,6 +161,10 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetAreaType(lambda area: self._get_area_type(area)),
             GetLabelByName(lambda label_name: self._get_label_by_name(label_name)),
             GetLabelByMBID(lambda label_mbid: self._get_label_by_mbid(label_mbid)),
+            GetLabelStartDate(lambda label: self._get_label_start_date(label)),
+            GetLabelEndDate(lambda label: self._get_label_end_date(label)),
+            GetLabelMBID(lambda label: self._get_label_mbid(label)),
+            GetLabelArea(lambda label: self._get_label_area(label)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -625,30 +633,32 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             pass
 
     def _parse_date(self, date_str: str) -> date | None:
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
-        except Exception:
-            pass
+        fmts = ["%Y-%m-%d", "%Y-%m", "%Y"]
+        for fmt in fmts:
+            try:
+                return datetime.strptime(date_str, fmt).date()
+            except Exception:
+                continue
 
-    def get_label_start_date(self, label: Any) -> date | None:
+    def _get_label_start_date(self, label: Any) -> date | None:
         try:
             return self._parse_date(label["life-span"]["begin"])
         except Exception:
             pass
 
-    def get_label_end_date(self, label: Any) -> date | None:
+    def _get_label_end_date(self, label: Any) -> date | None:
         try:
             return self._parse_date(label["life-span"]["end"])
         except Exception:
             pass
 
-    def get_label_mbid(self, label: Any) -> str | None:
+    def _get_label_mbid(self, label: Any) -> str | None:
         try:
             return label["id"]
         except Exception:
             pass
 
-    def get_label_area(self, label: Any) -> AreaDto | None:
+    def _get_label_area(self, label: Any) -> AreaDto | None:
         try:
             return self._parse_area(label["area"])
         except Exception:
