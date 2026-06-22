@@ -12,5 +12,5 @@
 		"i18next": "^26.0.0",
 		"react-i18next": "^17.0.0"
 	},
-	"packageManager": "yarn@4.15.0"
+	"packageManager": "yarn@4.16.0"
 }
