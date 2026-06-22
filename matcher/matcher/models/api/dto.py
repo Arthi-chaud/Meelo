@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import date
 from typing import List, Optional
 from dataclasses_json import DataClassJsonMixin, LetterCase, Undefined, dataclass_json
 
