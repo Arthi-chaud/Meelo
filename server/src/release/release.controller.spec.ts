@@ -8,6 +8,7 @@ import ArtistService from "src/artist/artist.service";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LabelModule from "src/label/label.module";
 import ParserModule from "src/parser/parser.module";
 import { AlbumType, IllustrationType } from "src/prisma/generated/client";
 import type {
@@ -55,6 +56,7 @@ describe("Release Controller", () => {
 				ParserModule,
 				GenreModule,
 				AreaModule,
+				LabelModule,
 			],
 			providers: [
 				ReleaseService,

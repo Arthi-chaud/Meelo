@@ -11,6 +11,7 @@ import FileManagerModule from "src/file-manager/file-manager.module";
 import FileManagerService from "src/file-manager/file-manager.service";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LabelModule from "src/label/label.module";
 import LibraryModule from "src/library/library.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
@@ -74,6 +75,7 @@ describe("Track Service", () => {
 				VideoModule,
 				StreamModule,
 				AreaModule,
+				LabelModule,
 			],
 			providers: [
 				PrismaService,
