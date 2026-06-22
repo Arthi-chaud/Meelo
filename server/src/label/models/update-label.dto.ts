@@ -19,7 +19,7 @@ export class UpdateLabelDTO {
 	startDate?: Date;
 
 	@ApiProperty({
-		description: "The date of creation of the label",
+		description: "The date of termination of the label",
 	})
 	@IsOptional()
 	endDate?: Date;
