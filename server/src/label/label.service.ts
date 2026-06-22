@@ -278,6 +278,27 @@ export default class LabelService {
 					{ albums: { _count: sortingParameter.order } },
 					{ slug: "asc" },
 				];
+			case "startDate":
+				return [
+					{
+						startDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
+					},
+					{ slug: "asc" },
+				];
+
+			case "endDate":
+				return [
+					{
+						endDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
+					},
+					{ slug: "asc" },
+				];
 			default:
 				return [
 					{
