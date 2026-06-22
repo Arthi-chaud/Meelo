@@ -85,7 +85,7 @@ class ExternalMetadataDto(DataClassJsonMixin):
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateLabelDto(DataClassJsonMixin):
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
     mbid: Optional[str] = None
     area_id: Optional[int] = None
