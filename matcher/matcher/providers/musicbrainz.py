@@ -8,7 +8,7 @@ import aiohttp
 from aiohttp.client import ClientSession
 from matcher.context import Context
 
-from matcher.models.api.dto import AreaDto
+from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.providers.features import (
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
@@ -22,6 +22,12 @@ from matcher.providers.features import (
     GetArtistFeature,
     GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
+    GetLabelArea,
+    GetLabelByMBID,
+    GetLabelByName,
+    GetLabelEndDate,
+    GetLabelMBID,
+    GetLabelStartDate,
     GetParentArea,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
@@ -153,6 +159,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetArea(lambda area_mbid: self._get_area(area_mbid)),
             GetParentArea(lambda area: self._get_parent_area(area)),
             GetAreaType(lambda area: self._get_area_type(area)),
+            GetLabelByName(lambda label_name: self._get_label_by_name(label_name)),
+            GetLabelByMBID(lambda label_mbid: self._get_label_by_mbid(label_mbid)),
+            GetLabelStartDate(lambda label: self._get_label_start_date(label)),
+            GetLabelEndDate(lambda label: self._get_label_end_date(label)),
+            GetLabelMBID(lambda label: self._get_label_mbid(label)),
+            GetLabelArea(lambda label: self._get_label_area(label)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -352,7 +364,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         )
         return res
 
-    async def _get_album_labels(self, album: Any) -> List[str] | None:
+    async def _get_album_labels(self, album: Any) -> List[LabelDto] | None:
         try:
             album_id = album["id"]
             res = await self._fetch("/release", {"query": f"rgid:{album_id}"})
@@ -384,12 +396,14 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             for release in original_releases:
                 for label in release["label-info"]:
                     label_name = label["label"]["name"]
+                    label_id = label["label"]["id"]
+                    known_labels = [label.name for label in labels]
                     if (
                         any([c for c in label_name if c.isascii()])
-                        and label_name not in labels
+                        and label_name not in known_labels
                         and label_name != "[no label]"  # Placeholder
                     ):
-                        labels.append(label_name)
+                        labels.append(LabelDto(name=label_name, mbid=label_id))
             return labels
         except Exception:
             return None
@@ -601,3 +615,51 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             return None
         if area_type in [t.value for _, t in AreaType.__members__.items()]:
             return AreaType(area_type)
+
+    async def _get_label_by_name(self, label_name: str) -> LabelDto | None:
+        try:
+            res = await self._fetch("/label/", {"query": label_name, "limit": 3})
+            items = res["labels"]
+            for label in items:
+                if to_slug(label["name"]) == to_slug(label_name):
+                    return label
+        except Exception:
+            pass
+
+    async def _get_label_by_mbid(self, label_mbid: str) -> LabelDto | None:
+        try:
+            return await self._fetch(f"/label/{label_mbid}")
+        except Exception:
+            pass
+
+    def _parse_date(self, date_str: str) -> date | None:
+        fmts = ["%Y-%m-%d", "%Y-%m", "%Y"]
+        for fmt in fmts:
+            try:
+                return datetime.strptime(date_str, fmt).date()
+            except Exception:
+                continue
+
+    def _get_label_start_date(self, label: Any) -> date | None:
+        try:
+            return self._parse_date(label["life-span"]["begin"])
+        except Exception:
+            pass
+
+    def _get_label_end_date(self, label: Any) -> date | None:
+        try:
+            return self._parse_date(label["life-span"]["end"])
+        except Exception:
+            pass
+
+    def _get_label_mbid(self, label: Any) -> str | None:
+        try:
+            return label["id"]
+        except Exception:
+            pass
+
+    def _get_label_area(self, label: Any) -> AreaDto | None:
+        try:
+            return self._parse_area(label["area"])
+        except Exception:
+            pass

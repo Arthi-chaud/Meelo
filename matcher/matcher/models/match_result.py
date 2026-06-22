@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from matcher.models.api.dto import AreaDto, ExternalMetadataDto
+from matcher.models.api.dto import AreaDto, ExternalMetadataDto, LabelDto
 from datetime import date
 from dataclasses import dataclass
 
@@ -37,7 +37,7 @@ class AlbumMatchResult:
     release_date: date | None
     album_type: AlbumType | None
     genres: List[str]
-    labels: List[str]
+    labels: List[LabelDto]
 
     def set_album_type_if_none(self, album_type: AlbumType):
         self.album_type = self.album_type or album_type
@@ -48,9 +48,10 @@ class AlbumMatchResult:
     def push_genres(self, genres: List[str]):
         self.genres = self.genres + [g for g in genres if g not in self.genres]
 
-    def push_labels(self, labels: List[str]):
+    def push_labels(self, labels: List[LabelDto]):
+        existing_labels = [label.name for label in self.labels]
         self.labels = self.labels + [
-            label for label in labels if label not in self.labels
+            label for label in labels if label.name not in existing_labels
         ]
 
 
@@ -81,3 +82,11 @@ class AreaMatchResult:
 
     def set_area_type_if_none(self, area_type: AreaType):
         self.type = self.type or area_type
+
+
+@dataclass
+class LabelMatchResult:
+    start_date: date | None
+    end_date: date | None
+    mbid: str | None
+    area: AreaDto | None

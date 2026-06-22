@@ -26,7 +26,8 @@ import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import { RequireExactlyOne } from "type-fest";
 
 namespace LabelQueryParameters {
-	export type CreateInput = Pick<Label, "name">;
+	export type CreateInput = Pick<Label, "name"> &
+		Partial<Pick<Label, "mbid">>;
 	export type WhereInput = RequireExactlyOne<{ id: number; slug?: Slug }>;
 	export type ManyWhereInput = Partial<{
 		album: Filter<AlbumQueryParameters.WhereInput>;
@@ -45,7 +46,13 @@ namespace LabelQueryParameters {
 	/**
 	 * Defines how to sort fetched entries
 	 */
-	export const SortingKeys = ["id", "name", "albumCount"] as const;
+	export const SortingKeys = [
+		"id",
+		"name",
+		"albumCount",
+		"startDate",
+		"endDate",
+	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}
 }

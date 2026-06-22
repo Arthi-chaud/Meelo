@@ -347,7 +347,7 @@ class TestMusicbrainz:
                 album = await provider.get_album(mbid)
                 labels = await provider.get_album_labels(album)
                 assert labels is not None
-                for label in labels:
+                for label in [label.name for label in labels]:
                     assert label in expected
                 assert len(labels) == len(expected)
 
@@ -363,3 +363,42 @@ class TestMusicbrainz:
         assert parent_area is not None
         # AU
         assert parent_area.mbid == "106e0bec-b638-3b37-b731-f53d507dc00e"
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_label_by_mbid(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        label_mbid = "c595c289-47ce-4fba-b999-b87503e8cb71"
+        # Warner Bros. Records
+        label = await provider.get_label_by_mbid("c595c289-47ce-4fba-b999-b87503e8cb71")
+        assert label is not None
+        start_date = provider.get_label_start_date(label)
+        assert start_date == datetime.date(1958, 3, 19)
+        end_date = provider.get_label_end_date(label)
+        assert end_date == datetime.date(2019, 5, 28)
+
+        mbid = provider.get_label_mbid(label)
+        assert mbid == label_mbid
+        area = provider.get_label_area(label)
+        assert area is not None
+        assert area.name == "United States"
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_label_by_name(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        label_mbid = "c595c289-47ce-4fba-b999-b87503e8cb71"
+        label = await provider.get_label_by_name("Warner Bros Records")
+        assert label is not None
+        start_date = provider.get_label_start_date(label)
+        assert start_date == datetime.date(1958, 3, 19)
+        end_date = provider.get_label_end_date(label)
+        assert end_date == datetime.date(2019, 5, 28)
+
+        mbid = provider.get_label_mbid(label)
+        assert mbid == label_mbid
+        area = provider.get_label_area(label)
+        assert area is not None
+        assert area.name == "United States"

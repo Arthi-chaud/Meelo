@@ -5,13 +5,15 @@ from typing import Any, List, TypeVar
 import aiohttp
 from dataclasses_json import DataClassJsonMixin
 
-from matcher.models.api.domain import Album, Area, Artist, Song, File
+from matcher.models.api.domain import Album, Area, Artist, Label, Song, File
 from matcher.models.api.dto import (
     AreaDto,
     CreateProviderDto,
     ExternalMetadataDto,
+    LabelDto,
     UpdateAlbumDto,
     UpdateAreaDto,
+    UpdateLabelDto,
     User,
 )
 from matcher.models.api.page import Page
@@ -163,7 +165,7 @@ class API:
         album_id: int,
         release_date: date | None,
         genres: List[str] | None,
-        labels: List[str] | None,
+        labels: List[LabelDto] | None,
         type: AlbumType | None,
     ):
         dto = UpdateAlbumDto(
@@ -192,6 +194,10 @@ class API:
         json = await self._get(f"/areas/{area_id}")
         return Area.schema().load(json)
 
+    async def get_label(self, label_id: str | int) -> Label:
+        json = await self._get(f"/labels/{label_id}")
+        return Label.schema().load(json)
+
     async def get_area_by_mbid(self, area_mbid: str) -> Area | None:
         try:
             return await self.get_area(area_mbid)
@@ -209,6 +215,13 @@ class API:
     async def update_area(self, area_id: int, area_dto: UpdateAreaDto):
         try:
             await self._put(f"/areas/{area_id}", json=area_dto.to_dict())
+        except Exception as e:
+            logging.error(e)
+            pass
+
+    async def update_label(self, label_id: int, label_dto: UpdateLabelDto):
+        try:
+            await self._put(f"/labels/{label_id}", json=label_dto.to_dict())
         except Exception as e:
             logging.error(e)
             pass

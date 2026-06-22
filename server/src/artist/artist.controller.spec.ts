@@ -7,6 +7,7 @@ import compilationAlbumArtistKeyword from "src/constants/compilation";
 import FileModule from "src/file/file.module";
 import GenreModule from "src/genre/genre.module";
 import IllustrationModule from "src/illustration/illustration.module";
+import LabelModule from "src/label/label.module";
 import { LyricsModule } from "src/lyrics/lyrics.module";
 import ParserModule from "src/parser/parser.module";
 import { IllustrationType } from "src/prisma/generated/client";
@@ -49,6 +50,7 @@ describe("Artist Controller", () => {
 				FileModule,
 				SettingsModule,
 				AreaModule,
+				LabelModule,
 			],
 			providers: [
 				ArtistService,

@@ -302,18 +302,23 @@ model Release {
 model Label {
     /// @description Unique numeric identifier
     /// @example 123
-    id       Int       @id @default(autoincrement())
+    id        Int       @id @default(autoincrement())
     /// @description The name of the label 
     /// @example My Label
-    name     String    @db.Citext()
+    name      String    @db.Citext()
     /// @description Unique string identifier
     /// @example my-label
-    slug     String    @unique
+    slug      String    @unique
     /// @description Related area
-    areaId   Int?
-    area     Area?     @relation(fields: [areaId], references: [id])
-    releases Release[]
-    albums   Album[]
+    areaId    Int?
+    area      Area?     @relation(fields: [areaId], references: [id])
+    mbid      String?
+    /// @description Date of creation of label
+    startDate DateTime?
+    /// @description Date of termination of label
+    endDate   DateTime?
+    releases  Release[]
+    albums    Album[]
 
     @@map("labels")
 }

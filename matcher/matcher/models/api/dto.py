@@ -5,13 +5,20 @@ from dataclasses_json import DataClassJsonMixin, LetterCase, Undefined, dataclas
 from matcher.providers.domain import AreaType
 
 
+@dataclass_json
+@dataclass
+class LabelDto(DataClassJsonMixin):
+    name: str
+    mbid: Optional[str] = None
+
+
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateAlbumDto(DataClassJsonMixin):
     # str should be iso 8601
     release_date: Optional[str] = None
     genres: Optional[List[str]] = None
-    labels: Optional[List[str]] = None
+    labels: Optional[List[LabelDto]] = None
     type: Optional[str] = None
 
 
@@ -72,3 +79,12 @@ class ExternalMetadataDto(DataClassJsonMixin):
 
     def set_description_if_none(self, description: str):
         self.description = self.description or description
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class UpdateLabelDto(DataClassJsonMixin):
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    mbid: Optional[str] = None
+    area_id: Optional[int] = None

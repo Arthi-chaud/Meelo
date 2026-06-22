@@ -1,6 +1,6 @@
 from datetime import date
 from typing import Any, Awaitable, List
-from matcher.models.api.dto import AreaDto
+from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
@@ -107,7 +107,7 @@ class GetAlbumGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
     pass
 
 
-class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
+class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[List[LabelDto] | None]]):
     pass
 
 
@@ -196,13 +196,6 @@ class IsSongUrlFeature(IsUrlFeature):
     pass
 
 
-## Labels
-
-
-class GetLabelArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
-    pass
-
-
 ## Areas
 
 
@@ -215,4 +208,31 @@ class GetParentArea(BaseFeature[Any, AreaDto | None]):
 
 
 class GetAreaType(BaseFeature[Any, AreaType | None]):
+    pass
+
+
+## Label
+
+
+class GetLabelByName(BaseFeature[str, Awaitable[Any | None]]):
+    pass
+
+
+class GetLabelByMBID(BaseFeature[str, Awaitable[Any | None]]):
+    pass
+
+
+class GetLabelStartDate(BaseFeature[Any, date | None]):
+    pass
+
+
+class GetLabelEndDate(BaseFeature[Any, date | None]):
+    pass
+
+
+class GetLabelArea(BaseFeature[Any, AreaDto | None]):
+    pass
+
+
+class GetLabelMBID(BaseFeature[Any, str | None]):
     pass

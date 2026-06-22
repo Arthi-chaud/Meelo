@@ -17,7 +17,9 @@
  */
 
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsOptional } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsEnum, IsOptional, ValidateNested } from "class-validator";
+import CreateLabelDTO from "src/label/models/create-label.dto";
 import { AlbumType } from "src/prisma/generated/client";
 
 export default class UpdateAlbumDTO {
@@ -40,8 +42,11 @@ export default class UpdateAlbumDTO {
 		description: "The labels of the album",
 		isArray: true,
 	})
+	@IsArray()
+	@ValidateNested({ each: true })
+	@Type(() => CreateLabelDTO)
 	@IsOptional()
-	labels?: string[];
+	labels?: CreateLabelDTO[];
 
 	@ApiProperty({
 		description: "The original release date of the album",

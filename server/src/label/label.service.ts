@@ -19,6 +19,10 @@ import { Injectable } from "@nestjs/common";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import AreaService from "src/area/area.service";
+import {
+	EventsService,
+	ResourceEventPriority,
+} from "src/events/events.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
@@ -42,6 +46,7 @@ export default class LabelService {
 	constructor(
 		private prismaService: PrismaService,
 		private areaService: AreaService,
+		private eventService: EventsService,
 	) {}
 
 	async create(input: LabelQueryParameters.CreateInput) {
@@ -50,6 +55,7 @@ export default class LabelService {
 			.create({
 				data: {
 					name: input.name,
+					mbid: input.mbid,
 					slug: labelSlug.toString(),
 				},
 			})
@@ -60,6 +66,15 @@ export default class LabelService {
 					}
 				}
 				throw new UnhandledORMErrorException(error, input);
+			})
+			.then((label) => {
+				this.eventService.publishItemCreationEvent(
+					"label",
+					label.name,
+					label.id,
+					ResourceEventPriority.Label,
+				);
+				return label;
 			});
 	}
 
@@ -263,6 +278,27 @@ export default class LabelService {
 					{ albums: { _count: sortingParameter.order } },
 					{ slug: "asc" },
 				];
+			case "startDate":
+				return [
+					{
+						startDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
+					},
+					{ slug: "asc" },
+				];
+
+			case "endDate":
+				return [
+					{
+						endDate: {
+							sort: sortingParameter.order,
+							nulls: "last",
+						},
+					},
+					{ slug: "asc" },
+				];
 			default:
 				return [
 					{
@@ -277,11 +313,11 @@ export default class LabelService {
 
 	async getOrCreate(data: LabelQueryParameters.CreateInput) {
 		const labelSlug = new Slug(data.name);
-		return this.prismaService.label.upsert({
-			where: { slug: labelSlug.toString() },
-			create: { name: data.name, slug: labelSlug.toString() },
-			update: {},
-		});
+		try {
+			return await this.get({ slug: labelSlug });
+		} catch {
+			return await this.create(data);
+		}
 	}
 
 	async housekeeping() {

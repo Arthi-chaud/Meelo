@@ -45,7 +45,7 @@ export default class AreaService {
 					"area",
 					area.name,
 					area.id,
-					ResourceEventPriority.Artist,
+					ResourceEventPriority.Area,
 				);
 				return area;
 			})

@@ -8,8 +8,8 @@ import request from "supertest";
 import SetupApp from "test/setup-app";
 import { createTestingModule } from "test/test-module";
 import TestPrismaService from "test/test-prisma.service";
-import { UpdateLabelDTO } from "./label.model";
 import LabelModule from "./label.module";
+import { UpdateLabelDTO } from "./models/update-label.dto";
 
 describe("Label Controller", () => {
 	let dummyRepository: TestPrismaService;
