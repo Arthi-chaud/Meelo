@@ -67,6 +67,7 @@
 	"resolutions": {
 		"jpeg-js": "^0.4.4",
 		"lodash": "4.18.1",
+		"qs": "6.14.1",
 		"@prisma/generator-helper": "6.19.3",
 		"@prisma/internals": "6.19.3",
 		"semver": "7.8.4",
