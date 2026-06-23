@@ -1,4 +1,4 @@
-import { useRoute } from "@react-navigation/native";
+import { useRoute } from "expo-router";
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { getCurrentUserStatus, getPlaylistEntries } from "@/api/queries";

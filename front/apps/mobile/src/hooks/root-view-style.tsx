@@ -16,15 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useHeaderHeight } from "@react-navigation/elements";
+import { HeaderHeightContext } from "expo-router/build/react-navigation";
 import { atom, useAtomValue } from "jotai";
+import { useContext } from "react";
 import type { ViewStyle } from "react-native";
 
 export const bottomTabBarHeightAtom = atom<number>(0);
 
 // Provides padding to avoid the tababr to mask content
 export const useRootViewStyle = () => {
-	const headerHeight = useHeaderHeight();
+	const headerHeight = useContext(HeaderHeightContext) ?? 80;
 	const tabBarHeight = useAtomValue(bottomTabBarHeightAtom);
 
 	return {

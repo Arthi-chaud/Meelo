@@ -1,7 +1,6 @@
-import { useScrollToTop } from "@react-navigation/native";
 import type { FlashListRef } from "@shopify/flash-list";
 import { BlurTargetView } from "expo-blur";
-import { type ScreenProps, Stack } from "expo-router";
+import { type ScreenProps, Stack, useScrollToTop } from "expo-router";
 import { type ReactNode, type Ref, type RefObject, useRef } from "react";
 import { Platform } from "react-native";
 import {

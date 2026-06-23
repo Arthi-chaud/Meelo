@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRoute } from "@react-navigation/native";
+import { useRoute } from "expo-router";
 import { useLayoutControl as useLayoutControlBase } from "@/infinite-controls/layout";
 import type { LayoutOption } from "@/models/layout";
 import { useViewPreference } from "~/state/view-preferences";
