@@ -3292,14 +3292,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/core-downloads-tracker@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "@mui/core-downloads-tracker@npm:9.1.1"
-  checksum: 10c0/8192f2d4cadaf04d3723de45a0a946bff164c3f66425799ce1d6d9deb8958d9e5bff0d293859c5b043f77fce77b463c992ef1df466ea8b06e1a092ebf7a6093f
+"@mui/core-downloads-tracker@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@mui/core-downloads-tracker@npm:9.1.2"
+  checksum: 10c0/787f9bf6bc178cf405252bbd7ab8fd24375cb203fe36beedc29165eea432bf120e1fdf61b22de0037b6e2db6702c9f348c8f45164a5c367a3f3dbacea6f1fe04
   languageName: node
   linkType: hard
 
-"@mui/material-nextjs@npm:^9.0.0":
+"@mui/material-nextjs@npm:^9.1.1":
   version: 9.1.1
   resolution: "@mui/material-nextjs@npm:9.1.1"
   dependencies:
@@ -3322,13 +3322,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^9.0.0":
-  version: 9.1.1
-  resolution: "@mui/material@npm:9.1.1"
+"@mui/material@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@mui/material@npm:9.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
-    "@mui/core-downloads-tracker": "npm:^9.1.1"
-    "@mui/system": "npm:^9.1.1"
+    "@mui/core-downloads-tracker": "npm:^9.1.2"
+    "@mui/system": "npm:^9.1.2"
     "@mui/types": "npm:^9.1.1"
     "@mui/utils": "npm:^9.1.1"
     "@popperjs/core": "npm:^2.11.8"
@@ -3354,7 +3354,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 10c0/c3acb7a10195e22363996419e38ccc1b8ace98d5fa88e548c8e7926c2c9ee38fc92ba8c669da971e95f537c30f320d72c612bf93506e2888bacfeba9ea9d3322
+  checksum: 10c0/b3279d4b8f2df6c6de88b51bb236b8f800dbc83d37eb168c4525bef01990a1e4016f65868a68e0244fd01113bba9b297e9fc10c41499b1b540c4c3778b61da5e
   languageName: node
   linkType: hard
 
@@ -3398,9 +3398,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "@mui/system@npm:9.1.1"
+"@mui/system@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@mui/system@npm:9.1.2"
   dependencies:
     "@babel/runtime": "npm:^7.29.2"
     "@mui/private-theming": "npm:^9.1.1"
@@ -3422,7 +3422,7 @@ __metadata:
       optional: true
     "@types/react":
       optional: true
-  checksum: 10c0/e76804044f2ab672f5a98b6ef6eac73aacdd43b7b31558c8ab875816b222ee9f186ade8bb583b27ce68971b6b58f0087a05c90c287863be75e84a45aa11e768d
+  checksum: 10c0/9f274cf009e4235a9bbb9a6524aa2de6ba59a3fc01e91157004be1a4d5c6d4db5f16d91dfe95d3c3acb36fa355a8ac7d811b146a547f3b9292c2a1c981adb707
   languageName: node
   linkType: hard
 
@@ -3440,7 +3440,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^9.0.0, @mui/utils@npm:^9.0.1, @mui/utils@npm:^9.1.1":
+"@mui/utils@npm:^9.0.1, @mui/utils@npm:^9.1.1":
   version: 9.1.1
   resolution: "@mui/utils@npm:9.1.1"
   dependencies:
@@ -3460,7 +3460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^9.0.0":
+"@mui/x-data-grid@npm:^9.6.0":
   version: 9.6.0
   resolution: "@mui/x-data-grid@npm:9.6.0"
   dependencies:
@@ -3487,7 +3487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^9.0.0":
+"@mui/x-date-pickers@npm:^9.6.0":
   version: 9.6.0
   resolution: "@mui/x-date-pickers@npm:9.6.0"
   dependencies:
@@ -12531,11 +12531,11 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@mui/material": "npm:^9.0.0"
-    "@mui/material-nextjs": "npm:^9.0.0"
-    "@mui/utils": "npm:^9.0.0"
-    "@mui/x-data-grid": "npm:^9.0.0"
-    "@mui/x-date-pickers": "npm:^9.0.0"
+    "@mui/material": "npm:^9.1.2"
+    "@mui/material-nextjs": "npm:^9.1.1"
+    "@mui/utils": "npm:^9.1.1"
+    "@mui/x-data-grid": "npm:^9.6.0"
+    "@mui/x-date-pickers": "npm:^9.6.0"
     "@tanstack/react-query": "npm:^5.100.5"
     "@tanstack/react-query-devtools": "npm:^5.100.5"
     "@types/accept-language-parser": "npm:^1.5.3"
