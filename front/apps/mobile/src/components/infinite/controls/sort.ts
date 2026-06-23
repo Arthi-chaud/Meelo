@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRoute } from "@react-navigation/native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRoute } from "expo-router";
 import { useSortControl as useSortControlBase } from "@/infinite-controls/sort";
 import { useViewPreference } from "~/state/view-preferences";
 import type { Sorting } from "~/utils/sorting";
