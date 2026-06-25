@@ -16,18 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-	Box,
-	IconButton,
-	Skeleton,
-	Tab,
-	Tabs,
-	Typography,
-} from "@mui/material";
+import { Box, IconButton, Skeleton, Typography } from "@mui/material";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAlbums, getArtists, getLabel, getSongs } from "@/api/queries";
 import {
@@ -41,7 +33,7 @@ import { Head } from "~/components/head";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
 import { InfiniteSongView } from "~/components/infinite/resource/song";
-import { useTabRouter } from "~/components/tab-router";
+import { TabPage } from "~/components/tab-page";
 import getSlugOrId from "~/utils/getSlugOrId";
 
 const prepareSSR = (context: NextPageContext) => {
@@ -69,16 +61,8 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 	const playFromQuery = useSetAtom(playFromInfiniteQuery);
-	const { t } = useTranslation();
 	const labelIdentifier = props?.labelIdentifier ?? getSlugOrId(router.query);
 	const label = useQuery(getLabel, labelIdentifier);
-	const { selectedTab, selectTab } = useTabRouter(
-		(r) => r.query.t,
-		(newTab) => `/labels/${labelIdentifier}?t=${newTab}`,
-		"album",
-		"artist",
-		"song",
-	);
 
 	const playRadio = () => {
 		playFromQuery(
@@ -94,87 +78,97 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	};
 
 	return (
-		<Box sx={{ width: "100%" }}>
-			<Head title={label.data?.name} />
-			<Box
-				sx={{
-					width: "100%",
-					justifyContent: "center",
-					alignItems: "center",
-					gap: 1,
-					textAlign: "center",
-					display: "flex",
-					marginY: 5,
-				}}
-			>
-				<IconButton onClick={playRadio}>
-					<RadioIcon />
-				</IconButton>
-				<Typography variant="h5" sx={{ fontWeight: "bold" }}>
-					{label.data?.name ?? <Skeleton width={"100px"} />}
-				</Typography>
-			</Box>
-			<Tabs
-				value={selectedTab}
-				onChange={(__, tabName) => selectTab(tabName)}
-				variant="fullWidth"
-			>
-				{tabs.map((value, index) => (
-					<Tab
-						key={index}
-						value={value}
-						sx={{ minWidth: "fit-content", flex: 1 }}
-						label={t(`models.${value}_plural`)}
-					/>
-				))}
-			</Tabs>
-			<Box sx={{ paddingBottom: 2 }} />
-			{selectedTab === "artist" && (
-				<InfiniteArtistView
-					query={({ libraries, sortBy, order }) =>
-						getArtists(
-							{
-								label: labelIdentifier,
-								library: libraries,
-							},
-							{ sortBy, order },
-							["illustration"],
-						)
-					}
-				/>
-			)}
-			{selectedTab === "album" && (
-				<InfiniteAlbumView
-					query={({ libraries, types, sortBy, order }) =>
-						getAlbums(
-							{
-								label: labelIdentifier,
-								type: types,
-								library: libraries,
-							},
-							{ sortBy, order },
-							["artists", "illustration"],
-						)
-					}
-				/>
-			)}
-			{selectedTab === "song" && (
-				<InfiniteSongView
-					query={({ libraries, types, random, sortBy, order }) =>
-						getSongs(
-							{
-								label: labelIdentifier,
-								type: types,
-								random,
-								library: libraries,
-							},
-							{ sortBy, order },
-							["artist", "featuring", "master", "illustration"],
-						)
-					}
-				/>
-			)}
-		</Box>
+		<TabPage
+			tabs={tabs}
+			urlFromTab={(tab) => `/labels/${labelIdentifier}?t=${tab}`}
+			translateTab={(tab) => `models.${tab}_plural`}
+			header={
+				<>
+					<Head title={label.data?.name} />
+					<Box
+						sx={{
+							width: "100%",
+							justifyContent: "center",
+							alignItems: "center",
+							gap: 1,
+							textAlign: "center",
+							display: "flex",
+							marginY: 5,
+						}}
+					>
+						<IconButton onClick={playRadio}>
+							<RadioIcon />
+						</IconButton>
+						<Typography variant="h5" sx={{ fontWeight: "bold" }}>
+							{label.data?.name ?? <Skeleton width={"100px"} />}
+						</Typography>
+					</Box>
+				</>
+			}
+			render={(tab) => {
+				switch (tab) {
+					case "artist":
+						return (
+							<InfiniteArtistView
+								query={({ libraries, sortBy, order }) =>
+									getArtists(
+										{
+											label: labelIdentifier,
+											library: libraries,
+										},
+										{ sortBy, order },
+										["illustration"],
+									)
+								}
+							/>
+						);
+					case "album":
+						return (
+							<InfiniteAlbumView
+								query={({ libraries, types, sortBy, order }) =>
+									getAlbums(
+										{
+											label: labelIdentifier,
+											type: types,
+											library: libraries,
+										},
+										{ sortBy, order },
+										["artists", "illustration"],
+									)
+								}
+							/>
+						);
+					case "song":
+						return (
+							<InfiniteSongView
+								query={({
+									libraries,
+									types,
+									random,
+									sortBy,
+									order,
+								}) =>
+									getSongs(
+										{
+											label: labelIdentifier,
+											type: types,
+											random,
+											library: libraries,
+										},
+										{ sortBy, order },
+										[
+											"artist",
+											"featuring",
+											"master",
+											"illustration",
+										],
+									)
+								}
+							/>
+						);
+				}
+			}}
+		/>
 	);
 };
 
