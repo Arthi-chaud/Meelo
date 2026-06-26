@@ -16,23 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box } from "@mui/material";
 import type { NextPageContext } from "next";
 import { useTranslation } from "react-i18next";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getLabels } from "@/api/queries";
-import type { InfiniteQuery } from "@/api/query";
-import type Labels from "@/models/genre";
-import type { IllustratedResource } from "@/models/illustration";
 import { LabelSortingKeys } from "@/models/label";
 import { Head } from "~/components/head";
-import { Controls } from "~/components/infinite/controls/controls";
-import {
-	ssrGetSortingParameter,
-	useSortControl,
-} from "~/components/infinite/controls/sort";
-import InfiniteGrid from "~/components/infinite/grid";
-import { LabelTile } from "~/components/tile/resource/label";
+import { ssrGetSortingParameter } from "~/components/infinite/controls/sort";
+import { InfiniteLabelView } from "~/components/infinite/resource/label";
 
 const prepareSSR = (context: NextPageContext) => {
 	const sort = ssrGetSortingParameter(LabelSortingKeys, context);
@@ -44,27 +35,11 @@ const prepareSSR = (context: NextPageContext) => {
 const LabelsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 	const { t } = useTranslation();
 
-	const [sort, sortControl] = useSortControl({
-		sortingKeys: LabelSortingKeys,
-		translate: (s) => `browsing.controls.sort.${s}`,
-	});
 	return (
 		<>
 			<Head title={t("models.genre_plural")} />
-			<Controls sort={sortControl} />
-			<InfiniteGrid
-				itemSize={"xl"}
-				render={(label) => (
-					<Box sx={{ padding: 3 }}>
-						<LabelTile label={label} />
-					</Box>
-				)}
-				query={() =>
-					getLabels(
-						{},
-						{ sortBy: sort.sort, order: sort.order },
-					) as unknown as InfiniteQuery<Labels & IllustratedResource>
-				}
+			<InfiniteLabelView
+				query={({ sortBy, order }) => getLabels({}, { sortBy, order })}
 			/>
 		</>
 	);

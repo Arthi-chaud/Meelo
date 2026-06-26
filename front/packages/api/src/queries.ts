@@ -110,6 +110,7 @@ export const getArtists = <I extends ArtistInclude | never = never>(
 		genre?: Identifier;
 		query?: Identifier;
 		label?: Identifier;
+		area?: Identifier;
 	},
 	sort?: SortingParameters<typeof ArtistSortingKeys>,
 	include: I[] = [],
@@ -499,7 +500,7 @@ export const getLabel = (identifier: string | number): Query<Label> => {
 };
 
 export const getLabels = (
-	filter: { artist?: Identifier; album?: Identifier },
+	filter: { artist?: Identifier; album?: Identifier; area?: Identifier },
 	sort?: SortingParameters<typeof LabelSortingKeys>,
 ): InfiniteQuery<Label> => {
 	return _mkSimplePaginatedQuery({
@@ -640,6 +641,13 @@ export const getParentAreas = (areaId: Identifier): Query<Area[]> => {
 	return _mkSimpleQuery({
 		route: `/areas/${areaId}/parents`,
 		validator: yup.array().of(Area.required()).required(),
+	});
+};
+
+export const getArea = (areaId: Identifier): Query<Area> => {
+	return _mkSimpleQuery({
+		route: `/areas/${areaId}`,
+		validator: Area.required(),
 	});
 };
 

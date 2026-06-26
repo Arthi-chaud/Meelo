@@ -133,6 +133,8 @@ export const RepeatTrackIcon: Icon = Iconsax.RepeateOne;
 
 export const CoverflowIcon: Icon = Iconsax.SliderHorizontal;
 
+export const AreaIcon: Icon = Iconsax.Location;
+
 // Icons for song type
 export const SongTypeOriginalIcon: Icon = Iconsax.Music;
 export const SongTypeRemixIcon: Icon = Iconsax.Repeat;

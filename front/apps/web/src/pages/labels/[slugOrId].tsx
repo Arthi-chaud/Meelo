@@ -16,12 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Box, IconButton, Skeleton, Typography } from "@mui/material";
+import {
+	Box,
+	IconButton,
+	Link as MUILink,
+	Skeleton,
+	Stack,
+	Typography,
+} from "@mui/material";
 import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import { getAlbums, getArtists, getLabel, getSongs } from "@/api/queries";
+import {
+	getAlbums,
+	getArea,
+	getArtists,
+	getLabel,
+	getSongs,
+} from "@/api/queries";
 import {
 	infiniteSongQueryToPlayerQuery,
 	playFromInfiniteQuery,
@@ -63,6 +77,7 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const playFromQuery = useSetAtom(playFromInfiniteQuery);
 	const labelIdentifier = props?.labelIdentifier ?? getSlugOrId(router.query);
 	const label = useQuery(getLabel, labelIdentifier);
+	const { data: area } = useQuery(getArea, label.data?.areaId ?? undefined);
 
 	const playRadio = () => {
 		playFromQuery(
@@ -88,20 +103,54 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					<Box
 						sx={{
 							width: "100%",
-							justifyContent: "center",
-							alignItems: "center",
-							gap: 1,
-							textAlign: "center",
 							display: "flex",
+							alignItems: "center",
+							flexDirection: "column",
 							marginY: 5,
 						}}
 					>
-						<IconButton onClick={playRadio}>
-							<RadioIcon />
-						</IconButton>
-						<Typography variant="h5" sx={{ fontWeight: "bold" }}>
-							{label.data?.name ?? <Skeleton width={"100px"} />}
-						</Typography>
+						<Stack
+							direction={"row"}
+							sx={{
+								justifyContent: "center",
+								gap: 1,
+								alignItems: "center",
+								textAlign: "center",
+							}}
+						>
+							<IconButton onClick={playRadio}>
+								<RadioIcon />
+							</IconButton>
+							<Typography
+								variant="h5"
+								sx={{
+									fontWeight: "bold",
+									paddingRight: 1, // To balance with button padding
+								}}
+							>
+								{label.data?.name ?? (
+									<Skeleton width={"100px"} />
+								)}
+							</Typography>
+						</Stack>
+						<Stack direction={"row"}>
+							{area && (
+								<Typography
+									sx={{ fontSize: "small" }}
+									color="textSecondary"
+								>
+									{"Based in "}
+									<MUILink
+										href={`/areas/${area.id}`}
+										underline="hover"
+										sx={{ color: "text.secondary" }}
+										component={Link}
+									>
+										{area?.name}
+									</MUILink>
+								</Typography>
+							)}
+						</Stack>
 					</Box>
 				</>
 			}
