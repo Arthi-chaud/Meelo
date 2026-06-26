@@ -17,6 +17,7 @@
  */
 
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AreaQueryParameters from "src/area/area.query-parameters";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Filter } from "src/filter/filter";
 import { Label } from "src/prisma/generated/client";
@@ -32,6 +33,7 @@ namespace LabelQueryParameters {
 	export type ManyWhereInput = Partial<{
 		album: Filter<AlbumQueryParameters.WhereInput>;
 		artist: Filter<ArtistQueryParameters.WhereInput>;
+		area: AreaQueryParameters.WhereInput[];
 	}>;
 
 	export type UpdateInput = Partial<Pick<Label, "areaId">>;

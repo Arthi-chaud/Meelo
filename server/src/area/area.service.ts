@@ -121,6 +121,25 @@ export default class AreaService {
 		return parentAreas;
 	}
 
+	async getChildrenIds(
+		where: AreaQueryParameters.WhereInput,
+	): Promise<number[]> {
+		const area = await this.get(where);
+		let children = [area.id];
+		const res = [];
+		while (children.length > 0) {
+			const parents = children;
+			children = (
+				await this.prismaService.area.findMany({
+					select: { id: true },
+					where: { parentId: { in: parents } },
+				})
+			).map(({ id }) => id);
+			res.push(...children);
+		}
+		return res;
+	}
+
 	private _buildInclude(depth: number): any {
 		if (depth < 1) {
 			return { parent: true };

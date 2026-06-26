@@ -216,6 +216,20 @@ export default class ArtistService extends SearchableRepositoryService {
 			},
 		];
 
+		if (where.area) {
+			query.push({
+				OR: where.area.map((area) => ({
+					OR: [
+						{
+							activityArea: AreaService.formatWhereInput(area),
+						},
+						{
+							birthArea: AreaService.formatWhereInput(area),
+						},
+					],
+				})),
+			});
+		}
 		if (where.artists) {
 			query.push({
 				OR: where.artists.map((artist) =>
