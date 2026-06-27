@@ -117,6 +117,9 @@ export default class ArtistService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
+		if (!matchingIds.length) {
+			return [];
+		}
 		const artists = await this.getMany(
 			{ ...where, artists: matchingIds.map((id) => ({ id })) },
 			{},

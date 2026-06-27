@@ -245,6 +245,9 @@ export default class SongService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
+		if (!matchingIds.length) {
+			return [];
+		}
 		const artists = await this.getMany(
 			{
 				...where,

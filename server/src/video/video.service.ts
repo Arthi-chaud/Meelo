@@ -168,6 +168,9 @@ export default class VideoService extends SearchableRepositoryService {
 		include?: I,
 	) {
 		const matchingIds = await this.getMatchingIds(token, pagination);
+		if (!matchingIds.length) {
+			return [];
+		}
 		const artists = await this.getMany(
 			{ ...where, videos: matchingIds.map((id) => ({ id })) },
 			{},
