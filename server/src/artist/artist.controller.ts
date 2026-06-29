@@ -29,6 +29,8 @@ import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AreaQueryParameters from "src/area/area.query-parameters";
+import AreaService from "src/area/area.service";
 import {
 	DefaultRoleAndMicroservice,
 	Role,
@@ -38,6 +40,7 @@ import TransformFilter, { Filter } from "src/filter/filter";
 import GenreService from "src/genre/genre.service";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
 import LabelQueryParameters from "src/label/label.query-parameters";
 import LabelService from "src/label/label.service";
 import LibraryService from "src/library/library.service";
@@ -87,6 +90,13 @@ class Selector {
 		description: "Filter artists by label",
 	})
 	label?: Filter<LabelQueryParameters.WhereInput>;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter artists by area",
+	})
+	@TransformIdentifier(AreaService)
+	area?: AreaQueryParameters.WhereInput;
 }
 
 @ApiTags("Artists")
@@ -95,6 +105,9 @@ export default class ArtistController {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
+
+		@Inject(forwardRef(() => AreaService))
+		private areaService: AreaService,
 	) {}
 
 	@ApiOperation({
@@ -113,16 +126,27 @@ export default class ArtistController {
 		@RelationIncludeQuery(ArtistQueryParameters.AvailableAtomicIncludes)
 		include: ArtistQueryParameters.RelationInclude,
 	) {
+		const where: ArtistQueryParameters.ManyWhereInput = {
+			...selector,
+			area: selector.area
+				? [
+						selector.area,
+						...(
+							await this.areaService.getChildrenIds(selector.area)
+						).map((id) => ({ id })),
+					]
+				: undefined,
+		};
 		if (selector.query) {
 			return this.artistService.search(
 				decodeURI(selector.query),
-				selector,
+				where,
 				paginationParameters,
 				include,
 			);
 		}
 		return this.artistService.getMany(
-			selector,
+			where,
 			sort,
 			paginationParameters,
 			include,

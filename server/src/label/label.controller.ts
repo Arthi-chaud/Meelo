@@ -17,16 +17,19 @@
  */
 
 import { Body, Controller, Get, Put, Query } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiPropertyOptional, ApiTags } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import AlbumService from "src/album/album.service";
 import AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AreaQueryParameters from "src/area/area.query-parameters";
+import AreaService from "src/area/area.service";
 import ArtistService from "src/artist/artist.service";
 import ArtistQueryParameters from "src/artist/models/artist.query-parameters";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
+import TransformIdentifier from "src/identifier/identifier.transform";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Label } from "src/prisma/models";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
@@ -43,12 +46,22 @@ class Selector {
 	@IsOptional()
 	@TransformFilter(AlbumService, { description: "Filter labels by albums" })
 	album?: Filter<AlbumQueryParameters.WhereInput>;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Filter labels by area",
+	})
+	@TransformIdentifier(AreaService)
+	area?: AreaQueryParameters.WhereInput;
 }
 
 @ApiTags("Labels")
 @Controller("labels")
 export default class LabelController {
-	constructor(private labelService: LabelService) {}
+	constructor(
+		private labelService: LabelService,
+		private areaService: AreaService,
+	) {}
 
 	@Get()
 	@ApiOperation({ summary: "Get many labels" })
@@ -63,8 +76,19 @@ export default class LabelController {
 		@RelationIncludeQuery(LabelQueryParameters.AvailableAtomicIncludes)
 		include: LabelQueryParameters.RelationInclude,
 	) {
+		const where: LabelQueryParameters.ManyWhereInput = {
+			...selector,
+			area: selector.area
+				? [
+						selector.area,
+						...(
+							await this.areaService.getChildrenIds(selector.area)
+						).map((id) => ({ id })),
+					]
+				: undefined,
+		};
 		return this.labelService.getMany(
-			selector,
+			where,
 			sort,
 			include,
 			paginationParameters,

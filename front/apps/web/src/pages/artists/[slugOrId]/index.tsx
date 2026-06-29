@@ -21,10 +21,12 @@ import {
 	Container,
 	Divider,
 	Grid,
+	Link as MUILink,
 	Stack,
 	Typography,
 } from "@mui/material";
 import type { NextPageContext } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -280,11 +282,18 @@ const ArtistPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						<Typography variant="h6" component={"span"}>
 							{`${t("misc.from")}: `}
 						</Typography>
-						{areas.map((area, idx) =>
-							idx < areas.length - 1
-								? `${area.name}, `
-								: area.name,
-						)}
+						{areas.map((area, idx) => (
+							<Fragment key={area.id}>
+								<MUILink
+									component={Link}
+									underline="hover"
+									href={`/areas/${area.id}`}
+								>
+									{area.name}
+								</MUILink>
+								{idx < areas.length - 1 ? ", " : null}
+							</Fragment>
+						))}
 					</Box>
 				)}
 				{(externalMetadata.data === undefined ||

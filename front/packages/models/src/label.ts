@@ -26,6 +26,7 @@ const Label = Resource.concat(
 	yup.object({
 		slug: yup.string().required(),
 		name: yup.string().required(),
+		areaId: yup.number().required().nullable(),
 	}),
 );
 

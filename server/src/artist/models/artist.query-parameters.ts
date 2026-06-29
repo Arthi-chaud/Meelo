@@ -17,6 +17,7 @@
  */
 
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
+import AreaQueryParameters from "src/area/area.query-parameters";
 import { Filter } from "src/filter/filter";
 import type GenreQueryParameters from "src/genre/models/genre.query-parameters";
 import LabelQueryParameters from "src/label/label.query-parameters";
@@ -70,6 +71,7 @@ namespace ArtistQueryParameters {
 			primaryArtistsOnly: boolean;
 			album: Filter<AlbumQueryParameters.WhereInput>;
 			label: Filter<LabelQueryParameters.WhereInput>;
+			area: AreaQueryParameters.WhereInput[];
 		}>
 	>;
 
