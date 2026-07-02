@@ -18,6 +18,7 @@
 
 import * as yup from "yup";
 import Resource from "./resource";
+import { yupdate } from "./utils";
 
 /**
  * 'Instance' of a song on a release
@@ -27,6 +28,8 @@ const Label = Resource.concat(
 		slug: yup.string().required(),
 		name: yup.string().required(),
 		areaId: yup.number().required().nullable(),
+		startDate: yupdate.required().nullable(),
+		endDate: yupdate.required().nullable(),
 	}),
 );
 

@@ -28,6 +28,7 @@ import { useSetAtom } from "jotai";
 import type { NextPageContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import {
 	getAlbums,
@@ -91,6 +92,19 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			queryClient,
 		);
 	};
+	const formattedDate = useMemo(() => {
+		if (!label.data?.startDate) {
+			return null;
+		}
+		const startDate = new Date(label.data.startDate)
+			.getFullYear()
+			.toString();
+
+		const endDate = label.data.endDate
+			? new Date(label.data.endDate).getFullYear().toString()
+			: "Present";
+		return `${startDate} - ${endDate}`;
+	}, [label.data?.startDate, label.data?.endDate]);
 
 	return (
 		<TabPage
@@ -107,6 +121,7 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							alignItems: "center",
 							flexDirection: "column",
 							marginY: 5,
+							gap: 0.5,
 						}}
 					>
 						<Stack
@@ -132,6 +147,17 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									<Skeleton width={"100px"} />
 								)}
 							</Typography>
+						</Stack>
+
+						<Stack direction={"row"}>
+							{formattedDate && (
+								<Typography
+									sx={{ fontSize: "small" }}
+									color="textSecondary"
+								>
+									{formattedDate}
+								</Typography>
+							)}
 						</Stack>
 						<Stack direction={"row"}>
 							{area && (
