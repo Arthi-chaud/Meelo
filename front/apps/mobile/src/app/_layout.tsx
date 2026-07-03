@@ -26,7 +26,7 @@ import {
 	Rubik_900Black,
 } from "@expo-google-fonts/rubik";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import i18next from "i18next";
 import { Provider } from "jotai";
@@ -120,66 +120,79 @@ export default function RootLayout() {
 		return null;
 	}
 	return (
-		<GestureHandlerRootView>
-			<QueryClientProvider client={queryClient}>
-				<Provider store={store}>
-					<ColorSchemeProvider>
-						<BottomSheetModalProvider>
-							<KeyboardProvider>
-								<DownloadManager />
-								<BlurTargetView
-									ref={blurTarget}
-									style={{ flex: 1 }}
-								>
-									<Stack
-										screenOptions={{
-											animation: "default",
-											headerShown: false,
-											contentStyle: {
-												flex: 1,
-											},
-											statusBarStyle:
-												actualColorScheme === "light"
-													? "dark"
-													: "light",
-										}}
+		<ThemeProvider
+			value={{
+				...DefaultTheme,
+				// NOTE: PR #47121 from expo forces the bg color of stacks to be set
+				// We do not want this becase we rely on the bg to be transparent for the bg gradient
+				colors: { ...DefaultTheme.colors, background: "transparent" },
+			}}
+		>
+			<GestureHandlerRootView>
+				<QueryClientProvider client={queryClient}>
+					<Provider store={store}>
+						<ColorSchemeProvider>
+							<BottomSheetModalProvider>
+								<KeyboardProvider>
+									<DownloadManager />
+									<BlurTargetView
+										ref={blurTarget}
+										style={{ flex: 1 }}
 									>
-										<Stack.Screen
-											name="(protected)"
-											options={{
-												animationTypeForReplace: "push",
+										<Stack
+											screenOptions={{
+												animation: "default",
+												headerShown: false,
 												contentStyle: {
-													backgroundColor:
-														"transparent",
+													flex: 1,
 												},
+												statusBarStyle:
+													actualColorScheme ===
+													"light"
+														? "dark"
+														: "light",
 											}}
-										/>
+										>
+											<Stack.Screen
+												name="(protected)"
+												options={{
+													animationTypeForReplace:
+														"push",
+													contentStyle: {
+														zIndex: 1,
+														backgroundColor:
+															"transparent",
+													},
+												}}
+											/>
 
-										<Stack.Screen
-											name="auth"
-											options={{
-												animationTypeForReplace: "pop",
-												contentStyle: {
-													backgroundColor:
-														(actualColorScheme ===
-														"dark"
-															? appThemes.dark
-															: appThemes.light
-														).colors.background,
-												},
-											}}
-										/>
-									</Stack>
-								</BlurTargetView>
-								<Modal blurTarget={blurTarget} />
-							</KeyboardProvider>
-						</BottomSheetModalProvider>
-						<BackgroundGradient />
-					</ColorSchemeProvider>
-				</Provider>
-				<ToastManager />
-			</QueryClientProvider>
-		</GestureHandlerRootView>
+											<Stack.Screen
+												name="auth"
+												options={{
+													animationTypeForReplace:
+														"pop",
+													contentStyle: {
+														backgroundColor:
+															(actualColorScheme ===
+															"dark"
+																? appThemes.dark
+																: appThemes.light
+															).colors.background,
+													},
+												}}
+											/>
+										</Stack>
+									</BlurTargetView>
+									<Modal blurTarget={blurTarget} />
+								</KeyboardProvider>
+							</BottomSheetModalProvider>
+							<BackgroundGradient />
+						</ColorSchemeProvider>
+					</Provider>
+					<ToastManager />
+				</QueryClientProvider>
+			</GestureHandlerRootView>
+		</ThemeProvider>
 	);
 }
 
