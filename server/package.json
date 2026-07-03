@@ -106,5 +106,5 @@
 		"unplugin-swc": "^1.5.9",
 		"vitest": "^4.1.8"
 	},
-	"packageManager": "yarn@4.16.0"
+	"packageManager": "yarn@4.17.0"
 }

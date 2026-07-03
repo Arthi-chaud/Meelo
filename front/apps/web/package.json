@@ -54,5 +54,5 @@
 		"@types/react-infinite-scroller": "^1.2.5",
 		"typescript": "5.9.3"
 	},
-	"packageManager": "yarn@4.16.0"
+	"packageManager": "yarn@4.17.0"
 }
