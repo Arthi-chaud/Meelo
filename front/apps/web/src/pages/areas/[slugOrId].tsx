@@ -133,6 +133,7 @@ const AreaPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									getLabels(
 										{ area: areaIdentifier },
 										{ sortBy, order },
+										[],
 									)
 								}
 							/>

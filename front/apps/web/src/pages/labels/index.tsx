@@ -39,7 +39,9 @@ const LabelsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 		<>
 			<Head title={t("models.genre_plural")} />
 			<InfiniteLabelView
-				query={({ sortBy, order }) => getLabels({}, { sortBy, order })}
+				query={({ sortBy, order }) =>
+					getLabels({}, { sortBy, order }, [])
+				}
 			/>
 		</>
 	);

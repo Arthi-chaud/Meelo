@@ -30,18 +30,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import type { GetPropsTypesFrom, Page } from "ssr";
-import {
-	getAlbums,
-	getArea,
-	getArtists,
-	getLabel,
-	getSongs,
-} from "@/api/queries";
+import { getAlbums, getArtists, getLabel, getSongs } from "@/api/queries";
 import {
 	infiniteSongQueryToPlayerQuery,
 	playFromInfiniteQuery,
 } from "@/state/player";
 import { RadioIcon } from "@/ui/icons";
+import { formatLabelDates } from "@/utils/format-label-dates";
 import { getRandomNumber } from "@/utils/random";
 import { useQuery, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
@@ -57,7 +52,7 @@ const prepareSSR = (context: NextPageContext) => {
 
 	return {
 		additionalProps: { labelIdentifier },
-		queries: [getLabel(labelIdentifier)],
+		queries: [getLabel(labelIdentifier, ["area"])],
 		infiniteQueries: [
 			getAlbums({ label: labelIdentifier }, defaultQuerySortParams, [
 				"artists",
@@ -77,8 +72,7 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const queryClient = useQueryClient();
 	const playFromQuery = useSetAtom(playFromInfiniteQuery);
 	const labelIdentifier = props?.labelIdentifier ?? getSlugOrId(router.query);
-	const label = useQuery(getLabel, labelIdentifier);
-	const { data: area } = useQuery(getArea, label.data?.areaId ?? undefined);
+	const label = useQuery((id) => getLabel(id, ["area"]), labelIdentifier);
 
 	const playRadio = () => {
 		playFromQuery(
@@ -92,19 +86,10 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 			queryClient,
 		);
 	};
-	const formattedDate = useMemo(() => {
-		if (!label.data?.startDate) {
-			return null;
-		}
-		const startDate = new Date(label.data.startDate)
-			.getFullYear()
-			.toString();
-
-		const endDate = label.data.endDate
-			? new Date(label.data.endDate).getFullYear().toString()
-			: "Present";
-		return `${startDate} - ${endDate}`;
-	}, [label.data?.startDate, label.data?.endDate]);
+	const formattedDate = useMemo(
+		() => formatLabelDates(label.data?.startDate, label.data?.endDate),
+		[label.data?.startDate, label.data?.endDate],
+	);
 
 	return (
 		<TabPage
@@ -160,19 +145,19 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 							)}
 						</Stack>
 						<Stack direction={"row"}>
-							{area && (
+							{label.data?.area && (
 								<Typography
 									sx={{ fontSize: "small" }}
 									color="textSecondary"
 								>
 									{"Based in "}
 									<MUILink
-										href={`/areas/${area.id}`}
+										href={`/areas/${label.data.area.id}`}
 										underline="hover"
 										sx={{ color: "text.secondary" }}
 										component={Link}
 									>
-										{area?.name}
+										{label.data.area.name}
 									</MUILink>
 								</Typography>
 							)}
