@@ -17,6 +17,7 @@
  */
 
 import * as yup from "yup";
+import { Area } from "./area";
 import Resource from "./resource";
 import { yupdate } from "./utils";
 
@@ -32,6 +33,24 @@ const Label = Resource.concat(
 		endDate: yupdate.required().nullable(),
 	}),
 );
+
+export type LabelInclude = "area";
+
+export const LabelWithRelations = <
+	Selection extends LabelInclude | never = never,
+>(
+	relation: Selection[],
+) =>
+	Label.concat(
+		yup
+			.object({
+				area: Area.required().nullable(),
+			})
+			.pick(relation),
+	);
+
+export type LabelWithRelations<Selection extends LabelInclude | never = never> =
+	yup.InferType<ReturnType<typeof LabelWithRelations<Selection>>>;
 
 type Label = yup.InferType<typeof Label>;
 
