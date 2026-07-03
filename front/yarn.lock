@@ -3940,15 +3940,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:2.6.4":
-  version: 2.6.4
-  resolution: "@shopify/react-native-skia@npm:2.6.4"
+"@shopify/react-native-skia@npm:2.6.6":
+  version: 2.6.6
+  resolution: "@shopify/react-native-skia@npm:2.6.6"
   dependencies:
     canvaskit-wasm: "npm:0.41.0"
-    react-native-skia-android: "npm:147.1.0"
-    react-native-skia-apple-ios: "npm:147.1.0"
-    react-native-skia-apple-macos: "npm:147.1.0"
-    react-native-skia-apple-tvos: "npm:147.1.0"
+    react-native-skia-android: "npm:150.0.0"
+    react-native-skia-apple-ios: "npm:150.0.0"
+    react-native-skia-apple-macos: "npm:150.0.0"
+    react-native-skia-apple-tvos: "npm:150.0.0"
     react-reconciler: "npm:0.31.0"
   peerDependencies:
     react: ">=19.0"
@@ -3960,9 +3960,8 @@ __metadata:
     react-native-reanimated:
       optional: true
   bin:
-    install-skia: scripts/install-libs.js
     setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/0503b6511409a3d672afbd2f4a9c56ee4523771de06907a3751d9de8588d523b035dec3d6a0cd3316c95cfdf974fb2b58fc86db05d73dbf16698567edc8dc424
+  checksum: 10c0/12b098f2710c6969861d8c6334f668760a33dfcc2a37d351a0ea9b715914e5242e30167ed176a2b0dc8ea2b3a8b45adfe57796224854f48a6a5b0e025d124d38
   languageName: node
   linkType: hard
 
@@ -8486,7 +8485,7 @@ __metadata:
     "@gorhom/bottom-sheet": "npm:^5.2.14"
     "@kesha-antonov/react-native-background-downloader": "npm:^4.5.4"
     "@shopify/flash-list": "npm:2.3.2"
-    "@shopify/react-native-skia": "npm:2.6.4"
+    "@shopify/react-native-skia": "npm:2.6.6"
     "@tanstack/react-query": "npm:^5.100.5"
     "@types/react": "npm:~19.1.10"
     "@types/react-native-base64": "npm:^0"
@@ -9593,31 +9592,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-skia-android@npm:147.1.0":
-  version: 147.1.0
-  resolution: "react-native-skia-android@npm:147.1.0"
-  checksum: 10c0/c2f938db0550fc99095bc01154b6d002b4e841c67ff6350187355c88930e8115add3e0b736bdcbf1db67a368a9314b2ea11f73248bcd15f09926d005b022e019
+"react-native-skia-android@npm:150.0.0":
+  version: 150.0.0
+  resolution: "react-native-skia-android@npm:150.0.0"
+  checksum: 10c0/fd350a8151e0a27eeba6a1be32b93a4998f624b95c5f56d048115173d932b3340fcd150ef89c230e868f5ce26d6332ff1273b32eaf83a087523daf18cdf049be
   languageName: node
   linkType: hard
 
-"react-native-skia-apple-ios@npm:147.1.0":
-  version: 147.1.0
-  resolution: "react-native-skia-apple-ios@npm:147.1.0"
-  checksum: 10c0/77f9b49d3db472a64af4aa298160bcee9528022d9830e091be1c0e840ec6e55df94e03bffabee2e8e3e6303b5c4a8101798104850df8a5a681d785f2f6c45c4b
+"react-native-skia-apple-ios@npm:150.0.0":
+  version: 150.0.0
+  resolution: "react-native-skia-apple-ios@npm:150.0.0"
+  checksum: 10c0/b911b1decb12c6c95de52db071cb2f4765164e8960ce0104ee16e9158611270982c82908242175f68579728775764e8d5587f336788b2988a3d5c645cc4c2405
   languageName: node
   linkType: hard
 
-"react-native-skia-apple-macos@npm:147.1.0":
-  version: 147.1.0
-  resolution: "react-native-skia-apple-macos@npm:147.1.0"
-  checksum: 10c0/c33843d0b3244bd250508550468d20a51763abc6cf41ea1a3e0893fd63e695a3325cfe4f513340561fbf6515add8bd55d9dd873b1f6ae4a021b6b78fe71d5b57
+"react-native-skia-apple-macos@npm:150.0.0":
+  version: 150.0.0
+  resolution: "react-native-skia-apple-macos@npm:150.0.0"
+  checksum: 10c0/55225587e5802c680cc909e860e935248a155f4a241f892e1916dfe3b7deadf75aa0ef42033d0341b842844af77baabf22b7b661417524c6bd05c474321ecd56
   languageName: node
   linkType: hard
 
-"react-native-skia-apple-tvos@npm:147.1.0":
-  version: 147.1.0
-  resolution: "react-native-skia-apple-tvos@npm:147.1.0"
-  checksum: 10c0/eaf3a8970dc9e49af7221ed4381fc2ac2a61acf68f8d854c26df5836845beceb816dd06c8b4e3aa13940c461c89e115b0b9a97694eeff3a32e9fee3bd9611811
+"react-native-skia-apple-tvos@npm:150.0.0":
+  version: 150.0.0
+  resolution: "react-native-skia-apple-tvos@npm:150.0.0"
+  checksum: 10c0/04c554c5ac3b45db95ec44ea8343ae9f78469f1c5f6e54fb76e728912f9f0eaec540dd76c2b047b69934e5a9f07e219c667fdff63280dd315b0125fbd5830f74
   languageName: node
   linkType: hard
 
