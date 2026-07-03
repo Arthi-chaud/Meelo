@@ -1,20 +1,21 @@
 import { useSetAtom } from "jotai";
-import { useCallback } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, useMemo } from "react";
 import { getSongs } from "@/api/queries";
-import type Label from "@/models/label";
+import type { LabelWithRelations } from "@/models/label";
 import {
 	infiniteSongQueryToPlayerQuery,
 	playFromInfiniteQuery,
 } from "@/state/player";
 import { AlbumIcon, ArtistIcon, LabelIcon, RadioIcon } from "@/ui/icons";
+import { formatLabelDates } from "@/utils/format-label-dates";
 import { getRandomNumber } from "@/utils/random";
 import { useQueryClient } from "~/api";
 import type { ContextMenu } from "..";
 
-export const useLabelContextMenu = (label: Label | undefined) => {
+export const useLabelContextMenu = (
+	label: LabelWithRelations<"area"> | undefined,
+) => {
 	const queryClient = useQueryClient();
-	const { t } = useTranslation();
 	const playFromQuery = useSetAtom(playFromInfiniteQuery);
 	const startLabelRadio = useCallback(() => {
 		if (!label) {
@@ -31,11 +32,25 @@ export const useLabelContextMenu = (label: Label | undefined) => {
 		);
 		playFromQuery(query, queryClient);
 	}, [label, queryClient]);
+	const subtitle = useMemo(() => {
+		if (!label) {
+			return undefined;
+		}
+		if (!label.startDate && !label.area) {
+			return null;
+		}
+		return [
+			formatLabelDates(label.startDate, label.endDate),
+			label.area?.name,
+		]
+			.filter((item) => item)
+			.join(" • ");
+	}, [label]);
 	return useCallback(() => {
 		return {
 			header: {
 				title: label?.name,
-				subtitle: t("models.label"),
+				subtitle: subtitle,
 				illustration: null,
 				illustrationProps: { fallbackIcon: LabelIcon },
 			},

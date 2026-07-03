@@ -13,7 +13,7 @@ import {
 } from "@/api/queries";
 import type { AlbumWithRelations } from "@/models/album";
 import type Genre from "@/models/genre";
-import type Label from "@/models/label";
+import type { LabelWithRelations } from "@/models/label";
 import type { ReleaseWithRelations } from "@/models/release";
 import type { SongWithRelations } from "@/models/song";
 import type { VideoWithRelations } from "@/models/video";
@@ -145,7 +145,7 @@ export const useFooter = ({
 	);
 
 	const { items: albumLabels } = useInfiniteQuery(
-		(albumId) => getLabels({ album: albumId }),
+		(albumId) => getLabels({ album: albumId }, undefined, ["area"]),
 		album?.id,
 	);
 	const { items: genres } = useInfiniteQuery(
@@ -183,7 +183,11 @@ export const useFooter = ({
 					items: labels,
 					style: styles.section,
 					title: "models.label",
-					renderItem: (label) => <LabelChip label={label as Label} />,
+					renderItem: (label) => (
+						<LabelChip
+							label={label as LabelWithRelations<"area">}
+						/>
+					),
 				},
 			};
 		}

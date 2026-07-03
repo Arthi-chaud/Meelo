@@ -16,6 +16,7 @@ export default function LabelsList() {
 		const base = getLabels(
 			{},
 			{ sortBy: sort ?? "name", order: order ?? "asc" },
+			["area"],
 		);
 		return transformPage(base, (g) => ({ ...g, illustration: null }));
 	}, [sort, order]);

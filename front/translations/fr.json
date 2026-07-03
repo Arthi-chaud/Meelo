@@ -274,6 +274,9 @@
 		"openModalShortcutDescription": "Ouvrir / Fermer cette modale",
 		"playPauseWhenExpanded": "Lecture / Pause (Quand le lecteur est ouvert)"
 	},
+	"labels": {
+		"foundedIn": "Fondé en {{startYear}}"
+	},
 	"misc": {
 		"from": "Originaire de",
 		"loading": "Chargement",
