@@ -6770,10 +6770,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"format-duration@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "format-duration@npm:3.0.2"
-  checksum: 10c0/2873fa124fc75b9d240651707c6f664feb0c4f53015c8d261c6d8b9c37d937303338f994ab66463e4875da60ed93f14bdd60bbccaeaf8ffabe91bc09e0e96cef
+"format-duration@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "format-duration@npm:4.0.0"
+  checksum: 10c0/857a3c2e59f89dc16f03d5ea1e44f5d07cc61931f684087aba8e31078ec5aceb778f08cb27626baff8cf7863228b2153edeebcf5bf0e63a6e6ac00c447b2891f
   languageName: node
   linkType: hard
 
@@ -11397,7 +11397,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "utils@workspace:packages/utils"
   dependencies:
-    format-duration: "npm:^3.0.0"
+    format-duration: "npm:^4.0.0"
     i18next: "npm:^26.0.8"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.8"
