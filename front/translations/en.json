@@ -274,6 +274,9 @@
 		"openModalShortcutDescription": "Open / Close this modal",
 		"playPauseWhenExpanded": "Play / Pause (When player is open)"
 	},
+	"labels": {
+		"foundedIn": "Founded in {{startYear}}"
+	},
 	"misc": {
 		"from": "From",
 		"loading": "Loading",

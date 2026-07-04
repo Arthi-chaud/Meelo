@@ -41,7 +41,11 @@ import {
 import File from "@/models/file";
 import Genre, { type GenreSortingKeys } from "@/models/genre";
 import Illustration from "@/models/illustration";
-import Label, { type LabelSortingKeys } from "@/models/label";
+import {
+	type LabelInclude,
+	type LabelSortingKeys,
+	LabelWithRelations,
+} from "@/models/label";
 import Library from "@/models/library";
 import type { MatchableResourceType } from "@/models/matcher";
 import PaginatedResponse, {
@@ -492,22 +496,28 @@ export const getGenre = (idOrSlug: string | number): Query<Genre> => {
 };
 
 /// Labels
-export const getLabel = (identifier: string | number): Query<Label> => {
+export const getLabel = <I extends LabelInclude | never = never>(
+	identifier: string | number,
+	include?: I[],
+): Query<LabelWithRelations<I>> => {
 	return _mkSimpleQuery({
 		route: `/labels/${identifier}`,
-		validator: Label,
+		include,
+		validator: LabelWithRelations(include ?? []),
 	});
 };
 
-export const getLabels = (
+export const getLabels = <I extends LabelInclude | never = never>(
 	filter: { artist?: Identifier; album?: Identifier; area?: Identifier },
 	sort?: SortingParameters<typeof LabelSortingKeys>,
-): InfiniteQuery<Label> => {
+	include?: I[],
+): InfiniteQuery<LabelWithRelations<I>> => {
 	return _mkSimplePaginatedQuery({
 		route: "/labels",
 		filter,
+		include,
 		sort,
-		validator: PaginatedResponse(Label),
+		validator: PaginatedResponse(LabelWithRelations(include ?? [])),
 	});
 };
 

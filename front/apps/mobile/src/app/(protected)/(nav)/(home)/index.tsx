@@ -132,7 +132,7 @@ export default function Root() {
 	);
 
 	const topLabels = useInfiniteQuery(() =>
-		getLabels({}, { sortBy: "albumCount", order: "desc" }),
+		getLabels({}, { sortBy: "albumCount", order: "desc" }, ["area"]),
 	);
 
 	useSetKeyIllustration(newlyAddedAlbums.items?.at(0));
