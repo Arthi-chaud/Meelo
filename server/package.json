@@ -71,7 +71,7 @@
 		"form-data": "4.0.6",
 		"lodash": "4.18.1",
 		"multer": "2.2.0",
-		"qs": "6.14.1",
+		"qs": "6.15.2",
 		"@prisma/generator-helper": "6.19.3",
 		"@prisma/internals": "6.19.3",
 		"semver": "7.8.5",
