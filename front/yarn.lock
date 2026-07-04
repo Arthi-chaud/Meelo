@@ -2884,12 +2884,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kesha-antonov/react-native-background-downloader@npm:^4.5.4":
-  version: 4.5.4
-  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.5.4"
+"@kesha-antonov/react-native-background-downloader@npm:^4.5.6":
+  version: 4.5.6
+  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.5.6"
   peerDependencies:
     react-native: ">=0.57.0"
-  checksum: 10c0/b26aa3b2d963683c28eb879655256cac0f2acca6fb49b21993dc7ba122a36fbdc679b536eaa1ed27756347018b3e9b6b9fa82b51310e9c22e4ead9db25cbcfd5
+  checksum: 10c0/4c2bbd0c7814ccab79f1a198a63a79fe3124b23be2e871e6061f906c094ac01535e26dffb924d438e7e28f2c16bfacd023c7f8359f472c6363d3da7f1d1f9369
   languageName: node
   linkType: hard
 
@@ -8483,7 +8483,7 @@ __metadata:
     "@expo-google-fonts/rubik": "npm:^0.4.2"
     "@expo/ngrok": "npm:^4.1.3"
     "@gorhom/bottom-sheet": "npm:^5.2.14"
-    "@kesha-antonov/react-native-background-downloader": "npm:^4.5.4"
+    "@kesha-antonov/react-native-background-downloader": "npm:^4.5.6"
     "@shopify/flash-list": "npm:2.3.2"
     "@shopify/react-native-skia": "npm:2.6.9"
     "@tanstack/react-query": "npm:^5.100.5"
