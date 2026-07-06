@@ -81,7 +81,7 @@ async def match(
                     ctx.increment_handled_items_count()
                     pass
                 case "area":
-                    area = await ctx.client.get_area(str(resourceId))
+                    area = await ctx.client.get_area(str(resourceId), True)
                     await match_and_post_area(area)
                     ctx.increment_handled_items_count()
                     pass

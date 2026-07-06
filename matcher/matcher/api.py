@@ -41,7 +41,9 @@ class API:
         except Exception:
             return False
 
-    async def _get(self, route: str, token: str | None = None) -> Any:
+    async def _get(
+        self, route: str, token: str | None = None, log_fail: bool = True
+    ) -> Any:
         async with self.session.get(
             route,
             headers={"Authorization": f"Bearer {token}"}
@@ -49,7 +51,8 @@ class API:
             else {"x-api-key": self._key},
         ) as response:
             if response.status != 200:
-                logging.error("GETting API failed: ")
+                if log_fail:
+                    logging.error("GETting API failed: ")
                 raise Exception(await response.text())
             return await response.json()
 
@@ -190,8 +193,8 @@ class API:
     async def post_song_genres(self, song_id: int, genres: List[str]):
         await self._put(f"/songs/{song_id}", json={"genres": genres})
 
-    async def get_area(self, area_id: str | int) -> Area:
-        json = await self._get(f"/areas/{area_id}")
+    async def get_area(self, area_id: str | int, log_fail: bool) -> Area:
+        json = await self._get(f"/areas/{area_id}", None, log_fail)
         return Area.schema().load(json)
 
     async def get_label(self, label_id: str | int) -> Label:
@@ -200,7 +203,7 @@ class API:
 
     async def get_area_by_mbid(self, area_mbid: str) -> Area | None:
         try:
-            return await self.get_area(area_mbid)
+            return await self.get_area(area_mbid, False)
         except Exception:
             pass
 
