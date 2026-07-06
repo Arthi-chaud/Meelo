@@ -27,7 +27,8 @@ export const useUser = (): UserState => {
 
 export const getUser = () => {
 	const user = store
-		.get(queryClientAtom)
+		// NOTE: It will always be set (on SSR or CSR)
+		.get(queryClientAtom)!
 		.getQueryData<User>(getCurrentUserStatus().key);
 	return getUser_(store.get(accessTokenAtom), user, null);
 };
