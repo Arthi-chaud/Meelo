@@ -29,5 +29,10 @@
 		"allowJs": true,
 		"types": ["*", "vitest/globals"]
 	},
+	"watchOptions": {
+		"watchFile": "dynamicPriorityPolling",
+		"watchDirectory": "dynamicPriorityPolling",
+		"excludeDirectories": ["**/node_modules", "dist"]
+	},
 	"include": ["./src/**/*.ts", "./prisma/types.d.ts"]
 }
