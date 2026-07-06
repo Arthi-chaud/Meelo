@@ -1,6 +1,7 @@
 import {
 	dehydrate,
 	HydrationBoundary as Hydrate,
+	QueryClient,
 	QueryClientProvider,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -22,10 +23,14 @@ import "~/theme/styles.css";
 import type { EmotionCache } from "@emotion/react";
 import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter";
 import { deepmerge } from "@mui/utils";
-import { Provider, useAtomValue } from "jotai";
+import { Provider } from "jotai";
 import type { Page } from "ssr";
 import { getCurrentUserStatus, getLibraries, getSettings } from "@/api/queries";
-import { toTanStackInfiniteQuery, toTanStackQuery } from "@/api/query";
+import {
+	DefaultQueryOptions,
+	toTanStackInfiniteQuery,
+	toTanStackQuery,
+} from "@/api/query";
 import { store } from "@/state/store";
 import {
 	loadViewPreferences,
@@ -51,7 +56,15 @@ function MyApp({
 	pageProps: { session, lng, ...pageProps },
 	emotionCache,
 }: MyAppProps) {
-	const queryClient = useAtomValue(queryClientAtom);
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: DefaultQueryOptions,
+				},
+			}),
+	);
+	store.set(queryClientAtom, queryClient);
 	const router = useRouter();
 	const [errorType, setError] = useState<"not-found" | "error" | undefined>();
 	useEffect(() => {
@@ -138,7 +151,12 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
 	const { pageProps } = await NextApp.getInitialProps(appContext);
 	const Component = appContext.Component as unknown as Page;
 
-	const queryClient = store.get(queryClientAtom);
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: DefaultQueryOptions,
+		},
+	});
+	store.set(queryClientAtom, queryClient);
 	const cookies = (appContext.ctx.req as any)?.cookies ?? {};
 
 	const accessToken: string | undefined = cookies[UserAccessTokenStorageKey];
