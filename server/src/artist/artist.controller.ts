@@ -130,13 +130,16 @@ export default class ArtistController {
 			...selector,
 			area: selector.area
 				? [
-						selector.area,
-						...(
-							await this.areaService.getChildrenIds(selector.area)
-						).map((id) => ({ id })),
+						await this.areaService
+							.get(selector.area)
+							.then((a) => a.id),
+						...(await this.areaService.getChildrenIds(
+							selector.area,
+						)),
 					]
 				: undefined,
 		};
+
 		if (selector.query) {
 			return this.artistService.search(
 				decodeURI(selector.query),
@@ -145,12 +148,13 @@ export default class ArtistController {
 				include,
 			);
 		}
-		return this.artistService.getMany(
+		const artists = await this.artistService.getMany(
 			where,
 			sort,
 			paginationParameters,
 			include,
 		);
+		return artists;
 	}
 
 	@ApiOperation({

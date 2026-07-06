@@ -126,7 +126,7 @@ export default class AreaService {
 	): Promise<number[]> {
 		const area = await this.get(where);
 		let children = [area.id];
-		const res = [];
+		const res: number[] = [];
 		while (children.length > 0) {
 			const parents = children;
 			children = (
@@ -134,7 +134,9 @@ export default class AreaService {
 					select: { id: true },
 					where: { parentId: { in: parents } },
 				})
-			).map(({ id }) => id);
+			)
+				.map(({ id }) => id)
+				.filter((id) => res.indexOf(id) === -1);
 			res.push(...children);
 		}
 		return res;
