@@ -151,11 +151,9 @@ export default class LabelService {
 	): Prisma.LabelWhereInput {
 		const query: Prisma.LabelWhereInput[] = [];
 
-		if (where.area) {
+		if (where.area?.length) {
 			query.push({
-				OR: where.area.map((area) => ({
-					area: AreaService.formatWhereInput(area),
-				})),
+				areaId: { in: where.area },
 			});
 		}
 		if (where.album?.not) {

@@ -80,10 +80,12 @@ export default class LabelController {
 			...selector,
 			area: selector.area
 				? [
-						selector.area,
-						...(
-							await this.areaService.getChildrenIds(selector.area)
-						).map((id) => ({ id })),
+						await this.areaService
+							.get(selector.area)
+							.then((a) => a.id),
+						...(await this.areaService.getChildrenIds(
+							selector.area,
+						)),
 					]
 				: undefined,
 		};
