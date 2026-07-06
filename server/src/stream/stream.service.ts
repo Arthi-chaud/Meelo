@@ -49,11 +49,10 @@ export class StreamService {
 					// knowing that it responded is OK
 					this.logger.log("Transcoder found!");
 				})
-				.catch((err) => {
+				.catch((_) => {
 					this.logger.warn(
 						"Failed to connect to transcoder. Transcoding is disabled.",
 					);
-					this.logger.error(err);
 					this.transcoderUrl = null;
 				});
 		}
