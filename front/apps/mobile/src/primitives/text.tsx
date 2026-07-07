@@ -36,6 +36,7 @@ const fontSizeAndLineHeight = (
 
 const styles = StyleSheet.create((theme) => ({
 	text: {
+		paddingRight: 0.001,
 		fontSize: theme.fontSize.default, // to fix typing
 		variants: {
 			color: {
