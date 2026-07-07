@@ -49,33 +49,35 @@ type TracklistData = {
 	tracklist: Tracklist<TrackType> | undefined;
 };
 
+const _computeState = (
+	tracklist: Tracklist<TrackType> | undefined,
+): TracklistData => {
+	const discMap = tracklist;
+	const flatTracks = Array.from(Object.values(discMap ?? {})).flat();
+
+	return {
+		isMixed: !flatTracks.some(({ mixed }) => !mixed),
+		tracks: flatTracks,
+		totalDuration: flatTracks.reduce(
+			(prevDuration, track) => prevDuration + (track.duration ?? 0),
+			0,
+		),
+		tracklist: discMap,
+	};
+};
+
 export const useTracklist = (
 	tracklist: Tracklist<TrackType> | undefined,
 ): Partial<TracklistData> => {
-	const [state, setState] = useState<TracklistData>();
+	const [state, setState] = useState<TracklistData>(() =>
+		_computeState(tracklist),
+	);
 	useEffect(() => {
 		if (tracklist) {
-			const discMap = tracklist;
-			const flatTracks = Array.from(Object.values(discMap)).flat();
-
-			setState({
-				isMixed: !flatTracks.some(({ mixed }) => !mixed),
-				tracks: flatTracks,
-				totalDuration: flatTracks.reduce(
-					(prevDuration, track) =>
-						prevDuration + (track.duration ?? 0),
-					0,
-				),
-				tracklist: discMap,
-			});
+			setState(_computeState(tracklist));
 		}
 	}, [tracklist]);
-	return {
-		isMixed: state?.isMixed,
-		tracks: state?.tracks,
-		totalDuration: state?.totalDuration,
-		tracklist: state?.tracklist,
-	};
+	return state;
 };
 
 type VideoType = VideoWithRelations<"master" | "illustration">;
