@@ -67,7 +67,7 @@ export const withTranslations = (
 							// biome-ignore lint/complexity/noCommaOperator: OK
 						}),
 						i18next),
-			[props.pageProps.__lang, props.pageProps.__resources],
+			[],
 		);
 
 		return (
