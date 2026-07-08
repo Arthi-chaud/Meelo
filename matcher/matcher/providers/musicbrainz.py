@@ -1,6 +1,5 @@
 import asyncio
 from dataclasses import dataclass
-import logging
 import re
 from typing import Any, List
 from urllib.parse import urlparse
@@ -8,6 +7,7 @@ import aiohttp
 from aiohttp.client import ClientSession
 from matcher.context import Context
 
+from matcher.logger import ERROR, log
 from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.providers.features import (
     GetAlbumGenresFeature,
@@ -355,7 +355,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 return SearchResult(match["id"], match)
             return None
         except Exception as e:
-            logging.error(e)
+            log(ERROR, str(e))
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:

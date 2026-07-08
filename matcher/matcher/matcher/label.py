@@ -1,5 +1,5 @@
-import logging
 from matcher.context import Context
+from matcher.logger import ERROR, INFO, log
 from matcher.matcher import common
 from matcher.models.api.domain import Area, Label
 from matcher.models.api.dto import ExternalMetadataSourceDto, UpdateLabelDto
@@ -13,10 +13,18 @@ async def match_and_post_label(label: Label):
         context = Context.get()
 
         area: Area | None = None
+        log_data: dict[str, str | int] = {
+            "label": label.name,
+            "area": "none",
+            "dates": "found" if res.start_date or res.end_date else "none",
+        }
         if res.area:
             area = await context.client.get_area_by_mbid(res.area.mbid)
             if area is None:
+                log_data["area"] = "created"
                 area = await context.client.post_area(res.area)
+            else:
+                log_data["area"] = "linked"
 
         update_dto = UpdateLabelDto(
             start_date=res.start_date.isoformat() if res.start_date else None,
@@ -25,8 +33,9 @@ async def match_and_post_label(label: Label):
             mbid=res.mbid,
         )
         await context.client.update_label(label.id, update_dto)
+        log(INFO, "Matched data", log_data)
     except Exception as e:
-        logging.error(e)
+        log(ERROR, str(e))
 
 
 async def match_label(label: Label) -> LabelMatchResult:

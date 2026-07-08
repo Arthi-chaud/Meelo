@@ -1,5 +1,5 @@
-import logging
 from typing import List
+from matcher.logger import log, INFO, FATAL
 from matcher.api import API
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -17,7 +17,7 @@ async def bootstrap_context():
         settings = Settings()
         if not await api_client.ping():
             raise Exception("Could not connect to API.")
-        logging.info(f"{len(settings.provider_settings)} providers enabled.")
+        log(INFO, "Providers enabled", {"count": len(settings.provider_settings)})
         provider_api_entries = await push_missing_providers(
             (await api_client.get_providers()).items,
             settings.provider_settings,
@@ -28,7 +28,7 @@ async def bootstrap_context():
         )
         Context.init(api_client, settings, resolved_providers)
     except Exception as e:
-        logging.fatal(e)
+        log(FATAL, str(e))
         exit(1)
 
 
@@ -49,11 +49,12 @@ async def push_missing_providers(
             await api_client.post_provider_icon(res.id, icon_path)
             api_providers.append(res)
     if created_providers_name != []:
-        logging.info(
-            f"Added {len(created_providers_name)} providers: {created_providers_name}"
+        log(
+            INFO,
+            f"Added {len(created_providers_name)} providers: {created_providers_name}",
         )
     else:
-        logging.info("Providers up to date.")
+        log(INFO, "Providers up to date.")
     return api_providers
 
 

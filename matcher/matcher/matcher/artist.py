@@ -2,6 +2,7 @@ import asyncio
 import logging
 from typing import List
 
+from matcher.logger import INFO, log
 from matcher.models.api.domain import Area, LocalIdentifiers
 from matcher.models.api.dto import ExternalMetadataDto, ExternalMetadataSourceDto
 from matcher.models.match_result import ArtistMatchResult
@@ -37,18 +38,21 @@ async def match_and_post_artist(
     try:
         context = Context.get()
         res = await match()
+        log_data: dict[str, str | int] = {"artist": artist_name}
+
+        log_data["providers count"] = len(res.metadata.sources)
         if len(res.metadata.sources):
-            logging.info(
-                f"Matched with {len(res.metadata.sources)} providers for artist {artist_name}{' using known sources' if reuseSources else ''}"
-            )
+            log_data["reusing known sources"] = str(reuseSources)
             await context.client.post_external_metadata(res.metadata)
+
+        log_data["illustration"] = "found" if res.illustration_url else "none"
         if res.illustration_url:
-            logging.info(f"Found image for artist {artist_name}")
             await context.client.post_artist_illustration(
                 artist_id, res.illustration_url
             )
+
+        log_data["areas"] = "found" if res.activity_area or res.birth_area else "none"
         if res.activity_area or res.birth_area:
-            logging.info(f"Found area(s) for artist {artist_name}")
             activity_area: Area | None = None
             birth_area: Area | None = None
             if res.activity_area:
@@ -64,6 +68,7 @@ async def match_and_post_artist(
                 activity_area.id if activity_area else None,
                 birth_area.id if birth_area else None,
             )
+        log(INFO, "Matched data", log_data)
     except Exception as e:
         logging.error(e)
 
