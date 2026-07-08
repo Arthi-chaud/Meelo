@@ -1,7 +1,13 @@
 import type { FlashListRef } from "@shopify/flash-list";
 import { BlurTargetView } from "expo-blur";
 import { type ScreenProps, Stack, useScrollToTop } from "expo-router";
-import { type ReactNode, type Ref, type RefObject, useRef } from "react";
+import {
+	type ComponentProps,
+	type ReactNode,
+	type Ref,
+	type RefObject,
+	useRef,
+} from "react";
 import { Platform } from "react-native";
 import {
 	interpolate,
@@ -10,6 +16,7 @@ import {
 	useAnimatedStyle,
 	useSharedValue,
 } from "react-native-reanimated";
+import { useUnistyles } from "react-native-unistyles";
 import { HeaderBackground } from "./navigation";
 
 export type ScrollHandler = ScrollHandlerProcessed<Record<string, unknown>>;
@@ -72,6 +79,27 @@ export const FadingHeader = ({
 	);
 };
 
+export const useIosLargeTitle = () => {
+	const { theme } = useUnistyles();
+	return {
+		screenOptions: {
+			headerLargeTitleEnabled: Platform.OS === "ios",
+			headerLargeTitleStyle:
+				Platform.OS === "ios" ? theme.fontStyles.medium : undefined,
+			headerBlurEffect: // NOTE: https://amanhimself.dev/blog/large-header-title-in-expo-router/
+				Platform.OS === "ios" && parseInt(Platform.Version, 10) < 26
+					? ("regular" as const)
+					: undefined,
+		},
+		flashlistOptions: {
+			contentInsetAdjustmentBehavior:
+				Platform.OS === "ios"
+					? ("automatic" as const)
+					: ("never" as const),
+		},
+	};
+};
+
 export const StaticHeader = ({
 	children,
 	options,
@@ -79,10 +107,11 @@ export const StaticHeader = ({
 	children:
 		| ReactNode
 		| ((scrollRef: RefObject<FlashListRef<any> | null>) => ReactNode);
-	options?: ScreenProps["options"];
+	options?: ComponentProps<typeof Stack.Screen>["options"];
 }) => {
 	const contentRef = useRef(null);
 	const scrollRef = useRef<FlashListRef<any>>(null);
+	const { theme } = useUnistyles();
 
 	useScrollToTop(
 		useRef({
@@ -93,9 +122,14 @@ export const StaticHeader = ({
 	return (
 		<Stack.Screen
 			options={{
-				headerBackground: () => (
-					<HeaderBackground blurTarget={contentRef} />
-				),
+				headerTitleStyle: theme.fontStyles.regular,
+				headerBackground:
+					// @ts-expect-error
+					options?.headerLargeTitleEnabled ||
+					// @ts-expect-error
+					options?.headerLargeTitle
+						? undefined
+						: () => <HeaderBackground blurTarget={contentRef} />,
 				...options,
 			}}
 		>

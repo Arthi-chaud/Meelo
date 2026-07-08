@@ -1,4 +1,4 @@
-import type { FlashListRef } from "@shopify/flash-list";
+import type { FlashListProps, FlashListRef } from "@shopify/flash-list";
 import { useAtomValue } from "jotai";
 import { type ReactNode, type RefObject, useMemo } from "react";
 import { View } from "react-native";
@@ -18,8 +18,13 @@ import { ServiceVersionsSettings } from "./sections/service-versions";
 
 export const SettingsPage = ({
 	scrollRef,
+	flashlistOptions,
 }: {
 	scrollRef: RefObject<FlashListRef<any> | null>;
+	flashlistOptions?: Pick<
+		FlashListProps<any>,
+		"contentInsetAdjustmentBehavior"
+	>;
 }) => {
 	const { data: user } = useQuery(getCurrentUserStatus);
 	const otherInstances = useAtomValue(otherInstancesAtom);
@@ -41,6 +46,7 @@ export const SettingsPage = ({
 	}, [user, otherInstances]);
 	return (
 		<SafeFlashList
+			{...flashlistOptions}
 			ref={scrollRef}
 			data={sections}
 			contentContainerStyle={[styles.root]}

@@ -16,7 +16,7 @@ import {
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
-import { StaticHeader } from "~/components/header";
+import { StaticHeader, useIosLargeTitle } from "~/components/header";
 import { ListItem } from "~/components/item/list-item";
 import { SafeFlashList } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
@@ -86,9 +86,11 @@ const TabGroups: { title: TranslationKey; href: Href; icon: Icon }[][] = [
 export default function BrowseList() {
 	const router = useRouter();
 	const { t } = useTranslation();
+	const { screenOptions, flashlistOptions } = useIosLargeTitle();
 	return (
-		<StaticHeader>
+		<StaticHeader options={screenOptions}>
 			<SafeFlashList
+				{...flashlistOptions}
 				data={TabGroups}
 				contentContainerStyle={[styles.root]}
 				renderItem={({ item: group }) => (

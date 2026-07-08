@@ -7,6 +7,7 @@ import {
 	type ViewProps,
 	type ViewStyle,
 } from "react-native";
+import { useUnistyles } from "react-native-unistyles";
 import { useRootViewStyle } from "~/hooks/root-view-style";
 import { AnimatedFlashlist } from "./animated";
 
@@ -19,18 +20,24 @@ export const SafeFlashList = <T,>(
 	},
 ) => {
 	const { paddingTop, ...rootStyle } = useRootViewStyle();
+	const { rt } = useUnistyles();
 	return (
 		<AnimatedFlashlist
 			{...props}
 			contentContainerStyle={[
 				...(props.contentContainerStyle ?? []),
 				rootStyle,
-				{
-					paddingTop: mergePaddingTop(
-						paddingTop,
-						props.contentContainerStyle,
-					),
-				},
+				props.contentInsetAdjustmentBehavior === "automatic"
+					? {
+							paddingBottom:
+								rootStyle.paddingBottom - rt.insets.bottom,
+						}
+					: {
+							paddingTop: mergePaddingTop(
+								paddingTop,
+								props.contentContainerStyle,
+							),
+						},
 			]}
 		/>
 	);
