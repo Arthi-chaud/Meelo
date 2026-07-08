@@ -43,7 +43,7 @@ export const useLabelContextMenu = (
 			formatLabelDates(label.startDate, label.endDate),
 			label.area?.name,
 		]
-			.filter((item) => item)
+			.filter((item) => !!item)
 			.join(" • ");
 	}, [label]);
 	return useCallback(() => {
