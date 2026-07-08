@@ -42,6 +42,7 @@ export const ArtistItem = ({ artist, illustrationProps, onPress }: Props) => {
 			illustration={artist?.illustration}
 			illustrationProps={{
 				...illustrationProps,
+				fallbackIcon: ArtistIcon,
 				variant: "circle",
 			}}
 		/>
