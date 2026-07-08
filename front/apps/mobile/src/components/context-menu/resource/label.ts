@@ -61,6 +61,8 @@ export const useLabelContextMenu = (
 						icon: RadioIcon,
 						onPress: startLabelRadio,
 					},
+				],
+				[
 					{
 						label: "actions.artist.seeAlbums",
 						icon: AlbumIcon,
