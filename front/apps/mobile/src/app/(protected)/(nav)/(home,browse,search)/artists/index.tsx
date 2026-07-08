@@ -18,7 +18,7 @@
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
-import { getArtists, getLabel } from "@/api/queries";
+import { getArea, getArtists, getLabel } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
 import { useQuery } from "~/api";
 import { StaticHeader } from "~/components/header";
@@ -27,6 +27,7 @@ import { useLayoutControl } from "~/components/infinite/controls/layout";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { ArtistItem, ArtistTile } from "~/components/item/resource/artist";
+import { AreaHeader } from "~/components/resource-header";
 
 export default function ArtistBrowseView() {
 	const [{ layout }, layoutControl] = useLayoutControl({
@@ -38,12 +39,14 @@ export default function ArtistBrowseView() {
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 
-	const { label: labelId } = useLocalSearchParams<{
+	const { label: labelId, area: areaId } = useLocalSearchParams<{
 		label?: string;
+		area?: string;
 	}>();
 	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
 
 	const { data: label } = useQuery((labelId) => getLabel(labelId), labelId);
+	const { data: area } = useQuery((areaId) => getArea(areaId), areaId);
 	const Item = layout === "list" ? ArtistItem : ArtistTile;
 	const nav = useNavigation();
 
@@ -56,13 +59,18 @@ export default function ArtistBrowseView() {
 		<StaticHeader>
 			<InfiniteView
 				layout={layout}
+				header={
+					areaId !== undefined ? (
+						<AreaHeader area={area} />
+					) : undefined
+				}
 				controls={{
 					layout: layoutControl,
 					sort: sortControl,
 					filters: [libraryFilterControl],
 				}}
 				query={getArtists(
-					{ library: libraries, label: labelId },
+					{ library: libraries, label: labelId, area: areaId },
 					{ sortBy: sort ?? "name", order: order ?? "asc" },
 					["illustration"],
 				)}
