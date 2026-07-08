@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useSetAtom } from "jotai";
-import { type ComponentProps, useCallback, useMemo } from "react";
+import { type ComponentProps, Fragment, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -24,6 +24,7 @@ import type { VideoSortingKey, VideoWithRelations } from "@/models/video";
 import { VideoTypeIsExtra } from "@/models/video";
 import { playTracksAtom } from "@/state/player";
 import { useInfiniteQuery, useQueries, useQuery } from "~/api";
+import { AreaButton } from "~/components/area-button";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import {
 	ExternalMetadataDescriptionSection,
@@ -102,15 +103,24 @@ const AreaSection = ({ areas }: { areas: Area[] | null | undefined }) => {
 				style={[{ flex: 0 }, styles.areaText]}
 				content={`${t("misc.from")} `}
 			/>
-			<Text
-				variant="itemText"
-				style={[{ flex: 1 }, styles.areaText]}
-				content={areas
-					.map((area, idx) =>
-						idx < areas.length - 1 ? `${area.name},` : area.name,
-					)
-					.join(" ")}
-			/>
+			<View style={styles.areaListContainer}>
+				{areas.map((area, index) => (
+					<Fragment key={area.id}>
+						<AreaButton
+							area={area}
+							textProps={{
+								variant: "itemText",
+								style: styles.areaText,
+							}}
+							containerProps={{ style: styles.areaButton }}
+						/>
+
+						{index < areas.length - 1 ? (
+							<Text content=", " style={styles.areaText} />
+						) : null}
+					</Fragment>
+				))}
+			</View>
 		</View>
 	);
 };
@@ -430,4 +440,14 @@ const styles = StyleSheet.create((theme) => ({
 		paddingHorizontal: theme.gap(2),
 	},
 	areaText: { lineHeight: theme.fontSize.rem(1.3) }, // NOTE: Copied from text component, for consistency across font
+	areaListContainer: {
+		flex: 1,
+		flexWrap: "wrap",
+		flexDirection: "row",
+		justifyContent: "flex-start",
+	},
+	areaButton: {
+		// NOTE: Overriding Pressable's padding
+		paddingHorizontal: 0,
+	},
 }));
