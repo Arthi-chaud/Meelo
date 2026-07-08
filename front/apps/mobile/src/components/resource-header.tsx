@@ -1,12 +1,29 @@
-import { type ComponentProps, useLayoutEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import {
+	type ComponentProps,
+	Fragment,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
+import { Pressable, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
+import { getParentAreas } from "@/api/queries";
+import type { Area } from "@/models/area";
 import type { ArtistWithRelations } from "@/models/artist";
 import type IllustrationResource from "@/models/illustration";
 import type { SongWithRelations } from "@/models/song";
-import { ArtistIcon } from "@/ui/icons";
+import { AreaIcon, ArtistIcon } from "@/ui/icons";
 import formatArtists from "@/utils/format-artists";
-import { type ContextMenuBuilder, ContextMenuButton } from "./context-menu";
+import { useQuery } from "~/api";
+import { Icon } from "~/primitives/icon";
+import { Text } from "~/primitives/text";
+import { AreaButton } from "./area-button";
+import {
+	type ContextMenuBuilder,
+	ContextMenuButton,
+	useContextMenu,
+} from "./context-menu";
+import { useAreaContextMenu } from "./context-menu/resource/area";
 import { useArtistContextMenu } from "./context-menu/resource/artist";
 import { useSongContextMenu } from "./context-menu/resource/song";
 import { Illustration } from "./illustration";
@@ -29,6 +46,46 @@ export const SongHeader = ({
 				song ? formatArtists(song.artist, song.featuring) : undefined
 			}
 		/>
+	);
+};
+
+export const AreaHeader = ({ area }: { area: Area | undefined }) => {
+	const { data: parentAreas } = useQuery(getParentAreas, area?.id);
+	const areaContextMenu = useAreaContextMenu(area);
+	const { openContextMenu } = useContextMenu(areaContextMenu);
+	styles.useVariants({ vertical: true });
+
+	return (
+		<View style={styles.root}>
+			<View style={styles.areaPrimary}>
+				<Icon icon={AreaIcon} />
+				<Pressable onPress={openContextMenu}>
+					<LoadableText
+						content={area?.name}
+						skeletonWidth={10}
+						numberOfLines={1}
+						style={styles.text}
+						variant={"secondaryTitle"}
+					/>
+				</Pressable>
+			</View>
+			{parentAreas?.length === 0 ? null : (
+				<View style={styles.areaList}>
+					{parentAreas?.map((area, index, areas) => (
+						<Fragment key={area.id}>
+							<AreaButton
+								area={area}
+								textProps={{ style: styles.text }}
+								containerProps={{}}
+							/>
+							{index < areas.length - 1 ? (
+								<Text content="<" style={styles.text} />
+							) : null}
+						</Fragment>
+					))}
+				</View>
+			)}
+		</View>
 	);
 };
 
@@ -184,5 +241,15 @@ const styles = StyleSheet.create((theme) => ({
 				},
 			},
 		},
+	},
+	areaPrimary: {
+		flexDirection: "row",
+		gap: theme.gap(1),
+		justifyContent: "center",
+	},
+	areaList: {
+		flexDirection: "row",
+		flexWrap: "wrap",
+		justifyContent: "center",
 	},
 }));
