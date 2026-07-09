@@ -39,7 +39,7 @@ import { useInfiniteQuery, useQuery } from "~/api";
 import { useSetKeyIllustration } from "~/components/background-gradient";
 import { EmptyState } from "~/components/empty-state";
 import { GoToWebSettingsButton } from "~/components/go-to-web";
-import { StaticHeader } from "~/components/header";
+import { StaticHeader, useIosLargeTitle } from "~/components/header";
 import { AlbumTile } from "~/components/item/resource/album";
 import { ArtistTile } from "~/components/item/resource/artist";
 import { GenreChip } from "~/components/item/resource/genre";
@@ -339,8 +339,9 @@ export default function Root() {
 	const isEmpty = useMemo(() => {
 		return queries.every((q) => q.data?.pages.at(0)?.items.length === 0);
 	}, [queries]);
+	const { screenOptions, flashlistOptions } = useIosLargeTitle();
 	return (
-		<StaticHeader>
+		<StaticHeader options={screenOptions}>
 			{(scrollRef) =>
 				isEmpty ? (
 					<SafeView style={[styles.main, styles.emptyState]}>
@@ -352,6 +353,7 @@ export default function Root() {
 					</SafeView>
 				) : (
 					<SafeFlashList
+						{...flashlistOptions}
 						ref={scrollRef}
 						data={filterSections(sections)}
 						refreshing={!!queries.find((q) => q.isRefetching)}
