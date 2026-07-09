@@ -1,6 +1,5 @@
 import asyncio
-import logging
-
+from matcher.logger import INFO, ERROR, log
 from typing import List
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import LyricsMatchResult, SongMatchResult
@@ -58,26 +57,26 @@ async def match_and_post_song(
             if song.master
             else None
         )
+        log_data: dict[str, str | int] = {"song": song_name}
         res = await match()
-        if res.metadata:
-            logging.info(
-                f"Matched with {len(res.metadata.sources)} providers for song {song_name}"
-            )
+        log_data["providers count"] = len(res.metadata.sources)
+        if len(res.metadata.sources):
             await context.client.post_external_metadata(res.metadata)
-
         if res.lyrics.plain or res.lyrics.synced:
-            logging.info(
-                f"Found {'synced lyrics' if res.lyrics.synced else 'lyrics'} for song {song.name}"
-            )
-            if res.lyrics.plain:  # Note should always be true
+            log_data["lyrics"] = "synced" if res.lyrics.synced else "plain"
+            if res.lyrics.plain:  # NOTE: should always be true
                 await context.client.post_song_lyrics(
                     song_id, res.lyrics.plain, res.lyrics.synced
                 )
+        else:
+            log_data["lyrics"] = "none"
+
+        log_data["genres count"] = len(res.genres)
         if res.genres:
-            logging.info(f"Found {len(res.genres)} genres for song {song.name}")
             await context.client.post_song_genres(song_id, res.genres)
+        log(INFO, "Matched data", log_data)
     except Exception as e:
-        logging.error(e)
+        log(ERROR, str(e))
 
 
 async def match_song(

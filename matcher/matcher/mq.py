@@ -1,9 +1,9 @@
 from aiormq.abc import AbstractChannel
 import aiormq
-import logging
 import os
 from typing import Callable, Any, Coroutine
 from matcher.context import Context
+from matcher.logger import log, ERROR, INFO
 
 
 channel: AbstractChannel | None = None
@@ -16,7 +16,7 @@ async def connect_mq(
 ):
     rabbit_url = os.environ.get("RABBITMQ_URL")
     if not rabbit_url:
-        logging.error("Missing env var 'RABBITMQ_URL'")
+        log(ERROR, "Missing env var 'RABBITMQ_URL'")
         exit(1)
     global channel
     connection = await aiormq.connect(rabbit_url)
@@ -29,10 +29,9 @@ async def connect_mq(
         exclusive=False,
     )
     if declare_ok.queue is None:
-        logging.error("Couldn't declare queue")
+        log(ERROR, "Couldn't declare queue")
         exit(1)
-    logging.info(f"Version: {Context.get().settings.version}")
-    logging.info("Ready to match!")
+    log(INFO, "Ready to match!", {"version": Context.get().settings.version})
     await channel.basic_qos(prefetch_count=1)
     await channel.basic_consume(
         declare_ok.queue,

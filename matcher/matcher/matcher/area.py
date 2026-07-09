@@ -1,5 +1,5 @@
-import logging
 from matcher.context import Context
+from matcher.logger import ERROR, INFO, log
 from matcher.matcher import common
 from matcher.models.api.domain import Area
 from matcher.models.api.dto import ExternalMetadataSourceDto, UpdateAreaDto
@@ -12,16 +12,21 @@ async def match_and_post_area(area: Area):
         res = await match_area(area)
         context = Context.get()
         parent_area: Area | None = None
+        log_data: dict[str, str | int] = {"area": area.name, "parent area": "none"}
         if res.parent_area:
             parent_area = await context.client.get_area_by_mbid(res.parent_area.mbid)
             if parent_area is None:
                 parent_area = await context.client.post_area(res.parent_area)
+                log_data["parent area"] = "created"
+            else:
+                log_data["parent area"] = "linked"
         update_dto = UpdateAreaDto(
             parentId=parent_area.id if parent_area else None, type=res.type
         )
         await context.client.update_area(area.id, update_dto)
+        log(INFO, "Matched data", log_data)
     except Exception as e:
-        logging.error(e)
+        log(ERROR, str(e))
 
 
 async def match_area(area: Area) -> AreaMatchResult:

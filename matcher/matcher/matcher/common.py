@@ -1,4 +1,4 @@
-import logging
+from matcher.logger import DEBUG, log
 from matcher.models.api.domain import LocalIdentifiers
 from matcher.models.api.dto import ExternalMetadataSourceDto
 from matcher.providers.base import BaseFeature
@@ -144,7 +144,7 @@ async def get_sources_from_musicbrainz(
     ]
     external_sources = []
     if local_identifiers.musicbrainz_id is not None:
-        logging.debug("Using local identifier for MusicBrainz")
+        log(DEBUG, "Using local identifier for MusicBrainz")
         resource_mbid = local_identifiers.musicbrainz_id
     else:
         mb_entry = await mb_search_resource(mb_provider)
@@ -155,7 +155,7 @@ async def get_sources_from_musicbrainz(
         discogs_provider = context.get_provider(DiscogsProvider)
         discogs_url: str | None = None
         if discogs_provider is not None:
-            logging.debug("Using local identifier for Discogs")
+            log(DEBUG, "Using local identifier for Discogs")
             discogs_url = mb_get_url_from_id(
                 discogs_provider, local_identifiers.discogs_id
             )

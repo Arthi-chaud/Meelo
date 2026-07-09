@@ -1,8 +1,7 @@
 import asyncio
-import logging
-
 from datetime import datetime
 from typing import List
+from matcher.logger import ERROR, INFO, log
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import AlbumMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -68,44 +67,42 @@ async def match_and_post_album(
             if album.release_date
             else None
         )
-        if res.metadata:
-            logging.info(
-                f"Matched with {len(res.metadata.sources)} providers for album {album_name}"
-            )
+        log_data: dict[str, str | int] = {
+            "album": album_name,
+        }
+        log_data["providers count"] = len(res.metadata.sources)
+        if len(res.metadata.sources):
             await context.client.post_external_metadata(res.metadata)
+
         if old_release_date and res.release_date:
             if old_release_date.month != 1 and old_release_date.day != 1:
-                logging.info(
-                    "Ignoring matched release date as API already provides it."
-                )
+                log_data["release date ignored"] = "already provided by api"
                 res.release_date = None
             elif abs(res.release_date.year - old_release_date.year) > 2:
-                logging.info(
-                    f"Release date found ({res.release_date.year}) is too far from the one from the API ({old_release_date.year})."
-                )
-                logging.info("Probably a mismatch. Ignoring...")
+                log_data["release date ignored"] = "too far from api's"
+                log_data["found release year"] = res.release_date.year
+                log_data["api release year"] = old_release_date.year
                 res.release_date = None
-        if res.release_date:
-            logging.info(f"Updating release date for album {album_name}")
-        if res.genres:
-            logging.info(f"Found {len(res.genres)} genres for album {album_name}")
-        if album_type != album.type and album_type != AlbumType.OTHER:
-            logging.info(f"Found type for album {album_name}: {album_type.value}")
-
-        if res.labels:
-            logging.info(f"Found {len(res.labels)} labels for album {album_name}")
+        log_data["release date"] = "found" if res.release_date else "none"
+        log_data["genres count"] = len(res.genres)
+        log_data["album type"] = (
+            album_type.value
+            if album_type != album.type and album_type != AlbumType.OTHER
+            else "other"
+        )
+        log_data["labels count"] = len(res.labels)
         if (
             res.release_date
             or res.genres
             or res.labels
-            or (album_type != album.type)
-            and album_type != AlbumType.OTHER
+            or (album_type != album.type and album_type != AlbumType.OTHER)
         ):
             await context.client.post_album_update(
                 album_id, res.release_date, res.genres, (res.labels or None), album_type
             )
+        log(INFO, "Matched data", log_data)
     except Exception as e:
-        logging.error(e)
+        log(ERROR, str(e))
 
 
 async def match_album(

@@ -1,6 +1,6 @@
 from datetime import date
+from matcher.logger import log, ERROR
 import os
-import logging
 from typing import Any, List, TypeVar
 import aiohttp
 from dataclasses_json import DataClassJsonMixin
@@ -52,7 +52,7 @@ class API:
         ) as response:
             if response.status != 200:
                 if log_fail:
-                    logging.error("GETting API failed: ")
+                    log(ERROR, "GETting API failed: ")
                 raise Exception(await response.text())
             return await response.json()
 
@@ -66,7 +66,7 @@ class API:
             json=json if len(json.keys()) else None,
         ) as response:
             if response.status != 201:
-                logging.error("POSTting API failed: ")
+                log(ERROR, "POSTting API failed: ")
                 raise Exception(await response.text())
             return await response.json()
 
@@ -80,7 +80,7 @@ class API:
             json=json if len(json.keys()) else None,
         ) as response:
             if response.status != 200:
-                logging.error("PUTting API failed: ")
+                log(ERROR, "PUTting API failed: ")
                 raise Exception(await response.text())
 
     async def post_external_metadata(self, dto: ExternalMetadataDto):
@@ -212,21 +212,21 @@ class API:
             json = await self._post("/areas", json=area_dto.to_dict())
             return Area.schema().load(json)
         except Exception as e:
-            logging.error(e)
+            log(ERROR, str(e))
             pass
 
     async def update_area(self, area_id: int, area_dto: UpdateAreaDto):
         try:
             await self._put(f"/areas/{area_id}", json=area_dto.to_dict())
         except Exception as e:
-            logging.error(e)
+            log(ERROR, str(e))
             pass
 
     async def update_label(self, label_id: int, label_dto: UpdateLabelDto):
         try:
             await self._put(f"/labels/{label_id}", json=label_dto.to_dict())
         except Exception as e:
-            logging.error(e)
+            log(ERROR, str(e))
             pass
 
     @staticmethod

@@ -1,14 +1,15 @@
 import asyncio
 from dataclasses import dataclass
+import logging
 from typing import Annotated
 from fastapi import Depends, FastAPI, Query, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-import logging
 from aiormq.abc import AbstractChannel, DeliveredMessage
 from pydantic import BaseModel
 from matcher.bootstrap import bootstrap_context
 from matcher.context import Context, CurrentItem
+from matcher.logger import INFO, WARN, log
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.area import match_and_post_area
 from matcher.matcher.label import match_and_post_label
@@ -30,7 +31,11 @@ match_lock = asyncio.Lock()
 async def consume(message: DeliveredMessage, channel: AbstractChannel):
     event = Event.from_json(message.body)
     delivery_tag = message.delivery_tag
-    logging.info(f"Received event: {event}")
+    log(
+        INFO,
+        "Received event",
+        {event.type: event.name, "id": event.id},
+    )
     await match(event.type, event.name, event.id)
     if delivery_tag is not None:
         await channel.basic_ack(delivery_tag)
@@ -92,7 +97,7 @@ async def match(
                     ctx.increment_handled_items_count()
                     pass
                 case _:
-                    logging.warning("No handler for resource with type " + resourceType)
+                    log(WARN, "No handler for resource type", {"type": resourceType})
                     pass
         except Exception:
             pass
@@ -110,7 +115,16 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    logging.basicConfig(level=logging.INFO)
+    uvicorn_error = logging.getLogger("uvicorn.error")
+    uvicorn_error.disabled = True
+    uvicorn_access = logging.getLogger("uvicorn.access")
+    uvicorn_access.disabled = True
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-4s %(message)s",
+        datefmt="%Y/%m/%d %H:%M:%S",
+    )
+
     logging.getLogger("asyncio").setLevel(logging.ERROR)
     logging.getLogger("pika").setLevel(logging.ERROR)
     await bootstrap_context()

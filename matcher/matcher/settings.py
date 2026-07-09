@@ -1,5 +1,5 @@
-import logging
 import os
+from matcher.logger import log, INFO, WARN
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json, LetterCase
 import json
@@ -69,7 +69,7 @@ class Settings:
             raise Exception("Could not find settings file")
         self.version = os.environ.get("VERSION") or "unknown"
         with open(config_path) as file:
-            logging.info("Reading settings file...")
+            log(INFO, "Reading settings file...")
             json_data = json.loads(file.read())
             self.push_genres = bool(json_data["metadata"]["useExternalProviderGenres"])
             self.provider_settings = []
@@ -85,8 +85,10 @@ class Settings:
                     "lrclib": LrcLibSettings,
                 }
                 if key not in provider_dict:
-                    logging.warning(
-                        f"Unknown provider key in settings: '{key}'. Skipping..."
+                    log(
+                        WARN,
+                        "Unknown provider key in settings. Skipping...",
+                        {"unknown key": key},
                     )
                     continue
                 provider_json["name"] = provider_dict[key].name
@@ -98,7 +100,7 @@ class Settings:
                     raise Exception(
                         f"An error occured while reading settings for {key}: {e}"
                     )
-            logging.info("Settings parsed successfully")
+            log(INFO, "Settings parsed successfully")
 
     def get_provider_setting(self, cl: Type[T]) -> T | None:
         for provider_setting in self.provider_settings:
