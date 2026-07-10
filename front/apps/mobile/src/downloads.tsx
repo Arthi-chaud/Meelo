@@ -15,7 +15,6 @@ import { getSourceFile } from "@/api/queries";
 import { store } from "@/state/store";
 import { storage } from "~/utils/storage";
 import { getAPI, useAPI, useQueryClient } from "./api";
-import { canDownload } from "./utils/can-download";
 
 const DownloadedFile = yup.object({
 	fileId: yup.number().required(),
@@ -123,9 +122,6 @@ const deleteOldestFiles = (fileCount: number) => {
 export const downloadFile =
 	(queryClient: QueryClient) =>
 	async (sourceFileId: number, forCache: boolean = true) => {
-		if (!canDownload()) {
-			return;
-		}
 		if (
 			store
 				.get(downloadsAtom)
