@@ -8,8 +8,10 @@ import {
 import * as FileSystem from "expo-file-system";
 import { atom, useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
+import { Platform } from "react-native";
 import * as yup from "yup";
 import type { QueryClient } from "@/api/hook";
+import { getSourceFile } from "@/api/queries";
 import { store } from "@/state/store";
 import { storage } from "~/utils/storage";
 import { getAPI, useAPI, useQueryClient } from "./api";
@@ -25,7 +27,6 @@ const DownloadedFile = yup.object({
 const Downloads = yup.object({
 	downloadedFiles: yup.array(DownloadedFile.required()).required(),
 });
-
 export type Downloads = yup.InferType<typeof Downloads>;
 export type DownloadedFile = yup.InferType<typeof DownloadedFile>;
 
@@ -147,7 +148,20 @@ export const downloadFile =
 		const taskId = sourceFileId.toString();
 
 		const serverHostname = new URL(queryClient.api.urls.api).hostname;
-		const destFileName = `${cacheDirectory}/${serverHostname}-${sourceFileId}`;
+		let destFileName = `${cacheDirectory}/${serverHostname}-${sourceFileId}`;
+		if (Platform.OS === "ios") {
+			const fileInfo = await queryClient
+				.fetchQuery(getSourceFile(sourceFileId))
+				.catch(() => null);
+			if (!fileInfo) {
+				return null;
+			}
+			const ext = fileInfo.path.slice(fileInfo.path.lastIndexOf(".") + 1);
+			if (ext.includes(".") || ext.includes("/")) {
+				return null;
+			}
+			destFileName = `${destFileName}.${ext}`;
+		}
 		const currentTasks = await getExistingDownloadTasks();
 		if (currentTasks.find((t) => t.id === taskId)) {
 			return null;
@@ -188,7 +202,8 @@ export const getDownloadStatus = async (
 			(f) => f.fileId === sourceFileId && instanceUrl === f.instanceUrl,
 		);
 	if (downloaded) {
-		if (!new FileSystem.File(`file://${downloaded.localPath}`).exists) {
+		const localUri = `file://${downloaded.localPath}`;
+		if (!new FileSystem.File(localUri).exists) {
 			store.set(_downloadsAtom, {
 				downloadedFiles: store
 					.get(downloadsAtom)
@@ -203,7 +218,7 @@ export const getDownloadStatus = async (
 
 			return ["not-downloaded", null];
 		}
-		return ["downloaded", downloaded.localPath];
+		return ["downloaded", localUri];
 	}
 	const tasks = await getExistingDownloadTasks();
 	if (tasks.find((t) => t.id === sourceFileId.toString())) {

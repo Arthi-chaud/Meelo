@@ -4,5 +4,5 @@ import { Platform } from "react-native";
 //
 // Until a fix is found, we disable the feature on this platform
 export const canDownload = () => {
-	return Platform.OS !== "ios";
+	return true;
 };
