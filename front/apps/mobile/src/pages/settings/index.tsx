@@ -8,7 +8,6 @@ import { useQuery } from "~/api";
 import { SafeFlashList } from "~/components/safe-view";
 import { Divider } from "~/primitives/divider";
 import { otherInstancesAtom } from "~/state/user";
-import { canDownload } from "~/utils/can-download";
 import { AdminSettings } from "./sections/admin";
 import { CacheSettings } from "./sections/cache";
 import { InstancesSettings } from "./sections/instances";
@@ -31,9 +30,7 @@ export const SettingsPage = ({
 	const sections = useMemo(() => {
 		const sections: (() => ReactNode)[] = [];
 		sections.push(InterfaceSettings);
-		if (canDownload()) {
-			sections.push(CacheSettings);
-		}
+		sections.push(CacheSettings);
 		if (user?.admin) {
 			sections.push(AdminSettings);
 		}
