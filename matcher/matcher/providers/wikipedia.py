@@ -54,9 +54,12 @@ class WikipediaProvider(BaseProviderBoilerplate[WikipediaSettings], HasSession):
         ]
 
     def mk_session(self) -> ClientSession:
+        version = Context.get().settings.version
+        # https://wikitech.wikimedia.org/wiki/Robot_policy
         return ClientSession(
             headers={
-                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                "User-Agent": f"Meelo (Matcher), {version} (https://github.com/Arthi-chaud/meelo) meelo-matcher/{version}",
+                "Accept-Encoding": "gzip",
             },
         )
 
