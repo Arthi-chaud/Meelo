@@ -88,7 +88,7 @@ async def match_and_post_album(
         log_data["album type"] = (
             album_type.value
             if album_type != album.type and album_type != AlbumType.OTHER
-            else "other"
+            else album.type.value
         )
         log_data["labels count"] = len(res.labels)
         if (
