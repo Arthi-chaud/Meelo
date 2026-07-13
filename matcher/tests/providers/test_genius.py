@@ -128,7 +128,9 @@ class TestGenius:
     async def test_get_song_wo_lyrics_and_description(self, ctx):
         provider: GeniusProvider = Context().get().get_provider_or_raise(GeniusProvider)
         await provider.reset_session()
-        song = await provider.get_song("Madonna-die-another-day-dirty-vegas-dub")
+        song = await provider.get_song(
+            "Madonna-erotica-kenlou-b-boy-instrumental-lyrics"
+        )
         assert song is not None
         # Lyrics
         lyrics = await provider.get_plain_song_lyrics(song)

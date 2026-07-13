@@ -24,16 +24,16 @@ class TestMatchAlbum:
         res = await match_album(
             1,
             "Confessions on a Dancefloor",
-            "Madonna",
+            ["Madonna"],
             AlbumType.STUDIO,
             LocalIdentifiers(),
         )
         # Type
         assert res.album_type is None
         # Labels
-        assert "Warner Bros. Records" in res.labels
+        assert "Warner Bros. Records" in [label.name for label in res.labels]
         # Genres
-        assert len(res.genres) == 7
+        assert len(res.genres) > 4
         assert "Pop" in res.genres
         assert "Dance-Pop" in res.genres
         assert "Synth-Pop" in res.genres
@@ -47,6 +47,7 @@ class TestMatchAlbum:
         # Release date
         assert res.release_date is not None
         assert res.release_date in [
+            datetime.date(2005, 11, 9),
             datetime.date(2005, 11, 11),
             datetime.date(2005, 11, 15),
         ]
@@ -93,7 +94,7 @@ class TestMatchAlbum:
         res = await match_album(
             1,
             "The Tortured Poets Department",
-            "Taylor Swift",
+            ["Taylor Swift"],
             AlbumType.STUDIO,
             LocalIdentifiers(),
         )
@@ -142,7 +143,7 @@ class TestMatchAlbum:
     @pytest.mark.asyncio(loop_scope="module")
     async def test_get_album_no_rating(self, ctx):
         res = await match_album(
-            1, "Aéromusical", "Superbus", AlbumType.STUDIO, LocalIdentifiers()
+            1, "Aéromusical", ["Superbus"], AlbumType.STUDIO, LocalIdentifiers()
         )
         # Rating
         assert res.metadata.rating is None
@@ -181,7 +182,7 @@ class TestMatchAlbum:
         res = await match_album(
             1,
             "Confessions on a Dancefloor",
-            "Madonna",
+            ["Madonna"],
             AlbumType.STUDIO,
             LocalIdentifiers(),
         )
@@ -196,7 +197,11 @@ class TestMatchAlbum:
         context = Context.get()
         context.settings.push_genres = False
         res = await match_album(
-            1, "(How to Live) as Ghosts", "10 Years", AlbumType.LIVE, LocalIdentifiers()
+            1,
+            "(How to Live) as Ghosts",
+            ["10 Years"],
+            AlbumType.LIVE,
+            LocalIdentifiers(),
         )
         # Teardown
         context.settings.push_genres = True

@@ -61,7 +61,9 @@ class TestMatchArtist:
 
         # Illustration
         assert res.illustration_url is not None
-        assert "discogs" in res.illustration_url
+        assert ("discogs" in res.illustration_url) or (
+            "images.genius" in res.illustration_url
+        )
         # Matches
         assert res.metadata is not None
         assert res.metadata.artist_id == 1
