@@ -3,6 +3,7 @@ import { View } from "react-native";
 import type { SearchResult } from "@/models/search";
 import { AlbumItem } from "./album";
 import { ArtistItem } from "./artist";
+import { LabelItem } from "./label";
 import { SongItem } from "./song";
 import { VideoItem } from "./video";
 
@@ -53,6 +54,17 @@ export const SearchResultItem = ({
 				onPress={onPress}
 				subtitle="artistName"
 				formatSubtitle={(s) => `${t("models.video")} • ${s}`}
+			/>
+		);
+	}
+
+	if (searchResult.label) {
+		return (
+			<LabelItem
+				label={searchResult.label}
+				onPress={onPress}
+				withLeadingIcon
+				subtitle={t("models.label")}
 			/>
 		);
 	}

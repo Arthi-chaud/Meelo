@@ -41,15 +41,17 @@ import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
-import { SearchIcon } from "@/ui/icons";
+import { LabelIcon, SearchIcon } from "@/ui/icons";
 import formatArtists, { formatArtists_ } from "@/utils/format-artists";
 import { useAPI, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
+import Illustration from "~/components/illustration";
 import InfiniteList from "~/components/infinite/list";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
 import { InfiniteSongView } from "~/components/infinite/resource/song";
 import InfiniteVideoView from "~/components/infinite/resource/video";
+import ListItem from "~/components/list-item";
 import AlbumItem from "~/components/list-item/resource/album";
 import ArtistItem from "~/components/list-item/resource/artist";
 import SongItem from "~/components/list-item/resource/song";
@@ -289,6 +291,24 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 													async (video) =>
 														`${t("models.video")} • ${formatArtists(video.artist)}`,
 												]}
+											/>
+										) : item.label ? (
+											<ListItem
+												onClick={() =>
+													saveSearch.mutate({
+														labelId: item.label.id,
+													})
+												}
+												href={`/labels/${item.label.slug}`}
+												title={item.label.name}
+												secondTitle={t("models.label")}
+												icon={
+													<Illustration
+														illustration={null}
+														quality="low"
+														fallback={<LabelIcon />}
+													/>
+												}
 											/>
 										) : (
 											<ArtistItem

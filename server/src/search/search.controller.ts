@@ -33,7 +33,7 @@ import {
 } from "src/artist/models/artist.response";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
 import type { Video } from "src/prisma/generated/client";
-import type { AlbumWithRelations, Artist, Song } from "src/prisma/models";
+import { AlbumWithRelations, Artist, Label, Song } from "src/prisma/models";
 import {
 	SongResponse,
 	SongResponseBuilder,
@@ -75,6 +75,7 @@ export class SearchController {
 					AlbumResponse,
 					SongResponse,
 					VideoResponse,
+					Label,
 				].map((resType) => ({ $ref: getSchemaPath(resType) })),
 			},
 		},
@@ -106,6 +107,8 @@ export class SearchController {
 						return this.artistResponseBuilder.buildResponse(
 							item as Artist,
 						);
+					case "label":
+						return item as Label;
 				}
 			}),
 		);

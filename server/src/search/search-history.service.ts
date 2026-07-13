@@ -22,9 +22,10 @@ import AlbumService from "src/album/album.service";
 import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import LabelService from "src/label/label.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Prisma, type Video } from "src/prisma/generated/client";
-import type { Artist, Song } from "src/prisma/models";
+import type { Artist, Label, Song } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";
 import SongService from "src/song/song.service";
@@ -42,6 +43,7 @@ export class SearchHistoryService {
 	constructor(
 		private prismaService: PrismaService,
 		private artistService: ArtistService,
+		private labelService: LabelService,
 		private songService: SongService,
 		private albumService: AlbumService,
 		private videoService: VideoService,
@@ -61,6 +63,7 @@ export class SearchHistoryService {
 				albumId: dto.albumId,
 				artistId: dto.artistId,
 				videoId: dto.videoId,
+				labelId: dto.labelId,
 			},
 		});
 		return this.prismaService.searchHistory
@@ -71,6 +74,7 @@ export class SearchHistoryService {
 					albumId: dto.albumId,
 					artistId: dto.artistId,
 					videoId: dto.videoId,
+					labelId: dto.labelId,
 				},
 			})
 			.catch((error) => {
@@ -88,7 +92,7 @@ export class SearchHistoryService {
 	async getHistory(
 		userId: number,
 		paginationParameters?: PaginationParameters,
-	): Promise<(Artist | Song | AlbumModel | Video)[]> {
+	): Promise<(Artist | Song | AlbumModel | Video | Label)[]> {
 		const history = await this.prismaService.searchHistory.findMany({
 			where: { userId },
 			orderBy: { searchAt: "desc" },
@@ -97,36 +101,52 @@ export class SearchHistoryService {
 		if (history.length === 0) {
 			return [];
 		}
-		const { artistIds, albumIds, songIds, videoIds } = history.reduce(
-			(rest, item) => {
-				if (item.artistId !== null) {
-					return {
-						...rest,
-						artistIds: [...rest.artistIds, { id: item.artistId }],
-					};
-				}
-				if (item.albumId !== null) {
-					return {
-						...rest,
-						albumIds: [...rest.albumIds, { id: item.albumId }],
-					};
-				}
-				if (item.songId !== null) {
-					return {
-						...rest,
-						songIds: [...rest.songIds, { id: item.songId }],
-					};
-				}
-				if (item.videoId !== null) {
-					return {
-						...rest,
-						videoIds: [...rest.videoIds, { id: item.videoId }],
-					};
-				}
-				return rest;
-			},
-			{ artistIds: [], albumIds: [], songIds: [], videoIds: [] },
-		);
+		const { artistIds, albumIds, songIds, videoIds, labelIds } =
+			history.reduce(
+				(rest, item) => {
+					if (item.artistId !== null) {
+						return {
+							...rest,
+							artistIds: [
+								...rest.artistIds,
+								{ id: item.artistId },
+							],
+						};
+					}
+					if (item.albumId !== null) {
+						return {
+							...rest,
+							albumIds: [...rest.albumIds, { id: item.albumId }],
+						};
+					}
+					if (item.songId !== null) {
+						return {
+							...rest,
+							songIds: [...rest.songIds, { id: item.songId }],
+						};
+					}
+					if (item.videoId !== null) {
+						return {
+							...rest,
+							videoIds: [...rest.videoIds, { id: item.videoId }],
+						};
+					}
+					if (item.labelId !== null) {
+						return {
+							...rest,
+							labelIds: [...rest.labelIds, { id: item.labelId }],
+						};
+					}
+					return rest;
+				},
+				{
+					artistIds: [],
+					albumIds: [],
+					songIds: [],
+					videoIds: [],
+					labelIds: [],
+				},
+			);
 		const artists = artistIds.length
 			? await this.artistService.getMany(
 					{
@@ -172,28 +192,43 @@ export class SearchHistoryService {
 				)
 			: [];
 
-		return [...artists, ...songs, ...albums, ...videos].sort((a, b) => {
-			const getIndex = (item: any) => {
-				switch (getSearchResourceType(item)) {
-					case "video":
-						return history.findIndex(
-							({ videoId }) => videoId === item.id,
-						);
-					case "album":
-						return history.findIndex(
-							({ albumId }) => albumId === item.id,
-						);
-					case "song":
-						return history.findIndex(
-							({ songId }) => songId === item.id,
-						);
-					case "artist":
-						return history.findIndex(
-							({ artistId }) => artistId === item.id,
-						);
-				}
-			};
-			return getIndex(a) - getIndex(b);
-		});
+		const labels = labelIds.length
+			? await this.labelService.getMany(
+					{
+						labels: labelIds,
+					},
+					undefined,
+				)
+			: [];
+
+		return [...artists, ...songs, ...albums, ...videos, ...labels].sort(
+			(a, b) => {
+				const getIndex = (item: any) => {
+					switch (getSearchResourceType(item)) {
+						case "video":
+							return history.findIndex(
+								({ videoId }) => videoId === item.id,
+							);
+						case "album":
+							return history.findIndex(
+								({ albumId }) => albumId === item.id,
+							);
+						case "song":
+							return history.findIndex(
+								({ songId }) => songId === item.id,
+							);
+						case "artist":
+							return history.findIndex(
+								({ artistId }) => artistId === item.id,
+							);
+						case "label":
+							return history.findIndex(
+								({ labelId }) => labelId === item.id,
+							);
+					}
+				};
+				return getIndex(a) - getIndex(b);
+			},
+		);
 	}
 }

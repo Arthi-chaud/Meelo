@@ -36,4 +36,8 @@ export class CreateSearchHistoryEntry {
 	@IsPositive()
 	@IsOptional()
 	artistId?: number;
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
+	labelId?: number;
 }

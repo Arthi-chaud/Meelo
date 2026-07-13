@@ -17,12 +17,15 @@
  */
 
 import type { AlbumModel } from "src/album/models/album.model";
-import type { Artist, Song, Video } from "src/prisma/generated/client";
+import type { Artist, Label, Song, Video } from "src/prisma/generated/client";
 
 // Use this is you have a union type and need to identify what type is actually is
 export function getSearchResourceType(
-	item: Artist | AlbumModel | Song | Video,
+	item: Artist | AlbumModel | Song | Video | Label,
 ) {
+	if ("startDate" in item) {
+		return "label";
+	}
 	if ("groupId" in item) {
 		if ("songId" in item) {
 			return "video";

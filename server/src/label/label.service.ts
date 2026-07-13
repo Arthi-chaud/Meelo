@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { Injectable } from "@nestjs/common";
+import { MeiliSearch } from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import AreaService from "src/area/area.service";
@@ -27,12 +29,14 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Prisma } from "src/prisma/generated/client";
+import { Label } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
 import {
 	LabelAlreadyExistsException,
@@ -41,13 +45,16 @@ import {
 import LabelQueryParameters from "./label.query-parameters";
 
 @Injectable()
-export default class LabelService {
+export default class LabelService extends SearchableRepositoryService {
 	private readonly logger: Logger = new Logger(LabelService.name);
 	constructor(
+		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 		private prismaService: PrismaService,
 		private areaService: AreaService,
 		private eventService: EventsService,
-	) {}
+	) {
+		super("label", ["name", "slug"], meiliSearch);
+	}
 
 	async create(input: LabelQueryParameters.CreateInput) {
 		const labelSlug = new Slug(input.name);
@@ -68,6 +75,7 @@ export default class LabelService {
 				throw new UnhandledORMErrorException(error, input);
 			})
 			.then((label) => {
+				this._addToMeilisearch(label);
 				this.eventService.publishItemCreationEvent(
 					"label",
 					label.name,
@@ -150,6 +158,11 @@ export default class LabelService {
 		where: LabelQueryParameters.ManyWhereInput,
 	): Prisma.LabelWhereInput {
 		const query: Prisma.LabelWhereInput[] = [];
+		if (where.labels?.length) {
+			query.push({
+				OR: where.labels.map((l) => LabelService.formatWhereInput(l)),
+			});
+		}
 
 		if (where.area?.length) {
 			query.push({
@@ -326,12 +339,29 @@ export default class LabelService {
 	}
 
 	async housekeeping() {
+		const toDelete = await this.prismaService.label
+			.findMany({
+				where: { releases: { none: {} }, albums: { none: {} } },
+				select: { id: true },
+			})
+			.then((labels) => labels.map(({ id }) => id));
+		this.meiliSearch.index(this.indexName).deleteDocuments(toDelete);
 		const { count: deletedCount } =
 			await this.prismaService.label.deleteMany({
-				where: { releases: { none: {} }, albums: { none: {} } },
+				where: { id: { in: toDelete } },
 			});
 		if (deletedCount) {
 			this.logger.warn(`Deleted ${deletedCount} labels`);
 		}
+	}
+
+	public async _addToMeilisearch(label: Label) {
+		this.meiliSearch.index(this.indexName).addDocuments([
+			{
+				id: label.id,
+				slug: label.slug,
+				name: label.name,
+			},
+		]);
 	}
 }

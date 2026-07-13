@@ -37,6 +37,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import type {
 	AlbumWithRelations,
 	Artist,
+	Label,
 	Song,
 	User,
 	Video,
@@ -126,6 +127,9 @@ export class SearchHistoryController {
 						return this.artistResponseBuilder.buildResponse(
 							item as Artist,
 						);
+
+					case "label":
+						return item as Label;
 				}
 			}),
 		);
