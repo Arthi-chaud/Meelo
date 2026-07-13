@@ -198,7 +198,6 @@ export class SearchHistoryService {
 						labels: labelIds,
 					},
 					undefined,
-					{ area: true },
 				)
 			: [];
 

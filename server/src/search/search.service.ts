@@ -125,13 +125,9 @@ export class SearchService {
 
 				[
 					(ids: number[]) =>
-						this.labelService.getMany(
-							{ labels: ids.map((id) => ({ id })) },
-							undefined,
-							{
-								area: true,
-							},
-						),
+						this.labelService.getMany({
+							labels: ids.map((id) => ({ id })),
+						}),
 					matchingLabelsIds,
 				] as const,
 			].map(async ([getMany, matches]) => {

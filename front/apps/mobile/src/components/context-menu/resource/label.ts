@@ -1,7 +1,8 @@
 import { useSetAtom } from "jotai";
 import { useCallback, useMemo } from "react";
 import { getSongs } from "@/api/queries";
-import type { LabelWithRelations } from "@/models/label";
+import type { Area } from "@/models/area";
+import type Label from "@/models/label";
 import {
 	infiniteSongQueryToPlayerQuery,
 	playFromInfiniteQuery,
@@ -13,7 +14,7 @@ import { useQueryClient } from "~/api";
 import type { ContextMenu } from "..";
 
 export const useLabelContextMenu = (
-	label: LabelWithRelations<"area"> | undefined,
+	label: (Label & { area?: Area | null }) | undefined,
 ) => {
 	const queryClient = useQueryClient();
 	const playFromQuery = useSetAtom(playFromInfiniteQuery);
