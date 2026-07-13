@@ -38,6 +38,7 @@ import LabelModule from "./label/label.module";
 import LibraryModule from "./library/library.module";
 import LoggerModule from "./logger/logger.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
+import MigrationModule from "./migrations/migration.module";
 import ParserModule from "./parser/parser.module";
 import PlaylistModule from "./playlist/playlist.module";
 import PrismaModule from "./prisma/prisma.module";
@@ -94,6 +95,7 @@ import VideoModule from "./video/video.module";
 		LabelModule,
 		ScrobblerModule,
 		AreaModule,
+		MigrationModule,
 	],
 	controllers: [AppController],
 	providers: Plugins.AppProviders,

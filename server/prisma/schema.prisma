@@ -36,6 +36,17 @@ generator classes {
 
 /////// Models
 
+model SoftMigration {
+    /// @description Unique numeric user identifier
+    /// @example 123
+    id            Int             @id @default(autoincrement())
+    /// @description the name of the migration
+    name          String          @unique
+    executedAt    DateTime        @default(now())
+    @@map("soft_migrations")
+}
+
+
 model User {
     /// @description Unique numeric user identifier
     /// @example 123
@@ -319,6 +330,7 @@ model Label {
     endDate   DateTime?
     releases  Release[]
     albums    Album[]
+    searchHistory SearchHistory[]
 
     @@map("labels")
 }
@@ -814,6 +826,8 @@ model SearchHistory {
     artistId Int?
     video    Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
     videoId  Int?
+    label    Label?   @relation(fields: [labelId], references: [id], onDelete: Cascade)
+    labelId  Int?
 
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
