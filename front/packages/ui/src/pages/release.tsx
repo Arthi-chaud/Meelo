@@ -56,7 +56,8 @@ const _computeState = (
 	const flatTracks = Array.from(Object.values(discMap ?? {})).flat();
 
 	return {
-		isMixed: !flatTracks.some(({ mixed }) => !mixed),
+		isMixed:
+			flatTracks.length > 0 && !flatTracks.some(({ mixed }) => !mixed),
 		tracks: flatTracks,
 		totalDuration: flatTracks.reduce(
 			(prevDuration, track) => prevDuration + (track.duration ?? 0),
