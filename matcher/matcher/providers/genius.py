@@ -152,32 +152,19 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
     async def _fetch_text(self, url: str, params={}, host="https://genius.com/api"):
         return await self.__fetch(url, host, lambda r: r.text(), params)
 
-    async def _search_artist(self, artist_name: str) -> SearchResult | None:
+    async def _search_artist(self, artist_query: str) -> SearchResult | None:
+        def remove_and(s: str):
+            return s.replace(" & ", " and ").replace(" and ", " ")
+
         try:
-            artist_name = artist_name.lower()
-            artists = (await self._fetch_json("/search/artist", {"q": artist_name}))[
+            artist_query = remove_and(artist_query.lower())
+            artists = (await self._fetch_json("/search/artist", {"q": artist_query}))[
                 "response"
             ]["sections"][0]["hits"]
-            # Sometimes search fails if the name contains ' and ' instead of ' & '
-            if len(artists) == 0 and " and " in artist_name:
-                artists = (
-                    await self._fetch_json(
-                        "/search/artist", {"q": artist_name.replace(" and ", " & ")}
-                    )
-                )["response"]["sections"][0]["hits"]
-            artist_slug = to_slug(
-                artist_name.replace(" & ", " and ").replace(" and ", " ")
-            )
+
+            artist_slug = to_slug(artist_query)
             for artist in artists:
-                if (
-                    to_slug(
-                        artist["result"]["name"]
-                        .lower()
-                        .replace(" & ", " and ")
-                        .replace(" and ", " ")
-                    )
-                    == artist_slug
-                ):
+                if to_slug(remove_and(artist["result"]["name"].lower())) == artist_slug:
                     return SearchResult(artist["result"]["name"], artist["result"])
             return None
         except Exception:
@@ -316,7 +303,8 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             if "start the song bio" in div.get_text().lower():
                 return
         # Note: There are 2 matching divs, which are nested. We are interested in the second one
-        return self._clean_html(divs[1:])
+        div = divs[1:][0].find(class_=re.compile(r"^RichText__Container"))
+        return self._clean_html(div)
 
     def _clean_html(self, divs: Any) -> str | None:
         if divs and len(divs) > 0:
