@@ -22,10 +22,13 @@ class WikidataRelations:
 @dataclass
 class WikidataProvider(HasSession):
     def mk_session(self) -> ClientSession:
+        version = Context.get().settings.version
+        # https://wikitech.wikimedia.org/wiki/Robot_policy
         return ClientSession(
             base_url="https://wikidata.org/",
             headers={
-                "User-Agent": f"Meelo (Matcher), {Context.get().settings.version}",
+                "User-Agent": f"Meelo (Matcher), {version} (https://github.com/Arthi-chaud/meelo) meelo-matcher/{version}",
+                "Accept-Encoding": "gzip",
             },
         )
 
