@@ -102,7 +102,7 @@ async def match_song(
             search_res = await mb.search_song_with_fingerprint(
                 fingerprint, duration, song_name
             )
-        if search_res is not None and local_identifiers.acoustid_id is not None:
+        if search_res is None and local_identifiers.acoustid_id is not None:
             search_res = await mb.search_song_with_acoustid(
                 local_identifiers.acoustid_id
             )
