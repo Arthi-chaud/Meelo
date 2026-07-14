@@ -55,7 +55,7 @@
 		"react-native-draggable-flatlist": "^4.0.3",
 		"react-native-edge-to-edge": "^1.8.1",
 		"react-native-gesture-handler": "~2.31.0",
-		"react-native-keyboard-controller": "1.21.12",
+		"react-native-keyboard-controller": "1.21.13",
 		"react-native-mmkv": "4.3.2",
 		"react-native-nitro-modules": "0.35.9",
 		"react-native-reanimated": "~4.5.1",
