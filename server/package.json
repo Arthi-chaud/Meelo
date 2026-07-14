@@ -66,7 +66,7 @@
 	},
 	"resolutions": {
 		"jpeg-js": "^0.4.4",
-		"js-yaml": "4.2.0",
+		"js-yaml": "4.3.0",
 		"jws": "3.2.3",
 		"form-data": "4.0.6",
 		"lodash": "4.18.1",
