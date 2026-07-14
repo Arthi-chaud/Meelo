@@ -34,7 +34,7 @@ import { animations } from "~/theme";
 type Props = {
 	illustration: IllustrationModel | undefined | null;
 	fallbackIcon?: IconType;
-	dropShadow?: boolean;
+	shadowStyle?: Pick<ViewStyle, "boxShadow">;
 	quality: IllustrationQuality;
 	normalizedThumbnail?: boolean;
 	variant?: "fill" | "circle" | "center";
@@ -46,7 +46,7 @@ export const Illustration = ({
 	fallbackIcon,
 	quality,
 	variant,
-	dropShadow = false,
+	shadowStyle,
 	normalizedThumbnail,
 	style,
 }: Props) => {
@@ -61,7 +61,6 @@ export const Illustration = ({
 		[illustration],
 	);
 	styles.useVariants({
-		hasShadow: dropShadow,
 		imageType: innerAspectRatio > 1 ? "wide" : "tall",
 		shape: variant === "circle" ? "circle" : undefined,
 		align: variant === "center" ? "center" : "bottom",
@@ -92,7 +91,7 @@ export const Illustration = ({
 						aspectRatio: innerAspectRatio,
 					},
 					styles.innerContainer,
-					styles.shadow,
+					shadowStyle,
 				]}
 			>
 				{illustration && loadStatus !== "error" && (
@@ -185,16 +184,6 @@ const styles = StyleSheet.create((theme) => ({
 	},
 	slotContent: {
 		flex: 1,
-	},
-	shadow: {
-		variants: {
-			hasShadow: {
-				true: {
-					boxShadow: theme.illustrationShadow,
-				},
-				false: {},
-			},
-		},
 	},
 	fallbackContainer: {
 		flex: 1,

@@ -345,6 +345,7 @@ const IllustrationOrVideo = () => {
 	return (
 		<Illustration
 			illustration={currentTrack?.track.illustration}
+			shadowStyle={styles.illustrationShadow}
 			quality="original"
 			variant="center"
 		/>
@@ -365,6 +366,12 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		justifyContent: "center",
 		maxHeight: "60%",
 		maxWidth: breakpoints.sm,
+	},
+	illustrationShadow: {
+		boxShadow:
+			theme.name === "light"
+				? `0px 0px 20px 0px grey`
+				: `0px 0px 20px 0px #303030`,
 	},
 	illustration: {
 		aspectRatio: 1,
