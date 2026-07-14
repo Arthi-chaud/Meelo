@@ -63,7 +63,6 @@ const baseTheme = {
 export const lightTheme = {
 	name: "light" as const,
 	...baseTheme,
-	illustrationShadow: `0px 5px 15px 1px grey`,
 	colors: {
 		text: {
 			primary: "#242120",
@@ -83,7 +82,6 @@ export const lightTheme = {
 export const darkTheme = {
 	name: "dark" as const,
 	...baseTheme,
-	illustrationShadow: `0px 5px 15px 1px #212121`,
 	colors: {
 		text: {
 			primary: "#ffffff",

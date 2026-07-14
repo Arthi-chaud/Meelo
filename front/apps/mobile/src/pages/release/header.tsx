@@ -71,7 +71,7 @@ export const Header = ({
 							illustration={release?.illustration}
 							quality="original"
 							variant="center"
-							dropShadow
+							shadowStyle={styles.illustrationShadow}
 						/>
 					</View>
 				</View>
@@ -260,6 +260,12 @@ const styles = StyleSheet.create((theme, _rt) => ({
 		padding: { xs: undefined, [HalfHorizontalLayout]: theme.gap(2) },
 		flex: { xs: undefined, [HalfHorizontalLayout]: 1 },
 		width: { xs: "100%", [HalfHorizontalLayout]: undefined },
+	},
+	illustrationShadow: {
+		boxShadow:
+			theme.name === "light"
+				? `0px 5px 15px 1px grey`
+				: `0px 5px 15px 1px #212121`,
 	},
 	illustration: {
 		width: { xs: "60%", [HalfHorizontalLayout]: "100%" },
