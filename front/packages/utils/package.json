@@ -6,7 +6,7 @@
 		"i18next": "^26.0.8"
 	},
 	"devDependencies": {
-		"typescript": "5.9.3",
+		"typescript": "6.0.3",
 		"vitest": "^4.1.8"
 	},
 	"packageManager": "yarn@4.17.0"
