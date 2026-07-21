@@ -21,6 +21,7 @@
 			"style": {
 				"noNonNullAssertion": "off",
 				"noRestrictedImports": {
+					"level": "error",
 					"options": {
 						"paths": {
 							"format-duration": "Use wrapper from 'theme/provider'",
