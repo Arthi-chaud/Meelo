@@ -1,1 +1,7 @@
-{}
+{
+	"actions": {
+		"addToPlaylist": {
+			"duplicateWarning": "Esta canción ya está en la lista de reproducción. ¿Estás seguro de que quieres añadirla de nuevo?"
+		}
+	}
+}
