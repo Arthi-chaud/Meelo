@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// biome-ignore lint: internal
 import formatMilliSecondsDuration from "format-duration";
 
 const formatDuration = (seconds?: number | null) =>

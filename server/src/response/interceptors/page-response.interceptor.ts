@@ -23,6 +23,7 @@ import {
 	type NestInterceptor,
 } from "@nestjs/common";
 import { map } from "rxjs";
+// biome-ignore lint: internal
 import PaginatedResponse from "src/pagination/models/paginated-response";
 
 /**
