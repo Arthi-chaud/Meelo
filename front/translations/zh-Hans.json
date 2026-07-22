@@ -1,6 +1,7 @@
 {
 	"actions": {
 		"addToPlaylist": {
+			"duplicateWarning": "该歌曲已在播放列表中。您确定再次添加吗？",
 			"label": "添加到播放列表",
 			"modalTitle": "选择播放列表"
 		},
@@ -13,6 +14,7 @@
 			"seeAlbums": "查看专辑",
 			"seeSongs": "查看歌曲"
 		},
+		"clearQueryCache": "清除查询缓存",
 		"connectToNewServer": "连接一个 Meelo 服务器",
 		"create": "创建",
 		"delete": "删除",
@@ -36,6 +38,7 @@
 			"deletionWarning": "您即将删除库。此操作无法撤销"
 		},
 		"logout": "登出",
+		"new": "新建",
 		"playback": {
 			"play": "播放",
 			"playAfter": "稍后播放",
