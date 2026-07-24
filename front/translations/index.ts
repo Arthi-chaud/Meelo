@@ -20,6 +20,7 @@ import cs from "./cs.json";
 import da from "./da.json";
 import de from "./de.json";
 import en from "./en.json";
+import es from "./es.json";
 import fr from "./fr.json";
 import id from "./id.json";
 import it from "./it.json";
@@ -33,6 +34,7 @@ import zh_Hant from "./zh-Hant.json";
 
 export default Object.entries({
 	en,
+	es,
 	fr,
 	de,
 	da,
@@ -53,6 +55,7 @@ export default Object.entries({
 
 export const Languages = [
 	"en",
+	"es",
 	"fr",
 	"de",
 	"da",
