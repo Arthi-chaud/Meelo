@@ -8441,7 +8441,7 @@ __metadata:
     react-native-base64: "npm:^0.2.2"
     react-native-draggable-flatlist: "npm:^4.0.3"
     react-native-edge-to-edge: "npm:^1.8.1"
-    react-native-gesture-handler: "npm:~2.31.0"
+    react-native-gesture-handler: "npm:~2.32.0"
     react-native-keyboard-controller: "npm:1.21.13"
     react-native-mmkv: "npm:4.3.2"
     react-native-nitro-modules: "npm:0.35.9"
@@ -9403,9 +9403,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:~2.31.0":
-  version: 2.31.2
-  resolution: "react-native-gesture-handler@npm:2.31.2"
+"react-native-gesture-handler@npm:~2.32.0":
+  version: 2.32.0
+  resolution: "react-native-gesture-handler@npm:2.32.0"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     "@types/react-test-renderer": "npm:^19.1.0"
@@ -9414,7 +9414,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/a312bb684b5de5376078e407a08a17fddef51a11ea09dd12236b3a971b18a68496f3d8c13391cdfefcc5af776fd90936066aaf20a7cfe2849d8c47c223643dd2
+  checksum: 10c0/f3d903a8ad1f053732f7cbfbd16891a6bc696f4d03428a334948587a203fdcfa29592f1fc6c4c03c175932febe9df1fce3eb40ddd54d2fa3de63cc939ccd0e85
   languageName: node
   linkType: hard
 
