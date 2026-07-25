@@ -4717,7 +4717,7 @@ __metadata:
   resolution: "api@workspace:packages/api"
   dependencies:
     "@tanstack/react-query": "npm:^5.100.5"
-    jotai: "npm:2.20.1"
+    jotai: "npm:2.20.2"
     react: "npm:19.2.3"
     type-fest: "npm:^5.6.0"
     typescript: "npm:5.9.3"
@@ -7390,9 +7390,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:2.20.1":
-  version: 2.20.1
-  resolution: "jotai@npm:2.20.1"
+"jotai@npm:2.20.2":
+  version: 2.20.2
+  resolution: "jotai@npm:2.20.2"
   peerDependencies:
     "@babel/core": ">=7.0.0"
     "@babel/template": ">=7.0.0"
@@ -7407,7 +7407,7 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/a0d5104784efd5328aa25e29bb8e4e51d91c87d78afd0edd5dc90cdd1ee735828d3987adfcbe35b817ed921e6742794a0523b71467df49f52964c2275d6284f0
+  checksum: 10c0/8c9cbdcc2956cbe9b78f61e8ffe3018f7c7cd7efbb8260e7996dba4ac7cc9ee5e2fc53d5c218d9b5f04052672535be9fa7848293b8a35410d17112f95e6395b0
   languageName: node
   linkType: hard
 
@@ -8429,7 +8429,7 @@ __metadata:
     iconsax-react-nativejs: "npm:^0.0.8"
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
-    jotai: "npm:2.20.1"
+    jotai: "npm:2.20.2"
     models: "workspace:^"
     react: "npm:19.2.3"
     react-hook-form: "npm:^7.75.0"
@@ -10668,7 +10668,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "state@workspace:packages/state"
   dependencies:
-    jotai: "npm:2.20.1"
+    jotai: "npm:2.20.2"
     react: "npm:19.2.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -11550,7 +11550,7 @@ __metadata:
     core-js: "npm:^3.47.0"
     hls.js: "npm:^1.6.16"
     i18next: "npm:^26.0.8"
-    jotai: "npm:2.20.1"
+    jotai: "npm:2.20.2"
     material-ui-confirm: "npm:^4.0.0"
     mui-react-hook-form-plus: "npm:^1.5.1"
     next: "npm:16.2.11"
