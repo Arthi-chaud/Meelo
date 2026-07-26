@@ -2873,11 +2873,11 @@ __metadata:
   linkType: hard
 
 "@kesha-antonov/react-native-background-downloader@npm:^4.5.6":
-  version: 4.5.6
-  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.5.6"
+  version: 4.5.9
+  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.5.9"
   peerDependencies:
     react-native: ">=0.57.0"
-  checksum: 10c0/4c2bbd0c7814ccab79f1a198a63a79fe3124b23be2e871e6061f906c094ac01535e26dffb924d438e7e28f2c16bfacd023c7f8359f472c6363d3da7f1d1f9369
+  checksum: 10c0/c78fdeadf8558e8bd876f96aafe8bbf5d9a868589f083cc10a08137a0c4f9e65c04de4a5cbf47533800ca5bd4fc4001da0f36132ce8498e265fd0d343810290b
   languageName: node
   linkType: hard
 
