@@ -1,7 +1,83 @@
 {
 	"actions": {
 		"addToPlaylist": {
-			"duplicateWarning": "Esta canción ya está en la lista de reproducción. ¿Estás seguro de que quieres añadirla de nuevo?"
+			"duplicateWarning": "Esta canción ya está en la lista de reproducción. ¿Estás seguro de que quieres añadirla de nuevo?",
+			"label": "Agregar a Lista de reproducción",
+			"modalTitle": "Seleccionar una lista de reproducción"
+		},
+		"album": {
+			"changeType": "Cambiar Tipo de Álbum",
+			"goToAlbum": "Ir a Álbum"
+		},
+		"archive": "Archivar",
+		"artist": {
+			"seeAlbums": "Ver Álbumes",
+			"seeSongs": "Ver Canciones"
+		},
+		"changeIllutration": "Cambiar Ilustración",
+		"clearQueryCache": "Borrar Caché de Consultas",
+		"connectToNewServer": "Conectar un servidor Meelo",
+		"create": "Crear",
+		"delete": "Borrar",
+		"deleteFromPlaylist": "Borrar de Lista de reproducción",
+		"deleteUser": {
+			"label": "Borrar Usuario",
+			"warning": "Estás a punto de borrar un usuario. Esta acción no se puede deshacer."
+		},
+		"download": {
+			"label": "Descargar",
+			"warning": "No está autorizada la descarga de material protegido por derechos de autor que no te pertenece. Por favor, procede única y exclusivamente si posees el contenido original."
+		},
+		"editExternalLinks": "Editar Enlaces Externos",
+		"genre": {
+			"startRadio": "Iniciar Radio de Género"
+		},
+		"goBackHome": "Volver a Inicio",
+		"goToArtist": "Ir a Artista",
+		"goToPlaylist": "Ir a Lista de Reproducción",
+		"goToRelease": "Ir a Lanzamiento",
+		"goToSettingsPage": "Ir a Ajustes",
+		"label": {
+			"startRadio": "Iniciar Radio del Sello"
+		},
+		"library": {
+			"create": "Crear Librería",
+			"delete": "Borrar Librería",
+			"deletionWarning": "Estás a punto de borrar una librería. Esta acción no se puede deshacer"
+		},
+		"logout": "Desconectar",
+		"new": "Nuevo",
+		"playRadio": "Reproducir Radio",
+		"playback": {
+			"play": "Reproducir",
+			"playAfter": "Reproducir después",
+			"playAll": "Reproducir todo",
+			"playNext": "Reproducir siguiente",
+			"shuffle": "Mezclar"
+		},
+		"release": {
+			"setAllTracksAsMaster": "Establecer todas las pistas como Master"
+		},
+		"seeArtists": "Ir a Artistas",
+		"seeLabels": "Ir a Sellos",
+		"setAsMaster": "Establecer como Master",
+		"share": "Compartir",
+		"song": {
+			"changeType": "Cambiar Tipo de Canción",
+			"mergeSong": {
+				"label": "Combinar Canciones",
+				"modalTitle": "Seleccionar una canción",
+				"warningBeforeMerging": "Todas las pistas serán asignadas a la canción seleccionada, y la canción vieja será borrada. Tus archivos no se modificarán ni borrarán"
+			},
+			"seeLyrics": "Ver Letra",
+			"seeOtherVersions": "Ver Otras Versiones",
+			"seeRelatedTracks": "Ver Pistas Relacionadas",
+			"seeRelatedVideos": "Ver Videos Relacionados",
+			"seeSongInfo": "Información sobre la Canción"
+		},
+		"switchServer": {
+			"label": "Cambiar Servidor",
+			"modalMessage": "Al cambiar de servidor, se interrumpirá la reprodución y borrará la cola. ¿Estás seguro de querer cambiar?"
 		}
 	}
 }
