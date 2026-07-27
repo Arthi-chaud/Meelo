@@ -6195,7 +6195,7 @@ __metadata:
     supertest: "npm:^7.1.4"
     ts-node: "npm:^10.9.2"
     tsconfig-paths: "npm:^4.2.0"
-    type-fest: "npm:5.7.0"
+    type-fest: "npm:5.8.0"
     typescript: "npm:^6.0.0"
     unplugin-swc: "npm:^1.5.9"
     vitest: "npm:^4.1.8"
@@ -8473,12 +8473,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:5.7.0":
-  version: 5.7.0
-  resolution: "type-fest@npm:5.7.0"
+"type-fest@npm:5.8.0":
+  version: 5.8.0
+  resolution: "type-fest@npm:5.8.0"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10c0/f71ed17b753649421e419db8cc2e140f930333a1467b1d9cca2e0e4052900fd442f2360bae73f3a6bf9340d949ac46d9a1598c709b4c8089272e7624df9c8716
+  checksum: 10c0/c8aae118a763d550a9552a511dff6b71840a23dab4edf693cf1c4df22596942794e6f6723389bd9036a90182249d915158bacf0815a1ae87f05f901b1d5f574e
   languageName: node
   linkType: hard
 
