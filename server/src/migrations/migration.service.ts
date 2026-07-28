@@ -1,4 +1,5 @@
 import { Inject, Injectable, OnApplicationBootstrap } from "@nestjs/common";
+import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import Logger from "src/logger/logger";
 import PrismaService from "src/prisma/prisma.service";
@@ -9,6 +10,7 @@ export default class MigrationService implements OnApplicationBootstrap {
 	constructor(
 		@Inject(PrismaService) private prismaService: PrismaService,
 		private labelService: LabelService,
+		private genreService: GenreService,
 	) {}
 
 	async onApplicationBootstrap() {
@@ -57,6 +59,26 @@ export default class MigrationService implements OnApplicationBootstrap {
 					),
 				);
 				items = await this.prismaService.label.findMany({
+					take: 30,
+					skip: 1,
+					cursor: { id: items[items.length - 1].id },
+					orderBy: { id: "asc" },
+				});
+			}
+		});
+
+		await runMigration("Add Genres search entries", async () => {
+			let items = await this.prismaService.genre.findMany({
+				take: 30,
+				orderBy: { id: "asc" },
+			});
+			while (items.length > 0) {
+				await Promise.all(
+					items.map((genre) =>
+						this.genreService._addToMeilisearch(genre),
+					),
+				);
+				items = await this.prismaService.genre.findMany({
 					take: 30,
 					skip: 1,
 					cursor: { id: items[items.length - 1].id },

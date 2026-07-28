@@ -32,8 +32,7 @@ import {
 	ArtistResponseBuilder,
 } from "src/artist/models/artist.response";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import type { Video } from "src/prisma/generated/client";
-import { AlbumWithRelations, Artist, Label, Song } from "src/prisma/models";
+import { Label } from "src/prisma/models";
 import {
 	SongResponse,
 	SongResponseBuilder,
@@ -43,7 +42,6 @@ import {
 	VideoResponseBuilder,
 } from "src/video/models/video.response";
 import { SearchService } from "./search.service";
-import { getSearchResourceType } from "./search.utils";
 
 @ApiTags("Search")
 @Controller("search")
@@ -89,26 +87,20 @@ export class SearchController {
 		const items = await this.searchService.search(query);
 		return Promise.all(
 			// biome-ignore lint: All cases are covered
-			items.map((item) => {
-				switch (getSearchResourceType(item)) {
+			items.map(({ type, item }) => {
+				switch (type) {
 					case "video":
-						return this.videoResponseBuilder.buildResponse(
-							item as Video,
-						);
+						return this.videoResponseBuilder.buildResponse(item);
 					case "album":
-						return this.albumResponseBuilder.buildResponse(
-							item as AlbumWithRelations,
-						);
+						return this.albumResponseBuilder.buildResponse(item);
 					case "song":
-						return this.songResponseBuilder.buildResponse(
-							item as Song,
-						);
+						return this.songResponseBuilder.buildResponse(item);
 					case "artist":
-						return this.artistResponseBuilder.buildResponse(
-							item as Artist,
-						);
+						return this.artistResponseBuilder.buildResponse(item);
 					case "label":
-						return item as Label;
+						return item;
+					case "genre":
+						return item;
 				}
 			}),
 		);

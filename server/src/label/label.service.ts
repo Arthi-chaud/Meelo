@@ -356,7 +356,7 @@ export default class LabelService extends SearchableRepositoryService {
 	}
 
 	public async _addToMeilisearch(label: Label) {
-		this.meiliSearch.index(this.indexName).addDocuments([
+		await this.meiliSearch.index(this.indexName).addDocuments([
 			{
 				id: label.id,
 				slug: label.slug,

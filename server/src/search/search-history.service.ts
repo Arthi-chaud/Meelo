@@ -19,24 +19,23 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaError } from "prisma-error-enum/dist";
 import AlbumService from "src/album/album.service";
-import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
+import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import { Prisma, type Video } from "src/prisma/generated/client";
-import type { Artist, Label, Song } from "src/prisma/models";
+import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";
 import SongService from "src/song/song.service";
 import countDefinedFields from "src/utils/count-defined-fields";
 import VideoService from "src/video/video.service";
 import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import { SearchHistoryItem, toSearchItem } from "./models/seatch-item";
 import {
 	HistoryEntryResourceNotFoundException,
 	InvalidCreateHistoryEntryException,
 } from "./search.exceptions";
-import { getSearchResourceType } from "./search.utils";
 
 @Injectable()
 export class SearchHistoryService {
@@ -44,6 +43,7 @@ export class SearchHistoryService {
 		private prismaService: PrismaService,
 		private artistService: ArtistService,
 		private labelService: LabelService,
+		private genreService: GenreService,
 		private songService: SongService,
 		private albumService: AlbumService,
 		private videoService: VideoService,
@@ -64,6 +64,7 @@ export class SearchHistoryService {
 				artistId: dto.artistId,
 				videoId: dto.videoId,
 				labelId: dto.labelId,
+				genreId: dto.genreId,
 			},
 		});
 		return this.prismaService.searchHistory
@@ -75,6 +76,7 @@ export class SearchHistoryService {
 					artistId: dto.artistId,
 					videoId: dto.videoId,
 					labelId: dto.labelId,
+					genreId: dto.genreId,
 				},
 			})
 			.catch((error) => {
@@ -92,7 +94,7 @@ export class SearchHistoryService {
 	async getHistory(
 		userId: number,
 		paginationParameters?: PaginationParameters,
-	): Promise<(Artist | Song | AlbumModel | Video | Label)[]> {
+	): Promise<SearchHistoryItem[]> {
 		const history = await this.prismaService.searchHistory.findMany({
 			where: { userId },
 			orderBy: { searchAt: "desc" },
@@ -101,7 +103,7 @@ export class SearchHistoryService {
 		if (history.length === 0) {
 			return [];
 		}
-		const { artistIds, albumIds, songIds, videoIds, labelIds } =
+		const { artistIds, albumIds, songIds, videoIds, labelIds, genreIds } =
 			history.reduce(
 				(rest, item) => {
 					if (item.artistId !== null) {
@@ -137,6 +139,12 @@ export class SearchHistoryService {
 							labelIds: [...rest.labelIds, { id: item.labelId }],
 						};
 					}
+					if (item.genreId !== null) {
+						return {
+							...rest,
+							genreIds: [...rest.genreIds, { id: item.genreId }],
+						};
+					}
 					return rest;
 				},
 				{
@@ -145,6 +153,7 @@ export class SearchHistoryService {
 					songIds: [],
 					videoIds: [],
 					labelIds: [],
+					genreIds: [],
 				},
 			);
 		const artists = artistIds.length
@@ -201,34 +210,56 @@ export class SearchHistoryService {
 				)
 			: [];
 
-		return [...artists, ...songs, ...albums, ...videos, ...labels].sort(
-			(a, b) => {
-				const getIndex = (item: any) => {
-					switch (getSearchResourceType(item)) {
-						case "video":
-							return history.findIndex(
-								({ videoId }) => videoId === item.id,
-							);
-						case "album":
-							return history.findIndex(
-								({ albumId }) => albumId === item.id,
-							);
-						case "song":
-							return history.findIndex(
-								({ songId }) => songId === item.id,
-							);
-						case "artist":
-							return history.findIndex(
-								({ artistId }) => artistId === item.id,
-							);
-						case "label":
-							return history.findIndex(
-								({ labelId }) => labelId === item.id,
-							);
-					}
-				};
+		const genres = genreIds.length
+			? await this.genreService.getMany(
+					{
+						genres: genreIds,
+					},
+					undefined,
+				)
+			: [];
+
+		const getIndex = ({ type, item }: SearchHistoryItem) => {
+			switch (type) {
+				case "video":
+					return history.findIndex(
+						({ videoId }) => videoId === item.id,
+					);
+				case "album":
+					return history.findIndex(
+						({ albumId }) => albumId === item.id,
+					);
+				case "song":
+					return history.findIndex(
+						({ songId }) => songId === item.id,
+					);
+				case "artist":
+					return history.findIndex(
+						({ artistId }) => artistId === item.id,
+					);
+				case "label":
+					return history.findIndex(
+						({ labelId }) => labelId === item.id,
+					);
+				case "genre":
+					return history.findIndex(
+						({ genreId }) => genreId === item.id,
+					);
+				default:
+					return 0;
+			}
+		};
+		return [
+			...artists,
+			...songs,
+			...albums,
+			...videos,
+			...labels,
+			...genres,
+		]
+			.map(toSearchItem)
+			.sort((a, b) => {
 				return getIndex(a) - getIndex(b);
-			},
-		);
+			});
 	}
 }

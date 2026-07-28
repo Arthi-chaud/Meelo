@@ -40,4 +40,8 @@ export class CreateSearchHistoryEntry {
 	@IsPositive()
 	@IsOptional()
 	labelId?: number;
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
+	genreId?: number;
 }
