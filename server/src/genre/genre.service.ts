@@ -70,7 +70,7 @@ export default class GenreService extends SearchableRepositoryService {
 				throw new UnhandledORMErrorException(error, input);
 			})
 			.then((label) => {
-				// this._addToMeilisearch(label);
+				this._addToMeilisearch(label);
 				return label;
 			});
 	}
