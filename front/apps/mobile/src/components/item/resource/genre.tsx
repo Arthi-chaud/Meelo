@@ -1,20 +1,39 @@
 import type Genre from "@/models/genre";
+import { GenreIcon } from "@/ui/icons";
 import { Chip } from "~/components/chip";
 import { useContextMenu } from "~/components/context-menu";
 import { useGenreContextMenu } from "~/components/context-menu/resource/genre";
 import { ListItem } from "../list-item";
 
-type Props = { genre: Genre | undefined };
+type Props = {
+	genre: Genre | undefined;
+	withLeadingIcon?: boolean;
+	onPress?: () => void;
+	subtitle?: string;
+};
 
-export const GenreItem = ({ genre }: Props) => {
+export const GenreItem = ({
+	genre,
+	withLeadingIcon,
+	subtitle,
+	onPress,
+}: Props) => {
 	const ctxMenu = useGenreContextMenu(genre);
 	const { openContextMenu } = useContextMenu(ctxMenu);
 	return (
 		<ListItem
-			leading={null}
+			{...(withLeadingIcon
+				? {
+						illustration: null,
+						illustrationProps: { fallbackIcon: GenreIcon },
+					}
+				: { leading: null })}
 			title={genre?.name}
-			subtitle={null}
-			onPress={openContextMenu}
+			subtitle={subtitle ?? null}
+			onPress={() => {
+				onPress?.();
+				openContextMenu();
+			}}
 			contextMenu={ctxMenu}
 		/>
 	);

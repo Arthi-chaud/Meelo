@@ -41,7 +41,7 @@ import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
 import type { SaveSearchItem, SearchResult } from "@/models/search";
 import { playTrackAtom } from "@/state/player";
-import { LabelIcon, SearchIcon } from "@/ui/icons";
+import { GenreIcon, LabelIcon, SearchIcon } from "@/ui/icons";
 import formatArtists, { formatArtists_ } from "@/utils/format-artists";
 import { useAPI, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
@@ -307,6 +307,24 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 														illustration={null}
 														quality="low"
 														fallback={<LabelIcon />}
+													/>
+												}
+											/>
+										) : item.genre ? (
+											<ListItem
+												onClick={() =>
+													saveSearch.mutate({
+														genreId: item.genre.id,
+													})
+												}
+												href={`/genres/${item.genre.slug}`}
+												title={item.genre.name}
+												secondTitle={t("models.genre")}
+												icon={
+													<Illustration
+														illustration={null}
+														quality="low"
+														fallback={<GenreIcon />}
 													/>
 												}
 											/>

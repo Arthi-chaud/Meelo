@@ -19,6 +19,7 @@
 import type { RequireExactlyOne } from "type-fest";
 import { AlbumWithRelations } from "./album";
 import { ArtistWithRelations } from "./artist";
+import Genre from "./genre";
 import Label from "./label";
 import { SongWithRelations } from "./song";
 import { VideoWithRelations } from "./video";
@@ -29,10 +30,14 @@ export type SearchResult = RequireExactlyOne<{
 	artist: ArtistWithRelations<"illustration">;
 	video: VideoWithRelations<"illustration" | "master" | "artist">;
 	label: Label;
+	genre: Genre;
 }>;
 
 export type SaveSearchItem = Partial<
-	Record<"songId" | "albumId" | "artistId" | "videoId" | "labelId", number>
+	Record<
+		"songId" | "albumId" | "artistId" | "videoId" | "labelId" | "genreId",
+		number
+	>
 >;
 export const SearchResultTransformer = (
 	results: unknown,
@@ -74,11 +79,14 @@ export const SearchResultTransformer = (
 					] as const).validate(result),
 				};
 			}
-			return {
-				artist: await ArtistWithRelations([
-					"illustration",
-				] as const).validate(result),
-			};
+			if ("birthAreaId" in result) {
+				return {
+					artist: await ArtistWithRelations([
+						"illustration",
+					] as const).validate(result),
+				};
+			}
+			return { genre: await Genre.validate(result) };
 		}),
 	);
 };
