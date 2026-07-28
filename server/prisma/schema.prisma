@@ -105,6 +105,8 @@ model Genre {
     /// @description The albums from this genre
     albums Album[]
 
+	searchHistory SearchHistory[]
+
     @@map("genres")
 }
 
@@ -828,6 +830,9 @@ model SearchHistory {
     videoId  Int?
     label    Label?   @relation(fields: [labelId], references: [id], onDelete: Cascade)
     labelId  Int?
+
+    genre    Genre?   @relation(fields: [genreId], references: [id], onDelete: Cascade)
+    genreId  Int?
 
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
