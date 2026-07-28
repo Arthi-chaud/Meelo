@@ -31,7 +31,7 @@ import SongService from "src/song/song.service";
 import countDefinedFields from "src/utils/count-defined-fields";
 import VideoService from "src/video/video.service";
 import type { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
-import { SearchHistoryItem, toSearchItem } from "./models/seatch-item";
+import { SearchHistoryItem, toSearchItem } from "./models/search-item";
 import {
 	HistoryEntryResourceNotFoundException,
 	InvalidCreateHistoryEntryException,

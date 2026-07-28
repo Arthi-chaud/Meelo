@@ -18,7 +18,7 @@ export type SearchItem =
 export type SearchHistoryItem = SearchItem;
 
 export function toSearchItem(
-	item: Artist | Album | Song | Video | Label,
+	item: Artist | Album | Song | Video | Label | Genre,
 ): SearchItem {
 	if ("startDate" in item) {
 		return { type: "label", item };

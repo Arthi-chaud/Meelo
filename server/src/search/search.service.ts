@@ -25,7 +25,7 @@ import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";
-import { SearchItem, toSearchItem } from "./models/seatch-item";
+import { SearchItem, toSearchItem } from "./models/search-item";
 
 type MeilisearchResultType = Record<"id" | "_rankingScore", number>;
 
