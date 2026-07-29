@@ -75,7 +75,9 @@ export default function SearchView() {
 							? { songId: item.song.id }
 							: item.video
 								? { videoId: item.video.id }
-								: { labelId: item.label.id };
+								: item.genre
+									? { genreId: item.genre.id }
+									: { labelId: item.label.id };
 				await api.saveSearchHistoryEntry(dto);
 				// Sometimes, it refreshes to fast, and shifts the history
 				// before openning a page (for artists) is done
@@ -228,7 +230,9 @@ const withStringId = (q: InfiniteQuery<any, SearchResult>) =>
 					? `video-${item.video.id}`
 					: item.artist
 						? `artist-${item.artist.id}`
-						: `label-${item.label.id}`,
+						: item.genre
+							? `genre-${item.genre.id}`
+							: `label-${item.label.id}`,
 	}));
 
 const searchResultQueryToResourceQuery = (query: Query<SearchResult[]>) => {

@@ -34,14 +34,7 @@ import {
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
-import type {
-	AlbumWithRelations,
-	Artist,
-	Label,
-	Song,
-	User,
-	Video,
-} from "src/prisma/models";
+import type { User } from "src/prisma/models";
 import {
 	SongResponse,
 	SongResponseBuilder,
@@ -51,7 +44,6 @@ import {
 	VideoResponseBuilder,
 } from "src/video/models/video.response";
 import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
-import { getSearchResourceType } from "./search.utils";
 import { SearchHistoryService } from "./search-history.service";
 
 @ApiTags("Search")
@@ -109,27 +101,22 @@ export class SearchHistoryController {
 		);
 		return Promise.all(
 			// biome-ignore lint: All cases are covered
-			history.map((item) => {
-				switch (getSearchResourceType(item)) {
+			history.map((historyItem) => {
+				const { type, item } = historyItem;
+				//TODO: Leave key in response
+				switch (type) {
 					case "video":
-						return this.videoResponseBuilder.buildResponse(
-							item as Video,
-						);
+						return this.videoResponseBuilder.buildResponse(item);
 					case "album":
-						return this.albumResponseBuilder.buildResponse(
-							item as AlbumWithRelations,
-						);
+						return this.albumResponseBuilder.buildResponse(item);
 					case "song":
-						return this.songResponseBuilder.buildResponse(
-							item as Song,
-						);
+						return this.songResponseBuilder.buildResponse(item);
 					case "artist":
-						return this.artistResponseBuilder.buildResponse(
-							item as Artist,
-						);
-
+						return this.artistResponseBuilder.buildResponse(item);
 					case "label":
-						return item as Label;
+						return item;
+					case "genre":
+						return item;
 				}
 			}),
 		);

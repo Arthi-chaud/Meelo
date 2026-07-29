@@ -20,13 +20,12 @@ import { Injectable } from "@nestjs/common";
 import { MeiliSearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import AlbumService from "src/album/album.service";
-import type { AlbumModel } from "src/album/models/album.model";
 import ArtistService from "src/artist/artist.service";
+import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
-import type { Video } from "src/prisma/generated/client";
-import type { Artist, Label, Song } from "src/prisma/models";
 import SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";
+import { SearchItem, toSearchItem } from "./models/search-item";
 
 type MeilisearchResultType = Record<"id" | "_rankingScore", number>;
 
@@ -38,12 +37,11 @@ export class SearchService {
 		private albumService: AlbumService,
 		private videoService: VideoService,
 		private labelService: LabelService,
+		private genreService: GenreService,
 		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
 	) {}
 
-	async search(
-		query: string,
-	): Promise<(Artist | Song | AlbumModel | Video | Label)[]> {
+	async search(query: string): Promise<SearchItem[]> {
 		const meiliQueryResult = await this.meiliSearch.multiSearch({
 			queries: [
 				this.artistService,
@@ -51,6 +49,7 @@ export class SearchService {
 				this.albumService,
 				this.videoService,
 				this.labelService,
+				this.genreService,
 			].map((s) => ({
 				q: query,
 				indexUid: s.indexName,
@@ -68,85 +67,103 @@ export class SearchService {
 			.hits as MeilisearchResultType[];
 		const matchingLabelsIds = meiliQueryResult.results[4]
 			.hits as MeilisearchResultType[];
-		const [artists, songs, albums, videos, labels] = await Promise.all(
-			[
+		const matchingGenresIds = meiliQueryResult.results[5]
+			.hits as MeilisearchResultType[];
+		const [artists, songs, albums, videos, labels, genres] =
+			await Promise.all(
 				[
-					// Note: I know it's ugly, but needed for correct typing
-					(ids: number[]) =>
-						this.artistService.getMany(
-							{ artists: ids.map((id) => ({ id })) },
-							undefined,
-							undefined,
-							{ illustration: true },
-						),
-					matchingArtistsIds,
-				] as const,
-				[
-					(ids: number[]) =>
-						this.songService.getMany(
-							{ songs: ids.map((id) => ({ id })) },
-							undefined,
-							undefined,
-							{
-								illustration: true,
-								master: true,
-								artist: true,
-								featuring: true,
-							},
-						),
-					matchingSongsIds,
-				] as const,
-				[
-					(ids: number[]) =>
-						this.albumService.getMany(
-							{ albums: ids.map((id) => ({ id })) },
-							undefined,
-							undefined,
-							{
-								illustration: true,
-								artists: true,
-							},
-						),
-					matchingAlbumsIds,
-				] as const,
-				[
-					(ids: number[]) =>
-						this.videoService.getMany(
-							{ videos: ids.map((id) => ({ id })) },
-							undefined,
-							{
-								illustration: true,
-								master: true,
-								artist: true,
-							},
-						),
-					matchingVideosIds,
-				] as const,
+					[
+						// Note: I know it's ugly, but needed for correct typing
+						(ids: number[]) =>
+							this.artistService.getMany(
+								{ artists: ids.map((id) => ({ id })) },
+								undefined,
+								undefined,
+								{ illustration: true },
+							),
+						matchingArtistsIds,
+					] as const,
+					[
+						(ids: number[]) =>
+							this.songService.getMany(
+								{ songs: ids.map((id) => ({ id })) },
+								undefined,
+								undefined,
+								{
+									illustration: true,
+									master: true,
+									artist: true,
+									featuring: true,
+								},
+							),
+						matchingSongsIds,
+					] as const,
+					[
+						(ids: number[]) =>
+							this.albumService.getMany(
+								{ albums: ids.map((id) => ({ id })) },
+								undefined,
+								undefined,
+								{
+									illustration: true,
+									artists: true,
+								},
+							),
+						matchingAlbumsIds,
+					] as const,
+					[
+						(ids: number[]) =>
+							this.videoService.getMany(
+								{ videos: ids.map((id) => ({ id })) },
+								undefined,
+								{
+									illustration: true,
+									master: true,
+									artist: true,
+								},
+							),
+						matchingVideosIds,
+					] as const,
 
-				[
-					(ids: number[]) =>
-						this.labelService.getMany({
-							labels: ids.map((id) => ({ id })),
-						}),
-					matchingLabelsIds,
-				] as const,
-			].map(async ([getMany, matches]) => {
-				if (!matches.length) {
-					return [];
-				}
-				const fullItems = await getMany(matches.map(({ id }) => id));
+					[
+						(ids: number[]) =>
+							this.labelService.getMany({
+								labels: ids.map((id) => ({ id })),
+							}),
+						matchingLabelsIds,
+					] as const,
 
-				return fullItems.map((item) => ({
-					...item,
-					ranking:
-						matches.find((m) => m.id === item.id)?._rankingScore ??
-						0,
-				}));
-			}),
-		);
+					[
+						(ids: number[]) =>
+							this.genreService.getMany({
+								genres: ids.map((id) => ({ id })),
+							}),
+						matchingGenresIds,
+					] as const,
+				].map(async ([getMany, matches]) => {
+					if (!matches.length) {
+						return [];
+					}
+					const fullItems = await getMany(
+						matches.map(({ id }) => id),
+					);
 
-		return [...artists, ...songs, ...albums, ...videos, ...labels].sort(
-			(a, b) => b.ranking - a.ranking,
-		);
+					return fullItems.map((item) => ({
+						...toSearchItem(item as any), // NOTE: Album type does not match
+						ranking:
+							matches.find((m) => m.id === item.id)
+								?._rankingScore ?? 0,
+					}));
+				}),
+			);
+
+		return [
+			...artists,
+			...songs,
+			...albums,
+			...videos,
+			...labels,
+			...genres,
+		].sort((a, b) => b.ranking - a.ranking);
 	}
 }

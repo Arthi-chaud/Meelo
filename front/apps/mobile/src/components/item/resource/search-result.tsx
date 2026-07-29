@@ -3,6 +3,7 @@ import { View } from "react-native";
 import type { SearchResult } from "@/models/search";
 import { AlbumItem } from "./album";
 import { ArtistItem } from "./artist";
+import { GenreItem } from "./genre";
 import { LabelItem } from "./label";
 import { SongItem } from "./song";
 import { VideoItem } from "./video";
@@ -65,6 +66,17 @@ export const SearchResultItem = ({
 				onPress={onPress}
 				withLeadingIcon
 				subtitle={t("models.label")}
+			/>
+		);
+	}
+
+	if (searchResult.genre) {
+		return (
+			<GenreItem
+				genre={searchResult.genre}
+				onPress={onPress}
+				withLeadingIcon
+				subtitle={t("models.genre")}
 			/>
 		);
 	}

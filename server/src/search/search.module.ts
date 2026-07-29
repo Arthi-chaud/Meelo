@@ -19,6 +19,7 @@
 import { Module } from "@nestjs/common";
 import AlbumModule from "src/album/album.module";
 import ArtistModule from "src/artist/artist.module";
+import GenreModule from "src/genre/genre.module";
 import LabelModule from "src/label/label.module";
 import PrismaModule from "src/prisma/prisma.module";
 import SongModule from "src/song/song.module";
@@ -38,6 +39,7 @@ import { SearchHistoryService } from "./search-history.service";
 		PrismaModule,
 		VideoModule,
 		LabelModule,
+		GenreModule,
 	],
 	exports: [SearchHistoryService, SearchService],
 })

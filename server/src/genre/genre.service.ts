@@ -17,6 +17,8 @@
  */
 
 import { Injectable } from "@nestjs/common";
+import { MeiliSearch } from "meilisearch";
+import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
@@ -24,32 +26,62 @@ import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
 import Logger from "src/logger/logger";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { Prisma } from "src/prisma/generated/client";
+import { Genre } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import {
 	formatIdentifierToIdOrSlug,
 	formatPaginationParameters,
 } from "src/repository/repository.utils";
+import SearchableRepositoryService from "src/repository/searchable-repository.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
 import { buildStringSearchParameters } from "src/utils/search-string-input";
-import { GenreNotFoundException } from "./genre.exceptions";
+import {
+	GenreAlreadyExistsException,
+	GenreNotFoundException,
+} from "./genre.exceptions";
 import type GenreQueryParameters from "./models/genre.query-parameters";
 
 @Injectable()
-export default class GenreService {
+export default class GenreService extends SearchableRepositoryService {
 	private readonly logger = new Logger(GenreService.name);
-	constructor(private prismaService: PrismaService) {}
+	constructor(
+		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
+		private prismaService: PrismaService,
+	) {
+		super("genre", ["name", "slug"], meiliSearch);
+	}
+
+	async create(input: GenreQueryParameters.CreateInput) {
+		const genreSlug = new Slug(input.name);
+		return this.prismaService.genre
+			.create({
+				data: {
+					name: input.name,
+					slug: genreSlug.toString(),
+				},
+			})
+			.catch((error) => {
+				if (error instanceof Prisma.PrismaClientKnownRequestError) {
+					if (error.code === PrismaError.UniqueConstraintViolation) {
+						throw new GenreAlreadyExistsException(genreSlug);
+					}
+				}
+				throw new UnhandledORMErrorException(error, input);
+			})
+			.then((label) => {
+				this._addToMeilisearch(label);
+				return label;
+			});
+	}
 
 	async getOrCreate(input: GenreQueryParameters.CreateInput) {
 		const genreSlug = new Slug(input.name);
-		return this.prismaService.genre.upsert({
-			create: {
-				name: input.name,
-				slug: genreSlug.toString(),
-			},
-			update: {},
-			where: { slug: genreSlug.toString() },
-		});
+		try {
+			return await this.get({ slug: genreSlug });
+		} catch {
+			return await this.create(input);
+		}
 	}
 
 	/**
@@ -192,8 +224,17 @@ export default class GenreService {
 		if (!where.length) {
 			return 0;
 		}
+		const toDelete = (
+			await this.prismaService.genre.findMany({
+				where: GenreService.formatManyWhereInput({ genres: where }),
+				select: { id: true },
+			})
+		).map(({ id }) => id);
+
+		this.meiliSearch.index(this.indexName).deleteDocuments(toDelete);
+
 		const deleted = await this.prismaService.genre.deleteMany({
-			where: GenreService.formatManyWhereInput({ genres: where }),
+			where: { id: { in: toDelete } },
 		});
 
 		return deleted.count;
@@ -229,5 +270,15 @@ export default class GenreService {
 			return new GenreNotFoundException(where.slug ?? where.id);
 		}
 		return new UnhandledORMErrorException(error, where);
+	}
+
+	public async _addToMeilisearch(genre: Genre) {
+		await this.meiliSearch.index(this.indexName).addDocuments([
+			{
+				id: genre.id,
+				slug: genre.slug,
+				name: genre.name,
+			},
+		]);
 	}
 }
