@@ -170,11 +170,18 @@ const LabelPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					case "artist":
 						return (
 							<InfiniteArtistView
-								query={({ libraries, sortBy, order }) =>
+								disablePrimaryArtistsFilter
+								query={({
+									libraries,
+									sortBy,
+									order,
+									primaryArtistsOnly,
+								}) =>
 									getArtists(
 										{
 											label: labelIdentifier,
 											library: libraries,
+											primaryArtistsOnly,
 										},
 										{ sortBy, order },
 										["illustration"],

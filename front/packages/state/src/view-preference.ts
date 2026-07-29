@@ -1,7 +1,6 @@
-import { atom, useAtom, type WritableAtom } from "jotai";
-import { useCallback, useMemo } from "react";
 import type { ItemSize, LayoutOption } from "@/models/layout";
 import type { SortingParameters } from "@/models/sorting";
+import { mkPagePreferenceAtom } from "./page-preference";
 
 export type ViewPreference = {
 	layout?: Partial<{
@@ -30,29 +29,4 @@ export const loadViewPreferences = (c?: any): ViewPreferences => {
 	}
 };
 
-export const mkViewPreferenceAtom = (
-	rootAtom: WritableAtom<ViewPreferences, [ViewPreferences], void>,
-	onSave: (vp: ViewPreferences) => void,
-) => {
-	const viewPreferenceAtom = atom(
-		(get) => get(rootAtom),
-		(_, set, newVP: ViewPreferences) => {
-			set(rootAtom, newVP);
-			onSave(newVP);
-		},
-	);
-	const useViewPreference = (route: string) => {
-		const [prefs, setPrefs] = useAtom(viewPreferenceAtom);
-		const preference = useMemo((): ViewPreference => {
-			return prefs[route] ?? {};
-		}, [prefs, route]);
-		const updatePreference = useCallback(
-			(f: (pref: ViewPreference) => ViewPreference) => {
-				setPrefs({ ...prefs, [route]: f(prefs[route] ?? {}) });
-			},
-			[route, setPrefs, prefs],
-		);
-		return [preference, updatePreference] as const;
-	};
-	return { viewPreferenceAtom, useViewPreference };
-};
+export const mkViewPreferenceAtom = mkPagePreferenceAtom<ViewPreference>;

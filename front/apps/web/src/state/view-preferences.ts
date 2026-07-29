@@ -13,14 +13,14 @@ const _viewPreferences = atom<ViewPreferences>(
 	loadViewPreferences(getCookie(ViewPreferenceKey)),
 );
 
-export const { viewPreferenceAtom, useViewPreference } = mkViewPreferenceAtom(
-	_viewPreferences,
-	(newVP) => {
-		const expires = new Date();
-		expires.setFullYear(expires.getFullYear() + 1);
-		setCookie(ViewPreferenceKey, JSON.stringify(newVP), { expires });
-	},
-);
+export const {
+	preferenceAtom: viewPreferenceAtom,
+	usePreference: useViewPreference,
+} = mkViewPreferenceAtom(_viewPreferences, (newVP) => {
+	const expires = new Date();
+	expires.setFullYear(expires.getFullYear() + 1);
+	setCookie(ViewPreferenceKey, JSON.stringify(newVP), { expires });
+});
 
 // To be used in SSR
 export const getViewPreference = (route: string): ViewPreference =>

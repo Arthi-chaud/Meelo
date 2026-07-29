@@ -7,6 +7,7 @@ import { getArea, getArtists, getLabels, getParentAreas } from "@/api/queries";
 import { AreaIcon } from "@/ui/icons";
 import { useQuery } from "~/api";
 import { Head } from "~/components/head";
+import { ssrGetPrimaryArtistsPreference } from "~/components/infinite/controls/primary-artists";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
 import { InfiniteLabelView } from "~/components/infinite/resource/label";
 import { TabPage } from "~/components/tab-page";
@@ -15,14 +16,20 @@ import getSlugOrId from "~/utils/getSlugOrId";
 const prepareSSR = (context: NextPageContext) => {
 	const areaIdentifier = getSlugOrId(context.query);
 	const defaultQuerySortParams = { sortBy: "name", order: "asc" } as const;
+	const { primaryArtistsOnly } = ssrGetPrimaryArtistsPreference(context);
 
 	return {
 		additionalProps: { areaIdentifier: areaIdentifier },
 		queries: [getArea(areaIdentifier)],
 		infiniteQueries: [
-			getArtists({ area: areaIdentifier }, defaultQuerySortParams, [
-				"illustration",
-			]),
+			getArtists(
+				{
+					area: areaIdentifier,
+					primaryArtistsOnly,
+				},
+				defaultQuerySortParams,
+				["illustration"],
+			),
 			getLabels({ area: areaIdentifier }, defaultQuerySortParams),
 		],
 	};
@@ -114,11 +121,18 @@ const AreaPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					case "artist":
 						return (
 							<InfiniteArtistView
-								query={({ libraries, sortBy, order }) =>
+								enablePrimaryArtistsFilter
+								query={({
+									libraries,
+									sortBy,
+									order,
+									primaryArtistsOnly,
+								}) =>
 									getArtists(
 										{
 											area: areaIdentifier,
 											library: libraries,
+											primaryArtistsOnly,
 										},
 										{ sortBy, order },
 										["illustration"],

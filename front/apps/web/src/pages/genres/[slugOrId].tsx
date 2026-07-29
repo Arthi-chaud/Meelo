@@ -115,11 +115,17 @@ const GenrePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 					case "artist":
 						return (
 							<InfiniteArtistView
-								query={({ libraries, sortBy, order }) =>
+								query={({
+									libraries,
+									sortBy,
+									order,
+									primaryArtistsOnly,
+								}) =>
 									getArtists(
 										{
 											genre: genreIdentifier,
 											library: libraries,
+											primaryArtistsOnly,
 										},
 										{ sortBy, order },
 										["illustration"],

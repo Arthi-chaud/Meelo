@@ -16,9 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { useTranslation } from "react-i18next";
 import type { InfiniteQuery } from "@/api/query";
 import { ArtistSortingKeys, type ArtistWithRelations } from "@/models/artist";
 import type { SortingParameters } from "@/models/sorting";
+import type Action from "~/components/actions";
 import { Controls } from "~/components/infinite/controls/controls";
 import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
@@ -26,18 +28,22 @@ import { useSortControl } from "~/components/infinite/controls/sort";
 import InfiniteView from "~/components/infinite/view";
 import ArtistItem from "~/components/list-item/resource/artist";
 import ArtistTile from "~/components/tile/resource/artist";
+import { usePrimaryArtistsToggleControl } from "../controls/primary-artists";
 
-type QueryProps = { libraries?: string[] } & SortingParameters<
-	typeof ArtistSortingKeys
->;
+type QueryProps = {
+	libraries?: string[];
+	primaryArtistsOnly?: boolean;
+} & SortingParameters<typeof ArtistSortingKeys>;
 type ArtistModel = ArtistWithRelations<"illustration">;
 type ViewProps = {
 	query: (qp: QueryProps) => InfiniteQuery<ArtistModel>;
 	disableSort?: boolean;
+	enablePrimaryArtistsFilter?: boolean;
 	onItemClick?: (p: ArtistModel) => void;
 };
 
 const InfiniteArtistView = (props: ViewProps) => {
+	const { t } = useTranslation();
 	const [libraryFilter, libraryFilterControl] = useLibraryFiltersControl();
 	const [sort, sortControl] = useSortControl({
 		sortingKeys: ArtistSortingKeys,
@@ -47,12 +53,34 @@ const InfiniteArtistView = (props: ViewProps) => {
 		defaultLayout: "list",
 		enableToggle: true,
 	});
+
+	const [{ primaryArtistsOnly }, primaryArtistsControl] =
+		usePrimaryArtistsToggleControl({
+			defaultValue: true,
+			enableToggle: props.enablePrimaryArtistsFilter ?? false,
+		});
+	const primaryArtistsAction: Action = {
+		disabled: props.enablePrimaryArtistsFilter !== true,
+		onClick: () =>
+			primaryArtistsControl.onUpdate({
+				primaryArtistsOnly: !primaryArtistsOnly,
+			}),
+		label: primaryArtistsOnly
+			? t("Show All Artists")
+			: t("Album Artists Only"),
+	};
+
 	return (
 		<>
 			<Controls
 				filters={[libraryFilterControl]}
 				layout={layoutControl}
 				sort={props.disableSort ? undefined : sortControl}
+				actions={
+					!primaryArtistsAction.disabled
+						? [[primaryArtistsAction]]
+						: undefined
+				}
 			/>
 			<InfiniteView
 				itemSize={layout.itemSize}
@@ -60,6 +88,7 @@ const InfiniteArtistView = (props: ViewProps) => {
 				query={() =>
 					props.query({
 						libraries: libraryFilter,
+						primaryArtistsOnly,
 						sortBy: sort.sort,
 						order: sort.order,
 					})

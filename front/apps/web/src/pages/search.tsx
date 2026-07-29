@@ -346,6 +346,7 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 							return (
 								<InfiniteArtistView
 									disableSort
+									disablePrimaryArtistsFilter
 									onItemClick={(item) =>
 										item &&
 										saveSearch.mutate({ artistId: item.id })
