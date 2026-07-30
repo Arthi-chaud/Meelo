@@ -18,18 +18,23 @@
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { getArea, getArtists, getLabel } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
+import { ArtistIcon } from "@/ui/icons";
+import type { Action } from "~/actions";
 import { useQuery } from "~/api";
 import { StaticHeader } from "~/components/header";
 import { useLibraryFiltersControl } from "~/components/infinite/controls/filters";
 import { useLayoutControl } from "~/components/infinite/controls/layout";
+import { usePrimaryArtistsToggleControl } from "~/components/infinite/controls/primary-artists";
 import { useSortControl } from "~/components/infinite/controls/sort";
 import { InfiniteView } from "~/components/infinite/view";
 import { ArtistItem, ArtistTile } from "~/components/item/resource/artist";
 import { AreaHeader } from "~/components/resource-header";
 
 export default function ArtistBrowseView() {
+	const { t } = useTranslation();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "list",
 		enableToggle: true,
@@ -44,7 +49,22 @@ export default function ArtistBrowseView() {
 		area?: string;
 	}>();
 	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
-
+	const enablePrimaryArtistsToggle =
+		(!labelId && !areaId) || areaId !== undefined;
+	const [{ primaryArtistsOnly }, primaryArtistsToggleControl] =
+		usePrimaryArtistsToggleControl({
+			enableToggle: enablePrimaryArtistsToggle,
+		});
+	const primaryArtistsAction: Action = {
+		icon: ArtistIcon,
+		label: primaryArtistsOnly
+			? t("Show All Artists")
+			: t("Album Artists Only"),
+		onPress: () =>
+			primaryArtistsToggleControl.onUpdate({
+				primaryArtistsOnly: !primaryArtistsOnly,
+			}),
+	};
 	const { data: label } = useQuery((labelId) => getLabel(labelId), labelId);
 	const { data: area } = useQuery((areaId) => getArea(areaId), areaId);
 	const Item = layout === "list" ? ArtistItem : ArtistTile;
@@ -68,9 +88,17 @@ export default function ArtistBrowseView() {
 					layout: layoutControl,
 					sort: sortControl,
 					filters: [libraryFilterControl],
+					actions: enablePrimaryArtistsToggle
+						? [primaryArtistsAction]
+						: undefined,
 				}}
 				query={getArtists(
-					{ library: libraries, label: labelId, area: areaId },
+					{
+						library: libraries,
+						label: labelId,
+						area: areaId,
+						primaryArtistsOnly,
+					},
 					{ sortBy: sort ?? "name", order: order ?? "asc" },
 					["illustration"],
 				)}
