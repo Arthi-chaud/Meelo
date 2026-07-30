@@ -205,14 +205,14 @@ export default class ParserService {
 			const [sstart, strippedGroup, ssend] =
 				this.stripGroupDelimiters(group);
 			let featureSubGroup = strippedGroup.match(
-				/(^with|(feat(uring|\.)?))\s+(?<artists>.*)$/i,
+				/(^with|(ft\.?|feat(uring|\.)?))\s+(?<artists>.*)$/i,
 			);
 			let artistGroupIndex = 4;
 
 			if (!sstart && !ssend) {
 				// If there is no delimiters
 				featureSubGroup = strippedGroup.match(
-					/(feat(uring|\.)?)\s+(?<artists>.*)$/i,
+					/(ft\.?|feat(uring|\.)?)\s+(?<artists>.*)$/i,
 				);
 				artistGroupIndex = 3;
 			}
