@@ -27,7 +27,7 @@ import {
 } from "@/ui/icons";
 import { showSuccessToast } from "~/primitives/toast";
 export type Action = {
-	icon: IconType;
+	icon?: IconType;
 	label: TranslationKey;
 	subtitle?: string;
 	onPress?: () => void;

@@ -143,10 +143,12 @@
 			"changeLayout": "Changer la disposition",
 			"desc": "Desc.",
 			"filter": {
+				"allArtists": "Voir tous les Artistes",
 				"allLibraries": "Toutes librairies",
 				"allTypes": "Tous Types",
 				"header": "Filtrer",
-				"nTypes": "{{n}} Types"
+				"nTypes": "{{n}} Types",
+				"primaryArtists": "Voir les Artistes d'Albums"
 			},
 			"groupVersions": "Grouper les versions",
 			"order": "Ordre",

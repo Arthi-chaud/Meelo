@@ -18,10 +18,8 @@
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { getArea, getArtists, getLabel } from "@/api/queries";
 import { ArtistSortingKeys } from "@/models/artist";
-import { ArtistIcon } from "@/ui/icons";
 import type { Action } from "~/actions";
 import { useQuery } from "~/api";
 import { StaticHeader } from "~/components/header";
@@ -34,7 +32,6 @@ import { ArtistItem, ArtistTile } from "~/components/item/resource/artist";
 import { AreaHeader } from "~/components/resource-header";
 
 export default function ArtistBrowseView() {
-	const { t } = useTranslation();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "list",
 		enableToggle: true,
@@ -56,10 +53,9 @@ export default function ArtistBrowseView() {
 			enableToggle: enablePrimaryArtistsToggle,
 		});
 	const primaryArtistsAction: Action = {
-		icon: ArtistIcon,
 		label: primaryArtistsOnly
-			? t("Show All Artists")
-			: t("Album Artists Only"),
+			? "browsing.controls.filter.allArtists"
+			: "browsing.controls.filter.primaryArtists",
 		onPress: () =>
 			primaryArtistsToggleControl.onUpdate({
 				primaryArtistsOnly: !primaryArtistsOnly,
