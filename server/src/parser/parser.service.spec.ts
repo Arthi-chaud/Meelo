@@ -145,6 +145,15 @@ describe("Parser Service", () => {
 				"Me Against the Music (feat. Madonna) - Remix A (Edit B)",
 				["Me Against the Music", "feat. Madonna", "Remix A", "Edit B"],
 			],
+			// NOTE: emdash
+			[
+				"Me Against the Music – instrumental",
+				["Me Against the Music", "instrumental"],
+			],
+			[
+				"Me Against the Music –instrumental–",
+				["Me Against the Music", "instrumental"],
+			],
 		] as const;
 
 		for (const [unparsed, expected] of scenarios) {

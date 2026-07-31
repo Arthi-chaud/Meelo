@@ -34,7 +34,9 @@ export default class ParserService {
 		[/\(/, /\)/],
 		[/\[/, /\]/],
 		[/\{/, /\}/],
+		[/–/, /–/],
 		[/\s+-\s+/, /$/],
+		[/\s+–\s+/, /$/],
 	] as const;
 
 	private _getFirstGroup(token: string, start: RegExp, end: RegExp) {
@@ -141,7 +143,10 @@ export default class ParserService {
 			// for each nested dashed group
 			// merge with previous one
 			for (let i = 1; i < subGroups.length; i++) {
-				if (subGroups[i].startsWith("- ")) {
+				if (
+					subGroups[i].startsWith("- ") ||
+					subGroups[i].startsWith("– ")
+				) {
 					subGroups[i - 1] = [subGroups[i - 1], subGroups[i]].join(
 						" ",
 					);
@@ -156,7 +161,7 @@ export default class ParserService {
 			} else {
 				tokens.push(
 					...subGroups.map((g) => {
-						if (g.startsWith("- ")) {
+						if (g.startsWith("- ") || g.startsWith("– ")) {
 							g = ` ${g}`;
 						}
 						return this.stripGroupDelimiters(g)[1];
