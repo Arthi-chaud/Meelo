@@ -145,12 +145,14 @@ const ContextMenuItemComponent = ({ item }: { item: ContextMenuItem }) => {
 				item.onPress?.();
 			}}
 		>
-			<View style={styles.itemIcon}>
-				<Icon
-					icon={item.icon}
-					style={item.disabled ? styles.disabled : undefined}
-				/>
-			</View>
+			{item.icon && (
+				<View style={styles.itemIcon}>
+					<Icon
+						icon={item.icon}
+						style={item.disabled ? styles.disabled : undefined}
+					/>
+				</View>
+			)}
 			<View style={styles.itemLabel}>
 				<Text
 					content={t(item.label)}

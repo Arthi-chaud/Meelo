@@ -22,10 +22,13 @@ const ArtistsPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 		<>
 			<Head title={t("models.artist_plural")} />
 			<InfiniteArtistView
-				query={({ libraries, sortBy, order }) =>
-					getArtists({ library: libraries }, { sortBy, order }, [
-						"illustration",
-					])
+				enablePrimaryArtistsFilter
+				query={({ libraries, sortBy, order, primaryArtistsOnly }) =>
+					getArtists(
+						{ library: libraries, primaryArtistsOnly },
+						{ sortBy, order },
+						["illustration"],
+					)
 				}
 			/>
 		</>

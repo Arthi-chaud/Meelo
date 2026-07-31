@@ -115,6 +115,7 @@ export const getArtists = <I extends ArtistInclude | never = never>(
 		query?: Identifier;
 		label?: Identifier;
 		area?: Identifier;
+		primaryArtistsOnly?: boolean;
 	},
 	sort?: SortingParameters<typeof ArtistSortingKeys>,
 	include: I[] = [],
@@ -122,8 +123,15 @@ export const getArtists = <I extends ArtistInclude | never = never>(
 	return _mkSimplePaginatedQuery({
 		route: "/artists",
 		filter: {
-			primaryArtistsOnly: filter.album ? undefined : "true",
 			...filter,
+			primaryArtistsOnly:
+				filter.primaryArtistsOnly !== undefined
+					? filter.primaryArtistsOnly
+						? "true"
+						: undefined
+					: filter.album !== undefined
+						? undefined
+						: "true",
 			library: formatOr(filter.library),
 		},
 		sort,

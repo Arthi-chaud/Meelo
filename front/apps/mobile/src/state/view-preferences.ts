@@ -11,9 +11,9 @@ const _viewPreferences = atom<ViewPreferences>(
 	loadViewPreferences(storage.getString(ViewPreferenceKey)),
 );
 
-export const { viewPreferenceAtom, useViewPreference } = mkViewPreferenceAtom(
-	_viewPreferences,
-	(newVP) => {
-		storage.set(ViewPreferenceKey, JSON.stringify(newVP));
-	},
-);
+export const {
+	preferenceAtom: viewPreferenceAtom,
+	usePreference: useViewPreference,
+} = mkViewPreferenceAtom(_viewPreferences, (newVP) => {
+	storage.set(ViewPreferenceKey, JSON.stringify(newVP));
+});

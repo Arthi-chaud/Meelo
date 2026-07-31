@@ -145,9 +145,11 @@
 			"desc": "Desc",
 			"filter": {
 				"header": "Filter",
+				"allArtists": "See All Artists",
 				"allLibraries": "All Libraries",
 				"allTypes": "All Types",
-				"nTypes": "{{n}} Types"
+				"nTypes": "{{n}} Types",
+				"primaryArtists": "See Album Artists"
 			},
 			"groupVersions": "Group Versions",
 			"order": "Order",
