@@ -50,9 +50,12 @@ func ParsePrefixedTag(t ffprobe.Tags, prefixes []string, fun parseTagFn) {
 func CollectTags(probeData *ffprobe.ProbeData) ffprobe.Tags {
 	var tags ffprobe.Tags = make(ffprobe.Tags)
 	// In some format (e.g. opus)
-	// Tags are attached to the audio stream,
+	// Tags are attached to the audio/video stream,
 	// Not the 'Format'
 	for _, s := range probeData.Streams {
+		if s.CodecType == "video" {
+			continue // NOTE: See #1961
+		}
 		for k, v := range s.TagList {
 			tags[strings.ToLower(k)] = v
 		}
