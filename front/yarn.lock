@@ -8448,7 +8448,7 @@ __metadata:
     react-native-screens: "npm:~4.25.2"
     react-native-svg: "npm:15.15.5"
     react-native-toast-message: "npm:^2.3.3"
-    react-native-unistyles: "npm:3.2.5"
+    react-native-unistyles: "npm:3.3.0"
     react-native-uuid: "npm:^2.0.4"
     react-native-video: "npm:^7.0.0-beta.9"
     react-native-worklets: "npm:^0.10.1"
@@ -9558,9 +9558,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-unistyles@npm:3.2.5":
-  version: 3.2.5
-  resolution: "react-native-unistyles@npm:3.2.5"
+"react-native-unistyles@npm:3.3.0":
+  version: 3.3.0
+  resolution: "react-native-unistyles@npm:3.3.0"
   dependencies:
     "@babel/types": "npm:7.29.0"
   peerDependencies:
@@ -9575,7 +9575,7 @@ __metadata:
       optional: true
     react-native-reanimated:
       optional: true
-  checksum: 10c0/dcbba53188bff64b422d5d6f9407636846a4076122de4034b912318782717cb7bc0ed7aa84bcac64bc10cd307c33507e8774c24965df1b7998e8dcdaa1343a34
+  checksum: 10c0/228582bd2833089982ce83044c22c6b61cf53c3b126465761df7087eb11594d518fa075a5d79f65aefbca88ff11d35caf87f316766eeb1ea249082e3f6a8742e
   languageName: node
   linkType: hard
 
