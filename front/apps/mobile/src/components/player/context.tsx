@@ -4,9 +4,11 @@ import {
 	type MediaControlEvent,
 	PlaybackState,
 } from "expo-media-control";
+import { getNetworkStateAsync, NetworkStateType } from "expo-network";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
+import Toast from "react-native-toast-message";
 import uuid from "react-native-uuid";
 import {
 	type onLoadData,
@@ -34,6 +36,7 @@ import {
 	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
+import { streamingPreferenceAtom } from "~/state/streaming";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -191,8 +194,8 @@ export const PlayerContext = () => {
 			prefetchCount + 1 + cursor, // NOTE: add one to include current song
 		);
 		for (const track of queue) {
-			if (track.track.type === "Audio")
-				download(track.track.sourceFileId);
+			// if (track.track.type === "Audio")
+			// 	download(track.track.sourceFileId);
 		}
 	}, [playlist, cursor]);
 
@@ -237,7 +240,7 @@ export const PlayerContext = () => {
 			return;
 		}
 		if (playerRef.current === null) {
-			mkSource(queryClient, currentTrack).then((source) => {
+			mkSource(queryClient, currentTrack, "direct").then((source) => {
 				playerRef.current = new VideoPlayer(source);
 				playerRef.current.mixAudioMode = "doNotMix";
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
@@ -336,7 +339,7 @@ export const PlayerContext = () => {
 			isSwitchingTrack.current = true;
 			ready.current = false;
 			playerRef.current!.pause();
-			mkSource(queryClient, currentTrack).then((source) => {
+			mkSource(queryClient, currentTrack, "direct").then((source) => {
 				playerRef.current
 					?.replaceSourceAsync(source)
 					.then(() => {
@@ -366,7 +369,11 @@ export const PlayerContext = () => {
 		}
 		const timestamp = playerRef.current?.currentTime;
 
-		mkSource(queryClient, currentTrack, isHLS).then((source) =>
+		mkSource(
+			queryClient,
+			currentTrack,
+			isHLS ? "transcoding" : "direct",
+		).then((source) =>
 			playerRef.current?.replaceSourceAsync(source).then(() => {
 				playerRef.current!.play();
 				if (isHLS) {
@@ -408,40 +415,55 @@ const clientId = uuid.v4();
 const mkSource = async (
 	queryClient: QueryClient,
 	st: TrackState,
-	useHLS: boolean = false,
+	method: "direct" | "transcoding",
 ) => {
 	const api = getAPI();
 	const [dlStatus, localPath] = await getDownloadStatus(
 		st.track.sourceFileId,
 	);
-	const shouldDownload = !useHLS && st.track.type === "Audio";
-	if (!shouldDownload || dlStatus !== "downloaded") {
-		if (shouldDownload) {
-			await downloadFile(queryClient)(st.track.sourceFileId);
-		}
-		return _mkSource(st, api, useHLS);
+	const streamingPreference = store.get(streamingPreferenceAtom);
+	console.log(streamingPreference);
+	const streamingQuality =
+		dlStatus === "downloaded"
+			? null
+			: await getNetworkStateAsync().then((st) =>
+					st.type === NetworkStateType.WIFI
+						? streamingPreference.wifi
+						: streamingPreference.cellular,
+				);
+	const shouldDownload = method === "direct" && st.track.type === "Audio";
+	// if (!shouldDownload || dlStatus !== "downloaded") {
+	if (shouldDownload) {
+		// await downloadFile(queryClient)(st.track.sourceFileId);
 	}
-
-	return _mkSource(st, api, false, localPath);
+	const res = _mkSource(st, api, "transcoding");
+	console.log(res);
+	if (streamingQuality) {
+		Toast.show({
+			text1: "Playing in quality " + streamingQuality?.audio,
+		});
+		res.uri = res.uri.replace("/128k/", `/${streamingQuality?.audio}/`);
+	} else {
+		Toast.show({ text1: "Streaming quality unspecified" });
+	}
+	return res;
+	// }
+	// return { uri: localPath };
 };
 
 const _mkSource = (
 	{ track }: TrackState,
 	api: API,
+	method: "direct" | "transcoding",
 	useTranscoding = false,
-	localPath?: string,
-): VideoConfig => ({
-	uri:
-		localPath ??
-		(useTranscoding
-			? api.getTranscodeStreamURL(track.sourceFileId, track.type)
-			: api.getDirectStreamURL(track.sourceFileId)),
-	headers: {
-		...api.getAuthHeaders(),
-		...(useTranscoding
-			? {
-					"X-CLIENT-ID": clientId,
-				}
-			: {}),
-	},
-});
+) =>
+	({
+		uri:
+			method === "transcoding"
+				? api.getTranscodeStreamURL(track.sourceFileId, track.type)
+				: api.getDirectStreamURL(track.sourceFileId),
+		headers: {
+			...api.getAuthHeaders(),
+			"X-CLIENT-ID": clientId,
+		},
+	}) satisfies VideoConfig;
