@@ -8442,15 +8442,15 @@ __metadata:
     react-native-gesture-handler: "npm:~2.31.0"
     react-native-keyboard-controller: "npm:1.22.2"
     react-native-mmkv: "npm:4.3.2"
-    react-native-nitro-modules: "npm:0.35.9"
+    react-native-nitro-modules: "npm:0.36.4"
     react-native-reanimated: "npm:~4.5.1"
     react-native-safe-area-context: "npm:~5.8.0"
     react-native-screens: "npm:~4.25.2"
     react-native-svg: "npm:15.15.5"
     react-native-toast-message: "npm:^2.3.3"
-    react-native-unistyles: "npm:3.2.5"
+    react-native-unistyles: "npm:3.3.0"
     react-native-uuid: "npm:^2.0.4"
-    react-native-video: "npm:^7.0.0-beta.9"
+    react-native-video: "npm:^7.0.0-beta.10"
     react-native-worklets: "npm:^0.10.1"
     state: "workspace:^"
     type-fest: "npm:^5.6.0"
@@ -9460,13 +9460,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-nitro-modules@npm:0.35.9":
-  version: 0.35.9
-  resolution: "react-native-nitro-modules@npm:0.35.9"
+"react-native-nitro-modules@npm:0.36.4":
+  version: 0.36.4
+  resolution: "react-native-nitro-modules@npm:0.36.4"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/2e5c1b3eed1d187e7c2bbbf661e6405cb69c6a20b01427ea4c8a3bfe07a4baf2efbeb170a21f8c17fb0e18f022244f4b1fe1ce69a7ec824a7a4cf72441893cf1
+  checksum: 10c0/609cbb9d3511cba2b60847c64946ae7c33a002cba5c2a7299a661251c63ae30f1750108a437faaeca7653e80af70f259da0aa27d3dd9d581b5b01ebfb1a07902
   languageName: node
   linkType: hard
 
@@ -9558,9 +9558,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-unistyles@npm:3.2.5":
-  version: 3.2.5
-  resolution: "react-native-unistyles@npm:3.2.5"
+"react-native-unistyles@npm:3.3.0":
+  version: 3.3.0
+  resolution: "react-native-unistyles@npm:3.3.0"
   dependencies:
     "@babel/types": "npm:7.29.0"
   peerDependencies:
@@ -9575,7 +9575,7 @@ __metadata:
       optional: true
     react-native-reanimated:
       optional: true
-  checksum: 10c0/dcbba53188bff64b422d5d6f9407636846a4076122de4034b912318782717cb7bc0ed7aa84bcac64bc10cd307c33507e8774c24965df1b7998e8dcdaa1343a34
+  checksum: 10c0/228582bd2833089982ce83044c22c6b61cf53c3b126465761df7087eb11594d518fa075a5d79f65aefbca88ff11d35caf87f316766eeb1ea249082e3f6a8742e
   languageName: node
   linkType: hard
 
@@ -9586,7 +9586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-video@npm:^7.0.0-beta.9":
+"react-native-video@npm:^7.0.0-beta.10":
   version: 7.0.0-beta.10
   resolution: "react-native-video@npm:7.0.0-beta.10"
   dependencies:
