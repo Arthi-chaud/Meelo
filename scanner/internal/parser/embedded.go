@@ -53,6 +53,9 @@ func CollectTags(probeData *ffprobe.ProbeData) ffprobe.Tags {
 	// Tags are attached to the audio stream,
 	// Not the 'Format'
 	for _, s := range probeData.Streams {
+		if s.CodecType == "video" {
+			continue // NOTE: See #1961
+		}
 		for k, v := range s.TagList {
 			tags[strings.ToLower(k)] = v
 		}
