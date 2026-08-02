@@ -28,7 +28,7 @@ export default class ParserService {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
-	) {}
+	) { }
 
 	protected separators = [
 		[/\(/, /\)/],
@@ -323,7 +323,11 @@ export default class ParserService {
 			.map((ext) => ext.toLowerCase())
 			.filter(
 				(ext) =>
-					!(ext.startsWith("feat ") || ext.startsWith("featuring ")),
+					!(
+						ext.startsWith("feat ") ||
+						ext.startsWith("featuring ") ||
+						ext.startsWith("ft. ")
+					),
 			)
 			.join(" ");
 		const extensionWords = jointExtensionWords.split(" ").flat();
@@ -563,7 +567,11 @@ export default class ParserService {
 			.map((ext) => ext.toLowerCase())
 			.filter(
 				(ext) =>
-					!(ext.startsWith("feat ") || ext.startsWith("featuring ")),
+					!(
+						ext.startsWith("feat ") ||
+						ext.startsWith("featuring ") ||
+						ext.startsWith("ft. ")
+					),
 			)
 			.join(" ");
 		const extensionWords = jointExtensionWords.split(" ").flat();
