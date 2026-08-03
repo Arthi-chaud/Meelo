@@ -28,7 +28,7 @@ export default class ParserService {
 	constructor(
 		@Inject(forwardRef(() => ArtistService))
 		private artistService: ArtistService,
-	) { }
+	) {}
 
 	protected separators = [
 		[/\(/, /\)/],
