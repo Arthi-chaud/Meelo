@@ -244,9 +244,20 @@ describe("Parser Service", () => {
 				"Me Against the Music",
 				["Madonna"],
 			],
+			[
+				"Me Against the Music (ft. Madonna)",
+				"Me Against the Music",
+				["Madonna"],
+			],
 
 			[
 				"Me Against the Music feat. Madonna",
+				"Me Against the Music",
+				["Madonna"],
+			],
+
+			[
+				"Me Against the Music ft. Madonna",
 				"Me Against the Music",
 				["Madonna"],
 			],
