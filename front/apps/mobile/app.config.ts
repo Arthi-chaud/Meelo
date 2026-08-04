@@ -25,6 +25,7 @@ export default (_: ConfigContext): ExpoConfig => ({
 		supportsTablet: true,
 		config: { usesNonExemptEncryption: false },
 		infoPlist: {
+			UIBackgroundModes: "audio",
 			UIViewControllerBasedStatusBarAppearance: true,
 			CFBundleShortVersionString: "$(MARKETING_VERSION)",
 			CFBundleVersion: "$(CURRENT_PROJECT_VERSION)",
@@ -65,13 +66,13 @@ export default (_: ConfigContext): ExpoConfig => ({
 				},
 			},
 		],
-		[
-			"expo-media-control",
-			{
-				enableBackgroundAudio: true,
-				audioSessionCategory: "playback",
-			},
-		],
+		// [
+		// 	"expo-media-control",
+		// 	{
+		// 		enableBackgroundAudio: true,
+		// 		audioSessionCategory: "playback",
+		// 	},
+		// ],
 		[
 			"expo-asset",
 			{

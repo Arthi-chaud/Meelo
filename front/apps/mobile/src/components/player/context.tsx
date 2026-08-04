@@ -1,12 +1,7 @@
-import {
-	Command,
-	MediaControl,
-	type MediaControlEvent,
-	PlaybackState,
-} from "expo-media-control";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
+import * as MediaControls from "react-native-media-notification";
 import uuid from "react-native-uuid";
 import {
 	type onLoadData,
@@ -78,7 +73,6 @@ export const PlayerContext = () => {
 	const { data: settings } = useQuery(getSettings);
 	const isSwitchingTrack = useRef(false);
 	const controlsRegistered = useRef(false);
-	const controlsListener = useRef<(() => void) | null>(null);
 	const ready = useRef(false);
 	const { download } = useDownloadManager();
 
@@ -93,90 +87,53 @@ export const PlayerContext = () => {
 			(controlsRegistered.current &&
 				ready.current &&
 				!isSwitchingTrack.current)
-		)
-			await MediaControl.updatePlaybackState(
-				(isPlaying ?? store.get(isPlayingAtom))
-					? PlaybackState.PLAYING
-					: PlaybackState.PAUSED,
-				progress ?? store.get(progressAtom),
-				1,
-			);
+		) {
+			await MediaControls.updateMetadata({
+				isPlaying,
+				position: progress,
+			});
+		}
 	};
 
 	const enableControls = async (enable: boolean) => {
 		if (enable === false) {
-			await MediaControl.removeAllListeners();
-			await MediaControl.disableMediaControls();
-			controlsListener.current?.();
-			controlsListener.current = null;
+			if (controlsRegistered.current === false) {
+				return;
+			}
 			controlsRegistered.current = false;
+			MediaControls.removeAllListeners();
+			await MediaControls.stopMediaNotification();
 			return;
 		}
 		if (controlsRegistered.current === false) {
-			await MediaControl.enableMediaControls({
-				capabilities: [
-					Command.PLAY,
-					Command.PAUSE,
-					Command.STOP,
-					Command.NEXT_TRACK,
-					Command.PREVIOUS_TRACK,
-					Command.SEEK,
-				],
-				compactCapabilities: [
-					Command.PREVIOUS_TRACK,
-					Command.PLAY,
-					Command.NEXT_TRACK,
-				],
-				notification: { showWhenClosed: true },
-				ios: { skipInterval: 15 },
-				android: { skipInterval: 15 },
+			// MediaControls.enableBackgroundMode(true);
+			// MediaControls.enableAudioInterruption(true);
+			MediaControls.setControlEnabled("play", true);
+			MediaControls.setControlEnabled("pause", true);
+			MediaControls.setControlEnabled("skipToNext", true);
+			MediaControls.setControlEnabled("skipToPrevious", true);
+			MediaControls.setControlEnabled("stop", true);
+			MediaControls.setControlEnabled("shuffle", false);
+			MediaControls.setControlEnabled("repeatMode", false);
+			MediaControls.addEventListener("play", () => store.set(playAtom));
+			MediaControls.addEventListener("pause", () => store.set(pauseAtom));
+			MediaControls.addEventListener("seek", (payload) => {
+				if (payload?.seekPosition !== undefined)
+					store.set(requestedProgressAtom, payload.seekPosition);
 			});
-			controlsRegistered.current = true;
-			controlsListener.current = MediaControl.addListener(
-				(event: MediaControlEvent) => {
-					const progress = store.get(progressAtom);
-					switch (event.command) {
-						case Command.PLAY:
-							playerRef.current?.play();
-							break;
-						case Command.PAUSE:
-							playerRef.current?.pause();
-							break;
-						case Command.STOP:
-							MediaControl.updatePlaybackState(
-								PlaybackState.STOPPED,
-								0,
-								1,
-							);
-							store.set(emptyPlaylistAtom);
-							break;
-						case Command.NEXT_TRACK:
-							store.set(skipTrackAtom, queryClient);
-							break;
-						case Command.PREVIOUS_TRACK:
-							store.set(rewindTrackAtom);
-							break;
-						case Command.SEEK:
-							store.set(
-								requestedProgressAtom,
-								event.data.position,
-							);
-							break;
-						case Command.SKIP_FORWARD:
-							store.set(
-								requestedProgressAtom,
-								progress + (event.data?.interval || 15),
-							);
-							break;
-						case Command.SKIP_BACKWARD:
-							store.set(
-								requestedProgressAtom,
-								progress - (event.data?.interval || 15),
-							);
-							break;
-					}
-				},
+			MediaControls.addEventListener("skipToNext", () =>
+				store.set(skipTrackAtom, queryClient),
 			);
+
+			MediaControls.addEventListener("skipToPrevious", () =>
+				store.set(rewindTrackAtom),
+			);
+			MediaControls.addEventListener("stop", () =>
+				store.set(emptyPlaylistAtom),
+			);
+			//NOTE: RepeatMode button is broken on android
+
+			controlsRegistered.current = true;
 		}
 	};
 
@@ -243,8 +200,6 @@ export const PlayerContext = () => {
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
 				// NOTE: On ios, When the player is paused, the 'focus' is lost and the media controls are flushed (cannot press play again + no metadata)
 				// Setting this opt to true preserves the focus.
-				playerRef.current.showNotificationControls =
-					Platform.OS === "ios";
 				playerRef.current.playInBackground = true;
 				playerRef.current.addEventListener(
 					"onPlaybackStateChange",
@@ -286,30 +241,30 @@ export const PlayerContext = () => {
 						ready.current = false;
 						enableControls(true).then(async () => {
 							const currentTrack = store.get(currentTrackAtom)!;
-							await MediaControl.updatePlaybackState(
-								PlaybackState.PLAYING,
-								0,
-								1,
+							const cursor = store.get(cursorAtom);
+							const playlist = store.get(playlistAtom);
+							MediaControls.setControlEnabled(
+								"skipToNext",
+								cursor < playlist.length - 1 && cursor >= 0,
 							);
-							await MediaControl.updateMetadata({
-								trackNumber: store.get(cursorAtom) + 1,
-								albumTrackCount: store.get(playlistAtom).length,
+							MediaControls.setControlEnabled(
+								"skipToPrevious",
+								cursor > 0,
+							);
+							await MediaControls.updateMetadata({
 								title: currentTrack.track.name,
-								elapsedTime: 0,
+								position: 0,
 								duration: duration ?? 1,
 								artist: formatArtists(
 									currentTrack.artist,
 									currentTrack.featuring,
 								),
 								artwork: currentTrack.track.illustration
-									? {
-											uri: getAPI().getIllustrationURL(
-												currentTrack.track.illustration
-													.url,
-												"original",
-												true,
-											),
-										}
+									? getAPI().getIllustrationURL(
+											currentTrack.track.illustration.url,
+											"original",
+											true,
+										)
 									: undefined,
 							});
 							ready.current = true;
