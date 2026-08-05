@@ -330,6 +330,7 @@ const Player = () => {
 			const streamURL = api.getStreamUrl({
 				fileId: currentTrack.track.sourceFileId,
 				fileType: currentTrack.track.type,
+				audioQuality: "256k",
 				method: "hls",
 			});
 			hls.current!.loadSource(streamURL);

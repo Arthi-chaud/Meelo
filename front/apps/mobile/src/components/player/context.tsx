@@ -19,6 +19,7 @@ import type API from "@/api";
 import type { StreamMethod } from "@/api";
 import type { QueryClient } from "@/api/hook";
 import { getSettings } from "@/api/queries";
+import type { AudioQuality } from "@/models/streaming";
 import {
 	cursorAtom,
 	emptyPlaylistAtom,
@@ -430,12 +431,14 @@ const _mkSource = (
 	{ track }: TrackState,
 	api: API,
 	method: StreamMethod,
+	transcodeQuality: AudioQuality = "128k",
 ): VideoConfig => ({
 	uri: api.getStreamUrl(
 		method === "hls"
 			? {
 					method,
 					fileId: track.sourceFileId,
+					audioQuality: transcodeQuality,
 					fileType: track.type,
 				}
 			: { method, fileId: track.sourceFileId },
