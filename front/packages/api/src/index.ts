@@ -38,6 +38,7 @@ import type { Scrobbler } from "@/models/scrobblers";
 import type { SaveSearchItem } from "@/models/search";
 import type { SongType } from "@/models/song";
 import type { SortingParameters } from "@/models/sorting";
+import type { AudioQuality } from "@/models/streaming";
 import { TaskResponse } from "@/models/task";
 import type { TrackType } from "@/models/track";
 import User from "@/models/user";
@@ -77,10 +78,12 @@ type StreamUrlParam = {
 } & (
 	| {
 			fileType: TrackType;
+			audioQuality: AudioQuality;
 			method: "hls";
 	  }
 	| {
 			fileType?: never;
+			audioQuality?: never;
 			method: "direct";
 	  }
 );
@@ -718,7 +721,7 @@ export default class API {
 			return this.buildURL(`/stream/${params.fileId}/master.m3u8`, {});
 		}
 		return this.buildURL(
-			`/stream/${params.fileId}/audio/0/128k/index.m3u8`,
+			`/stream/${params.fileId}/audio/0/${params.audioQuality}/index.m3u8`,
 			{},
 		);
 	}
