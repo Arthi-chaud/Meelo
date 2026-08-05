@@ -70,6 +70,21 @@ export enum Service {
 	Matcher = "matcher",
 }
 
+export type StreamMethod = "direct" | "hls";
+
+type StreamUrlParam = {
+	fileId: number;
+} & (
+	| {
+			fileType: TrackType;
+			method: "hls";
+	  }
+	| {
+			fileType?: never;
+			method: "direct";
+	  }
+);
+
 type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	route: string;
 	parameters: QueryParameters<Keys>;
@@ -695,14 +710,17 @@ export default class API {
 		return authedUrl;
 	}
 
-	getDirectStreamURL(fileId: number): string {
-		return this.buildURL(`/stream/${fileId}/direct`, {});
-	}
-	getTranscodeStreamURL(fileId: number, type: TrackType): string {
-		if (type === "Video") {
-			return this.buildURL(`/stream/${fileId}/master.m3u8`, {});
+	getStreamUrl(params: StreamUrlParam): string {
+		if (params.method === "direct") {
+			return this.buildURL(`/stream/${params.fileId}/direct`, {});
 		}
-		return this.buildURL(`/stream/${fileId}/audio/0/128k/index.m3u8`, {});
+		if (params.fileType === "Video") {
+			return this.buildURL(`/stream/${params.fileId}/master.m3u8`, {});
+		}
+		return this.buildURL(
+			`/stream/${params.fileId}/audio/0/128k/index.m3u8`,
+			{},
+		);
 	}
 
 	/**

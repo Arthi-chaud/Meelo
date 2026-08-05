@@ -49,7 +49,13 @@ export const DownloadAction = (
 	label: "actions.download.label",
 	disabled: !getUser()?.user,
 	onClick: () =>
-		confirmDownloadAction(confirm, api.getDirectStreamURL(sourceFileId)),
+		confirmDownloadAction(
+			confirm,
+			api.getStreamUrl({
+				fileId: sourceFileId,
+				method: "direct",
+			}),
+		),
 });
 
 export const DownloadAsyncAction = (
@@ -62,7 +68,13 @@ export const DownloadAsyncAction = (
 	disabled: !getUser()?.user,
 	onClick: () =>
 		sourceFileId().then((id) =>
-			confirmDownloadAction(confirm, api.getDirectStreamURL(id)),
+			confirmDownloadAction(
+				confirm,
+				api.getStreamUrl({
+					fileId: id,
+					method: "direct",
+				}),
+			),
 		),
 });
 
