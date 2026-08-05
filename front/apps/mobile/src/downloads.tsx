@@ -165,7 +165,10 @@ export const downloadFile =
 		const task = createDownloadTask({
 			id: taskId,
 			destination: destFileName,
-			url: queryClient.api.getDirectStreamURL(sourceFileId),
+			url: queryClient.api.getStreamUrl({
+				fileId: sourceFileId,
+				method: "direct",
+			}),
 			metadata: {
 				fileId: sourceFileId,
 				localPath: destFileName,

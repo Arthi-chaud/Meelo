@@ -16,6 +16,7 @@ import {
 	VideoPlayer,
 } from "react-native-video";
 import type API from "@/api";
+import type { StreamMethod } from "@/api";
 import type { QueryClient } from "@/api/hook";
 import { getSettings } from "@/api/queries";
 import {
@@ -237,7 +238,7 @@ export const PlayerContext = () => {
 			return;
 		}
 		if (playerRef.current === null) {
-			mkSource(queryClient, currentTrack).then((source) => {
+			mkSource(queryClient, currentTrack, "direct").then((source) => {
 				playerRef.current = new VideoPlayer(source);
 				playerRef.current.mixAudioMode = "doNotMix";
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
@@ -336,7 +337,7 @@ export const PlayerContext = () => {
 			isSwitchingTrack.current = true;
 			ready.current = false;
 			playerRef.current!.pause();
-			mkSource(queryClient, currentTrack).then((source) => {
+			mkSource(queryClient, currentTrack, "direct").then((source) => {
 				playerRef.current
 					?.replaceSourceAsync(source)
 					.then(() => {
@@ -366,13 +367,14 @@ export const PlayerContext = () => {
 		}
 		const timestamp = playerRef.current?.currentTime;
 
-		mkSource(queryClient, currentTrack, isHLS).then((source) =>
-			playerRef.current?.replaceSourceAsync(source).then(() => {
-				playerRef.current!.play();
-				if (isHLS) {
-					playerRef.current!.seekTo(timestamp);
-				}
-			}),
+		mkSource(queryClient, currentTrack, isHLS ? "hls" : "direct").then(
+			(source) =>
+				playerRef.current?.replaceSourceAsync(source).then(() => {
+					playerRef.current!.play();
+					if (isHLS) {
+						playerRef.current!.seekTo(timestamp);
+					}
+				}),
 		);
 	}, [isHLS]);
 
@@ -408,37 +410,39 @@ const clientId = uuid.v4();
 const mkSource = async (
 	queryClient: QueryClient,
 	st: TrackState,
-	useHLS: boolean = false,
+	method: StreamMethod,
 ) => {
 	const api = getAPI();
 	const [dlStatus, localPath] = await getDownloadStatus(
 		st.track.sourceFileId,
 	);
-	const shouldDownload = !useHLS && st.track.type === "Audio";
+	const shouldDownload = method === "direct" && st.track.type === "Audio";
 	if (!shouldDownload || dlStatus !== "downloaded") {
 		if (shouldDownload) {
 			await downloadFile(queryClient)(st.track.sourceFileId);
 		}
-		return _mkSource(st, api, useHLS);
+		return _mkSource(st, api, method);
 	}
-
-	return _mkSource(st, api, false, localPath);
+	return { uri: localPath };
 };
 
 const _mkSource = (
 	{ track }: TrackState,
 	api: API,
-	useTranscoding = false,
-	localPath?: string,
+	method: StreamMethod,
 ): VideoConfig => ({
-	uri:
-		localPath ??
-		(useTranscoding
-			? api.getTranscodeStreamURL(track.sourceFileId, track.type)
-			: api.getDirectStreamURL(track.sourceFileId)),
+	uri: api.getStreamUrl(
+		method === "hls"
+			? {
+					method,
+					fileId: track.sourceFileId,
+					fileType: track.type,
+				}
+			: { method, fileId: track.sourceFileId },
+	),
 	headers: {
 		...api.getAuthHeaders(),
-		...(useTranscoding
+		...(method === "hls"
 			? {
 					"X-CLIENT-ID": clientId,
 				}
