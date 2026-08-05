@@ -6,7 +6,7 @@ import { storage } from "~/utils/storage";
 const StreamingQuality = yup.object({
 	audio: AudioQuality.default("320k"),
 });
-type StreamingQuality = yup.InferType<typeof StreamingQuality>;
+export type StreamingQuality = yup.InferType<typeof StreamingQuality>;
 
 const StreamingPreferences = yup.object({
 	wifi: StreamingQuality.default({
@@ -19,7 +19,7 @@ const StreamingPreferences = yup.object({
 		audio: "256k",
 	} satisfies StreamingQuality).required(),
 });
-type StreamingPreferences = yup.InferType<typeof StreamingPreferences>;
+export type StreamingPreferences = yup.InferType<typeof StreamingPreferences>;
 export const StreamingPreferenceKey = "streaming-preferences";
 
 const readStreamingPreferences = (): StreamingPreferences => {

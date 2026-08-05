@@ -4,6 +4,7 @@ import {
 	type MediaControlEvent,
 	PlaybackState,
 } from "expo-media-control";
+import { NetworkStateType, useNetworkState } from "expo-network";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
@@ -19,7 +20,6 @@ import type API from "@/api";
 import type { StreamMethod } from "@/api";
 import type { QueryClient } from "@/api/hook";
 import { getSettings } from "@/api/queries";
-import type { AudioQuality } from "@/models/streaming";
 import {
 	cursorAtom,
 	emptyPlaylistAtom,
@@ -36,6 +36,11 @@ import {
 	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
+import { showErrorToast } from "~/primitives/toast";
+import {
+	type StreamingQuality,
+	streamingPreferenceAtom,
+} from "~/state/streaming";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -55,8 +60,18 @@ export const useHLSAtom = atom(false);
 const _canUseHLSAtom = atom(false);
 export const canUseHLSAtom = atom((get) => get(_canUseHLSAtom));
 
+const useStreamingQuality = (): StreamingQuality => {
+	const state = useNetworkState();
+	const prefs = useAtomValue(streamingPreferenceAtom);
+	if (state.type === NetworkStateType.WIFI) {
+		return prefs.wifi;
+	}
+	return prefs.cellular;
+};
+
 export const PlayerContext = () => {
 	const queryClient = useQueryClient();
+	const streamingQuality = useStreamingQuality();
 	const api = queryClient.api;
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const setPlayer = useSetAtom(videoPlayerAtom);
@@ -188,13 +203,17 @@ export const PlayerContext = () => {
 
 	useEffect(() => {
 		const prefetchCount = store.get(queuePrefetchCountAtom);
+		if (prefetchCount === 0) {
+			return;
+		}
 		const queue = playlist.slice(
 			cursor === -1 ? 0 : cursor,
 			prefetchCount + 1 + cursor, // NOTE: add one to include current song
 		);
 		for (const track of queue) {
-			if (track.track.type === "Audio")
+			if (track.track.type === "Audio") {
 				download(track.track.sourceFileId);
+			}
 		}
 	}, [playlist, cursor]);
 
@@ -239,7 +258,12 @@ export const PlayerContext = () => {
 			return;
 		}
 		if (playerRef.current === null) {
-			mkSource(queryClient, currentTrack, "direct").then((source) => {
+			mkSource(
+				queryClient,
+				currentTrack,
+				canUseHLS ? "hls" : "direct",
+				streamingQuality,
+			).then((source) => {
 				playerRef.current = new VideoPlayer(source);
 				playerRef.current.mixAudioMode = "doNotMix";
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
@@ -338,7 +362,12 @@ export const PlayerContext = () => {
 			isSwitchingTrack.current = true;
 			ready.current = false;
 			playerRef.current!.pause();
-			mkSource(queryClient, currentTrack, "direct").then((source) => {
+			mkSource(
+				queryClient,
+				currentTrack,
+				"direct",
+				streamingQuality,
+			).then((source) => {
 				playerRef.current
 					?.replaceSourceAsync(source)
 					.then(() => {
@@ -368,14 +397,18 @@ export const PlayerContext = () => {
 		}
 		const timestamp = playerRef.current?.currentTime;
 
-		mkSource(queryClient, currentTrack, isHLS ? "hls" : "direct").then(
-			(source) =>
-				playerRef.current?.replaceSourceAsync(source).then(() => {
-					playerRef.current!.play();
-					if (isHLS) {
-						playerRef.current!.seekTo(timestamp);
-					}
-				}),
+		mkSource(
+			queryClient,
+			currentTrack,
+			canUseHLS ? "hls" : "direct",
+			streamingQuality,
+		).then((source) =>
+			playerRef.current?.replaceSourceAsync(source).then(() => {
+				playerRef.current!.play();
+				if (isHLS) {
+					playerRef.current!.seekTo(timestamp);
+				}
+			}),
 		);
 	}, [isHLS]);
 
@@ -412,6 +445,7 @@ const mkSource = async (
 	queryClient: QueryClient,
 	st: TrackState,
 	method: StreamMethod,
+	transcodeQuality: StreamingQuality,
 ) => {
 	const api = getAPI();
 	const [dlStatus, localPath] = await getDownloadStatus(
@@ -420,9 +454,11 @@ const mkSource = async (
 	const shouldDownload = method === "direct" && st.track.type === "Audio";
 	if (!shouldDownload || dlStatus !== "downloaded") {
 		if (shouldDownload) {
+			// TODO: Delete
 			await downloadFile(queryClient)(st.track.sourceFileId);
 		}
-		return _mkSource(st, api, method);
+		showErrorToast({ text: transcodeQuality.audio });
+		return _mkSource(st, api, method, transcodeQuality);
 	}
 	return { uri: localPath };
 };
@@ -431,14 +467,14 @@ const _mkSource = (
 	{ track }: TrackState,
 	api: API,
 	method: StreamMethod,
-	transcodeQuality: AudioQuality = "128k",
+	streamingQuality: StreamingQuality,
 ): VideoConfig => ({
 	uri: api.getStreamUrl(
 		method === "hls"
 			? {
 					method,
 					fileId: track.sourceFileId,
-					audioQuality: transcodeQuality,
+					audioQuality: streamingQuality.audio,
 					fileType: track.type,
 				}
 			: { method, fileId: track.sourceFileId },
