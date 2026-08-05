@@ -18,7 +18,6 @@ import {
 } from "react-native-video";
 import type API from "@/api";
 import type { StreamMethod } from "@/api";
-import type { QueryClient } from "@/api/hook";
 import { getSettings } from "@/api/queries";
 import {
 	cursorAtom,
@@ -31,12 +30,10 @@ import { store } from "@/state/store";
 import formatArtists from "@/utils/format-artists";
 import { getAPI, useQuery, useQueryClient } from "~/api";
 import {
-	downloadFile,
 	getDownloadStatus,
 	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
-import { showErrorToast } from "~/primitives/toast";
 import {
 	type StreamingQuality,
 	streamingPreferenceAtom,
@@ -203,9 +200,6 @@ export const PlayerContext = () => {
 
 	useEffect(() => {
 		const prefetchCount = store.get(queuePrefetchCountAtom);
-		if (prefetchCount === 0) {
-			return;
-		}
 		const queue = playlist.slice(
 			cursor === -1 ? 0 : cursor,
 			prefetchCount + 1 + cursor, // NOTE: add one to include current song
@@ -259,7 +253,6 @@ export const PlayerContext = () => {
 		}
 		if (playerRef.current === null) {
 			mkSource(
-				queryClient,
 				currentTrack,
 				canUseHLS ? "hls" : "direct",
 				streamingQuality,
@@ -363,9 +356,8 @@ export const PlayerContext = () => {
 			ready.current = false;
 			playerRef.current!.pause();
 			mkSource(
-				queryClient,
 				currentTrack,
-				"direct",
+				canUseHLS ? "hls" : "direct",
 				streamingQuality,
 			).then((source) => {
 				playerRef.current
@@ -398,7 +390,6 @@ export const PlayerContext = () => {
 		const timestamp = playerRef.current?.currentTime;
 
 		mkSource(
-			queryClient,
 			currentTrack,
 			canUseHLS ? "hls" : "direct",
 			streamingQuality,
@@ -442,7 +433,6 @@ export const PlayerContext = () => {
 const clientId = uuid.v4();
 
 const mkSource = async (
-	queryClient: QueryClient,
 	st: TrackState,
 	method: StreamMethod,
 	transcodeQuality: StreamingQuality,
@@ -451,16 +441,10 @@ const mkSource = async (
 	const [dlStatus, localPath] = await getDownloadStatus(
 		st.track.sourceFileId,
 	);
-	const shouldDownload = method === "direct" && st.track.type === "Audio";
-	if (!shouldDownload || dlStatus !== "downloaded") {
-		if (shouldDownload) {
-			// TODO: Delete
-			await downloadFile(queryClient)(st.track.sourceFileId);
-		}
-		showErrorToast({ text: transcodeQuality.audio });
-		return _mkSource(st, api, method, transcodeQuality);
+	if (dlStatus === "downloaded") {
+		return { uri: localPath };
 	}
-	return { uri: localPath };
+	return _mkSource(st, api, method, transcodeQuality);
 };
 
 const _mkSource = (
