@@ -254,7 +254,9 @@ export const PlayerContext = () => {
 		if (playerRef.current === null) {
 			mkSource(
 				currentTrack,
-				canUseHLS ? "hls" : "direct",
+				canUseHLS && currentTrack.track.type === "Audio"
+					? "hls"
+					: "direct",
 				streamingQuality,
 			).then((source) => {
 				playerRef.current = new VideoPlayer(source);
@@ -357,7 +359,9 @@ export const PlayerContext = () => {
 			playerRef.current!.pause();
 			mkSource(
 				currentTrack,
-				canUseHLS ? "hls" : "direct",
+				canUseHLS && currentTrack.track.type === "Audio"
+					? "hls"
+					: "direct",
 				streamingQuality,
 			).then((source) => {
 				playerRef.current
