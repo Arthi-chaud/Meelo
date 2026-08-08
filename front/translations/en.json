@@ -353,8 +353,9 @@
 		},
 		"manageFromWebApp": "Manage libraries and users from the web app",
 		"streaming": {
-			"header": "Playback Quality",
+			"allowTranscoding": "Allow Transcoding",
 			"cellular": "Cellular",
+			"header": "Playback Quality",
 			"transcoderAvailable": "Transcoder Available",
 			"wifi": "Wifi",
 			"original": "Original"

@@ -35,6 +35,7 @@ import {
 } from "~/downloads";
 import { useTranscoderIsAvailable } from "~/hooks/streaming";
 import {
+	allowTranscodingAtom,
 	type StreamingQuality,
 	streamingPreferenceAtom,
 } from "~/state/streaming";
@@ -86,7 +87,9 @@ export const PlayerContext = () => {
 	const playlist = useAtomValue(playlistAtom);
 	const onProgressRef = useRef<any>(null);
 	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
-	const { isAvailable: canUseHLS } = useTranscoderIsAvailable();
+	const { isAvailable } = useTranscoderIsAvailable();
+	const allowTranscoding = useAtomValue(allowTranscodingAtom);
+	const canUseHLS = isAvailable && allowTranscoding;
 	const isSwitchingTrack = useRef(false);
 	const controlsRegistered = useRef(false);
 	const controlsListener = useRef<(() => void) | null>(null);
