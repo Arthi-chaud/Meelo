@@ -7,6 +7,7 @@ import {
 import { NetworkStateType, useNetworkState } from "expo-network";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 import uuid from "react-native-uuid";
 import {
@@ -34,6 +35,7 @@ import {
 	useDownloadManager,
 } from "~/downloads";
 import { useTranscoderIsAvailable } from "~/hooks/streaming";
+import { showErrorToast } from "~/primitives/toast";
 import {
 	allowTranscodingAtom,
 	type StreamingQuality,
@@ -67,6 +69,7 @@ const useStreamingQuality = (): StreamingQuality => {
 
 export const PlayerContext = () => {
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 	const streamingQuality = useStreamingQuality();
 	const api = queryClient.api;
 	const playerRef = useRef<VideoPlayer | null>(null);
@@ -393,10 +396,15 @@ export const PlayerContext = () => {
 			return;
 		}
 		const timestamp = playerRef.current?.currentTime;
+		if (isHLS && !canUseHLS) {
+			store.set(pauseAtom);
+			showErrorToast({ text: t("toasts.player.playbackError") });
+			return;
+		}
 
 		mkSource(
 			currentTrack,
-			canUseHLS ? "hls" : "direct",
+			canUseHLS && isHLS ? "hls" : "direct",
 			streamingQuality,
 		).then((source) =>
 			playerRef.current?.replaceSourceAsync(source).then(() => {
