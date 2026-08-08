@@ -18,7 +18,6 @@ import {
 } from "react-native-video";
 import type API from "@/api";
 import type { StreamMethod } from "@/api";
-import { getSettings } from "@/api/queries";
 import {
 	cursorAtom,
 	emptyPlaylistAtom,
@@ -28,12 +27,13 @@ import {
 } from "@/state/player";
 import { store } from "@/state/store";
 import formatArtists from "@/utils/format-artists";
-import { getAPI, useQuery, useQueryClient } from "~/api";
+import { getAPI, useQueryClient } from "~/api";
 import {
 	getDownloadStatus,
 	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
+import { useTranscoderIsAvailable } from "~/hooks/streaming";
 import {
 	type StreamingQuality,
 	streamingPreferenceAtom,
@@ -54,8 +54,6 @@ export const videoPlayerAtom = atom<VideoPlayer | null>(null);
 
 // These can be used
 export const useHLSAtom = atom(false);
-const _canUseHLSAtom = atom(false);
-export const canUseHLSAtom = atom((get) => get(_canUseHLSAtom));
 
 const useStreamingQuality = (): StreamingQuality => {
 	const state = useNetworkState();
@@ -88,8 +86,7 @@ export const PlayerContext = () => {
 	const playlist = useAtomValue(playlistAtom);
 	const onProgressRef = useRef<any>(null);
 	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
-	const [canUseHLS, setCanUseHLS] = useAtom(_canUseHLSAtom);
-	const { data: settings } = useQuery(getSettings);
+	const { isAvailable: canUseHLS } = useTranscoderIsAvailable();
 	const isSwitchingTrack = useRef(false);
 	const controlsRegistered = useRef(false);
 	const controlsListener = useRef<(() => void) | null>(null);
@@ -193,10 +190,6 @@ export const PlayerContext = () => {
 			);
 		}
 	};
-
-	useEffect(() => {
-		setCanUseHLS(settings?.transcoderAvailable === true);
-	}, [settings]);
 
 	useEffect(() => {
 		const prefetchCount = store.get(queuePrefetchCountAtom);

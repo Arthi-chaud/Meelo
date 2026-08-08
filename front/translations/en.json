@@ -338,7 +338,8 @@
 			"cachedTracks": "Cached Tracks",
 			"clearCache": "Clear Cache",
 			"maxCachedTracks": "Max Cached Tracks",
-			"prefetchCount": "Prefetch Count"
+			"prefetchCount": "Prefetch Count",
+			"qualityWarning": "Warning: Files will be cached in their original quality. No transcoding is available."
 		},
 		"interface": "Interface",
 		"libraries": {
@@ -354,6 +355,7 @@
 		"streaming": {
 			"header": "Playback Quality",
 			"cellular": "Cellular",
+			"transcoderAvailable": "Transcoder Available",
 			"wifi": "Wifi",
 			"original": "Original"
 		},

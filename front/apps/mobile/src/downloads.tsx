@@ -228,7 +228,10 @@ export const getDownloadStatus = async (
 
 const wipeCache = (): Error | null => {
 	try {
-		new FileSystem.Directory(`file://${cacheDirectory}`).delete();
+		const dir = new FileSystem.Directory(`file://${cacheDirectory}`);
+		if (dir.exists) {
+			dir.delete();
+		}
 	} catch (e) {
 		return e as Error;
 	}

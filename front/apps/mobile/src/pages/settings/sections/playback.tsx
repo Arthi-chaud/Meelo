@@ -3,10 +3,12 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { AudioQualities, type AudioQuality } from "@/models/streaming";
 import { store } from "@/state/store";
-import { MoreIcon } from "@/ui/icons";
+import { CheckIcon, CloseIcon, MoreIcon, RetryIcon } from "@/ui/icons";
 import { closeModalAtom, useModal } from "~/components/bottom-modal-sheet";
 import { SelectBottomModalContent } from "~/components/bottom-modal-sheet/select";
+import { useTranscoderIsAvailable } from "~/hooks/streaming";
 import { Button } from "~/primitives/button";
+import { Icon } from "~/primitives/icon";
 import { Text } from "~/primitives/text";
 import {
 	type NetworkMode,
@@ -24,10 +26,26 @@ export const PlaybackSettings = () => {
 	const [streamingSettings] = useAtom(streamingPreferenceAtom);
 	const { t } = useTranslation();
 	const { openModal } = usePickStreamingQualityModal();
+	const { isAvailable: isHLSAvailable, refresh } = useTranscoderIsAvailable();
 
 	return (
 		<Section>
 			<SectionHeader title={"settings.streaming.header"} />
+			<SectionRow
+				heading={
+					<SectionRowTitle title="settings.streaming.transcoderAvailable" />
+				}
+				action={
+					<>
+						<Icon icon={isHLSAvailable ? CheckIcon : CloseIcon} />
+						<Button
+							size="small"
+							icon={RetryIcon}
+							onPress={() => refresh()}
+						/>
+					</>
+				}
+			/>
 			{Object.entries(streamingSettings).map(([key, value]) => {
 				const networkMode = key as NetworkMode;
 				const quality = value as StreamingQuality;
@@ -38,15 +56,26 @@ export const PlaybackSettings = () => {
 						heading={
 							<SectionRowTitle
 								title={`settings.streaming.${networkMode}`}
+								textProps={{
+									color: !isHLSAvailable
+										? "secondary"
+										: undefined,
+								}}
 							/>
 						}
 						action={
 							<>
 								<Text
 									content={
-										quality.audio === "original"
-											? t("settings.streaming.original")
-											: quality.audio
+										isHLSAvailable
+											? translateAudioQuality(
+													quality.audio,
+													t,
+												)
+											: translateAudioQuality(
+													"original",
+													t,
+												)
 									}
 									variant="thirdTitle"
 									color="secondary"
@@ -54,6 +83,7 @@ export const PlaybackSettings = () => {
 								<Button
 									size="small"
 									icon={MoreIcon}
+									disabled={!isHLSAvailable}
 									onPress={() => openModal(networkMode)}
 								/>
 							</>
@@ -100,3 +130,8 @@ export const usePickStreamingQualityModal = () => {
 	});
 	return { openModal };
 };
+
+const translateAudioQuality = (
+	q: AudioQuality,
+	t: (s: TranslationKey) => string,
+) => (q === "original" ? t("settings.streaming.original") : q);

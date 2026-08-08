@@ -29,12 +29,13 @@ import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { usePickArtistModal } from "~/components/pick-artist";
 import * as Haptics from "~/haptics";
+import { useTranscoderIsAvailable } from "~/hooks/streaming";
 import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
 import { breakpoints } from "~/theme";
-import { canUseHLSAtom, useHLSAtom, videoPlayerAtom } from "../context";
+import { useHLSAtom, videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
 import { Slider } from "../slider";
 import {
@@ -146,7 +147,7 @@ const WithFullScreenAndTranscodeButton = ({
 }: ComponentProps<any>) => {
 	const [currentTrack] = useAtom(currentTrackAtom);
 	const [useHLS, setUseHLS] = useAtom(useHLSAtom);
-	const canUseHLS = useAtomValue(canUseHLSAtom);
+	const { isAvailable: canUseHLS } = useTranscoderIsAvailable();
 	const isVideo = currentTrack?.track.type === "Video";
 	const router = useRouter();
 	const onFullscreenPress = useCallback(() => {
@@ -170,7 +171,11 @@ const WithFullScreenAndTranscodeButton = ({
 			{isVideo && (
 				<View style={styles.videoButton}>
 					<SelectTranscodingButton
-						{...{ canUseHLS, useHLS, setUseHLS }}
+						{...{
+							canUseHLS: canUseHLS || false,
+							useHLS,
+							setUseHLS,
+						}}
 					/>
 				</View>
 			)}
