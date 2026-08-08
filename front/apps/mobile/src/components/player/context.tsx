@@ -200,6 +200,11 @@ export const PlayerContext = () => {
 
 	useEffect(() => {
 		const prefetchCount = store.get(queuePrefetchCountAtom);
+		if (prefetchCount <= 0) {
+			// NOTE: if count is zero, do not prefetch anything,
+			// even current song
+			return;
+		}
 		const queue = playlist.slice(
 			cursor === -1 ? 0 : cursor,
 			prefetchCount + 1 + cursor, // NOTE: add one to include current song
