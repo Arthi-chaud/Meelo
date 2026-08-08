@@ -13,6 +13,7 @@ import { CacheSettings } from "./sections/cache";
 import { InstancesSettings } from "./sections/instances";
 import { InterfaceSettings } from "./sections/interface";
 import { MiscSection } from "./sections/misc";
+import { PlaybackSettings } from "./sections/playback";
 import { ServiceVersionsSettings } from "./sections/service-versions";
 
 export const SettingsPage = ({
@@ -30,6 +31,7 @@ export const SettingsPage = ({
 	const sections = useMemo(() => {
 		const sections: (() => ReactNode)[] = [];
 		sections.push(InterfaceSettings);
+		sections.push(PlaybackSettings);
 		sections.push(CacheSettings);
 		if (user?.admin) {
 			sections.push(AdminSettings);

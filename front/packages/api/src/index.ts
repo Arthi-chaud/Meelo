@@ -38,6 +38,7 @@ import type { Scrobbler } from "@/models/scrobblers";
 import type { SaveSearchItem } from "@/models/search";
 import type { SongType } from "@/models/song";
 import type { SortingParameters } from "@/models/sorting";
+import type { AudioQuality } from "@/models/streaming";
 import { TaskResponse } from "@/models/task";
 import type { TrackType } from "@/models/track";
 import User from "@/models/user";
@@ -69,6 +70,23 @@ export enum Service {
 	Scanner = "scanner",
 	Matcher = "matcher",
 }
+
+export type StreamMethod = "direct" | "hls";
+
+type StreamUrlParam = {
+	fileId: number;
+} & (
+	| {
+			fileType: TrackType;
+			audioQuality: AudioQuality;
+			method: "hls";
+	  }
+	| {
+			fileType?: never;
+			audioQuality?: never;
+			method: "direct";
+	  }
+);
 
 type FetchParameters<Keys extends readonly string[], ReturnType> = {
 	route: string;
@@ -695,14 +713,17 @@ export default class API {
 		return authedUrl;
 	}
 
-	getDirectStreamURL(fileId: number): string {
-		return this.buildURL(`/stream/${fileId}/direct`, {});
-	}
-	getTranscodeStreamURL(fileId: number, type: TrackType): string {
-		if (type === "Video") {
-			return this.buildURL(`/stream/${fileId}/master.m3u8`, {});
+	getStreamUrl(params: StreamUrlParam): string {
+		if (params.method === "direct") {
+			return this.buildURL(`/stream/${params.fileId}/direct`, {});
 		}
-		return this.buildURL(`/stream/${fileId}/audio/0/128k/index.m3u8`, {});
+		if (params.fileType === "Video") {
+			return this.buildURL(`/stream/${params.fileId}/master.m3u8`, {});
+		}
+		return this.buildURL(
+			`/stream/${params.fileId}/audio/0/${params.audioQuality}/index.m3u8`,
+			{},
+		);
 	}
 
 	/**

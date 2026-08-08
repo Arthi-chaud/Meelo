@@ -34,6 +34,7 @@
 		"expo-linear-gradient": "^56.0.4",
 		"expo-linking": "~56.0.16",
 		"expo-media-control": "patch:expo-media-control@npm%3A1.0.12#~/.yarn/patches/expo-media-control-npm-1.0.12-d7bddfea85.patch",
+		"expo-network": "^57.0.1",
 		"expo-router": "~56.2.18",
 		"expo-screen-orientation": "~56.0.5",
 		"expo-splash-screen": "~56.0.14",

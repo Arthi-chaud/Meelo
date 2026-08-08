@@ -4,8 +4,10 @@ import {
 	type MediaControlEvent,
 	PlaybackState,
 } from "expo-media-control";
+import { NetworkStateType, useNetworkState } from "expo-network";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 import uuid from "react-native-uuid";
 import {
@@ -16,8 +18,7 @@ import {
 	VideoPlayer,
 } from "react-native-video";
 import type API from "@/api";
-import type { QueryClient } from "@/api/hook";
-import { getSettings } from "@/api/queries";
+import type { StreamMethod } from "@/api";
 import {
 	cursorAtom,
 	emptyPlaylistAtom,
@@ -27,13 +28,19 @@ import {
 } from "@/state/player";
 import { store } from "@/state/store";
 import formatArtists from "@/utils/format-artists";
-import { getAPI, useQuery, useQueryClient } from "~/api";
+import { getAPI, useQueryClient } from "~/api";
 import {
-	downloadFile,
 	getDownloadStatus,
 	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
+import { useTranscoderIsAvailable } from "~/hooks/streaming";
+import { showErrorToast } from "~/primitives/toast";
+import {
+	allowTranscodingAtom,
+	type StreamingQuality,
+	streamingPreferenceAtom,
+} from "~/state/streaming";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -50,11 +57,20 @@ export const videoPlayerAtom = atom<VideoPlayer | null>(null);
 
 // These can be used
 export const useHLSAtom = atom(false);
-const _canUseHLSAtom = atom(false);
-export const canUseHLSAtom = atom((get) => get(_canUseHLSAtom));
+
+const useStreamingQuality = (): StreamingQuality => {
+	const state = useNetworkState();
+	const prefs = useAtomValue(streamingPreferenceAtom);
+	if (state.type === NetworkStateType.WIFI) {
+		return prefs.wifi;
+	}
+	return prefs.cellular;
+};
 
 export const PlayerContext = () => {
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
+	const streamingQuality = useStreamingQuality();
 	const api = queryClient.api;
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const setPlayer = useSetAtom(videoPlayerAtom);
@@ -74,8 +90,9 @@ export const PlayerContext = () => {
 	const playlist = useAtomValue(playlistAtom);
 	const onProgressRef = useRef<any>(null);
 	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
-	const [canUseHLS, setCanUseHLS] = useAtom(_canUseHLSAtom);
-	const { data: settings } = useQuery(getSettings);
+	const { isAvailable } = useTranscoderIsAvailable();
+	const allowTranscoding = useAtomValue(allowTranscodingAtom);
+	const canUseHLS = isAvailable && allowTranscoding;
 	const isSwitchingTrack = useRef(false);
 	const controlsRegistered = useRef(false);
 	const controlsListener = useRef<(() => void) | null>(null);
@@ -181,18 +198,20 @@ export const PlayerContext = () => {
 	};
 
 	useEffect(() => {
-		setCanUseHLS(settings?.transcoderAvailable === true);
-	}, [settings]);
-
-	useEffect(() => {
 		const prefetchCount = store.get(queuePrefetchCountAtom);
+		if (prefetchCount <= 0) {
+			// NOTE: if count is zero, do not prefetch anything,
+			// even current song
+			return;
+		}
 		const queue = playlist.slice(
 			cursor === -1 ? 0 : cursor,
 			prefetchCount + 1 + cursor, // NOTE: add one to include current song
 		);
 		for (const track of queue) {
-			if (track.track.type === "Audio")
+			if (track.track.type === "Audio") {
 				download(track.track.sourceFileId);
+			}
 		}
 	}, [playlist, cursor]);
 
@@ -237,7 +256,13 @@ export const PlayerContext = () => {
 			return;
 		}
 		if (playerRef.current === null) {
-			mkSource(queryClient, currentTrack).then((source) => {
+			mkSource(
+				currentTrack,
+				canUseHLS && currentTrack.track.type === "Audio"
+					? "hls"
+					: "direct",
+				streamingQuality,
+			).then((source) => {
 				playerRef.current = new VideoPlayer(source);
 				playerRef.current.mixAudioMode = "doNotMix";
 				playerRef.current.ignoreSilentSwitchMode = "ignore";
@@ -336,7 +361,13 @@ export const PlayerContext = () => {
 			isSwitchingTrack.current = true;
 			ready.current = false;
 			playerRef.current!.pause();
-			mkSource(queryClient, currentTrack).then((source) => {
+			mkSource(
+				currentTrack,
+				canUseHLS && currentTrack.track.type === "Audio"
+					? "hls"
+					: "direct",
+				streamingQuality,
+			).then((source) => {
 				playerRef.current
 					?.replaceSourceAsync(source)
 					.then(() => {
@@ -365,8 +396,17 @@ export const PlayerContext = () => {
 			return;
 		}
 		const timestamp = playerRef.current?.currentTime;
+		if (isHLS && !canUseHLS) {
+			store.set(pauseAtom);
+			showErrorToast({ text: t("toasts.player.playbackError") });
+			return;
+		}
 
-		mkSource(queryClient, currentTrack, isHLS).then((source) =>
+		mkSource(
+			currentTrack,
+			canUseHLS && isHLS ? "hls" : "direct",
+			streamingQuality,
+		).then((source) =>
 			playerRef.current?.replaceSourceAsync(source).then(() => {
 				playerRef.current!.play();
 				if (isHLS) {
@@ -406,39 +446,39 @@ export const PlayerContext = () => {
 const clientId = uuid.v4();
 
 const mkSource = async (
-	queryClient: QueryClient,
 	st: TrackState,
-	useHLS: boolean = false,
+	method: StreamMethod,
+	transcodeQuality: StreamingQuality,
 ) => {
 	const api = getAPI();
 	const [dlStatus, localPath] = await getDownloadStatus(
 		st.track.sourceFileId,
 	);
-	const shouldDownload = !useHLS && st.track.type === "Audio";
-	if (!shouldDownload || dlStatus !== "downloaded") {
-		if (shouldDownload) {
-			await downloadFile(queryClient)(st.track.sourceFileId);
-		}
-		return _mkSource(st, api, useHLS);
+	if (dlStatus === "downloaded") {
+		return { uri: localPath };
 	}
-
-	return _mkSource(st, api, false, localPath);
+	return _mkSource(st, api, method, transcodeQuality);
 };
 
 const _mkSource = (
 	{ track }: TrackState,
 	api: API,
-	useTranscoding = false,
-	localPath?: string,
+	method: StreamMethod,
+	streamingQuality: StreamingQuality,
 ): VideoConfig => ({
-	uri:
-		localPath ??
-		(useTranscoding
-			? api.getTranscodeStreamURL(track.sourceFileId, track.type)
-			: api.getDirectStreamURL(track.sourceFileId)),
+	uri: api.getStreamUrl(
+		method === "hls"
+			? {
+					method,
+					fileId: track.sourceFileId,
+					audioQuality: streamingQuality.audio,
+					fileType: track.type,
+				}
+			: { method, fileId: track.sourceFileId },
+	),
 	headers: {
 		...api.getAuthHeaders(),
-		...(useTranscoding
+		...(method === "hls"
 			? {
 					"X-CLIENT-ID": clientId,
 				}

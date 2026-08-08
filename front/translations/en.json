@@ -338,7 +338,8 @@
 			"cachedTracks": "Cached Tracks",
 			"clearCache": "Clear Cache",
 			"maxCachedTracks": "Max Cached Tracks",
-			"prefetchCount": "Prefetch Count"
+			"prefetchCount": "Prefetch Count",
+			"qualityWarning": "Warning: Files will be cached in their original quality. No transcoding is available."
 		},
 		"interface": "Interface",
 		"libraries": {
@@ -351,6 +352,14 @@
 			}
 		},
 		"manageFromWebApp": "Manage libraries and users from the web app",
+		"streaming": {
+			"allowTranscoding": "Allow Transcoding",
+			"cellular": "Cellular",
+			"header": "Playback Quality",
+			"transcoderAvailable": "Transcoder Available",
+			"wifi": "Wifi",
+			"original": "Original"
+		},
 		"ui": {
 			"account": {
 				"header": "Account",
