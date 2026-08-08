@@ -351,6 +351,12 @@
 			}
 		},
 		"manageFromWebApp": "Manage libraries and users from the web app",
+		"streaming": {
+			"header": "Playback Quality",
+			"cellular": "Cellular",
+			"wifi": "Wifi",
+			"original": "Original"
+		},
 		"ui": {
 			"account": {
 				"header": "Account",

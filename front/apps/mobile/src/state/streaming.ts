@@ -17,6 +17,7 @@ const StreamingPreferences = yup.object({
 	} satisfies StreamingQuality).required(),
 });
 export type StreamingPreferences = yup.InferType<typeof StreamingPreferences>;
+export type NetworkMode = keyof StreamingPreferences;
 export const StreamingPreferenceKey = "streaming-preferences";
 
 const readStreamingPreferences = (): StreamingPreferences => {

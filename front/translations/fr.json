@@ -349,6 +349,12 @@
 			}
 		},
 		"manageFromWebApp": "Gérer les librairies et les utilisateurs depuis l'application web",
+		"streaming": {
+			"header": "Qualité de Lecture",
+			"cellular": "Données Mobiles",
+			"wifi": "Wifi",
+			"original": "Qualité originale"
+		},
 		"ui": {
 			"account": {
 				"changePassword": "Changer le mot de passe",
