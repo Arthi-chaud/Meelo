@@ -351,8 +351,9 @@
 		},
 		"manageFromWebApp": "Gérer les librairies et les utilisateurs depuis l'application web",
 		"streaming": {
-			"header": "Qualité de Lecture",
+			"allowTranscoding": "Permettre le Transcodage",
 			"cellular": "Données Mobiles",
+			"header": "Qualité de Lecture",
 			"transcoderAvailable": "Transcoder Disponible",
 			"wifi": "Wifi",
 			"original": "Qualité originale"

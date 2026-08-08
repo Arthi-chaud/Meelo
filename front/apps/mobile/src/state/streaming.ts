@@ -19,6 +19,7 @@ const StreamingPreferences = yup.object({
 export type StreamingPreferences = yup.InferType<typeof StreamingPreferences>;
 export type NetworkMode = keyof StreamingPreferences;
 export const StreamingPreferenceKey = "streaming-preferences";
+export const AllowTranscodingKey = "allow-transcoding";
 
 const readStreamingPreferences = (): StreamingPreferences => {
 	const stringPrefs = storage.getString(StreamingPreferenceKey);
@@ -39,6 +40,14 @@ const readStreamingPreferences = (): StreamingPreferences => {
 	}
 };
 
+export const allowTranscodingAtom = atom<boolean, [boolean], void>(
+	(get) => get(_allowTranscodingAtom),
+	(_, set, newPref) => {
+		storage.set(AllowTranscodingKey, newPref);
+		set(_allowTranscodingAtom, newPref);
+	},
+);
+
 export const streamingPreferenceAtom = atom<
 	StreamingPreferences,
 	[StreamingPreferences],
@@ -52,4 +61,7 @@ export const streamingPreferenceAtom = atom<
 	},
 );
 
+const _allowTranscodingAtom = atom(
+	storage.getBoolean(AllowTranscodingKey) === true,
+);
 const _streamingPreferenceAtom = atom(readStreamingPreferences());

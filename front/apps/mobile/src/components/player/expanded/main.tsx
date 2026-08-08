@@ -34,6 +34,7 @@ import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
+import { allowTranscodingAtom } from "~/state/streaming";
 import { breakpoints } from "~/theme";
 import { useHLSAtom, videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
@@ -147,7 +148,9 @@ const WithFullScreenAndTranscodeButton = ({
 }: ComponentProps<any>) => {
 	const [currentTrack] = useAtom(currentTrackAtom);
 	const [useHLS, setUseHLS] = useAtom(useHLSAtom);
-	const { isAvailable: canUseHLS } = useTranscoderIsAvailable();
+	const { isAvailable } = useTranscoderIsAvailable();
+	const allowTranscoding = useAtomValue(allowTranscodingAtom);
+	const canUseHLS = isAvailable === true && allowTranscoding;
 	const isVideo = currentTrack?.track.type === "Video";
 	const router = useRouter();
 	const onFullscreenPress = useCallback(() => {
@@ -172,7 +175,7 @@ const WithFullScreenAndTranscodeButton = ({
 				<View style={styles.videoButton}>
 					<SelectTranscodingButton
 						{...{
-							canUseHLS: canUseHLS || false,
+							canUseHLS,
 							useHLS,
 							setUseHLS,
 						}}
