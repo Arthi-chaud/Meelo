@@ -15,9 +15,6 @@ const StreamingPreferences = yup.object({
 	cellular: StreamingQuality.default({
 		audio: "128k",
 	} satisfies StreamingQuality).required(),
-	download: StreamingQuality.default({
-		audio: "256k",
-	} satisfies StreamingQuality).required(),
 });
 export type StreamingPreferences = yup.InferType<typeof StreamingPreferences>;
 export const StreamingPreferenceKey = "streaming-preferences";
