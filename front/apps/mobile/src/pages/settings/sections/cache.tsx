@@ -24,6 +24,15 @@ export const CacheSettings = () => {
 			<MaxCachedSettings />
 			<PrefetchCountSettings />
 			<ClearCachedTracksSettings />
+			<SectionRow
+				heading={
+					<Text
+						content="Warning: Files will be downloaded in their original quality. No transcoding is available."
+						variant="itemLabel"
+					/>
+				}
+				action={null}
+			/>
 		</Section>
 	);
 };

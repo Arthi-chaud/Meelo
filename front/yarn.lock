@@ -6325,6 +6325,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-network@npm:^57.0.1":
+  version: 57.0.1
+  resolution: "expo-network@npm:57.0.1"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+  checksum: 10c0/15e2b59a88a500fc803b296fa80988e39659ed618959fa02b370c8b9a70db968e21a62de350a1998ece06819b83c49e8c59ea32fe5d132b325640c98a544a85f
+  languageName: node
+  linkType: hard
+
 "expo-router@npm:~56.2.18":
   version: 56.2.18
   resolution: "expo-router@npm:56.2.18"
@@ -8398,6 +8408,7 @@ __metadata:
     expo-linear-gradient: "npm:^56.0.4"
     expo-linking: "npm:~56.0.16"
     expo-media-control: "patch:expo-media-control@npm%3A1.0.12#~/.yarn/patches/expo-media-control-npm-1.0.12-d7bddfea85.patch"
+    expo-network: "npm:^57.0.1"
     expo-router: "npm:~56.2.18"
     expo-screen-orientation: "npm:~56.0.5"
     expo-splash-screen: "npm:~56.0.14"

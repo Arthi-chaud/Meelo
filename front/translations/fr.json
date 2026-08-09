@@ -336,7 +336,8 @@
 		"cache": {
 			"cachedTracks": "Pistes en cache",
 			"clearCache": "Vider le cache",
-			"header": "Cache"
+			"header": "Cache",
+			"qualityWarning": "Attention: Les fichiers cachés seront téléchargés dans leurs qualité originale."
 		},
 		"interface": "Interface",
 		"libraries": {
@@ -349,6 +350,14 @@
 			}
 		},
 		"manageFromWebApp": "Gérer les librairies et les utilisateurs depuis l'application web",
+		"streaming": {
+			"allowTranscoding": "Permettre le Transcodage",
+			"cellular": "Données Mobiles",
+			"header": "Qualité de Lecture",
+			"transcoderAvailable": "Transcoder Disponible",
+			"wifi": "Wifi",
+			"original": "Qualité originale"
+		},
 		"ui": {
 			"account": {
 				"changePassword": "Changer le mot de passe",

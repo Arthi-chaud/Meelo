@@ -327,10 +327,12 @@ const Player = () => {
 			if (!player?.current) {
 				return;
 			}
-			const streamURL = api.getTranscodeStreamURL(
-				currentTrack.track.sourceFileId,
-				currentTrack.track.type,
-			);
+			const streamURL = api.getStreamUrl({
+				fileId: currentTrack.track.sourceFileId,
+				fileType: currentTrack.track.type,
+				audioQuality: "256k",
+				method: "hls",
+			});
 			hls.current!.loadSource(streamURL);
 			hls.current!.attachMedia(player.current);
 			hls.current!.on(Hls.Events.ERROR, (err, data) => {
@@ -409,9 +411,10 @@ const Player = () => {
 			const newIllustrationURL = currentTrack.track.illustration?.url;
 
 			// biome-ignore lint: false positive
-			player!.current!.src = api.getDirectStreamURL(
-				currentTrack.track.sourceFileId,
-			);
+			player!.current!.src = api.getStreamUrl({
+				fileId: currentTrack.track.sourceFileId,
+				method: "direct",
+			});
 			startPlayback(false);
 			if (typeof navigator.mediaSession !== "undefined") {
 				navigator.mediaSession.metadata = new MediaMetadata({
