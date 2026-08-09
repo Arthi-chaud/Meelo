@@ -46,6 +46,7 @@
 		},
 		"logout": "Keluar",
 		"new": "Baru",
+		"playRadio": "Putar Radio",
 		"playback": {
 			"play": "Putar",
 			"playAfter": "Putar Setelahnya",
@@ -57,6 +58,7 @@
 			"setAllTracksAsMaster": "Tetapkan semua trek sebagai Master"
 		},
 		"seeArtists": "Buka Artis",
+		"seeLabels": "Buka Label",
 		"setAsMaster": "Tetapkan sebagai Master",
 		"share": "Bagikan",
 		"song": {
@@ -99,6 +101,8 @@
 		"compilation_plural": "Kompilasi",
 		"demoAlbum": "Album Demo",
 		"demoAlbum_plural": "Album-Album Demo",
+		"djMix": "DJ Mix",
+		"djMix_plural": "DJ Mix",
 		"ep": "EP",
 		"ep_plural": "EP",
 		"liveRecording": "Rekaman Live",
@@ -139,10 +143,12 @@
 			"changeLayout": "Ubah tata letak",
 			"desc": "Turun",
 			"filter": {
+				"allArtists": "Lihat Semua Artis",
 				"allLibraries": "Semua Pustaka",
 				"allTypes": "Semua Jenis",
 				"header": "Filter",
-				"nTypes": "{{n}} Jenis"
+				"nTypes": "{{n}} Jenis",
+				"primaryArtists": "Lihat Artis Album"
 			},
 			"groupVersions": "Kelompokkan Versi",
 			"order": "Urutan",
@@ -270,6 +276,9 @@
 		"openModalShortcutDescription": "Buka / Tutup modal ini",
 		"playPauseWhenExpanded": "Putar / Jeda (Saat pemutar terbuka)"
 	},
+	"labels": {
+		"foundedIn": "Didirikan pada {{startYear}}"
+	},
 	"misc": {
 		"from": "Dari",
 		"loading": "Memuat",
@@ -303,6 +312,7 @@
 		"browse": "Jelajahi",
 		"compilations": "Kompilasi",
 		"home": "Beranda",
+		"labels": "Label",
 		"more": "Lainnya",
 		"musicVideos": "Video Musik",
 		"search": "Cari",
@@ -361,11 +371,13 @@
 				"da": "Denmark",
 				"de": "Jerman",
 				"en": "Inggris",
+				"es": "Spanyol",
 				"fr": "Prancis",
 				"id": "Indonesia",
 				"it": "Italia",
 				"pt": "Portugis",
 				"pt_br": "Portugis (Brasil)",
+				"ro": "Rumania",
 				"ru": "Rusia",
 				"sk": "Slovak",
 				"zh_Hans": "Tionghoa (Sederhana)",
@@ -481,7 +493,9 @@
 			"nowEnabled": "Pengguna kini diaktifkan",
 			"nowNotAdmin": "Pengguna bukan lagi admin",
 			"updateFail": "Pembaruan pengguna gagal"
-		}
+		},
+		"willPlayAfter": "'{{songName}}' akan diputar setelahnya",
+		"willPlayNext": "'{{songName}}' akan diputar berikutnya"
 	},
 	"track": {
 		"bonusTrack": "Trek Bonus",
