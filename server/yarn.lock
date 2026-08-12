@@ -2779,7 +2779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pg@npm:^8.16.0, @types/pg@npm:^8.18.0":
+"@types/pg@npm:^8.16.0":
   version: 8.20.0
   resolution: "@types/pg@npm:8.20.0"
   dependencies:
@@ -2787,6 +2787,17 @@ __metadata:
     pg-protocol: "npm:*"
     pg-types: "npm:^2.2.0"
   checksum: 10c0/c8b5aa794ea074aa20d0c1ef6c721ce0fe16f2c084d0ccc32b7f12909a08ec969e6b01a094ce8e7019cc425381c4b59f261bd0133daf0c6d4aca5c6c492e8312
+  languageName: node
+  linkType: hard
+
+"@types/pg@npm:^8.18.0":
+  version: 8.18.0
+  resolution: "@types/pg@npm:8.18.0"
+  dependencies:
+    "@types/node": "npm:*"
+    pg-protocol: "npm:*"
+    pg-types: "npm:^2.2.0"
+  checksum: 10c0/cafece430d8d583a75eb3f7beff7b3e97e05ef0b6326ae5070476bda46ccc42edb72724b9c2bf799cea93a48b1342319bfbbe1217fff5ffa5c322b8d637ea949
   languageName: node
   linkType: hard
 
@@ -6568,10 +6579,10 @@ __metadata:
     helmet: "npm:^8.1.0"
     http-proxy-middleware: "npm:^4.0.0"
     md5: "npm:^2.3.0"
-    meilisearch: "npm:^0.56.0"
+    meilisearch: "npm:^0.60.0"
     mime: "npm:^3.0.0"
     nestjs-form-data: "npm:^11.0.1"
-    nestjs-meilisearch: "npm:^3.0.0"
+    nestjs-meilisearch: "patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch"
     normalize-path: "npm:^3.0.0"
     passport: "npm:^0.7.0"
     passport-jwt: "npm:^4.0.1"
@@ -6595,10 +6606,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"meilisearch@npm:^0.56.0":
-  version: 0.56.0
-  resolution: "meilisearch@npm:0.56.0"
-  checksum: 10c0/d94e410ebe9ac0ad525fa3bf12d789a60fd68078a803eeb3e2adacc43f18f4d2ee3572ae1f26e052790b2aa6c848710c04332bbccd60862be2d17c883dfd43d9
+"meilisearch@npm:^0.60.0":
+  version: 0.60.0
+  resolution: "meilisearch@npm:0.60.0"
+  checksum: 10c0/af9f3085844555fa61a0dfa33a25c9f662f164fc94ae5503be222358997c191fc81d275f3446bdf8fd9512438c9faee2e3d2775e1c1c4ea1f408eec5b1110986
   languageName: node
   linkType: hard
 
@@ -6961,7 +6972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nestjs-meilisearch@npm:^3.0.0":
+"nestjs-meilisearch@npm:3.0.0":
   version: 3.0.0
   resolution: "nestjs-meilisearch@npm:3.0.0"
   peerDependencies:
@@ -6971,6 +6982,19 @@ __metadata:
     reflect-metadata: ^0.1.13 || ^0.2.1
     rxjs: ^6.0.0 || ^7.8.0
   checksum: 10c0/4b744791802c32229252fe53968d9aae2c2428e6d1e5f63d68e8cfde81a386462e1b53a7f50b752d061355793696030bc2652fd3e364231a897ad8f35d691dfa
+  languageName: node
+  linkType: hard
+
+"nestjs-meilisearch@patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch":
+  version: 3.0.0
+  resolution: "nestjs-meilisearch@patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch::version=3.0.0&hash=186864"
+  peerDependencies:
+    "@nestjs/common": ^11.0.0
+    "@nestjs/core": ^11.0.0
+    meilisearch: ">=0.31.1 <1.0.0"
+    reflect-metadata: ^0.1.13 || ^0.2.1
+    rxjs: ^6.0.0 || ^7.8.0
+  checksum: 10c0/000a03b4f5c36c4f5a21101815d5d2bab4ed079432a4462c9a000196c8507c3003227b370ec390fb71656960e1f1e98f4251ea2f7c45bc9d79ef2d70415195a3
   languageName: node
   linkType: hard
 
@@ -7429,7 +7453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picomatch@npm:4.0.4, picomatch@npm:^4.0.2, picomatch@npm:^4.0.4":
+"picomatch@npm:4.0.4, picomatch@npm:^4.0.4":
   version: 4.0.4
   resolution: "picomatch@npm:4.0.4"
   checksum: 10c0/e2c6023372cc7b5764719a5ffb9da0f8e781212fa7ca4bd0562db929df8e117460f00dff3cb7509dacfc06b86de924b247f504d0ce1806a37fac4633081466b0
@@ -7443,7 +7467,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picomatch@npm:^4.0.3":
+"picomatch@npm:^4.0.2, picomatch@npm:^4.0.3":
   version: 4.0.3
   resolution: "picomatch@npm:4.0.3"
   checksum: 10c0/9582c951e95eebee5434f59e426cddd228a7b97a0161a375aed4be244bd3fe8e3a31b846808ea14ef2c8a2527a6eeab7b3946a67d5979e81694654f939473ae2

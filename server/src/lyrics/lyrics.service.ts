@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { MeiliSearch } from "meilisearch";
+import { Meilisearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import { UnhandledORMErrorException } from "src/exceptions/orm-exceptions";
@@ -34,7 +34,7 @@ import type LyricsQueryParameters from "./models/lyrics.query-parameters";
 @Injectable()
 export class LyricsService {
 	constructor(
-		@InjectMeiliSearch() private readonly meiliSearch: MeiliSearch,
+		@InjectMeiliSearch() private readonly meiliSearch: Meilisearch,
 		protected prismaService: PrismaService,
 		@Inject(forwardRef(() => SongService))
 		private songService: SongService,
