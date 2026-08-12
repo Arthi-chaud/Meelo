@@ -6582,7 +6582,7 @@ __metadata:
     meilisearch: "npm:^0.60.0"
     mime: "npm:^3.0.0"
     nestjs-form-data: "npm:^11.0.1"
-    nestjs-meilisearch: "npm:^3.0.0"
+    nestjs-meilisearch: "patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch"
     normalize-path: "npm:^3.0.0"
     passport: "npm:^0.7.0"
     passport-jwt: "npm:^4.0.1"
@@ -6972,7 +6972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nestjs-meilisearch@npm:^3.0.0":
+"nestjs-meilisearch@npm:3.0.0":
   version: 3.0.0
   resolution: "nestjs-meilisearch@npm:3.0.0"
   peerDependencies:
@@ -6982,6 +6982,19 @@ __metadata:
     reflect-metadata: ^0.1.13 || ^0.2.1
     rxjs: ^6.0.0 || ^7.8.0
   checksum: 10c0/4b744791802c32229252fe53968d9aae2c2428e6d1e5f63d68e8cfde81a386462e1b53a7f50b752d061355793696030bc2652fd3e364231a897ad8f35d691dfa
+  languageName: node
+  linkType: hard
+
+"nestjs-meilisearch@patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch":
+  version: 3.0.0
+  resolution: "nestjs-meilisearch@patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch::version=3.0.0&hash=186864"
+  peerDependencies:
+    "@nestjs/common": ^11.0.0
+    "@nestjs/core": ^11.0.0
+    meilisearch: ">=0.31.1 <1.0.0"
+    reflect-metadata: ^0.1.13 || ^0.2.1
+    rxjs: ^6.0.0 || ^7.8.0
+  checksum: 10c0/000a03b4f5c36c4f5a21101815d5d2bab4ed079432a4462c9a000196c8507c3003227b370ec390fb71656960e1f1e98f4251ea2f7c45bc9d79ef2d70415195a3
   languageName: node
   linkType: hard
 

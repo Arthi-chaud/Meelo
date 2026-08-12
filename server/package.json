@@ -50,7 +50,7 @@
 		"meilisearch": "^0.60.0",
 		"mime": "^3.0.0",
 		"nestjs-form-data": "^11.0.1",
-		"nestjs-meilisearch": "^3.0.0",
+		"nestjs-meilisearch": "patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch",
 		"normalize-path": "^3.0.0",
 		"passport": "^0.7.0",
 		"passport-jwt": "^4.0.1",

@@ -1,0 +1,52 @@
+diff --git a/lib/providers/create-meilisearch.provider.d.ts b/lib/providers/create-meilisearch.provider.d.ts
+index cae2205939cd3f0aa428d136264989a8bfc0a6ef..d45192ec328665f32547a9c6283909e004cf61c9 100644
+--- a/lib/providers/create-meilisearch.provider.d.ts
++++ b/lib/providers/create-meilisearch.provider.d.ts
+@@ -1,6 +1,6 @@
+ import { Provider } from '@nestjs/common';
+-import { MeiliSearch } from 'meilisearch';
++import { Meilisearch } from 'meilisearch';
+ import { MeiliModuleAsyncOptions, MeiliModuleOptions } from '../interfaces';
+-export declare function createConnectionFactory(options: MeiliModuleOptions): MeiliSearch;
++export declare function createConnectionFactory(options: MeiliModuleOptions): Meilisearch;
+ export declare function createAsyncProviders(options: MeiliModuleAsyncOptions): Provider[];
+ export declare function createAsyncOptionsProvider(options: MeiliModuleAsyncOptions): Provider;
+diff --git a/lib/providers/create-meilisearch.provider.js b/lib/providers/create-meilisearch.provider.js
+index aeaa0e47a02b231bbc7897b4a8c7345791d749a1..3d7cd4f97b753302d509d03e0d17e1660dff29c0 100644
+--- a/lib/providers/create-meilisearch.provider.js
++++ b/lib/providers/create-meilisearch.provider.js
+@@ -15,7 +15,7 @@ exports.createAsyncOptionsProvider = createAsyncOptionsProvider;
+ const meilisearch_1 = require("meilisearch");
+ const constants_1 = require("../constants");
+ function createConnectionFactory(options) {
+-    return new meilisearch_1.MeiliSearch(options);
++    return new meilisearch_1.Meilisearch(options);
+ }
+ function createAsyncProviders(options) {
+     if (options.useExisting || options.useFactory) {
+diff --git a/lib/services/meilisearch.service.d.ts b/lib/services/meilisearch.service.d.ts
+index ba5cf58e5fd0916bf7563d5add97fa4cc859241c..75633c15e602709db73ddbc5045d644288d9a46b 100644
+--- a/lib/services/meilisearch.service.d.ts
++++ b/lib/services/meilisearch.service.d.ts
+@@ -1,7 +1,7 @@
+-import { DocumentOptions, DocumentsQuery, EnqueuedTask, MeiliSearch } from 'meilisearch';
++import { DocumentOptions, DocumentsQuery, EnqueuedTask, Meilisearch } from 'meilisearch';
+ export declare class MeiliSearchService {
+     private readonly meiliSearchClient;
+-    constructor(meiliSearchClient: MeiliSearch);
++    constructor(meiliSearchClient: Meilisearch);
+     addDocuments(index: string, documents: Array<Record<string, any>>, options?: DocumentOptions): Promise<EnqueuedTask>;
+     getDocuments(index: string, parameters?: DocumentsQuery<Record<string, any>>): Promise<any>;
+     updateDocuments(index: string, documents: Array<Partial<Record<string, any>>>): Promise<EnqueuedTask>;
+diff --git a/lib/services/meilisearch.service.js b/lib/services/meilisearch.service.js
+index ba06e255c26b8227d6dd8985433db385661e6978..8b8bfbcf3d046f08546b2be80705e45d93873dd9 100644
+--- a/lib/services/meilisearch.service.js
++++ b/lib/services/meilisearch.service.js
+@@ -56,6 +56,6 @@ exports.MeiliSearchService = MeiliSearchService;
+ exports.MeiliSearchService = MeiliSearchService = __decorate([
+     (0, common_1.Injectable)(),
+     __param(0, (0, decorators_1.InjectMeiliSearch)()),
+-    __metadata("design:paramtypes", [meilisearch_1.MeiliSearch])
++    __metadata("design:paramtypes", [meilisearch_1.Meilisearch])
+ ], MeiliSearchService);
+ //# sourceMappingURL=meilisearch.service.js.map
