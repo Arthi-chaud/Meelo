@@ -106,11 +106,11 @@ export default function RootLayout() {
 	useEffect(() => {
 		if (loaded || error) {
 			const lock =
-				Device.deviceType === Device.DeviceType.TABLET
-					? ScreenOrientation.unlockAsync()
-					: ScreenOrientation.lockAsync(
+				Device.deviceType === Device.DeviceType.PHONE
+					? ScreenOrientation.lockAsync(
 							ScreenOrientation.OrientationLock.PORTRAIT_UP,
-						);
+						)
+					: ScreenOrientation.unlockAsync();
 			lock.then(() => SplashScreen.hideAsync());
 		}
 	}, [loaded, error]);
