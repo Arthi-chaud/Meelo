@@ -1,26 +1,27 @@
 from dataclasses import dataclass
 from typing import Any
+from urllib.parse import unquote, urlparse
 
 from aiohttp import ClientSession
+
 from matcher.context import Context
+from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.session import HasSession
 from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
+
+from ..settings import WikipediaSettings
 from .features import (
-    GetArtistDescriptionFeature,
-    GetArtistFeature,
-    GetArtistIdFromUrlFeature,
-    GetArtistUrlFromIdFeature,
     GetAlbumDescriptionFeature,
     GetAlbumFeature,
     GetAlbumIdFromUrlFeature,
     GetAlbumUrlFromIdFeature,
-    GetSongFeature,
+    GetArtistDescriptionFeature,
+    GetArtistFeature,
+    GetArtistIdFromUrlFeature,
+    GetArtistUrlFromIdFeature,
     GetSongDescriptionFeature,
+    GetSongFeature,
 )
-from urllib.parse import unquote
-from matcher.providers.boilerplate import BaseProviderBoilerplate
-from ..settings import WikipediaSettings
-from urllib.parse import urlparse
 
 
 @dataclass

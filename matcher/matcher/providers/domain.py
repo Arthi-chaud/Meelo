@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, TypeAlias
 from enum import Enum
+from typing import Any, TypeAlias
 
 
 @dataclass

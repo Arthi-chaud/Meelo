@@ -1,29 +1,31 @@
 import asyncio
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from typing import Annotated
+
+from aiormq.abc import AbstractChannel, DeliveredMessage
 from fastapi import Depends, FastAPI, Query, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-from aiormq.abc import AbstractChannel, DeliveredMessage
 from pydantic import BaseModel
+
+from matcher.api import User
 from matcher.bootstrap import bootstrap_context
 from matcher.context import Context, CurrentItem
 from matcher.logger import INFO, WARN, log
 from matcher.matcher.album import match_and_post_album
 from matcher.matcher.area import match_and_post_area
+from matcher.matcher.artist import match_and_post_artist
 from matcher.matcher.label import match_and_post_label
 from matcher.matcher.song import match_and_post_song
-from matcher.matcher.artist import match_and_post_artist
-from matcher.api import User
 from matcher.models.api.domain import LocalIdentifiers
 from matcher.mq import (
     connect_mq,
-    stop_mq,
     get_queue_size,
+    stop_mq,
 )
-from .models.event import Event
 
+from .models.event import Event
 
 match_lock = asyncio.Lock()
 
@@ -64,7 +66,6 @@ async def match(
                         reuseSources,
                     )
                     ctx.increment_handled_items_count()
-                    pass
                 case "album":
                     album = await ctx.client.get_album(resourceId)
                     await match_and_post_album(
@@ -74,7 +75,6 @@ async def match(
                         reuseSources,
                     )
                     ctx.increment_handled_items_count()
-                    pass
                 case "song":
                     song = await ctx.client.get_song(resourceId)
                     await match_and_post_song(
@@ -84,21 +84,17 @@ async def match(
                         reuseSources,
                     )
                     ctx.increment_handled_items_count()
-                    pass
                 case "area":
                     area = await ctx.client.get_area(str(resourceId), True)
                     await match_and_post_area(area)
                     ctx.increment_handled_items_count()
-                    pass
 
                 case "label":
                     label = await ctx.client.get_label(str(resourceId))
                     await match_and_post_label(label)
                     ctx.increment_handled_items_count()
-                    pass
                 case _:
                     log(WARN, "No handler for resource type", {"type": resourceType})
-                    pass
         except Exception:
             pass
         ctx.current_item = None

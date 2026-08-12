@@ -1,8 +1,11 @@
 from dataclasses import dataclass
+from datetime import date, datetime
 from typing import Any
 from urllib.parse import urlparse
 
 from aiohttp import ClientSession
+from bs4 import BeautifulSoup, Tag
+
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.features import (
@@ -13,15 +16,12 @@ from matcher.providers.features import (
     GetAlbumUrlFromIdFeature,
     GetArtistIdFromUrlFeature,
     GetArtistUrlFromIdFeature,
-    GetWikidataArtistRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
+    GetWikidataArtistRelationKeyFeature,
     IsMusicBrainzRelationFeature,
 )
 from matcher.providers.session import HasSession
 from matcher.settings import MetacriticSettings
-from bs4 import BeautifulSoup, Tag
-from datetime import date, datetime
-
 from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
 
 
@@ -34,11 +34,15 @@ class MetacriticProvider(BaseProviderBoilerplate[MetacriticSettings], HasSession
             ),
             GetArtistIdFromUrlFeature(lambda url: self._get_artist_id_from_url(url)),
             GetArtistUrlFromIdFeature(
-                lambda artist_id: f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
+                lambda artist_id: (
+                    f"https://www.metacritic.com/person/{artist_id.removeprefix('person/')}"
+                )
             ),
             GetWikidataArtistRelationKeyFeature(lambda: "P1712"),
             GetAlbumUrlFromIdFeature(
-                lambda album_id: f"https://www.metacritic.com/music/{album_id.removeprefix('music/')}"
+                lambda album_id: (
+                    f"https://www.metacritic.com/music/{album_id.removeprefix('music/')}"
+                )
             ),
             GetAlbumIdFromUrlFeature(
                 lambda album_url: self._get_album_id_from_url(album_url)

@@ -1,5 +1,7 @@
 import asyncio
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
+
 from slugify import slugify
 
 
@@ -27,7 +29,7 @@ async def asyncify(f: Callable[[], T] | Any, *kwargs) -> T:
 
 
 def normalise_url_for_parse(url: str) -> str:
-    if url.startswith("http://") or url.startswith("https://"):
+    if url.startswith(("http://", "https://")):
         return url
     return f"https://{url}"
 

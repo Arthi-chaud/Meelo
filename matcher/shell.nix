@@ -6,7 +6,6 @@ pkgs.mkShell rec {
   buildInputs = with pkgs; [
     python314
     python314Packages.venvShellHook
-    ruff
     pyright
   ];
   # SRC: https://nixos.org/manual/nixpkgs/stable/#python

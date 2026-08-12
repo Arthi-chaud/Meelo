@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from typing import List
 
 from matcher.logger import INFO, log
 from matcher.models.api.domain import Area, LocalIdentifiers
@@ -13,6 +12,7 @@ from matcher.providers.features import (
     GetArtistDescriptionFeature,
     GetArtistIllustrationUrlFeature,
 )
+
 from ..context import Context
 from . import common
 
@@ -77,7 +77,7 @@ async def match_artist(
     artist_id: int,
     artist_name: str,
     local_identifiers: LocalIdentifiers,
-    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
+    sources_to_reuse: list[ExternalMetadataSourceDto] | None = None,
 ) -> ArtistMatchResult:
     context = Context.get()
 

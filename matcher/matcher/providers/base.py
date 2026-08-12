@@ -1,8 +1,10 @@
-from typing import TypeVar, Type, TypeVarTuple, Callable
-from matcher.settings import BaseProviderSettings
-from ..models.api.provider import Provider as ApiProviderEntry
-from typing import List
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import TypeVar, TypeVarTuple
+
+from matcher.settings import BaseProviderSettings
+
+from ..models.api.provider import Provider as ApiProviderEntry
 
 Settings = TypeVar("Settings", bound=BaseProviderSettings, default=BaseProviderSettings)
 
@@ -20,12 +22,12 @@ class BaseProvider[Settings]:
     T = TypeVar("T")
     api_model: ApiProviderEntry
     settings: Settings
-    features: List[BaseFeature] = field(init=False)
+    features: list[BaseFeature] = field(init=False)
 
-    def has_feature(self, t: Type[T]) -> bool:
-        return any([f for f in self.features if isinstance(f, t)])
+    def has_feature(self, t: type[T]) -> bool:
+        return any(f for f in self.features if isinstance(f, t))
 
-    def get_feature(self, t: Type[T]) -> T | None:
+    def get_feature(self, t: type[T]) -> T | None:
         try:
             return [f for f in self.features if isinstance(f, t)][0]
         except Exception:

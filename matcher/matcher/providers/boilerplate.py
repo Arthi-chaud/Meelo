@@ -1,7 +1,11 @@
+from datetime import date
+from typing import Any
+
 from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseProvider
-from datetime import date
+
+from .domain import AlbumType, AreaType, SearchResult
 from .features import (
     GetAlbumDescriptionFeature,
     GetAlbumFeature,
@@ -16,41 +20,39 @@ from .features import (
     GetAreaType,
     GetArtistActivityArea,
     GetArtistBirthArea,
+    GetArtistDescriptionFeature,
+    GetArtistFeature,
+    GetArtistIdFromUrlFeature,
+    GetArtistIllustrationUrlFeature,
+    GetArtistUrlFromIdFeature,
     GetLabelArea,
     GetLabelByMBID,
     GetLabelByName,
     GetLabelEndDate,
     GetLabelMBID,
     GetLabelStartDate,
-    GetParentArea,
-    IsAlbumUrlFeature,
-    GetArtistDescriptionFeature,
-    GetArtistFeature,
-    GetArtistIdFromUrlFeature,
-    GetArtistIllustrationUrlFeature,
-    GetArtistUrlFromIdFeature,
-    IsArtistUrlFeature,
     GetMusicBrainzRelationKeyFeature,
+    GetParentArea,
+    GetPlainSongLyricsFeature,
     GetSongDescriptionFeature,
     GetSongFeature,
     GetSongGenresFeature,
     GetSongIdFromUrlFeature,
-    GetSyncedSongLyricsFeature,
-    GetPlainSongLyricsFeature,
     GetSongUrlFromIdFeature,
+    GetSyncedSongLyricsFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
+    IsAlbumUrlFeature,
+    IsArtistUrlFeature,
     IsMusicBrainzRelationFeature,
+    IsSongUrlFeature,
     SearchAlbumFeature,
     SearchArtistFeature,
     SearchSongFeature,
     SearchSongWithAcoustIdFeature,
     SearchSongWithFingerprintFeature,
-    IsSongUrlFeature,
 )
-from .domain import AlbumType, AreaType, SearchResult
-from typing import Any, List
 
 
 class BaseProviderBoilerplate[S](BaseProvider[S]):
@@ -117,7 +119,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     # Album
     async def search_album(
-        self, album_name: str, artist_names: List[str]
+        self, album_name: str, artist_names: list[str]
     ) -> SearchResult | None:
         f = self.get_feature(SearchAlbumFeature)
         return await f.run(album_name, artist_names) if f else None
@@ -146,11 +148,11 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetAlbumTypeFeature)
         return await f.run(album) if f else None
 
-    async def get_album_genres(self, album: Any) -> List[str] | None:
+    async def get_album_genres(self, album: Any) -> list[str] | None:
         f = self.get_feature(GetAlbumGenresFeature)
         return await f.run(album) if f else None
 
-    async def get_album_labels(self, album: Any) -> List[LabelDto] | None:
+    async def get_album_labels(self, album: Any) -> list[LabelDto] | None:
         f = self.get_feature(GetAlbumLabelsFeature)
         return await f.run(album) if f else None
 
@@ -178,7 +180,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         self,
         song_name: str,
         artist_name: str,
-        featuring_artists: List[str],
+        featuring_artists: list[str],
         duration: int | None,
     ) -> SearchResult | None:
         f = self.get_feature(SearchSongFeature)
@@ -206,7 +208,7 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
         f = self.get_feature(GetSongDescriptionFeature)
         return await f.run(song) if f else None
 
-    async def get_song_genres(self, song: Any) -> List[str] | None:
+    async def get_song_genres(self, song: Any) -> list[str] | None:
         f = self.get_feature(GetSongGenresFeature)
         return await f.run(song) if f else None
 

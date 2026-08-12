@@ -1,18 +1,19 @@
 import asyncio
-from matcher.logger import INFO, ERROR, log
-from typing import List
+
+from matcher.logger import ERROR, INFO, log
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import LyricsMatchResult, SongMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
-from . import common
-from ..models.api.dto import ExternalMetadataSourceDto
-from ..context import Context
 from matcher.providers.features import (
-    GetSongDescriptionFeature,
     GetPlainSongLyricsFeature,
+    GetSongDescriptionFeature,
     GetSongGenresFeature,
     GetSyncedSongLyricsFeature,
 )
+
+from ..context import Context
+from ..models.api.dto import ExternalMetadataSourceDto
+from . import common
 
 
 async def match_and_post_song(
@@ -83,15 +84,15 @@ async def match_song(
     song_id: int,
     song_name: str,
     artist_name: str,
-    featuring: List[str],
+    featuring: list[str],
     duration: int | None,
     fingerprint: str | None,
     local_identifiers: common.LocalIdentifiers,
-    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
+    sources_to_reuse: list[ExternalMetadataSourceDto] | None = None,
 ) -> SongMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()
-    external_sources: List[ExternalMetadataSourceDto] = []
+    external_sources: list[ExternalMetadataSourceDto] = []
 
     # We could skip using crossreference using wikidata,
     # because musicbrainz is not always useful for songs
