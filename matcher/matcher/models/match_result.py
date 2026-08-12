@@ -1,11 +1,10 @@
-from typing import List, Tuple
-from matcher.models.api.dto import AreaDto, ExternalMetadataDto, LabelDto
-from datetime import date
 from dataclasses import dataclass
+from datetime import date
 
+from matcher.models.api.dto import AreaDto, ExternalMetadataDto, LabelDto
 from matcher.providers.domain import AlbumType, AreaType
 
-type SyncedLyrics = List[Tuple[float, str]]
+type SyncedLyrics = list[tuple[float, str]]
 
 
 @dataclass
@@ -18,7 +17,7 @@ class LyricsMatchResult:
 class SongMatchResult:
     metadata: ExternalMetadataDto
     lyrics: LyricsMatchResult
-    genres: List[str]
+    genres: list[str]
 
     def set_synced_lyrics(self, lyrics: SyncedLyrics):
         self.lyrics.synced = lyrics
@@ -27,7 +26,7 @@ class SongMatchResult:
     def set_plain_lyrics_if_none(self, lyrics: str):
         self.lyrics.plain = self.lyrics.plain or lyrics
 
-    def push_genres(self, genres: List[str]):
+    def push_genres(self, genres: list[str]):
         self.genres = self.genres + [g for g in genres if g not in self.genres]
 
 
@@ -36,8 +35,8 @@ class AlbumMatchResult:
     metadata: ExternalMetadataDto
     release_date: date | None
     album_type: AlbumType | None
-    genres: List[str]
-    labels: List[LabelDto]
+    genres: list[str]
+    labels: list[LabelDto]
 
     def set_album_type_if_none(self, album_type: AlbumType):
         self.album_type = self.album_type or album_type
@@ -45,10 +44,10 @@ class AlbumMatchResult:
     def set_release_date_if_none(self, release_date: date):
         self.release_date = self.release_date or release_date
 
-    def push_genres(self, genres: List[str]):
+    def push_genres(self, genres: list[str]):
         self.genres = self.genres + [g for g in genres if g not in self.genres]
 
-    def push_labels(self, labels: List[LabelDto]):
+    def push_labels(self, labels: list[LabelDto]):
         existing_labels = [label.name for label in self.labels]
         self.labels = self.labels + [
             label for label in labels if label.name not in existing_labels

@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from typing import List
+
 from matcher.logger import ERROR, INFO, log
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import AlbumMatchResult
@@ -14,9 +14,10 @@ from matcher.providers.features import (
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
 )
-from . import common
-from ..models.api.dto import ExternalMetadataSourceDto
+
 from ..context import Context
+from ..models.api.dto import ExternalMetadataSourceDto
+from . import common
 
 OVERRIDABLE_ALBUM_TYPES = [AlbumType.STUDIO, AlbumType.LIVE]
 
@@ -108,10 +109,10 @@ async def match_and_post_album(
 async def match_album(
     album_id: int,
     album_name: str,
-    artist_names: List[str],
+    artist_names: list[str],
     type: AlbumType,
     local_identifiers: common.LocalIdentifiers,
-    sources_to_reuse: List[ExternalMetadataSourceDto] | None = None,
+    sources_to_reuse: list[ExternalMetadataSourceDto] | None = None,
 ) -> AlbumMatchResult:
     need_genres = Context.get().settings.push_genres
     context = Context.get()

@@ -1,4 +1,5 @@
 from typing import TypeVar, cast
+
 from matcher.providers.allmusic import AllMusicProvider
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.discogs import DiscogsProvider
@@ -16,6 +17,7 @@ from matcher.settings import (
     MusicBrainzSettings,
     WikipediaSettings,
 )
+
 from ..models.api.provider import Provider as ApiProviderEntry
 from .wikipedia import WikipediaProvider
 

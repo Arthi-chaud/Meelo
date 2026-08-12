@@ -1,20 +1,21 @@
 from dataclasses import dataclass
+
 from dataclasses_json import (
-    dataclass_json,
+    DataClassJsonMixin,
     LetterCase,
     Undefined,
-    DataClassJsonMixin,
+    dataclass_json,
 )
-from typing import Optional, List
+
 from matcher.providers.domain import AlbumType, AreaType
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class LocalIdentifiers(DataClassJsonMixin):
-    musicbrainz_id: Optional[str] = None
-    discogs_id: Optional[str] = None
-    acoustid_id: Optional[str] = None
+    musicbrainz_id: str | None = None
+    discogs_id: str | None = None
+    acoustid_id: str | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -22,7 +23,7 @@ class LocalIdentifiers(DataClassJsonMixin):
 class Artist(DataClassJsonMixin):
     id: int
     name: str
-    local_identifiers: Optional[LocalIdentifiers] = None
+    local_identifiers: LocalIdentifiers | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -30,10 +31,10 @@ class Artist(DataClassJsonMixin):
 class Album(DataClassJsonMixin):
     id: int
     name: str
-    artists: Optional[List[Artist]] = None
+    artists: list[Artist] | None = None
     type: AlbumType = AlbumType.OTHER
-    release_date: Optional[str] = None
-    local_identifiers: Optional[LocalIdentifiers] = None
+    release_date: str | None = None
+    local_identifiers: LocalIdentifiers | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -41,7 +42,7 @@ class Album(DataClassJsonMixin):
 class Label(DataClassJsonMixin):
     id: int
     name: str
-    mbid: Optional[str] = None
+    mbid: str | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -50,14 +51,14 @@ class Area(DataClassJsonMixin):
     id: int
     name: str
     mbid: str
-    type: Optional[AreaType] = None
+    type: AreaType | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class Track(DataClassJsonMixin):
     source_file_id: int
-    duration: Optional[int] = None
+    duration: int | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
@@ -66,12 +67,12 @@ class Song(DataClassJsonMixin):
     id: int
     name: str
     artist: Artist
-    featuring: List[Artist]
-    master: Optional[Track] = None
-    local_identifiers: Optional[LocalIdentifiers] = None
+    featuring: list[Artist]
+    master: Track | None = None
+    local_identifiers: LocalIdentifiers | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class File(DataClassJsonMixin):
-    fingerprint: Optional[str] = None
+    fingerprint: str | None = None

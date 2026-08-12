@@ -1,6 +1,7 @@
-import jsons
 import json
 from dataclasses import dataclass
+
+import jsons
 
 
 @dataclass

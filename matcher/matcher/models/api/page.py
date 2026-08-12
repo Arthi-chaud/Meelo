@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from typing import Generic, TypeVar
+
 from dataclasses_json import dataclass_json
-from typing import List, TypeVar, Generic
 
 T = TypeVar("T")
 
@@ -8,4 +9,4 @@ T = TypeVar("T")
 @dataclass_json
 @dataclass
 class Page(Generic[T]):
-    items: List[T]
+    items: list[T]

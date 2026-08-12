@@ -1,5 +1,7 @@
+from collections.abc import Awaitable
 from datetime import date
-from typing import Any, Awaitable, List
+from typing import Any
+
 from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
@@ -7,8 +9,8 @@ from matcher.providers.domain import (
     AlbumType,
     AreaType,
     ResourceId,
-    ResourceUrl,
     ResourceName,
+    ResourceUrl,
     SearchResult,
 )
 
@@ -86,7 +88,7 @@ class GetArtistBirthArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
 
 
 class SearchAlbumFeature(
-    BaseFeature[ResourceName, List[ResourceName], Awaitable[SearchResult | None]]
+    BaseFeature[ResourceName, list[ResourceName], Awaitable[SearchResult | None]]
 ):
     pass
 
@@ -103,11 +105,11 @@ class GetAlbumRatingFeature(BaseFeature[Any, Awaitable[int | None]]):
     pass
 
 
-class GetAlbumGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
+class GetAlbumGenresFeature(BaseFeature[Any, Awaitable[list[str] | None]]):
     pass
 
 
-class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[List[LabelDto] | None]]):
+class GetAlbumLabelsFeature(BaseFeature[Any, Awaitable[list[LabelDto] | None]]):
     pass
 
 
@@ -142,7 +144,7 @@ class SearchSongFeature(
     BaseFeature[
         ResourceName,
         ResourceName,
-        List[ResourceName],
+        list[ResourceName],
         int | None,
         Awaitable[SearchResult | None],
     ]
@@ -168,7 +170,7 @@ class GetSongDescriptionFeature(BaseFeature[Any, Awaitable[str | None]]):
     pass
 
 
-class GetSongGenresFeature(BaseFeature[Any, Awaitable[List[str] | None]]):
+class GetSongGenresFeature(BaseFeature[Any, Awaitable[list[str] | None]]):
     pass
 
 

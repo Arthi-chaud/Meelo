@@ -6,3 +6,20 @@ testpaths = ["tests"]
 addopts = ["-p", "no:warnings", "--no-header"]
 reruns = '3'
 reruns-delay = '5'
+
+[tool.ruff.lint]
+ignore = [
+	"TRY002", # Using bare Exception
+	"BLE001", # Catching bare Exception
+	"S112", "S110", # 'pass'/'continue'-ing the Exception
+	"FLY002",
+	"SIM117",
+	"SIM118",
+	"DTZ007", # Date parsing
+	"LOG015",
+	"B006",
+	"ASYNC230",
+	"RUF015"
+
+]
+

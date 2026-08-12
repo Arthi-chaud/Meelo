@@ -1,19 +1,25 @@
 import asyncio
-from dataclasses import dataclass
 import re
-from typing import Any, List
+import time
+from dataclasses import dataclass
+from datetime import date, datetime
+from typing import Any
 from urllib.parse import urlparse
+
 import aiohttp
 from aiohttp.client import ClientSession
-from matcher.context import Context
+from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
 
+from matcher.context import Context
 from matcher.logger import ERROR, log
 from matcher.models.api.dto import AreaDto, LabelDto
 from matcher.providers.features import (
+    GetAlbumFeature,
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
     GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
+    GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
     GetArea,
     GetAreaType,
@@ -29,21 +35,21 @@ from matcher.providers.features import (
     GetLabelMBID,
     GetLabelStartDate,
     GetParentArea,
-    GetWikidataArtistRelationKeyFeature,
-    GetWikidataAlbumRelationKeyFeature,
-    GetWikidataSongRelationKeyFeature,
     GetSongFeature,
+    GetSongGenresFeature,
+    GetSongIdFromUrlFeature,
+    GetSongUrlFromIdFeature,
+    GetWikidataAlbumRelationKeyFeature,
+    GetWikidataArtistRelationKeyFeature,
+    GetWikidataSongRelationKeyFeature,
     SearchAlbumFeature,
-    GetAlbumFeature,
-    GetAlbumTypeFeature,
     SearchArtistFeature,
     SearchSongFeature,
-    SearchSongWithFingerprintFeature,
     SearchSongWithAcoustIdFeature,
-    GetSongGenresFeature,
-    GetSongUrlFromIdFeature,
-    GetSongIdFromUrlFeature,
+    SearchSongWithFingerprintFeature,
 )
+
+from ..settings import MusicBrainzSettings
 from ..utils import (
     asyncify,
     capitalize_all_words,
@@ -51,17 +57,13 @@ from ..utils import (
     removeprefix_or_none,
     to_slug,
 )
-from .domain import AlbumType, AreaType, SearchResult
-from ..settings import MusicBrainzSettings
-from .session import HasSession
 from .boilerplate import BaseProviderBoilerplate
-from datetime import date, datetime
-import time
-from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
+from .domain import AlbumType, AreaType, SearchResult
+from .session import HasSession
 
 
 # Stolen from https://github.com/alastair/python-musicbrainzngs/blob/master/musicbrainzngs/musicbrainz.py
-class RateLimiter(object):
+class RateLimiter:
     def __init__(self):
         self.limit_interval = 1.0
         self.limit_requests = 1 if Context.is_ci() else 2
@@ -191,7 +193,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             await self.rate_limiter.rate_limit()
         async with session.get(
             route,
-            params={**query, **{"fmt": "json"}},
+            params={**query, "fmt": "json"},
         ) as response:
             res = await response.json()
             return res
@@ -259,7 +261,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     async def _search_album(
         self,
         album_name: str,
-        artist_names: List[str],
+        artist_names: list[str],
     ) -> SearchResult | None:
         album_name = self._sanitise_acronyms(album_name)
         # TODO It's ugly, use an album_type variable from API
@@ -325,17 +327,15 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                             r["artist-credit"][0]["artist"]["id"]
                             == self.compilation_artist_id()
                             or any(
-                                [
-                                    type
-                                    in [
-                                        r[release_group_key]["primary-type"],
-                                        *(
-                                            r[release_group_key].get("secondary-types")
-                                            or []
-                                        ),
-                                    ]
-                                    for type in ["Compilation", "Soundtrack"]
+                                type
+                                in [
+                                    r[release_group_key]["primary-type"],
+                                    *(
+                                        r[release_group_key].get("secondary-types")
+                                        or []
+                                    ),
                                 ]
+                                for type in ["Compilation", "Soundtrack"]
                             )
                         )
                     )
@@ -364,7 +364,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         )
         return res
 
-    async def _get_album_labels(self, album: Any) -> List[LabelDto] | None:
+    async def _get_album_labels(self, album: Any) -> list[LabelDto] | None:
         try:
             album_id = album["id"]
             res = await self._fetch("/release", {"query": f"rgid:{album_id}"})
@@ -399,7 +399,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                     label_id = label["label"]["id"]
                     known_labels = [label.name for label in labels]
                     if (
-                        any([c for c in label_name if c.isascii()])
+                        any(c for c in label_name if c.isascii())
                         and label_name not in known_labels
                         and label_name != "[no label]"  # Placeholder
                     ):
@@ -420,9 +420,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             except Exception:
                 continue
 
-    def _get_album_genres(self, album: Any) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> list[str] | None:
         try:
-            genres: List[Any] = album["genres"]
+            genres: list[Any] = album["genres"]
             return [
                 capitalize_all_words(genre["name"])
                 for genre in genres
@@ -432,7 +432,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             pass
 
     def _get_album_type(self, album: Any) -> AlbumType | None:
-        raw_types: List[str] = []
+        raw_types: list[str] = []
         if album.get("primary-type"):
             raw_types.append(album["primary-type"])
         if album.get("secondary-types"):
@@ -474,7 +474,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     # - Finding the work from a recording requires a new query
     # - Work dont include genres, recordings do
     async def _search_song(
-        self, song_name: str, artist_name: str, featuring: List[str]
+        self, song_name: str, artist_name: str, featuring: list[str]
     ) -> SearchResult | None:
         try:
             recordings = (
@@ -556,11 +556,10 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                     return SearchResult(match["id"], match)
         except Exception as e:
             print(e)
-            pass
 
-    def _get_song_genres(self, song: Any) -> List[str] | None:
+    def _get_song_genres(self, song: Any) -> list[str] | None:
         try:
-            genres: List[Any] = song["genres"]
+            genres: list[Any] = song["genres"]
             return [
                 capitalize_all_words(genre["name"])
                 for genre in genres

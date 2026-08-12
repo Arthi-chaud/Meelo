@@ -1,10 +1,12 @@
-import os
-from matcher.logger import log, INFO, WARN
-from dataclasses import dataclass
-from dataclasses_json import dataclass_json, LetterCase
 import json
-from typing import Type, TypeVar
+import os
+from dataclasses import dataclass
+from typing import TypeVar
+
 import jsons
+from dataclasses_json import LetterCase, dataclass_json
+
+from matcher.logger import INFO, WARN, log
 
 T = TypeVar("T")
 
@@ -102,7 +104,7 @@ class Settings:
                     )
             log(INFO, "Settings parsed successfully")
 
-    def get_provider_setting(self, cl: Type[T]) -> T | None:
+    def get_provider_setting(self, cl: type[T]) -> T | None:
         for provider_setting in self.provider_settings:
             if isinstance(provider_setting, cl):
                 return provider_setting

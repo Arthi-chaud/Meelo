@@ -1,8 +1,10 @@
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 from urllib.parse import urlparse
 
+import discogs_client
 from aiohttp import ClientSession
+
 from matcher.context import Context
 from matcher.providers.domain import SearchResult
 from matcher.providers.features import (
@@ -14,10 +16,10 @@ from matcher.providers.features import (
     GetArtistIdFromUrlFeature,
     GetArtistIllustrationUrlFeature,
     GetArtistUrlFromIdFeature,
+    GetMusicBrainzRelationKeyFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
     SearchArtistFeature,
-    GetMusicBrainzRelationKeyFeature,
 )
 from matcher.providers.session import HasSession
 from matcher.utils import (
@@ -26,9 +28,9 @@ from matcher.utils import (
     normalise_url_for_parse,
     removeprefix_or_none,
 )
-from .boilerplate import BaseProviderBoilerplate
+
 from ..settings import DiscogsSettings
-import discogs_client
+from .boilerplate import BaseProviderBoilerplate
 
 # Notes:
 # - We dont get descriptions because they are too short and/or technical
@@ -140,7 +142,7 @@ class DiscogsProvider(BaseProviderBoilerplate[DiscogsSettings], HasSession):
         except Exception:
             return None
 
-    def _get_album_genres(self, album: Any) -> List[str] | None:
+    def _get_album_genres(self, album: Any) -> list[str] | None:
         try:
             return [capitalize_all_words(g) for g in album["genres"]]
         except Exception:

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+
 from dataclasses_json import DataClassJsonMixin, LetterCase, Undefined, dataclass_json
 
 from matcher.providers.domain import AreaType
@@ -9,17 +9,17 @@ from matcher.providers.domain import AreaType
 @dataclass
 class LabelDto(DataClassJsonMixin):
     name: str
-    mbid: Optional[str] = None
+    mbid: str | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateAlbumDto(DataClassJsonMixin):
     # str should be iso 8601
-    release_date: Optional[str] = None
-    genres: Optional[List[str]] = None
-    labels: Optional[List[LabelDto]] = None
-    type: Optional[str] = None
+    release_date: str | None = None
+    genres: list[str] | None = None
+    labels: list[LabelDto] | None = None
+    type: str | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
@@ -28,15 +28,15 @@ class AreaDto(DataClassJsonMixin):
     name: str
     sort_name: str
     mbid: str
-    iso3166: Optional[str] = None
-    type: Optional[AreaType] = None
+    iso3166: str | None = None
+    type: AreaType | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateAreaDto(DataClassJsonMixin):
-    parentId: Optional[int] = None
-    type: Optional[AreaType] = None
+    parentId: int | None = None
+    type: AreaType | None = None
 
 
 @dataclass_json
@@ -66,10 +66,10 @@ class ExternalMetadataSourceDto(DataClassJsonMixin):
 class ExternalMetadataDto(DataClassJsonMixin):
     description: str | None
     rating: int | None
-    sources: List[ExternalMetadataSourceDto]
-    song_id: Optional[int] = None
-    artist_id: Optional[int] = None
-    album_id: Optional[int] = None
+    sources: list[ExternalMetadataSourceDto]
+    song_id: int | None = None
+    artist_id: int | None = None
+    album_id: int | None = None
 
     def push_source(self, source: ExternalMetadataSourceDto):
         self.sources.append(source)
@@ -84,7 +84,7 @@ class ExternalMetadataDto(DataClassJsonMixin):
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateLabelDto(DataClassJsonMixin):
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
-    mbid: Optional[str] = None
-    area_id: Optional[int] = None
+    start_date: str | None = None
+    end_date: str | None = None
+    mbid: str | None = None
+    area_id: int | None = None

@@ -1,10 +1,12 @@
-from typing import List
-from matcher.logger import log, INFO, FATAL
+import sys
+
 from matcher.api import API
 from matcher.context import Context
+from matcher.logger import FATAL, INFO, log
+from matcher.models.api.provider import Provider as ProviderApiModel
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.settings import Settings
-from matcher.models.api.provider import Provider as ProviderApiModel
+
 from .providers.factory import ProviderFactory
 from .settings import BaseProviderSettings
 
@@ -29,12 +31,12 @@ async def bootstrap_context():
         Context.init(api_client, settings, resolved_providers)
     except Exception as e:
         log(FATAL, str(e))
-        exit(1)
+        sys.exit(1)
 
 
 async def push_missing_providers(
-    api_providers: List[ProviderApiModel],
-    enabled_providers: List[BaseProviderSettings],
+    api_providers: list[ProviderApiModel],
+    enabled_providers: list[BaseProviderSettings],
     api_client: API,
 ):
     created_providers_name = []
@@ -60,8 +62,8 @@ async def push_missing_providers(
 
 # Builds provider instances from .providers using their settings
 def build_provider_models(
-    api_models: List[ProviderApiModel], provider_settings: List[BaseProviderSettings]
-) -> List[BaseProviderBoilerplate]:
+    api_models: list[ProviderApiModel], provider_settings: list[BaseProviderSettings]
+) -> list[BaseProviderBoilerplate]:
     providers = []
     for provider_setting in provider_settings:
         api_model = [

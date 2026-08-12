@@ -1,7 +1,14 @@
+import re
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, List, TypeAlias
+from datetime import date
+from typing import Any, TypeAlias
+from urllib.parse import urlparse
+
 import aiohttp
 from aiohttp.client import ClientSession
+from bs4 import BeautifulSoup
+
 from matcher.context import Context
 from matcher.providers.features import (
     GetAlbumFeature,
@@ -14,10 +21,10 @@ from matcher.providers.features import (
     GetArtistIllustrationUrlFeature,
     GetArtistUrlFromIdFeature,
     GetMusicBrainzRelationKeyFeature,
+    GetPlainSongLyricsFeature,
     GetSongDescriptionFeature,
     GetSongFeature,
     GetSongIdFromUrlFeature,
-    GetPlainSongLyricsFeature,
     GetSongUrlFromIdFeature,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
@@ -28,12 +35,8 @@ from matcher.providers.features import (
     SearchSongFeature,
 )
 from matcher.providers.session import HasSession
-from .domain import SearchResult
-from .boilerplate import BaseProviderBoilerplate
+
 from ..settings import GeniusSettings
-from urllib.parse import urlparse
-from datetime import date
-import re
 from ..utils import (
     asyncify,
     normalise_url_for_parse,
@@ -41,7 +44,8 @@ from ..utils import (
     removesuffix_or_none,
     to_slug,
 )
-from bs4 import BeautifulSoup
+from .boilerplate import BaseProviderBoilerplate
+from .domain import SearchResult
 
 AlbumSearchResultData: TypeAlias = tuple[Any, Any]
 
@@ -177,7 +181,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             ]["sections"][0]["hits"]
             for artist in artists:
                 artist = artist["result"]
-                if not artist["_type"] == "artist":
+                if artist["_type"] != "artist":
                     continue
                 if (
                     to_slug(artist["name"]) == to_slug(artist_id)
@@ -216,7 +220,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
 
     # Album
     async def _search_album(
-        self, album_name: str, artist_names: List[str]
+        self, album_name: str, artist_names: list[str]
     ) -> SearchResult | None:
         artist_name = None if len(artist_names) == 0 else artist_names[0]
         artist_slug = None if not artist_name else to_slug(artist_name)
@@ -224,7 +228,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
         try:
             albums = (
                 await self._fetch_json(
-                    "/search/album", {"q": f"{album_name} {artist_name or str()}"}
+                    "/search/album", {"q": f"{album_name} {artist_name or ''}"}
                 )
             )["response"]["sections"][0]["hits"]
             for album in albums:
@@ -247,7 +251,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             ]["sections"][0]["hits"]
             for album in albums:
                 album = album["result"]
-                if not album["_type"] == "album":
+                if album["_type"] != "album":
                     continue
                 if album["url"] == self.get_album_url_from_id(album_id):
                     return album
@@ -312,7 +316,7 @@ class GeniusProvider(BaseProviderBoilerplate[GeniusSettings], HasSession):
             return text.strip("\n")
 
     async def _search_song(
-        self, song_name: str, artist_name: str, featuring: List[str]
+        self, song_name: str, artist_name: str, featuring: list[str]
     ) -> SearchResult | None:
         try:
             response = (

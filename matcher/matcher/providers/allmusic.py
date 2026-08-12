@@ -1,13 +1,18 @@
-from dataclasses import dataclass
 import datetime
-from typing import Any
 import json
+from dataclasses import dataclass
+from datetime import date
+from typing import Any
 from urllib.parse import urlparse
+
 from aiohttp import ClientSession
+from bs4 import BeautifulSoup, Tag
+
 from matcher.context import Context
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.session import HasSession
 from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
+
 from ..settings import AllMusicSettings
 from .features import (
     GetAlbumFeature,
@@ -21,8 +26,6 @@ from .features import (
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
 )
-from datetime import date
-from bs4 import BeautifulSoup, Tag
 
 
 @dataclass

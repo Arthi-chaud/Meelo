@@ -1,22 +1,23 @@
-from dataclasses import dataclass
 import re
-from typing import Any, List
+from dataclasses import dataclass
+from typing import Any
 from urllib.parse import urlparse
 
 from aiohttp import ClientSession
+
 from matcher.context import Context
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.boilerplate import BaseProviderBoilerplate
 from matcher.providers.domain import SearchResult
-from matcher.providers.session import HasSession
-from matcher.settings import LrcLibSettings
 from matcher.providers.features import (
+    GetPlainSongLyricsFeature,
+    GetSongIdFromUrlFeature,
+    GetSongUrlFromIdFeature,
     GetSyncedSongLyricsFeature,
     SearchSongFeature,
-    GetPlainSongLyricsFeature,
-    GetSongUrlFromIdFeature,
-    GetSongIdFromUrlFeature,
 )
+from matcher.providers.session import HasSession
+from matcher.settings import LrcLibSettings
 from matcher.utils import asyncify, normalise_url_for_parse, removeprefix_or_none
 
 
@@ -55,14 +56,11 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
         if item.get("id") is None:
             return False
         item_duration = item.get("duration")
-        if duration and item_duration:
-            if abs(duration - item_duration) > 2:
-                return False
-        return True
+        return duration and item_duration and abs(duration - item_duration) > 2
 
     def _get_song_id_from_url(self, resource_url: str) -> str | None:
         url = urlparse(normalise_url_for_parse(resource_url))
-        if not url.netloc == "lrclib.net":
+        if url.netloc != "lrclib.net":
             return None
         return removeprefix_or_none(url.path, "/api/get/")
 
@@ -70,7 +68,7 @@ class LrcLibProvider(BaseProviderBoilerplate[LrcLibSettings], HasSession):
         self,
         song_name: str,
         artist_name: str,
-        featuring: List[str],
+        featuring: list[str],
         duration: int | None,
     ) -> SearchResult | None:
         async def _search_with_get() -> SearchResult | None:

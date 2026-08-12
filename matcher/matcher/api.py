@@ -1,11 +1,12 @@
-from datetime import date
-from matcher.logger import log, ERROR
 import os
-from typing import Any, List, TypeVar
+from datetime import date
+from typing import Any, TypeVar
+
 import aiohttp
 from dataclasses_json import DataClassJsonMixin
 
-from matcher.models.api.domain import Album, Area, Artist, Label, Song, File
+from matcher.logger import ERROR, log
+from matcher.models.api.domain import Album, Area, Artist, File, Label, Song
 from matcher.models.api.dto import (
     AreaDto,
     CreateProviderDto,
@@ -70,13 +71,12 @@ class API:
                 raise Exception(await response.text())
             return await response.json()
 
-    async def _put(self, route: str, json: dict = {}, file_path: str = "") -> None:
+    async def _put(self, route: str, json: dict = {}) -> None:
         async with self.session.put(
             route,
             headers={
                 "x-api-key": self._key,
             },
-            data={"file": open(file_path, "rb")} if len(file_path) else None,
             json=json if len(json.keys()) else None,
         ) as response:
             if response.status != 200:
@@ -167,8 +167,8 @@ class API:
         self,
         album_id: int,
         release_date: date | None,
-        genres: List[str] | None,
-        labels: List[LabelDto] | None,
+        genres: list[str] | None,
+        labels: list[LabelDto] | None,
         type: AlbumType | None,
     ):
         dto = UpdateAlbumDto(
@@ -190,7 +190,7 @@ class API:
             dto = {**dto, "synced": formatted}
         await self._post(f"/songs/{song_id}/lyrics", json=dto)
 
-    async def post_song_genres(self, song_id: int, genres: List[str]):
+    async def post_song_genres(self, song_id: int, genres: list[str]):
         await self._put(f"/songs/{song_id}", json={"genres": genres})
 
     async def get_area(self, area_id: str | int, log_fail: bool) -> Area:
@@ -213,21 +213,18 @@ class API:
             return Area.schema().load(json)
         except Exception as e:
             log(ERROR, str(e))
-            pass
 
     async def update_area(self, area_id: int, area_dto: UpdateAreaDto):
         try:
             await self._put(f"/areas/{area_id}", json=area_dto.to_dict())
         except Exception as e:
             log(ERROR, str(e))
-            pass
 
     async def update_label(self, label_id: int, label_dto: UpdateLabelDto):
         try:
             await self._put(f"/labels/{label_id}", json=label_dto.to_dict())
         except Exception as e:
             log(ERROR, str(e))
-            pass
 
     @staticmethod
     def _to_page(obj: Any, t: type[T]) -> Page[T]:
