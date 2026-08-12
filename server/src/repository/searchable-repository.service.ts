@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MeiliSearch } from "meilisearch";
+import { Meilisearch } from "meilisearch";
 import type { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import { sortItemsUsingOrderedIdList } from "./repository.utils";
 
@@ -25,7 +25,7 @@ export default abstract class SearchableRepositoryService {
 	constructor(
 		public readonly indexName: string,
 		protected searchableKeys: string[],
-		protected readonly meiliSearch: MeiliSearch,
+		protected readonly meiliSearch: Meilisearch,
 	) {
 		this.meiliSearch
 			.createIndex(this.indexName, {

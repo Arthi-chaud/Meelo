@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { MeiliSearch } from "meilisearch";
+import { Meilisearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import AlbumService from "src/album/album.service";
@@ -46,7 +46,7 @@ import type GenreQueryParameters from "./models/genre.query-parameters";
 export default class GenreService extends SearchableRepositoryService {
 	private readonly logger = new Logger(GenreService.name);
 	constructor(
-		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
+		@InjectMeiliSearch() protected readonly meiliSearch: Meilisearch,
 		private prismaService: PrismaService,
 	) {
 		super("genre", ["name", "slug"], meiliSearch);

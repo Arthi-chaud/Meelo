@@ -17,7 +17,7 @@
  */
 
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { MeiliSearch } from "meilisearch";
+import { Meilisearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import { PrismaError } from "prisma-error-enum";
 import ArtistService from "src/artist/artist.service";
@@ -68,7 +68,7 @@ export default class AlbumService extends SearchableRepositoryService {
 		@Inject(forwardRef(() => LabelService))
 		private labelService: LabelService,
 		@InjectMeiliSearch()
-		protected readonly meiliSearch: MeiliSearch,
+		protected readonly meiliSearch: Meilisearch,
 	) {
 		super(
 			"albums",

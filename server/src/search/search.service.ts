@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from "@nestjs/common";
-import { MeiliSearch } from "meilisearch";
+import { Meilisearch } from "meilisearch";
 import { InjectMeiliSearch } from "nestjs-meilisearch";
 import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
@@ -38,7 +38,7 @@ export class SearchService {
 		private videoService: VideoService,
 		private labelService: LabelService,
 		private genreService: GenreService,
-		@InjectMeiliSearch() protected readonly meiliSearch: MeiliSearch,
+		@InjectMeiliSearch() protected readonly meiliSearch: Meilisearch,
 	) {}
 
 	async search(query: string): Promise<SearchItem[]> {
