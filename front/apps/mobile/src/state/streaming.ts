@@ -2,13 +2,15 @@ import { atom } from "jotai";
 import * as yup from "yup";
 import { AudioQuality } from "@/models/streaming";
 import { storage } from "~/utils/storage";
+import type { MeeloInstance } from "./user";
 
 const StreamingQuality = yup.object({
 	audio: AudioQuality.default("320k"),
 });
 export type StreamingQuality = yup.InferType<typeof StreamingQuality>;
 
-const StreamingPreferences = yup.object({
+export const InstanceStreamingPreferences = yup.object({
+	allowTranscoding: yup.boolean().default(true),
 	wifi: StreamingQuality.default({
 		audio: "320k",
 	} satisfies StreamingQuality).required(),
@@ -16,35 +18,64 @@ const StreamingPreferences = yup.object({
 		audio: "128k",
 	} satisfies StreamingQuality).required(),
 });
-export type StreamingPreferences = yup.InferType<typeof StreamingPreferences>;
-export type NetworkMode = keyof StreamingPreferences;
+export type InstanceStreamingPreferences = yup.InferType<
+	typeof InstanceStreamingPreferences
+>;
+export type StreamingPreferences = Record<string, InstanceStreamingPreferences>;
+export type NetworkMode = keyof Omit<
+	InstanceStreamingPreferences,
+	"allowTranscoding"
+>;
 export const StreamingPreferenceKey = "streaming-preferences";
-export const AllowTranscodingKey = "allow-transcoding";
 
 const readStreamingPreferences = (): StreamingPreferences => {
 	const stringPrefs = storage.getString(StreamingPreferenceKey);
 	if (!stringPrefs) {
-		return StreamingPreferences.getDefault();
+		return {};
 	}
 	try {
-		const prefs = StreamingPreferences.validateSync(
-			JSON.parse(stringPrefs),
-		);
-		return prefs;
+		const obj = JSON.parse(stringPrefs);
+		if (typeof obj !== "object") {
+			return {};
+		}
+		const prefs: StreamingPreferences = {};
+		for (const [instanceUrl, rawInstancePrefs] of Object.entries(obj)) {
+			if (typeof instanceUrl !== "string") {
+				continue;
+			}
+			try {
+				const instancePrefs = InstanceStreamingPreferences.validateSync(
+					rawInstancePrefs,
+					{},
+				);
+				prefs[instanceUrl] = instancePrefs;
+			} catch {
+				prefs[instanceUrl] = InstanceStreamingPreferences.getDefault();
+			}
+		}
+		return obj;
 	} catch (e) {
 		// biome-ignore lint/suspicious/noConsole: For debug
 		console.warn(
 			`An error occured when reading streaming preferences: ${e}`,
 		);
-		return StreamingPreferences.getDefault();
+		return {};
 	}
 };
 
-export const allowTranscodingAtom = atom<boolean, [boolean], void>(
-	(get) => get(_allowTranscodingAtom),
-	(_, set, newPref) => {
-		storage.set(AllowTranscodingKey, newPref);
-		set(_allowTranscodingAtom, newPref);
+export const setInstanceStreamingPreferenceAtom = atom(
+	null,
+	(
+		get,
+		set,
+		instance: MeeloInstance,
+		instancePrefs: InstanceStreamingPreferences,
+	) => {
+		const prefs = get(streamingPreferenceAtom);
+		set(streamingPreferenceAtom, {
+			...prefs,
+			[instance.url]: instancePrefs,
+		});
 	},
 );
 
@@ -61,7 +92,4 @@ export const streamingPreferenceAtom = atom<
 	},
 );
 
-const _allowTranscodingAtom = atom(
-	storage.getBoolean(AllowTranscodingKey) === true,
-);
 const _streamingPreferenceAtom = atom(readStreamingPreferences());

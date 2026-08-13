@@ -1,22 +1,19 @@
-import { useAtom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { AudioQualities, type AudioQuality } from "@/models/streaming";
-import { store } from "@/state/store";
 import { CheckIcon, MoreIcon, RetryIcon, UncheckIcon } from "@/ui/icons";
 import { closeModalAtom, useModal } from "~/components/bottom-modal-sheet";
 import { SelectBottomModalContent } from "~/components/bottom-modal-sheet/select";
-import { useTranscoderIsAvailable } from "~/hooks/streaming";
+import {
+	useStreamingPreferences,
+	useTranscoderIsAvailable,
+} from "~/hooks/streaming";
 import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import {
-	allowTranscodingAtom,
-	type NetworkMode,
-	type StreamingQuality,
-	streamingPreferenceAtom,
-} from "~/state/streaming";
+import type { NetworkMode, StreamingQuality } from "~/state/streaming";
 import {
 	Section,
 	SectionHeader,
@@ -25,12 +22,13 @@ import {
 } from "../components";
 
 export const PlaybackSettings = () => {
-	const [streamingSettings] = useAtom(streamingPreferenceAtom);
+	const [
+		{ allowTranscoding, ...streamingPreferences },
+		setStreamingPreferences,
+	] = useStreamingPreferences();
 	const { t } = useTranslation();
 	const { openModal } = usePickStreamingQualityModal();
 	const { isAvailable: isHLSAvailable, refresh } = useTranscoderIsAvailable();
-	const [allowTranscoding, setAllowTranscoding] =
-		useAtom(allowTranscodingAtom);
 	const enableTranscodingSettings = isHLSAvailable && allowTranscoding;
 
 	return (
@@ -64,7 +62,12 @@ export const PlaybackSettings = () => {
 				}
 				action={
 					<Pressable
-						onPress={() => setAllowTranscoding(!allowTranscoding)}
+						onPress={() =>
+							setStreamingPreferences({
+								...streamingPreferences,
+								allowTranscoding: !allowTranscoding,
+							})
+						}
 					>
 						<Icon
 							variant={allowTranscoding ? "Bold" : "Outline"}
@@ -74,7 +77,7 @@ export const PlaybackSettings = () => {
 				}
 			/>
 			{allowTranscoding
-				? Object.entries(streamingSettings).map(([key, value]) => {
+				? Object.entries(streamingPreferences).map(([key, value]) => {
 						const networkMode = key as NetworkMode;
 						const quality = value as StreamingQuality;
 
@@ -133,12 +136,9 @@ export const usePickStreamingQualityModal = () => {
 	const { t } = useTranslation();
 	const content = useCallback(
 		(networkMode: NetworkMode) => {
-			const prefs = store.get(streamingPreferenceAtom);
-			const onSelect = (e: AudioQuality) => {
-				store.set(streamingPreferenceAtom, {
-					...prefs,
-					[networkMode]: { audio: e },
-				});
+			const [prefs, setPrefs] = useStreamingPreferences();
+			const onSelect = (q: AudioQuality) => {
+				setPrefs({ ...prefs, [networkMode]: { audio: q } });
 				closeModal();
 			};
 			return (
