@@ -12,7 +12,7 @@ export type StreamingQuality = yup.InferType<typeof StreamingQuality>;
 export const InstanceStreamingPreferences = yup.object({
 	allowTranscoding: yup.boolean().default(true),
 	wifi: StreamingQuality.default({
-		audio: "320k",
+		audio: "direct",
 	} satisfies StreamingQuality).required(),
 	cellular: StreamingQuality.default({
 		audio: "128k",

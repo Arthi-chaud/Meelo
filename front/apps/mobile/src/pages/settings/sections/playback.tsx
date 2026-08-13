@@ -147,9 +147,7 @@ export const usePickStreamingQualityModal = () => {
 					isSelected={(a, b) => a === b}
 					values={AudioQualities}
 					onItemSelect={(q) => q}
-					formatItem={(q) =>
-						q === "original" ? t("settings.streaming.original") : q
-					}
+					formatItem={(q) => translateAudioQuality(q, t)}
 					onSave={onSelect}
 					closeOnSelect
 				/>
@@ -167,4 +165,9 @@ export const usePickStreamingQualityModal = () => {
 const translateAudioQuality = (
 	q: AudioQuality,
 	t: (s: TranslationKey) => string,
-) => (q === "original" ? t("settings.streaming.original") : q);
+) =>
+	q === "original"
+		? t("settings.streaming.original")
+		: q === "direct"
+			? t("settings.streaming.direct")
+			: q;

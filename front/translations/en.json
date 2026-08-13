@@ -355,6 +355,7 @@
 		"streaming": {
 			"allowTranscoding": "Allow Transcoding",
 			"cellular": "Cellular",
+			"direct": "Direct",
 			"header": "Playback Quality",
 			"transcoderAvailable": "Transcoder Available",
 			"wifi": "Wifi",
