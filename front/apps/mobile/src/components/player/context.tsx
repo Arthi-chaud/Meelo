@@ -34,13 +34,12 @@ import {
 	queuePrefetchCountAtom,
 	useDownloadManager,
 } from "~/downloads";
-import { useTranscoderIsAvailable } from "~/hooks/streaming";
-import { showErrorToast } from "~/primitives/toast";
 import {
-	allowTranscodingAtom,
-	type StreamingQuality,
-	streamingPreferenceAtom,
-} from "~/state/streaming";
+	useStreamingPreferences,
+	useTranscoderIsAvailable,
+} from "~/hooks/streaming";
+import { showErrorToast } from "~/primitives/toast";
+import type { StreamingQuality } from "~/state/streaming";
 import {
 	currentTrackAtom,
 	durationAtom,
@@ -60,7 +59,7 @@ export const useHLSAtom = atom(false);
 
 const useStreamingQuality = (): StreamingQuality => {
 	const state = useNetworkState();
-	const prefs = useAtomValue(streamingPreferenceAtom);
+	const [prefs] = useStreamingPreferences();
 	if (state.type === NetworkStateType.WIFI) {
 		return prefs.wifi;
 	}
@@ -71,6 +70,7 @@ export const PlayerContext = () => {
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 	const streamingQuality = useStreamingQuality();
+	const [streamingPreferences] = useStreamingPreferences();
 	const api = queryClient.api;
 	const playerRef = useRef<VideoPlayer | null>(null);
 	const setPlayer = useSetAtom(videoPlayerAtom);
@@ -91,8 +91,7 @@ export const PlayerContext = () => {
 	const onProgressRef = useRef<any>(null);
 	const [isHLS, setIsHLS] = useAtom(useHLSAtom);
 	const { isAvailable } = useTranscoderIsAvailable();
-	const allowTranscoding = useAtomValue(allowTranscodingAtom);
-	const canUseHLS = isAvailable && allowTranscoding;
+	const canUseHLS = isAvailable && streamingPreferences.allowTranscoding;
 	const isSwitchingTrack = useRef(false);
 	const controlsRegistered = useRef(false);
 	const controlsListener = useRef<(() => void) | null>(null);

@@ -29,12 +29,14 @@ import { Illustration } from "~/components/illustration";
 import { LoadableText } from "~/components/loadable_text";
 import { usePickArtistModal } from "~/components/pick-artist";
 import * as Haptics from "~/haptics";
-import { useTranscoderIsAvailable } from "~/hooks/streaming";
+import {
+	useStreamingPreferences,
+	useTranscoderIsAvailable,
+} from "~/hooks/streaming";
 import { Button } from "~/primitives/button";
 import { Icon } from "~/primitives/icon";
 import { Pressable } from "~/primitives/pressable";
 import { Text } from "~/primitives/text";
-import { allowTranscodingAtom } from "~/state/streaming";
 import { breakpoints } from "~/theme";
 import { useHLSAtom, videoPlayerAtom } from "../context";
 import { getTrackForContextMenu } from "../queries";
@@ -149,7 +151,7 @@ const WithFullScreenAndTranscodeButton = ({
 	const [currentTrack] = useAtom(currentTrackAtom);
 	const [useHLS, setUseHLS] = useAtom(useHLSAtom);
 	const { isAvailable } = useTranscoderIsAvailable();
-	const allowTranscoding = useAtomValue(allowTranscodingAtom);
+	const [{ allowTranscoding }] = useStreamingPreferences();
 	const canUseHLS = isAvailable === true && allowTranscoding;
 	const isVideo = currentTrack?.track.type === "Video";
 	const router = useRouter();
