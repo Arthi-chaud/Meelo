@@ -6,6 +6,7 @@ export const AudioQualities = [
 	"320k",
 	"512k",
 	"original",
+	"direct",
 ] as const;
 export const AudioQuality = yup
 	.mixed<AudioQuality>()

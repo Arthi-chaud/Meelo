@@ -78,7 +78,7 @@ type StreamUrlParam = {
 } & (
 	| {
 			fileType: TrackType;
-			audioQuality: AudioQuality;
+			audioQuality: keyof Omit<Record<AudioQuality, never>, "direct">;
 			method: "hls";
 	  }
 	| {

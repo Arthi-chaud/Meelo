@@ -257,7 +257,9 @@ export const PlayerContext = () => {
 		if (playerRef.current === null) {
 			mkSource(
 				currentTrack,
-				canUseHLS && currentTrack.track.type === "Audio"
+				canUseHLS &&
+					currentTrack.track.type === "Audio" &&
+					streamingQuality.audio !== "direct"
 					? "hls"
 					: "direct",
 				streamingQuality,
@@ -362,7 +364,9 @@ export const PlayerContext = () => {
 			playerRef.current!.pause();
 			mkSource(
 				currentTrack,
-				canUseHLS && currentTrack.track.type === "Audio"
+				canUseHLS &&
+					currentTrack.track.type === "Audio" &&
+					streamingQuality.audio !== "direct"
 					? "hls"
 					: "direct",
 				streamingQuality,
@@ -470,7 +474,10 @@ const _mkSource = (
 			? {
 					method,
 					fileId: track.sourceFileId,
-					audioQuality: streamingQuality.audio,
+					audioQuality:
+						streamingQuality.audio === "direct"
+							? "320k"
+							: streamingQuality.audio,
 					fileType: track.type,
 				}
 			: { method, fileId: track.sourceFileId },
