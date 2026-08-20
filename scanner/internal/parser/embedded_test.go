@@ -76,6 +76,7 @@ func TestEmbeddedOpus(t *testing.T) {
 	assert.Equal(t, int64(217), m.Duration)
 	assert.Equal(t, "", m.Release)
 	assert.Equal(t, 1999, m.ReleaseReleaseDate.Year())
+	assert.Equal(t, time.Month(12), m.ReleaseReleaseDate.Month())
 	assert.Nil(t, m.AlbumReleaseDate)
 	assert.Equal(t, int64(2), m.DiscIndex)
 	assert.Equal(t, int64(1), m.Index)

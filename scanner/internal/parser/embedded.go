@@ -16,7 +16,7 @@ import (
 
 type parseTagFn func(string)
 
-var dateFormats []string = []string{time.DateOnly, "2006", time.DateTime, time.RFC3339}
+var dateFormats []string = []string{time.DateOnly, "2006-01", "2006", time.DateTime, time.RFC3339}
 
 // Tries to get each tag by key one after the other. If it success, calls function and returns
 func ParseTag(t ffprobe.Tags, keys []string, fun parseTagFn) {
