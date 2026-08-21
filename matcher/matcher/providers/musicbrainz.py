@@ -360,40 +360,26 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
 
     async def _get_album(self, album_id: str) -> Any | None:
         res = await self._fetch(
-            f"/release-group/{album_id}", {"inc": " ".join(["url-rels", "genres"])}
+            f"/release-group/{album_id}",
+            {"inc": " ".join(["url-rels", "genres"])},
         )
         return res
 
     async def _get_album_labels(self, album: Any) -> list[LabelDto] | None:
         try:
             album_id = album["id"]
+            album_first_release_date = album["first-release-date"]
             res = await self._fetch("/release", {"query": f"rgid:{album_id}"})
             releases = [
                 r
                 for r in res["releases"]
                 # date can be an empty string
-                if "date" in r and r["date"] and "label-info" in r
-            ]
-            releases_with_date = [
-                [
-                    datetime.strptime(
-                        d
-                        + ("" if len(d) == 10 else "-31" if len(d) == 7 else "-12-31"),
-                        "%Y-%m-%d",
-                    ),
-                    r,
-                ]
-                for [d, r] in ([r["date"], r] for r in releases)
-            ]
-            sorted_releases = [
-                r for [_, r] in sorted(releases_with_date, key=lambda i: i[0])
-            ]
-            first_release = sorted_releases[0]
-            original_releases = [
-                r for r in sorted_releases if r["date"] == first_release["date"]
+                if "date" in r
+                and r["date"] == album_first_release_date
+                and "label-info" in r
             ]
             labels = []
-            for release in original_releases:
+            for release in releases:
                 for label in release["label-info"]:
                     label_name = label["label"]["name"]
                     label_id = label["label"]["id"]
