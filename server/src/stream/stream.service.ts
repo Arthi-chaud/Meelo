@@ -43,10 +43,12 @@ export class StreamService {
 		this.transcoderUrl = process.env.TRANSCODER_URL ?? null;
 		if (this.transcoderUrl) {
 			this.httpService.axiosRef
-				.get(this.transcoderUrl, { validateStatus: (s) => s < 500 })
+				.get(`${this.transcoderUrl}/video/health`, {
+					// Tolerate 404s so transcoders that predate the
+					// health route still pass as a connectivity check
+					validateStatus: (s) => s < 500,
+				})
 				.then(() => {
-					// there is no healthcheck route atm
-					// knowing that it responded is OK
 					this.logger.log("Transcoder found!");
 				})
 				.catch((_) => {
