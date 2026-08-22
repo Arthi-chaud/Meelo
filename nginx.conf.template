@@ -1,3 +1,5 @@
+resolver 127.0.0.11 valid=10s ipv6=off;
+
 server {
 	listen ${PORT} default_server;
 	listen [::]:${PORT} default_server;
@@ -8,21 +10,28 @@ server {
 	    return 302 /api/;
 	}
 	location /api/ {
-	    proxy_pass ${SERVER_URL}/;
+	    set $meelo_server ${SERVER_URL};
+	    rewrite ^/api(/.*)$ $1 break;
+	    proxy_pass $meelo_server;
 	}
 	location = /scanner {
 	    return 302 /scanner/;
 	}
 	location /scanner/ {
-	    proxy_pass ${SCANNER_URL}/;
+	    set $meelo_scanner ${SCANNER_URL};
+	    rewrite ^/scanner(/.*)$ $1 break;
+	    proxy_pass $meelo_scanner;
 	}
 	location = /matcher {
 	    return 302 /matcher/;
 	}
 	location /matcher/ {
-	    proxy_pass ${MATCHER_URL}/;
+	    set $meelo_matcher ${MATCHER_URL};
+	    rewrite ^/matcher(/.*)$ $1 break;
+	    proxy_pass $meelo_matcher;
 	}
 	location / {
-		proxy_pass ${FRONT_URL};
+		set $meelo_front ${FRONT_URL};
+		proxy_pass $meelo_front;
 	}
 }
