@@ -8519,7 +8519,7 @@ __metadata:
     react-native-draggable-flatlist: "npm:^4.0.3"
     react-native-edge-to-edge: "npm:^1.8.1"
     react-native-gesture-handler: "npm:~2.31.2"
-    react-native-keyboard-controller: "npm:1.22.2"
+    react-native-keyboard-controller: "npm:1.22.3"
     react-native-mmkv: "npm:4.3.2"
     react-native-nitro-modules: "npm:0.36.5"
     react-native-reanimated: "npm:~4.5.3"
@@ -9515,16 +9515,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-keyboard-controller@npm:1.22.2":
-  version: 1.22.2
-  resolution: "react-native-keyboard-controller@npm:1.22.2"
+"react-native-keyboard-controller@npm:1.22.3":
+  version: 1.22.3
+  resolution: "react-native-keyboard-controller@npm:1.22.3"
   dependencies:
     react-native-is-edge-to-edge: "npm:^1.2.1"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-reanimated: ">=3.0.0"
-  checksum: 10c0/d28a2f4f17c34fe7b38e5d80cda22b88b11cd7400ad041d7a7270fc0ea9599773a7d4baa76ae415b7a1785655bab6082432005b4e6efb399995cd24e4721b666
+  checksum: 10c0/d3bf5a9378156feba2495ac1ba6d019c70cce9ddcb40e0043a15d5f7f2ceb05c044c88b7408d34b970f392fff261709719c57283768f5884f03a520c96adcd2f
   languageName: node
   linkType: hard
 
