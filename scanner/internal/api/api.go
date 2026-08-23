@@ -193,6 +193,15 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 	}
 	mp.WriteField("registrationDate", m.RegistrationDate.Format(time.RFC3339))
 	mp.WriteField("checksum", m.Checksum)
+	if len(m.Series) > 0 {
+		mp.WriteField("series", m.Series)
+	}
+	if len(m.SeriesMbid) > 0 {
+		mp.WriteField("seriesMbid", m.SeriesMbid)
+	}
+	if m.SeriesIndex > 0 {
+		mp.WriteField("seriesIndex", strconv.FormatInt(int64(m.SeriesIndex), 10))
+	}
 	mp.WriteField("path", m.Path)
 	if m.Fingerprint != nil {
 		mp.WriteField("fingerprint", *m.Fingerprint)

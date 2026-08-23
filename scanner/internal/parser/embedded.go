@@ -224,6 +224,18 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		}
 	})
 
+	ParseTag(tags, []string{"series", "release series"}, func(value string) {
+		metadata.Series = value
+	})
+	ParseTag(tags, []string{"series index", "release series index", "series number", "seriesindex", "seriesnumber", "seriesidx"}, func(value string) {
+		if seriesIndex, err := strconv.Atoi(value); err == nil {
+			metadata.SeriesIndex = int32(seriesIndex)
+		}
+	})
+	ParseTag(tags, []string{"series mbid", "seriesmbid", "release series mbid", "musicbrainz series id"}, func(value string) {
+		metadata.SeriesMbid = value
+	})
+
 	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {
 		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
 			metadata.IllustrationLocation = internal.Embedded

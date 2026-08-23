@@ -118,6 +118,17 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 			metadata.Bpm = bpm
 		}
 	}
+
+	if index := regex.SubexpIndex("Series"); index != -1 {
+		metadata.Series = matches[index]
+	}
+	if index := regex.SubexpIndex("SeriesIndex"); index != -1 {
+		seriesIndex, err := strconv.Atoi(matches[index])
+		if err == nil {
+			metadata.SeriesIndex = int32(seriesIndex)
+		}
+	}
+
 	return metadata, errors
 }
 
