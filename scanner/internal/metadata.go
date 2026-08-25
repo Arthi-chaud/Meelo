@@ -66,7 +66,7 @@ type Metadata struct {
 	Label string
 
 	Series      string
-	SeriesIndex int32
+	SeriesIndex float64
 	SeriesMbid  string
 
 	IllustrationLocation    IllustrationLocation

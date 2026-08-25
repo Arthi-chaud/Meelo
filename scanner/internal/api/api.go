@@ -200,7 +200,7 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 		mp.WriteField("seriesMbid", m.SeriesMbid)
 	}
 	if m.SeriesIndex > 0 {
-		mp.WriteField("seriesIndex", strconv.FormatInt(int64(m.SeriesIndex), 10))
+		mp.WriteField("seriesIndex", fmt.Sprintf("%.2f", m.SeriesIndex))
 	}
 	mp.WriteField("path", m.Path)
 	if m.Fingerprint != nil {

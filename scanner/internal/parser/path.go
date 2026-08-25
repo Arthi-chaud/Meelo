@@ -123,9 +123,9 @@ func getMetadataFromMatches(matches []string, regex *regexp.Regexp) (internal.Me
 		metadata.Series = matches[index]
 	}
 	if index := regex.SubexpIndex("SeriesIndex"); index != -1 {
-		seriesIndex, err := strconv.Atoi(matches[index])
+		seriesIndex, err := strconv.ParseFloat(matches[index], 64)
 		if err == nil {
-			metadata.SeriesIndex = int32(seriesIndex)
+			metadata.SeriesIndex = seriesIndex
 		}
 	}
 

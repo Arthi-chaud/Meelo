@@ -232,8 +232,8 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.Series = value
 	})
 	ParseTag(tags, []string{"series index", "release series index", "series number", "seriesindex", "seriesnumber", "seriesidx"}, func(value string) {
-		if seriesIndex, err := strconv.Atoi(value); err == nil {
-			metadata.SeriesIndex = int32(seriesIndex)
+		if seriesIndex, err := strconv.ParseFloat(value, 64); err == nil {
+			metadata.SeriesIndex = seriesIndex
 		}
 	})
 	ParseTag(tags, []string{"series mbid", "seriesmbid", "release series mbid", "musicbrainz series id"}, func(value string) {

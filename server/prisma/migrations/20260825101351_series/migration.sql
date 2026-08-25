@@ -14,7 +14,7 @@ CREATE TABLE "series_entry" (
     "id" SERIAL NOT NULL,
     "albumId" INTEGER NOT NULL,
     "seriesId" INTEGER NOT NULL,
-    "index" INTEGER,
+    "index" DOUBLE PRECISION,
 
     CONSTRAINT "series_entry_pkey" PRIMARY KEY ("id")
 );

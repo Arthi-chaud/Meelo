@@ -803,7 +803,7 @@ model SeriesEntry {
     album    Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
     seriesId Int
     series   Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
-    index    Int?
+    index    Float?
 
     @@unique([seriesId, albumId])
     @@map("series_entry")
