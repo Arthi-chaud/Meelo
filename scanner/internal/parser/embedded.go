@@ -124,6 +124,10 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.Genres = strings.FieldsFunc(value, func(r rune) bool {
 			return r == ';' || r == '\\' || r == ','
 		})
+		for i, g := range metadata.Genres {
+			metadata.Genres[i] = strings.TrimSpace(g)
+
+		}
 	})
 	if c.Compilations.UseID3CompTag {
 		ParseTag(tags, []string{"compilation", "compilations", "itunescompilation"}, func(value string) {
