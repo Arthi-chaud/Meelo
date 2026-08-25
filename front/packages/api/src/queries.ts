@@ -174,6 +174,7 @@ export const getAlbums = <I extends AlbumInclude | never = never>(
 		appearance?: Identifier;
 		query?: Identifier;
 		label?: Identifier;
+		series?: Identifier;
 		random?: number;
 	},
 	sort?: SortingParameters<typeof AlbumSortingKeys>,

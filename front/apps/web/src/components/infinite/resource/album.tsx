@@ -57,7 +57,7 @@ const InfiniteAlbumView = (props: ViewProps) => {
 		translate: (s) => albumTypeToTranslationKey(s, false),
 	});
 	const [sort, sortControl] = useSortControl({
-		sortingKeys: AlbumSortingKeys,
+		sortingKeys: AlbumSortingKeys.filter((s) => s !== "seriesIndex"),
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [layout, layoutControl] = useLayoutControl({

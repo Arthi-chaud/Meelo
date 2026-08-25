@@ -91,6 +91,7 @@
 	},
 	"album": {
 		"bonusTracks": "Bonus Tracks",
+		"moreFromSeries": "More from {{series}}",
 		"onThisAlbum": "Featured Artists",
 		"otherAlbumReleases": "Other releases of the same album",
 		"relatedAlbums": "Related Albums",
@@ -331,6 +332,9 @@
 	},
 	"search": {
 		"all": "All"
+	},
+	"series": {
+		"entryIndex": "Vol. {{index}}"
 	},
 	"settings": {
 		"cache": {
