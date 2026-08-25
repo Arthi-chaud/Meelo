@@ -33,6 +33,7 @@ import { Album } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
 import type ReleaseQueryParameters from "src/release/models/release.query-parameters";
+import SeriesQueryParameters from "src/series/series.query-parameters";
 import type Slug from "src/slug/slug";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type { SearchDateInput } from "src/utils/search-date-input";
@@ -77,6 +78,7 @@ namespace AlbumQueryParameters {
 			albums: AlbumQueryParameters.WhereInput[];
 			// Get albums with a song in common. Does not include the given album
 			related: AlbumQueryParameters.WhereInput;
+			series: SeriesQueryParameters.WhereInput;
 		}>
 	>;
 
@@ -111,10 +113,11 @@ namespace AlbumQueryParameters {
 		"genres",
 		"illustration",
 		"localIdentifiers",
+		"series",
 	] as const;
 	export const AvailableAtomicIncludes = filterAtomicRelationInclude(
 		AvailableIncludes,
-		["artists", "genres", "localIdentifiers"],
+		["artists", "genres", "localIdentifiers", "series"],
 	);
 	export type RelationInclude = BaseRelationInclude<typeof AvailableIncludes>;
 
@@ -127,6 +130,7 @@ namespace AlbumQueryParameters {
 		"artistName",
 		"releaseDate",
 		"addDate",
+		"seriesIndex",
 	] as const;
 	export type SortingKeys = typeof SortingKeys;
 	export class SortingParameter extends ModelSortingParameter(SortingKeys) {}

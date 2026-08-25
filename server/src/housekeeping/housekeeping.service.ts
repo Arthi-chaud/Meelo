@@ -24,6 +24,7 @@ import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
 import PlaylistService from "src/playlist/playlist.service";
 import ReleaseService from "src/release/release.service";
+import { SeriesService } from "src/series/series.service";
 import SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";
 
@@ -49,6 +50,8 @@ export class HousekeepingService {
 		private labelService: LabelService,
 		@Inject(forwardRef(() => AreaService))
 		private areaService: AreaService,
+		@Inject(forwardRef(() => SeriesService))
+		private seriesService: SeriesService,
 	) {}
 	/**
 	 * Calls housekeeping methods on repository services
@@ -63,6 +66,7 @@ export class HousekeepingService {
 		await this.playlistService.housekeeping();
 		await this.labelService.housekeeping();
 		await this.areaService.housekeeping();
+		await this.seriesService.housekeeping();
 		await this.resolveMasters();
 	}
 

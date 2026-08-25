@@ -52,6 +52,7 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import { AlbumType } from "src/prisma/generated/client";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
+import { SeriesService } from "src/series/series.service";
 import AlbumService from "./album.service";
 import AlbumQueryParameters from "./models/album.query-parameters";
 import { AlbumResponseBuilder } from "./models/album.response";
@@ -103,6 +104,13 @@ class Selector {
 	})
 	@TransformIdentifier(AlbumService)
 	related?: AlbumQueryParameters.WhereInput;
+
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: "Get albums belonging to a series",
+	})
+	@TransformIdentifier(SeriesService)
+	series?: AlbumQueryParameters.WhereInput;
 
 	@IsOptional()
 	@ApiPropertyOptional({

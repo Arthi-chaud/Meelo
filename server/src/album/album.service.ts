@@ -42,6 +42,7 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import { SeriesService } from "src/series/series.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
 import { getSortName } from "src/sort/sort-name";
@@ -285,7 +286,13 @@ export default class AlbumService extends SearchableRepositoryService {
 				name: buildStringSearchParameters(where.name),
 			},
 		];
-
+		if (where.series) {
+			query.push({
+				seriesEntry: {
+					series: SeriesService.formatWhereInput(where.series),
+				},
+			});
+		}
 		if (where.albums) {
 			query.push({
 				OR: where.albums.map((album) =>
@@ -603,6 +610,19 @@ export default class AlbumService extends SearchableRepositoryService {
 						},
 					},
 					{ slug: "asc" },
+					{ sortSlug: "asc" },
+					{ id: "asc" },
+				];
+			case "seriesIndex":
+				return [
+					{
+						seriesEntry: {
+							index: {
+								sort: sortingParameter.order,
+								nulls: "last",
+							},
+						},
+					},
 					{ sortSlug: "asc" },
 					{ id: "asc" },
 				];

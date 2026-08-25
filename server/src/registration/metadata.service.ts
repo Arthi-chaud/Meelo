@@ -25,6 +25,7 @@ import { AlbumType, TrackType } from "src/prisma/generated/client";
 import type { Artist, File } from "src/prisma/models";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseService from "src/release/release.service";
+import { SeriesService } from "src/series/series.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
@@ -54,6 +55,8 @@ export default class MetadataService {
 		private videoService: VideoService,
 		@Inject(forwardRef(() => LabelService))
 		private labelService: LabelService,
+		@Inject(forwardRef(() => SeriesService))
+		private seriesService: SeriesService,
 		private prismaService: PrismaService,
 	) {}
 
@@ -250,6 +253,12 @@ export default class MetadataService {
 			? this.parserService.parseReleaseExtension(metadata.album)
 					.parsedName
 			: undefined;
+		const series = metadata.series
+			? await this.seriesService.getOrCreate({
+					name: metadata.series,
+					mbid: metadata.seriesMbid,
+				})
+			: undefined;
 		const album = metadata.album
 			? await this.albumService.getOrCreate(
 					{
@@ -335,6 +344,14 @@ export default class MetadataService {
 				this.releaseService.update(
 					{ label: { id: label.id } },
 					{ id: release.id },
+				);
+			}
+
+			if (series && metadata.seriesIndex) {
+				await this.seriesService.addEntry(
+					{ id: album.id },
+					{ id: series.id },
+					metadata.seriesIndex,
 				);
 			}
 			if (

@@ -341,7 +341,11 @@ export default class LabelService extends SearchableRepositoryService {
 	async housekeeping() {
 		const toDelete = await this.prismaService.label
 			.findMany({
-				where: { releases: { none: {} }, albums: { none: {} } },
+				where: {
+					releases: { none: {} },
+					albums: { none: {} },
+					series: { none: {} },
+				},
 				select: { id: true },
 			})
 			.then((labels) => labels.map(({ id }) => id));
