@@ -19,7 +19,13 @@
 import { useLocalSearchParams } from "expo-router";
 import { useSetAtom } from "jotai";
 import { useTranslation } from "react-i18next";
-import { getAlbums, getArtist, getGenre, getLabel } from "@/api/queries";
+import {
+	getAlbums,
+	getArtist,
+	getGenre,
+	getLabel,
+	getOneSeries,
+} from "@/api/queries";
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { CoverflowIcon } from "@/ui/icons";
@@ -43,18 +49,23 @@ export default function AlbumBrowseView() {
 		artist: artistId,
 		genre: genreId,
 		label: labelId,
+		series: seriesId,
 	} = useLocalSearchParams<{
 		compilations?: "true";
 		artist?: string;
 		genre?: string;
 		label?: string;
+		series?: string;
 	}>();
 	const [{ layout }, layoutControl] = useLayoutControl({
 		defaultLayout: "grid",
 		enableToggle: true,
 	});
 	const [{ sort, order }, sortControl] = useSortControl({
-		sortingKeys: AlbumSortingKeys,
+		sortingKeys:
+			seriesId === undefined
+				? AlbumSortingKeys.filter((s) => s !== "seriesIndex")
+				: AlbumSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
@@ -69,6 +80,10 @@ export default function AlbumBrowseView() {
 	const setCoverflowQuery = useSetAtom(coverflowQueryAtom);
 
 	const { data: genre } = useQuery((genreId) => getGenre(genreId), genreId);
+	const { data: series } = useQuery(
+		(seriesId) => getOneSeries(seriesId),
+		seriesId,
+	);
 	const { data: label } = useQuery((labelId) => getLabel(labelId), labelId);
 	const Item = layout === "list" ? AlbumItem : AlbumTile;
 	const query = getAlbums(
@@ -78,6 +93,7 @@ export default function AlbumBrowseView() {
 			artist: compilations ? "compilations" : artistId,
 			genre: genreId,
 			label: labelId,
+			series: seriesId,
 		},
 		{ sortBy: sort ?? "name", order: order ?? "asc" },
 		["artists", "illustration"],
@@ -88,13 +104,15 @@ export default function AlbumBrowseView() {
 			options={{
 				headerTitle: genreId
 					? (genre?.name ?? "")
-					: labelId
-						? (label?.name ?? "")
-						: t(
-								compilations
-									? "nav.compilations"
-									: "models.album_plural",
-							),
+					: seriesId
+						? (series?.name ?? "")
+						: labelId
+							? (label?.name ?? "")
+							: t(
+									compilations
+										? "nav.compilations"
+										: "models.album_plural",
+								),
 			}}
 		>
 			<InfiniteView

@@ -32,6 +32,7 @@ export const ArtistIcon: Icon = Iconsax.Profile2User;
 export const SongIcon: Icon = Iconsax.Musicnote;
 export const GenreIcon: Icon = Iconsax.Speaker;
 export const LabelIcon: Icon = Iconsax.Cd;
+export const SeriesIcon: Icon = Iconsax.Layer;
 export const RadioIcon: Icon = Iconsax.Radio;
 export const PlayerIcon: Icon = Iconsax.PlayCircle;
 export const CompilationIcon: Icon = Iconsax.Category;
