@@ -7,6 +7,7 @@ pkgs.mkShell rec {
     python314
     python314Packages.venvShellHook
     pyright
+    ruff
   ];
   # SRC: https://nixos.org/manual/nixpkgs/stable/#python
   shellHook = ''

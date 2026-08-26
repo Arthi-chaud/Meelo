@@ -6,6 +6,7 @@ pkgs.mkShell {
     nodejs_24
     biome
     yarn-berry
+    typescript-language-server
     watchman
     eas-cli
     cocoapods
