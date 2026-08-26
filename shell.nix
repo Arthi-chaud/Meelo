@@ -2,15 +2,15 @@
   pkgs ? import <nixpkgs> { },
 }:
 pkgs.mkShell {
-  inputsFrom = [
-    (import ./server/shell.nix { inherit pkgs; })
-    (import ./matcher/shell.nix { inherit pkgs; })
-    (import ./scanner/shell.nix { inherit pkgs; })
-    (import ./front/shell.nix { inherit pkgs; })
-  ];
+  packages = with pkgs; [
+    yaml-language-server
 
-  packages = [
-    pkgs.yaml-language-server
+    nixfmt
+
+    docker
+    docker-compose
+    docker-buildx
+    docker-language-server
   ];
 
 }

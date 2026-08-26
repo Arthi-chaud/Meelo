@@ -7,5 +7,6 @@ pkgs.mkShell {
     yarn-berry
     biome
     prisma-language-server
+    typescript-language-server
   ];
 }
