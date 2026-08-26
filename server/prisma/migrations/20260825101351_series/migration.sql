@@ -5,6 +5,7 @@ CREATE TABLE "series" (
     "slug" TEXT NOT NULL,
     "mbid" TEXT,
     "labelId" INTEGER,
+	"registeredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "series_pkey" PRIMARY KEY ("id")
 );

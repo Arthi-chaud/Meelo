@@ -124,6 +124,11 @@ export class SeriesService extends SearchableRepositoryService {
 					{ entries: { _count: sortingParameter.order } },
 					{ slug: "asc" },
 				];
+			case "addDate":
+				return [
+					{ registeredAt: sortingParameter.order },
+					{ slug: "asc" },
+				];
 			default:
 				return [
 					{

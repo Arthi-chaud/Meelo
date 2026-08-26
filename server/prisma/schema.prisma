@@ -786,13 +786,14 @@ enum AreaType {
 model Series {
     /// @description Unique numeric identifier
     /// @example 123
-    id      Int           @id @default(autoincrement())
-    name    String        @db.Citext()
-    slug    String        @unique
-    mbid    String?       @unique
-    entries SeriesEntry[]
-    labelId Int?
-    label   Label?        @relation(fields: [labelId], references: [id], onDelete: SetNull)
+    id           Int           @id @default(autoincrement())
+    name         String        @db.Citext()
+    slug         String        @unique
+    mbid         String?       @unique
+    registeredAt DateTime      @default(now())
+    entries      SeriesEntry[]
+    labelId      Int?
+    label        Label?        @relation(fields: [labelId], references: [id], onDelete: SetNull)
 
     @@map("series")
 }

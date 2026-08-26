@@ -17,4 +17,4 @@ type Series = yup.InferType<typeof Series>;
 
 export default Series;
 
-export const SeriesSortingKeys = ["name", "albumCount"] as const;
+export const SeriesSortingKeys = ["name", "albumCount", "addDate"] as const;
