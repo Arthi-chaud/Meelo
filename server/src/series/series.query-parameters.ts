@@ -9,7 +9,7 @@ namespace SeriesQueryParameters {
 		Partial<Pick<Series, "mbid" | "labelId">>;
 	export type WhereInput = RequireExactlyOne<{ id: number; slug?: Slug }>;
 
-	export type UpdateInput = Partial<Pick<Series, "mbid" | "labelId">>;
+	export type UpdateInput = Partial<Pick<Series, "mbid">>;
 
 	/**
 	 * Defines what relations to include in query

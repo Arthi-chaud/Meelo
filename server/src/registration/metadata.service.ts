@@ -349,8 +349,8 @@ export default class MetadataService {
 
 			if (series && metadata.seriesIndex) {
 				await this.seriesService.addEntry(
-					{ id: album.id },
 					{ id: series.id },
+					{ id: album.id },
 					metadata.seriesIndex,
 				);
 			}

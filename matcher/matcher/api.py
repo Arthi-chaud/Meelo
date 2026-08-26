@@ -12,6 +12,7 @@ from matcher.models.api.dto import (
     CreateProviderDto,
     ExternalMetadataDto,
     LabelDto,
+    SeriesDto,
     UpdateAlbumDto,
     UpdateAreaDto,
     UpdateLabelDto,
@@ -131,7 +132,7 @@ class API:
 
     async def get_album(self, album_id: int, token: str | None = None) -> Album:
         json = await self._get(
-            f"/albums/{album_id}?with=artists,localIdentifiers", token
+            f"/albums/{album_id}?with=artists,localIdentifiers,series", token
         )
         return Album.schema().load(json)
 
@@ -170,12 +171,14 @@ class API:
         release_date: date | None,
         genres: list[str] | None,
         labels: list[LabelDto] | None,
+        series: SeriesDto | None,
         type: AlbumType | None,
     ):
         dto = UpdateAlbumDto(
             release_date=release_date.isoformat() if release_date else None,
             genres=genres,
             labels=labels,
+            series=series,
             type=type.value if type else None,
         )
         await self._put(f"/albums/{album_id}", json=dto.to_dict())

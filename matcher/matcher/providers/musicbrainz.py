@@ -12,7 +12,7 @@ from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
 
 from matcher.context import Context
 from matcher.logger import ERROR, log
-from matcher.models.api.dto import AreaDto, LabelDto
+from matcher.models.api.dto import AreaDto, LabelDto, SeriesDto
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
@@ -20,6 +20,7 @@ from matcher.providers.features import (
     GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
     GetAlbumTypeFeature,
+    GetAlbumSeriesFeature,
     GetAlbumUrlFromIdFeature,
     GetArea,
     GetAreaType,
@@ -123,6 +124,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetArtistBirthArea(lambda artist: self._get_artist_birth_area(artist)),
             GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
             GetAlbumLabelsFeature(lambda album: self._get_album_labels(album)),
+            GetAlbumSeriesFeature(
+                lambda album: asyncify(self._get_album_series, album)
+            ),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
             SearchAlbumFeature(
@@ -361,13 +365,12 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 return SearchResult(match["id"], match)
             return None
         except Exception as e:
-            log(ERROR, str(e))
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:
         res = await self._fetch(
             f"/release-group/{album_id}",
-            {"inc": " ".join(["url-rels", "genres"])},
+            {"inc": " ".join(["url-rels", "genres", "series-rels"])},
         )
         return res
 
@@ -397,6 +400,38 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                     ):
                         labels.append(LabelDto(name=label_name, mbid=label_id))
             return labels
+        except Exception:
+            return None
+
+    def _get_album_series(self, album: Any) -> SeriesDto | None:
+        try:
+            relations = album["relations"]
+            for rel in relations:
+                if "series" not in rel:
+                    continue
+                series = rel["series"]
+                if 'type' not in series or series['type'] != "Release group series":
+                    continue
+                return SeriesDto(
+                    name=series["name"],
+                    mbid=series["id"],
+                    index=self._get_series_entry_index(rel),
+                )
+            return None
+        except Exception:
+            pass
+
+    def _get_series_entry_index(self, rel: Any) -> int | None:
+        try:
+            attrValKey = "attribute-values"
+            orderKey = "ordering-key"
+            if attrValKey in rel and "number" in rel[attrValKey]:
+                str_index = rel[attrValKey]["number"]
+                try:
+                    return int(str_index)
+                except Exception:
+                    pass
+            return int(rel[orderKey])
         except Exception:
             return None
 

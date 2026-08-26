@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 
-from matcher.models.api.dto import AreaDto, ExternalMetadataDto, LabelDto
+from matcher.models.api.dto import AreaDto, ExternalMetadataDto, LabelDto, SeriesDto
 from matcher.providers.domain import AlbumType, AreaType
 
 type SyncedLyrics = list[tuple[float, str]]
@@ -37,9 +37,13 @@ class AlbumMatchResult:
     album_type: AlbumType | None
     genres: list[str]
     labels: list[LabelDto]
+    series: SeriesDto | None
 
     def set_album_type_if_none(self, album_type: AlbumType):
         self.album_type = self.album_type or album_type
+
+    def set_series_if_none(self, series: SeriesDto):
+        self.series = self.series or series
 
     def set_release_date_if_none(self, release_date: date):
         self.release_date = self.release_date or release_date

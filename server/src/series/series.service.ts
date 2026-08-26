@@ -165,9 +165,6 @@ export class SeriesService extends SearchableRepositoryService {
 		what: SeriesQueryParameters.UpdateInput,
 		where: SeriesQueryParameters.WhereInput,
 	) {
-		if (what.labelId) {
-			await this.labelService.get({ id: what.labelId });
-		}
 		return this.prismaService.series
 			.update({
 				data: what,
@@ -179,16 +176,16 @@ export class SeriesService extends SearchableRepositoryService {
 	}
 
 	async addEntry(
-		album: AlbumQueryParameters.WhereInput,
 		series: SeriesQueryParameters.WhereInput,
-		index: number,
+		album: AlbumQueryParameters.WhereInput,
+		index: number | null,
 	) {
 		const { id: albumId } = await this.albumService.get(album);
 		const { id: seriesId } = await this.get(series);
 		await this.prismaService.seriesEntry.upsert({
 			where: { seriesId_albumId: { seriesId, albumId } },
 			create: { seriesId, albumId, index },
-			update: { index },
+			update: { index: index ?? undefined },
 		});
 	}
 

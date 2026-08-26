@@ -91,6 +91,7 @@ namespace AlbumQueryParameters {
 		master?: ReleaseQueryParameters.WhereInput;
 		genres?: string[];
 		labels?: LabelQueryParameters.CreateInput[];
+		series?: SeriesQueryParameters.CreateInput & { index?: number };
 	}
 
 	/**

@@ -18,9 +18,22 @@
 
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsOptional, ValidateNested } from "class-validator";
+import {
+	IsArray,
+	IsEnum,
+	IsNumber,
+	IsOptional,
+	ValidateNested,
+} from "class-validator";
 import CreateLabelDTO from "src/label/models/create-label.dto";
 import { AlbumType } from "src/prisma/generated/client";
+import CreateSeriesDTO from "src/series/models/create-series.dto";
+
+class SeriesEntryDTO extends CreateSeriesDTO {
+	@IsOptional()
+	@IsNumber()
+	index?: number;
+}
 
 export default class UpdateAlbumDTO {
 	@ApiProperty({
@@ -59,4 +72,11 @@ export default class UpdateAlbumDTO {
 	})
 	@IsOptional()
 	masterReleaseId?: number;
+
+	@ApiProperty({
+		description: "The series of the album",
+	})
+	@Type(() => SeriesEntryDTO)
+	@IsOptional()
+	series?: SeriesEntryDTO;
 }

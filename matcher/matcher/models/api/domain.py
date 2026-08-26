@@ -12,6 +12,15 @@ from matcher.providers.domain import AlbumType, AreaType
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
+class Series(DataClassJsonMixin):
+    id: int
+    name: str
+    mbid: str | None = None
+    index: int | None = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
 class LocalIdentifiers(DataClassJsonMixin):
     musicbrainz_id: str | None = None
     discogs_id: str | None = None
@@ -32,6 +41,7 @@ class Album(DataClassJsonMixin):
     id: int
     name: str
     artists: list[Artist] | None = None
+    series: Series | None = None
     type: AlbumType = AlbumType.OTHER
     release_date: str | None = None
     local_identifiers: LocalIdentifiers | None = None
@@ -40,14 +50,6 @@ class Album(DataClassJsonMixin):
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
 class Label(DataClassJsonMixin):
-    id: int
-    name: str
-    mbid: str | None = None
-
-
-@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
-@dataclass
-class Series(DataClassJsonMixin):
     id: int
     name: str
     mbid: str | None = None

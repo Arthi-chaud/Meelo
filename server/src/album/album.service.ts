@@ -68,6 +68,8 @@ export default class AlbumService extends SearchableRepositoryService {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => LabelService))
 		private labelService: LabelService,
+		@Inject(forwardRef(() => SeriesService))
+		private seriesService: SeriesService,
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: Meilisearch,
 	) {
@@ -653,10 +655,21 @@ export default class AlbumService extends SearchableRepositoryService {
 			what.labels?.map((label) => this.labelService.getOrCreate(label)) ??
 				[],
 		);
+		if (what.series) {
+			const series = await this.seriesService.getOrCreate(what.series);
+			const album = await this.get(where);
+			await this.seriesService.addEntry(
+				{ id: series.id },
+				{ id: album.id },
+				what.series.index ?? null,
+			);
+		}
+
 		return this.prismaService.album
 			.update({
 				data: {
 					...what,
+					series: undefined,
 					master: what.master
 						? {
 								connect: ReleaseService.formatWhereInput(

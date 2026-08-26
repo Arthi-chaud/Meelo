@@ -2,7 +2,7 @@ from collections.abc import Awaitable
 from datetime import date
 from typing import Any
 
-from matcher.models.api.dto import AreaDto, LabelDto
+from matcher.models.api.dto import AreaDto, LabelDto, SeriesDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseFeature
 from matcher.providers.domain import (
@@ -90,6 +90,10 @@ class GetArtistBirthArea(BaseFeature[Any, Awaitable[AreaDto | None]]):
 class SearchAlbumFeature(
     BaseFeature[ResourceName, list[ResourceName], Awaitable[SearchResult | None]]
 ):
+    pass
+
+
+class GetAlbumSeriesFeature(BaseFeature[Any, Awaitable[SeriesDto | None]]):
     pass
 
 

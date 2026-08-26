@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Body, Controller, Get, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Get, Put, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
@@ -25,7 +25,6 @@ import { PaginationParameters } from "src/pagination/models/pagination-parameter
 import { Series } from "src/prisma/models";
 import RelationIncludeQuery from "src/relation-include/relation-include-query.decorator";
 import Response, { ResponseType } from "src/response/response.decorator";
-import CreateSeriesDTO from "./models/create-series.dto";
 import { UpdateSeriesDTO } from "./models/update-series.dto";
 import SeriesQueryParameters from "./series.query-parameters";
 import { SeriesService } from "./series.service";
@@ -60,15 +59,6 @@ export default class SeriesController {
 		include: SeriesQueryParameters.RelationInclude,
 	): Promise<Series> {
 		return this.seriesService.get(where, include);
-	}
-
-	@ApiOperation({
-		summary: "Create one series",
-	})
-	@Role(Roles.Microservice, Roles.Admin)
-	@Post()
-	async create(@Body() what: CreateSeriesDTO): Promise<Series> {
-		return this.seriesService.create(what);
 	}
 
 	@ApiOperation({
