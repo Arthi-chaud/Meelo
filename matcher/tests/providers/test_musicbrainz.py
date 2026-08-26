@@ -402,3 +402,15 @@ class TestMusicbrainz:
         area = provider.get_label_area(label)
         assert area is not None
         assert area.name == "United States"
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_series_by_name(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        series_mbid = "db3d1739-ad49-41b6-8da3-9f64894c9eef"
+        series = await provider.get_series_by_name("Global Underground City Series")
+        assert series is not None
+
+        mbid = provider.get_series_mbid(series)
+        assert mbid == series_mbid

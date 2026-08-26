@@ -47,6 +47,14 @@ class Label(DataClassJsonMixin):
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
 @dataclass
+class Series(DataClassJsonMixin):
+    id: int
+    name: str
+    mbid: str | None = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore
+@dataclass
 class Area(DataClassJsonMixin):
     id: int
     name: str

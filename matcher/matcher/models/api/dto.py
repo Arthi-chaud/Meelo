@@ -88,3 +88,9 @@ class UpdateLabelDto(DataClassJsonMixin):
     end_date: str | None = None
     mbid: str | None = None
     area_id: int | None = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class UpdateSeriesDto(DataClassJsonMixin):
+    mbid: str | None = None

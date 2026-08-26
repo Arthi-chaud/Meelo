@@ -6,7 +6,7 @@ import aiohttp
 from dataclasses_json import DataClassJsonMixin
 
 from matcher.logger import ERROR, log
-from matcher.models.api.domain import Album, Area, Artist, File, Label, Song
+from matcher.models.api.domain import Album, Area, Artist, File, Label, Series, Song
 from matcher.models.api.dto import (
     AreaDto,
     CreateProviderDto,
@@ -15,6 +15,7 @@ from matcher.models.api.dto import (
     UpdateAlbumDto,
     UpdateAreaDto,
     UpdateLabelDto,
+    UpdateSeriesDto,
     User,
 )
 from matcher.models.api.page import Page
@@ -201,6 +202,10 @@ class API:
         json = await self._get(f"/labels/{label_id}")
         return Label.schema().load(json)
 
+    async def get_series(self, series_id: str | int) -> Series:
+        json = await self._get(f"/series/{series_id}")
+        return Series.schema().load(json)
+
     async def get_area_by_mbid(self, area_mbid: str) -> Area | None:
         try:
             return await self.get_area(area_mbid, False)
@@ -223,6 +228,12 @@ class API:
     async def update_label(self, label_id: int, label_dto: UpdateLabelDto):
         try:
             await self._put(f"/labels/{label_id}", json=label_dto.to_dict())
+        except Exception as e:
+            log(ERROR, str(e))
+
+    async def update_series(self, series_id: int, series_dto: UpdateSeriesDto):
+        try:
+            await self._put(f"/series/{series_id}", json=series_dto.to_dict())
         except Exception as e:
             log(ERROR, str(e))
 

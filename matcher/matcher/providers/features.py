@@ -238,3 +238,18 @@ class GetLabelArea(BaseFeature[Any, AreaDto | None]):
 
 class GetLabelMBID(BaseFeature[Any, str | None]):
     pass
+
+
+## Series
+
+
+class GetSeriesByName(BaseFeature[str, Awaitable[Any | None]]):
+    pass
+
+
+class GetSeriesByMBID(BaseFeature[str, Awaitable[Any | None]]):
+    pass
+
+
+class GetSeriesMBID(BaseFeature[Any, str | None]):
+    pass

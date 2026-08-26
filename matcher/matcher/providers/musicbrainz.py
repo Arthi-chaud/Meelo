@@ -39,6 +39,9 @@ from matcher.providers.features import (
     GetSongGenresFeature,
     GetSongIdFromUrlFeature,
     GetSongUrlFromIdFeature,
+    GetSeriesByMBID,
+    GetSeriesByName,
+    GetSeriesMBID,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
@@ -167,6 +170,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetLabelEndDate(lambda label: self._get_label_end_date(label)),
             GetLabelMBID(lambda label: self._get_label_mbid(label)),
             GetLabelArea(lambda label: self._get_label_area(label)),
+            GetSeriesByName(lambda series_name: self._get_series_by_name(series_name)),
+            GetSeriesByMBID(lambda series_mbid: self._get_series_by_mbid(series_mbid)),
+            GetSeriesMBID(lambda series: self._get_series_mbid(series)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -601,7 +607,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         if area_type in [t.value for _, t in AreaType.__members__.items()]:
             return AreaType(area_type)
 
-    async def _get_label_by_name(self, label_name: str) -> LabelDto | None:
+    async def _get_label_by_name(self, label_name: str) -> Any | None:
         try:
             res = await self._fetch("/label/", {"query": label_name, "limit": 3})
             items = res["labels"]
@@ -611,7 +617,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         except Exception:
             pass
 
-    async def _get_label_by_mbid(self, label_mbid: str) -> LabelDto | None:
+    async def _get_label_by_mbid(self, label_mbid: str) -> Any | None:
         try:
             return await self._fetch(f"/label/{label_mbid}")
         except Exception:
@@ -646,5 +652,27 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     def _get_label_area(self, label: Any) -> AreaDto | None:
         try:
             return self._parse_area(label["area"])
+        except Exception:
+            pass
+
+    async def _get_series_by_name(self, label_name: str) -> Any | None:
+        try:
+            res = await self._fetch("/series/", {"query": label_name, "limit": 3})
+            items = res["series"]
+            for label in items:
+                if to_slug(label["name"]) == to_slug(label_name):
+                    return label
+        except Exception:
+            pass
+
+    async def _get_series_by_mbid(self, series_mbid: str) -> Any | None:
+        try:
+            return await self._fetch(f"/series/{series_mbid}")
+        except Exception:
+            pass
+
+    def _get_series_mbid(self, series: Any) -> str | None:
+        try:
+            return series["id"]
         except Exception:
             pass

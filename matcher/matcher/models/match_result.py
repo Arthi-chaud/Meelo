@@ -89,3 +89,9 @@ class LabelMatchResult:
     end_date: date | None
     mbid: str | None
     area: AreaDto | None
+
+
+@dataclass
+class SeriesMatchResult:
+    mbid: str | None
+    label: LabelDto | None
