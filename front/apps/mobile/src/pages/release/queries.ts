@@ -29,6 +29,13 @@ export const releaseBSidesQuery = (releaseId: number) =>
 		"illustration",
 	]);
 
+export const relatedAlbumsBySeriesQuery = (seriesId: number) =>
+	getAlbums({ series: seriesId }, { sortBy: "releaseDate" }, [
+		"artists",
+		"illustration",
+		"series",
+	]);
+
 export const relatedAlbumsQuery = (albumId: number) =>
 	getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
 		"artists",

@@ -42,7 +42,7 @@ export default function ReleasePage({
 	);
 	const { data: release } = releaseQuery;
 	const albumQuery = useQuery(
-		(albumId) => getAlbum(albumId, ["artists"]),
+		(albumId) => getAlbum(albumId, ["artists", "series"]),
 		release?.albumId,
 	);
 	const { data: album } = albumQuery;
