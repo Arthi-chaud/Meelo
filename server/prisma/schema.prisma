@@ -817,7 +817,7 @@ view SeriesView {
     mbid    String? @unique
     labelId Int?
     label   Label?  @relation(fields: [labelId], references: [id], onDelete: SetNull)
-    index   Int?
+    index   Float?
     albumId Int     @unique
     album   Album   @relation(fields: [albumId], references: [id], onDelete: Cascade)
 
