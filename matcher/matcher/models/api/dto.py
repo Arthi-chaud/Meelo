@@ -17,7 +17,7 @@ class LabelDto(DataClassJsonMixin):
 class SeriesDto(DataClassJsonMixin):
     name: str
     mbid: str | None = None
-    index: int | None = None
+    index: float | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore

@@ -16,7 +16,7 @@ class Series(DataClassJsonMixin):
     id: int
     name: str
     mbid: str | None = None
-    index: int | None = None
+    index: float | None = None
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.EXCLUDE)  # type: ignore

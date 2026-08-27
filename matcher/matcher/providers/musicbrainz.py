@@ -364,7 +364,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 match = exact_matches[0][release_group_key]
                 return SearchResult(match["id"], match)
             return None
-        except Exception as e:
+        except Exception:
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:
@@ -410,7 +410,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 if "series" not in rel:
                     continue
                 series = rel["series"]
-                if 'type' not in series or series['type'] != "Release group series":
+                if "type" not in series or series["type"] != "Release group series":
                     continue
                 return SeriesDto(
                     name=series["name"],
@@ -421,17 +421,17 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         except Exception:
             pass
 
-    def _get_series_entry_index(self, rel: Any) -> int | None:
+    def _get_series_entry_index(self, rel: Any) -> float | None:
         try:
             attrValKey = "attribute-values"
             orderKey = "ordering-key"
             if attrValKey in rel and "number" in rel[attrValKey]:
                 str_index = rel[attrValKey]["number"]
                 try:
-                    return int(str_index)
+                    return float(str_index)
                 except Exception:
                     pass
-            return int(rel[orderKey])
+            return float(rel[orderKey])
         except Exception:
             return None
 
