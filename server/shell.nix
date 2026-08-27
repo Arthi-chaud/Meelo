@@ -8,5 +8,6 @@ pkgs.mkShell {
     biome
     prisma-language-server
     typescript-language-server
+    sleek
   ];
 }
