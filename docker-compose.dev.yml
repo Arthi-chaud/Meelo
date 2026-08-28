@@ -134,7 +134,7 @@ services:
       timeout: 5s
       retries: 10
   transcoder:
-    image: ghcr.io/zoriya/kyoo_transcoder:master
+    image: ghcr.io/zoriya/kyoo_transcoder:5.2.1
     ports:
       - "7666:7666"
     restart: on-failure

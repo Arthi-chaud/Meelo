@@ -94,7 +94,7 @@ services:
     volumes:
       - ${CONFIG_DIR}:${INTERNAL_CONFIG_DIR}:ro
   transcoder:
-    image: ghcr.io/zoriya/kyoo_transcoder:master
+    image: ghcr.io/zoriya/kyoo_transcoder:5.2.1
     restart: on-failure
     cpus: 1
     expose:
