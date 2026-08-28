@@ -22,11 +22,14 @@ import type { NextPageContext } from "next";
 import { useRouter } from "next/router";
 import type { GetPropsTypesFrom, Page } from "ssr";
 import { getAlbums, getOneSeries, getSongs } from "@/api/queries";
+import type { InfiniteQuery } from "@/api/query";
+import type { AlbumWithRelations } from "@/models/album";
 import {
 	infiniteSongQueryToPlayerQuery,
 	playFromInfiniteQuery,
 } from "@/state/player";
 import { RadioIcon } from "@/ui/icons";
+import { formatSeriesEntrySubtitle } from "@/utils/format-series-entry";
 import { getRandomNumber } from "@/utils/random";
 import { useQuery, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
@@ -110,11 +113,21 @@ const SeriesPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 				</Stack>
 			</Box>
 			<InfiniteAlbumView
+				formatSubtitle={(a) =>
+					formatSeriesEntrySubtitle(
+						(a as unknown as AlbumWithRelations<"series">).series
+							?.index ?? null,
+						a.artists,
+					)
+				}
 				query={({ sortBy, order }) =>
 					getAlbums({ series: seriesIdentifier }, { sortBy, order }, [
 						"artists",
+						"series",
 						"illustration",
-					])
+					]) as unknown as InfiniteQuery<
+						AlbumWithRelations<"artists" | "illustration">
+					>
 				}
 			/>
 		</>

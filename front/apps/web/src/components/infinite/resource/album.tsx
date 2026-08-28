@@ -42,15 +42,15 @@ type QueryProps = {
 
 type AlbumModel = AlbumWithRelations<"artists" | "illustration">;
 
-type ViewProps = {
-	query: (q: QueryProps) => InfiniteQuery<AlbumModel>;
-	onItemClick?: (song: AlbumModel) => void;
+type ViewProps<A> = {
+	query: (q: QueryProps) => InfiniteQuery<A>;
+	onItemClick?: (song: A) => void;
 	disableShuffle?: boolean;
 	disableSort?: boolean;
-	formatSubtitle?: Parameters<typeof AlbumItem>[0]["formatSubtitle"];
+	formatSubtitle?: (a: A) => string;
 };
 
-const InfiniteAlbumView = (props: ViewProps) => {
+const InfiniteAlbumView = <A extends AlbumModel>(props: ViewProps<A>) => {
 	const [libraryFilter, libraryFilterControl] = useLibraryFiltersControl();
 	const [typeFilter, typeFilterControl] = useTypeFiltersControl({
 		types: AlbumType,

@@ -24,16 +24,14 @@ import type { InfiniteQuery } from "@/api/query";
 import type { IllustratedResource } from "@/models/illustration";
 import type Series from "@/models/series";
 import { SeriesSortingKeys } from "@/models/series";
-import { SeriesIcon } from "@/ui/icons";
 import { Head } from "~/components/head";
-import Illustration from "~/components/illustration";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
 	ssrGetSortingParameter,
 	useSortControl,
 } from "~/components/infinite/controls/sort";
 import InfiniteList from "~/components/infinite/list";
-import ListItem from "~/components/list-item";
+import { SeriesItem } from "~/components/list-item/resource/series";
 
 const prepareSSR = (context: NextPageContext) => {
 	const sort = ssrGetSortingParameter(SeriesSortingKeys, context);
@@ -54,20 +52,7 @@ const SeriesPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 			<Head title={t("models.series_plural")} />
 			<Controls sort={sortControl} />
 			<InfiniteList
-				render={(series) => (
-					<ListItem
-						title={series?.name}
-						secondTitle={null}
-						href={series ? `/series/${series.slug}` : undefined}
-						icon={
-							<Illustration
-								illustration={null}
-								quality="original"
-								fallback={<SeriesIcon />}
-							/>
-						}
-					/>
-				)}
+				render={(series) => <SeriesItem series={series} />}
 				query={() =>
 					getManySeries({
 						sortBy: sort.sort,
