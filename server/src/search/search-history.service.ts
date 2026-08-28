@@ -27,6 +27,7 @@ import type { PaginationParameters } from "src/pagination/models/pagination-para
 import { Prisma } from "src/prisma/generated/client";
 import PrismaService from "src/prisma/prisma.service";
 import { formatPaginationParameters } from "src/repository/repository.utils";
+import { SeriesService } from "src/series/series.service";
 import SongService from "src/song/song.service";
 import countDefinedFields from "src/utils/count-defined-fields";
 import VideoService from "src/video/video.service";
@@ -43,6 +44,7 @@ export class SearchHistoryService {
 		private prismaService: PrismaService,
 		private artistService: ArtistService,
 		private labelService: LabelService,
+		private seriesService: SeriesService,
 		private genreService: GenreService,
 		private songService: SongService,
 		private albumService: AlbumService,
@@ -65,6 +67,7 @@ export class SearchHistoryService {
 				videoId: dto.videoId,
 				labelId: dto.labelId,
 				genreId: dto.genreId,
+				seriesId: dto.seriesId,
 			},
 		});
 		return this.prismaService.searchHistory
@@ -77,6 +80,7 @@ export class SearchHistoryService {
 					videoId: dto.videoId,
 					labelId: dto.labelId,
 					genreId: dto.genreId,
+					seriesId: dto.seriesId,
 				},
 			})
 			.catch((error) => {
@@ -103,59 +107,71 @@ export class SearchHistoryService {
 		if (history.length === 0) {
 			return [];
 		}
-		const { artistIds, albumIds, songIds, videoIds, labelIds, genreIds } =
-			history.reduce(
-				(rest, item) => {
-					if (item.artistId !== null) {
-						return {
-							...rest,
-							artistIds: [
-								...rest.artistIds,
-								{ id: item.artistId },
-							],
-						};
-					}
-					if (item.albumId !== null) {
-						return {
-							...rest,
-							albumIds: [...rest.albumIds, { id: item.albumId }],
-						};
-					}
-					if (item.songId !== null) {
-						return {
-							...rest,
-							songIds: [...rest.songIds, { id: item.songId }],
-						};
-					}
-					if (item.videoId !== null) {
-						return {
-							...rest,
-							videoIds: [...rest.videoIds, { id: item.videoId }],
-						};
-					}
-					if (item.labelId !== null) {
-						return {
-							...rest,
-							labelIds: [...rest.labelIds, { id: item.labelId }],
-						};
-					}
-					if (item.genreId !== null) {
-						return {
-							...rest,
-							genreIds: [...rest.genreIds, { id: item.genreId }],
-						};
-					}
-					return rest;
-				},
-				{
-					artistIds: [],
-					albumIds: [],
-					songIds: [],
-					videoIds: [],
-					labelIds: [],
-					genreIds: [],
-				},
-			);
+		const {
+			artistIds,
+			albumIds,
+			songIds,
+			videoIds,
+			labelIds,
+			genreIds,
+			seriesIds,
+		} = history.reduce(
+			(rest, item) => {
+				if (item.artistId !== null) {
+					return {
+						...rest,
+						artistIds: [...rest.artistIds, { id: item.artistId }],
+					};
+				}
+				if (item.albumId !== null) {
+					return {
+						...rest,
+						albumIds: [...rest.albumIds, { id: item.albumId }],
+					};
+				}
+				if (item.songId !== null) {
+					return {
+						...rest,
+						songIds: [...rest.songIds, { id: item.songId }],
+					};
+				}
+				if (item.videoId !== null) {
+					return {
+						...rest,
+						videoIds: [...rest.videoIds, { id: item.videoId }],
+					};
+				}
+				if (item.labelId !== null) {
+					return {
+						...rest,
+						labelIds: [...rest.labelIds, { id: item.labelId }],
+					};
+				}
+				if (item.genreId !== null) {
+					return {
+						...rest,
+						genreIds: [...rest.genreIds, { id: item.genreId }],
+					};
+				}
+
+				if (item.seriesId !== null) {
+					return {
+						...rest,
+						seriesIds: [...rest.seriesIds, { id: item.seriesId }],
+					};
+				}
+				return rest;
+			},
+			{
+				artistIds: [],
+				albumIds: [],
+				songIds: [],
+				videoIds: [],
+				labelIds: [],
+				genreIds: [],
+				seriesIds: [],
+			},
+		);
 		const artists = artistIds.length
 			? await this.artistService.getMany(
 					{
@@ -218,6 +234,14 @@ export class SearchHistoryService {
 					undefined,
 				)
 			: [];
+		const series = seriesIds.length
+			? await this.seriesService.getMany(
+					{
+						series: seriesIds,
+					},
+					undefined,
+				)
+			: [];
 
 		const getIndex = ({ type, item }: SearchHistoryItem) => {
 			switch (type) {
@@ -245,6 +269,10 @@ export class SearchHistoryService {
 					return history.findIndex(
 						({ genreId }) => genreId === item.id,
 					);
+				case "series":
+					return history.findIndex(
+						({ seriesId }) => seriesId === item.id,
+					);
 				default:
 					return 0;
 			}
@@ -256,6 +284,7 @@ export class SearchHistoryService {
 			...videos,
 			...labels,
 			...genres,
+			...series,
 		]
 			.map(toSearchItem)
 			.sort((a, b) => {

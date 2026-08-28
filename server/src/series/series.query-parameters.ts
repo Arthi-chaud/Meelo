@@ -8,6 +8,7 @@ namespace SeriesQueryParameters {
 	export type CreateInput = Pick<Series, "name"> &
 		Partial<Pick<Series, "mbid" | "labelId">>;
 	export type WhereInput = RequireExactlyOne<{ id: number; slug?: Slug }>;
+	export type ManyWhereInput = Partial<{ series?: WhereInput[] }>;
 
 	export type UpdateInput = Partial<Pick<Series, "mbid">>;
 

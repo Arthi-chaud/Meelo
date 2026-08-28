@@ -46,7 +46,12 @@ export default class SeriesController {
 		@RelationIncludeQuery(SeriesQueryParameters.AvailableAtomicIncludes)
 		include: SeriesQueryParameters.RelationInclude,
 	) {
-		return this.seriesService.getMany(sort, paginationParameters, include);
+		return this.seriesService.getMany(
+			{},
+			sort,
+			paginationParameters,
+			include,
+		);
 	}
 
 	@Get(":idOrSlug")

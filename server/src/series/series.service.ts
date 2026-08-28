@@ -100,12 +100,21 @@ export class SeriesService extends SearchableRepositoryService {
 	}
 
 	async getMany<I extends SeriesQueryParameters.RelationInclude = {}>(
+		where: SeriesQueryParameters.ManyWhereInput,
 		sort?: SeriesQueryParameters.SortingParameter,
 		pagination?: PaginationParameters,
 		include?: I,
 	) {
 		return this.prismaService.series.findMany({
 			include: include ?? ({} as I),
+			where:
+				where.series !== undefined
+					? {
+							OR: where.series.map((s) =>
+								SeriesService.formatWhereInput(s),
+							),
+						}
+					: undefined,
 			orderBy:
 				sort === undefined ? undefined : this.formatSortingInput(sort),
 			...formatPaginationParameters(pagination),

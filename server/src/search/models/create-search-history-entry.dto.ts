@@ -44,4 +44,8 @@ export class CreateSearchHistoryEntry {
 	@IsPositive()
 	@IsOptional()
 	genreId?: number;
+	@ApiPropertyOptional()
+	@IsPositive()
+	@IsOptional()
+	seriesId?: number;
 }

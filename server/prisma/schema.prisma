@@ -786,14 +786,15 @@ enum AreaType {
 model Series {
     /// @description Unique numeric identifier
     /// @example 123
-    id           Int           @id @default(autoincrement())
-    name         String        @db.Citext()
-    slug         String        @unique
-    mbid         String?       @unique
-    registeredAt DateTime      @default(now())
-    entries      SeriesEntry[]
-    labelId      Int?
-    label        Label?        @relation(fields: [labelId], references: [id], onDelete: SetNull)
+    id            Int             @id @default(autoincrement())
+    name          String          @db.Citext()
+    slug          String          @unique
+    mbid          String?         @unique
+    registeredAt  DateTime        @default(now())
+    entries       SeriesEntry[]
+    labelId       Int?
+    label         Label?          @relation(fields: [labelId], references: [id], onDelete: SetNull)
+    searchHistory SearchHistory[]
 
     @@map("series")
 }
@@ -878,6 +879,9 @@ model SearchHistory {
 
     genre   Genre? @relation(fields: [genreId], references: [id], onDelete: Cascade)
     genreId Int?
+
+    series   Series? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+    seriesId Int?
 
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int

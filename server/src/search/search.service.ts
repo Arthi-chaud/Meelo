@@ -23,6 +23,7 @@ import AlbumService from "src/album/album.service";
 import ArtistService from "src/artist/artist.service";
 import GenreService from "src/genre/genre.service";
 import LabelService from "src/label/label.service";
+import { SeriesService } from "src/series/series.service";
 import SongService from "src/song/song.service";
 import VideoService from "src/video/video.service";
 import { SearchItem, toSearchItem } from "./models/search-item";
@@ -38,6 +39,7 @@ export class SearchService {
 		private videoService: VideoService,
 		private labelService: LabelService,
 		private genreService: GenreService,
+		private seriesService: SeriesService,
 		@InjectMeiliSearch() protected readonly meiliSearch: Meilisearch,
 	) {}
 
@@ -50,6 +52,7 @@ export class SearchService {
 				this.videoService,
 				this.labelService,
 				this.genreService,
+				this.seriesService,
 			].map((s) => ({
 				q: query,
 				indexUid: s.indexName,
@@ -69,7 +72,9 @@ export class SearchService {
 			.hits as MeilisearchResultType[];
 		const matchingGenresIds = meiliQueryResult.results[5]
 			.hits as MeilisearchResultType[];
-		const [artists, songs, albums, videos, labels, genres] =
+		const matchingSeriesIds = meiliQueryResult.results[6]
+			.hits as MeilisearchResultType[];
+		const [artists, songs, albums, videos, labels, genres, series] =
 			await Promise.all(
 				[
 					[
@@ -140,6 +145,14 @@ export class SearchService {
 							}),
 						matchingGenresIds,
 					] as const,
+
+					[
+						(ids: number[]) =>
+							this.seriesService.getMany({
+								series: ids.map((id) => ({ id })),
+							}),
+						matchingSeriesIds,
+					] as const,
 				].map(async ([getMany, matches]) => {
 					if (!matches.length) {
 						return [];
@@ -164,6 +177,7 @@ export class SearchService {
 			...videos,
 			...labels,
 			...genres,
+			...series,
 		].sort((a, b) => b.ranking - a.ranking);
 	}
 }
