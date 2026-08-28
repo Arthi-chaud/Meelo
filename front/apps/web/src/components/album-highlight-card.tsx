@@ -154,7 +154,7 @@ const AlbumHighlightCard = ({
 									{album?.name ?? <Skeleton variant="text" />}
 								</Typography>
 
-								{(!album || album.artists.length) && (
+								{!album || album.artists.length ? (
 									<Link
 										href={
 											album
@@ -182,7 +182,7 @@ const AlbumHighlightCard = ({
 											)}
 										</Typography>
 									</Link>
-								)}
+								) : null}
 							</Grid>
 							<Grid
 								size={"auto"}
