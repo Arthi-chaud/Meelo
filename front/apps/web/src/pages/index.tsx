@@ -97,11 +97,14 @@ const playHistoryQuery = getSongHistory([
 ]);
 
 const albumRecommendations = (seed: number) =>
-	getAlbums({ random: seed, type: ["StudioRecording"] }, undefined, [
-		"artists",
-		"genres",
-		"illustration",
-	]);
+	getAlbums(
+		{
+			random: seed,
+			type: ["StudioRecording", "LiveRecording", "DJMix", "Soundtrack"],
+		},
+		undefined,
+		["artists", "genres", "illustration"],
+	);
 
 const topGenresQuery = getGenres({}, { sortBy: "songCount", order: "desc" });
 
