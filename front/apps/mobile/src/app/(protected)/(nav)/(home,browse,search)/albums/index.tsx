@@ -29,6 +29,7 @@ import {
 import { AlbumSortingKeys, AlbumType } from "@/models/album";
 import { albumTypeToTranslationKey } from "@/models/utils";
 import { CoverflowIcon } from "@/ui/icons";
+import { formatSeriesEntrySubtitle } from "@/utils/format-series-entry";
 import { useInfiniteQuery, useQuery } from "~/api";
 import { StaticHeader } from "~/components/header";
 import {
@@ -62,10 +63,7 @@ export default function AlbumBrowseView() {
 		enableToggle: true,
 	});
 	const [{ sort, order }, sortControl] = useSortControl({
-		sortingKeys:
-			seriesId === undefined
-				? AlbumSortingKeys.filter((s) => s !== "seriesIndex")
-				: AlbumSortingKeys,
+		sortingKeys: AlbumSortingKeys,
 		translate: (s) => `browsing.controls.sort.${s}`,
 	});
 	const [libraries, libraryFilterControl] = useLibraryFiltersControl();
@@ -96,7 +94,7 @@ export default function AlbumBrowseView() {
 			series: seriesId,
 		},
 		{ sortBy: sort ?? "name", order: order ?? "asc" },
-		["artists", "illustration"],
+		["artists", "illustration", "series"],
 	);
 	const { items } = useInfiniteQuery(() => query);
 	return (
@@ -120,13 +118,15 @@ export default function AlbumBrowseView() {
 				header={artistId ? <ArtistHeader artist={artist} /> : undefined}
 				controls={{
 					layout: layoutControl,
-					sort: sortControl,
+					// NOTE: Disabling sort for series,
+					// because sort by series index can leak back to main album page
+					sort: seriesId === undefined ? sortControl : undefined,
 					filters: [libraryFilterControl, albumTypeFilterControl],
 					actions: [
 						{
 							icon: CoverflowIcon,
 							href: "/coverflow",
-							onPress: () => setCoverflowQuery(query),
+							onPress: () => setCoverflowQuery(query as any),
 							disabled: items?.length === 0,
 						},
 					],
@@ -136,6 +136,14 @@ export default function AlbumBrowseView() {
 					<Item
 						album={album}
 						subtitle={artistId ? "year" : "artistName"}
+						formatSubtitle={(s) =>
+							album && seriesId !== undefined
+								? formatSeriesEntrySubtitle(
+										album.series?.index ?? null,
+										album.artists,
+									)
+								: s
+						}
 						illustrationProps={{}}
 					/>
 				)}

@@ -5,6 +5,7 @@ import { AlbumItem } from "./album";
 import { ArtistItem } from "./artist";
 import { GenreItem } from "./genre";
 import { LabelItem } from "./label";
+import { SeriesItem } from "./series";
 import { SongItem } from "./song";
 import { VideoItem } from "./video";
 
@@ -77,6 +78,17 @@ export const SearchResultItem = ({
 				onPress={onPress}
 				withLeadingIcon
 				subtitle={t("models.genre")}
+			/>
+		);
+	}
+
+	if (searchResult.series) {
+		return (
+			<SeriesItem
+				series={searchResult.series}
+				onPress={onPress}
+				withLeadingIcon
+				subtitle={t("models.series")}
 			/>
 		);
 	}
