@@ -47,6 +47,7 @@ import {
 	GenreIcon,
 	LabelIcon,
 	PlaylistIcon,
+	SeriesIcon,
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
@@ -74,7 +75,7 @@ export const ScaffoldActions: Action[] = [
 const navItems = [
 	["artists", "albums", "songs", "videos"],
 	["albums/compilations", "playlists"],
-	["genres", "labels"],
+	["genres", "labels", "series"],
 ] as const;
 
 const getNavItemLabel = (
@@ -95,6 +96,9 @@ const getNavItemLabel = (
 			return "models.genre_plural";
 		case "labels":
 			return "nav.labels";
+
+		case "series":
+			return "nav.series";
 		case "albums/compilations":
 			return "nav.compilations";
 	}
@@ -119,6 +123,8 @@ const getNavItemIcon = (
 			return <GenreIcon {...props} />;
 		case "labels":
 			return <LabelIcon {...props} />;
+		case "series":
+			return <SeriesIcon {...props} />;
 		case "albums/compilations":
 			return <CompilationIcon {...props} />;
 	}

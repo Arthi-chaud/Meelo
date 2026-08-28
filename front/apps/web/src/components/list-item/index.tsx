@@ -38,6 +38,7 @@ type ListItemProps = {
 	href?: string;
 	onClick?: () => void;
 	iconIsThumbnail?: boolean;
+	noLeading?: boolean;
 };
 
 const textStyle = {

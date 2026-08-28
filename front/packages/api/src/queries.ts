@@ -208,6 +208,7 @@ export const getSongs = <I extends SongInclude | never = never>(
 		bsides?: Identifier;
 		random?: number;
 		label?: Identifier;
+		series?: Identifier;
 	},
 	sort?: SortingParameters<typeof SongSortingKeys>,
 	include?: readonly I[],
