@@ -68,7 +68,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.20.0, @babel/core@npm:^7.25.2, @babel/core@npm:^7.29.7":
+"@babel/core@npm:^7.20.0, @babel/core@npm:^7.25.2":
   version: 7.29.7
   resolution: "@babel/core@npm:7.29.7"
   dependencies:
@@ -8420,7 +8420,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "mobile@workspace:apps/mobile"
   dependencies:
-    "@babel/core": "npm:^7.29.7"
     "@expo-google-fonts/rubik": "npm:^0.4.2"
     "@expo/ngrok": "npm:^4.1.3"
     "@gorhom/bottom-sheet": "npm:^5.2.14"
