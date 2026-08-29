@@ -350,6 +350,15 @@
 			}
 		},
 		"manageFromWebApp": "Kelola pustaka dan pengguna dari aplikasi web",
+		"streaming": {
+			"allowTranscoding": "Izinkan Transcoding",
+			"cellular": "Seluler",
+			"direct": "Langsung",
+			"header": "Kualitas Pemutaran",
+			"original": "Asli",
+			"transcoderAvailable": "Transcoder Tersedia",
+			"wifi": "Wi-Fi"
+		},
 		"ui": {
 			"account": {
 				"changePassword": "Ubah Kata Sandi",
