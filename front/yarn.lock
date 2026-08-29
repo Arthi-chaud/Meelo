@@ -9610,15 +9610,15 @@ __metadata:
   linkType: hard
 
 "react-native-video@npm:^7.0.0-beta.10":
-  version: 7.0.0-beta.10
-  resolution: "react-native-video@npm:7.0.0-beta.10"
+  version: 7.0.0-beta.11
+  resolution: "react-native-video@npm:7.0.0-beta.11"
   dependencies:
     "@videojs/react": "npm:^10.0.0-beta.11"
   peerDependencies:
     react: "*"
     react-native: "*"
     react-native-nitro-modules: ">=0.35.0"
-  checksum: 10c0/234c44ef963f28f62f2d626f4bfdc87249945de823505a22ca54432f7231cc5c0d76492c7ad59f93b5b99e7287ca3d1ce4ec4ad6c4cd3b1533b308d9b5427a7f
+  checksum: 10c0/6b2487589394c9d81b2ec1a8b09ef0215729ec2a7b8387aa5422570102533b6117865f3c6a51b176dfce6ac02204ae1bd9e4fc9a8cdfe74bb61799bed2e14fc6
   languageName: node
   linkType: hard
 
