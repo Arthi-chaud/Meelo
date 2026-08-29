@@ -3,8 +3,11 @@ import { useCallback, useEffect, useMemo } from "react";
 import { View } from "react-native";
 import {
 	Directions,
-	Gesture,
 	GestureDetector,
+	useCompetingGestures,
+	useFlingGesture,
+	useLongPressGesture,
+	useTapGesture,
 } from "react-native-gesture-handler";
 import Animated, {
 	useAnimatedStyle,
@@ -77,38 +80,42 @@ export const MinimisedPlayer = ({ blurTarget }: { blurTarget: any }) => {
 			},
 		],
 	}));
-	const skipGesture = Gesture.Fling()
-		.runOnJS(true)
-		.direction(Directions.LEFT)
-		.onEnd(() => {
+	const skipGesture = useFlingGesture({
+		runOnJS: true,
+		direction: Directions.LEFT,
+		onDeactivate: () => {
 			skipTrack(queryClient);
-		});
-	const rewindGesture = Gesture.Fling()
-		.runOnJS(true)
-		.direction(Directions.RIGHT)
-		.onEnd(() => {
+		},
+	});
+	const rewindGesture = useFlingGesture({
+		runOnJS: true,
+		direction: Directions.RIGHT,
+		onDeactivate: () => {
 			rewindTrack();
-		});
-	const tapGesture = Gesture.Tap()
-		.runOnJS(true)
-		.onTouchesDown(() => onPressIn())
-		.onEnd(() => {
+		},
+	});
+	const tapGesture = useTapGesture({
+		runOnJS: true,
+		onTouchesDown: () => onPressIn(),
+		onDeactivate: () => {
 			expandPlayer();
 			onPressOut();
-		});
+		},
+	});
 	const trackContextMenu = useTrackContextMenu(track);
 	const { openContextMenu } = useContextMenu(trackContextMenu);
-	const longTapGesture = Gesture.LongPress()
-		.runOnJS(true)
-		.onTouchesDown(() => onPressIn())
-		.onStart(() => {
+	const longTapGesture = useLongPressGesture({
+		runOnJS: true,
+		onTouchesDown: () => onPressIn(),
+		onActivate: () => {
 			openContextMenu();
 			Haptics.onContextMenuOpen();
-		})
-		.onFinalize(() => {
+		},
+		onFinalize: () => {
 			onPressOut();
-		});
-	const gesture = Gesture.Race(
+		},
+	});
+	const gesture = useCompetingGestures(
 		skipGesture,
 		rewindGesture,
 		tapGesture,

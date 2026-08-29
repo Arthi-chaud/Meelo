@@ -8,7 +8,7 @@ import {
 	useState,
 } from "react";
 import { View, type ViewStyle } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import {
 	cancelAnimation,
 	clamp,
@@ -138,19 +138,18 @@ export const Coverflow = <T,>(props: Props<T>) => {
 
 		return orderChildren(items, selection);
 	}, [props.data, selection]);
-
-	const panResponder = Gesture.Pan()
-		// Only start the pan responder when there is some movement
-		.activeOffsetX([-10, 10])
-		.onBegin(() => {
+	const panResponder = usePanGesture({
+		activeOffsetX: -10,
+		activeOffsetY: 10,
+		onBegin: () => {
 			cancelAnimation(scrollX);
 			//TODO: Extract offset?
 			offsetX.value = scrollX.value;
-		})
-		.onUpdate((event) => {
+		},
+		onUpdate: (event) => {
 			scrollX.value = offsetX.value - event.translationX / sensitivity;
-		})
-		.onEnd((event) => {
+		},
+		onDeactivate: (event) => {
 			const selection = Math.round(scrollPos.value);
 			if (
 				selection > 0 &&
@@ -174,7 +173,8 @@ export const Coverflow = <T,>(props: Props<T>) => {
 			} else {
 				runOnJS(snapToPosition)();
 			}
-		});
+		},
+	});
 
 	const onSelect = (idx: number) => {
 		// Check if the current selection is "exactly" the same
