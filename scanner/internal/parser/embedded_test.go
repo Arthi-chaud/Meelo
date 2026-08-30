@@ -63,7 +63,7 @@ func TestEmbeddedFlac(t *testing.T) {
 	assert.Empty(t, m.Genres)
 	assert.Equal(t, "Title", m.Name)
 	assert.Equal(t, "Test Series", m.Series)
-	assert.Equal(t, int32(2), m.SeriesIndex)
+	assert.Equal(t, float64(2), m.SeriesIndex)
 }
 
 func TestEmbeddedOpus(t *testing.T) {
