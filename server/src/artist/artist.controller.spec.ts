@@ -16,6 +16,7 @@ import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
+import { SeriesModule } from "src/series/series.module";
 import SettingsModule from "src/settings/settings.module";
 import SongModule from "src/song/song.module";
 import SongService from "src/song/song.service";
@@ -51,6 +52,7 @@ describe("Artist Controller", () => {
 				SettingsModule,
 				AreaModule,
 				LabelModule,
+				SeriesModule,
 			],
 			providers: [
 				ArtistService,

@@ -19,6 +19,7 @@ import type {
 } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { SeriesModule } from "src/series/series.module";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
 import request from "supertest";
@@ -57,6 +58,7 @@ describe("Release Controller", () => {
 				GenreModule,
 				AreaModule,
 				LabelModule,
+				SeriesModule,
 			],
 			providers: [
 				ReleaseService,
