@@ -5,17 +5,17 @@ import {
 import Slug from "src/slug/slug";
 
 export class SeriesAlreadyExistsException extends AlreadyExistsException {
-	constructor(labelSlug: string | Slug) {
-		super(`Series ${labelSlug.toString()} already exists`);
+	constructor(seriesSlug: string | Slug) {
+		super(`Series ${seriesSlug.toString()} already exists`);
 	}
 }
 
 export class SeriesNotFoundException extends NotFoundException {
-	constructor(labelSlugOrId: Slug | number) {
+	constructor(seriesSlugOrId: Slug | number) {
 		super(
-			typeof labelSlugOrId === "number"
-				? `Series ${labelSlugOrId} not found`
-				: `Series '${labelSlugOrId}' not found`,
+			typeof seriesSlugOrId === "number"
+				? `Series ${seriesSlugOrId} not found`
+				: `Series '${seriesSlugOrId}' not found`,
 		);
 	}
 }
