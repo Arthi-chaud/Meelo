@@ -6,7 +6,10 @@ export const formatSeriesEntrySubtitle = (
 	entryIndex: number | null,
 	entryArtists: Pick<Artist, "name" | "id">[],
 ) => {
-	const formattedArtists = formatArtists_(entryArtists);
+	const formattedArtists =
+		entryArtists.length !== 0
+			? formatArtists_(entryArtists)
+			: i18next.t("compilationArtistLabel");
 	if (entryIndex !== null) {
 		return `${i18next.t("series.entryIndex", { index: entryIndex })} - ${formattedArtists}`;
 	}
