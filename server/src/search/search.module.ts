@@ -22,6 +22,7 @@ import ArtistModule from "src/artist/artist.module";
 import GenreModule from "src/genre/genre.module";
 import LabelModule from "src/label/label.module";
 import PrismaModule from "src/prisma/prisma.module";
+import { SeriesModule } from "src/series/series.module";
 import SongModule from "src/song/song.module";
 import VideoModule from "src/video/video.module";
 import { SearchController } from "./search.controller";
@@ -40,6 +41,7 @@ import { SearchHistoryService } from "./search-history.service";
 		VideoModule,
 		LabelModule,
 		GenreModule,
+		SeriesModule,
 	],
 	exports: [SearchHistoryService, SearchService],
 })

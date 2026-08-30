@@ -167,6 +167,7 @@
 				"registrationDate": "Date d'ajout",
 				"releaseDate": "Date de sortie",
 				"releaseName": "Nom du disque",
+				"seriesIndex": "Ordre dans la série",
 				"songCount": "Nombre de titres",
 				"totalPlayCount": "Nombre total de lectures",
 				"trackCount": "Nombre de pistes",
@@ -301,6 +302,8 @@
 		"lyrics": "Paroles",
 		"playlist": "Playlist",
 		"playlist_plural": "Playlists",
+		"series": "Série",
+		"series_plural": "Séries",
 		"song": "Morceau",
 		"song_plural": "Morceaux",
 		"track_plural": "Pistes",
@@ -317,6 +320,7 @@
 		"more": "Plus",
 		"musicVideos": "Vidéos",
 		"search": "Rechercher",
+		"series": "Séries",
 		"settings": "Préférences"
 	},
 	"player": {

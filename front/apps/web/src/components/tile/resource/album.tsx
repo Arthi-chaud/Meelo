@@ -24,9 +24,10 @@ import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
 import Illustration from "~/components/illustration";
 import Tile from "~/components/tile";
 
-const AlbumTile = (props: {
-	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
-	formatSubtitle?: (album: AlbumWithRelations<"artists">) => string;
+type AlbumType = AlbumWithRelations<"artists" | "illustration">;
+const AlbumTile = <A extends AlbumType>(props: {
+	album: A | undefined;
+	formatSubtitle?: (album: A) => string;
 	onClick?: () => void;
 }) => {
 	const { t } = useTranslation();

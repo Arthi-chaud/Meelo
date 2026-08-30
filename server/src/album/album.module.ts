@@ -24,6 +24,7 @@ import LabelModule from "src/label/label.module";
 import ParserModule from "src/parser/parser.module";
 import PrismaModule from "src/prisma/prisma.module";
 import ReleaseModule from "src/release/release.module";
+import { SeriesModule } from "src/series/series.module";
 import TrackModule from "src/track/track.module";
 import GenreModule from "../genre/genre.module";
 import AlbumController from "./album.controller";
@@ -41,6 +42,7 @@ import { AlbumResponseBuilder } from "./models/album.response";
 		GenreModule,
 		forwardRef(() => ParserModule),
 		forwardRef(() => LabelModule),
+		forwardRef(() => SeriesModule),
 	],
 	exports: [AlbumService, AlbumResponseBuilder],
 	providers: [AlbumService, AlbumResponseBuilder],

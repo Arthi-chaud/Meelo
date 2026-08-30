@@ -17,33 +17,17 @@
  */
 
 import { Body, Controller, Get, Post, Query, Req } from "@nestjs/common";
-import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	getSchemaPath,
-} from "@nestjs/swagger";
-import {
-	AlbumResponse,
-	AlbumResponseBuilder,
-} from "src/album/models/album.response";
-import {
-	ArtistResponse,
-	ArtistResponseBuilder,
-} from "src/artist/models/artist.response";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AlbumResponseBuilder } from "src/album/models/album.response";
+import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { Role } from "src/authentication/roles/roles.decorators";
 import Roles from "src/authentication/roles/roles.enum";
 import { PaginationParameters } from "src/pagination/models/pagination-parameters";
 import type { User } from "src/prisma/models";
-import {
-	SongResponse,
-	SongResponseBuilder,
-} from "src/song/models/song.response";
-import {
-	VideoResponse,
-	VideoResponseBuilder,
-} from "src/video/models/video.response";
+import { SongResponseBuilder } from "src/song/models/song.response";
+import { VideoResponseBuilder } from "src/video/models/video.response";
 import { CreateSearchHistoryEntry } from "./models/create-search-history-entry.dto";
+import { SearchItemSchema } from "./models/search-item";
 import { SearchHistoryService } from "./search-history.service";
 
 @ApiTags("Search")
@@ -79,17 +63,7 @@ export class SearchHistoryController {
 	@Role(Roles.User)
 	@Get()
 	@ApiOkResponse({
-		schema: {
-			type: "array",
-			items: {
-				oneOf: [
-					ArtistResponse,
-					AlbumResponse,
-					SongResponse,
-					VideoResponse,
-				].map((resType) => ({ $ref: getSchemaPath(resType) })),
-			},
-		},
+		schema: SearchItemSchema,
 	})
 	async getSearchHistory(
 		@Query() pagination: PaginationParameters,
@@ -101,22 +75,48 @@ export class SearchHistoryController {
 		);
 		return Promise.all(
 			// biome-ignore lint: All cases are covered
-			history.map((historyItem) => {
+			history.map(async (historyItem) => {
 				const { type, item } = historyItem;
 				//TODO: Leave key in response
 				switch (type) {
 					case "video":
-						return this.videoResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.videoResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "album":
-						return this.albumResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.albumResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "song":
-						return this.songResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.songResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "artist":
-						return this.artistResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.artistResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "label":
-						return item;
+						return { type, item };
 					case "genre":
-						return item;
+						return { type, item };
+					case "series":
+						return { type, item };
 				}
 			}),
 		);

@@ -26,6 +26,7 @@ import type { SongType } from "src/prisma/generated/client";
 import type { Song } from "src/prisma/models";
 import { filterAtomicRelationInclude } from "src/relation-include/atomic-relation-include.filter";
 import type { RelationInclude as BaseRelationInclude } from "src/relation-include/models/relation-include";
+import SeriesQueryParameters from "src/series/series.query-parameters";
 import type Slug from "src/slug/slug";
 import { ModelSortingParameter } from "src/sort/models/sorting-parameter";
 import type TrackQueryParameters from "src/track/models/track.query-parameters";
@@ -92,6 +93,7 @@ namespace SongQueryParameters {
 			type?: Filter<SongType>;
 			playedBy: Required<Pick<UserQueryParameters.WhereInput, "id">>;
 			label?: Filter<LabelQueryParameters.WhereInput>;
+			series?: SeriesQueryParameters.WhereInput;
 			songs: SongQueryParameters.WhereInput[];
 		}>
 	>;

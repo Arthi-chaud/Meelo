@@ -24,9 +24,11 @@ import AlbumContextualMenu from "~/components/contextual-menu/resource/album";
 import Illustration from "~/components/illustration";
 import ListItem from "~/components/list-item";
 
-type AlbumItemProps = {
-	album: AlbumWithRelations<"artists" | "illustration"> | undefined;
-	formatSubtitle?: (album: AlbumWithRelations<"artists">) => string;
+type AlbumType = AlbumWithRelations<"artists" | "illustration">;
+
+type AlbumItemProps<A> = {
+	album: A | undefined;
+	formatSubtitle?: (album: A) => string;
 	onClick?: () => void;
 };
 
@@ -35,7 +37,11 @@ type AlbumItemProps = {
  * @param props
  * @returns
  */
-const AlbumItem = ({ album, formatSubtitle, onClick }: AlbumItemProps) => {
+const AlbumItem = <A extends AlbumType>({
+	album,
+	formatSubtitle,
+	onClick,
+}: AlbumItemProps<A>) => {
 	const { t } = useTranslation();
 	const artistNames = album?.artists.length
 		? formatArtists_(album.artists)

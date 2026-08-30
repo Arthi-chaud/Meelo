@@ -21,6 +21,7 @@ import { AlbumWithRelations } from "./album";
 import { ArtistWithRelations } from "./artist";
 import Genre from "./genre";
 import Label from "./label";
+import Series from "./series";
 import { SongWithRelations } from "./song";
 import { VideoWithRelations } from "./video";
 
@@ -31,11 +32,18 @@ export type SearchResult = RequireExactlyOne<{
 	video: VideoWithRelations<"illustration" | "master" | "artist">;
 	label: Label;
 	genre: Genre;
+	series: Series;
 }>;
 
 export type SaveSearchItem = Partial<
 	Record<
-		"songId" | "albumId" | "artistId" | "videoId" | "labelId" | "genreId",
+		| "songId"
+		| "albumId"
+		| "artistId"
+		| "videoId"
+		| "labelId"
+		| "genreId"
+		| "seriesId",
 		number
 	>
 >;
@@ -47,46 +55,49 @@ export const SearchResultTransformer = (
 	}
 	return Promise.all(
 		results.map(async (result) => {
-			if ("endDate" in result) {
-				return {
-					label: await Label.validate(result),
-				};
-			}
-			if ("groupId" in result) {
-				if ("songId" in result) {
+			switch (result.type) {
+				case "artist":
+					return {
+						artist: await ArtistWithRelations([
+							"illustration",
+						] as const).validate(result.item),
+					};
+				case "album":
+					return {
+						album: await AlbumWithRelations([
+							"artists",
+							"illustration",
+						] as const).validate(result.item),
+					};
+				case "song":
+					return {
+						song: await SongWithRelations([
+							"artist",
+							"featuring",
+							"illustration",
+							"master",
+						] as const).validate(result.item),
+					};
+				case "video":
 					return {
 						video: await VideoWithRelations([
 							"artist",
 							"illustration",
 							"master",
-						] as const).validate(result),
+						] as const).validate(result.item),
 					};
-				}
-				return {
-					song: await SongWithRelations([
-						"artist",
-						"featuring",
-						"illustration",
-						"master",
-					] as const).validate(result),
-				};
+				case "label":
+					return {
+						label: await Label.validate(result.item),
+					};
+				case "genre":
+					return { genre: await Genre.validate(result.item) };
+				case "series":
+					return { series: await Series.validate(result.item) };
 			}
-			if ("masterId" in result) {
-				return {
-					album: await AlbumWithRelations([
-						"artists",
-						"illustration",
-					] as const).validate(result),
-				};
-			}
-			if ("birthAreaId" in result) {
-				return {
-					artist: await ArtistWithRelations([
-						"illustration",
-					] as const).validate(result),
-				};
-			}
-			return { genre: await Genre.validate(result) };
+			throw new Error(
+				`Invalid search result: ${JSON.stringify(result.item)}`,
+			);
 		}),
 	);
 };

@@ -72,6 +72,7 @@ import { ParentScrollableDivId } from "@/utils/constants";
 import { getYear } from "@/utils/date";
 import { formatArtists_ } from "@/utils/format-artists";
 import formatDuration from "@/utils/format-duration";
+import { formatSeriesEntrySubtitle } from "@/utils/format-series-entry";
 import { generateArray } from "@/utils/gen-list";
 import { shuffle } from "@/utils/random";
 import { getAPI, useInfiniteQuery, useQuery } from "~/api";
@@ -129,7 +130,7 @@ const releaseTracklistQuery = (
 	};
 };
 const albumQuery = (albumId: number) =>
-	getAlbum(albumId, ["genres", "artists"]);
+	getAlbum(albumId, ["genres", "artists", "series"]);
 const externalMetadataQuery = (albumIdentifier: string | number) =>
 	getAlbumExternalMetadata(albumIdentifier);
 const artistsOnAlbumQuery = (albumId: number) => {
@@ -158,6 +159,13 @@ const relatedAlbumsQuery = (albumId: number) =>
 	getAlbums({ related: albumId }, { sortBy: "releaseDate" }, [
 		"artists",
 		"illustration",
+	]);
+
+const relatedAlbumsFromSeriesQuery = (seriesId: number) =>
+	getAlbums({ series: seriesId }, { sortBy: "seriesIndex" }, [
+		"artists",
+		"illustration",
+		"series",
 	]);
 const relatedReleasesQuery = (albumId: number) =>
 	getReleases({ album: albumId }, { sortBy: "releaseDate" }, [
@@ -253,6 +261,10 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 	const relatedReleases = useInfiniteQuery(
 		relatedReleasesQuery,
 		release.data?.albumId,
+	);
+	const relatedAlbumsFromSeries = useInfiniteQuery(
+		relatedAlbumsFromSeriesQuery,
+		album.data?.series?.id,
 	);
 
 	const albumLabels = useInfiniteQuery(
@@ -781,6 +793,37 @@ const ReleasePage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 						/>
 					)}
 				</RelatedContentSection>
+
+				{album.data?.series && (
+					<RelatedContentSection
+						display={
+							(relatedAlbumsFromSeries.items?.length ?? 0) > 1
+						}
+						title={t("album.moreFromSeries", {
+							series: album.data.series.name,
+						})}
+					>
+						<TileRow
+							tiles={
+								relatedAlbumsFromSeries.items
+									?.filter((a) => a.id !== album.data.id)
+									.map((otherAlbum) => (
+										<AlbumTile
+											key={otherAlbum.id}
+											album={otherAlbum}
+											formatSubtitle={() =>
+												formatSeriesEntrySubtitle(
+													otherAlbum.series?.index ??
+														null,
+													otherAlbum.artists,
+												)
+											}
+										/>
+									)) ?? []
+							}
+						/>
+					</RelatedContentSection>
+				)}
 				<RelatedContentSection
 					display={(relatedAlbums.items?.length ?? 0) > 0}
 					title={t("album.relatedAlbums")}

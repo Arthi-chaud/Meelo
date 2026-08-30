@@ -28,7 +28,13 @@ import Logger from "src/logger/logger";
 
 const QueueName = "meelo";
 
-type ResourceCreationEventType = "artist" | "album" | "song" | "area" | "label";
+type ResourceCreationEventType =
+	| "artist"
+	| "album"
+	| "song"
+	| "area"
+	| "label"
+	| "series";
 
 // Should be numbers between 1 and 5. The higher, the more important
 export enum ResourceEventPriority {
@@ -40,6 +46,7 @@ export enum ResourceEventPriority {
 	StudioAlbum = 4,
 	NonStudioAlbum = 2,
 	Label = 2,
+	Series = 2,
 }
 
 @Injectable()

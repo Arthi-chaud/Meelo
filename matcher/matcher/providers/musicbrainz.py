@@ -11,14 +11,14 @@ from aiohttp.client import ClientSession
 from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
 
 from matcher.context import Context
-from matcher.logger import ERROR, log
-from matcher.models.api.dto import AreaDto, LabelDto
+from matcher.models.api.dto import AreaDto, LabelDto, SeriesDto
 from matcher.providers.features import (
     GetAlbumFeature,
     GetAlbumGenresFeature,
     GetAlbumIdFromUrlFeature,
     GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
+    GetAlbumSeriesFeature,
     GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
     GetArea,
@@ -35,6 +35,9 @@ from matcher.providers.features import (
     GetLabelMBID,
     GetLabelStartDate,
     GetParentArea,
+    GetSeriesByMBID,
+    GetSeriesByName,
+    GetSeriesMBID,
     GetSongFeature,
     GetSongGenresFeature,
     GetSongIdFromUrlFeature,
@@ -120,6 +123,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetArtistBirthArea(lambda artist: self._get_artist_birth_area(artist)),
             GetAlbumTypeFeature(lambda album: asyncify(self._get_album_type, album)),
             GetAlbumLabelsFeature(lambda album: self._get_album_labels(album)),
+            GetAlbumSeriesFeature(
+                lambda album: asyncify(self._get_album_series, album)
+            ),
             GetWikidataArtistRelationKeyFeature(lambda: "P434"),
             GetWikidataAlbumRelationKeyFeature(lambda: "P436"),
             SearchAlbumFeature(
@@ -167,6 +173,9 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
             GetLabelEndDate(lambda label: self._get_label_end_date(label)),
             GetLabelMBID(lambda label: self._get_label_mbid(label)),
             GetLabelArea(lambda label: self._get_label_area(label)),
+            GetSeriesByName(lambda series_name: self._get_series_by_name(series_name)),
+            GetSeriesByMBID(lambda series_mbid: self._get_series_by_mbid(series_mbid)),
+            GetSeriesMBID(lambda series: self._get_series_mbid(series)),
         ]
 
     def mk_session(self) -> ClientSession:
@@ -354,14 +363,13 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                 match = exact_matches[0][release_group_key]
                 return SearchResult(match["id"], match)
             return None
-        except Exception as e:
-            log(ERROR, str(e))
+        except Exception:
             return None
 
     async def _get_album(self, album_id: str) -> Any | None:
         res = await self._fetch(
             f"/release-group/{album_id}",
-            {"inc": " ".join(["url-rels", "genres"])},
+            {"inc": " ".join(["url-rels", "genres", "series-rels"])},
         )
         return res
 
@@ -391,6 +399,38 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
                     ):
                         labels.append(LabelDto(name=label_name, mbid=label_id))
             return labels
+        except Exception:
+            return None
+
+    def _get_album_series(self, album: Any) -> SeriesDto | None:
+        try:
+            relations = album["relations"]
+            for rel in relations:
+                if "series" not in rel:
+                    continue
+                series = rel["series"]
+                if "type" not in series or series["type"] != "Release group series":
+                    continue
+                return SeriesDto(
+                    name=series["name"],
+                    mbid=series["id"],
+                    index=self._get_series_entry_index(rel),
+                )
+            return None
+        except Exception:
+            pass
+
+    def _get_series_entry_index(self, rel: Any) -> float | None:
+        try:
+            attrValKey = "attribute-values"
+            orderKey = "ordering-key"
+            if attrValKey in rel and "number" in rel[attrValKey]:
+                str_index = rel[attrValKey]["number"]
+                try:
+                    return float(str_index)
+                except Exception:
+                    pass
+            return float(rel[orderKey])
         except Exception:
             return None
 
@@ -601,7 +641,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         if area_type in [t.value for _, t in AreaType.__members__.items()]:
             return AreaType(area_type)
 
-    async def _get_label_by_name(self, label_name: str) -> LabelDto | None:
+    async def _get_label_by_name(self, label_name: str) -> Any | None:
         try:
             res = await self._fetch("/label/", {"query": label_name, "limit": 3})
             items = res["labels"]
@@ -611,7 +651,7 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
         except Exception:
             pass
 
-    async def _get_label_by_mbid(self, label_mbid: str) -> LabelDto | None:
+    async def _get_label_by_mbid(self, label_mbid: str) -> Any | None:
         try:
             return await self._fetch(f"/label/{label_mbid}")
         except Exception:
@@ -646,5 +686,27 @@ class MusicBrainzProvider(BaseProviderBoilerplate[MusicBrainzSettings], HasSessi
     def _get_label_area(self, label: Any) -> AreaDto | None:
         try:
             return self._parse_area(label["area"])
+        except Exception:
+            pass
+
+    async def _get_series_by_name(self, label_name: str) -> Any | None:
+        try:
+            res = await self._fetch("/series/", {"query": label_name, "limit": 3})
+            items = res["series"]
+            for label in items:
+                if to_slug(label["name"]) == to_slug(label_name):
+                    return label
+        except Exception:
+            pass
+
+    async def _get_series_by_mbid(self, series_mbid: str) -> Any | None:
+        try:
+            return await self._fetch(f"/series/{series_mbid}")
+        except Exception:
+            pass
+
+    def _get_series_mbid(self, series: Any) -> str | None:
+        try:
+            return series["id"]
         except Exception:
             pass

@@ -39,6 +39,7 @@ import { SongGrid } from "~/components/song-grid";
 import { Text } from "~/primitives/text";
 import {
 	artistsOnAlbumQuery,
+	relatedAlbumsBySeriesQuery,
 	relatedAlbumsQuery,
 	relatedReleasesQuery,
 	releaseBSidesQuery,
@@ -97,7 +98,7 @@ export const useFooter = ({
 	release,
 	tracks,
 }: {
-	album: AlbumWithRelations<"artists"> | undefined;
+	album: AlbumWithRelations<"artists" | "series"> | undefined;
 	release: ReleaseWithRelations<"label"> | undefined;
 	tracks: TrackType[];
 }): FooterSection[] => {
@@ -112,6 +113,11 @@ export const useFooter = ({
 	const { items: relatedAlbums } = useInfiniteQuery(
 		(albumId) => relatedAlbumsQuery(albumId),
 		album?.id,
+	);
+
+	const { items: seriesAlbums } = useInfiniteQuery(
+		(seriesId) => relatedAlbumsBySeriesQuery(seriesId),
+		album?.series?.id,
 	);
 
 	const { items: relatedPlaylists } = useInfiniteQuery(
@@ -299,6 +305,34 @@ export const useFooter = ({
 		return null;
 	}, [videoItems, bSidesItems, videoExtras, audioExtras]);
 
+	const seriesAlbumSection: FooterSection = useMemo(
+		() => ({
+			type: "row",
+			props: {
+				hideIfEmpty: true,
+				style: styles.section,
+				header: t("album.moreFromSeries", {
+					series: album?.series?.name,
+				}),
+				items: album?.series
+					? seriesAlbums?.filter((a) => a.id !== album?.id)
+					: [],
+				render: (album) => (
+					<AlbumTile
+						album={album as any}
+						subtitle="artistName"
+						formatSubtitle={(s) =>
+							album
+								? `${t("series.entryIndex", { index: (album as any)?.series?.index ?? 0 })} - ${s}`
+								: s
+						}
+					/>
+				),
+			},
+		}),
+		[seriesAlbums, album],
+	);
+
 	const relatedAlbumsSection: FooterSection = useMemo(
 		() => ({
 			type: "row",
@@ -314,6 +348,7 @@ export const useFooter = ({
 		}),
 		[relatedAlbums],
 	);
+
 	const relatedArtistsSection: FooterSection = useMemo(
 		() => ({
 			type: "row",
@@ -383,6 +418,7 @@ export const useFooter = ({
 				releasesSection,
 				...videoSections,
 				extraSection,
+				...(album?.series ? [seriesAlbumSection] : []),
 				relatedAlbumsSection,
 				relatedArtistsSection,
 				playlistsSection,
@@ -395,6 +431,7 @@ export const useFooter = ({
 			releasesSection,
 			videoSections,
 			extraSection,
+			seriesAlbumSection,
 			relatedAlbumsSection,
 			relatedArtistsSection,
 			playlistsSection,

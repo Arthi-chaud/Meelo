@@ -63,7 +63,12 @@ type Metadata struct {
 	AlbumMbid       string
 	SongMbid        string
 	// Name of the label that published thed release
-	Label                   string
+	Label string
+
+	Series      string
+	SeriesIndex float64
+	SeriesMbid  string
+
 	IllustrationLocation    IllustrationLocation
 	IllustrationStreamIndex int
 	IllustrationPath        string

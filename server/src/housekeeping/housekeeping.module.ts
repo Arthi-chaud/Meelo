@@ -24,6 +24,7 @@ import GenreModule from "src/genre/genre.module";
 import LabelModule from "src/label/label.module";
 import PlaylistModule from "src/playlist/playlist.module";
 import ReleaseModule from "src/release/release.module";
+import { SeriesModule } from "src/series/series.module";
 import SongModule from "src/song/song.module";
 import VideoModule from "src/video/video.module";
 import { HousekeepingService } from "./housekeeping.service";
@@ -38,6 +39,7 @@ import { HousekeepingService } from "./housekeeping.service";
 		forwardRef(() => PlaylistModule),
 		forwardRef(() => VideoModule),
 		forwardRef(() => LabelModule),
+		forwardRef(() => SeriesModule),
 		forwardRef(() => AreaModule),
 	],
 	providers: [HousekeepingService],

@@ -13,6 +13,7 @@ import {
 	LabelIcon,
 	MoreIcon,
 	PlaylistIcon,
+	SeriesIcon,
 	SongIcon,
 	VideoIcon,
 } from "@/ui/icons";
@@ -71,6 +72,12 @@ const TabGroups: { title: TranslationKey; href: Href; icon: Icon }[][] = [
 			title: "models.label_plural",
 			href: "/(protected)/(nav)/(browse)/labels",
 			icon: LabelIcon,
+		},
+
+		{
+			title: "nav.series",
+			href: "/(protected)/(nav)/(browse)/series",
+			icon: SeriesIcon,
 		},
 	],
 

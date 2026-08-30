@@ -54,6 +54,7 @@ import InfiniteVideoView from "~/components/infinite/resource/video";
 import ListItem from "~/components/list-item";
 import AlbumItem from "~/components/list-item/resource/album";
 import ArtistItem from "~/components/list-item/resource/artist";
+import { SeriesItem } from "~/components/list-item/resource/series";
 import SongItem from "~/components/list-item/resource/song";
 import VideoItem from "~/components/list-item/resource/video";
 import { TabPage } from "~/components/tab-page";
@@ -326,6 +327,17 @@ const SearchPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = () => {
 														quality="low"
 														fallback={<GenreIcon />}
 													/>
+												}
+											/>
+										) : item.series ? (
+											<SeriesItem
+												series={item.series}
+												secondTitle={t("models.series")}
+												onClick={() =>
+													saveSearch.mutate({
+														seriesId:
+															item.series.id,
+													})
 												}
 											/>
 										) : (

@@ -17,30 +17,13 @@
  */
 
 import { Controller, Get, Query } from "@nestjs/common";
-import {
-	ApiOkResponse,
-	ApiOperation,
-	ApiTags,
-	getSchemaPath,
-} from "@nestjs/swagger";
-import {
-	AlbumResponse,
-	AlbumResponseBuilder,
-} from "src/album/models/album.response";
-import {
-	ArtistResponse,
-	ArtistResponseBuilder,
-} from "src/artist/models/artist.response";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AlbumResponseBuilder } from "src/album/models/album.response";
+import { ArtistResponseBuilder } from "src/artist/models/artist.response";
 import { InvalidRequestException } from "src/exceptions/meelo-exception";
-import { Label } from "src/prisma/models";
-import {
-	SongResponse,
-	SongResponseBuilder,
-} from "src/song/models/song.response";
-import {
-	VideoResponse,
-	VideoResponseBuilder,
-} from "src/video/models/video.response";
+import { SongResponseBuilder } from "src/song/models/song.response";
+import { VideoResponseBuilder } from "src/video/models/video.response";
+import { SearchItemSchema } from "./models/search-item";
 import { SearchService } from "./search.service";
 
 @ApiTags("Search")
@@ -65,18 +48,7 @@ export class SearchController {
 	})
 	@Get()
 	@ApiOkResponse({
-		schema: {
-			type: "array",
-			items: {
-				oneOf: [
-					ArtistResponse,
-					AlbumResponse,
-					SongResponse,
-					VideoResponse,
-					Label,
-				].map((resType) => ({ $ref: getSchemaPath(resType) })),
-			},
-		},
+		schema: SearchItemSchema,
 	})
 	async search(@Query("query") query?: string) {
 		if (!query) {
@@ -87,20 +59,46 @@ export class SearchController {
 		const items = await this.searchService.search(query);
 		return Promise.all(
 			// biome-ignore lint: All cases are covered
-			items.map(({ type, item }) => {
+			items.map(async ({ type, item }) => {
 				switch (type) {
 					case "video":
-						return this.videoResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.videoResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "album":
-						return this.albumResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.albumResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "song":
-						return this.songResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.songResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "artist":
-						return this.artistResponseBuilder.buildResponse(item);
+						return {
+							type,
+							item:
+								await this.artistResponseBuilder.buildResponse(
+									item,
+								),
+						};
 					case "label":
-						return item;
+						return { type, item };
 					case "genre":
-						return item;
+						return { type, item };
+					case "series":
+						return { type, item };
 				}
 			}),
 		);

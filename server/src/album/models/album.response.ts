@@ -30,13 +30,20 @@ import {
 	LocalIdentifiersResponse,
 	ResponseWithLocalIdentifiers,
 } from "src/local-identifiers/local-identifiers.response";
-import { Album, type AlbumWithRelations, type Genre } from "src/prisma/models";
+import {
+	Album,
+	type AlbumWithRelations,
+	type Genre,
+	SeriesView,
+} from "src/prisma/models";
 import {
 	type ReleaseResponse,
 	ReleaseResponseBuilder,
 } from "src/release/models/release.response";
 import ReleaseService from "src/release/release.service";
 import ResponseBuilderInterceptor from "src/response/interceptors/response.interceptor";
+
+class SeriesRelation extends OmitType(SeriesView, ["albumId"]) {}
 
 export class AlbumResponse extends IntersectionType(
 	OmitType(Album, ["sortSlug", "nameSlug"]),
@@ -45,6 +52,7 @@ export class AlbumResponse extends IntersectionType(
 	class {
 		artists?: ArtistResponse[];
 		master?: ReleaseResponse;
+		series?: SeriesRelation | null;
 		genres?: Genre[];
 	},
 ) {}
@@ -73,6 +81,13 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 				id: album.id,
 			});
 		}
+		let series: SeriesRelation | null | undefined;
+		if (album.series === null) {
+			series = null;
+		} else if (album.series !== undefined) {
+			const { albumId: _, ...albumSeries } = album.series;
+			series = albumSeries;
+		}
 		return {
 			id: album.id,
 			name: album.name,
@@ -99,6 +114,7 @@ export class AlbumResponseBuilder extends ResponseBuilderInterceptor<
 			localIdentifiers: LocalIdentifiersResponse.from(
 				album.localIdentifiers,
 			),
+			series: series,
 		};
 	}
 }

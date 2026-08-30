@@ -13,6 +13,7 @@ import { AlbumType } from "src/prisma/generated/enums";
 import type { Release } from "src/prisma/models";
 import PrismaModule from "src/prisma/prisma.module";
 import PrismaService from "src/prisma/prisma.service";
+import { SeriesModule } from "src/series/series.module";
 import Slug from "src/slug/slug";
 import SongModule from "src/song/song.module";
 import TrackModule from "src/track/track.module";
@@ -51,6 +52,7 @@ describe("Release Service", () => {
 				FileModule,
 				AreaModule,
 				LabelModule,
+				SeriesModule,
 			],
 			providers: [ReleaseService, AlbumService, ArtistService],
 		})

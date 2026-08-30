@@ -65,6 +65,7 @@ import {
 } from "@/models/release";
 import { ScrobblersStatus } from "@/models/scrobblers";
 import { type SearchResult, SearchResultTransformer } from "@/models/search";
+import Series, { type SeriesSortingKeys } from "@/models/series";
 import { Settings } from "@/models/settings";
 import {
 	PlayHistoryEntryWithRelations,
@@ -174,6 +175,7 @@ export const getAlbums = <I extends AlbumInclude | never = never>(
 		appearance?: Identifier;
 		query?: Identifier;
 		label?: Identifier;
+		series?: Identifier;
 		random?: number;
 	},
 	sort?: SortingParameters<typeof AlbumSortingKeys>,
@@ -206,6 +208,7 @@ export const getSongs = <I extends SongInclude | never = never>(
 		bsides?: Identifier;
 		random?: number;
 		label?: Identifier;
+		series?: Identifier;
 	},
 	sort?: SortingParameters<typeof SongSortingKeys>,
 	include?: readonly I[],
@@ -526,6 +529,24 @@ export const getLabels = <I extends LabelInclude | never = never>(
 		include,
 		sort,
 		validator: PaginatedResponse(LabelWithRelations(include ?? [])),
+	});
+};
+
+/// Series
+export const getOneSeries = (identifier: string | number): Query<Series> => {
+	return _mkSimpleQuery({
+		route: `/series/${identifier}`,
+		validator: Series,
+	});
+};
+
+export const getManySeries = (
+	sort?: SortingParameters<typeof SeriesSortingKeys>,
+): InfiniteQuery<Series> => {
+	return _mkSimplePaginatedQuery({
+		route: "/series",
+		sort,
+		validator: PaginatedResponse(Series),
 	});
 };
 

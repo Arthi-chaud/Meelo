@@ -2,6 +2,7 @@ import asyncio
 from datetime import datetime
 
 from matcher.logger import ERROR, INFO, log
+from matcher.models.api.domain import Series
 from matcher.models.api.dto import ExternalMetadataDto
 from matcher.models.match_result import AlbumMatchResult
 from matcher.providers.boilerplate import BaseProviderBoilerplate
@@ -12,11 +13,12 @@ from matcher.providers.features import (
     GetAlbumLabelsFeature,
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
+    GetAlbumSeriesFeature,
     GetAlbumTypeFeature,
 )
 
 from ..context import Context
-from ..models.api.dto import ExternalMetadataSourceDto
+from ..models.api.dto import ExternalMetadataSourceDto, SeriesDto
 from . import common
 
 OVERRIDABLE_ALBUM_TYPES = [AlbumType.STUDIO, AlbumType.LIVE]
@@ -40,6 +42,7 @@ async def match_and_post_album(
                     album_name,
                     artist_names,
                     album.type,
+                    album.series,
                     local_identifiers,
                     None,
                 )
@@ -52,6 +55,7 @@ async def match_and_post_album(
                 album_name,
                 artist_names,
                 album.type,
+                album.series,
                 local_identifiers,
                 previous_sources,
             )
@@ -85,6 +89,11 @@ async def match_and_post_album(
                 log_data["api release year"] = old_release_date.year
                 res.release_date = None
         log_data["release date"] = "found" if res.release_date else "none"
+        if res.series:
+            if not album.series:
+                log_data["series"] = "found"
+        else:
+            log_data["series"] = "none"
         log_data["genres count"] = len(res.genres)
         log_data["album type"] = (
             album_type.value
@@ -99,7 +108,12 @@ async def match_and_post_album(
             or (album_type != album.type and album_type != AlbumType.OTHER)
         ):
             await context.client.post_album_update(
-                album_id, res.release_date, res.genres, (res.labels or None), album_type
+                album_id,
+                res.release_date,
+                res.genres,
+                (res.labels or None),
+                res.series,
+                album_type,
             )
         log(INFO, "Matched data", log_data)
     except Exception as e:
@@ -111,6 +125,7 @@ async def match_album(
     album_name: str,
     artist_names: list[str],
     type: AlbumType,
+    series: Series | None,
     local_identifiers: common.LocalIdentifiers,
     sources_to_reuse: list[ExternalMetadataSourceDto] | None = None,
 ) -> AlbumMatchResult:
@@ -163,6 +178,7 @@ async def match_album(
         None,
         [],
         [],
+        None if series is None else SeriesDto(name=series.name, mbid=series.mbid),
     )
 
     async def provider_task(
@@ -225,6 +241,13 @@ async def match_album(
                 lambda: need_genres,
                 lambda get_album_genres: get_album_genres.run(album),
                 lambda genres: res.push_genres(genres),
+            ),
+            common.bind_feature_to_result(
+                GetAlbumSeriesFeature,
+                provider,
+                lambda: res.series is None or res.series.index is None,
+                lambda get_album_series: get_album_series.run(album),
+                lambda series: res.set_series_if_none(series),
             ),
         )
 

@@ -42,6 +42,7 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import { SeriesService } from "src/series/series.service";
 import Slug from "src/slug/slug";
 import SongService from "src/song/song.service";
 import { getSortName } from "src/sort/sort-name";
@@ -67,6 +68,8 @@ export default class AlbumService extends SearchableRepositoryService {
 		private releaseService: ReleaseService,
 		@Inject(forwardRef(() => LabelService))
 		private labelService: LabelService,
+		@Inject(forwardRef(() => SeriesService))
+		private seriesService: SeriesService,
 		@InjectMeiliSearch()
 		protected readonly meiliSearch: Meilisearch,
 	) {
@@ -285,7 +288,13 @@ export default class AlbumService extends SearchableRepositoryService {
 				name: buildStringSearchParameters(where.name),
 			},
 		];
-
+		if (where.series) {
+			query.push({
+				seriesEntry: {
+					series: SeriesService.formatWhereInput(where.series),
+				},
+			});
+		}
 		if (where.albums) {
 			query.push({
 				OR: where.albums.map((album) =>
@@ -606,6 +615,19 @@ export default class AlbumService extends SearchableRepositoryService {
 					{ sortSlug: "asc" },
 					{ id: "asc" },
 				];
+			case "seriesIndex":
+				return [
+					{
+						seriesEntry: {
+							index: {
+								sort: sortingParameter.order,
+								nulls: "last",
+							},
+						},
+					},
+					{ sortSlug: "asc" },
+					{ id: "asc" },
+				];
 			default:
 				return [
 					{
@@ -633,10 +655,21 @@ export default class AlbumService extends SearchableRepositoryService {
 			what.labels?.map((label) => this.labelService.getOrCreate(label)) ??
 				[],
 		);
+		if (what.series) {
+			const series = await this.seriesService.getOrCreate(what.series);
+			const album = await this.get(where);
+			await this.seriesService.addEntry(
+				{ id: series.id },
+				{ id: album.id },
+				what.series.index ?? null,
+			);
+		}
+
 		return this.prismaService.album
 			.update({
 				data: {
 					...what,
+					series: undefined,
 					master: what.master
 						? {
 								connect: ReleaseService.formatWhereInput(

@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any
 
-from matcher.models.api.dto import AreaDto, LabelDto
+from matcher.models.api.dto import AreaDto, LabelDto, SeriesDto
 from matcher.models.match_result import SyncedLyrics
 from matcher.providers.base import BaseProvider
 
@@ -14,6 +14,7 @@ from .features import (
     GetAlbumLabelsFeature,
     GetAlbumRatingFeature,
     GetAlbumReleaseDateFeature,
+    GetAlbumSeriesFeature,
     GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
     GetArea,
@@ -34,6 +35,9 @@ from .features import (
     GetMusicBrainzRelationKeyFeature,
     GetParentArea,
     GetPlainSongLyricsFeature,
+    GetSeriesByMBID,
+    GetSeriesByName,
+    GetSeriesMBID,
     GetSongDescriptionFeature,
     GetSongFeature,
     GetSongGenresFeature,
@@ -154,6 +158,10 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
 
     async def get_album_labels(self, album: Any) -> list[LabelDto] | None:
         f = self.get_feature(GetAlbumLabelsFeature)
+        return await f.run(album) if f else None
+
+    async def get_album_series(self, album: Any) -> SeriesDto | None:
+        f = self.get_feature(GetAlbumSeriesFeature)
         return await f.run(album) if f else None
 
     async def get_album_release_date(self, album: Any) -> date | None:
@@ -280,3 +288,16 @@ class BaseProviderBoilerplate[S](BaseProvider[S]):
     def get_label_area(self, label: Any) -> AreaDto | None:
         f = self.get_feature(GetLabelArea)
         return f.run(label) if f else None
+
+    ## Series
+    async def get_series_by_mbid(self, series_mbid: str) -> Any | None:
+        f = self.get_feature(GetSeriesByMBID)
+        return await f.run(series_mbid) if f else None
+
+    async def get_series_by_name(self, series_name: str) -> Any | None:
+        f = self.get_feature(GetSeriesByName)
+        return await f.run(series_name) if f else None
+
+    def get_series_mbid(self, series: Any) -> str | None:
+        f = self.get_feature(GetSeriesMBID)
+        return f.run(series) if f else None

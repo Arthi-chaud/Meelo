@@ -22,6 +22,7 @@ const SharedRoutes: {
 	{ name: "songs/index", options: { headerTitle: "models.song_plural" } },
 	{ name: "genres", options: { headerTitle: "models.genre_plural" } },
 	{ name: "labels", options: { headerTitle: "models.label_plural" } },
+	{ name: "series", options: { headerTitle: "models.series_plural" } },
 	{ name: "videos/index", options: { headerTitle: "models.video_plural" } },
 	{ name: "tracks/index", options: { headerTitle: "models.track_plural" } },
 	{

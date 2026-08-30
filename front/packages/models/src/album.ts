@@ -21,6 +21,7 @@ import Artist from "./artist";
 import Genre from "./genre";
 import Illustration from "./illustration";
 import Resource from "./resource";
+import Series from "./series";
 import { yupdate } from "./utils";
 
 export const AlbumType = [
@@ -70,7 +71,7 @@ type Album = yup.InferType<typeof Album>;
 
 export default Album;
 
-export type AlbumInclude = "artists" | "genres" | "illustration";
+export type AlbumInclude = "artists" | "genres" | "illustration" | "series";
 
 export const AlbumWithRelations = <
 	Selection extends AlbumInclude | never = never,
@@ -83,6 +84,7 @@ export const AlbumWithRelations = <
 				artists: yup.array(Artist.required()).required(),
 				genres: yup.array(Genre.required()).required(),
 				illustration: Illustration.required().nullable(),
+				series: Series.required().default(null).nullable(),
 			})
 			.pick(relation),
 	);
@@ -95,5 +97,6 @@ export const AlbumSortingKeys = [
 	"artistName",
 	"releaseDate",
 	"addDate",
+	"seriesIndex",
 ] as const;
 export type AlbumSortingKey = (typeof AlbumSortingKeys)[number];

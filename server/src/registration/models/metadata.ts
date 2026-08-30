@@ -284,4 +284,21 @@ export default class Metadata {
 	@IsOptional()
 	@ApiPropertyOptional()
 	label?: string;
+
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	@ApiPropertyOptional()
+	series?: string;
+
+	@IsNumber()
+	@IsOptional()
+	@ApiPropertyOptional()
+	seriesIndex?: number;
+
+	@IsString()
+	@IsNotEmpty()
+	@IsOptional()
+	@ApiPropertyOptional()
+	seriesMbid?: string;
 }

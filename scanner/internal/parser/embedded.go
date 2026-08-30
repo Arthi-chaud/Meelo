@@ -124,6 +124,10 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.Genres = strings.FieldsFunc(value, func(r rune) bool {
 			return r == ';' || r == '\\' || r == ','
 		})
+		for i, g := range metadata.Genres {
+			metadata.Genres[i] = strings.TrimSpace(g)
+
+		}
 	})
 	if c.Compilations.UseID3CompTag {
 		ParseTag(tags, []string{"compilation", "compilations", "itunescompilation"}, func(value string) {
@@ -222,6 +226,18 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 				return
 			}
 		}
+	})
+
+	ParseTag(tags, []string{"series", "release series"}, func(value string) {
+		metadata.Series = value
+	})
+	ParseTag(tags, []string{"series index", "release series index", "series number", "seriesindex", "seriesnumber", "seriesidx"}, func(value string) {
+		if seriesIndex, err := strconv.ParseFloat(value, 64); err == nil {
+			metadata.SeriesIndex = seriesIndex
+		}
+	})
+	ParseTag(tags, []string{"series mbid", "seriesmbid", "release series mbid", "musicbrainz series id"}, func(value string) {
+		metadata.SeriesMbid = value
 	})
 
 	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {

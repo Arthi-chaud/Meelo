@@ -46,6 +46,7 @@ import { RegistrationModule } from "./registration/registration.module";
 import ReleaseModule from "./release/release.module";
 import ScrobblerModule from "./scrobbler/scrobbler.module";
 import { SearchModule } from "./search/search.module";
+import { SeriesModule } from "./series/series.module";
 import SettingsModule from "./settings/settings.module";
 import SongModule from "./song/song.module";
 import { StreamModule } from "./stream/stream.module";
@@ -95,6 +96,7 @@ import VideoModule from "./video/video.module";
 		LabelModule,
 		ScrobblerModule,
 		AreaModule,
+		SeriesModule,
 		MigrationModule,
 	],
 	controllers: [AppController],

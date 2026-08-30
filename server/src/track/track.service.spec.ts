@@ -22,6 +22,7 @@ import PrismaService from "src/prisma/prisma.service";
 import { ReleaseNotFoundException } from "src/release/release.exceptions";
 import ReleaseModule from "src/release/release.module";
 import ReleaseService from "src/release/release.service";
+import { SeriesModule } from "src/series/series.module";
 import SettingsModule from "src/settings/settings.module";
 import SettingsService from "src/settings/settings.service";
 import Slug from "src/slug/slug";
@@ -76,6 +77,7 @@ describe("Track Service", () => {
 				StreamModule,
 				AreaModule,
 				LabelModule,
+				SeriesModule,
 			],
 			providers: [
 				PrismaService,

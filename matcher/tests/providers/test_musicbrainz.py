@@ -402,3 +402,45 @@ class TestMusicbrainz:
         area = provider.get_label_area(label)
         assert area is not None
         assert area.name == "United States"
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_series_by_name(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        series_mbid = "db3d1739-ad49-41b6-8da3-9f64894c9eef"
+        series = await provider.get_series_by_name("Global Underground City Series")
+        assert series is not None
+
+        mbid = provider.get_series_mbid(series)
+        assert mbid == series_mbid
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_series(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        album = await provider.get_album(
+            "d243979a-9e29-3f61-b8f7-232db71a804a"
+        )  # GU, Danny Tenaglia, 10
+        assert album is not None
+        series = await provider.get_album_series(album)
+        assert series is not None
+        assert series.index == 10
+        series_mbid = "db3d1739-ad49-41b6-8da3-9f64894c9eef"
+        assert series.mbid == series_mbid
+
+    @pytest.mark.asyncio(loop_scope="module")
+    async def test_get_album_series_float_index(self, ctx):
+        provider: MusicBrainzProvider = (
+            Context().get().get_provider_or_raise(MusicBrainzProvider)
+        )
+        album = await provider.get_album(
+            "78a4ac64-298f-45ec-ac69-832a68830a6a"
+        )  # Minaj, Pink Friday RR
+        assert album is not None
+        series = await provider.get_album_series(album)
+        assert series is not None
+        assert series.index == 1.5
+        series_mbid = "430f8774-5a9e-407d-9f16-549327030a6b"
+        assert series.mbid == series_mbid

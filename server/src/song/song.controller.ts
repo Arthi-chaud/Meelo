@@ -59,6 +59,8 @@ import type ReleaseQueryParameters from "src/release/models/release.query-parame
 import ReleaseService from "src/release/release.service";
 import { formatIdentifier } from "src/repository/repository.utils";
 import Response, { ResponseType } from "src/response/response.decorator";
+import SeriesQueryParameters from "src/series/series.query-parameters";
+import { SeriesService } from "src/series/series.service";
 import Slug from "src/slug/slug";
 import MergeSongDTO from "./models/merge-song.dto";
 import SongQueryParameters from "./models/song.query-params";
@@ -154,6 +156,11 @@ export class Selector {
 	@IsNumber()
 	@IsPositive()
 	random?: number;
+
+	@IsOptional()
+	@ApiPropertyOptional()
+	@TransformIdentifier(SeriesService)
+	series: SeriesQueryParameters.WhereInput;
 }
 
 @ApiTags("Songs")

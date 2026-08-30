@@ -91,6 +91,7 @@
 	},
 	"album": {
 		"bonusTracks": "Bonus Tracks",
+		"moreFromSeries": "More from {{series}}",
 		"onThisAlbum": "Featured Artists",
 		"otherAlbumReleases": "Other releases of the same album",
 		"relatedAlbums": "Related Albums",
@@ -168,6 +169,7 @@
 				"registrationDate": "Registration Date",
 				"releaseDate": "Release Date",
 				"releaseName": "Release Name",
+				"seriesIndex": "Series Index",
 				"songCount": "Song Count",
 				"totalPlayCount": "Total Play Count",
 				"trackCount": "Track Count",
@@ -301,6 +303,8 @@
 		"lyrics": "Lyrics",
 		"playlist": "Playlist",
 		"playlist_plural": "Playlists",
+		"series": "Series",
+		"series_plural": "Series",
 		"song": "Song",
 		"song_plural": "Songs",
 		"track_plural": "Tracks",
@@ -317,6 +321,7 @@
 		"more": "More",
 		"musicVideos": "Music Videos",
 		"search": "Search",
+		"series": "Series",
 		"settings": "Settings"
 	},
 	"player": {
@@ -331,6 +336,9 @@
 	},
 	"search": {
 		"all": "All"
+	},
+	"series": {
+		"entryIndex": "Vol. {{index}}"
 	},
 	"settings": {
 		"cache": {

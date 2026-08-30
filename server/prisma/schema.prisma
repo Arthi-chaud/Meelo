@@ -39,13 +39,13 @@ generator classes {
 model SoftMigration {
     /// @description Unique numeric user identifier
     /// @example 123
-    id            Int             @id @default(autoincrement())
+    id         Int      @id @default(autoincrement())
     /// @description the name of the migration
-    name          String          @unique
-    executedAt    DateTime        @default(now())
+    name       String   @unique
+    executedAt DateTime @default(now())
+
     @@map("soft_migrations")
 }
-
 
 model User {
     /// @description Unique numeric user identifier
@@ -105,7 +105,7 @@ model Genre {
     /// @description The albums from this genre
     albums Album[]
 
-	searchHistory SearchHistory[]
+    searchHistory SearchHistory[]
 
     @@map("genres")
 }
@@ -177,6 +177,8 @@ model Album {
     localIdentifiers LocalIdentifiers?
 
     searchHistory SearchHistory[]
+    seriesEntry   SeriesEntry?
+    series        SeriesView?
 
     @@map("albums")
 }
@@ -315,24 +317,26 @@ model Release {
 model Label {
     /// @description Unique numeric identifier
     /// @example 123
-    id        Int       @id @default(autoincrement())
+    id            Int             @id @default(autoincrement())
     /// @description The name of the label 
     /// @example My Label
-    name      String    @db.Citext()
+    name          String          @db.Citext()
     /// @description Unique string identifier
     /// @example my-label
-    slug      String    @unique
+    slug          String          @unique
     /// @description Related area
-    areaId    Int?
-    area      Area?     @relation(fields: [areaId], references: [id])
-    mbid      String?
+    areaId        Int?
+    area          Area?           @relation(fields: [areaId], references: [id])
+    mbid          String?
     /// @description Date of creation of label
-    startDate DateTime?
+    startDate     DateTime?
     /// @description Date of termination of label
-    endDate   DateTime?
-    releases  Release[]
-    albums    Album[]
+    endDate       DateTime?
+    releases      Release[]
+    albums        Album[]
     searchHistory SearchHistory[]
+    series        Series[]
+    seriesViews   SeriesView[]
 
     @@map("labels")
 }
@@ -779,6 +783,48 @@ enum AreaType {
     Island
 }
 
+model Series {
+    /// @description Unique numeric identifier
+    /// @example 123
+    id            Int             @id @default(autoincrement())
+    name          String          @db.Citext()
+    slug          String          @unique
+    mbid          String?         @unique
+    registeredAt  DateTime        @default(now())
+    entries       SeriesEntry[]
+    labelId       Int?
+    label         Label?          @relation(fields: [labelId], references: [id], onDelete: SetNull)
+    searchHistory SearchHistory[]
+
+    @@map("series")
+}
+
+model SeriesEntry {
+    id       Int    @id @default(autoincrement())
+    albumId  Int    @unique
+    album    Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    seriesId Int
+    series   Series @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+    index    Float?
+
+    @@unique([seriesId, albumId])
+    @@map("series_entry")
+}
+
+view SeriesView {
+    id      Int
+    name    String  @db.Citext()
+    slug    String  @unique
+    mbid    String? @unique
+    labelId Int?
+    label   Label?  @relation(fields: [labelId], references: [id], onDelete: SetNull)
+    index   Float?
+    albumId Int     @unique
+    album   Album   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+    @@map("series_album_view")
+}
+
 model ReleaseIllustration {
     /// @description Unique numeric identifier
     /// @example 123
@@ -831,8 +877,11 @@ model SearchHistory {
     label    Label?   @relation(fields: [labelId], references: [id], onDelete: Cascade)
     labelId  Int?
 
-    genre    Genre?   @relation(fields: [genreId], references: [id], onDelete: Cascade)
-    genreId  Int?
+    genre   Genre? @relation(fields: [genreId], references: [id], onDelete: Cascade)
+    genreId Int?
+
+    series   Series? @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+    seriesId Int?
 
     user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int

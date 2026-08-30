@@ -53,6 +53,7 @@ import {
 	sortItemsUsingOrderedIdList,
 } from "src/repository/repository.utils";
 import SearchableRepositoryService from "src/repository/searchable-repository.service";
+import { SeriesService } from "src/series/series.service";
 import Slug from "src/slug/slug";
 import { getSortName } from "src/sort/sort-name";
 import TrackService from "src/track/track.service";
@@ -387,6 +388,24 @@ export default class SongService extends SearchableRepositoryService {
 		if (where.playedBy) {
 			query.push({
 				playHistory: { some: { userId: where.playedBy.id } },
+			});
+		}
+
+		if (where.series) {
+			query.push({
+				tracks: {
+					some: {
+						release: {
+							album: {
+								seriesEntry: {
+									series: SeriesService.formatWhereInput(
+										where.series,
+									),
+								},
+							},
+						},
+					},
+				},
 			});
 		}
 		if (where.label) {

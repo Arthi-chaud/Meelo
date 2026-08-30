@@ -12,6 +12,14 @@ class LabelDto(DataClassJsonMixin):
     mbid: str | None = None
 
 
+@dataclass_json
+@dataclass
+class SeriesDto(DataClassJsonMixin):
+    name: str
+    mbid: str | None = None
+    index: float | None = None
+
+
 @dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
 @dataclass
 class UpdateAlbumDto(DataClassJsonMixin):
@@ -19,6 +27,7 @@ class UpdateAlbumDto(DataClassJsonMixin):
     release_date: str | None = None
     genres: list[str] | None = None
     labels: list[LabelDto] | None = None
+    series: SeriesDto | None = None
     type: str | None = None
 
 
@@ -88,3 +97,9 @@ class UpdateLabelDto(DataClassJsonMixin):
     end_date: str | None = None
     mbid: str | None = None
     area_id: int | None = None
+
+
+@dataclass_json(letter_case=LetterCase.CAMEL)  # type: ignore
+@dataclass
+class UpdateSeriesDto(DataClassJsonMixin):
+    mbid: str | None = None
