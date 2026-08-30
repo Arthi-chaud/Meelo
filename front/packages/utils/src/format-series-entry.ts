@@ -4,9 +4,9 @@ import { formatArtists_ } from "./format-artists";
 
 export const formatSeriesEntrySubtitle = (
 	entryIndex: number | null,
-	entryArtists?: Pick<Artist, "name" | "id">[] | null,
+	entryArtists: Pick<Artist, "name" | "id">[],
 ) => {
-	const formattedArtists = formatArtists_(entryArtists ?? []);
+	const formattedArtists = formatArtists_(entryArtists);
 	if (entryIndex !== null) {
 		return `${i18next.t("series.entryIndex", { index: entryIndex })} - ${formattedArtists}`;
 	}
