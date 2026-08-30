@@ -2,11 +2,13 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from typing import Annotated
+
 from aiormq.abc import AbstractChannel, DeliveredMessage
 from fastapi import Depends, FastAPI, Query, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
+
 from matcher.api import User
 from matcher.bootstrap import bootstrap_context
 from matcher.context import Context, CurrentItem
@@ -15,14 +17,15 @@ from matcher.matcher.album import match_and_post_album
 from matcher.matcher.area import match_and_post_area
 from matcher.matcher.artist import match_and_post_artist
 from matcher.matcher.label import match_and_post_label
-from matcher.matcher.song import match_and_post_song
 from matcher.matcher.series import match_and_post_series
+from matcher.matcher.song import match_and_post_song
 from matcher.models.api.domain import LocalIdentifiers
 from matcher.mq import (
     connect_mq,
     get_queue_size,
     stop_mq,
 )
+
 from .models.event import Event
 
 match_lock = asyncio.Lock()

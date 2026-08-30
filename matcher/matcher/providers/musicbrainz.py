@@ -11,7 +11,6 @@ from aiohttp.client import ClientSession
 from aiohttp_client_cache import CacheBackend, CachedSession  # pyright: ignore
 
 from matcher.context import Context
-from matcher.logger import ERROR, log
 from matcher.models.api.dto import AreaDto, LabelDto, SeriesDto
 from matcher.providers.features import (
     GetAlbumFeature,
@@ -19,8 +18,8 @@ from matcher.providers.features import (
     GetAlbumIdFromUrlFeature,
     GetAlbumLabelsFeature,
     GetAlbumReleaseDateFeature,
-    GetAlbumTypeFeature,
     GetAlbumSeriesFeature,
+    GetAlbumTypeFeature,
     GetAlbumUrlFromIdFeature,
     GetArea,
     GetAreaType,
@@ -36,13 +35,13 @@ from matcher.providers.features import (
     GetLabelMBID,
     GetLabelStartDate,
     GetParentArea,
+    GetSeriesByMBID,
+    GetSeriesByName,
+    GetSeriesMBID,
     GetSongFeature,
     GetSongGenresFeature,
     GetSongIdFromUrlFeature,
     GetSongUrlFromIdFeature,
-    GetSeriesByMBID,
-    GetSeriesByName,
-    GetSeriesMBID,
     GetWikidataAlbumRelationKeyFeature,
     GetWikidataArtistRelationKeyFeature,
     GetWikidataSongRelationKeyFeature,
