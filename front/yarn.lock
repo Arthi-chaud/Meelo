@@ -8480,7 +8480,7 @@ __metadata:
     react-native-unistyles: "npm:3.3.0"
     react-native-uuid: "npm:^2.0.4"
     react-native-video: "npm:^7.0.0-beta.10"
-    react-native-worklets: "npm:^0.11.3"
+    react-native-worklets: "npm:^0.12.0"
     state: "workspace:^"
     type-fest: "npm:^5.6.0"
     typescript: "npm:5.9.3"
@@ -9623,9 +9623,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:^0.11.3":
-  version: 0.11.3
-  resolution: "react-native-worklets@npm:0.11.3"
+"react-native-worklets@npm:^0.12.0":
+  version: 0.12.1
+  resolution: "react-native-worklets@npm:0.12.1"
   dependencies:
     "@babel/generator": "npm:^7.27.1"
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
@@ -9645,8 +9645,8 @@ __metadata:
     "@babel/core": "*"
     "@react-native/metro-config": "*"
     react: "*"
-    react-native: 0.83 - 0.86
-  checksum: 10c0/74627598616e671f19475053037fdd2c40941b0b1e65cd538b41ec53229f7d2a35a182f88baf2e669b785c11ace11e2a9ec0c3cf50e1f9c283645af71a673c1a
+    react-native: 0.83 - 0.87
+  checksum: 10c0/86b9043ed2ceacd3dada3f94d62393a5bb54c7a26877e5bb54171cd4455b34f4148009a6b41bf53be70f265444bd7fff287f4d0fd8599e27d476c10e6cd7923f
   languageName: node
   linkType: hard
 
