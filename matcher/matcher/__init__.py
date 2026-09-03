@@ -127,7 +127,8 @@ async def startup():
         datefmt="%Y/%m/%d %H:%M:%S",
     )
 
-    logging.getLogger("asyncio").setLevel(logging.ERROR)
+    # NOTE: To hide the 'unclosed connection' messages
+    logging.getLogger("asyncio").setLevel(logging.FATAL)
     logging.getLogger("pika").setLevel(logging.ERROR)
     await bootstrap_context()
     await connect_mq(consume)
