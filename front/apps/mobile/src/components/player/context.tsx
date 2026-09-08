@@ -23,7 +23,6 @@ import {
 	cursorAtom,
 	emptyPlaylistAtom,
 	playlistAtom,
-	skipTrackAtom,
 	type TrackState,
 } from "@/state/player";
 import { store } from "@/state/store";
@@ -50,6 +49,7 @@ import {
 	progressAtom,
 	requestedProgressAtom,
 	rewindTrackAtom,
+	skipTrackAtom,
 } from "./state";
 // Should be used as a readonly handle, mainly for the VideoView component
 export const videoPlayerAtom = atom<VideoPlayer | null>(null);
@@ -297,7 +297,7 @@ export const PlayerContext = () => {
 					skipTrack(queryClient);
 				});
 				playerRef.current.addEventListener("onStatusChange", (e) => {
-					if (e !== "readyToPlay") {
+					if (e !== "readyToPlay" && e !== "idle") {
 						ready.current = false;
 					}
 				});
