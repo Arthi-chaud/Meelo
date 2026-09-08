@@ -62,7 +62,8 @@ export default class PlaylistService {
 			return await this.prismaService.playlist.create({
 				data: {
 					name: input.name,
-					allowChanges: input.allowChanges,
+					allowChanges:
+						input.isPublic === false ? false : input.allowChanges,
 					isPublic: input.isPublic,
 					ownerId: input.ownerId,
 					slug: new Slug(`${input.name}-${input.ownerId}`).toString(),
@@ -280,7 +281,10 @@ export default class PlaylistService {
 								`${what.name}-${playlist.ownerId}`,
 							).toString()
 						: undefined,
-					allowChanges: what.allowChanges,
+					allowChanges:
+						(what.isPublic ?? playlist.isPublic) === false
+							? false
+							: what.allowChanges,
 					isPublic: what.isPublic,
 				},
 				where: { id: playlist.id },
@@ -570,6 +574,7 @@ export default class PlaylistService {
 	private _guardCanUpdatePlaylist(playlist: Playlist, userId: number | null) {
 		if (
 			userId === null ||
+			(playlist.ownerId !== userId && !playlist.isPublic) ||
 			(playlist.ownerId !== userId && !playlist.allowChanges)
 		) {
 			throw new UnallowedPlaylistUpdate(playlist.id);
