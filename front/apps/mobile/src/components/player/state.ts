@@ -28,6 +28,7 @@ export const skipTrackAtom = atom(null, (get, set, qc: QueryClient) => {
 	const loopMode = get(loopModeAtom);
 	if (loopMode === "track") {
 		set(requestedProgressAtom, 0);
+		set(playAtom);
 	} else {
 		set(skipTrackAtom_, qc);
 	}

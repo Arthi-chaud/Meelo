@@ -41,6 +41,7 @@ import {
 	skipTrackAtom,
 	type TrackState,
 } from "@/state/player";
+import { store } from "@/state/store";
 import formatArtists from "@/utils/format-artists";
 import { useQueryClient } from "~/api";
 import { DrawerBreakpoint } from "~/components/scaffold";
@@ -132,9 +133,10 @@ const Player = () => {
 			throwawayAudioPlayer.current.pause();
 			throwawayAudioPlayer.current.src = "";
 		}
-		if (player?.current && loopMode === "track") {
+		if (player?.current && store.get(loopModeAtom) === "track") {
 			markedAsPlayed.current = false;
 			player.current.currentTime = 0;
+			play();
 			return;
 		}
 		// If last track, disable player
@@ -238,7 +240,7 @@ const Player = () => {
 				};
 				player.current!.onended = () => {
 					progress.current = null;
-					skipTrack(queryClient);
+					onSkipTrack();
 				};
 				player.current!.onpause = () => {
 					throwawayAudioPlayer.current?.pause();
