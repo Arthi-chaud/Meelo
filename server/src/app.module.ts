@@ -36,7 +36,6 @@ import { HousekeepingModule } from "./housekeeping/housekeeping.module";
 import IllustrationModule from "./illustration/illustration.module";
 import LabelModule from "./label/label.module";
 import LibraryModule from "./library/library.module";
-import LoggerModule from "./logger/logger.module";
 import { LyricsModule } from "./lyrics/lyrics.module";
 import MigrationModule from "./migrations/migration.module";
 import ParserModule from "./parser/parser.module";
@@ -83,7 +82,6 @@ import VideoModule from "./video/video.module";
 		LyricsModule,
 		AuthenticationModule,
 		UserModule,
-		LoggerModule,
 		PlaylistModule,
 		VideoModule,
 		StreamModule,

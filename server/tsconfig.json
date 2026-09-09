@@ -1,7 +1,8 @@
 {
 	"compilerOptions": {
 		"strict": false,
-		"module": "commonjs",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"declaration": true,
 		"removeComments": true,
 		"emitDecoratorMetadata": true,
@@ -22,6 +23,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"noFallthroughCasesInSwitch": true,
 		"resolveJsonModule": true,
+		"resolvePackageJsonExports": true,
 		"esModuleInterop": true,
 		"alwaysStrict": true,
 		"noImplicitReturns": true,
