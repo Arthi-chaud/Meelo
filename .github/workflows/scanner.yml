@@ -40,7 +40,7 @@ jobs:
               - '.github/actions/dockerize/**'
   Build:
     needs: changes
-    container: ghcr.io/hybridgroup/opencv:4.12.0
+    container: ghcr.io/hybridgroup/opencv:4.13.0
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
@@ -53,7 +53,7 @@ jobs:
   Format:
     if: ${{ needs.changes.outputs.scanner == 'true' && github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
-    container: ghcr.io/hybridgroup/opencv:4.12.0
+    container: ghcr.io/hybridgroup/opencv:4.13.0
     needs: [Build]
     steps:
       - name: Check out the repo
@@ -66,7 +66,7 @@ jobs:
           gofmt-flags: "-l"
   Tests:
     runs-on: ubuntu-latest
-    container: ghcr.io/hybridgroup/opencv:4.12.0
+    container: ghcr.io/hybridgroup/opencv:4.13.0
     needs: [Build]
     if: ${{ needs.changes.outputs.scanner == 'true' && always() }}
     steps:
