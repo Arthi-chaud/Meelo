@@ -154,18 +154,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/biome@npm:2.5.10"
+"@biomejs/biome@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/biome@npm:2.5.11"
   dependencies:
-    "@biomejs/cli-darwin-arm64": "npm:2.5.10"
-    "@biomejs/cli-darwin-x64": "npm:2.5.10"
-    "@biomejs/cli-linux-arm64": "npm:2.5.10"
-    "@biomejs/cli-linux-arm64-musl": "npm:2.5.10"
-    "@biomejs/cli-linux-x64": "npm:2.5.10"
-    "@biomejs/cli-linux-x64-musl": "npm:2.5.10"
-    "@biomejs/cli-win32-arm64": "npm:2.5.10"
-    "@biomejs/cli-win32-x64": "npm:2.5.10"
+    "@biomejs/cli-darwin-arm64": "npm:2.5.11"
+    "@biomejs/cli-darwin-x64": "npm:2.5.11"
+    "@biomejs/cli-linux-arm64": "npm:2.5.11"
+    "@biomejs/cli-linux-arm64-musl": "npm:2.5.11"
+    "@biomejs/cli-linux-x64": "npm:2.5.11"
+    "@biomejs/cli-linux-x64-musl": "npm:2.5.11"
+    "@biomejs/cli-win32-arm64": "npm:2.5.11"
+    "@biomejs/cli-win32-x64": "npm:2.5.11"
   dependenciesMeta:
     "@biomejs/cli-darwin-arm64":
       optional: true
@@ -185,62 +185,62 @@ __metadata:
       optional: true
   bin:
     biome: bin/biome
-  checksum: 10c0/486653f389d235abf2f899e6b1bc5ec548905d89f15ce5a3c60f673ed4c473eabdf9ad9cebbe5c1ef080739ebdda88402c58f64e2a055af3e319126f0fec1e93
+  checksum: 10c0/6d76d2b2e2fcf01e40e0e65dd249b6a6e003b7db716fb3bcb17789bef644fa7353be62c595ae7a25831d80515b5b311b22f4660f82446f55843a0fdd3458f32a
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-arm64@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-darwin-arm64@npm:2.5.10"
+"@biomejs/cli-darwin-arm64@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-darwin-arm64@npm:2.5.11"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-x64@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-darwin-x64@npm:2.5.10"
+"@biomejs/cli-darwin-x64@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-darwin-x64@npm:2.5.11"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64-musl@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-linux-arm64-musl@npm:2.5.10"
+"@biomejs/cli-linux-arm64-musl@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-linux-arm64-musl@npm:2.5.11"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-linux-arm64@npm:2.5.10"
+"@biomejs/cli-linux-arm64@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-linux-arm64@npm:2.5.11"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64-musl@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-linux-x64-musl@npm:2.5.10"
+"@biomejs/cli-linux-x64-musl@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-linux-x64-musl@npm:2.5.11"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-linux-x64@npm:2.5.10"
+"@biomejs/cli-linux-x64@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-linux-x64@npm:2.5.11"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-arm64@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-win32-arm64@npm:2.5.10"
+"@biomejs/cli-win32-arm64@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-win32-arm64@npm:2.5.11"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-x64@npm:2.5.10":
-  version: 2.5.10
-  resolution: "@biomejs/cli-win32-x64@npm:2.5.10"
+"@biomejs/cli-win32-x64@npm:2.5.11":
+  version: 2.5.11
+  resolution: "@biomejs/cli-win32-x64@npm:2.5.11"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -6523,7 +6523,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "meelo@workspace:."
   dependencies:
-    "@biomejs/biome": "npm:2.5.10"
+    "@biomejs/biome": "npm:2.5.11"
     "@nestjs/axios": "npm:^4.0.1"
     "@nestjs/cli": "npm:^11.0.21"
     "@nestjs/common": "npm:^11.1.19"
