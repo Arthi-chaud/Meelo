@@ -8,7 +8,7 @@ export default defineConfig({
 	oxc: false,
 	test: {
 		globals: true,
-		root: "./",
+		root: "./src",
 		watch: false,
 		testTimeout: 60000,
 		env: loadEnv("", process.cwd(), ""),
