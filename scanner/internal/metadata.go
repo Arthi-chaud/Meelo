@@ -140,6 +140,7 @@ func SanitizeAndValidateMetadata(m *Metadata) []error {
 
 // Will override m1's values m2's if m1's is empty
 func Merge(m1 Metadata, m2 Metadata) (Metadata, error) {
+	trackIndex := m1.Index
 	if err := mergo.Merge(&m1, m2, mergo.WithOverrideEmptySlice); err != nil {
 		return Metadata{}, e.Join(
 			e.New("merging Metadata struct may have failed: "),
@@ -154,9 +155,13 @@ func Merge(m1 Metadata, m2 Metadata) (Metadata, error) {
 	if m1.ReleaseReleaseDate != nil && (*m1.ReleaseReleaseDate).Year() == 1 {
 		m1.ReleaseReleaseDate = m2.ReleaseReleaseDate
 	}
-
-	if m1.Index == -1 && m2.Index != -1 {
+	// prevent m2's -1 from overriding m1's
+	if trackIndex != -1 {
+		m1.Index = trackIndex
+	} else if m2.Index != -1 {
 		m1.Index = m2.Index
+	} else {
+		m1.Index = -1
 	}
 	return m1, nil
 }

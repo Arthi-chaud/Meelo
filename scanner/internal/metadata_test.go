@@ -11,12 +11,14 @@ func TestVMergeMetadataCorrectOverride(t *testing.T) {
 	m1 := Metadata{
 		Artist:           "A",
 		AlbumArtist:      "",
+		Index:            0,
 		AlbumReleaseDate: nil,
 	}
 	m2Date := time.Date(2007, 1, 1, 1, 1, 1, 1, time.UTC)
 	m2 := Metadata{
 		Artist:           "B",
 		AlbumArtist:      "B",
+		Index:            -1,
 		AlbumReleaseDate: &m2Date,
 	}
 	m3, _ := Merge(m1, m2)
@@ -24,4 +26,5 @@ func TestVMergeMetadataCorrectOverride(t *testing.T) {
 	assert.Equal(t, "A", m3.Artist)
 	assert.Equal(t, "B", m3.AlbumArtist)
 	assert.Equal(t, 2007, m3.AlbumReleaseDate.Year())
+	assert.Equal(t, int64(0), m3.Index)
 }

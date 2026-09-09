@@ -5,9 +5,6 @@ import (
 	"testing"
 	"time"
 
-	// "time"
-
-	// "github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal"
 	"github.com/Arthi-chaud/Meelo/scanner/internal/config"
 	"github.com/stretchr/testify/assert"
