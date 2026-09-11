@@ -1,15 +1,21 @@
+ARG TAG=latest
+FROM arthichaud/meelo-front:$TAG AS front
+FROM arthichaud/meelo-matcher:$TAG AS matcher
+FROM arthichaud/meelo-server:$TAG AS server
+FROM arthichaud/meelo-scanner:$TAG AS scanner
+
 FROM --platform=$BUILDPLATFORM alpine:3.23 AS base
 ARG TARGETARCH
 RUN apk update && apk add git build-base
 
 FROM base AS meilisearch_builder
-ENV VERSION=v1.53.2
-ENV REPO=https://github.com/meilisearch/meilisearch
+ENV MEILI_VERSION=v1.53.2
+ENV MEILI_REPO=https://github.com/meilisearch/meilisearch
 RUN apk add rustup 
 RUN rustup-init -y
 ENV PATH=/root/.cargo/bin/:$PATH
 RUN rustup update && rustup default stable
-RUN git clone --branch "$VERSION" --single-branch "$REPO" /tmp/meilisearch
+RUN git clone --branch "$MEILI_VERSION" --single-branch "$MEILI_REPO" /tmp/meilisearch
 WORKDIR /tmp/meilisearch
 RUN case "$TARGETARCH" in \
       amd64) echo "amd64" > /tmp/rust-target ;; \
@@ -24,9 +30,17 @@ RUN TARGET="$(cat /tmp/rust-target)-unknown-linux-musl" \
 
 
 FROM base AS runner
-
-RUN apk add openssl postgresql rabbitmq-server nodejs
+RUN apk add openssl postgresql rabbitmq-server nodejs nginx ffmpeg
+COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
 COPY --from=meilisearch_builder /out/meilisearch /usr/bin/meilisearch
+
+RUN addgroup -S meelo && adduser -S meelo -G meelo
+RUN mkdir /app && chown -R meelo:meelo /app
+USER meelo
+COPY --from=front --chown=meelo:meelo /app /app/front
+COPY --from=server --chown=meelo:meelo /app /app/server
+COPY --from=scanner --chown=meelo:meelo /app /app/scanner
+COPY --from=matcher --chown=meelo:meelo /app /app/matcher
 RUN node --version > /dev/null && meilisearch --version > /dev/null 
 
 
