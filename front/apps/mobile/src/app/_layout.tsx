@@ -41,6 +41,10 @@ import { BlurTargetView } from "expo-blur";
 import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import {
+	configureReanimatedLogger,
+	ReanimatedLogLevel,
+} from "react-native-reanimated";
 import { UnistylesRuntime } from "react-native-unistyles";
 import { DefaultQueryOptions } from "@/api/query";
 import { BackgroundGradient } from "~/components/background-gradient";
@@ -52,6 +56,10 @@ import { colorSchemePreference } from "~/state/color-scheme";
 import { languagePreference } from "~/state/lang";
 import { appThemes } from "~/theme";
 import resources from "../../../../translations";
+
+configureReanimatedLogger({
+	level: ReanimatedLogLevel.error,
+});
 
 SplashScreen.preventAutoHideAsync();
 
