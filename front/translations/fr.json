@@ -208,6 +208,7 @@
 		"name": "Nom",
 		"path": "Chemin",
 		"registrationDate": "Date d'ajout",
+		"ripSource": "Source du rip",
 		"type": "Type",
 		"unknown": "Inconnu"
 	},

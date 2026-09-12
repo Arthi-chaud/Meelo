@@ -83,6 +83,9 @@ const TrackFileInfo = ({ trackId }: { trackId: number }) => {
 		"fileInfo.duration": track.data
 			? formatDuration(track.data.duration)
 			: undefined,
+		"fileInfo.ripSource": track.data
+			? (track.data.ripSource ?? t("fileInfo.unknown"))
+			: undefined,
 		"fileInfo.bitRate": track.data
 			? track.data.bitrate
 				? `${track.data.bitrate} kbps`

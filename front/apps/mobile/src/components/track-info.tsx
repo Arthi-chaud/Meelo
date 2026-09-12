@@ -65,6 +65,9 @@ export const TrackInfo = ({ trackId }: { trackId: number }) => {
 						: undefined
 				}
 			/>
+			{track?.ripSource ? (
+				<Row label={t("fileInfo.ripSource")} value={track.ripSource} />
+			) : null}
 			<Row label={t("fileInfo.path")} value={file?.path} />
 			<Row
 				label={t("fileInfo.registrationDate")}
