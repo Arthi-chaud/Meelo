@@ -343,15 +343,18 @@ const SongPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 									{song.data ? (
 										song.data.bpm ? (
 											<Typography
-												sx={{
-													paddingTop: 1,
-													paddingBottom: 4,
-												}}
+												sx={{ paddingBottom: 2 }}
 											>{`BPM: ${song.data.bpm}`}</Typography>
 										) : null
 									) : (
 										<Skeleton width={"50px"} />
 									)}
+
+									{song.data?.master.ripSource ? (
+										<Typography
+											sx={{ paddingBottom: 2 }}
+										>{`${t("fileInfo.ripSource")}: ${song.data.master.ripSource}`}</Typography>
+									) : null}
 									{(genres.items === undefined ||
 										genres.items.length !== 0) && (
 										<Stack
