@@ -318,6 +318,7 @@ export default class MetadataService {
 			mixed: parsedTrackName.mixed || releaseIsMixed,
 			isBonus: parsedTrackName.bonus,
 			isRemastered: parsedTrackName.remastered,
+			ripSource: metadata.ripSource ?? null,
 			discName: metadata.discName ?? null,
 			discIndex: metadata.discIndex ?? null,
 			trackIndex: metadata.index ?? null,
@@ -326,7 +327,6 @@ export default class MetadataService {
 				metadata.bitrate !== undefined
 					? Math.floor(metadata.bitrate)
 					: null,
-			ripSource: null,
 			duration:
 				metadata.duration !== undefined
 					? Math.floor(metadata.duration)
