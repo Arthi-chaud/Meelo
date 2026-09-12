@@ -69,6 +69,8 @@ type Metadata struct {
 	SeriesIndex float64
 	SeriesMbid  string
 
+	RipSource RipSource
+
 	IllustrationLocation    IllustrationLocation
 	IllustrationStreamIndex int
 	IllustrationPath        string
@@ -86,6 +88,18 @@ const (
 )
 
 type AlbumType string
+
+type RipSource string
+
+const (
+	CD             RipSource = "CD"
+	DVD            RipSource = "DVD"
+	BluRay         RipSource = "BluRay"
+	Cassette       RipSource = "Cassette"
+	Vinyl          RipSource = "Vinyl"
+	Digital        RipSource = "Digital"
+	OtherRipSource RipSource = "Other"
+)
 
 const (
 	Studio      AlbumType = "StudioRecording"
