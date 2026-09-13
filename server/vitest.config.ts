@@ -18,10 +18,10 @@ export default defineConfig({
 		sequence: { concurrent: false, sequencer: CustomSequencer },
 		coverage: {
 			provider: "v8",
-			reporter: "lcov",
+			reporter: ["lcov"],
 			include: ["src/**/*.ts"],
 			reportOnFailure: true,
-			reportsDirectory: "coverage",
+			reportsDirectory: "../coverage",
 		},
 	},
 	plugins: [
