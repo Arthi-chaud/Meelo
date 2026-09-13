@@ -34,7 +34,7 @@ import {
 	Min,
 	MinLength,
 } from "class-validator";
-import { AlbumType, TrackType } from "src/prisma/generated/client";
+import { AlbumType, RipSource, TrackType } from "src/prisma/generated/client";
 
 /**
  * Extracted metadata from a track file
@@ -301,4 +301,9 @@ export default class Metadata {
 	@IsOptional()
 	@ApiPropertyOptional()
 	seriesMbid?: string;
+
+	@ApiProperty()
+	@IsEnum(RipSource)
+	@IsOptional()
+	ripSource?: RipSource;
 }

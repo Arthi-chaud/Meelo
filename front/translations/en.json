@@ -210,6 +210,7 @@
 		"name": "Name",
 		"path": "Path",
 		"registrationDate": "Registration Date",
+		"ripSource": "Rip Source",
 		"type": "Type",
 		"unknown": "Unknown"
 	},

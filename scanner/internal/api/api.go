@@ -170,6 +170,9 @@ func SaveMetadata(config config.Config, m internal.Metadata, saveMethod SaveMeta
 		mp.WriteField("label", m.Label)
 	}
 	mp.WriteField("type", string(m.Type))
+	if len(m.RipSource) > 0 {
+		mp.WriteField("ripSource", string(m.RipSource))
+	}
 	for i, genre := range m.Genres {
 		mp.WriteField(fmt.Sprintf("genres[%d]", i), genre)
 	}

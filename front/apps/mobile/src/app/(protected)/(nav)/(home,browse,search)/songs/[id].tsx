@@ -8,7 +8,7 @@ import { getGenres, getSong, getSongExternalMetadata } from "@/api/queries";
 import type { ExternalMetadataSource } from "@/models/external-metadata";
 import type Genre from "@/models/genre";
 import type { Lyrics } from "@/models/lyrics";
-import type Song from "@/models/song";
+import type { SongWithRelations } from "@/models/song";
 import { songTypeToTranslationKey } from "@/models/utils";
 import { playTrackAtom, type TrackState } from "@/state/player";
 import { LyricsIcon, PlayIcon, SongTypeIcon } from "@/ui/icons";
@@ -147,7 +147,11 @@ const LyricsView = ({
 	);
 };
 
-const InfoView = ({ song }: { song: Song | undefined }) => {
+const InfoView = ({
+	song,
+}: {
+	song: SongWithRelations<"master"> | undefined;
+}) => {
 	const { t } = useTranslation();
 	const { items: genres } = useInfiniteQuery(
 		(songId) => getGenres({ song: songId }),
@@ -179,6 +183,18 @@ const InfoView = ({ song }: { song: Song | undefined }) => {
 					/>
 				</View>
 			</View>
+
+			{song?.master.ripSource ? (
+				<View style={styles.row}>
+					<Text
+						content={`${t("fileInfo.ripSource")}:`}
+						variant="itemLabel"
+					/>
+					<View style={styles.row}>
+						<Text content={song.master.ripSource} />
+					</View>
+				</View>
+			) : null}
 			{(genres === undefined || genres.length > 0) && (
 				<View style={styles.row}>
 					<Text

@@ -20,6 +20,7 @@ import * as yup from "yup";
 import Illustration from "./illustration";
 import Release from "./release";
 import Resource from "./resource";
+import { RipSource } from "./rip-source";
 import Song from "./song";
 import Video from "./video";
 
@@ -84,6 +85,7 @@ const Track = Resource.concat(
 		 * If the Track is mixed with the previous/next track
 		 */
 		mixed: yup.boolean().required(),
+		ripSource: RipSource.required().nullable().default(null),
 	}),
 );
 

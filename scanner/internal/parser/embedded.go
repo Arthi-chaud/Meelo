@@ -240,6 +240,9 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		metadata.SeriesMbid = value
 	})
 
+	ParseTag(tags, []string{"media", "rip source"}, func(value string) {
+		metadata.RipSource = parseRipSource(value)
+	})
 	if !c.UseEmbeddedThumbnails || metadata.Type != internal.Video {
 		if streamIndex := illustration.GetEmbeddedIllustrationStreamIndex(*probeData); streamIndex >= 0 {
 			metadata.IllustrationLocation = internal.Embedded
@@ -247,6 +250,29 @@ func parseMetadataFromEmbeddedTags(filePath string, c config.UserSettings) (inte
 		}
 	}
 	return metadata, errors
+}
+
+func parseRipSource(s string) internal.RipSource {
+	s = strings.ReplaceAll(strings.ToLower(s), "-", " ")
+	if strings.Contains(s, "vinyl") {
+		return internal.Vinyl
+	}
+	switch s {
+	case "cd", "sacd", "hdcd", "cd r", "cdr", "minidisc":
+		return internal.CD
+	case "dvd", "vcd", "cdv", "dvd audio", "dualdisc":
+		return internal.DVD
+	case "bluray", "hd dvd":
+		return internal.BluRay
+	case "cassette", "microcassette", "k7":
+		return internal.Cassette
+	case "vinyl", "record":
+		return internal.Vinyl
+	case "digital media":
+		return internal.Digital
+	default:
+		return internal.OtherRipSource
+	}
 }
 
 func parseLyrics(value string, metadata *internal.Metadata) {
