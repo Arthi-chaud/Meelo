@@ -41,7 +41,11 @@ COPY --from=front --chown=meelo:meelo /app /app/front
 COPY --from=server --chown=meelo:meelo /app /app/server
 COPY --from=scanner --chown=meelo:meelo /app /app/scanner
 COPY --from=matcher --chown=meelo:meelo /app /app/matcher
-RUN node --version > /dev/null && meilisearch --version > /dev/null 
-
+COPY --from=matcher /usr/local/lib/python3.14  /usr/local/lib/python3.14
+COPY --from=matcher /usr/local/lib/libpython*  /usr/local/lib/
+COPY --from=matcher /usr/local/bin/fastapi /usr/local/bin
+COPY --from=matcher /usr/local/bin/pip* /usr/local/bin
+COPY --from=matcher /usr/local/bin/python* /usr/local/bin
+RUN node --version > /dev/null && meilisearch --version > /dev/null && fastapi --version > /dev/null
 
 CMD ["echo", "hello world"]
