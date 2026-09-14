@@ -9780,12 +9780,12 @@ __metadata:
   linkType: hard
 
 "react-native-toast-message@npm:^2.3.3":
-  version: 2.4.0
-  resolution: "react-native-toast-message@npm:2.4.0"
+  version: 2.5.2
+  resolution: "react-native-toast-message@npm:2.5.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/615167ed4de0d5456b6d4d516a564671a3801991e8d897c98e45a3ce9460541ff5aff7e3104588074be7fcaaee9de6b81e337b8e53a6a29b8098053a06238af7
+  checksum: 10c0/e0f054efe16fb8f41abc937a6e6c66351fec55a11bf93c123c77534ca398c718653b6e46f9d62421c778e7611d68f91ef8fb8fb52afd72023e544b2d2294004e
   languageName: node
   linkType: hard
 
