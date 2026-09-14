@@ -3956,9 +3956,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shopify/react-native-skia@npm:2.11.1":
-  version: 2.11.1
-  resolution: "@shopify/react-native-skia@npm:2.11.1"
+"@shopify/react-native-skia@npm:2.11.2":
+  version: 2.11.2
+  resolution: "@shopify/react-native-skia@npm:2.11.2"
   dependencies:
     canvaskit-wasm: "npm:0.41.0"
     react-native-skia-android: "npm:152.0.0"
@@ -3980,7 +3980,7 @@ __metadata:
       optional: true
   bin:
     setup-skia-web: scripts/setup-canvaskit.js
-  checksum: 10c0/063c961a0f30bf7913a9b5da5086d2323e8a2f3ba0fb9a5260dec3a6029a0362ff86f44bcafe794a66ccbebd9fac50bc3bc4f6f78831175ca4b825b8ea1af618
+  checksum: 10c0/821fc130fd72dbf2930acc94ec6045b8353a7e17a14daf1b5282cdf6d9aec76fd8d02dfc18f8a22cbf2bc761beea9b1c4138e705f2f4d7760d4ef54388282bb0
   languageName: node
   linkType: hard
 
@@ -8625,7 +8625,7 @@ __metadata:
     "@gorhom/bottom-sheet": "npm:^5.2.14"
     "@kesha-antonov/react-native-background-downloader": "npm:^4.5.6"
     "@shopify/flash-list": "npm:2.3.2"
-    "@shopify/react-native-skia": "npm:2.11.1"
+    "@shopify/react-native-skia": "npm:2.11.2"
     "@tanstack/react-query": "npm:^5.100.5"
     "@types/react": "npm:~19.1.10"
     "@types/react-native-base64": "npm:^0"
