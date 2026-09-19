@@ -30,22 +30,30 @@ RUN TARGET="$(cat /tmp/rust-target)-unknown-linux-musl" \
 
 
 FROM base AS runner
-RUN apk add openssl postgresql rabbitmq-server nodejs nginx ffmpeg
-COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
-COPY --from=meilisearch_builder /out/meilisearch /usr/bin/meilisearch
-
+RUN apk add openssl postgresql rabbitmq-server nodejs nginx ffmpeg chromaprint
 RUN addgroup -S meelo && adduser -S meelo -G meelo
 RUN mkdir /app && chown -R meelo:meelo /app
+
+COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
+
+COPY --from=meilisearch_builder /out/meilisearch /usr/bin/meilisearch
+RUN meilisearch --version > /dev/null
+
 USER meelo
+
 COPY --from=front --chown=meelo:meelo /app /app/front
 COPY --from=server --chown=meelo:meelo /app /app/server
+
 COPY --from=scanner --chown=meelo:meelo /app /app/scanner
+COPY --from=scanner --chown=meelo:meelo /usr/local/lib/libopencv*.so.* /usr/local/lib/
+
 COPY --from=matcher --chown=meelo:meelo /app /app/matcher
 COPY --from=matcher /usr/local/lib/python3.14  /usr/local/lib/python3.14
 COPY --from=matcher /usr/local/lib/libpython*  /usr/local/lib/
 COPY --from=matcher /usr/local/bin/fastapi /usr/local/bin
 COPY --from=matcher /usr/local/bin/pip* /usr/local/bin
 COPY --from=matcher /usr/local/bin/python* /usr/local/bin
-RUN node --version > /dev/null && meilisearch --version > /dev/null && fastapi --version > /dev/null
+
+RUN node --version > /dev/null && fastapi --version > /dev/null
 
 CMD ["echo", "hello world"]
