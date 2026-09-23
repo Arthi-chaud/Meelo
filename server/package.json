@@ -47,7 +47,7 @@
 		"helmet": "^8.1.0",
 		"http-proxy-middleware": "^4.0.0",
 		"md5": "^2.3.0",
-		"meilisearch": "^0.60.0",
+		"meilisearch": "^0.62.0",
 		"mime": "^3.0.0",
 		"nestjs-form-data": "^11.0.1",
 		"nestjs-meilisearch": "patch:nestjs-meilisearch@npm%3A3.0.0#~/.yarn/patches/nestjs-meilisearch-npm-3.0.0-3b2c5df2ca.patch",
