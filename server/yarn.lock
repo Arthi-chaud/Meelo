@@ -24,6 +24,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-devkit/core@npm:22.1.8":
+  version: 22.1.8
+  resolution: "@angular-devkit/core@npm:22.1.8"
+  dependencies:
+    ajv: "npm:8.20.0"
+    ajv-formats: "npm:3.0.1"
+    jsonc-parser: "npm:3.3.1"
+    picomatch: "npm:4.0.5"
+    rxjs: "npm:7.8.2"
+    source-map: "npm:0.7.6"
+  peerDependencies:
+    chokidar: ^5.0.0
+  peerDependenciesMeta:
+    chokidar:
+      optional: true
+  checksum: 10c0/666156660be640ad3a3cd8f72acb26054a819017ff65b49898a31a98be971cf6759d40acfbbea92bc262a214a9f953e73878ec44a48b398f8d079a533ede9eab
+  languageName: node
+  linkType: hard
+
 "@angular-devkit/schematics-cli@npm:22.1.5":
   version: 22.1.5
   resolution: "@angular-devkit/schematics-cli@npm:22.1.5"
@@ -47,6 +66,19 @@ __metadata:
     ora: "npm:9.4.1"
     rxjs: "npm:7.8.2"
   checksum: 10c0/049a190d5cbd80ae152d2bfc17f80c1eb808571e36bb67fa9ec912c2936acd43e5270f88b8ddf3c688e397cbd1665ee5f9f2607f5cd6a27acd0837b4d86f1145
+  languageName: node
+  linkType: hard
+
+"@angular-devkit/schematics@npm:22.1.8":
+  version: 22.1.8
+  resolution: "@angular-devkit/schematics@npm:22.1.8"
+  dependencies:
+    "@angular-devkit/core": "npm:22.1.8"
+    jsonc-parser: "npm:3.3.1"
+    magic-string: "npm:1.0.0"
+    ora: "npm:9.4.1"
+    rxjs: "npm:7.8.2"
+  checksum: 10c0/aadf32388b331507e2f575b5b9c300bd2d214c217fec9a5d1551e4db2f4e4af54fa1d0447bc0b156df9ba354d068c0ebc0ccb57be2f89522894a14abe0789895
   languageName: node
   linkType: hard
 
@@ -936,13 +968,13 @@ __metadata:
   linkType: hard
 
 "@nestjs/axios@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@nestjs/axios@npm:12.0.0"
+  version: 12.0.1
+  resolution: "@nestjs/axios@npm:12.0.1"
   peerDependencies:
     "@nestjs/common": ^10.0.0 || ^11.0.0 || ^12.0.0
     axios: ^1.3.1
     rxjs: ^7.0.0
-  checksum: 10c0/10d4c00a0bada61d9f6a95245489bb22a9911ffa44ec651f6a22c292bfe0063a9ea0e17316251c48fb975a60faf5c5c96ac67daae76068d522fb669756549b85
+  checksum: 10c0/115e9b35512f3d43be55e42df65da556933ba246268f7bc15025f29e77c3ecbe40d51cde05de5e13ed9ce51c6a6ac004119f09ff21ddbc0256053c43a1bf9239
   languageName: node
   linkType: hard
 
@@ -1063,14 +1095,14 @@ __metadata:
   linkType: hard
 
 "@nestjs/jwt@npm:^12.0.0":
-  version: 12.0.1
-  resolution: "@nestjs/jwt@npm:12.0.1"
+  version: 12.0.2
+  resolution: "@nestjs/jwt@npm:12.0.2"
   dependencies:
     "@types/jsonwebtoken": "npm:9.0.10"
     jsonwebtoken: "npm:9.0.3"
   peerDependencies:
     "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0
-  checksum: 10c0/35f79f8704ffd276ddc0156910108e8350251f599ea6a59fb1368ef45b1b9153f24306c8a121ddd2f3748fab36660b78d36bb785f5c81dd344075c0abdcc3d22
+  checksum: 10c0/72e2dc1ef6b502feacfb487ccdcf4d3bab173bb034a452f171f97ac6ca66a88ba4913d56996abff5ed489a6fb6ae7feba57947086caec13e84f013d474840263
   languageName: node
   linkType: hard
 
@@ -1161,23 +1193,23 @@ __metadata:
   linkType: hard
 
 "@nestjs/schedule@npm:^12.0.0":
-  version: 12.0.1
-  resolution: "@nestjs/schedule@npm:12.0.1"
+  version: 12.0.2
+  resolution: "@nestjs/schedule@npm:12.0.2"
   dependencies:
     cron: "npm:4.4.0"
   peerDependencies:
     "@nestjs/common": ^11.0.0 || ^12.0.0
     "@nestjs/core": ^11.0.0 || ^12.0.0
-  checksum: 10c0/b2eb917310548064915ba984c5ead1ea0c711feba56e5963ea37788fb25e083d800c83b35353f8ff5f74a629a46414b651cd25b1cab527b7e902737319b99d4d
+  checksum: 10c0/c253910c01d8e9ff88e7490c278ecc175ac1485052a885c881ca00c95922659f286b1f58ba007e9038416c8fc37c3a775f8fd5c8c16f11b40f29079f76a0a88e
   languageName: node
   linkType: hard
 
 "@nestjs/schematics@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "@nestjs/schematics@npm:12.0.0"
+  version: 12.0.5
+  resolution: "@nestjs/schematics@npm:12.0.5"
   dependencies:
-    "@angular-devkit/core": "npm:22.1.5"
-    "@angular-devkit/schematics": "npm:22.1.5"
+    "@angular-devkit/core": "npm:22.1.8"
+    "@angular-devkit/schematics": "npm:22.1.8"
     comment-json: "npm:5.0.0"
     jsonc-parser: "npm:3.3.1"
     pluralize: "npm:8.0.0"
@@ -1187,7 +1219,7 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10c0/df0027bfc7dc450a25a103f8d924e45b936fc7c793664acc91acbbe9aede194310dd95d501742c0c80aae01786ff56e74302e064c00ec06ea83059ec5f515f32
+  checksum: 10c0/762f0483181598117c43a3410d5e31eb113d10584daa3a0f06860af16c98d8f06ac28c64a51e3e2f2bab7eb60cd26e344e38107b2ceb0f3d9cf50b0bb33797c3
   languageName: node
   linkType: hard
 
