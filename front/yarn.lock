@@ -9632,12 +9632,12 @@ __metadata:
   linkType: hard
 
 "react-native-edge-to-edge@npm:^1.8.1":
-  version: 1.8.1
-  resolution: "react-native-edge-to-edge@npm:1.8.1"
+  version: 1.8.2
+  resolution: "react-native-edge-to-edge@npm:1.8.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/c51244f93d2b65fb1e09bcc780be36e7fc7fd05d56de80d22fe90c07b0045666fb2ab719ad799230affdce9ae565a0ae2f703f72c501fe4f98c6c33b2880e609
+  checksum: 10c0/a4931dfe3952ff93f33fb8cbe433035b0476311841a200133b08ede83e23126bfc5aab3b36116e74687d50f809c2407939a8195afe68f18afb7bb10ea4ee19cd
   languageName: node
   linkType: hard
 
