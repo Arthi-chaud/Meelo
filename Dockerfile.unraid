@@ -30,7 +30,7 @@ RUN TARGET="$(cat /tmp/rust-target)-unknown-linux-musl" \
 
 
 FROM base AS runner
-RUN apk add openssl postgresql rabbitmq-server nodejs nginx ffmpeg chromaprint
+RUN apk add openssl postgresql rabbitmq-server nodejs nginx ffmpeg chromaprint bash
 RUN addgroup -S meelo && adduser -S meelo -G meelo
 RUN mkdir /app && chown -R meelo:meelo /app
 
@@ -38,6 +38,11 @@ COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
 
 COPY --from=meilisearch_builder /out/meilisearch /usr/bin/meilisearch
 RUN meilisearch --version > /dev/null
+
+
+ENV PGDATA=/var/lib/postgresql/data
+RUN mkdir -p "$PGDATA" && chown -R meelo:meelo "$(dirname "$PGDATA")"
+RUN mkdir -p /run/postgresql && chown -R meelo:meelo /run/postgresql
 
 USER meelo
 
@@ -56,4 +61,8 @@ COPY --from=matcher /usr/local/bin/python* /usr/local/bin
 
 RUN node --version > /dev/null && fastapi --version > /dev/null
 
-CMD ["echo", "hello world"]
+RUN initdb -D "$PGDATA"
+
+COPY --chown=meelo:meelo --chmod=755 ./unraid/start.sh /app/start.sh
+
+ENTRYPOINT ["/app/start.sh"]

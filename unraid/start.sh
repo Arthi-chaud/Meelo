@@ -12,14 +12,14 @@ start() {
     local name="$1"
     shift
 
-	commands["$name"]=( "$@" )
+	commands["$name"]="$*"
 
     echo "Starting $name: $*"
 
-	"${commands[$name]}" &
+	"$@" &
     pids["$name"]=$!
 
-    echo "$name started (PID $pid)"
+    echo "$name started (PID ${pids[$name]})"
 }
 
 stop_all() {
@@ -50,8 +50,8 @@ trap stop_all SIGTERM SIGINT
 
 declare -A commands
 
+start psql "postgres -D $PGDATA"
 # TODO:
-# start process_a /usr/local/bin/process-a
 # start process_b /usr/local/bin/process-b
 # start process_c /usr/local/bin/process-c
 
