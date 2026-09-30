@@ -16,7 +16,7 @@
 		"packages/*"
 	],
 	"devDependencies": {
-		"@biomejs/biome": "2.5.13",
+		"@biomejs/biome": "2.5.14",
 		"typescript": "5.9.3",
 		"vitest": "^5.0.0"
 	},
