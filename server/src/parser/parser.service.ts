@@ -212,7 +212,7 @@ export default class ParserService {
 			if (!sstart && !ssend) {
 				// If there is no delimiters
 				featureSubGroup = strippedGroup.match(
-					/(ft\.?|feat(uring|\.)?)\s+(?<artists>.*)$/i,
+					/(\s+ft\.?|feat(uring|\.)?)\s+(?<artists>.*)$/i,
 				);
 				artistGroupIndex = 3;
 			}

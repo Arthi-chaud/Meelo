@@ -340,6 +340,8 @@ describe("Parser Service", () => {
 				[],
 			],
 			["Good Times With Bad People", "Good Times With Bad People", []],
+			["Lift Me Up", "Lift Me Up", []],
+			["Lift Me Up (Remix)", "Lift Me Up (Remix)", []],
 		] as const;
 
 		for (const [
