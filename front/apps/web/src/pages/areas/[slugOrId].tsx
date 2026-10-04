@@ -1,5 +1,12 @@
-import { Box, Link, Skeleton, Stack, Typography } from "@mui/material";
+import {
+	Box,
+	Link as MUILink,
+	Skeleton,
+	Stack,
+	Typography,
+} from "@mui/material";
 import type { NextPageContext } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
 import type { GetPropsTypesFrom, Page } from "ssr";
@@ -98,14 +105,15 @@ const AreaPage: Page<GetPropsTypesFrom<typeof prepareSSR>> = ({ props }) => {
 											whiteSpace: "pre",
 										}}
 									>
-										<Link
+										<MUILink
+											component={Link}
 											style={{
 												textDecoration: "underline",
 											}}
 											href={`/areas/${area.id}`}
 										>
 											{area.name}
-										</Link>
+										</MUILink>
 										{idx < areas.length - 1
 											? "  <  "
 											: null}
