@@ -8,6 +8,11 @@ declare -A pids
 declare -A commands
 shutdown_requested=false
 
+run_migrations() {
+	export DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/meelo?schema=public
+	yarn --cwd /app/server run prisma migrate deploy  || exit 1
+}
+
 start() {
     local name="$1"
     shift
@@ -16,7 +21,7 @@ start() {
 
     echo "Starting $name: $*"
 
-	"$@" &
+	$@ &
     pids["$name"]=$!
 
     echo "$name started (PID ${pids[$name]})"
@@ -53,9 +58,10 @@ declare -A commands
 start psql "postgres -D $PGDATA"
 start meilisearch "meilisearch --db-path /app/meilisearch/db --dump-dir /app/meilisearch/dump --no-analytics"
 start mq "rabbitmq-server"
-# TODO:
-# start process_b /usr/local/bin/process-b
-# start process_c /usr/local/bin/process-c
+run_migrations
+export MEILI_HOST=http://localhost:7700
+start server "yarn --cwd /app/server start:prod"
+# TODO: Env var for meilisearch, db, mq
 
 
 while ! $shutdown_requested; do

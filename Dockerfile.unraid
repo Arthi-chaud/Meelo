@@ -30,7 +30,8 @@ RUN TARGET="$(cat /tmp/rust-target)-unknown-linux-musl" \
 
 
 FROM base AS runner
-RUN apk add openssl postgresql rabbitmq-server nodejs nginx ffmpeg chromaprint bash
+RUN apk add openssl postgresql rabbitmq-server nodejs npm nginx ffmpeg chromaprint bash postgresql18-contrib
+RUN npm install -g corepack && yarn set version stable
 RUN addgroup -S meelo && adduser -S meelo -G meelo
 RUN mkdir /app && chown -R meelo:meelo /app
 
@@ -65,6 +66,8 @@ COPY --from=matcher /usr/local/bin/pip* /usr/local/bin
 COPY --from=matcher /usr/local/bin/python* /usr/local/bin
 
 RUN node --version > /dev/null && fastapi --version > /dev/null
+
+RUN yarn --help < /dev/null > /dev/null
 
 RUN initdb -D "$PGDATA"
 
