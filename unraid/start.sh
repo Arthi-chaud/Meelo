@@ -61,6 +61,8 @@ start mq "rabbitmq-server"
 run_migrations
 export MEILI_HOST=http://localhost:7700
 start server "yarn --cwd /app/server start:prod"
+export API_URL=http://localhost:4000
+sleep 3 ; start scanner "./app/scanner/scanner"
 # TODO: Env var for meilisearch, db, mq
 
 
