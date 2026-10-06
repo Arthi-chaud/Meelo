@@ -40,9 +40,14 @@ COPY --from=meilisearch_builder /out/meilisearch /usr/bin/meilisearch
 RUN meilisearch --version > /dev/null
 
 
-ENV PGDATA=/var/lib/postgresql/data
+ENV PGDATA=/app/db/data
 RUN mkdir -p "$PGDATA" && chown -R meelo:meelo "$(dirname "$PGDATA")"
 RUN mkdir -p /run/postgresql && chown -R meelo:meelo /run/postgresql
+
+ENV RABBITMQ_MNESIA_BASE=/app/mq/mnesia
+RUN mkdir -p "$RABBITMQ_MNESIA_BASE" && chown -R meelo:meelo "$RABBITMQ_MNESIA_BASE"
+ENV RABBITMQ_LOG_BASE=/app/mq/logs
+RUN mkdir -p "$RABBITMQ_LOG_BASE" && chown -R meelo:meelo "$RABBITMQ_LOG_BASE"
 
 USER meelo
 

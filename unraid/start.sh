@@ -52,6 +52,7 @@ declare -A commands
 
 start psql "postgres -D $PGDATA"
 start meilisearch "meilisearch --db-path /app/meilisearch/db --dump-dir /app/meilisearch/dump --no-analytics"
+start mq "rabbitmq-server"
 # TODO:
 # start process_b /usr/local/bin/process-b
 # start process_c /usr/local/bin/process-c
