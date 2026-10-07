@@ -52,6 +52,9 @@ RUN mkdir -p "$RABBITMQ_LOG_BASE" && chown -R meelo:meelo "$RABBITMQ_LOG_BASE"
 
 USER meelo
 
+ARG TAG
+ENV VERSION=$TAG
+
 COPY --from=front --chown=meelo:meelo /app /app/front
 COPY --from=server --chown=meelo:meelo /app /app/server
 
@@ -73,4 +76,4 @@ RUN initdb -D "$PGDATA"
 
 COPY --chown=meelo:meelo --chmod=755 ./unraid/start.sh /app/start.sh
 
-ENTRYPOINT ["/app/start.sh"]
+CMD ["/app/start.sh"]

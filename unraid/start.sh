@@ -6,6 +6,7 @@ set -uo pipefail
 
 declare -A pids
 declare -A commands
+declare -A wds
 shutdown_requested=false
 
 run_migrations() {
@@ -17,12 +18,17 @@ start() {
     local name="$1"
     shift
 
+	local pwd="$1"
+	shift
+
 	commands["$name"]="$*"
 
-    echo "Starting $name: $*"
+	echo "Starting $name ($pwd): $*"
 
-	$@ &
+	cd "$pwd" ; $@ &
+	cd
     pids["$name"]=$!
+    wds["$name"]="$pwd"
 
     echo "$name started (PID ${pids[$name]})"
 }
@@ -55,15 +61,20 @@ trap stop_all SIGTERM SIGINT
 
 declare -A commands
 
-start psql "postgres -D $PGDATA"
-start meilisearch "meilisearch --db-path /app/meilisearch/db --dump-dir /app/meilisearch/dump --no-analytics"
-start mq "rabbitmq-server"
+start psql "/" "postgres -D $PGDATA"
+start meilisearch "/" "meilisearch --db-path /app/meilisearch/db --dump-dir /app/meilisearch/dump --no-analytics"
+export RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+export RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+start mq "/" "rabbitmq-server"
 run_migrations
 export MEILI_HOST=http://localhost:7700
-start server "yarn --cwd /app/server start:prod"
+export RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@localhost:5672
+start server "/app/server" "yarn start:prod"
 export API_URL=http://localhost:4000
-sleep 3 ; start scanner "./app/scanner/scanner"
-# TODO: Env var for meilisearch, db, mq
+sleep 3 ; start scanner "/app/scanner" "./scanner"
+start matcher "/app/matcher" "fastapi run matcher --port 6789"
+export HOSTNAME="0.0.0.0"
+start front "/app/front" "node server.js"
 
 
 while ! $shutdown_requested; do
@@ -74,6 +85,7 @@ while ! $shutdown_requested; do
 
     for name in "${!pids[@]}"; do
         pid="${pids[$name]}"
+        cwd="${wds[$name]}"
 
         if ! kill -0 "$pid" 2>/dev/null; then
             echo "$name (PID $pid) exited; restarting..."
@@ -83,7 +95,7 @@ while ! $shutdown_requested; do
             unset 'pids[$name]'
 
             # shellcheck disable=SC2086
-            start "$name" ${commands[$name]}
+            start "$name" "$cwd" ${commands[$name]}
 
             break
         fi
