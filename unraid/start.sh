@@ -74,8 +74,14 @@ export API_URL=http://localhost:4000
 sleep 3 ; start scanner "/app/scanner" "./scanner"
 start matcher "/app/matcher" "fastapi run matcher --port 6789"
 export HOSTNAME="0.0.0.0"
+export PUBLIC_SERVER_URL=${PUBLIC_URL}/api
+export SSR_SERVER_URL=http://0.0.0.0:4000
+export PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
+export SSR_SCANNER_URL=http://0.0.0.0:8133
+export PUBLIC_MATCHER_URL=${PUBLIC_URL}/matcher
 start front "/app/front" "node server.js"
 
+nginx
 
 while ! $shutdown_requested; do
 
