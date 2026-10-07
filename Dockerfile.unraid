@@ -30,7 +30,7 @@ RUN TARGET="$(cat /tmp/rust-target)-unknown-linux-musl" \
 
 
 FROM base AS runner
-RUN apk add openssl postgresql rabbitmq-server nodejs npm nginx ffmpeg chromaprint bash postgresql18-contrib
+RUN apk add openssl postgresql rabbitmq-server nodejs npm nginx ffmpeg chromaprint bash postgresql18-contrib mailcap gettext
 RUN npm install -g corepack && yarn set version stable
 RUN addgroup -S meelo && adduser -S meelo -G meelo
 RUN mkdir /app && chown -R meelo:meelo /app
@@ -45,7 +45,6 @@ RUN mkdir -p /var/log/nginx/ && chown -R meelo:meelo /var/log/nginx
 RUN mkdir -p /run/nginx/ && chown -R meelo:meelo /run/nginx/ 
 RUN mkdir -p /etc/nginx/templates /etc/nginx/conf.d && chown -R meelo:meelo /etc/nginx
 COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
-RUN apk add gettext
 RUN \
 	export PORT=80;\
 	export SERVER_URL=http://0.0.0.0:4000; \
