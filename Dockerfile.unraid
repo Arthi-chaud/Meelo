@@ -40,6 +40,37 @@ COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
 COPY --from=meilisearch_builder /out/meilisearch /usr/bin/meilisearch
 RUN meilisearch --version > /dev/null
 
+RUN mkdir -p /var/lib/nginx/ && chown -R meelo:meelo /var/lib/nginx
+RUN mkdir -p /var/log/nginx/ && chown -R meelo:meelo /var/log/nginx
+RUN mkdir -p /run/nginx/ && chown -R meelo:meelo /run/nginx/ 
+RUN mkdir -p /etc/nginx/templates /etc/nginx/conf.d && chown -R meelo:meelo /etc/nginx
+COPY ./nginx.conf.template /etc/nginx/templates/meelo.conf.template
+RUN apk add gettext
+RUN \
+	export PORT=80;\
+	export SERVER_URL=http://0.0.0.0:4000; \
+	export SCANNER_URL=http://0.0.0.0:8133; \ 
+	export MATCHER_URL=http://0.0.0.0:6789; \
+	export FRONT_URL=http://0.0.0.0:5000; \
+	envsubst '${PORT} ${SERVER_URL} ${SCANNER_URL} ${MATCHER_URL} ${FRONT_URL}' < /etc/nginx/templates/meelo.conf.template > /etc/nginx/conf.d/meelo.conf 
+RUN <<END cat > /etc/nginx/nginx.conf
+worker_processes  auto;
+events {
+    worker_connections  1024;
+}
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+    sendfile        on;
+    keepalive_timeout  65;
+    include /etc/nginx/conf.d/*.conf;
+}
+END
 
 ENV PGDATA=/app/db/data
 RUN mkdir -p "$PGDATA" && chown -R meelo:meelo "$(dirname "$PGDATA")"
@@ -67,6 +98,7 @@ COPY --from=matcher /usr/local/lib/libpython*  /usr/local/lib/
 COPY --from=matcher /usr/local/bin/fastapi /usr/local/bin
 COPY --from=matcher /usr/local/bin/pip* /usr/local/bin
 COPY --from=matcher /usr/local/bin/python* /usr/local/bin
+
 
 RUN node --version > /dev/null && fastapi --version > /dev/null
 
