@@ -61,6 +61,10 @@ trap stop_all SIGTERM SIGINT
 
 declare -A commands
 
+if [ ! -d "$PGDATA"/data ]; then
+	initdb -D "$PGDATA"
+fi
+
 start psql "/" "postgres -D $PGDATA"
 start meilisearch "/" "meilisearch --db-path /app/meilisearch/db --dump-dir /app/meilisearch/dump --no-analytics"
 export RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
@@ -79,6 +83,7 @@ export SSR_SERVER_URL=http://0.0.0.0:4000
 export PUBLIC_SCANNER_URL=${PUBLIC_URL}/scanner
 export SSR_SCANNER_URL=http://0.0.0.0:8133
 export PUBLIC_MATCHER_URL=${PUBLIC_URL}/matcher
+env
 start front "/app/front" "node server.js"
 
 nginx

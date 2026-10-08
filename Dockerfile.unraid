@@ -103,8 +103,6 @@ RUN node --version > /dev/null && fastapi --version > /dev/null
 
 RUN yarn --help < /dev/null > /dev/null
 
-RUN initdb -D "$PGDATA"
-
 COPY --chown=meelo:meelo --chmod=755 ./unraid/start.sh /app/start.sh
 
 CMD ["/app/start.sh"]
