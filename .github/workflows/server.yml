@@ -118,25 +118,6 @@ jobs:
         with:
           name: coverage-report-server
           path: ./server/coverage
-  Analysis:
-    needs: [Tests]
-    name: "Static Analysis"
-    runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' && always() }}
-    steps:
-      - uses: actions/checkout@v6
-      - name: Downlad Coverage artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: coverage-report-server
-          path: ./server/coverage
-      - name: Run SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@master
-        with:
-          projectBaseDir: ./server
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
   Dockerize:
     runs-on: ubuntu-latest
     needs: changes

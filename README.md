@@ -134,9 +134,7 @@ Want to support Meelo? [Become a sponsor](https://github.com/sponsors/Arthi-chau
 
 Get ready to make the most out of you music collection!
 
-[![Coverage (Back-end)](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=coverage)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=arthi-chaud_Meelo-back&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=arthi-chaud_Meelo-back)
-![Docker Pulls](https://img.shields.io/docker/pulls/arthichaud/meelo-server)
+![Docker Pulls](https://img.shieds.io/docker/pulls/arthichaud/meelo-server)
 
 <img src="https://github.com/user-attachments/assets/4e7a161f-180a-4f95-89b1-482421018a61" />
 
