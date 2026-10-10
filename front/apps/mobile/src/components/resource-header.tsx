@@ -91,8 +91,10 @@ export const AreaHeader = ({ area }: { area: Area | undefined }) => {
 
 export const ArtistHeader = ({
 	artist,
+	vertical,
 }: {
 	artist: ArtistWithRelations<"illustration"> | undefined;
+	vertical?: boolean;
 }) => {
 	const contextMenu = useArtistContextMenu(artist);
 	return (
@@ -102,7 +104,7 @@ export const ArtistHeader = ({
 			circleIllustration
 			title={artist?.name}
 			subtitle={null}
-			vertical
+			vertical={vertical}
 			contextMenu={contextMenu}
 		/>
 	);

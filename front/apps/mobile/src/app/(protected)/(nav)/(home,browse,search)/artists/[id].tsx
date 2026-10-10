@@ -260,7 +260,7 @@ export default function ArtistView() {
 		[],
 	);
 	const sections: ArtistPageSection[] = [
-		{ type: "header", props: { artist } },
+		{ type: "header", props: { artist, vertical: true } },
 		{
 			type: "songGrid",
 			props: {
