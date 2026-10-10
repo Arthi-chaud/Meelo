@@ -59,7 +59,7 @@
 		"react-native-keyboard-controller": "1.22.5",
 		"react-native-mmkv": "4.3.2",
 		"react-native-nitro-modules": "0.37.1",
-		"react-native-reanimated": "~4.6.0",
+		"react-native-reanimated": "~4.7.0",
 		"react-native-safe-area-context": "~5.10.0",
 		"react-native-svg": "15.15.5",
 		"react-native-toast-message": "^2.3.3",
