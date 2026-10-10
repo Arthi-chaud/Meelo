@@ -1,19 +1,25 @@
 {
 	"compilerOptions": {
 		"target": "es6",
-		"lib": ["dom", "dom.iterable", "esnext"],
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"esnext"
+		],
 		"allowJs": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
 		"noEmit": true,
 		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "node",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"jsx": "preserve",
 		"incremental": true
 	},
-	"exclude": ["node_modules"]
+	"exclude": [
+		"node_modules"
+	]
 }
