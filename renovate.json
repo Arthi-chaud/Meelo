@@ -120,6 +120,14 @@
 			],
 			"groupName": "react-native",
 			"enabled": false
+		},
+		{
+			"matchPackageNames": [
+				"/^react-native-worklets$/",
+				"/^react-native-reanimated$/",
+			],
+			"groupName": "reanimated",
+			"enabled": true
 		}
 	],
 	"postUpdateOptions": [
