@@ -1,12 +1,12 @@
 module github.com/Arthi-chaud/Meelo/scanner
 
-go 1.25.0
+go 1.26.0
 
 toolchain go1.27.1
 
 require (
 	dario.cat/mergo v1.0.2
-	github.com/go-playground/validator/v10 v10.30.4
+	github.com/go-playground/validator/v10 v10.30.5
 	github.com/goccy/go-json v0.11.1
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v5 v5.3.1
@@ -41,12 +41,12 @@ require (
 	github.com/swaggo/swag/v2 v2.0.0-rc4 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/crypto v0.55.0 // indirect
-	golang.org/x/mod v0.38.0 // indirect
-	golang.org/x/sync v0.22.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.41.0 // indirect
-	golang.org/x/tools v0.48.0 // indirect
+	golang.org/x/crypto v0.57.0 // indirect
+	golang.org/x/mod v0.41.0 // indirect
+	golang.org/x/sync v0.23.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
+	golang.org/x/text v0.42.0 // indirect
+	golang.org/x/tools v0.49.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
