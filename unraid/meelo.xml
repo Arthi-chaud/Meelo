@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<Container version="2">
+ <Name>Meelo</Name>
+ <Repository>Arthi-chaud</Repository>
+ <!-- TODO <Registry>https://hub.docker.com/r/deluan/navidrome/</Registry> -->
+ <Project>https://github.com/Arthi-chaud/Meelo</Project>
+ <Overview>Self-hosted Music Server. Focused on metadata integration & UI</Overview>
+ <Category>MediaServer:Music</Category>
+ <!-- TODO <WebUI>http://[IP]:[PORT:4533]/</WebUI> -->
+ <!-- TODO <Icon>https://raw.githubusercontent.com/selfhosters/unRAID-CA-templates/master/templates/img/navidrome.png</Icon> -->
+ <!-- 	<Overview>TelegramBot for Sonarr and Radarr&#xD; -->
+ <!-- &#xD; -->
+ <!-- This is a Telegram Bot made to add series to Sonarr or movies to Radarr with a couple of commands. You can also communicate with your Transmission/Sabnzbd service to change its download speed.&#xD; -->
+ <!-- &#xD; -->
+ <!-- You will need to create a config.yaml file and place in the addarr appdata folder. To create this file, you will need to follow the guide on the Addarr wiki to get authenticated to Telegram.&#xD; -->
+ <!-- &#xD; -->
+ <!-- </Overview> -->
+ <Config Name="WebUI" Target="80" Default="8080" Mode="tcp" Description="Container Port: 8080" Type="Port" Display="always" Required="true"/>
+ <Config Name="Data Folder" Target="/config" Default="" Mode="rw" Description="Directory containing settings.json" Type="Path" Display="always" Required="true" Mask="false"/>
+ <Config Name="Music Root Folder" Target="/data" Default="" Mode="ro" Description="The directory where your misuc libraries live" Type="Path" Display="always" Required="true"/>
+ <!-- TODO: PUBLIC URL, mount db, mount mq, mount meilisearch, LASTFM_API_KEY, LASTFM_API_SECRET, POSTGRES_USER, POSTGRES_PASSWORD, RABBITMQ_USER, RABBITMQ_PASSWORD, JWT_SIGNATURE, MEILI_MASTER_KEY,API_KEYS -->
+ <DonateText>Support Meelo</DonateText>
+ <DonateLink>https://github.com/sponsors/Arthi-chaud</DonateLink>
+</Container>
