@@ -98,7 +98,7 @@ jobs:
         with:
             packages: 'platform-tools'
       - name: Setup EAS
-        uses: expo/expo-github-action@v8
+        uses: expo/expo-github-action@v9
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
@@ -180,7 +180,7 @@ jobs:
       - name: Install Dependencies
         run: yarn workspaces focus -A
       - name: Setup EAS
-        uses: expo/expo-github-action@v8
+        uses: expo/expo-github-action@v9
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
