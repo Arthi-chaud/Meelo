@@ -116,7 +116,7 @@ jobs:
           DISABLE_SVG=1 eas build --platform android --profile ${{ github.event_name == 'pull_request' && 'preview' || 'production' }} --local --non-interactive && mv *.apk ${{ env.APK_NAME }}
 
       - name: Upload APK
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: ${{ env.APK_NAME }}
@@ -254,7 +254,7 @@ jobs:
           wait-for-processing: "true"
           backend: AppStoreAPI
       - name: Upload IPA
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: Meelo.ipa

@@ -114,7 +114,7 @@ jobs:
         run: yarn --cwd server test:cov
       - name: Upload Unit Tests artifact
         if: ${{ always() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report-server
           path: ./server/coverage
