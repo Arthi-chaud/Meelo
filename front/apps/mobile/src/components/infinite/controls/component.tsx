@@ -27,7 +27,7 @@ export const Controls = <SortingKey extends string>({
 	const { t } = useTranslation();
 	const router = useRouter();
 	return (
-		<View style={styles.row}>
+		<View style={styles.root}>
 			<View style={styles.row}>
 				{filters?.map((filter, idx) => (
 					<SelectModalButton
@@ -96,6 +96,8 @@ export const Controls = <SortingKey extends string>({
 						onSave={(selected) => sort.onUpdate(selected)}
 					/>
 				)}
+			</View>
+			<View style={[styles.row, styles.unbreakableRow]}>
 				{layout && (
 					<Button
 						size="small"
@@ -111,8 +113,6 @@ export const Controls = <SortingKey extends string>({
 						}}
 					/>
 				)}
-			</View>
-			<View style={[styles.row, styles.unbreakableRow]}>
 				{actions?.map((action, idx) => (
 					<Button
 						size="small"
@@ -135,6 +135,13 @@ export const Controls = <SortingKey extends string>({
 };
 
 const styles = StyleSheet.create((theme) => ({
+	root: {
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: theme.gap(1),
+	},
 	row: {
 		display: "flex",
 		flexDirection: "row",
