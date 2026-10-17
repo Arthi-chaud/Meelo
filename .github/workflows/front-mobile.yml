@@ -242,7 +242,7 @@ jobs:
       - name: Get IPA Path
         run: echo "IPA_PATH=${{ format('{0}/front/apps/mobile/ios/build/Meelo/Meelo.ipa', github.workspace) }}" >> $GITHUB_ENV
       - name: Upload app to TestFlight
-        uses: apple-actions/upload-testflight-build@v4
+        uses: apple-actions/upload-testflight-build@v5
         if: ${{ github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
         with:
           app-path: ${{ env.IPA_PATH }}
