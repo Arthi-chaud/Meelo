@@ -164,7 +164,7 @@ jobs:
           p12-password: ${{ secrets.APPSTORE_CERTIFICATES_PASSWORD }}
       - name: Download Store Provisioning Profile
         id: dl_store_prof
-        uses: apple-actions/download-provisioning-profiles@v4
+        uses: apple-actions/download-provisioning-profiles@v6
         with:
           bundle-id: "com.arthichaud.meelo"
           profile-type: "IOS_APP_STORE"
