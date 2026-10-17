@@ -2,9 +2,9 @@ name: "Front (Mobile)"
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [main, v4]
   push:
-    branches: [main]
+    branches: [main, v4]
   release:
     types: [published]
 
