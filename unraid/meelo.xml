@@ -1,24 +1,32 @@
 <?xml version="1.0"?>
 <Container version="2">
  <Name>Meelo</Name>
- <Repository>Arthi-chaud</Repository>
- <!-- TODO <Registry>https://hub.docker.com/r/deluan/navidrome/</Registry> -->
+ <Repository>arthichaud/meelo-unraid</Repository>
  <Project>https://github.com/Arthi-chaud/Meelo</Project>
  <Overview>Self-hosted Music Server. Focused on metadata integration & UI</Overview>
  <Category>MediaServer:Music</Category>
+ <Icon>https://raw.githubusercontent.com/Arthi-chaud/Meelo/refs/heads/main/front/assets/icon-white.png</Icon>
+ <Icon-white>https://raw.githubusercontent.com/Arthi-chaud/Meelo/refs/heads/main/front/assets/icon-white.png</Icon-white>
+ <Icon-black>https://raw.githubusercontent.com/Arthi-chaud/Meelo/refs/heads/main/front/assets/icon-black.png</Icon-black>
  <!-- TODO <WebUI>http://[IP]:[PORT:4533]/</WebUI> -->
- <!-- TODO <Icon>https://raw.githubusercontent.com/selfhosters/unRAID-CA-templates/master/templates/img/navidrome.png</Icon> -->
- <!-- 	<Overview>TelegramBot for Sonarr and Radarr&#xD; -->
- <!-- &#xD; -->
- <!-- This is a Telegram Bot made to add series to Sonarr or movies to Radarr with a couple of commands. You can also communicate with your Transmission/Sabnzbd service to change its download speed.&#xD; -->
- <!-- &#xD; -->
- <!-- You will need to create a config.yaml file and place in the addarr appdata folder. To create this file, you will need to follow the guide on the Addarr wiki to get authenticated to Telegram.&#xD; -->
- <!-- &#xD; -->
- <!-- </Overview> -->
  <Config Name="WebUI" Target="80" Default="8080" Mode="tcp" Description="Container Port: 8080" Type="Port" Display="always" Required="true"/>
+ <Config Name="Public Url" Target="PUBLIC_URL" Default="" Description="External Url used to reach the instance" Type="Variable" Display="always" Required="true"/>
  <Config Name="Data Folder" Target="/config" Default="" Mode="rw" Description="Directory containing settings.json" Type="Path" Display="always" Required="true" Mask="false"/>
- <Config Name="Music Root Folder" Target="/data" Default="" Mode="ro" Description="The directory where your misuc libraries live" Type="Path" Display="always" Required="true"/>
- <!-- TODO: PUBLIC URL, mount db, mount mq, mount meilisearch, LASTFM_API_KEY, LASTFM_API_SECRET, POSTGRES_USER, POSTGRES_PASSWORD, RABBITMQ_USER, RABBITMQ_PASSWORD, JWT_SIGNATURE, MEILI_MASTER_KEY,API_KEYS -->
+ <Config Name="Music Root Folder" Target="/data" Default="" Mode="ro" Description="The directory where your music libraries live" Type="Path" Display="always" Required="true"/>
+ <Config Name="Database folder" Target="/app/db" Default="" Description="Directory where the database data will be stored" Type="Path" Display="always" Required="true"/>
+ <Config Name="Message Queue folder" Target="/app/mq" Default="" Description="Directory where the message queue data will be stored" Type="Path" Display="always" Required="true"/>
+ <Config Name="Meilisearch folder" Target="/app/meilisearch" Default="" Description="Directory where the search engine data will be stored" Type="Path" Display="always" Required="true"/>
+ <Config Name="Meilisearch Master Key" Target="MEILI_MASTER_KEY" Default="" Description="String of random characters (used to internally authenticate to Meilisearch)" Type="Variable" Display="always" Required="true"/>
+ <Config Name="JWT Signature" Target="JWT_SIGNATURE" Default="" Description="String of random characters (used to sign JSON Web Tokens)" Type="Variable" Display="always" Required="true"/>
+ <Config Name="Internal API Keys" Target="API_KEYS" Default="" Description="Coma-separated strings of crandom characters (used for services to authenticate internally)" Type="Variable" Display="always" Required="true"/>
+ <Config Name="Postgres Username" Target="POSTGRES_USER" Default="" Description="Username to authenticate to the database" Type="Variable" Display="always" Required="true"/>
+ <Config Name="Postgres Password" Target="POSTGRES_PASSWORD" Default="" Description="Password to authenticate to the database" Type="Variable" Display="always" Required="true"/>
+ <Config Name="Message Queue Username" Target="RABBITMQ_USER" Default="" Description="Username to authenticate to the message queue" Type="Variable" Display="always" Required="true"/>
+ <Config Name="Message Queue Password" Target="RABBITMQ_PASSWORD" Default="" Description="Password to authenticate to the message queue" Type="Variable" Display="always" Required="true"/>
+ <Config Name="LastFM API Key" Target="LASTFM_API_KEY" Default="" Description="API Key for scrobbling with LastFM" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+ <Config Name="LastFM API Secret" Target="LASTFM_API_SECRET" Default="" Description="API Secret for scrobbling with LastFM" Type="Variable" Display="advanced" Required="false" Mask="false"/>
+ <Config Name="Data Dir" Target="INTERNAL_DATA_DIR" Default="/data" Description="Leave it to /data" Type="Variable" Display="advanced" Required="true" Mask="true"/>
+ <Config Name="Config Dir" Target="INTERNAL_CONFIG_DIR" Default="/config" Description="Leave it to /config" Type="Variable" Display="advanced" Required="true" Mask="true"/>
  <DonateText>Support Meelo</DonateText>
  <DonateLink>https://github.com/sponsors/Arthi-chaud</DonateLink>
 </Container>
