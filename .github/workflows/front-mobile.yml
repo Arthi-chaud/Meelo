@@ -25,7 +25,7 @@ jobs:
       front: ${{ steps.filter.outputs.front }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
         id: filter
         with:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Restore Dependencies
         uses: ./.github/actions/cache-front
       - name: Install Dependencies
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Tag
         shell: bash
         if: ${{ github.event_name == 'release' }}
@@ -136,7 +136,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'release' || (needs.changes.outputs.front == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main'))) }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Get Tag & Build Changelog
         shell: bash
         if: ${{ github.event_name == 'release' }}
