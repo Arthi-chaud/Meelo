@@ -1374,13 +1374,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:7.29.0, @babel/types@npm:^7.28.6, @babel/types@npm:^7.29.0":
-  version: 7.29.0
-  resolution: "@babel/types@npm:7.29.0"
+"@babel/types@npm:7.29.8, @babel/types@npm:^7.29.8":
+  version: 7.29.8
+  resolution: "@babel/types@npm:7.29.8"
   dependencies:
-    "@babel/helper-string-parser": "npm:^7.27.1"
-    "@babel/helper-validator-identifier": "npm:^7.28.5"
-  checksum: 10c0/23cc3466e83bcbfab8b9bd0edaafdb5d4efdb88b82b3be6728bbade5ba2f0996f84f63b1c5f7a8c0d67efded28300898a5f930b171bb40b311bca2029c4e9b4f
+    "@babel/helper-string-parser": "npm:^7.29.7"
+    "@babel/helper-validator-identifier": "npm:^7.29.7"
+  checksum: 10c0/be7c279f0abf2a086c633e21b49c7ca80275d05283cc5a268b67a708c9914bd0c944f1422b3eb3cb37682a2af5d560abf520ccf9b01b53ecbfe6b71fbc3fdde6
   languageName: node
   linkType: hard
 
@@ -1415,6 +1415,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/types@npm:^7.28.6, @babel/types@npm:^7.29.0":
+  version: 7.29.0
+  resolution: "@babel/types@npm:7.29.0"
+  dependencies:
+    "@babel/helper-string-parser": "npm:^7.27.1"
+    "@babel/helper-validator-identifier": "npm:^7.28.5"
+  checksum: 10c0/23cc3466e83bcbfab8b9bd0edaafdb5d4efdb88b82b3be6728bbade5ba2f0996f84f63b1c5f7a8c0d67efded28300898a5f930b171bb40b311bca2029c4e9b4f
+  languageName: node
+  linkType: hard
+
 "@babel/types@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/types@npm:7.29.7"
@@ -1422,16 +1432,6 @@ __metadata:
     "@babel/helper-string-parser": "npm:^7.29.7"
     "@babel/helper-validator-identifier": "npm:^7.29.7"
   checksum: 10c0/b6623994c69717fa27294f5fa46d59140338e2d86c6c1c13085c84ef7d53086ee357fbf4fe9abe3dd3da75734dc77c4c0df2f90fb29e667558bb3b3fb705e88f
-  languageName: node
-  linkType: hard
-
-"@babel/types@npm:^7.29.8":
-  version: 7.29.8
-  resolution: "@babel/types@npm:7.29.8"
-  dependencies:
-    "@babel/helper-string-parser": "npm:^7.29.7"
-    "@babel/helper-validator-identifier": "npm:^7.29.7"
-  checksum: 10c0/be7c279f0abf2a086c633e21b49c7ca80275d05283cc5a268b67a708c9914bd0c944f1422b3eb3cb37682a2af5d560abf520ccf9b01b53ecbfe6b71fbc3fdde6
   languageName: node
   linkType: hard
 
@@ -8200,7 +8200,7 @@ __metadata:
     react-native-safe-area-context: "npm:~5.10.0"
     react-native-svg: "npm:15.15.5"
     react-native-toast-message: "npm:^2.3.3"
-    react-native-unistyles: "npm:3.3.0"
+    react-native-unistyles: "npm:3.5.2"
     react-native-uuid: "npm:^2.0.4"
     react-native-video: "npm:^7.0.0-beta.10"
     react-native-worklets: "npm:^0.13.0"
@@ -9240,15 +9240,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-unistyles@npm:3.3.0":
-  version: 3.3.0
-  resolution: "react-native-unistyles@npm:3.3.0"
+"react-native-unistyles@npm:3.5.2":
+  version: 3.5.2
+  resolution: "react-native-unistyles@npm:3.5.2"
   dependencies:
-    "@babel/types": "npm:7.29.0"
+    "@babel/types": "npm:7.29.8"
   peerDependencies:
     "@react-native/normalize-colors": "*"
     react: "*"
-    react-native: ">=0.76.0"
+    react-native: ">=0.81.0"
     react-native-edge-to-edge: "*"
     react-native-nitro-modules: "*"
     react-native-reanimated: "*"
@@ -9257,7 +9257,7 @@ __metadata:
       optional: true
     react-native-reanimated:
       optional: true
-  checksum: 10c0/228582bd2833089982ce83044c22c6b61cf53c3b126465761df7087eb11594d518fa075a5d79f65aefbca88ff11d35caf87f316766eeb1ea249082e3f6a8742e
+  checksum: 10c0/c88764e1297aa93141062605685a909e52903da134a8a735a3633682c4a85a321625c43c8297b884774caad290a299aaf630bfd825a4c12e30acaf3f8bb66766
   languageName: node
   linkType: hard
 
