@@ -9,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.4
 	github.com/goccy/go-json v0.11.2
 	github.com/google/uuid v1.6.0
-	github.com/labstack/echo/v5 v5.4.0
+	github.com/labstack/echo/v5 v5.4.1
 	github.com/rs/zerolog v1.35.1
 	github.com/stretchr/testify v1.12.1
 	github.com/swaggo/echo-swagger/v2 v2.0.1
