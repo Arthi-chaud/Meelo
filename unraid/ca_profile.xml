@@ -1,0 +1,12 @@
+<CommunityApplications>
+ <Profile>
+	Meelo is a self-hosted Music Server, focused on metadata integration and UI.
+
+	For documentation, support and questions, please refer to the GitHub repository.
+ </Profile>
+ <Icon>https://raw.githubusercontent.com/Arthi-chaud/Meelo/refs/heads/main/front/assets/icon-white.png</Icon>
+ <Photo>https://repository-images.githubusercontent.com/488959298/55722b36-3723-4501-b5f4-ced8f0e29230</Photo>
+ <WebPage>https://github.com/Arthi-chaud/Meelo</WebPage>
+ <DonateText>Support this project</DonateText>
+ <DonateLink>https://github.com/sponsors/Arthi-chaud</DonateLink>
+</CommunityApplications>
