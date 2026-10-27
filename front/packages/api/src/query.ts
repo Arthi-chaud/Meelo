@@ -85,7 +85,13 @@ export const toTanStackQuery = <
 	...queryArgs: Partial<Params>
 ) => {
 	const enabled = isEnabled(queryArgs);
-	const queryParams = query(...(queryArgs as Parameters<typeof query>));
+	const queryParams = enabled
+		? query(...(queryArgs as Parameters<typeof query>))
+		: {
+				key: ["disabled"],
+				exec: () => async () => undefined as QueryReturnType,
+				transformer: undefined,
+			};
 
 	return {
 		queryKey: queryParams.key,
