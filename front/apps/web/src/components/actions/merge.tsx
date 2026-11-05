@@ -46,7 +46,7 @@ export const MergeSongAction = (
 ): Action => ({
 	icon: <MergeIcon />,
 	label: "actions.song.mergeSong.label",
-	disabled: !getUser()?.user,
+	disabled: !getUser()?.user?.admin,
 	dialog: ({ close }) => {
 		const [selectedSongId, selectSong] = useState<number>();
 		const closeModal = () => selectSong(undefined);
@@ -129,7 +129,7 @@ export const ReassignTrackAction = (
 ): Action => ({
 	icon: <MergeIcon />,
 	label: "actions.track.reassignTrack",
-	disabled: !getUser()?.user,
+	disabled: !getUser()?.user?.admin,
 	dialog: ({ close }) => {
 		const router = useRouter();
 		const { t } = useTranslation();

@@ -79,7 +79,7 @@ const ChangeResourceType = <
 	return {
 		label: label,
 		icon: <EditIcon />,
-		disabled: !getUser()?.user,
+		disabled: !getUser()?.user?.admin,
 		onClick: () =>
 			store.set(openModalAtom, () => (
 				<Box sx={{ paddingX: 4, paddingY: 6 }}>

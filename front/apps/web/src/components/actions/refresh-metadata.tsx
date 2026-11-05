@@ -157,7 +157,7 @@ const RefreshMetadataAction = (
 ): Action => ({
 	label: "tasks.refreshMetadata",
 	icon: <MetadataRefreshIcon />,
-	disabled: !getUser()?.user,
+	disabled: !getUser()?.user?.admin,
 	dialog: ({ close }) => (
 		<RefreshMetadataActionContent
 			resourceId={resourceId}
