@@ -133,7 +133,7 @@ export class VideoController {
 	})
 	@Response({ handler: VideoResponseBuilder })
 	@Put(":idOrSlug")
-	@Role(Roles.Default)
+	@Role(Roles.Admin)
 	async updateSong(
 		@Body() updateDTO: UpdateVideoDTO,
 		@IdentifierParam(VideoService)
