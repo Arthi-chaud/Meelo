@@ -9,6 +9,7 @@ import { MasterIcon } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import { showSuccessToast } from "~/primitives/toast";
 
+// NOTE: We assume that this action will only be made available to admins
 export const useSetReleaseAsMaster = (
 	release: Release | undefined,
 	album: Album | undefined,
@@ -44,6 +45,7 @@ export const useSetReleaseAsMaster = (
 	);
 };
 
+// NOTE: We assume that this action will only be made available to admins
 export const useSetSongTrackAsMaster = (
 	track: Track | undefined,
 	song: Song | undefined,

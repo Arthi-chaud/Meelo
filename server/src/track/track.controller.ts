@@ -31,6 +31,8 @@ import AlbumService from "src/album/album.service";
 import type AlbumQueryParameters from "src/album/models/album.query-parameters";
 import ArtistService from "src/artist/artist.service";
 import type ArtistQueryParameters from "src/artist/models/artist.query-parameters";
+import { Role } from "src/authentication/roles/roles.decorators";
+import Roles from "src/authentication/roles/roles.enum";
 import TransformFilter, { Filter } from "src/filter/filter";
 import IdentifierParam from "src/identifier/identifier.pipe";
 import LibraryService from "src/library/library.service";
@@ -147,6 +149,7 @@ export class TrackController {
 	})
 	@Response({ handler: TrackResponseBuilder })
 	@Put(":idOrSlug")
+	@Role(Roles.Admin)
 	async update(
 		@Body() updateDto: UpdateTrackDTO,
 		@IdentifierParam(TrackService)

@@ -277,7 +277,7 @@ export class SongController {
 	})
 	@Response({ handler: SongResponseBuilder })
 	@Put(":idOrSlug")
-	@Role(Roles.Default, Roles.Microservice)
+	@Role(Roles.Admin, Roles.Microservice)
 	async updateSong(
 		@Body() updateDTO: UpdateSongDTO,
 		@IdentifierParam(SongService)
@@ -299,7 +299,7 @@ export class SongController {
 			"All the tracks of the song will be moved to the song whose ID is given in the DTO",
 	})
 	@Post(":idOrSlug/merge")
-	@Role(Roles.Default, Roles.Microservice)
+	@Role(Roles.Admin, Roles.Microservice)
 	async mergeSong(
 		@Body() updateDTO: MergeSongDTO,
 		@IdentifierParam(SongService)

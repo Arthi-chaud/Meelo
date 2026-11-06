@@ -63,6 +63,7 @@ export const GoToRelease = (releaseId: string | number): Action => ({
 	href: `/releases/${releaseId}`,
 });
 
+// NOTE: We assume that this action will only be made available to admins
 export const ChangeType = (label: TranslationKey, onPress: () => void) => ({
 	label,
 	onPress,
