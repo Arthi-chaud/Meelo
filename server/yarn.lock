@@ -5398,7 +5398,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.2"
     rxjs: "npm:^7.8.1"
     sharp: "npm:^0.35.0"
-    slug: "npm:^5.3.0"
+    slug: "npm:^12.0.1"
     source-map-support: "npm:^0.5.20"
     supertest: "npm:^7.1.4"
     ts-node: "npm:^10.9.2"
@@ -6974,10 +6974,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slug@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "slug@npm:5.3.0"
-  checksum: 10c0/78d42d984c5ac448f2ac5beb37378ab00de1588a72443f4afec24244ff93e8e9134c68fbe76b120c9213a9e9d6bfa748b6257ff3b7c8865861cb8b177f2d0a3a
+"slug@npm:^12.0.1":
+  version: 12.0.1
+  resolution: "slug@npm:12.0.1"
+  bin:
+    slug: cli.js
+  checksum: 10c0/30a084b372d02f874800b128c09c8ae9b83fcf5cb9795830013c1c96745f63b5d80750d5a8eb253b1346702ea25dae0e46662a1aadb1eec4f4edd23fb05b0000
   languageName: node
   linkType: hard
 
