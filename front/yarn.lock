@@ -2972,11 +2972,11 @@ __metadata:
   linkType: hard
 
 "@kesha-antonov/react-native-background-downloader@npm:^4.5.6":
-  version: 4.6.3
-  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.6.3"
+  version: 4.8.0
+  resolution: "@kesha-antonov/react-native-background-downloader@npm:4.8.0"
   peerDependencies:
     react-native: ">=0.57.0"
-  checksum: 10c0/bf6ee75ab4e5729f293ec7bf291fd2b19201fda8a175e30a584f1bc7eb39d8bfb6d3696e01b8fa866da4228e091bb7385de2412d5d1dfc7f1563f57f40b89c16
+  checksum: 10c0/c50f1aff748476c49f8d6f5870a23a82e2a8dc6cd5e35bf969f31de01e7a30fce281a6dcd44659f4d90e98d8550f81d85a211410b41c62b1cd7d32ccd1331312
   languageName: node
   linkType: hard
 
