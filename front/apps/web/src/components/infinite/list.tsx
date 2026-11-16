@@ -16,12 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Divider, List } from "@mui/material";
-import { Fragment, type ReactNode } from "react";
+import { LegendList } from "@legendapp/list/react";
+import { Divider } from "@mui/material";
+import { Fragment, type ReactNode, useMemo, useRef } from "react";
 import type { IllustratedResource } from "@/models/illustration";
 import type Resource from "@/models/resource";
+import { EmptyStateIcon } from "@/ui/icons";
+import { ParentScrollableDivId } from "@/utils/constants";
+import { generateArray } from "@/utils/gen-list";
+import { useInfiniteQuery } from "~/api";
 import { useGradientBackground } from "~/components/gradient-background";
-import InfiniteScroll from "./scroll";
+import { EmptyState } from "../empty-state";
+import type InfiniteScroll from "./scroll";
 
 type TypedList<
 	T extends Resource,
@@ -38,6 +44,8 @@ type InfiniteListProps<T extends Resource, F extends Resource = T> = Omit<
 	) => ReactNode;
 } & Partial<Pick<Parameters<TypedList<T, F>>[0], "emptyState">>;
 
+const positions = new Map<string, { index: number }>();
+
 /**
  * Similar to InfiniteGrid, but rendered as a list
  * @param props
@@ -46,38 +54,80 @@ type InfiniteListProps<T extends Resource, F extends Resource = T> = Omit<
 const InfiniteList = <T extends Resource, F extends IllustratedResource>(
 	props: InfiniteListProps<T, F>,
 ) => {
+	const entryKey = useRef<string | undefined>(
+		typeof window !== "undefined" ? window.history.state?.key : undefined,
+	).current;
+
+	const saved = useRef(
+		entryKey ? positions.get(entryKey) : undefined,
+	).current;
+	const { items, hasNextPage, fetchNextPage, isFetchingNextPage } =
+		useInfiniteQuery(props.query);
+
+	const { GradientBackground } = useGradientBackground(
+		items?.find((item) => item?.illustration !== undefined)?.illustration
+			?.colors,
+		-1,
+	);
+	const data: (F | undefined)[] = useMemo(() => {
+		if (items === undefined) {
+			return generateArray(3);
+		}
+		if (isFetchingNextPage) {
+			return [...items, ...generateArray(3)];
+		}
+		return items;
+	}, [items, isFetchingNextPage]);
+
 	return (
-		<InfiniteScroll
-			{...props}
-			render={(items) => {
-				const { GradientBackground } = useGradientBackground(
-					items.find((item) => item?.illustration !== undefined)
-						?.illustration?.colors,
-					-1,
-				);
-				return (
-					<>
-						<GradientBackground />
-						<List>
-							{items.map((item, index) => (
-								<Fragment
-									key={
-										item === undefined
-											? `skeleton-${index}`
-											: `item-${index}`
-									}
-								>
-									{props.render(item, items, index)}
-									{index === items.length - 1 || (
-										<Divider variant="middle" />
-									)}
-								</Fragment>
-							))}
-						</List>
-					</>
-				);
-			}}
-		/>
+		<>
+			<GradientBackground />
+			{items?.length === 0 && (
+				<EmptyState
+					icon={props.emptyState?.icon ?? <EmptyStateIcon />}
+					text={props.emptyState?.text ?? "emptyState.default"}
+					actions={props.emptyState?.actions ?? []}
+				/>
+			)}
+			{typeof window === "undefined" ? (
+				<>
+					{generateArray(3).map((_, i) => (
+						<Fragment key={i}>
+							{props.render(undefined, [], i)}
+							<Divider variant="middle" />
+						</Fragment>
+					))}
+				</>
+			) : (
+				<LegendList
+					style={{ flex: 1 }}
+					data={data}
+					initialScrollIndex={
+						saved ? { index: saved.index } : undefined
+					}
+					scrollElement={
+						props.nested
+							? undefined
+							: typeof document === "undefined"
+								? undefined
+								: document.getElementById(ParentScrollableDivId)
+					}
+					keyExtractor={(i, idx) =>
+						i !== undefined ? i.id.toString() : `skeleton-${idx}`
+					}
+					onFirstVisibleItemChanged={({ index }) => {
+						if (entryKey) positions.set(entryKey, { index });
+					}}
+					maintainVisibleContentPosition
+					recycleItems
+					renderItem={({ item, index }) =>
+						props.render(item, data, index)
+					}
+					onEndReached={hasNextPage ? () => fetchNextPage() : null}
+					ItemSeparatorComponent={() => <Divider variant="middle" />}
+				/>
+			)}
+		</>
 	);
 };
 

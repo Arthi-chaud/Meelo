@@ -3014,6 +3014,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@legendapp/list@npm:^3.7.2":
+  version: 3.7.2
+  resolution: "@legendapp/list@npm:3.7.2"
+  dependencies:
+    use-sync-external-store: "npm:^1.5.0"
+  peerDependencies:
+    react: "*"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/a449c27cdcdac4fbe7741410638307bbc4506a532c3a732d52e50860a2884f7f66d6b0e6108e0c6963faab0121bd7264381c180cdd0f7bdb269b8476f7101b80
+  languageName: node
+  linkType: hard
+
 "@mui/core-downloads-tracker@npm:^9.5.0":
   version: 9.5.0
   resolution: "@mui/core-downloads-tracker@npm:9.5.0"
@@ -10869,21 +10885,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-sync-external-store@npm:^1.5.0, use-sync-external-store@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "use-sync-external-store@npm:1.7.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/6bae7cb778ce611131ec830c4e469fbc2872acefc25d2e4cf1c28b8628690689770742a9f2f0642c95134f9c77041fee60f0352f81ca43f96643b0ed01774726
+  languageName: node
+  linkType: hard
+
 "use-sync-external-store@npm:^1.6.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/35e1179f872a53227bdf8a827f7911da4c37c0f4091c29b76b1e32473d1670ebe7bcd880b808b7549ba9a5605c233350f800ffab963ee4a4ee346ee983b6019b
-  languageName: node
-  linkType: hard
-
-"use-sync-external-store@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "use-sync-external-store@npm:1.7.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/6bae7cb778ce611131ec830c4e469fbc2872acefc25d2e4cf1c28b8628690689770742a9f2f0642c95134f9c77041fee60f0352f81ca43f96643b0ed01774726
   languageName: node
   linkType: hard
 
@@ -11077,6 +11093,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/server": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.14.1"
+    "@legendapp/list": "npm:^3.7.2"
     "@mui/material": "npm:^9.1.2"
     "@mui/material-nextjs": "npm:^9.1.1"
     "@mui/utils": "npm:^9.1.1"
