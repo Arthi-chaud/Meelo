@@ -3115,9 +3115,9 @@ __metadata:
   linkType: hard
 
 "amqplib@npm:^2.0.0":
-  version: 2.2.0
-  resolution: "amqplib@npm:2.2.0"
-  checksum: 10c0/2ece1ee491d573f79ff9181f0460010ebb3e4b99186e0569ab292f3c5c8bd23d1eec553314d4e84eea9f8cea5a5fa87b4187eb3b4ead78abaa7c8db3c885a120
+  version: 2.4.0
+  resolution: "amqplib@npm:2.4.0"
+  checksum: 10c0/b6db4e5d9928371e23d09b0ca9a76af3e9b052637eb40a2e7c89f621c86095d5363e88b01534c97ee451d8c3139a2f214fd37889a0bc8a5d2e4d6f8fe66016ba
   languageName: node
   linkType: hard
 
