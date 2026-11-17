@@ -46,7 +46,7 @@ import formatArtists, { formatArtists_ } from "@/utils/format-artists";
 import { useAPI, useQueryClient } from "~/api";
 import { Head } from "~/components/head";
 import Illustration from "~/components/illustration";
-import InfiniteList from "~/components/infinite/list";
+import { InfiniteList } from "~/components/infinite/component";
 import InfiniteAlbumView from "~/components/infinite/resource/album";
 import InfiniteArtistView from "~/components/infinite/resource/artist";
 import { InfiniteSongView } from "~/components/infinite/resource/song";

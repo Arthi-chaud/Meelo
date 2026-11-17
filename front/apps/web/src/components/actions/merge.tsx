@@ -37,7 +37,7 @@ import { MergeIcon, SongIcon } from "@/ui/icons";
 import ListItem from "~/components/list-item";
 import { getUser } from "~/hooks/user";
 import Illustration from "../illustration";
-import InfiniteList from "../infinite/list";
+import { InfiniteList } from "../infinite/component";
 import type Action from ".";
 
 export const MergeSongAction = (

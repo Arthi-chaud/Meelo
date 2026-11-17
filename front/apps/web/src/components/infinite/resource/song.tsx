@@ -43,7 +43,7 @@ import {
 import { useSortControl } from "~/components/infinite/controls/sort";
 import SongItem, { SongGroupItem } from "~/components/list-item/resource/song";
 import { parseQueryParam, setQueryParam } from "~/utils/query-param";
-import InfiniteList from "../list";
+import { InfiniteList } from "../component";
 
 type SongModel = SongWithRelations<
 	"artist" | "featuring" | "master" | "illustration"

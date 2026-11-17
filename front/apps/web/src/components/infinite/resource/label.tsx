@@ -5,9 +5,9 @@ import type Label from "@/models/label";
 import { LabelSortingKeys } from "@/models/label";
 import type { SortingParameters } from "@/models/sorting";
 import { LabelTile } from "~/components/tile/resource/label";
+import { InfiniteGrid } from "../component";
 import { Controls } from "../controls/controls";
 import { useSortControl } from "../controls/sort";
-import InfiniteGrid from "../grid";
 
 type QueryProps = SortingParameters<typeof LabelSortingKeys>;
 type Props = { query: (qp: QueryProps) => InfiniteQuery<Label> };

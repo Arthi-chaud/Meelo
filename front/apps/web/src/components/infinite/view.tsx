@@ -27,8 +27,7 @@ import { GoBackTopIcon } from "@/ui/icons";
 import { ParentScrollableDivId } from "@/utils/constants";
 import type { EmptyStateProps } from "~/components/empty-state";
 import Fade from "~/components/fade";
-import InfiniteGrid from "./grid";
-import InfiniteList from "./list";
+import { InfiniteGrid, InfiniteList } from "./component";
 
 export type InfiniteViewProps<
 	ItemType extends Resource,

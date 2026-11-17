@@ -60,7 +60,7 @@ import {
 } from "@/ui/icons";
 import { useQueryClient } from "~/api";
 import Illustration from "~/components/illustration";
-import InfiniteList from "~/components/infinite/list";
+import { InfiniteList } from "~/components/infinite/component";
 import ListItem from "~/components/list-item";
 import { getUser } from "~/hooks/user";
 import type Action from "./";
