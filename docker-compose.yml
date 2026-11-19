@@ -1,5 +1,19 @@
 # This compose allows to build the whole project in a "production"-like environment
 services:
+  traefik:
+    image: traefik:v3.7
+    restart: "on-failure"
+    command:
+      - "--api.insecure=true"
+      - "--accesslog=true"
+      - "--log.level=WARN"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker=true"
+      - "--providers.docker.constraints=Label(`traefik.scope`, `meelo-local-${PORT}`)"     
+    ports:
+      - ${PORT:-5000}:80
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   server:
     init: true
     build:
@@ -9,6 +23,12 @@ services:
     expose:
       - 4000
     restart: on-failure
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api/`)"
+      - "traefik.http.middlewares.strip-api.stripprefix.prefixes=/api"
+      - "traefik.http.routers.api.middlewares=strip-api@docker"
+      - "traefik.scope=meelo-local-${PORT}"
     depends_on:
       db:
         condition: service_healthy
@@ -38,6 +58,10 @@ services:
         - VERSION=local
     expose:
       - 3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.front.rule=PathPrefix(`/`)"
+      - "traefik.scope=meelo-local-${PORT}"
     depends_on:
       server:
         condition: service_healthy
@@ -57,6 +81,12 @@ services:
         - VERSION=local
     expose:
       - 8133
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.scanner.rule=PathPrefix(`/scanner/`)"
+      - "traefik.http.middlewares.strip-scanner.stripprefix.prefixes=/scanner"
+      - "traefik.http.routers.scanner.middlewares=strip-scanner@docker"
+      - "traefik.scope=meelo-local-${PORT}"
     depends_on:
       server:
         condition: service_healthy
@@ -81,6 +111,12 @@ services:
     restart: on-failure
     expose:
       - 6789
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matcher.rule=PathPrefix(`/matcher/`)"
+      - "traefik.http.middlewares.strip-matcher.stripprefix.prefixes=/matcher"
+      - "traefik.http.routers.matcher.middlewares=strip-matcher@docker"
+      - "traefik.scope=meelo-local-${PORT}"
     depends_on:
       server:
         condition: service_healthy
@@ -159,24 +195,6 @@ services:
       retries: 20
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-  nginx:
-    restart: on-failure
-    image: nginx:1.31.3-alpine
-    depends_on:
-      server:
-        condition: service_started
-      front:
-        condition: service_started
-    ports:
-      - ${PORT:-5000}:5000
-    environment:
-      - PORT=5000
-      - FRONT_URL=http://front:3000
-      - SERVER_URL=http://server:4000
-      - SCANNER_URL=http://scanner:8133
-      - MATCHER_URL=http://matcher:6789
-    volumes:
-      - ./nginx.conf.template:/etc/nginx/templates/meelo.conf.template:ro
 volumes:
   db:
   config:
