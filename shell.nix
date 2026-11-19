@@ -6,6 +6,7 @@ pkgs.mkShell {
     yaml-language-server
 
     nixfmt
+    xmlformat
 
     docker
     docker-compose
