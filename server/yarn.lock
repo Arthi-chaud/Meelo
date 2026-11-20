@@ -2325,7 +2325,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^5.2.2":
+"@types/chai-as-promised@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "@types/chai-as-promised@npm:8.0.2"
+  dependencies:
+    "@types/chai": "npm:*"
+  checksum: 10c0/94492694121ba3c8b16e61be5f3d91bf1996c37e7b5f85363f30e160344b32d42b7ad9606198e57a3b3c06eb3b36e345ac0494e7556fc406433d8e13f1b83a77
+  languageName: node
+  linkType: hard
+
+"@types/chai@npm:*, @types/chai@npm:^5.2.2":
   version: 5.2.3
   resolution: "@types/chai@npm:5.2.3"
   dependencies:
@@ -3104,13 +3113,15 @@ __metadata:
   linkType: hard
 
 "amqp-connection-manager@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "amqp-connection-manager@npm:5.0.0"
+  version: 5.0.1
+  resolution: "amqp-connection-manager@npm:5.0.1"
   dependencies:
-    promise-breaker: "npm:^6.0.0"
+    "@types/chai-as-promised": "npm:^8.0.2"
+    promise-breaker: "npm:^7.0.0"
+    typed-emitter: "npm:^2.1.0"
   peerDependencies:
     amqplib: "*"
-  checksum: 10c0/5dfbbe07c5f58dad96bbeb4a8cbf8d6736672d5e2d82630dee0fecd9d1e437fea8a07f893ed71b88ef1777f833d63d26dc4daf4ac4604367bcc6167fac971f77
+  checksum: 10c0/af96f6c625486eb0b7c860f2f9924729879190dfcb487c4b88c96fcc417dc8786a9186206412f0468a2883c34b1fb6411a2a77d23b40c5ff979226f6206fbbad
   languageName: node
   linkType: hard
 
@@ -6652,10 +6663,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise-breaker@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "promise-breaker@npm:6.0.0"
-  checksum: 10c0/fcd00836dd96d34d3376964bc3a9482251248cef00f0dcf1f2485e7d9af44f9c48b0431cf4dc780fd5a7137b8e0861e3c6557667811522e93978f6bffab66cfe
+"promise-breaker@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "promise-breaker@npm:7.0.0"
+  checksum: 10c0/27e6bf37ed3fbfde01ac399fb140ab8f7e24b0d01a09b30af5dc20caece5605e5a410db4df73f2ac7303116f85f278e2782a9921f165a9b1f681d0a3aefac79e
   languageName: node
   linkType: hard
 
@@ -6968,7 +6979,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:7.8.2, rxjs@npm:^7.8.1":
+"rxjs@npm:*, rxjs@npm:7.8.2, rxjs@npm:^7.8.1":
   version: 7.8.2
   resolution: "rxjs@npm:7.8.2"
   dependencies:
@@ -7786,6 +7797,18 @@ __metadata:
     media-typer: "npm:^1.1.0"
     mime-types: "npm:^3.0.0"
   checksum: 10c0/a6018f8f509de48f2c7429305e3a920e73b374fa93127dd0877ae1c2df65a5d33907caac8afb0c37a9b9fc7c49f29e3f55d668963dc845d966930b667c07f50e
+  languageName: node
+  linkType: hard
+
+"typed-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "typed-emitter@npm:2.1.0"
+  dependencies:
+    rxjs: "npm:*"
+  dependenciesMeta:
+    rxjs:
+      optional: true
+  checksum: 10c0/01fc354ba8e87bd39b1bf4fe1c96fe7ecff7fde83161003b0f8c7f4b285a368052e185ba655dd8c102c4445301b7a1e032c8972f181b440fc95bd810450f1314
   languageName: node
   linkType: hard
 
