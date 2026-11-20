@@ -8240,7 +8240,7 @@ __metadata:
     react-native-nitro-modules: "npm:0.37.1"
     react-native-reanimated: "npm:~4.7.1"
     react-native-safe-area-context: "npm:~5.11.0"
-    react-native-svg: "npm:15.15.5"
+    react-native-svg: "npm:15.16.1"
     react-native-toast-message: "npm:^2.3.3"
     react-native-unistyles: "npm:3.5.2"
     react-native-uuid: "npm:^2.0.4"
@@ -9259,16 +9259,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-svg@npm:15.15.5":
-  version: 15.15.5
-  resolution: "react-native-svg@npm:15.15.5"
+"react-native-svg@npm:15.16.1":
+  version: 15.16.1
+  resolution: "react-native-svg@npm:15.16.1"
   dependencies:
     css-select: "npm:^5.1.0"
     css-tree: "npm:^1.1.3"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/34b71b6c83d7235efbc4263abaffcbad780375f9e0fca95786e4f1a543a2b6d07e90c7df426f708e85be68331c412066cdc639f4a6ce82bed42bc728050d9402
+  checksum: 10c0/0f7bc6e09718dc225c7fd1af94b9aa61d7e29b3f6f1756f96cefb6e19725f0667a5f9274532f8bfe5afc28e7be5bcf45f98b9a73629b649fdbcfced99645094c
   languageName: node
   linkType: hard
 
