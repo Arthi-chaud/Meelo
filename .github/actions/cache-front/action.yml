@@ -6,7 +6,7 @@ runs:
     - name: Setup node
       uses: actions/setup-node@v7
       with:
-        node-version: 24.x
+        node-version: 26.x
         package-manager-cache: false
     - name: Cache
       uses: actions/cache@v6
