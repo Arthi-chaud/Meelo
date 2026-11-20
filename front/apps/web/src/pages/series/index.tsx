@@ -25,12 +25,12 @@ import type { IllustratedResource } from "@/models/illustration";
 import type Series from "@/models/series";
 import { SeriesSortingKeys } from "@/models/series";
 import { Head } from "~/components/head";
+import { InfiniteList } from "~/components/infinite/component";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
 	ssrGetSortingParameter,
 	useSortControl,
 } from "~/components/infinite/controls/sort";
-import InfiniteList from "~/components/infinite/list";
 import { SeriesItem } from "~/components/list-item/resource/series";
 
 const prepareSSR = (context: NextPageContext) => {

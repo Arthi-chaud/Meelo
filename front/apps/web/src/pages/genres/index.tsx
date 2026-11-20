@@ -26,12 +26,12 @@ import type Genre from "@/models/genre";
 import { GenreSortingKeys } from "@/models/genre";
 import type { IllustratedResource } from "@/models/illustration";
 import { Head } from "~/components/head";
+import { InfiniteGrid } from "~/components/infinite/component";
 import { Controls } from "~/components/infinite/controls/controls";
 import {
 	ssrGetSortingParameter,
 	useSortControl,
 } from "~/components/infinite/controls/sort";
-import InfiniteGrid from "~/components/infinite/grid";
 import { GenreTile } from "~/components/tile/resource/genre";
 
 const prepareSSR = (context: NextPageContext) => {
