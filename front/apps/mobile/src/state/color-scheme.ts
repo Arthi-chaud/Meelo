@@ -17,8 +17,7 @@ export const colorSchemePreference = atom<
 		const appearanceColorScheme = Appearance.getColorScheme();
 		const actualColorScheme =
 			newColorScheme === "system"
-				? appearanceColorScheme === "unspecified" ||
-					!appearanceColorScheme
+				? appearanceColorScheme === null
 					? "light"
 					: appearanceColorScheme
 				: newColorScheme;

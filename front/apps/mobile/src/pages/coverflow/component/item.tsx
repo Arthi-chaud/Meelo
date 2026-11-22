@@ -100,7 +100,7 @@ export const CoverflowItem = ({
 	return (
 		<View style={styles.container}>
 			<Pressable
-				android_ripple={null}
+				android_ripple={{ alpha: 0 }}
 				android_disableSound
 				onPress={() => onSelect()}
 			>

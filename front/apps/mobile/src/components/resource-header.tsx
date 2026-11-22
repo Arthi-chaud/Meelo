@@ -5,7 +5,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, View, type ViewInstance } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { getParentAreas } from "@/api/queries";
 import type { Area } from "@/models/area";
@@ -131,7 +131,7 @@ export const ResourceHeader = ({
 }: Props) => {
 	vertical ??= false;
 	styles.useVariants({ vertical });
-	const gutterRef = useRef<View>(null);
+	const gutterRef = useRef<ViewInstance>(null);
 	const [gutterWidth, setGutterWidth] = useState(0);
 	useLayoutEffect(() => {
 		gutterRef.current?.measure((_, __, width) => setGutterWidth(width));

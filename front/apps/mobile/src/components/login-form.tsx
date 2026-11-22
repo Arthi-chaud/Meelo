@@ -196,7 +196,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 			<View style={styles.submitButton}>
 				<Button
 					disabled={isLoading}
-					onPress={handleSubmit(onSubmit)}
+					onPress={() => handleSubmit(onSubmit)()}
 					width="fitContent"
 					title={t(
 						formType === "url"

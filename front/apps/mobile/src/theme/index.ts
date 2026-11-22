@@ -128,7 +128,7 @@ StyleSheet.configure({
 			const pref = store.get(colorSchemePreference);
 			if (pref === "system") {
 				const appearance = Appearance.getColorScheme();
-				if (appearance === "unspecified") return "light";
+				if (appearance === null) return "light";
 				return appearance ?? "light";
 			}
 			return pref;

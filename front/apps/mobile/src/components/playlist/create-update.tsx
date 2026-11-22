@@ -145,7 +145,7 @@ export const CreateUpdatePlaylistForm = ({
 				icon={CheckIcon}
 				containerStyle={styles.saveButtonLabel}
 				disabled={isLoading}
-				onPress={handleSubmit((dto) => onSubmit.mutate(dto))}
+				onPress={() => handleSubmit((dto) => onSubmit.mutate(dto))()}
 			/>
 		</View>
 	);

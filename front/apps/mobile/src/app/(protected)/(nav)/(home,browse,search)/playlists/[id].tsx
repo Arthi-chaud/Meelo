@@ -245,7 +245,7 @@ const Items = ({
 							onReorderingEnd(reorderedIds.current)
 						}
 					/>
-				) : null
+				) : undefined
 			}
 		/>
 	);

@@ -12,7 +12,7 @@ import {
 	useEffect,
 	useRef,
 } from "react";
-import { View } from "react-native";
+import { View, type ViewInstance } from "react-native";
 import { ReduceMotion } from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BlurView } from "../blur-view";
@@ -40,7 +40,7 @@ export const useModal = <Args extends any[] = []>(p: ModalAtom<Args>) => {
 export const Modal = ({
 	blurTarget,
 }: {
-	blurTarget: RefObject<View | null>;
+	blurTarget: RefObject<ViewInstance | null>;
 }) => {
 	const [modalContent, setModalContent] = useAtom(modalAtom);
 	const onClose = useCallback(() => {
