@@ -1,6 +1,6 @@
 import { useNavigation } from "expo-router";
 import type { ComponentProps, RefObject } from "react";
-import { Platform, Pressable, type View } from "react-native";
+import { Platform, Pressable, type ViewInstance } from "react-native";
 import Animated from "react-native-reanimated";
 import { StyleSheet } from "react-native-unistyles";
 import { BackIcon } from "@/ui/icons";
@@ -25,7 +25,7 @@ export const HeaderBackground = ({
 	blurTarget,
 	style,
 }: {
-	blurTarget: RefObject<View | null>;
+	blurTarget: RefObject<ViewInstance | null>;
 	style?: ComponentProps<typeof Animated.View>["style"];
 }) => (
 	<Animated.View style={[styles.headerBgContainer, style]}>

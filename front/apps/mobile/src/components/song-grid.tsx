@@ -8,7 +8,12 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { ScrollView, View, type ViewStyle } from "react-native";
+import {
+	ScrollView,
+	type ScrollViewInstance,
+	View,
+	type ViewStyle,
+} from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type Artist from "@/models/artist";
 import type { SongWithRelations } from "@/models/song";
@@ -47,7 +52,7 @@ export const SongGrid = ({
 	...props
 }: SongGridProps) => {
 	const playTracks = useSetAtom(playTracksAtom);
-	const scrollViewRef = createRef<ScrollView>();
+	const scrollViewRef = createRef<ScrollViewInstance>();
 	const [columnWidth, setColumnWidth] = useState<number>();
 	const chunks = useMemo(() => {
 		if (songs === undefined) {

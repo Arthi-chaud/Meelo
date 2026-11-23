@@ -1,9 +1,9 @@
 import { BlurView as BV } from "expo-blur";
 import { createRef } from "react";
-import type { View } from "react-native";
+import type { ViewInstance } from "react-native";
 import { withUnistyles } from "react-native-unistyles";
 
-export const bvTarget = createRef<View | null>();
+export const bvTarget = createRef<ViewInstance | null>();
 
 export const BlurView = withUnistyles(
 	BV,

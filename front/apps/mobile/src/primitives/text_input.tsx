@@ -24,7 +24,6 @@ import {
 	Platform,
 	TextInput as RNTextInput,
 	type TextInputProps as RNTextInputProps,
-	type TextInputFocusEventData,
 	View,
 	type ViewStyle,
 } from "react-native";
@@ -202,7 +201,7 @@ const useKeyboardFocusEvents = () => {
 		useBottomSheetInternal();
 
 	const handleOnFocus = useCallback(
-		(args: NativeSyntheticEvent<TextInputFocusEventData>) => {
+		(args: NativeSyntheticEvent<any>) => {
 			animatedKeyboardState.set((state) => ({
 				...state,
 				target: args.nativeEvent.target,
@@ -211,10 +210,9 @@ const useKeyboardFocusEvents = () => {
 		[animatedKeyboardState],
 	) as NonNullable<TextInputProps["onFocus"]>;
 	const handleOnBlur = useCallback(
-		(args: NativeSyntheticEvent<TextInputFocusEventData>) => {
+		(args: NativeSyntheticEvent<any>) => {
 			const keyboardState = animatedKeyboardState.get();
 			const currentFocusedInput = findNodeHandle(
-				//@ts-expect-error
 				RNTextInput.State.currentlyFocusedInput(),
 			);
 

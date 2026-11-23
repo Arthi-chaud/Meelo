@@ -2,7 +2,12 @@ import { Image } from "expo-image";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View, type ViewStyle } from "react-native";
+import {
+	ScrollView,
+	type ScrollViewInstance,
+	View,
+	type ViewStyle,
+} from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import type {
 	AlbumExternalMetadata,
@@ -136,7 +141,7 @@ export const ExternalMetadataSourcesSection = ({
 }: Props) => {
 	const { t } = useTranslation();
 	const heading = useMemo(() => t("models.externalLink_plural"), [t]);
-	const scrollRef = useRef<ScrollView>(null);
+	const scrollRef = useRef<ScrollViewInstance>(null);
 	if (externalMetadata && externalMetadata.sources.length === 0) {
 		return null;
 	}

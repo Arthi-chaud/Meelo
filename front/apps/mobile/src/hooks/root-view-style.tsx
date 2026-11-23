@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { HeaderHeightContext } from "expo-router/build/react-navigation";
+import { HeaderHeightContext } from "expo-router/build/react-navigation/index";
 import { atom, useAtomValue } from "jotai";
 import { useContext } from "react";
 import type { ViewStyle } from "react-native";
