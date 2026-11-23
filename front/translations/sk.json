@@ -83,7 +83,7 @@
 	},
 	"album": {
 		"bonusTracks": "Bonusové skladby",
-		"onThisAlbum": "Predstavení umelci",
+		"onThisAlbum": "Predstavení Interpreti",
 		"otherAlbumReleases": "Ďalšie vydania toho istého albumu",
 		"relatedAlbums": "Súvisiace albumy",
 		"showAllTracks": "Zobraziť všetky skladby",
@@ -240,7 +240,7 @@
 		"latestAlbums": "Najnovšie albumy",
 		"mostPlayedSongs": "Najhranejšie skladby",
 		"newlyAddedAlbums": "Novo pridané albumy",
-		"newlyAddedArtists": "Novo pridaní umelci",
+		"newlyAddedArtists": "Novo pridaní Interpreti",
 		"newlyAddedReleases": "Novo pridané vydania",
 		"topGenres": "Najlepšie žánre",
 		"topLabels": "Najlepšie štítky"
@@ -262,8 +262,8 @@
 	"models": {
 		"album": "Album",
 		"album_plural": "Albumy",
-		"artist": "Umelec",
-		"artist_plural": "Umelci",
+		"artist": "Interpret",
+		"artist_plural": "Interpreti",
 		"disc": "Disk",
 		"externalLink_plural": "Externé odkazy",
 		"genre": "Žáner",
