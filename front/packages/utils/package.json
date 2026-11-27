@@ -3,7 +3,7 @@
 	"sideEffects": false,
 	"dependencies": {
 		"format-duration": "^4.0.0",
-		"i18next": "^26.0.8"
+		"i18next": "^27.0.0"
 	},
 	"devDependencies": {
 		"typescript": "5.9.3",

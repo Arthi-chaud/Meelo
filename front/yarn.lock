@@ -1312,13 +1312,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.29.7":
-  version: 7.29.7
-  resolution: "@babel/runtime@npm:7.29.7"
-  checksum: 10c0/ca11572f7146b21e0bde6a9ed4bb6a89eafbee5f0944c7eb54d0d8a2dac962c33638a1d611e14faa71dfbb92b4b5f9236232208568a6b7d5c6f3f39ddb91771e
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:^7.29.7 || ^8.0.0, @babel/runtime@npm:^7.29.7 || ^8.0.5":
   version: 8.0.7
   resolution: "@babel/runtime@npm:8.0.7"
@@ -6763,15 +6756,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^26.0.8":
-  version: 26.7.2
-  resolution: "i18next@npm:26.7.2"
+"i18next@npm:^27.0.0":
+  version: 27.2.9
+  resolution: "i18next@npm:27.2.9"
   peerDependencies:
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/671576c1a225e10994cff250dfc44585fcccc4486cda4162caadbefe5287052e56998fe80aa15e36e1c441215b601770702a820fd1dc5511255bc4ad514aa2cf
+  checksum: 10c0/cfc18ce50ceebb9d55444facdc725ca71449e03426ff1bbf60ac148aaed42c330401201c041eeaa155d5eecd08e50279b5c28eb2d498826a6326d4ea89c88ee4
   languageName: node
   linkType: hard
 
@@ -6827,8 +6820,8 @@ __metadata:
     react: "npm:19.2.3"
     typescript: "npm:5.9.3"
   peerDependencies:
-    i18next: ^26.0.0
-    react-i18next: ^17.0.0
+    i18next: ^26.0.0 || ^27.0.0
+    react-i18next: ^17.0.0 || ^18.0.0
   languageName: unknown
   linkType: soft
 
@@ -7974,7 +7967,7 @@ __metadata:
     expo-status-bar: "npm:~58.0.5"
     expo-system-ui: "npm:~58.0.7"
     expo-web-browser: "npm:~58.1.0"
-    i18next: "npm:^26.0.8"
+    i18next: "npm:^27.0.0"
     iconsax-react-nativejs: "npm:^0.0.8"
     infinite-controls: "workspace:^"
     intl-pluralrules: "npm:^2.0.1"
@@ -7982,7 +7975,7 @@ __metadata:
     models: "workspace:^"
     react: "npm:19.2.3"
     react-hook-form: "npm:^7.92.0"
-    react-i18next: "npm:^17.0.6"
+    react-i18next: "npm:^18.0.0"
     react-native: "npm:0.88.1"
     react-native-awesome-slider: "npm:^2.9.0"
     react-native-base64: "npm:^0.2.2"
@@ -8768,25 +8761,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^17.0.6":
-  version: 17.1.13
-  resolution: "react-i18next@npm:17.1.13"
+"react-i18next@npm:^18.0.0":
+  version: 18.0.3
+  resolution: "react-i18next@npm:18.0.3"
   dependencies:
-    "@babel/runtime": "npm:^7.29.7"
     html-parse-stringify: "npm:^4.0.1"
-    use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
-    i18next: ">= 26.2.0"
-    react: ">= 16.8.0"
+    "@types/react": "*"
+    i18next: ">= 27.0.1"
+    react: ">= 18.0.0"
     typescript: ^5 || ^6 || ^7
   peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
+    "@types/react":
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/961c7b43e8d568cc31499c810da8d3db7d4b1a8a5f14803c7e3462713bdae4f54444913e299750edd5fcf61f8b6962714d0781ee7399192fb94c3152bc894d38
+  checksum: 10c0/69814ea0554b1aff2ef4fb105e965d9e81cfec069394bd0925004f0efbb746e498eb65988a741f9fff628ab0a9ca0c39969607837ed4370d640a51a84c34ce93
   languageName: node
   linkType: hard
 
@@ -10553,15 +10543,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "use-sync-external-store@npm:1.6.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/35e1179f872a53227bdf8a827f7911da4c37c0f4091c29b76b1e32473d1670ebe7bcd880b808b7549ba9a5605c233350f800ffab963ee4a4ee346ee983b6019b
-  languageName: node
-  linkType: hard
-
 "usehooks-ts@npm:^3.0.0":
   version: 3.1.1
   resolution: "usehooks-ts@npm:3.1.1"
@@ -10592,7 +10573,7 @@ __metadata:
   resolution: "utils@workspace:packages/utils"
   dependencies:
     format-duration: "npm:^4.0.0"
-    i18next: "npm:^26.0.8"
+    i18next: "npm:^27.0.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^5.0.0"
   languageName: unknown
@@ -10750,7 +10731,7 @@ __metadata:
     cookies-next: "npm:^6.0.0"
     core-js: "npm:^3.47.0"
     hls.js: "npm:^1.6.16"
-    i18next: "npm:^26.0.8"
+    i18next: "npm:^27.0.0"
     jotai: "npm:3.0.2"
     material-ui-confirm: "npm:^4.0.0"
     mui-react-hook-form-plus: "npm:^1.5.1"
@@ -10762,7 +10743,7 @@ __metadata:
     react-error-boundary: "npm:^6.0.2"
     react-hook-form: "npm:^7.92.0"
     react-hot-toast: "npm:^2.6.0"
-    react-i18next: "npm:^17.0.6"
+    react-i18next: "npm:^18.0.0"
     react-infinite-scroller: "npm:^1.2.6"
     react-use: "npm:^17.6.0"
     type-fest: "npm:^5.6.0"
